@@ -79,11 +79,12 @@ public abstract class ServerConfigurator {
     /**
      * Generate configuration files from templates and given configuration
      * parameters
-     *
+     * 
      * @param config Properties with configuration parameters for template
      *            replacement
      */
-    protected void parseAndCopy(Properties config) throws IOException, TemplateException {
+    protected void parseAndCopy(Properties config) throws IOException,
+            TemplateException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
         final FilenameFilter filter = new FilenameFilter() {
             @Override
@@ -100,12 +101,24 @@ public abstract class ServerConfigurator {
                 ConfigurationGenerator.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS,
                 "nxftl"));
 
-
         // add included templates directories
         for (File includedTemplate : generator.getIncludedTemplates()) {
             if (includedTemplate.listFiles(filter) != null) {
+                String templateName = includedTemplate.getName();
+                // Check for deprecation
+                Boolean isDeprecated = Boolean.valueOf(config.getProperty(templateName
+                        + ".deprecated"));
+                if (isDeprecated) {
+                    log.warn("WARNING: Template " + templateName
+                            + " is deprecated.");
+                    String deprecationMessage = config.getProperty(templateName
+                            + ".deprecation");
+                    if (deprecationMessage != null) {
+                        log.warn(deprecationMessage);
+                    }
+                }
                 // Retrieve optional target directory if defined
-                String outputDirectoryStr = config.getProperty(includedTemplate.getName()
+                String outputDirectoryStr = config.getProperty(templateName
                         + ".target");
                 File outputDirectory = (outputDirectoryStr != null) ? new File(
                         generator.getNuxeoHome(), outputDirectoryStr)
@@ -133,9 +146,9 @@ public abstract class ServerConfigurator {
     protected abstract String getDefaultDataDir();
 
     /**
-     * Returns the Home of NuxeoRuntime
-     * (same as Framework.getRuntime().getHome().getAbsolutePath())
-     *
+     * Returns the Home of NuxeoRuntime (same as
+     * Framework.getRuntime().getHome().getAbsolutePath())
+     * 
      * @return
      */
     protected abstract File getRuntimeHome();
@@ -182,7 +195,7 @@ public abstract class ServerConfigurator {
 
     /**
      * Initialize logs
-     *
+     * 
      * @since 5.4.2
      */
     public void initLogs() {
@@ -220,11 +233,11 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Check server paths; warn if existing deprecated paths.
-     * Override this method to perform server specific checks.
-     *
+     * Check server paths; warn if existing deprecated paths. Override this
+     * method to perform server specific checks.
+     * 
      * @throws ConfigurationException If deprecated paths have been detected
-     *
+     * 
      * @since 5.4.2
      */
     public void checkPaths() throws ConfigurationException {
@@ -293,7 +306,7 @@ public abstract class ServerConfigurator {
     /**
      * Make absolute the directory passed in parameter. If it was relative, then
      * store absolute path in user config instead of relative and return value
-     *
+     * 
      * @param key Directory system key
      * @param directory absolute or relative directory path
      * @return absolute directory path
@@ -331,7 +344,7 @@ public abstract class ServerConfigurator {
     /**
      * Check if oldPath exist; if so, then raise a ConfigurationException with
      * information for fixing issue
-     *
+     * 
      * @param oldPath Path that must NOT exist
      * @param message Error message thrown with exception
      * @throws ConfigurationException If an old path has been discovered
@@ -352,7 +365,7 @@ public abstract class ServerConfigurator {
 
     /**
      * Remove locks on file system (dedicated to Lucene locks)
-     *
+     * 
      * @since 5.4.2
      */
     public void removeExistingLocks() {
@@ -411,7 +424,7 @@ public abstract class ServerConfigurator {
     /**
      * Extract Nuxeo properties from given Properties (System properties are
      * removed, except those set by Nuxeo)
-     *
+     * 
      * @param properties Properties to be filtered
      * @return copy of given properties filtered out of System properties
      * @since 5.4.2

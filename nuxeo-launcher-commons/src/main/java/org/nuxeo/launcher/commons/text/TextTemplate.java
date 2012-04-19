@@ -46,7 +46,6 @@ import freemarker.template.TemplateException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * Text template processing.
@@ -203,9 +202,11 @@ public class TextTemplate {
                     } else {
                         // silently ignore known conflicts in java properties
                         if (!key.startsWith("java.vendor")) {
-                            log.warn("Freemarker templates: " + currentString
-                                    + " is already defined - " + key
-                                    + " will not be available in Freemarker.");
+                            log.warn("Freemarker templates: "
+                                    + currentString
+                                    + " is already defined - "
+                                    + key
+                                    + " will not be available in the data model.");
                         }
                         setKeyVal = false;
                         break;
@@ -259,7 +260,7 @@ public class TextTemplate {
                     processAsFreemarker = true;
                     freemarkerExtension = extension;
                 }
-                
+
             } else {
                 // Check for each extension if it matches end of filename
                 String filename = in.getName().toLowerCase();
@@ -289,7 +290,8 @@ public class TextTemplate {
                     processText(is, os);
                 } else if (processAsFreemarker) {
                     out = new File(out.getCanonicalPath().replaceAll(
-                            Pattern.quote(freemarkerExtension) + "$", ""));
+                            "\\.*" + Pattern.quote(freemarkerExtension) + "$",
+                            ""));
                     processFreemarker(in, out);
                 } else {
                     os = new FileOutputStream(out);
