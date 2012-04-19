@@ -27,6 +27,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +43,8 @@ import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 
 /**
@@ -48,41 +53,25 @@ import org.osgi.framework.FrameworkEvent;
 public class FrameworkLoader {
 
     public static final String HOST_NAME = "org.nuxeo.app.host.name";
-
     public static final String HOST_VERSION = "org.nuxeo.app.host.version";
-
     /**
      * @deprecated prefer use of {@link Environment#NUXEO_TMP_DIR}
      */
     @Deprecated
     public static final String TMP_DIR = "org.nuxeo.app.tmp";
-
     public static final String LIBS = "org.nuxeo.app.libs"; // class path
-
     public static final String BUNDLES = "org.nuxeo.app.bundles"; // class path
-
     public static final String DEVMODE = "org.nuxeo.app.devmode";
-
     public static final String PREPROCESSING = "org.nuxeo.app.preprocessing";
-
     public static final String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
-
     public static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
-
     public static final String ARGS = "org.nuxeo.app.args";
-
     private static final Log log = LogFactory.getLog(FrameworkLoader.class);
-
     private static boolean isInitialized;
-
     private static boolean isStarted;
-
     private static File home;
-
     private static ClassLoader loader;
-
     private static List<File> bundleFiles;
-
     private static OSGiAdapter osgi;
 
     public static OSGiAdapter osgi() {
@@ -175,6 +164,22 @@ public class FrameworkLoader {
         }
     }
 
+    protected static Attributes.Name SYMBOLIC_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
+    
+    protected static boolean isBundle(File f) {
+        try {
+            JarFile jf = new JarFile(f);
+            try {
+                Manifest mf = jf.getManifest();
+                return mf.getMainAttributes().containsKey(SYMBOLIC_NAME);
+            } finally {
+                jf.close();
+            }
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
     private static void doStart() throws Exception {
         printStartMessage();
         // install system bundle first
@@ -183,6 +188,9 @@ public class FrameworkLoader {
         osgi.setSystemBundle(systemBundle);
         printDeploymentOrderInfo(bundleFiles);
         for (File f : bundleFiles) {
+            if (!isBundle(f)) {
+                continue;
+            }
             try {
                 install(f);
             } catch (BundleException e) {
@@ -233,7 +241,7 @@ public class FrameworkLoader {
         Class<?> klass = loader.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
         Method main = klass.getMethod("main", String[].class);
         main.invoke(null,
-                new Object[] { new String[] { home.getAbsolutePath() } });
+                new Object[]{new String[]{home.getAbsolutePath()}});
     }
 
     protected static void loadSystemProperties() {
@@ -378,5 +386,4 @@ public class FrameworkLoader {
         msg.append(hr);
         return msg;
     }
-
 }
