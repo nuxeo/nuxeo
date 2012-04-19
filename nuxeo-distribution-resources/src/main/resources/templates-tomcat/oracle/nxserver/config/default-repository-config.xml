@@ -36,7 +36,7 @@
             http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
           -->
         </indexing>
-        <usersSeparator key="${nuxeo.db.user.separator.key}" />
+        <usersSeparator key="${nuxeo.db.user-separator-key}" />
         <xa-datasource>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource>
         <property name="URL">jdbc:oracle:thin:@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}
         </property>

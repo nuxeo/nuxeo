@@ -26,7 +26,7 @@
             change the datamodel of VCS -->
          </fulltext>
         </indexing>
-        <usersSeparator key="${nuxeo.db.user.separator.key}" />
+        <usersSeparator key="${nuxeo.db.user-separator-key}" />
         <xa-datasource>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource>
         <property name="ServerName">${nuxeo.db.host}</property>
         <property name="PortNumber">${nuxeo.db.port}</property>

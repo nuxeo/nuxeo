@@ -65,7 +65,8 @@ repository.clustering.delay=1000
 # If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
 repository.binary.store=
 
-nuxeo.templates.parsing.extensions=xml,properties,nx,js
+nuxeo.plaintext-parsing-extensions=xml,properties,nx,js
+nuxeo.freemarker-parsing-extensions=nxftl
 
 # JBoss configuration to run
 org.nuxeo.ecm.jboss.configuration=default
