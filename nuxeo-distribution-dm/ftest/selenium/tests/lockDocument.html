@@ -55,28 +55,12 @@
 <!--Verouillage du document-->
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Lock</td>
+	<td>//img[@title='Lock']</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>locked</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>the</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=Unlock</td>
-	<td></td>
-</tr>
-<!--Véfication que les autres actions sont toujours dispo-->
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//div[@id=&quot;lock_unlock_button&quot;]</td>
+	<td>Locked</td>
 	<td></td>
 </tr>
 <tr>
@@ -143,22 +127,7 @@
 </tr>
 <tr>
 	<td>verifyTextPresent</td>
-	<td>locked</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyTextPresent</td>
-	<td>the</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//div[@id=&quot;lock_unlock_button&quot;]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>link=Unlock</td>
+	<td>Locked</td>
 	<td></td>
 </tr>
 <tr>
@@ -223,8 +192,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//div[@id=&quot;lock_unlock_button&quot;]</td>
+	<td>verifyTextPresent</td>
+	<td>Locked</td>
 	<td></td>
 </tr>
 <tr>
@@ -289,8 +258,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//div[@id=&quot;lock_unlock_button&quot;]</td>
+	<td>verifyTextPresent</td>
+	<td>Locked</td>
 	<td></td>
 </tr>
 <tr>
@@ -328,7 +297,6 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>
