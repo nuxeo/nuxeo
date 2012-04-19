@@ -76,7 +76,7 @@ public abstract class AbstractDocumentModelWriter extends
     private final Map<DocumentLocation, DocumentLocation> translationMap = new HashMap<DocumentLocation, DocumentLocation>();
 
     /**
-     * 
+     *
      * @param session the session to the repository where to write
      * @param parentPath where to write the tree. this document will be used as
      *            the parent of all top level documents passed as input. Note
@@ -124,7 +124,7 @@ public abstract class AbstractDocumentModelWriter extends
      * Creates a new document given its path.
      * <p>
      * The parent of this document is assumed to exist.
-     * 
+     *
      * @param xdoc the document containing
      * @param toPath the path of the doc to create
      */
@@ -197,6 +197,9 @@ public abstract class AbstractDocumentModelWriter extends
         boolean added = false;
         Element system = doc.getRootElement().element(
                 ExportConstants.SYSTEM_TAG);
+        if (system == null) {
+            return false;
+        }
 
         Iterator<Element> facets = system.elementIterator(ExportConstants.FACET_TAG);
         while (facets.hasNext()) {
