@@ -32,12 +32,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.core.io.ExportedDocument;
@@ -231,10 +233,10 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
             if (name.endsWith(ExportConstants.DOCUMENT_FILE)) {
                 xdoc.setDocument(loadXML(entry));
             } else if (name.endsWith(".xml")) { // external doc file
-                xdoc.putDocument(FileUtils.getFileNameNoExt(entry.getName()),
+                xdoc.putDocument(FilenameUtils.getBaseName(entry.getName()),
                         loadXML(entry));
             } else { // should be a blob
-                xdoc.putBlob(FileUtils.getFileName(entry.getName()),
+                xdoc.putBlob(FilenameUtils.getName(entry.getName()),
                         createBlob(entry));
             }
         }
@@ -273,10 +275,10 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
             if (name.endsWith(ExportConstants.DOCUMENT_FILE)) {
                 xdoc.setDocument(loadXML(entry));
             } else if (name.endsWith(".xml")) { // external doc file
-                xdoc.putDocument(FileUtils.getFileNameNoExt(entry.getName()),
+                xdoc.putDocument(FilenameUtils.getBaseName(entry.getName()),
                         loadXML(entry));
             } else { // should be a blob
-                xdoc.putBlob(FileUtils.getFileName(entry.getName()),
+                xdoc.putBlob(FilenameUtils.getName(entry.getName()),
                         createBlob(entry));
             }
         }
@@ -317,6 +319,9 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             if (zipFile != null) {
                 FileUtils.copy(zipFile.getInputStream(entry), baos);
+            } else if (file != null) {
+                ZipEntrySource src = new ZipEntrySource(file, entry.getName());
+                FileUtils.copy(src.getStream(), baos);
             } else {
                 FileUtils.copy(in, baos);
             }
@@ -331,8 +336,11 @@ public class NuxeoArchiveReader extends AbstractDocumentReader {
     }
 
     private Blob createBlob(ZipEntry entry) throws IOException {
-        if (file != null) { // the zip is a file : optimize blob loading -> do
-                            // not decompress blobs
+        if (zipFile != null) { // the zip is a file : optimize blob loading ->
+                               // do
+                               // not decompress blobs
+            return new InputStreamBlob(zipFile.getInputStream(entry));
+        } else if (file != null) {
             ZipEntrySource src = new ZipEntrySource(file, entry.getName());
             return new StreamingBlob(src);
         } else { // should decompress since this is a generic stream

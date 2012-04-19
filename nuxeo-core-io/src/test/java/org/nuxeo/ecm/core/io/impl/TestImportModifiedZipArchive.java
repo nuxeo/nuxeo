@@ -19,12 +19,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.security.MessageDigest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -89,6 +91,15 @@ public class TestImportModifiedZipArchive extends SQLRepositoryTestCase {
         assertEquals("dummyBlob.txt", blob.getFilename());
         assertEquals("SomeDummyContent", blob.getString());
 
+        byte[] expected = MessageDigest.getInstance("MD5").digest(
+                "SomeDummyContent".getBytes());
+        String source = Base64.encodeBytes(expected);
+
+        byte[] actual = MessageDigest.getInstance("MD5").digest(
+                FileUtils.readBytes(blob.getStream()));
+        String result = Base64.encodeBytes(actual);
+
+        assertEquals(source, result);
     }
 
     @Test
