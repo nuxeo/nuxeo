@@ -35,7 +35,6 @@
         <property name="URL">jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
-        <usersSeparator key="${nuxeo.db.user-separator-key}" />
       </repository>
     </repository>
   </extension>
