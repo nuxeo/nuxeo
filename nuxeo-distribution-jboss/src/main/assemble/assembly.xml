@@ -78,6 +78,9 @@
     <copy todir="${jboss}/server/default/lib">
       <artifact:resolveFile key="org.jboss.jbossas:jboss-as-varia::jar:logging-monitor" />
     </copy>
+    <copy tofile="${jboss}/common/lib/hibernate-core.jar">
+      <artifact:resolveFile key="org.hibernate:hibernate-core" />
+    </copy>
     <mkdir dir="${jboss}/client" />
     <copy todir="${jboss}/client">
       <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
