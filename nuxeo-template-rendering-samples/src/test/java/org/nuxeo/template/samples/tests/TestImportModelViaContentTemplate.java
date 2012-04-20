@@ -18,9 +18,9 @@
 
 package org.nuxeo.template.samples.tests;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,9 +29,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
-import org.nuxeo.template.samples.ModelImporter;
 
-public class TestImportModel extends SQLRepositoryTestCase {
+public class TestImportModelViaContentTemplate extends SQLRepositoryTestCase {
 
     DocumentModel rootDocument;
 
@@ -47,6 +46,7 @@ public class TestImportModel extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.template.manager.api");
         deployBundle("org.nuxeo.template.manager");
+        deployBundle("org.nuxeo.template.manager.samples");
 
         fireFrameworkStarted();
 
@@ -62,11 +62,6 @@ public class TestImportModel extends SQLRepositoryTestCase {
     @Test
     public void testImportContentTemplateArchive() throws Exception {
 
-        ModelImporter importer = new ModelImporter(session);
-
-        int nbImportedDocs = importer.importModels();
-
-        session.save();
         // check result
 
         StringBuffer sb = new StringBuffer();
@@ -88,8 +83,6 @@ public class TestImportModel extends SQLRepositoryTestCase {
             }
             sb.append("\n");
         }
-
-        assertEquals(nbImportedDocs, docs.size());
 
         // String dump = sb.toString();
         // System.out.println("Import completed : " + docs.size() + " docs");

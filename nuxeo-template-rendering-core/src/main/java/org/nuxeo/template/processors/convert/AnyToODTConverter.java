@@ -34,9 +34,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Converter used to bridge MarkDown and OpenOffice conversions
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class AnyToODTConverter implements ExternalConverter {
 
@@ -88,16 +88,15 @@ public class AnyToODTConverter implements ExternalConverter {
     }
 
     public void init(ConverterDescriptor descriptor) {
-        // TODO Auto-generated method stub
     }
 
     public ConverterCheckResult isConverterAvailable() {
         try {
             return getConversionService().isConverterAvailable("sdttext2odt");
         } catch (ConversionException e) {
-           ConverterCheckResult result = new ConverterCheckResult();
-           result.setAvailable(false);
-           return result;
+            ConverterCheckResult result = new ConverterCheckResult();
+            result.setAvailable(false);
+            return result;
         }
     }
 

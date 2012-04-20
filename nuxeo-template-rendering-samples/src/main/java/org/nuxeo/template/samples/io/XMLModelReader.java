@@ -1,15 +1,19 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-20012 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
  * Contributors:
- *     btatar
+ *     Nuxeo - initial API and implementation
  *
- * $Id: XMLModelReader.java 29029 2008-01-14 18:38:14Z ldoguin $
  */
 
 package org.nuxeo.template.samples.io;
@@ -18,9 +22,13 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -30,6 +38,14 @@ import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
 import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
+/**
+ * CoreIO reader used to read a exploded XML archive.
+ * <p>
+ * This format is used here to make changes in the models easier
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * 
+ */
 public class XMLModelReader extends AbstractDocumentReader {
 
     protected File source;

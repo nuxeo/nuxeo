@@ -18,20 +18,18 @@ public class FMBindingResolver extends AbstractBindingResolver {
 
     @Override
     protected Object handlePictureField(String paramName, Blob blobValue) {
-        // TODO Auto-generated method stub
+        // NOP
         return null;
     }
 
     @Override
     protected void handleBlobField(String paramName, Blob blobValue) {
-        // TODO Auto-generated method stub
-
+        // NOP
     }
 
     @Override
     protected void handleHtmlField(String paramName, String htmlValue) {
-        // TODO Auto-generated method stub
-
+        // NOP
     }
 
 }

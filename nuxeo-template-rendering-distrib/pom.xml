@@ -36,6 +36,11 @@
       <artifactId>nuxeo-template-rendering-web</artifactId>
       <version>5.6-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-samples</artifactId>
+      <version>5.6-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

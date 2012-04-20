@@ -1,14 +1,15 @@
-<document repository="default" id="efeba508-39c4-4ca0-a140-54805aab67a0">
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="4845b8da-21b5-4c00-9a6f-2d8d009329e8">
   <system>
-    <type>File</type>
-    <path>default-domain/workspaces/WS1/Spec</path>
+    <type>TemplateSource</type>
+    <path>default-domain/templates/Note Wrapper</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>Downloadable</facet>
-    <facet>TemplateBased</facet>
+    <facet>Template</facet>
     <facet>Commentable</facet>
     <facet>Versionable</facet>
-    <facet>Publishable</facet>
     <facet>HasRelatedText</facet>
     <access-control>
       <acl name="inherited">
@@ -26,20 +27,24 @@
       <item>Administrator</item>
     </dc:contributors>
     <dc:nature />
-    <dc:created>2012-04-17T15:53:18.83Z</dc:created>
-    <dc:description />
+    <dc:created>2012-04-19T18:15:27.58Z</dc:created>
+    <dc:description>
+      This template can be used to wrap the html preview of a Document. The
+      typical use case is to render a Note as a plan PDF document with
+      coverpage and table of content.
+    </dc:description>
     <dc:rights />
     <dc:subjects />
     <dc:publisher />
     <dc:valid />
     <dc:format />
     <dc:issued />
-    <dc:modified>2012-04-17T15:53:18.00Z</dc:modified>
+    <dc:modified>2012-04-19T18:16:41.00Z</dc:modified>
     <dc:language />
     <dc:coverage />
     <dc:expired />
     <dc:lastContributor>Administrator</dc:lastContributor>
-    <dc:title>Spec</dc:title>
+    <dc:title>Note Wrapper</dc:title>
   </schema>
   <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/"
     name="uid">
@@ -47,41 +52,41 @@
     <uid:minor_version>0</uid:minor_version>
     <uid:major_version>0</uid:major_version>
   </schema>
-  <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/"
-    name="files">
-    <files:files />
-  </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/"
     name="common">
-    <common:icon>/icons/file.gif</common:icon>
+    <common:icon>/icons/odt.png</common:icon>
     <common:icon-expanded />
-    <common:size />
+    <common:size>116250</common:size>
   </schema>
   <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/"
     name="file">
     <file:content>
       <encoding />
       <mime-type>application/vnd.oasis.opendocument.text</mime-type>
-      <filename>Spec_ModelNux.odt</filename>
-      <data>specNux.blob</data>
+      <filename>Container.odt</filename>
+      <data>Container.odt</data>
     </file:content>
-    <file:filename>Spec_ModelNux.odt</file:filename>
+    <file:filename>Container.odt</file:filename>
+  </schema>
+  <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
+    <tmpl:forcedTypes>
+      <item>none</item>
+    </tmpl:forcedTypes>
+    <tmpl:templateData>
+    <![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"><nxdt:field name="htmlContent" type="content" source="htmlPreview"></nxdt:field></nxdt:templateParams>]]>
+    </tmpl:templateData>
+    <tmpl:allowOverride>false</tmpl:allowOverride>
+    <tmpl:templateType>XDocReportProcessor</tmpl:templateType>
+    <tmpl:useAsMainContent>false</tmpl:useAsMainContent>
+    <tmpl:templateName />
+    <tmpl:applicableTypes>
+      <item>all</item>
+    </tmpl:applicableTypes>
+    <tmpl:outputFormat>application/pdf</tmpl:outputFormat>
+    <tmpl:targetRenditionName>delivery</tmpl:targetRenditionName>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/"
     name="relatedtext">
     <relatedtext:relatedtextresources />
-  </schema>
-  <schema xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/"
-    name="templatesupport">
-    <nxts:bindings>
-      <templateEntry>
-        <templateId>a7a2e87c-e0c2-4c30-9b12-d2b0e85bdc94</templateId>
-        <templateData>
-          <nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate" />
-        </templateData>
-        <templateName>SpecNux</templateName>
-        <useMainContentAsTemplate>true</useMainContentAsTemplate>
-      </templateEntry>
-    </nxts:bindings>
   </schema>
 </document>

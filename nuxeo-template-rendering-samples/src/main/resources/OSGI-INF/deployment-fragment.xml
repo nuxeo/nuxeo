@@ -5,6 +5,11 @@
 
 
   <install>
+    <!-- unzip templates resources -->
+    <unzip from="${bundle.fileName}" to="/data/resources/" >
+      <include>templatesamples/**</include>
+    </unzip>
+
     <!-- unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>

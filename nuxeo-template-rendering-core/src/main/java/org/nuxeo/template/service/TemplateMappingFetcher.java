@@ -45,11 +45,14 @@ public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
 
         for (DocumentModel doc : docs) {
             TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
-            if (tmpl!=null) {
+            if (tmpl != null) {
                 for (String type : tmpl.getForcedTypes()) {
                     if (mapping.containsKey(type)) {
-                        log.warn("Several templates are mapped to type " + type + ": " + mapping.get(type) + " -- " + doc.getId());
-                        // XXX fix
+                        log.warn("Several templates are mapped to type " + type
+                                + ": " + mapping.get(type) + " -- "
+                                + doc.getId()
+                                + " - removing duplicated binding");
+                        tmpl.removeForcedType(type, true);
                     } else {
                         mapping.put(type, doc.getId());
                     }
