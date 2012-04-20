@@ -924,6 +924,7 @@ public abstract class NuxeoLauncher {
             }
             checkNoRunningServer();
             configure();
+            configurationGenerator.verifyInstallation();
 
             if (configurationGenerator.isWizardRequired()) {
                 if (!configurationGenerator.isForceGeneration()) {
@@ -1221,7 +1222,7 @@ public abstract class NuxeoLauncher {
      *             configuration fails
      */
     public void configure() throws ConfigurationException {
-        configurationGenerator.verifyInstallation();
+        configurationGenerator.checkJavaVersion();
         configurationGenerator.run();
         overrideJavaTmpDir = Boolean.parseBoolean(configurationGenerator.getUserConfig().getProperty(
                 OVERRIDE_JAVA_TMPDIR_PARAM, "true"));
