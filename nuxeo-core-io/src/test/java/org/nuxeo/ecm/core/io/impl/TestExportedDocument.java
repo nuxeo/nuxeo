@@ -14,17 +14,17 @@
 
 package org.nuxeo.ecm.core.io.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.jmock.Expectations;
 import org.dom4j.io.XMLWriter;
+import org.jmock.Expectations;
+import org.junit.Test;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -80,6 +80,7 @@ public class TestExportedDocument extends NXRuntimeTestCase {
         Writer writer = new StringWriter();
         XMLWriter xmlWriter = new XMLWriter(writer);
         xmlWriter.write(exportedDoc.getDocument());
+
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<document id=\"My id\"><system><type>My type</type>"
                 + "<path>my-path</path><access-control/></system></document>",

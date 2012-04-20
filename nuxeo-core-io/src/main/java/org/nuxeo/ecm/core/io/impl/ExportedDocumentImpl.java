@@ -295,7 +295,9 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
         // extract the element content
         if (type.isSimpleType()) {
-            element.addText(type.encode(value));
+            // use CDATA to avoid any bad interaction between content and
+            // envelope
+            element.addCDATA(type.encode(value));
         } else if (type.isComplexType()) {
             ComplexType ctype = (ComplexType) type;
             if (TypeConstants.isContentType(ctype)) {

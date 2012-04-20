@@ -47,6 +47,8 @@ public class TestExportImportZipArchive extends SQLRepositoryTestCase {
 
     DocumentModel docToExport;
 
+    protected static final String XML_DATA = "\n    <nxdt:templateParams xmlns:nxdt=\"http://www.nuxeo.org/DocumentTemplate\">\n<nxdt:field name=\"htmlContent\" type=\"content\" source=\"htmlPreview\"></nxdt:field>\n   </nxdt:templateParams>\n    ";
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -72,6 +74,8 @@ public class TestExportImportZipArchive extends SQLRepositoryTestCase {
         docToExport = session.createDocumentModel(workspace.getPathAsString(),
                 "file", "File");
         docToExport.setProperty("dublincore", "title", "MyDoc");
+
+        docToExport.setProperty("dublincore", "description", XML_DATA);
 
         Blob blob = new StringBlob("SomeDummyContent");
         blob.setFilename("dummyBlob.txt");
@@ -148,6 +152,12 @@ public class TestExportImportZipArchive extends SQLRepositoryTestCase {
         DocumentModel importedDocument = children.get(0);
         Blob blob = (Blob) importedDocument.getProperty("file", "content");
         assertEquals("dummyBlob.txt", blob.getFilename());
+        // check attributes
+        assertEquals("MyDoc", importedDocument.getPropertyValue("dc:title"));
+        assertEquals(XML_DATA,
+                importedDocument.getPropertyValue("dc:description"));
+
+        // check that facets have been reimported
         assertTrue(importedDocument.hasFacet("HiddenInNavigation"));
     }
 
