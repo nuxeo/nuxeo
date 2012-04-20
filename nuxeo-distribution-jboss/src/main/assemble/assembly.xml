@@ -267,17 +267,21 @@
     <nx:rmdups dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib" />
 
     <!-- Define seam as EJB module-->
-<!--
-    <echo file="${distribution.dir}/server/default/deploy/nuxeo.ear/lib/jboss-seam-${seam.version}-fragment.xml">&lt;?xml version="1.0"?&gt;
+    <move todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
+      <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
+        <include name="jboss-seam-${seam.version}.jar"/>
+      </fileset>
+    </move>
+
+    <echo file="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles/jboss-seam-${seam.version}-fragment.xml">&lt;?xml version="1.0"?&gt;
 &lt;fragment version="1"&gt;
   &lt;extension target="application#MODULE"&gt;
     &lt;module&gt;
-      &lt;ejb&gt;lib/jboss-seam-${seam.version}.jar&lt;/ejb&gt;
+      &lt;ejb&gt;bundles/jboss-seam-${seam.version}.jar&lt;/ejb&gt;
     &lt;/module&gt;
   &lt;/extension&gt;
 &lt;/fragment&gt;
     </echo>
- -->
 
     <!-- remove libraries already provided by JBoss or unneeded -->
     <delete>
