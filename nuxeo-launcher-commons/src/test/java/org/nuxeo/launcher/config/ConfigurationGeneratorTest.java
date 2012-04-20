@@ -162,7 +162,10 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         configGenerator.addTemplate("fmtest");
-        configGenerator.setProperty("test.freemarker.key", "true");
+        configGenerator.setProperty("test.freemarker.part1", "tr");
+        configGenerator.setProperty("test.freemarker.part2", "ue");
+        configGenerator.setProperty("test.freemarker.key",
+                "${test.freemarker.part1}${test.freemarker.part2}");
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         configGenerator.run();

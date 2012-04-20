@@ -65,8 +65,12 @@ public class TextTemplate {
     private static final Log log = LogFactory.getLog(TextTemplate.class);
 
     private static final Pattern PATTERN = Pattern.compile("\\$\\{([a-zA-Z_0-9\\-\\.]+)\\}");
+    
+    private static final int MAX_RECURSION_LEVEL = 10;
 
     private final Properties vars;
+
+    private Properties processedVars;
 
     private boolean trim = false;
 
@@ -93,6 +97,7 @@ public class TextTemplate {
 
     public TextTemplate() {
         vars = new Properties();
+        processedVars = new Properties();
     }
 
     /**
@@ -102,6 +107,7 @@ public class TextTemplate {
     public TextTemplate(Map<String, String> vars) {
         this.vars = new Properties();
         this.vars.putAll(vars);
+        processedVars = preprocessVars(this.vars);
     }
 
     /**
@@ -109,6 +115,7 @@ public class TextTemplate {
      */
     public TextTemplate(Properties vars) {
         this.vars = vars;
+        processedVars = preprocessVars(this.vars);
     }
 
     /**
@@ -118,10 +125,12 @@ public class TextTemplate {
     @Deprecated
     public void setVariables(Map<String, String> vars) {
         this.vars.putAll(vars);
+        processedVars = preprocessVars(this.vars);
     }
 
     public void setVariable(String name, String value) {
         vars.setProperty(name, value);
+        processedVars = preprocessVars(vars);
     }
 
     public String getVariable(String name) {
@@ -130,6 +139,45 @@ public class TextTemplate {
 
     public Properties getVariables() {
         return vars;
+    }
+
+    public Properties preprocessVars(Properties unprocessedVars) {
+        Properties newVars = new Properties(unprocessedVars);
+        boolean doneProcessing = false;
+        int recursionLevel = 0;
+        while (!doneProcessing) {
+            doneProcessing = true;
+            Enumeration newVarsEnum = newVars.propertyNames();
+            while (newVarsEnum.hasMoreElements()) {
+                String newVarsKey = (String) newVarsEnum.nextElement();
+                String newVarsValue = newVars.getProperty(newVarsKey);
+                Matcher m = PATTERN.matcher(newVarsValue);
+                StringBuffer sb = new StringBuffer();
+                while (m.find()) {
+                    String embeddedVar = m.group(1);
+                    String value = newVars.getProperty(embeddedVar);
+                    if (value != null) {
+                        if (trim) {
+                            value = value.trim();
+                        }
+                        String escapedValue = Matcher.quoteReplacement(value);
+                        m.appendReplacement(sb, escapedValue);
+                    }
+                }
+                m.appendTail(sb);
+                String replacementValue = sb.toString();
+                if (!replacementValue.equals(newVarsValue)) {
+                    doneProcessing = false;
+                    newVars.put(newVarsKey, replacementValue);
+                }
+            }
+            recursionLevel++;
+            // Avoid infinite replacement loops
+            if ((!doneProcessing) && (recursionLevel > MAX_RECURSION_LEVEL)) {
+                break;
+            }
+        }
+        return newVars;
     }
 
     public String processText(CharSequence text) {
@@ -146,8 +194,14 @@ public class TextTemplate {
                 // process again the value if it still contains variable
                 // to replace
                 String oldValue = value;
+                int recursionLevel = 0;
                 while (!(value = processText(oldValue)).equals(oldValue)) {
                     oldValue = value;
+                    recursionLevel++;
+                    // Avoid infinite replacement loops
+                    if (recursionLevel > MAX_RECURSION_LEVEL) {
+                        break;
+                    }
                 }
 
                 // Allow use of backslash and dollars characters
@@ -177,14 +231,13 @@ public class TextTemplate {
         freemarkerConfiguration.setObjectWrapper(new DefaultObjectWrapper());
         // Initialize data model
         freemarkerVars = new HashMap<String, Object>();
-        Properties kv = getVariables();
         @SuppressWarnings("rawtypes")
-        Enumeration kvEnum = kv.propertyNames();
+        Enumeration processedEnum = processedVars.propertyNames();
         Map<String, Object> currentMap;
         String currentString;
-        while (kvEnum.hasMoreElements()) {
-            String key = (String) kvEnum.nextElement();
-            String value = kv.getProperty(key);
+        while (processedEnum.hasMoreElements()) {
+            String key = (String) processedEnum.nextElement();
+            String value = processedVars.getProperty(key);
             String[] keyparts = key.split("\\.");
             currentMap = freemarkerVars;
             currentString = "";
