@@ -1048,16 +1048,7 @@ public class ConfigurationGenerator {
      * @since 5.4.2
      */
     public void verifyInstallation() throws ConfigurationException {
-        String version = System.getProperty("java.version");
-        if (!version.startsWith("1.6") && !version.startsWith("1.7")) {
-            String message = "Nuxeo requires Java 6 or 7 (detected " + version
-                    + ").";
-            if ("nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
-                log.error(message);
-            } else {
-                throw new ConfigurationException(message);
-            }
-        }
+        checkJavaVersion();
         ifNotExistsAndIsDirectoryThenCreate(getLogDir());
         ifNotExistsAndIsDirectoryThenCreate(getPidDir());
         ifNotExistsAndIsDirectoryThenCreate(getDataDir());
@@ -1086,6 +1077,27 @@ public class ConfigurationGenerator {
                 log.error(e);
                 throw new ConfigurationException(
                         "Failed to connect on database: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Check that the process is executed with a supported Java version
+     * 
+     * @throws ConfigurationException
+     * 
+     * @since 5.6
+     * 
+     */
+    public void checkJavaVersion() throws ConfigurationException {
+        String version = System.getProperty("java.version");
+        if (!version.startsWith("1.6") && !version.startsWith("1.7")) {
+            String message = "Nuxeo requires Java 6 or 7 (detected " + version
+                    + ").";
+            if ("nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
+                log.error(message);
+            } else {
+                throw new ConfigurationException(message);
             }
         }
     }
