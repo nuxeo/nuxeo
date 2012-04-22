@@ -332,7 +332,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
                 return new ArrayList<TemplateInput>();
             }
         }
-        return null;
+        return new ArrayList<TemplateInput>();
     }
 
     public DocumentModel saveParams(String templateName,

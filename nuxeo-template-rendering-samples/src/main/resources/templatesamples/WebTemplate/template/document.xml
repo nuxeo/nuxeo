@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document repository="default" id="f34bd65b-7898-4c5f-85cf-fb8a41dc96ae">
+<document repository="default" id="6775a93a-2b0a-406d-a1f8-a91c8fe5b786">
   <system>
     <type>WebTemplateSource</type>
     <path>default-domain/templates/WebTemplate</path>
-    <lifecycle-state>undefined</lifecycle-state>
-    <lifecycle-policy>undefined</lifecycle-policy>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
     <facet>Downloadable</facet>
     <facet>Template</facet>
     <facet>Commentable</facet>
@@ -25,7 +25,7 @@
       <item><![CDATA[system]]></item>
     </dc:contributors>
     <dc:nature><![CDATA[]]></dc:nature>
-    <dc:created><![CDATA[2012-04-22T10:26:42.52Z]]></dc:created>
+    <dc:created><![CDATA[2012-04-22T15:02:54.57Z]]></dc:created>
     <dc:description><![CDATA[]]></dc:description>
     <dc:rights><![CDATA[]]></dc:rights>
     <dc:subjects/>
@@ -33,7 +33,7 @@
     <dc:valid><![CDATA[1970-01-01T00:00:00.00Z]]></dc:valid>
     <dc:format><![CDATA[]]></dc:format>
     <dc:issued><![CDATA[1970-01-01T00:00:00.00Z]]></dc:issued>
-    <dc:modified><![CDATA[2012-04-22T10:37:06.00Z]]></dc:modified>
+    <dc:modified><![CDATA[2012-04-22T22:21:46.00Z]]></dc:modified>
     <dc:language><![CDATA[]]></dc:language>
     <dc:coverage><![CDATA[]]></dc:coverage>
     <dc:expired><![CDATA[1970-01-01T00:00:00.00Z]]></dc:expired>
@@ -65,7 +65,7 @@
     <tmpl:applicableTypes>
       <item><![CDATA[all]]></item>
     </tmpl:applicableTypes>
-    <tmpl:outputFormat/>
+    <tmpl:outputFormat><![CDATA[]]></tmpl:outputFormat>
     <tmpl:targetRenditionName><![CDATA[webView]]></tmpl:targetRenditionName>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
@@ -75,15 +75,33 @@
     <note:mime_type><![CDATA[text/plain]]></note:mime_type>
     <note:note><![CDATA[<html>
 <head>
-   <title>        ${doc.title} </title>
+   <title> ${doc.title} </title>
+   <meta name="title" content="${doc.title}">
+   <meta name="description" content="${doc.dublincore.description}">
+   <meta name="author" content="${doc.dublincore.creator}">
+   <style type="text/css">
+  html {overflow-y: scroll;}
+  body{
+    margin:20px;
+    padding:20px;
+    font: 13px Helmet, Freesans, sans-serif;
+  }
+  .rounded-corner{
+    padding:20px;
+    background-color:#EEEEEE;
+    -moz-border-radius:10px; /* defining radius value for mozila */
+    -webkit-border-radius: 10px; /* CSS3 Standard syntax */
+    border: 1px solid #CCC;
+  }
+  </style>
 </head>
 <body>
         <h1>${doc.title}</h1>
-        <p>${doc.dublincore.description}</p>
-        <p>${htmlContent}</p>
+        <p>
+        <img src="${blobHolder.getBlobUrl(1)}" width="100">
+         ${doc.dublincore.description}</p>
+        <div class="rounded-corner">${htmlContent}</div>
 </body>
-</html>
-
-]]></note:note>
+</html>]]></note:note>
   </schema>
 </document>
