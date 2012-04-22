@@ -394,6 +394,55 @@
       </property>
     </widgetType>
 
+    <widgetType name="summary_current_document_states">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>States</title>
+        <description>
+          <p>
+            This widgets displays current document states
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/states_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="summary_current_document_contributors">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>States</title>
+        <description>
+          <p>
+            This widgets displays document contributors
+          </p>
+        </description>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/contributors_widget_template.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -440,6 +489,11 @@
     <widget name="summary_current_document_single_tasks"
       type="summary_current_document_single_tasks" />
 
+    <widget name="summary_current_document_states"
+      type="summary_current_document_states" />
+
+    <widget name="summary_current_document_contributors"
+      type="summary_current_document_contributors" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -452,14 +506,13 @@
       <rows>
         <row>
           <widget>summary_current_document_files</widget>
-          <widget>summary_current_document_description</widget>
           <widget>summary_current_document_view</widget>
-          <widget>summary_current_document_dublincore</widget>
           <widget>summary_current_document_comments</widget>
         </row>
         <row>
-          <widget>summary_current_document_lc_and_version</widget>
-          <widget>summary_current_document_actions</widget>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_states</widget>
+          <widget>summary_current_document_contributors</widget>
           <widget>summary_current_document_custom_actions</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
@@ -479,15 +532,14 @@
       </templates>
       <rows>
         <row>
-          <widget>summary_current_document_description</widget>
           <widget>note_text</widget>
           <widget>summary_current_document_files</widget>
-          <widget>summary_current_document_dublincore</widget>
           <widget>summary_current_document_comments</widget>
         </row>
         <row>
-          <widget>summary_current_document_lc_and_version</widget>
-          <widget>summary_current_document_actions</widget>
+          <widget>summary_current_document_description</widget>
+          <widget>summary_current_document_states</widget>
+          <widget>summary_current_document_contributors</widget>
           <widget>summary_current_document_custom_actions</widget>
           <widget>summary_current_document_tagging</widget>
           <widget>summary_current_document_relations</widget>
