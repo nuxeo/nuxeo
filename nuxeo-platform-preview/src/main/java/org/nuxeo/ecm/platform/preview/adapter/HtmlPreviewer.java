@@ -34,14 +34,15 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
 public class HtmlPreviewer extends AbstractPreviewer implements
         MimeTypePreviewer {
 
-    public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
-        List<Blob> blobResults=new ArrayList<Blob>();
+    public List<Blob> getPreview(Blob blob, DocumentModel dm)
+            throws PreviewException {
+        List<Blob> blobResults = new ArrayList<Blob>();
 
         StringBuffer htmlPage = new StringBuffer();
 
         htmlPage.append("<html><head></head><body>");
         try {
-            htmlPage.append("<pre>").append(blob.getString()).append("</pre>");
+            htmlPage.append(blob.getString());
         } catch (IOException e) {
             throw new PreviewException(e);
         }
