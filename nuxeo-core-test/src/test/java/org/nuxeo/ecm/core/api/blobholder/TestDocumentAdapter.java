@@ -19,6 +19,12 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -148,6 +154,58 @@ public class TestDocumentAdapter extends SQLRepositoryTestCase {
 
         BlobHolder bh = folder.getAdapter(BlobHolder.class);
         assertNull(bh);
+    }
+
+    @Test
+    public void testMultiFileAdapters() throws Exception {
+        DocumentModel file = session.createDocumentModel("File");
+        file.setPathInfo("/", "TestDoc");
+
+        Blob blob = new StringBlob("BlobContent");
+        blob.setFilename("TestFile.txt");
+        blob.setMimeType("text/plain");
+        file.setProperty("dublincore", "title", "TestDoc");
+        file.setProperty("file", "content", blob);
+        file.setProperty("file", "filename", "TestFile-fn.txt");
+
+        List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
+        for (int i = 1; i <= 5; i++) {
+            String name = "TestFile" + i + ".txt";
+            Blob nblob = new StringBlob("BlobContent" + i);
+            nblob.setFilename(name);
+            nblob.setMimeType("text/plain");
+
+            Map<String, Serializable> filesEntry = new HashMap<String, Serializable>();
+            filesEntry.put("file", (Serializable) nblob);
+            filesEntry.put("filename", name);
+            blobs.add(filesEntry);
+        }
+        file.setPropertyValue("files:files", (Serializable) blobs);
+
+        file = session.createDocument(file);
+        session.save();
+
+        BlobHolder bh = file.getAdapter(BlobHolder.class);
+        assertNotNull(bh);
+        assertTrue(bh instanceof DocumentBlobHolder);
+        assertEquals("/TestDoc/TestFile.txt", bh.getFilePath());
+
+        // test blob content
+        Blob b = bh.getBlob();
+        assertEquals("TestFile.txt", b.getFilename());
+        assertEquals("text/plain", b.getMimeType());
+        assertEquals("BlobContent", b.getString());
+
+        // test blobs and ordering
+        List<Blob> extractedBlobs = bh.getBlobs();
+        assertEquals(6, extractedBlobs.size());
+
+        assertEquals("TestFile.txt", extractedBlobs.get(0).getFilename());
+        for (int i = 1; i <= 5; i++) {
+            assertEquals("TestFile" + i + ".txt",
+                    extractedBlobs.get(i).getFilename());
+        }
+
     }
 
 }
