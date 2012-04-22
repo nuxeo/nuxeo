@@ -23,7 +23,7 @@
       <filter-id>folder</filter-id>
     </action>
 
-    <action id="exportView" link="export" order="20" label="label.exportview"
+    <action id="exportView" link="export" order="80" label="label.exportview"
       icon="/icons/export.png">
       <category>DOCUMENT_UPPER_ACTION</category>
     </action>

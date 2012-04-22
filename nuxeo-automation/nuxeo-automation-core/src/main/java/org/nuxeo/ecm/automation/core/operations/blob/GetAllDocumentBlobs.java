@@ -42,8 +42,14 @@ public class GetAllDocumentBlobs {
     @OperationMethod(collector = BlobListCollector.class)
     public BlobList run(DocumentModel doc) throws Exception {
         BlobList blobs = new BlobList();
-        Blob mainFile = (Blob) doc.getPropertyValue(xpathMainFile);
-        ListProperty listFiles = (ListProperty) doc.getProperty(xpathFiles);
+        Blob mainFile = null;
+        if (doc.hasSchema("file")) {
+            mainFile = (Blob) doc.getPropertyValue(xpathMainFile);
+        }
+        ListProperty listFiles = null;
+        if (doc.hasSchema("files")) {
+            listFiles = (ListProperty) doc.getProperty(xpathFiles);
+        }
         if (mainFile == null) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh != null) {

@@ -22,6 +22,7 @@
       "type": "selectOneDirectory",
       "labels": {"any": "Nature"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:nature",
         "propertyName": "dc:nature"
@@ -230,6 +231,7 @@
       "labels": {"any": "Sujets"},
       "helpLabels": {"edit": "Ce champ est utilisé pour la navigation virtuelle"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:subjects",
         "propertyName": "dc:subjects"
@@ -488,6 +490,7 @@
       "type": "text",
       "labels": {"any": "Droits"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:rights",
         "propertyName": "dc:rights"
@@ -499,6 +502,7 @@
       "type": "text",
       "labels": {"any": "Source"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:source",
         "propertyName": "dc:source"
@@ -511,6 +515,7 @@
       "labels": {"any": "Couverture"},
       "helpLabels": {"edit": "Ce champ est utilisé pour la navigation virtuelle"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:coverage",
         "propertyName": "dc:coverage"
@@ -1779,6 +1784,7 @@
       "type": "datetime",
       "labels": {"any": "Créé le"},
       "translated": true,
+      "handlingLabels": false,
       "widgetModes":       {
         "any": "view",
         "pdf": "pdf"
@@ -1794,6 +1800,7 @@
       "type": "datetime",
       "labels": {"any": "Dernière modification"},
       "translated": true,
+      "handlingLabels": false,
       "widgetModes":       {
         "any": "view",
         "pdf": "pdf"
@@ -1809,6 +1816,7 @@
       "type": "text",
       "labels": {"any": "Format"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:format",
         "propertyName": "dc:format"
@@ -1820,6 +1828,7 @@
       "type": "text",
       "labels": {"any": "Langue"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:language",
         "propertyName": "dc:language"
@@ -1831,6 +1840,7 @@
       "type": "datetime",
       "labels": {"any": "Expire le"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:expired",
         "propertyName": "dc:expired"
@@ -1846,6 +1856,7 @@
       "labels": {"any": "Auteur"},
       "helpLabels": {"edit": "L'auteur est renseigné automatiquement à la création du document"},
       "translated": true,
+      "handlingLabels": false,
       "widgetModes":       {
         "any": "view",
         "pdf": "pdf"
@@ -1862,6 +1873,7 @@
       "labels": {"any": "Contributeurs"},
       "helpLabels": {"edit": "Les contributeurs sont renseignés automatiquement à la création et à la modification du document"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:contributors",
         "propertyName": "dc:contributors"
@@ -1875,6 +1887,7 @@
       "labels": {"any": "Dernier contributeur"},
       "helpLabels": {"edit": "Le champs dernier contributeur est automatiquement rempli lorsqu'on crée ou modifie le document"},
       "translated": true,
+      "handlingLabels": false,
       "widgetModes":       {
         "any": "view",
         "pdf": "pdf"
