@@ -1,4 +1,4 @@
-<div class="description_block" xmlns:h="http://java.sun.com/jsf/html"
+<div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
@@ -7,6 +7,8 @@
   </h3>
   <c:forEach var="contributor"
     items="#{currentDocument.dc.contributors}">
-    <a href="#{baseURL}user/#{contributor}"> <h:outputText>#{nxu:userFullName(contributor)}</h:outputText></a>
+    <span class="tag user creator">
+      <a href="#{baseURL}user/#{contributor}"><h:outputText>#{nxu:userFullName(contributor)}</h:outputText></a>
+    </span>
   </c:forEach>
 </div>
