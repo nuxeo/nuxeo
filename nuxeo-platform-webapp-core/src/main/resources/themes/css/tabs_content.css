@@ -20,21 +20,26 @@ author: lkemen@nuxeo.com
 .summary_div_2 { clear: both }
 
 .summary_div_0 img { max-height: 50em; max-width: 100% }
-.summary_div_0 .note_content_block { margin: auto; max-width: 65em }
+.summary_div_0 .note_content_block { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); margin: auto; max-width: 65em }
 
 .contentViewTitle { float: left; line-height: normal; margin: 1em 1em 1em 0 }
 
 h3.summaryTitle {
-  border-width: 1px; border-style: none none solid; border-color: "neutral.medium (__FLAVOR__ border)";
-  color: "gray.medium (__FLAVOR__ color)";
+  border-width: 3px; border-style: none none double; border-color: "color.major.medium (__FLAVOR__ border)";
+  color: "black (__FLAVOR__ color)";
   font-size: 1.2em;
   font-weight: bold;
-  margin: 0 0 1em;
-  padding: 1.5em 0 .3em }
-.summary_div_1 h3.summaryTitle { color: "gray.medium (__FLAVOR__ color)"; font-size: 1.1em }
+  margin: 0 0 .8em;
+  padding: 2em 0 .3em;
+  text-transform: uppercase }
+.summary_div_1 h3.summaryTitle { font-size: 1.1em }
 .summary_div_1 .fieldColumn img { float: left; margin-bottom: 15px }
 
-.description_block span { display: block; font-size: .9em; padding-bottom: 1em }
+.description_block { color: "gray.medium (__FLAVOR__ color)"; padding: 1em 0 0 }
+.description_block span { display: block; font-size: 1em; padding-bottom: 1em }
+.description_block span.documentDescription { color: #444; font-size: 1.1em; font-weight: bold }
+.description_block .createdBy { color: #111; font-weight: bold; padding: 0 }
+.description_block .creationDate { display: inline }
 .dublincore_block table.floatingLeftTable { float: left; margin-right: 100px }
 .labelColumnLeftAlign { font-weight: bold; padding-right: 2.5em }
 .rank_block, .publication_block, .attachments { margin-top: 1.3em }
@@ -45,7 +50,7 @@ h3.summaryTitle {
 .content_block .actionsColumn { text-align: right; vertical-align: top; width: 20% }
 .content_block img { padding: 0 .5em }
 
-.note_content_block { border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; margin: 0 0 1.4em; padding: 1.4em }
+.note_content_block { background-color: #fff;	border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px; color: "black (__FLAVOR__ color)"; font-size: 115%; margin: 0 0 1.4em; padding: 1.4em 1.7em; text-align: justify }
 /* override styles for a beautiful formatted Note */
 .note_content_block span, .note_content_block div, .note_content_block p { font-size: 1.05em; line-height: 170% }
 .note_content_block i, .note_content_block cite, .note_content_block em, .note_content_block var, .note_content_block dfn { font-style: italic }
@@ -77,6 +82,7 @@ h3.summaryTitle {
 .summary_unlocked { color: "normal.status (__FLAVOR__ color)"; font-weight: bold }
 
 .lcAndVersion { border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; padding: .3em }
+.versionNumber { float: right; font-weight: bold; text-transform: uppercase }
 
 .actions_block { border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; margin: 1em 0; padding: 1em .6em .2em }
 

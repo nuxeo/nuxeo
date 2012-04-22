@@ -9,8 +9,11 @@ author: lkemen@nuxeo.com
 
 /* =Tabs */
 .tabsBar {
-  border-width: 1px; border-style: none none solid;
-  border-color: "tabs.selected (__FLAVOR__ border)";
+  background: none "neutral.medium (__FLAVOR__ background)";
+  border-width: 1px; border-style: solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 10px 8px #fff inset;
   float: left;
   margin-top: .4em;
   width: 100% }
@@ -20,28 +23,29 @@ author: lkemen@nuxeo.com
   padding: 0 1em 0 0 }
 .tabsBar li {
   float: left;
-  margin: 0 0 -0.1em .3em;
   padding: 0 }
 .tabsBar a,.tabsBar a:visited {
-  background: none "color.major.light (__FLAVOR__ background)";
-  border: 1px solid; border-color: "tabs.unselected (__FLAVOR__ border)";
-  border-radius: 2px 2px 0 0;
+  background: transparent;
+  border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "link (__FLAVOR__ color)";
   display: block;
   float: left;
-  padding: .19em 0.4em;
-  text-decoration:none }
+  padding: .3em .5em .4em;
+  text-decoration:none;
+  text-shadow: 1px 1px 0 #fff }
 .tabsBar li.selected a,.tabsBar li a:hover,.tabsBar li.selected a:visited {
-  background: none repeat scroll 0 0 #fff;
-  border: 1px solid;
-  border-color: "tabs.selected (__FLAVOR__ border)" "tabs.selected (__FLAVOR__ border)" "noborder (__FLAVOR__ border)";
-  color: "tabs.selected (__FLAVOR__ color)";
-  padding: .2em .4em .3em }
+  background: none "color.major.stronger (__FLAVOR__ background)";
+  color: #fff;
+  text-shadow: 1px 1px 0 #000 }
 
-.subtabsBar {border-style: none none solid; border-width: 1px; border-color: "subtabs.selected (__FLAVOR__ border)"; font-size: .9em}
-.subtabsBar a,.subtabsBar a:visited { background: none "subtabs.unselected (__FLAVOR__ background)"; color: "subtabs.unselected (__FLAVOR__ color)" }
+.column .tabsBar { border-style: solid solid none; border-width: 1px; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 0 0 0 0; box-shadow: 0 0 0 transparent, 0 10px 8px #fff inset }
+.column .tabsBar li.selected a { background-color: "tabs.selected (__FLAVOR__ background)"; color: "tabs.selected (__FLAVOR__ color)"; text-shadow: none }
+
+.subtabsBar { background: none transparent; border-style: none none solid; border-width: 1px; border-color: "subtabs.selected (__FLAVOR__ border)"; border-radius: 0; box-shadow: 0 0 0 transparent; font-size: .9em; margin-top: 1em }
+.subtabsBar li { margin: 0 0 -0.1em .3em }
+.subtabsBar a,.subtabsBar a:visited { background: none "color.major.light (__FLAVOR__ background)"; border-width: 1px; border-style: solid; border-color: "neutral.lighter (__FLAVOR__ border)";border-radius: 2px 2px 0 0; color: "link (__FLAVOR__ color)"; padding: .19em .4em }
 .subtabsBar li.selected a,.subtabsBar li a:hover,.subtabsBar li.selected a:visited {
-   background: none "subtabs.selected (__FLAVOR__ background)"; border-color: "subtabs.selected (__FLAVOR__ border)" "subtabs.selected (__FLAVOR__ border)" "noborder (__FLAVOR__ border)"; border-style: solid; border-width: 1px; color: "subtabs.selected (__FLAVOR__ color)" }
+   background: none "subtabs.selected (__FLAVOR__ background)"; border-color: "subtabs.selected (__FLAVOR__ border)" "subtabs.selected (__FLAVOR__ border)" "noborder (__FLAVOR__ border)"; border-style: solid; border-width: 1px; color: "subtabs.selected (__FLAVOR__ color)"; padding: .2em .4em .3em; text-shadow: none }
 
 /* =Navigation controls */
 .pageNavigationControls, #pageNavigationControls { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; margin: 0 0 .4em; padding: .2em 0 0; text-align: center }
