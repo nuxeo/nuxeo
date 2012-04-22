@@ -35,7 +35,9 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
 
     protected abstract void handleBlobField(String paramName, Blob blobValue);
 
-    protected abstract void handleHtmlField(String paramName, String htmlValue);
+    protected String handleHtmlField(String paramName, String htmlValue) {
+        return HtmlBodyExtractor.extractHtmlBody(htmlValue);
+    }
 
     protected DocumentObjectWrapper nuxeoWrapper = new DocumentObjectWrapper(
             null);
@@ -73,8 +75,9 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                                     }
                                 }
                             }
+                            htmlValue = handleHtmlField(param.getName(),
+                                    htmlValue);
                             context.put(param.getName(), htmlValue);
-                            handleHtmlField(param.getName(), htmlValue);
                             continue;
                         } else if (ContentInputType.BlobContent.getValue().equals(
                                 param.getSource())) {

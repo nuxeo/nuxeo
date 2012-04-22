@@ -22,8 +22,9 @@ public class XDocReportBindingResolver extends AbstractBindingResolver {
     }
 
     @Override
-    protected void handleHtmlField(String paramName, String htmlValue) {
+    protected String handleHtmlField(String paramName, String htmlValue) {
         metadata.addFieldAsTextStyling(paramName, SyntaxKind.Html);
+        return super.handleHtmlField(paramName, htmlValue);
     }
 
     @Override

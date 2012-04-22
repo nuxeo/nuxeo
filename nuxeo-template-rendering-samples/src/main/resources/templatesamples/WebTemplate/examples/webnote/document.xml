@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document repository="default" id="5857e273-3dd0-4063-b134-1202db134734">
+  <system>
+    <type>Note</type>
+    <path>default-domain/workspaces/templateSamples/Note4Web</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>TemplateBased</facet>
+    <facet>Commentable</facet>
+    <facet>Versionable</facet>
+    <facet>Publishable</facet>
+    <facet>HasRelatedText</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="Administrator" permission="Everything" grant="true"/>
+        <entry principal="members" permission="Read" grant="true"/>
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+    <uid:uid/>
+    <uid:minor_version><![CDATA[0]]></uid:minor_version>
+    <uid:major_version><![CDATA[0]]></uid:major_version>
+  </schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:source/>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+    <dc:nature/>
+    <dc:created><![CDATA[2012-04-22T10:29:32.15Z]]></dc:created>
+    <dc:description><![CDATA[Sample Note associated with a Web rendition]]></dc:description>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified><![CDATA[2012-04-22T10:32:54.00Z]]></dc:modified>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:title><![CDATA[Note4Web]]></dc:title>
+  </schema>
+  <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">
+    <files:files/>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon><![CDATA[/icons/note.gif]]></common:icon>
+    <common:icon-expanded/>
+    <common:size/>
+  </schema>
+  <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
+    <relatedtext:relatedtextresources/>
+  </schema>
+  <schema xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/" name="templatesupport">
+    <nxts:bindings>
+      <templateEntry>
+        <templateId><![CDATA[f34bd65b-7898-4c5f-85cf-fb8a41dc96ae]]></templateId>
+        <templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"><nxdt:field name="htmlContent" type="content" readonly="true" source="htmlPreview"></nxdt:field></nxdt:templateParams>]]></templateData>
+        <templateName><![CDATA[]]></templateName>
+        <useMainContentAsTemplate><![CDATA[false]]></useMainContentAsTemplate>
+      </templateEntry>
+    </nxts:bindings>
+  </schema>
+  <schema xmlns:note="http://www.nuxeo.org/ecm/schemas/note/" name="note">
+    <note:mime_type><![CDATA[text/html]]></note:mime_type>
+    <note:note><![CDATA[<p style="font-size: 13.0px;line-height: 17.0px;color: rgb(51,51,51);background-image: none;margin-top: 10.0px;margin-right: 0.0px;margin-bottom: 10.0px;margin-left: 0.0px;font-family: &quot;Lucida Grande&quot; , &quot;Lucida Sans&quot; , Helvetica , Arial , sans-serif;text-align: left;padding: 0.0px;"><strong>Welcome to the Documentation Center for the document management modules of the Nuxeo Platform</strong></p>
+<p style="font-size: 13.0px;line-height: 17.0px;color: rgb(51,51,51);background-image: none;margin-top: 10.0px;margin-right: 0.0px;margin-bottom: 10.0px;margin-left: 0.0px;font-family: &quot;Lucida Grande&quot; , &quot;Lucida Sans&quot; , Helvetica , Arial , sans-serif;text-align: left;padding: 0.0px;">The Nuxeo Platform includes several document management modules that help manage and track the flow of content through the business cycle, from capture and creation, to sharing, to approval and publishing.</p>
+<p style="font-size: 13.0px;line-height: 17.0px;color: rgb(51,51,51);background-image: none;margin-top: 10.0px;margin-right: 0.0px;margin-bottom: 10.0px;margin-left: 0.0px;font-family: &quot;Lucida Grande&quot; , &quot;Lucida Sans&quot; , Helvetica , Arial , sans-serif;text-align: left;padding: 0.0px;">All modules are installed on the naked Platform, which provides a set of document management features by default, which can be enriched by the modules below:</p>
+<ul
+    style="font-size: 13.0px;line-height: 17.0px;color: rgb(51,51,51);font-family: &quot;Lucida Grande&quot; , &quot;Lucida Sans&quot; , Helvetica , Arial , sans-serif;text-align: left;">
+<li
+    style="font-size: 10.0pt;line-height: 13.0pt;padding: 0.0px;margin: 0.0px;">Document Management, which provides additional document management features,</li>
+<li
+    style="font-size: 10.0pt;line-height: 13.0pt;padding: 0.0px;margin: 0.0px;">Social Collaboration, which provides project and user-centrics views of content,</li>
+<li
+    style="font-size: 10.0pt;line-height: 13.0pt;padding: 0.0px;margin: 0.0px;">Digital Asset Management, which provides browsing and edition features adapted to multimedia content,</li>
+<li style="font-size: 10.0pt;line-height: 13.0pt;padding: 0.0px;margin: 0.0px;">Case Management, which brings case-centric processes and views.</li>
+</ul>
+
+
+
+
+<p style="font-size: 13.0px;line-height: 17.0px;color: rgb(51,51,51);background-image: none;margin-top: 10.0px;margin-right: 0.0px;margin-bottom: 10.0px;margin-left: 0.0px;font-family: &quot;Lucida Grande&quot; , &quot;Lucida Sans&quot; , Helvetica , Arial , sans-serif;text-align: left;padding: 0.0px;">In this space, you will find here all the guides to help you work with the Document Management and Social Collaboration modules of the Nuxeo Platform.</p>]]></note:note>
+  </schema>
+</document>

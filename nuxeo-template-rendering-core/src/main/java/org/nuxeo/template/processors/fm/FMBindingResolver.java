@@ -27,9 +27,4 @@ public class FMBindingResolver extends AbstractBindingResolver {
         // NOP
     }
 
-    @Override
-    protected void handleHtmlField(String paramName, String htmlValue) {
-        // NOP
-    }
-
 }

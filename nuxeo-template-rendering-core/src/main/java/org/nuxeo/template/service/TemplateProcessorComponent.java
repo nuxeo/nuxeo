@@ -166,7 +166,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
 
     protected String buildTemplateSearchQuery(String targetType) {
         StringBuffer sb = new StringBuffer(
-                "select * from TemplateSource where ecm:currentLifeCycleState != 'deleted'");
+                "select * from Document where ecm:mixinType = 'Template' AND ecm:currentLifeCycleState != 'deleted'");
         if (targetType != null) {
             sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType
                     + "')");

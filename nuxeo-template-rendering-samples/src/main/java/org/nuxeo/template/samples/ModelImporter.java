@@ -135,7 +135,7 @@ public class ModelImporter {
                     "WorkspaceRoot");
             if (roots.size() > 0) {
                 DocumentModel WSRoot = roots.get(0);
-                PathRef targetPath = new PathRef(rootDomain.getPathAsString()
+                PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/"
                         + SAMPLES_ROOT_PATH);
                 if (!session.exists(targetPath)) {
                     container = session.createDocumentModel(

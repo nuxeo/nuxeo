@@ -22,10 +22,4 @@ public class JXLSBindingResolver extends AbstractBindingResolver {
 
     }
 
-    @Override
-    protected void handleHtmlField(String paramName, String htmlValue) {
-        // TODO Auto-generated method stub
-
-    }
-
 }

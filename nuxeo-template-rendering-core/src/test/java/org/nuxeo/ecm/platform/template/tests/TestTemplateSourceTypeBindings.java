@@ -1,6 +1,7 @@
 package org.nuxeo.ecm.platform.template.tests;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -57,6 +58,24 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         Blob fileBlob = new FileBlob(file);
         fileBlob.setFilename("testDoc.odt");
         templateDoc.setProperty("file", "content", fileBlob);
+        templateDoc = session.createDocument(templateDoc);
+        session.save();
+
+        TemplateSourceDocument result = templateDoc.getAdapter(TemplateSourceDocument.class);
+        assertNotNull(result);
+        return result;
+    }
+
+    protected TemplateSourceDocument createWebTemplateDoc(String name)
+            throws Exception {
+
+        DocumentModel root = session.getRootDocument();
+
+        // create template
+        DocumentModel templateDoc = session.createDocumentModel(
+                root.getPathAsString(), name, "WebTemplateSource");
+        templateDoc.setProperty("dublincore", "title", name);
+        templateDoc.setProperty("note", "note", "Template ${doc.title}");
         templateDoc = session.createDocument(templateDoc);
         session.save();
 
@@ -179,6 +198,25 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // verify that template has been associated
         assertNotNull(simpleNote.getAdapter(TemplateBasedDocument.class));
+
+    }
+
+    @Test
+    public void testAvailableTemplates() throws Exception {
+        TemplateSourceDocument t1 = createTemplateDoc("t1");
+        session.save();
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+
+        List<DocumentModel> docs = tps.getAvailableTemplateDocs(session, null);
+        assertEquals(1, docs.size());
+
+        docs = tps.getAvailableTemplateDocs(session, "all");
+        assertEquals(1, docs.size());
+
+        TemplateSourceDocument t2 = createWebTemplateDoc("t2");
+        session.save();
+        docs = tps.getAvailableTemplateDocs(session, "all");
+        assertEquals(2, docs.size());
 
     }
 

@@ -91,9 +91,9 @@ public class TestImportModel extends SQLRepositoryTestCase {
 
         assertEquals(nbImportedDocs, docs.size());
 
-        // String dump = sb.toString();
-        // System.out.println("Import completed : " + docs.size() + " docs");
-        // System.out.println(dump);
+        String dump = sb.toString();
+        System.out.println("Import completed : " + docs.size() + " docs");
+        System.out.println(dump);
 
     }
 }
