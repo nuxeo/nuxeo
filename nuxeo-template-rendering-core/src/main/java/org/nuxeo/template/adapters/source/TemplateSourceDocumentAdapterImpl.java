@@ -137,12 +137,24 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
     public List<TemplateInput> addInput(TemplateInput input) throws Exception {
 
         List<TemplateInput> params = getParams();
+        if (input == null) {
+            return params;
+        }
 
+        boolean newParam = true;
         if (params == null) {
             params = new ArrayList<TemplateInput>();
         }
-
-        params.add(input);
+        for (TemplateInput param : params) {
+            if (param.getName().equals(input.getName())) {
+                newParam = false;
+                param.update(input);
+                break;
+            }
+        }
+        if (newParam) {
+            params.add(input);
+        }
         saveParams(params, false);
 
         return params;

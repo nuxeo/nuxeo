@@ -49,7 +49,7 @@ public interface TemplateSourceDocument {
     public String getParamsAsString() throws PropertyException, ClientException;
 
     /**
-     * Add a {@link TemplateInput} to the list of template parameters.
+     * Add or update a {@link TemplateInput} to the list of template parameters.
      * 
      * @param input
      * @return

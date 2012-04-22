@@ -50,9 +50,12 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.processors.HtmlBodyExtractor;
 
 import com.google.inject.Inject;
 
@@ -103,9 +106,9 @@ public class TestRenditionPublication {
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
         // File file =
         // FileUtils.getResourceFileFromContext("data/DocumentsAttributes.odt");
-        File file = FileUtils.getResourceFileFromContext("data/wsdl-viewer.xsl");
+        File file = FileUtils.getResourceFileFromContext("data/htmlRender.ftl");
         Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("wsdl-viewer.xsl");
+        fileBlob.setFilename("htmlRendered.ftl");
         templateDoc.setProperty("file", "content", fileBlob);
         templateDoc.setPropertyValue("tmpl:templateName", TEMPLATE_NAME);
 
@@ -113,22 +116,34 @@ public class TestRenditionPublication {
 
         // configure rendition and output format
         TemplateSourceDocument source = templateDoc.getAdapter(TemplateSourceDocument.class);
-        source.setTargetRenditioName("delivery", false);
-        source.setOutputFormat("application/pdf", false);
+        source.setTargetRenditioName("webView", false);
+
+        // check that parameter has been detected
+        assertEquals(1, source.getParams().size());
+
+        // value parameter
+        TemplateInput param = new TemplateInput("htmlContent", "htmlPreview");
+        param.setType(InputType.Content);
+        param.setSource("htmlPreview");
+        source.addInput(param);
 
         // update the doc and adapter
         templateDoc = session.saveDocument(source.getAdaptedDoc());
         source = templateDoc.getAdapter(TemplateSourceDocument.class);
 
-        // create the File
+        assertEquals(1, source.getParams().size());
+        TemplateInput inputParam = source.getParams().get(0);
+        assertEquals("htmlContent", inputParam.getName());
+        assertEquals("htmlPreview", inputParam.getSource());
+
+        // create the Note
         DocumentModel testDoc = session.createDocumentModel(
-                root.getPathAsString(), "testDoc", "File");
-        file = FileUtils.getResourceFileFromContext("data/nuxeoremoting.wsdl");
-        fileBlob = new FileBlob(file);
-        fileBlob.setFilename("nuxeoremoting.wsdl");
-        testDoc.setProperty("file", "content", fileBlob);
-        testDoc.setProperty("dublincore", "title", "MyTestFileDoc");
-        testDoc.setProperty("dublincore", "description", "Simple file sample");
+                root.getPathAsString(), "testDoc", "Note");
+        testDoc.setProperty("dublincore", "title", "MyTestNoteDoc");
+        testDoc.setProperty("dublincore", "description", "Simple note sample");
+
+        testDoc.setProperty("note", "note",
+                "<html><body><p> Simple <b> Note </b> with <i>text</i></body></html>");
 
         testDoc = session.createDocument(testDoc);
 
@@ -156,7 +171,7 @@ public class TestRenditionPublication {
         assertEquals(1, defs.size());
 
         templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(
-                "delivery", true);
+                "webView", true);
         defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
         // blob, + delivery rendition binding => 2 rendition
         assertEquals(2, defs.size());
@@ -185,7 +200,7 @@ public class TestRenditionPublication {
         // publish
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(
                 templateBasedDoc, targetNode, Collections.singletonMap(
-                        RENDITION_NAME_PARAMETER_KEY, "delivery"));
+                        RENDITION_NAME_PARAMETER_KEY, "webView"));
 
         // check rendition is done
         DocumentModel proxy = publishedDocument.getProxy();
@@ -195,7 +210,21 @@ public class TestRenditionPublication {
         BlobHolder bh = proxy.getAdapter(BlobHolder.class);
         Blob renditionBlob = bh.getBlob();
         assertNotNull(renditionBlob);
-        assertEquals("application/pdf", renditionBlob.getMimeType());
+
+        String htmlPage = renditionBlob.getString();
+        assertNotNull(htmlPage);
+        System.out.print(htmlPage);
+        assertTrue(htmlPage.contains((String) templateBasedDoc.getPropertyValue("dc:description")));
+        assertTrue(htmlPage.contains(templateBasedDoc.getTitle()));
+        String noteHtmlContent = HtmlBodyExtractor.extractHtmlBody((String) templateBasedDoc.getPropertyValue("note:note"));
+        assertNotNull(noteHtmlContent);
+        System.out.print(noteHtmlContent);
+        assertTrue(htmlPage.contains(noteHtmlContent));
+
+        // verify html body extraction
+        int bodyIdx = htmlPage.indexOf("<body>");
+        assertTrue(bodyIdx > 0); // at least one body tag
+        assertTrue(htmlPage.indexOf("<body>", bodyIdx + 1) < 0); // but not 2
 
         // refetch !?
         proxy = session.getDocument(proxy.getRef());
@@ -210,7 +239,7 @@ public class TestRenditionPublication {
         // republish
         publishedDocument = (SimpleCorePublishedDocument) tree.publish(
                 templateBasedDoc, targetNode, Collections.singletonMap(
-                        RENDITION_NAME_PARAMETER_KEY, "delivery"));
+                        RENDITION_NAME_PARAMETER_KEY, "webView"));
 
         proxy = publishedDocument.getProxy();
         assertTrue(proxy.hasFacet(RENDITION_FACET));
@@ -219,12 +248,10 @@ public class TestRenditionPublication {
         bh = proxy.getAdapter(BlobHolder.class);
         renditionBlob = bh.getBlob();
         assertNotNull(renditionBlob);
-        assertEquals("application/pdf", renditionBlob.getMimeType());
 
         // refetch !?
         proxy = session.getDocument(proxy.getRef());
         assertEquals("0.2", proxy.getVersionLabel());
 
     }
-
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -71,6 +72,18 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                                     Blob htmlBlob = preview.getFilePreviewBlobs().get(
                                             0);
                                     if (htmlBlob != null) {
+                                        htmlValue = htmlBlob.getString();
+                                    }
+                                }
+                            } else {
+                                BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(
+                                        BlobHolder.class);
+                                if (bh != null) {
+                                    Blob htmlBlob = bh.getBlob();
+                                    if (htmlBlob != null
+                                            && htmlBlob.getMimeType() != null
+                                            && htmlBlob.getMimeType().startsWith(
+                                                    "text/")) {
                                         htmlValue = htmlBlob.getString();
                                     }
                                 }

@@ -84,6 +84,19 @@ public class TemplateInput implements Serializable {
         return item;
     }
 
+    public TemplateInput update(TemplateInput other) {
+        this.name = other.name;
+        this.type = other.type;
+        this.autoLoop = other.autoLoop;
+        this.booleanValue = other.booleanValue;
+        this.dateValue = other.dateValue;
+        this.desciption = other.desciption;
+        this.readOnly = other.readOnly;
+        this.source = other.source;
+        this.stringValue = other.stringValue;
+        return this;
+    }
+
     public String getSource() {
         return source;
     }
