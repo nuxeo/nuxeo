@@ -4,7 +4,6 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <c:if test="#{!empty currentDocument.dc.description}">
     <nxl:widgetType name="textarea" mode="view"
       value="#{currentDocument.dc.description}"
       styleClass="documentDescription quote"/>
@@ -15,14 +14,12 @@
         <h:outputText>#{nxu:userFullName(currentDocument.dc.creator)}</h:outputText>
       </a>
     </span>
-    <span class="creationDate nowrap"><h:outputText value="#{currentDocument.dc.created}" /></span>
+    <span class="creationDate nowrap"><h:outputText value="#{currentDocument.dc.created} " /></span>
 
     <span class="versionNumber">
       <h:outputFormat value="#{messages['label.version.number']}">
         <f:param value="#{currentDocumentVersionInfo.versionLabel}" />
       </h:outputFormat>
     </span>
-
-  </c:if>
 
 </div>
