@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
+import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
@@ -76,22 +77,24 @@ public class ITContextualActionsTest extends AbstractTest {
         Assert.assertTrue(states.contains(DOCUMENT_STATE));
         Assert.assertEquals("Administrator", filePage.getCurrentContributors());
 
+        // Test contextual actions
+        ContextualActions actions = filePage.getContextualActions();
         // Test lock action
-        filePage.clickOnButton(filePage.lockButton);
+        actions.clickOnButton(actions.lockButton);
         states = filePage.getCurrentStates();
         Assert.assertTrue(states.contains(DOCUMENT_LOCKED));
 
         // Test follow action
-        filePage.clickOnButton(filePage.followButton);
+        actions.clickOnButton(actions.followButton);
         // Test Add to Worklist action
-        filePage.clickOnButton(filePage.addToWorklistButton);
-        // Test More button & Export
-        filePage.clickOnButton(filePage.moreButton);
-        filePage.clickOnButton(filePage.exportButton);
-
+        actions.clickOnButton(actions.addToWorklistButton);
         // Test permalink action
-        // filePage.clickOnButton(filePage.permaButton);
-        // filePage.clickOnButton(filePage.closePermaBoxButton);
+        actions.clickOnButton(actions.permaButton);
+        actions.clickOnButton(actions.closePermaBoxButton);
+        // Test More button & Export
+        actions.clickOnButton(actions.moreButton);
+        actions.clickOnButton(actions.exportButton);
+
 
         // Log out
         navToUrl("http://localhost:8080/nuxeo/logout");

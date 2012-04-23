@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
@@ -37,9 +38,8 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * The nuxeo main document base page
- *
+ * 
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class DocumentBasePage extends AbstractPage {
 
@@ -73,27 +73,8 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(className = "creator")
     public WebElement currentDocumentContributor;
-
-    @FindBy(xpath = "//img[@title=\"Lock\"]")
-    public WebElement lockButton;
-
-    @FindBy(xpath = "//img[@title=\"Follow this document\"]")
-    public WebElement followButton;
-
-    @FindBy(xpath = "//img[@title=\"Add to worklist\"]")
-    public WebElement addToWorklistButton;
-
-    @FindBy(xpath = "//img[@title=\"Permanent link to this document\"]")
-    public WebElement permaButton;
-
-    @FindBy(xpath = "//img[@id=\"fancybox-close\"]")
-    public WebElement closePermaBoxButton;
-
-    @FindBy(className = "dropDownMenu")
-    public WebElement moreButton;
-
-    @FindBy(xpath = "//img[@title=\"Export options\"]")
-    public WebElement exportButton;
+    
+    public ContextualActions contextualActions;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -137,10 +118,6 @@ public class DocumentBasePage extends AbstractPage {
         if (!selectedTab.equals(tabLink)) {
             tabLink.click();
         }
-    }
-
-    public void clickOnButton(WebElement button){
-        button.click();
     }
 
     /**
@@ -221,6 +198,10 @@ public class DocumentBasePage extends AbstractPage {
     public AdminCenterBasePage getAdminCenter() {
         findElementWithTimeout(By.linkText("Admin Center")).click();
         return asPage(AdminCenterBasePage.class);
+    }
+
+    public ContextualActions getContextualActions() {
+        return asPage(ContextualActions.class);
     }
 
 }
