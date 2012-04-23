@@ -36,8 +36,12 @@ function initContentIncludeWidget(index, widget) {
 
 }
 
-jQuery(document).ready(function() {
-  jQuery(".contentWidget").each( function ( index, widget) {
+function initContentWidgets() {
+ jQuery(".contentWidget").each( function ( index, widget) {
     initContentIncludeWidget(index, widget);
   });
+}
+
+jQuery(document).ready(function() {
+ initContentWidgets();
 });
