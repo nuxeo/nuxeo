@@ -64,27 +64,11 @@
       }
     }      
  }
-  
-jQuery(document).ready(function(){
 
-  saveForm();
-
-  // bind mode selector container
-  ;
-  jQuery(jQuery('.modeSelectorContainer')[0]).css("backgroundColor", "#DDDDDD");
-  jQuery('.modeSelectorContainer').css("cursor","pointer").click( function() {
-    if (this.tagName!="INPUT") {
-       var targetInput = jQuery(this).children("input[@type=radio]")[0];
-       jQuery(targetInput).click();
-       targetInput.checked=true;
-    }
-    });
-  
-  // bind mode selector
-  jQuery('.modeSelector').click( function(){
-     var mode = jQuery(this).val();
+function selectMode(radio) {
+     var mode = jQuery(radio).val();
      jQuery(".modeSelectorContainer").css("backgroundColor", "white");
-     jQuery(this).parent(".modeSelectorContainer").css("backgroundColor", "#DDDDDD");
+     jQuery(radio).parent(".modeSelectorContainer").css("backgroundColor", "#DDDDDD");
      var wizardPanel = jQuery("#" + wizard_params.presetLayout);
      var advancedPanel = jQuery("#nxl_" + wizard_params.advancedLayout);
      if (mode=='preset') {
@@ -98,7 +82,30 @@ jQuery(document).ready(function(){
             advancedPanel.fadeIn('fast');
           });
      }
-     return false;
+     jQuery(radio).attr('checked',true);
+  }
+  
+jQuery(document).ready(function(){
+
+  saveForm();
+
+
+  // bind mode selector container
+  
+  jQuery(jQuery('.modeSelectorContainer')[0]).css("backgroundColor", "#DDDDDD");
+  jQuery('.modeSelectorContainer').css("cursor","pointer").click( function() {
+    if (this.tagName!="INPUT") {
+       var targetInput = jQuery(this).children("input[@type=radio]")[0];
+//       jQuery(targetInput).click();
+       selectMode(targetInput);
+    }
+    return true});
+  
+
+  // bind mode selector
+  jQuery('.modeSelector').click( function(){    
+     selectMode(this)     
+     return true;
   });
 
     // change CSS on presetSelector
