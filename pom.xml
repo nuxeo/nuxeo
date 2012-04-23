@@ -105,7 +105,7 @@
     <module>nuxeo-exalead-connector</module>
     <module>nuxeo-signature</module>
     <module>nuxeo-rating</module>
-    <module>nuxeo-agenda</nuxeo-agenda>
+    <module>nuxeo-agenda</module>
   </modules>
 
   <dependencyManagement>
