@@ -52,13 +52,9 @@ public class FileCreationFormPage extends AbstractPage {
     }
 
     public FileDocumentBasePage createFileDocument(String title,
-            String description, String fileToUploadPath) {
+            String description) {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
-        if (fileToUploadPath != null) {
-            uploadFileRadioButton.click();
-            fileInput.sendKeys(fileToUploadPath);
-        }
         createButton.click();
         return asPage(FileDocumentBasePage.class);
     }

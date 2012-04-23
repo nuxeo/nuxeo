@@ -63,6 +63,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
+import org.openqa.selenium.internal.selenesedriver.FindElements;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -455,6 +456,11 @@ public abstract class AbstractTest {
         return findElementWithTimeout(by, LOAD_TIMEOUT_SECONDS * 1000);
     }
 
+    public static List<WebElement> findElementsWithTimeout(By by)
+            throws NoSuchElementException {
+        return driver.findElements(by);
+    }
+
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
@@ -790,7 +796,7 @@ public abstract class AbstractTest {
 
         // Create File
         FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(
-                fileTitle, fileDescription, fileToUploadPath);
+                fileTitle, fileDescription);
         return filePage;
     }
 
