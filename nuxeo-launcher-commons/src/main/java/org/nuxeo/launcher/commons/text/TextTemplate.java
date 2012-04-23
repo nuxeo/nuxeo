@@ -147,6 +147,7 @@ public class TextTemplate {
         int recursionLevel = 0;
         while (!doneProcessing) {
             doneProcessing = true;
+            @SuppressWarnings("rawtypes")
             Enumeration newVarsEnum = newVars.propertyNames();
             while (newVarsEnum.hasMoreElements()) {
                 String newVarsKey = (String) newVarsEnum.nextElement();

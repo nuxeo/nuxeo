@@ -102,9 +102,9 @@ public class ConfigurationGenerator {
 
     public static final String OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
 
-    public static final String PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.plaintext-parsing-extensions";
+    public static final String PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.plaintext_parsing_extensions";
 
-    public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.freemarker-parsing-extensions";
+    public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.freemarker_parsing_extensions";
 
     /**
      * Absolute or relative PATH to the included templates (comma separated
@@ -218,7 +218,8 @@ public class ConfigurationGenerator {
         Map<String, String> tempPM = new HashMap<String, String>();
         tempPM.put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS,
                 PARAM_TEMPLATES_PARSING_EXTENSIONS);
-        tempPM.put("nuxeo.db.user.separator.key", "nuxeo.db.user-separator-key");
+        tempPM.put("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key");
+        tempPM.put("nuxeo.server.tomcat-admin.port", "nuxeo.server.tomcat_admin.port");
         parametersMigration = tempPM;
     }
 
@@ -422,7 +423,7 @@ public class ConfigurationGenerator {
                     // Don't remove the deprecated key yet - more
                     // warnings but old things should keep working
                     // userConfig.remove(key);
-                    log.warn("Parameter " + key
+                    log.warn("WARNING: Parameter " + key
                             + " is deprecated - please use "
                             + parametersMigration.get(key) + " instead");
                 }
@@ -448,8 +449,8 @@ public class ConfigurationGenerator {
             if (templates == null) {
                 templates = getUserTemplates();
             }
-            extractDatabaseTemplateName();
             includeTemplates(templates);
+            extractDatabaseTemplateName();
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
