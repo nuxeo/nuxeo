@@ -5,6 +5,8 @@
 nuxeo.data.dir=server/default/data/NXRuntime/data
 nuxeo.server.dir=server/default/deploy/nuxeo.ear
 
+jndi.base=java:
+
 # Default template to use if not defined in nuxeo.conf
 nuxeo.templates=default
 

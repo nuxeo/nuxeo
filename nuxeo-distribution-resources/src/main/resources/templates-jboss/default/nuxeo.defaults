@@ -3,6 +3,7 @@ default.target=server/default
 
 nuxeo.template.includes=common
 
+nuxeo.db.type=default
 nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=

@@ -5,6 +5,8 @@
 nuxeo.data.dir=nxserver/data
 nuxeo.server.dir=nxserver
 
+jndi.base=java:comp/env
+
 # Default template to use if not defined in nuxeo.conf
 nuxeo.templates=default
 

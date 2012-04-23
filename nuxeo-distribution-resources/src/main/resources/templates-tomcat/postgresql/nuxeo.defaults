@@ -2,6 +2,7 @@
 nuxeo.template.includes=default
 postgresql.target=.
 
+nuxeo.db.type=postgresql
 nuxeo.db.host=localhost
 nuxeo.db.port=5432
 nuxeo.db.name=nuxeo

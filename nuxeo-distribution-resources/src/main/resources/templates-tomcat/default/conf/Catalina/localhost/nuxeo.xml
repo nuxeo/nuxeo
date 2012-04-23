@@ -20,7 +20,9 @@
   <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader"
     loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader" />
 
+<#if "${nuxeo.server.ContextSecurityGrabber.disable}" != "true">
   <Listener className="org.nuxeo.runtime.tomcat.ContextSecurityGrabber" />
+</#if>
   <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" home="${catalina.base}/nxserver" />
 
   <!-- Define JDBC datasources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME.

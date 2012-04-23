@@ -2,6 +2,7 @@
 nuxeo.template.includes=default
 mysql.target=.
 
+nuxeo.db.type=mysql
 nuxeo.db.host=localhost
 nuxeo.db.port=3306
 nuxeo.db.name=nuxeo

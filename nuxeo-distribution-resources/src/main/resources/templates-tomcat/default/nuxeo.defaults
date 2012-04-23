@@ -4,10 +4,11 @@ default.target=.
 
 nuxeo.server.http.port=8080
 nuxeo.server.ajp.port=8009
-nuxeo.server.https.port=8443
-nuxeo.server.tomcat-admin.port=8005
+nuxeo.server.https.port=0
+nuxeo.server.tomcat_admin.port=8005
 nuxeo.server.jvmRoute=nuxeo
 
+nuxeo.db.type=default
 nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
@@ -16,7 +17,7 @@ nuxeo.db.validationQuery=
 nuxeo.db.driver=org.apache.derby.jdbc.EmbeddedDriver
 nuxeo.db.commonds=jdbc/nuxeo
 
-nuxeo.db.user-separator-key=,
+nuxeo.db.user_separator_key=,
 
 org.nuxeo.ecm.instance.name=Nuxeo 5.4
 org.nuxeo.ecm.instance.description=Nuxeo ECM server

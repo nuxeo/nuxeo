@@ -3,6 +3,7 @@ mssql.target=server/default
 
 nuxeo.template.includes=common
 
+nuxeo.db.type=mssql
 nuxeo.db.host=localhost
 nuxeo.db.port=1433
 nuxeo.db.name=nuxeo
