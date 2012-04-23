@@ -57,6 +57,7 @@
     <nuxeo.exalead.connector.version>5.6-SNAPSHOT</nuxeo.exalead.connector.version>
     <nuxeo.user.registration.version>5.6-SNAPSHOT</nuxeo.user.registration.version>
     <nuxeo.rating.version>5.6-SNAPSHOT</nuxeo.rating.version>
+    <nuxeo.agenda.version>5.6-SNAPSHOT</nuxeo.agenda.version>
   </properties>
 
   <modules>
@@ -104,6 +105,7 @@
     <module>nuxeo-exalead-connector</module>
     <module>nuxeo-signature</module>
     <module>nuxeo-rating</module>
+    <module>nuxeo-agenda</nuxeo-agenda>
   </modules>
 
   <dependencyManagement>
@@ -851,6 +853,12 @@
         <version>${nuxeo.rating.version}</version>
       </dependency>
 
+      <!-- Agenda -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-agenda</artifactId>
+        <version>${nuxeo.agenda.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
