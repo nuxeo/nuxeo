@@ -4,10 +4,11 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+<c:if test="#{!empty currentDocument.dc.description}">
     <nxl:widgetType name="textarea" mode="view"
       value="#{currentDocument.dc.description}"
       styleClass="documentDescription quote"/>
-
+</c:if>
     <span class="createdBy">
       <h:outputText value="#{messages['label.summary.createdBy']}" />
       <a href="#{baseURL}user/#{currentDocument.dc.creator}">
