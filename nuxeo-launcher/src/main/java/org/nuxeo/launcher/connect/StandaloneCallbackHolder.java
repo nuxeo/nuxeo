@@ -26,7 +26,6 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
-import org.nuxeo.launcher.NuxeoLauncher;
 
 public class StandaloneCallbackHolder implements CallbackHolder {
 

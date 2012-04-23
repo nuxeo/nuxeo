@@ -5,6 +5,9 @@
 nuxeo.data.dir=nxserver/data
 nuxeo.server.dir=nxserver
 
+jndi.base=java:comp/env
+nuxeo.server.ContextSecurityGrabber.disable=false
+
 # Default template to use if not defined in nuxeo.conf
 nuxeo.templates=default
 
@@ -27,7 +30,7 @@ org.nuxeo.ecm.product.version=5.6-SNAPSHOT
 #nuxeo.db.user=
 #nuxeo.db.password=
 #nuxeo.db.min-pool-size=
-nuxeo.db.max-pool-size=20
+nuxeo.db.max-pool-size=100
 nuxeo.vcs.min-pool-size=0
 nuxeo.vcs.max-pool-size=20
 
@@ -68,6 +71,7 @@ repository.clustering.delay=1000
 # If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
 repository.binary.store=
 
-nuxeo.templates.parsing.extensions=xml,properties,nx,html,js
+nuxeo.plaintext-parsing-extensions=xml,properties,nx,html,js
+nuxeo.freemarker-parsing-extensions=nxftl
 
 session.timeout=60
