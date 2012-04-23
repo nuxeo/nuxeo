@@ -90,8 +90,8 @@ public class ITContextualActionsTest extends AbstractTest {
         filePage.clickOnButton(filePage.exportButton);
 
         // Test permalink action
-//        filePage.clickOnButton(filePage.permaButton);
-//        filePage.clickOnButton(filePage.closePermaBoxButton);
+        // filePage.clickOnButton(filePage.permaButton);
+        // filePage.clickOnButton(filePage.closePermaBoxButton);
 
         // Log out
         navToUrl("http://localhost:8080/nuxeo/logout");

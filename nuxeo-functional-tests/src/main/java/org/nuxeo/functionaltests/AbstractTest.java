@@ -63,7 +63,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
-import org.openqa.selenium.internal.selenesedriver.FindElements;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -182,7 +181,7 @@ public abstract class AbstractTest {
 
     /**
      * Introspects the classpath and returns the list of files in it.
-     *
+     * 
      * @return
      * @throws Exception
      */
@@ -392,7 +391,7 @@ public abstract class AbstractTest {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     *
+     * 
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
@@ -406,7 +405,7 @@ public abstract class AbstractTest {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     *
+     * 
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @param parentElement find from the element
@@ -445,7 +444,7 @@ public abstract class AbstractTest {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     *
+     * 
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
@@ -464,7 +463,7 @@ public abstract class AbstractTest {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     *
+     * 
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @param parentElement find from the element
@@ -479,7 +478,7 @@ public abstract class AbstractTest {
 
     /**
      * Waits until an element is enabled, with a timeout.
-     *
+     * 
      * @param element the element
      * @param timeout the timeout in milliseconds
      */
@@ -503,7 +502,7 @@ public abstract class AbstractTest {
 
     /**
      * Waits until an element is enabled, with a timeout.
-     *
+     * 
      * @param element the element
      */
     public static void waitUntilEnabled(WebElement element)
@@ -515,7 +514,7 @@ public abstract class AbstractTest {
      * Finds the first {@link WebElement} using the given method, with a
      * {@code findElementTimeout}. Then waits until the element is enabled, with
      * a {@code waitUntilEnabledTimeout}.
-     *
+     * 
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in
@@ -558,7 +557,7 @@ public abstract class AbstractTest {
      * Finds the first {@link WebElement} using the given method, with the
      * default timeout. Then waits until the element is enabled, with the
      * default timeout.
-     *
+     * 
      * @param by the locating mechanism
      * @return the first matching element on the current page, if found
      * @throws NotFoundException if the element is not found or not enabled
@@ -573,7 +572,7 @@ public abstract class AbstractTest {
      * Finds the first {@link WebElement} using the given method, with a
      * {@code findElementTimeout}. Then waits until the element is enabled, with
      * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
-     *
+     * 
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in
@@ -623,7 +622,7 @@ public abstract class AbstractTest {
      * Finds the first {@link WebElement} using the given method, with the
      * default timeout. Then waits until the element is enabled, with the
      * default timeout. Then clicks on the element.
-     *
+     * 
      * @param by the locating mechanism
      * @throws NotFoundException if the element is not found or not enabled
      */
@@ -656,7 +655,7 @@ public abstract class AbstractTest {
 
     /**
      * Navigate to a specified url
-     *
+     * 
      * @param urlString url
      * @throws MalformedURLException
      */
@@ -667,7 +666,7 @@ public abstract class AbstractTest {
 
     /**
      * Login as Administrator
-     *
+     * 
      * @return the Document base page (by default returned by nuxeo dm)
      * @throws UserNotConnectedException
      */
@@ -685,7 +684,7 @@ public abstract class AbstractTest {
 
     /**
      * Login using an invalid credential.
-     *
+     * 
      * @param username
      * @param password
      */
@@ -697,7 +696,7 @@ public abstract class AbstractTest {
 
     /**
      * Init the repository with a test Workspace form the {@code currentPage}.
-     *
+     * 
      * @param currentPage the current page
      * @return the created Workspace page
      * @throws Exception if initializing repository fails
@@ -712,7 +711,7 @@ public abstract class AbstractTest {
     /**
      * Cleans the repository (delete the test Workspace) from the
      * {@code currentPage}.
-     *
+     * 
      * @param currentPage the current page
      * @throws Exception if cleaning repository fails
      */
@@ -724,7 +723,7 @@ public abstract class AbstractTest {
 
     /**
      * Creates a Workspace form the {@code currentPage}.
-     *
+     * 
      * @param currentPage the current page
      * @param workspaceTitle the workspace title
      * @param workspaceDescription the workspace description
@@ -749,7 +748,7 @@ public abstract class AbstractTest {
     /**
      * Deletes the Workspace with title {@code workspaceTitle} from the
      * {@code currentPage}.
-     *
+     * 
      * @param currentPage the current page
      * @param workspaceTitle the workspace title
      */
@@ -766,7 +765,7 @@ public abstract class AbstractTest {
 
     /**
      * Creates a File form the {@code currentPage}.
-     *
+     * 
      * @param currentPage the current page
      * @param fileTitle the file title
      * @param fileDescription the file description
@@ -802,7 +801,7 @@ public abstract class AbstractTest {
 
     /**
      * Creates a temporary file and returns its absolute path.
-     *
+     * 
      * @param tmpFilePrefix the file prefix
      * @param fileSuffix the file suffix
      * @param fileContent the file content
