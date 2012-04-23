@@ -20,6 +20,8 @@ package org.nuxeo.functionaltests.pages;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
 import org.nuxeo.functionaltests.AbstractTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -121,6 +123,14 @@ public abstract class AbstractPage {
     public static WebElement findElementWithTimeout(By by)
             throws NoSuchElementException {
         return AbstractTest.findElementWithTimeout(by);
+    }
+
+    /**
+     * Finds webelement list using the given method, with a timeout
+     */
+    public static List<WebElement> findElementsWithTimeout(By by)
+            throws NoSuchElementException {
+        return AbstractTest.findElementsWithTimeout(by);
     }
 
     /**

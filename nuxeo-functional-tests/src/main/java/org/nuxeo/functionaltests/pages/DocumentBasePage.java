@@ -19,6 +19,9 @@ package org.nuxeo.functionaltests.pages;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
@@ -59,7 +62,7 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Manage\"]")
     public WebElement manageTabLink;
 
-    @FindBy(className = "currentDocumentDescription")
+    @FindBy(className = "documentDescription")
     public WebElement currentDocumentDescription;
 
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//h1")
@@ -67,6 +70,30 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//form[@id=\"breadcrumbForm\"]")
     public WebElement breadcrumbForm;
+
+    @FindBy(className = "creator")
+    public WebElement currentDocumentContributor;
+
+    @FindBy(xpath = "//img[@title=\"Lock\"]")
+    public WebElement lockButton;
+
+    @FindBy(xpath = "//img[@title=\"Follow this document\"]")
+    public WebElement followButton;
+
+    @FindBy(xpath = "//img[@title=\"Add to worklist\"]")
+    public WebElement addToWorklistButton;
+
+    @FindBy(xpath = "//img[@title=\"Permanent link to this document\"]")
+    public WebElement permaButton;
+
+    @FindBy(xpath = "//img[@id=\"fancybox-close\"]")
+    public WebElement closePermaBoxButton;
+
+    @FindBy(className = "dropDownMenu")
+    public WebElement moreButton;
+
+    @FindBy(xpath = "//img[@title=\"Export options\"]")
+    public WebElement exportButton;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -112,6 +139,10 @@ public class DocumentBasePage extends AbstractPage {
         }
     }
 
+    public void clickOnButton(WebElement button){
+        button.click();
+    }
+
     /**
      * For workspace type, the content tab is a bit different.
      *
@@ -151,6 +182,19 @@ public class DocumentBasePage extends AbstractPage {
 
     public String getCurrentDocumentTitle() {
         return currentDocumentTitle.getText();
+    }
+
+    public List<String> getCurrentStates() {
+        List<WebElement> states = findElementsWithTimeout(By.className("sticker"));
+        List<String> stateLabels = new ArrayList<String>();
+        for(WebElement state:states){
+            stateLabels.add(state.getText());
+        }
+        return stateLabels;
+    }
+
+    public String getCurrentContributors() {
+        return currentDocumentContributor.getText();
     }
 
     public DocumentBasePage goToDocumentByBreadcrumb(String documentTitle) {
