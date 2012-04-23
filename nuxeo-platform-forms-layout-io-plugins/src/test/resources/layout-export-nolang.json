@@ -2,19 +2,19 @@
   "name": "dublincore",
   "templates": {"any": "/layouts/layout_default_template.xhtml"},
   "rows":   [
-    {"widgets": ["nature"]},
-    {"widgets": ["subjects"]},
-    {"widgets": ["rights"]},
-    {"widgets": ["source"]},
-    {"widgets": ["coverage"]},
-    {"widgets": ["created"]},
-    {"widgets": ["modified"]},
-    {"widgets": ["format"]},
-    {"widgets": ["language"]},
-    {"widgets": ["expired"]},
-    {"widgets": ["author"]},
-    {"widgets": ["contributors"]},
-    {"widgets": ["lastContributor"]}
+    {"widgets": [{"name": "nature"}]},
+    {"widgets": [{"name": "subjects"}]},
+    {"widgets": [{"name": "rights"}]},
+    {"widgets": [{"name": "source"}]},
+    {"widgets": [{"name": "coverage"}]},
+    {"widgets": [{"name": "created"}]},
+    {"widgets": [{"name": "modified"}]},
+    {"widgets": [{"name": "format"}]},
+    {"widgets": [{"name": "language"}]},
+    {"widgets": [{"name": "expired"}]},
+    {"widgets": [{"name": "author"}]},
+    {"widgets": [{"name": "contributors"}]},
+    {"widgets": [{"name": "lastContributor"}]}
   ],
   "widgets":   [
         {
@@ -22,6 +22,7 @@
       "type": "selectOneDirectory",
       "labels": {"any": "label.dublincore.nature"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:nature",
         "propertyName": "dc:nature"
@@ -230,6 +231,7 @@
       "labels": {"any": "label.dublincore.subject"},
       "helpLabels": {"edit": "label.dublincore.subjects.info"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:subjects",
         "propertyName": "dc:subjects"
@@ -488,6 +490,7 @@
       "type": "text",
       "labels": {"any": "label.dublincore.rights"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:rights",
         "propertyName": "dc:rights"
@@ -499,6 +502,7 @@
       "type": "text",
       "labels": {"any": "label.dublincore.source"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:source",
         "propertyName": "dc:source"
@@ -511,6 +515,7 @@
       "labels": {"any": "label.dublincore.coverage"},
       "helpLabels": {"edit": "label.dublincore.coverage.info"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:coverage",
         "propertyName": "dc:coverage"
@@ -1779,6 +1784,7 @@
       "type": "datetime",
       "labels": {"any": "label.dublincore.created"},
       "translated": true,
+      "handlingLabels": false,
       "widgetModes":       {
         "any": "view",
         "pdf": "pdf"
@@ -1794,6 +1800,7 @@
       "type": "datetime",
       "labels": {"any": "label.dublincore.modified"},
       "translated": true,
+      "handlingLabels": false,
       "widgetModes":       {
         "any": "view",
         "pdf": "pdf"
@@ -1809,6 +1816,7 @@
       "type": "text",
       "labels": {"any": "label.dublincore.format"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:format",
         "propertyName": "dc:format"
@@ -1820,6 +1828,7 @@
       "type": "text",
       "labels": {"any": "label.dublincore.language"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:language",
         "propertyName": "dc:language"
@@ -1831,6 +1840,7 @@
       "type": "datetime",
       "labels": {"any": "label.dublincore.expired"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:expired",
         "propertyName": "dc:expired"
@@ -1846,6 +1856,7 @@
       "labels": {"any": "label.dublincore.creator"},
       "helpLabels": {"edit": "label.dublincore.author.info"},
       "translated": true,
+      "handlingLabels": false,
       "widgetModes":       {
         "any": "view",
         "pdf": "pdf"
@@ -1862,6 +1873,7 @@
       "labels": {"any": "label.dublincore.contributors"},
       "helpLabels": {"edit": "label.dublincore.contributors.info"},
       "translated": true,
+      "handlingLabels": false,
       "fields": [      {
         "fieldName": "dc:contributors",
         "propertyName": "dc:contributors"
@@ -1875,6 +1887,7 @@
       "labels": {"any": "label.dublincore.lastContributor"},
       "helpLabels": {"edit": "label.dublincore.lastContributor.info"},
       "translated": true,
+      "handlingLabels": false,
       "widgetModes":       {
         "any": "view",
         "pdf": "pdf"

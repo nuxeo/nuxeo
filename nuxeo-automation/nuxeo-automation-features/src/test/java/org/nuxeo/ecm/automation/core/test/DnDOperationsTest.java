@@ -103,8 +103,9 @@ public class DnDOperationsTest {
         assertNotNull(bh);
         assertNotNull(bh.getBlob());
         assertEquals("YoMan", bh.getBlob().getString());
-        assertEquals("YoMan2", bh.getBlobs().get(0).getString());
-        assertEquals("YoMan3", bh.getBlobs().get(1).getString());
+        assertEquals("YoMan", bh.getBlobs().get(0).getString());
+        assertEquals("YoMan2", bh.getBlobs().get(1).getString());
+        assertEquals("YoMan3", bh.getBlobs().get(2).getString());
 
     }
 }

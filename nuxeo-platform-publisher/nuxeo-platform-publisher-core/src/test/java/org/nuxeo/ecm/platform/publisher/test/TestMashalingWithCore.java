@@ -46,9 +46,9 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePub
 
 /**
  * Test marshaling with real {@link DocumentModel}
- *
+ * 
  * @author tiry
- *
+ * 
  */
 public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
@@ -229,7 +229,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
         // System.out.println(data);
 
-        assertTrue(data.contains("<dc:source>test@MySourceServer:"));
+        assertTrue(data.contains("<dc:source><![CDATA[test@MySourceServer:"));
 
         String srcRef = "test@MySourceServer:57583948-fc6a-41c1-9fa2-1be0aab12784";
         String[] refParts = srcRef.split("@");

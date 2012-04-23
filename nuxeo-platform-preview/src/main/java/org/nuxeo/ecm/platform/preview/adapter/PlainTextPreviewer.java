@@ -37,7 +37,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
 
         StringBuilder htmlPage = new StringBuilder();
 
-        htmlPage.append("<html>");
+        htmlPage.append("<html><body>");
         try {
             String temp = blob.getString().replace("&", "&amp;").replace("<",
                     "&lt;").replace(">", "&gt;").replace("\'", "&apos;").replace(
@@ -47,7 +47,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
         } catch (IOException e) {
             throw new PreviewException(e);
         }
-        htmlPage.append("</html>");
+        htmlPage.append("</body></html>");
 
         Blob mainBlob = new StringBlob(htmlPage.toString());
         mainBlob.setFilename("index.html");
