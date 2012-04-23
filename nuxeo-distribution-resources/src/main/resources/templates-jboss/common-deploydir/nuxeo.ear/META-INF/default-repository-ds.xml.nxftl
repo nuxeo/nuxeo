@@ -34,7 +34,7 @@
     <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
     <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
     <config-property name="property" type="java.lang.String">UseCursors=true</config-property>
-<#elseif "${nudo.db.type}" == "mysql">
+<#elseif "${nuxeo.db.type}" == "mysql">
     <config-property name="xaDataSource" type="java.lang.String">com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</config-property>
     <config-property name="property" type="java.lang.String">URL=jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true</config-property>
     <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
