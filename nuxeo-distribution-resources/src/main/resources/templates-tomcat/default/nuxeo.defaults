@@ -19,9 +19,6 @@ nuxeo.db.commonds=jdbc/nuxeo
 
 nuxeo.db.user_separator_key=,
 
-org.nuxeo.ecm.instance.name=Nuxeo 5.4
-org.nuxeo.ecm.instance.description=Nuxeo ECM server
-
 # Mail server protocol
 mail.store.protocol=pop3
 mail.transport.protocol=smtp
