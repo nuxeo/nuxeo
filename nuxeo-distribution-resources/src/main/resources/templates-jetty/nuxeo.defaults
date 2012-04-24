@@ -50,7 +50,7 @@ opensocial.gadgets.port=8080
 opensocial.gadgets.path=/site/gadgets
 opensocial.trusted.hosts=
 
-nuxeo.plaintext-parsing-extensions=xml,properties,nx,js
-nuxeo.freemarker-parsing-extensions=nxftl
+nuxeo.plaintext_parsing_extensions=xml,properties,nx,js
+nuxeo.freemarker_parsing_extensions=nxftl
 
 session.timeout=60

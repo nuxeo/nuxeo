@@ -71,7 +71,7 @@ repository.clustering.delay=1000
 # If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
 repository.binary.store=
 
-nuxeo.plaintext-parsing-extensions=xml,properties,nx,html,js
-nuxeo.freemarker-parsing-extensions=nxftl
+nuxeo.plaintext_parsing_extensions=xml,properties,nx,html,js
+nuxeo.freemarker_parsing_extensions=nxftl
 
 session.timeout=60
