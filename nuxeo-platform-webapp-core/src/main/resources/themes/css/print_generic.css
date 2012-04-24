@@ -24,7 +24,10 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .breadcrumbs { float:left; font-size: .8em; margin-bottom: 1.8em }
 
 /* Tables */
-.fieldColumn { padding-left: 5px }
+.labelColumn { width: 12em }
+.fieldColumn { line-height: 160%; padding: .4em }
+.labelColumn, .fieldColumn { border-bottom: 1px solid #eee }
+.fieldColumn img { margin-bottom: -4px }
 .dataOutput th, .dataList th { background-color: #eee; padding: .4em .5em; text-align: left;  }
 .dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img { display: block }
 .dataInput, .dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse }
@@ -41,9 +44,16 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .summary_div_0 img { max-width: 15cm; max-height: 15cm }
 .note_content_block { border: 1px solid #ddd; padding: 1em }
 .content_block, .metadata_block, .comments_block, .entitiesBlock, .relation_block, .summary_div_2, .summary_div_3 { margin: 1em 0 }
-.content_block { page-break-after: always }
+.content_block { page-break-after: always /* Flute Parser remove it */}
+.content_block table { width: 100% }
+
 .metadata_block .dataInput { width: 100% }
-.summary .summary_div_0 .description_block, .summary .summary_div_1, .content_block .actionsColumn { display: none }
+.summary_div_1 > div, .content_block .actionsColumn, .globalActionBar { display: none }
+
+.summary_div_1 .description_block { border: 1px solid #ddd; display: block;	font-size: 110%; font-weight: bold; line-height: 130%; padding: 1em; margin-top: 2em }
+.description_block .documentDescription { display: block; padding: 0 0 1em }
+.description_block .createdBy, .description_block .creationDate, .description_block .versionNumber { padding-right: 1em }
+.description_block .creationDate {  color: #888; font-weight: normal }
 
 /* Note view */
 .note_content_block span, .note_content_block div, .note_content_block p { font-size: 1.05em; line-height: 170% }
@@ -68,6 +78,12 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .note_content_block pre, .note_content_block code { background-color: #F7F7F7; border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 3px; font-family: "Lucida Console","Monaco","Courier",monospace; font-size: 90%;	line-height: normal; overflow: auto; padding: 0 .2em }
 .note_content_block pre { border-color: "neutral.light (__FLAVOR__ border)"; margin: 0 0 1em; padding: .4em }
 .note_content_block pre code { border: none; font-size: 100% }
+
+/* Comments */
+.commentBlock { padding: 1em 0 0 }
+.commentBlock .commentAuthor { color: #888; font-weight: bold }
+.commentBlock .commentCreationDate { font-weight: normal }
+.commentBlock .commentQuote { line-height: 150% }
 
 
 /* Workflow */

@@ -24,7 +24,7 @@ author: lkemen@nuxeo.com
 
 /* =Clipboard & Worklist */
 .userClipboard { background-color: #fff; height: 1%; margin: 1em 0 }
-.userClipboardContent { margin: 0; max-width: 20em; padding: 1em 0 1em 0.3em; word-wrap: break-word }
+.userClipboardContent { margin: 0; padding: 1em 0 1em 0.3em; word-wrap: break-word }
 .userClipboard h4 {
   border-width: 1px; border-style: none none dotted; border-color: "neutral.medium (__FLAVOR__ border)";
   color: "gray.medium (__FLAVOR__ color)";
@@ -40,7 +40,7 @@ author: lkemen@nuxeo.com
 
 .clipboardFunctions { border-width: 2px; border-style: solid none none; border-color:"neutral.lighter (__FLAVOR__ border)"; padding-top: .9em }
 .clipboardFunction { padding: .2em }
-.clipboardRemoveItem { float: right }
+.clipboardRemoveItem { bottom: 2px; float: right; position: absolute; right: 0 }
 
 .clipboardEmptyMessage { color: "gray.dark (__FLAVOR__ color)"; font-style: italic; padding: 0 .2em .2em; text-align: center }
 

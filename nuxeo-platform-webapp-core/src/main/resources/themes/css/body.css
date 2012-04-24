@@ -8,5 +8,5 @@ author: lkemen@nuxeo.com
 .nxMainContainer .content { padding: 0 }
 .mainFragment { padding: .6em }
 
-.currentDocumentDescription { font-size: .8em; padding: .3em 0 }
+.currentDocumentDescription { display: block; font-size: .9em; font-weight: bold; padding: 0 0 1em }
 .currentItemDescription { display: block; font-size: 13px }

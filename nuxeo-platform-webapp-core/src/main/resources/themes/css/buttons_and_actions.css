@@ -62,7 +62,7 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .action_bar ul { list-style: none; margin: 0; padding: 0 1em 0 0 }
 .action_bar li { float: left; margin: 0; padding: 0 }
 .action_bar a {
-  box-shadow: 0px 1px 0px 0px #fff inset;
+  box-shadow: 0 1px 0 0 #fff inset;
   background-color: "neutral.medium (__FLAVOR__ background)";
   border-radius: 3px;
   border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
@@ -78,6 +78,7 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .action_bar a img { margin: 0 .2em -0.2em -0.4em }
 .action_bar a:focus { border-color: "color.major.strong (__FLAVOR__ border)"; }
 .action_bar input[type="text"] { margin: 0 .2em }
+.action_bar input.button { margin-top: 0 }
 .contentViewQuickFilterForm .action_bar a { margin: 0 }
 
 .listingLayoutSelector { float: right; margin: 1.1em 0 1em .7em; text-align: right }
@@ -141,10 +142,10 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .tagLink a:hover { opacity: 1 }
 .tagLink img { border-left: 1px dotted rgba(255,255,255,0.4); display: inline; margin: 0 -0.1em -0.3em .2em }
 
-.user, span.user { background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent; border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)"; display: inline-block; opacity: 1; padding: .1em .3em .1em 2.1em }
+.user, span.user { background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; box-shadow: -1px -2px 2px rgba(140, 140, 140, 0.2) inset, 1px 1px 1px #fff inset; display: inline-block; opacity: 1; padding: .1em .3em .1em 2.1em }
 .user a { color: "link (__FLAVOR__ color)" }
-span.user:hover { background-color: #fff; border-color: "color.major.stronger (__FLAVOR__ border)" }
+span.user:hover { background-color: "color.major.light (__FLAVOR__ background)" ; border-color: "color.major.stronger (__FLAVOR__ border)" }
 .user a:hover { text-decoration: none }
 .description_block span.user { display: inline-block; font-size: 1em; padding: .1em .3em .1em 2.1em }
 
-.sticker, .description_block .sticker { background-color: #fff; border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px; color: "black (__FLAVOR__ color)"; display: inline-block; font-size: 1em; font-weight: bold; margin: .2em; padding: .1em .2em; text-transform: uppercase }
+.sticker, .description_block .sticker { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px;	 display: inline-block; font-size: 1em; font-weight: bold; margin: .2em; padding: .1em .2em; text-transform: uppercase }
