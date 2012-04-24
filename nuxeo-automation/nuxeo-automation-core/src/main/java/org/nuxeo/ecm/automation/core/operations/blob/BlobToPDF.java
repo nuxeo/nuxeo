@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
  * Save the input document
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author tiry
  */
@@ -40,11 +40,10 @@ public class BlobToPDF {
     @Context
     protected ConversionService service;
 
-
     @OperationMethod
     public Blob run(DocumentModel doc) throws Exception {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh==null) {
+        if (bh == null) {
             return null;
         }
         BlobHolder pdfBh = service.convertToMimeType("application/pdf", bh,
@@ -52,11 +51,12 @@ public class BlobToPDF {
         Blob result = pdfBh.getBlob();
 
         String fname = result.getFilename();
-        if(fname==null || fname.isEmpty()) {
+        if (fname == null || fname.isEmpty()) {
             fname = bh.getBlob().getFilename();
             fname = fname + ".pdf";
             result.setFilename(fname);
         }
+        result.setMimeType("application/pdf");
         return result;
     }
 
@@ -89,6 +89,7 @@ public class BlobToPDF {
             fname = "Unknown_" + System.identityHashCode(in);
         }
         out.setFilename(fname + ".pdf");
+        out.setMimeType("application/pdf");
     }
 
 }

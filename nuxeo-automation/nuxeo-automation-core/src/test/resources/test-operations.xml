@@ -48,13 +48,13 @@
         <param type="string" name="name">MyDoc</param>
         <param type="properties" name="properties">
           <property key="dc:title">My Doc</property>
-          <property key="dc:description">My Doc desc</property>          
+          <property key="dc:description">My Doc desc</property>
         </param>
       </operation>
     </chain>
     <chain id="runOnList">
       <operation id="runOnListItem" />
-    </chain>    
+    </chain>
     <chain id="core_chain1">
       <operation id="Context.FetchDocument" />
       <operation id="Document.Create">
@@ -80,13 +80,13 @@
         <param type="boolean" name="save">true</param>
       </operation>
     </chain>
-    
+
     <chain id="testExitChain">
       <operation id="Test.Exit" >
         <param type="boolean" name="error">true</param>
         <param type="boolean" name="rollback">true</param>
       </operation>
-    </chain>  
+    </chain>
 
   </extension>
 

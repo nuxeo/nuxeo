@@ -14,7 +14,6 @@ package org.nuxeo.ecm.automation.core.test;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -41,7 +40,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -50,9 +48,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.versioning" })
-// For version label info
-@LocalDeploy("org.nuxeo.ecm.automation.core:test-enc.xml")
+@Deploy({ "org.nuxeo.ecm.automation.core" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EventOperationsTest {
 
@@ -89,7 +85,7 @@ public class EventOperationsTest {
     /**
      * Create | Copy | Set Property This is also testing
      * {@link StringToProperties} adapter
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -127,7 +123,7 @@ public class EventOperationsTest {
     /**
      * Create | Copy | Set Property in a post commit listener This is also
      * testing {@link StringToProperties} adapter
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -168,13 +164,6 @@ public class EventOperationsTest {
         assertEquals("MyDocPc", doc.getTitle());
         assertEquals("Note", doc.getType());
         CoreInstance.getInstance().close(session2);
-    }
-
-    @Test
-    public void testXmlEncoding() {
-        EventHandlerRegistry reg = Framework.getLocalService(EventHandlerRegistry.class);
-        List<EventHandler> eh = reg.getEventHandlers("aboutToCreate");
-        assertEquals("a < b & b > c", eh.get(0).getExpression());
     }
 
 }

@@ -84,7 +84,7 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features( { TransactionalFeature.class, CoreFeature.class })
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
@@ -171,7 +171,7 @@ public class CoreOperationsTest {
     /**
      * Create | Copy | Set Property. This is also testing
      * {@link StringToProperties} adapter
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -200,7 +200,7 @@ public class CoreOperationsTest {
     /**
      * Same as before but tests relative paths Create | Copy | Set Property This
      * is also testing {@link StringToProperties} adapter
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -221,7 +221,7 @@ public class CoreOperationsTest {
     /**
      * Same as before Create | Copy | Set Property But also test properties
      * specified using a mvel Expression
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -252,7 +252,7 @@ public class CoreOperationsTest {
 
     /**
      * Same as before but use DocumentWrapper to access properties
-     *
+     * 
      * @throws Exception
      */
     @Test
@@ -338,7 +338,8 @@ public class CoreOperationsTest {
         assertEquals("mydesc", out.getPropertyValue("dc:description"));
         assertEquals("MyDoc2", out.getPropertyValue("dc:title"));
         assertTrue(out.isLocked());
-        assertEquals("parentdoc",
+        assertEquals(
+                "parentdoc",
                 session.getDocument(src.getRef()).getPropertyValue(
                         "dc:description"));
     }
@@ -427,10 +428,12 @@ public class CoreOperationsTest {
         assertEquals(2, list.size());
         assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
         assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
-        assertEquals("samedesc",
+        assertEquals(
+                "samedesc",
                 session.getDocument(src.getRef()).getPropertyValue(
                         "dc:description"));
-        assertEquals("samedesc",
+        assertEquals(
+                "samedesc",
                 session.getDocument(dst.getRef()).getPropertyValue(
                         "dc:description"));
     }
@@ -454,7 +457,7 @@ public class CoreOperationsTest {
     /**
      * Alternate version - use xml properties instead of java properties when
      * defining a properties value
-     *
+     * 
      * @throws Exception
      */
     @Test
