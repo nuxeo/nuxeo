@@ -101,6 +101,22 @@ public class PackageDefinitionImpl implements PackageDefinition {
     protected PackageDependency[] dependencies;
 
     /**
+     * The conflict value format is:
+     * <code>package_name[:package_min_version[:package_max_version]]</code> if
+     * no min and max version are specified the the last version should be used.
+     */
+    @XNodeList(value = "conflicts/package", type = PackageDependency[].class, componentType = PackageDependency.class)
+    protected PackageDependency[] conflicts;
+
+    /**
+     * The provides value format is:
+     * <code>package_name[:package_min_version[:package_max_version]]</code> if
+     * no min and max version are specified the the last version should be used.
+     */
+    @XNodeList(value = "provides/package", type = PackageDependency[].class, componentType = PackageDependency.class)
+    protected PackageDependency[] provides;
+
+    /**
      * A class implementing {@link Task}. if not specified the default
      * implementation will be used
      */
@@ -232,6 +248,22 @@ public class PackageDefinitionImpl implements PackageDefinition {
 
     public void setDependencies(PackageDependency[] dependencies) {
         this.dependencies = dependencies;
+    }
+
+    public PackageDependency[] getConflicts() {
+        return conflicts;
+    }
+
+    public void setConflicts(PackageDependency[] conflicts) {
+        this.conflicts = conflicts;
+    }
+
+    public PackageDependency[] getProvides() {
+        return provides;
+    }
+
+    public void setProvides(PackageDependency[] provides) {
+        this.provides = provides;
     }
 
     public String getVendor() {
