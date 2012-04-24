@@ -65,6 +65,9 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(className = "documentDescription")
     public WebElement currentDocumentDescription;
 
+    @FindBy(className = "currentDocumentDescription")
+    public WebElement currentFolderishDescription;
+
     @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//h1")
     public WebElement currentDocumentTitle;
 
@@ -155,6 +158,10 @@ public class DocumentBasePage extends AbstractPage {
 
     public String getCurrentDocumentDescription() {
         return currentDocumentDescription.getText();
+    }
+
+    public String getCurrentFolderishDescription() {
+        return currentFolderishDescription.getText();
     }
 
     public String getCurrentDocumentTitle() {

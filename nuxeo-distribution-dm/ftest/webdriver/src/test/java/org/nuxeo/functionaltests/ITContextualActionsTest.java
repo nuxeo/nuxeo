@@ -67,7 +67,7 @@ public class ITContextualActionsTest extends AbstractTest {
         FileCreationFormPage fileFormPage = workspacesContent.getDocumentCreatePage(
                 NOTE_TYPE, FileCreationFormPage.class);
         FileDocumentBasePage filePage = fileFormPage.createFileDocument(
-                DOCUMENT_NAME, DOCUMENT_DESC);
+                DOCUMENT_NAME, DOCUMENT_DESC, null);
 
         // Verify summary informations
         Assert.assertEquals(DOCUMENT_DESC,
@@ -94,7 +94,6 @@ public class ITContextualActionsTest extends AbstractTest {
         // Test More button & Export
         actions.clickOnButton(actions.moreButton);
         actions.clickOnButton(actions.exportButton);
-
 
         // Log out
         navToUrl("http://localhost:8080/nuxeo/logout");

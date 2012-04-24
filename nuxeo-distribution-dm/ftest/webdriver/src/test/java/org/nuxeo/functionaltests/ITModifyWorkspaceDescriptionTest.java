@@ -86,7 +86,7 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
                 descriptionModified, null);
 
         assertEquals(descriptionModified,
-                workspacePage.getCurrentDocumentDescription());
+                workspacePage.getCurrentFolderishDescription());
         assertEquals(workspaceTitle, workspacePage.getCurrentDocumentTitle());
 
         // Clean up repository

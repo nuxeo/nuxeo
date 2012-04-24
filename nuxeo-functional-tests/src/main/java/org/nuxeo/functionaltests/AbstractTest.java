@@ -795,7 +795,7 @@ public abstract class AbstractTest {
 
         // Create File
         FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(
-                fileTitle, fileDescription);
+                fileTitle, fileDescription, fileToUploadPath);
         return filePage;
     }
 
