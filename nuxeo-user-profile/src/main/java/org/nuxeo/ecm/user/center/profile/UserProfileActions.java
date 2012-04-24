@@ -69,8 +69,10 @@ public class UserProfileActions implements Serializable {
 
     public void updateUser() throws ClientException {
         userManagementActions.updateUser();
-        documentManager.saveDocument(userProfileDocument);
-        documentManager.save();
+        if (userProfileDocument != null) {
+            documentManager.saveDocument(userProfileDocument);
+            documentManager.save();
+        }
         mode = PROFILE_VIEW_MODE;
     }
 
