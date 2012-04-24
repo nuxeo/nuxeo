@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -294,17 +294,16 @@ public class PopupHelper implements Serializable {
 
     public boolean isDocumentHasBlobs(DocumentModel documentModel)
             throws ClientException {
-        if (documentModel.hasSchema("file")) {
-            Blob blob = (Blob) documentModel.getProperty("file", "content");
-            return blob != null;
-        } else {
-            if (documentModel.hasSchema("files")) {
-                List<Blob> blobList = (List<Blob>) documentModel.getProperty(
-                        "files", "files");
-                return (!ArrayUtils.isEmpty(blobList.toArray()));
+        BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
+        if (bh != null) {
+            List<Blob> docBlobs = bh.getBlobs();
+            if (docBlobs != null && !docBlobs.isEmpty()) {
+                return true;
             } else {
                 return false;
             }
+        } else {
+            return false;
         }
     }
 
