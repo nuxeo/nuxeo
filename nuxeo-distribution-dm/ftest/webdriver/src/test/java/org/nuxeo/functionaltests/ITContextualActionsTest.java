@@ -61,13 +61,14 @@ public class ITContextualActionsTest extends AbstractTest {
 
         // Create a workspace and navigate into it
         WorkspaceFormPage workspaceFormPage = workspacesContent.getWorkspaceCreatePage();
-        workspaceFormPage.createNewWorkspace(WORKSPACE_NAME, WORKSPACE_DESC);
+        DocumentBasePage workspacePage = workspaceFormPage.createNewWorkspace(
+                WORKSPACE_NAME, WORKSPACE_DESC);
 
-        // Create a file and navigate into it
-        FileCreationFormPage fileFormPage = workspacesContent.getDocumentCreatePage(
-                NOTE_TYPE, FileCreationFormPage.class);
-        FileDocumentBasePage filePage = fileFormPage.createFileDocument(
-                DOCUMENT_NAME, DOCUMENT_DESC, null);
+        // Create a File with an uploaded blob
+        String filePrefix = "NX-Webdriver-test-";
+        FileDocumentBasePage filePage = createFile(workspacePage,
+                DOCUMENT_NAME, DOCUMENT_DESC, true, filePrefix, ".txt",
+                "Webdriver test file content.");
 
         // Verify summary informations
         Assert.assertEquals(DOCUMENT_DESC,
@@ -86,11 +87,14 @@ public class ITContextualActionsTest extends AbstractTest {
 
         // Test follow action
         actions.clickOnButton(actions.followButton);
-        // Test Add to Worklist action
-        actions.clickOnButton(actions.addToWorklistButton);
+        // Test download action
+        actions.clickOnButton(actions.downloadButton);
         // Test permalink action
         actions.clickOnButton(actions.permaButton);
         actions.clickOnButton(actions.closePermaBoxButton);
+        // Test Add to Worklist action
+        actions.clickOnButton(actions.moreButton);
+        actions.clickOnButton(actions.addToWorklistButton);
         // Test More button & Export
         actions.clickOnButton(actions.moreButton);
         actions.clickOnButton(actions.exportButton);

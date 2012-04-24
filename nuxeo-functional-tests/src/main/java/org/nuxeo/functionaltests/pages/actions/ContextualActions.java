@@ -48,6 +48,9 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@title=\"Export options\"]")
     public WebElement exportButton;
 
+    @FindBy(xpath = "//img[@title=\"Download\"]")
+    public WebElement downloadButton;
+
     public ContextualActions(WebDriver driver) {
         super(driver);
     }
