@@ -177,9 +177,6 @@ public class NuxeoRequestControllerFilter implements Filter {
             }
             chain.doFilter(request, response);
         } catch (Exception e) {
-            log.error(
-                    doFormatLogMessage(httpRequest,
-                            "Unhandled error was caught by the Filter"), e);
             if (txStarted) {
                 if (log.isDebugEnabled()) {
                     log.debug(doFormatLogMessage(httpRequest,
@@ -187,7 +184,16 @@ public class NuxeoRequestControllerFilter implements Filter {
                 }
                 TransactionHelper.setTransactionRollbackOnly();
             }
-            throw new ServletException(e);
+            Throwable unwrappedError = ExceptionHelper.unwrapException(e);
+            if (ExceptionHelper.isClientAbortError(unwrappedError)) {
+                log.warn("Client disconnected: "
+                        + unwrappedError.getMessage());
+            } else {
+                log.error(
+                    doFormatLogMessage(httpRequest,
+                            "Unhandled error was caught by the Filter"), e);
+                throw new ServletException(e);
+            }
         } finally {
             if (txStarted) {
                 try {
