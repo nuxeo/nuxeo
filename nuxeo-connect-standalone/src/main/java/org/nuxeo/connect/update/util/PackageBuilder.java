@@ -332,29 +332,4 @@ public class PackageBuilder {
         zout.closeEntry();
     }
 
-    // TODO NXP-9086: make it a unit test
-    public static void main(String[] args) throws Exception {
-        PackageBuilder builder = new PackageBuilder();
-        builder.name("nuxeo-automation").version("5.3.2").type(
-                PackageType.ADDON);
-        builder.title("Nuxeo Automation").description(
-                "The automation framework");
-        builder.platform("dm-5.3.2");
-        builder.dependency("nuxeo-core:5.3.2");
-        builder.classifier("OpenSource");
-        builder.installer("MyInstaller", true);
-        builder.addLicense("My License");
-
-        String xml = builder.buildManifest();
-        System.out.println(xml);
-
-        XMap xmap = StandaloneUpdateService.createXmap();
-        PackageDefinitionImpl pdef = (PackageDefinitionImpl) xmap.load(new ByteArrayInputStream(
-                xml.getBytes()));
-        System.out.println(pdef);
-
-        File file = builder.build();
-        System.out.println(file);
-        file.delete();
-    }
 }

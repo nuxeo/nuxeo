@@ -90,6 +90,24 @@ public class XmlSerializer extends XmlWriter {
             end("dependencies");
         }
 
+        if (def.getConflicts() != null && def.getConflicts().length > 0) {
+            start("conflicts");
+            startContent();
+            for (PackageDependency conflict : def.getConflicts()) {
+                element("package", conflict.toString());
+            }
+            end("conflicts");
+        }
+
+        if (def.getProvides() != null && def.getProvides().length > 0) {
+            start("provides");
+            startContent();
+            for (PackageDependency provide : def.getProvides()) {
+                element("package", provide.toString());
+            }
+            end("provides");
+        }
+
         end("package");
         return sb.toString();
     }
