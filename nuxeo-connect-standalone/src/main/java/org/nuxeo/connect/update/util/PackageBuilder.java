@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Mathieu Guillaume
  */
 package org.nuxeo.connect.update.util;
 
@@ -64,12 +65,18 @@ public class PackageBuilder {
 
     protected final List<PackageDependency> dependencies;
 
+    protected final List<PackageDependency> conflicts;
+
+    protected final List<PackageDependency> provides;
+
     protected final LinkedHashMap<String, InputStream> entries;
 
     public PackageBuilder() {
         def = new PackageDefinitionImpl();
         platforms = new ArrayList<String>();
         dependencies = new ArrayList<PackageDependency>();
+        conflicts = new ArrayList<PackageDependency>();
+        provides = new ArrayList<PackageDependency>();
         entries = new LinkedHashMap<String, InputStream>();
         installForms = new ArrayList<FormDefinition>();
         validationForms = new ArrayList<FormDefinition>();
@@ -187,6 +194,16 @@ public class PackageBuilder {
         return this;
     }
 
+    public PackageBuilder conflict(String expr) {
+        conflicts.add(new PackageDependency(expr));
+        return this;
+    }
+
+    public PackageBuilder provide(String expr) {
+        provides.add(new PackageDependency(expr));
+        return this;
+    }
+
     public PackageBuilder addInstallForm(FormDefinition form) {
         installForms.add(form);
         return this;
@@ -251,6 +268,12 @@ public class PackageBuilder {
         }
         if (!dependencies.isEmpty()) {
             def.setDependencies(dependencies.toArray(new PackageDependency[dependencies.size()]));
+        }
+        if (!conflicts.isEmpty()) {
+            def.setConflicts(conflicts.toArray(new PackageDependency[conflicts.size()]));
+        }
+        if (!provides.isEmpty()) {
+            def.setProvides(provides.toArray(new PackageDependency[provides.size()]));
         }
         return new XmlSerializer().toXML(def);
     }
