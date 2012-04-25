@@ -188,7 +188,7 @@ class Release(object):
     def update_versions(self, old_version, new_version):
         """Update all occurrences of 'old_version' with 'new_version'."""
         log("Replacing occurrences of %s with %s" % (old_version, new_version))
-        pattern = re.compile("^.*\\.(xml|properties|txt|defaults|sh|html)$")
+        pattern = re.compile("^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$")
         for root, dirs, files in os.walk(os.getcwd(), True, None, True):
             for dir in set(dirs) & set([".git", "target"]):
                 dirs.remove(dir)
