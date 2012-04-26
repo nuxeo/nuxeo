@@ -144,7 +144,9 @@ public class WidgetTagHandler extends MetaTagHandler {
         Widget widgetInstance = null;
         if (widget != null) {
             widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
-            widgetInstance.setValueName(valueName);
+            if (widgetInstance != null) {
+                widgetInstance.setValueName(valueName);
+            }
         } else {
             // resolve widget according to name and mode (and optional
             // category)
