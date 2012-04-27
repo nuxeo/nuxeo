@@ -161,7 +161,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
             if (!userManager.areGroupsReadOnly()
                     && currentUser instanceof NuxeoPrincipal) {
                 NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
-                if (pal.isAdministrator()) {
+                if (pal.isManager()) {
                     canEditGroups = true;
                 }
             }
