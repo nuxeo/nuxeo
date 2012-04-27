@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<!-- Nuxeo Enterprise Platform, svn $Revision: 22925 $ -->
+<!-- Nuxeo Enterprise Platform -->
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
