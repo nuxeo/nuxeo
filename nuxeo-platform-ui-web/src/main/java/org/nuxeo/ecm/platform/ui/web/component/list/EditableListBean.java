@@ -104,7 +104,10 @@ public class EditableListBean {
      * container found thanks to given event
      *
      * @since 5.3.1
+     * @deprecated since 5.6: the component resets its cache correctly after
+     *             update now so forcing the reset is now useless
      */
+    @Deprecated
     public void resetAllListsCachedModels(ActionEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
@@ -115,6 +118,11 @@ public class EditableListBean {
         resetListCachedModels(anchor);
     }
 
+    /**
+     * @deprecated since 5.6: the component resets its cache correctly after
+     *             update now so forcing the reset is now useless
+     */
+    @Deprecated
     protected void resetListCachedModels(UIComponent parent) {
         if (parent == null) {
             return;
@@ -325,9 +333,9 @@ public class EditableListBean {
      * <p>
      * A table resets its saved state when decoding, which is a problem when
      * saving a file temporarily: as it will not be submitted again in the
-     * request, the new value will be lost. The table is not reset when embedded
-     * in another table, so we can use this list as value of the embedding table
-     * as a work around.
+     * request, the new value will be lost. The table is not reset when
+     * embedded in another table, so we can use this list as value of the
+     * embedding table as a work around.
      *
      * @return dummy list of one item
      */

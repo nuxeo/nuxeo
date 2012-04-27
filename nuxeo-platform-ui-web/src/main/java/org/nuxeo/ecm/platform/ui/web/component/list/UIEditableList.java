@@ -1015,6 +1015,9 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
         if (!isValid()) {
             context.renderResponse();
+        } else {
+            // force reset
+            resetCachedModel();
         }
     }
 
