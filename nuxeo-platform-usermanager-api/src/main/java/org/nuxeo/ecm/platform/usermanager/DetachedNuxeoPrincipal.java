@@ -197,6 +197,16 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
         return isAdministrator;
     }
 
+    @Override
+    public boolean isManager() {
+        return isAdministrator();
+    }
+
+    @Override
+    public String getTenantId() {
+        return null;
+    }
+
     public boolean isAnonymous() {
         return isAnonymous;
     }

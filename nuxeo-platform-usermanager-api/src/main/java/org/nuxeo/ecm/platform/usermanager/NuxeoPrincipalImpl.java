@@ -393,6 +393,16 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                 || SecurityConstants.SYSTEM_USERNAME.equals(getName());
     }
 
+    @Override
+    public boolean isManager() {
+        return isAdministrator();
+    }
+
+    @Override
+    public String getTenantId() {
+        return null;
+    }
+
     public boolean isAnonymous() {
         return isAnonymous;
     }
