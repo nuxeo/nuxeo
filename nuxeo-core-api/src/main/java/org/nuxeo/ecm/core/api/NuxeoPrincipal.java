@@ -139,6 +139,22 @@ public interface NuxeoPrincipal extends Principal, Serializable {
     boolean isAdministrator();
 
     /**
+     * Returns @{code true} if the principal is a manager, {@code false}
+     * otherwise.
+     *
+     * @since 5.6
+     */
+    boolean isManager();
+
+    /**
+     * Returns the {@code tenantId} of this {@NuxeoPrincipal},
+     * or {@code null} if there is no {@code tenantId}.
+     *
+     * @since 5.6
+     */
+    String getTenantId();
+
+    /**
      * Checks if the principal is anonymous (guest user).
      *
      * @return true if the principal is anonymous.

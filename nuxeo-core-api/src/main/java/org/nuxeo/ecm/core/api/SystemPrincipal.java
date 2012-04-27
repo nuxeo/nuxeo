@@ -180,6 +180,16 @@ public class SystemPrincipal implements NuxeoPrincipal {
         return true;
     }
 
+    @Override
+    public boolean isManager() {
+        return isAdministrator();
+    }
+
+    @Override
+    public String getTenantId() {
+        return null;
+    }
+
     public boolean isAnonymous() {
         return false;
     }
