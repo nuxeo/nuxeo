@@ -54,10 +54,23 @@ public class UIHtmlEditor extends UIInput {
 
     private String editorSelector;
 
-    private Boolean disableHtmlInit = false;
+    private Boolean disableHtmlInit;
 
     public Boolean getDisableHtmlInit() {
-        return disableHtmlInit;
+        if (disableHtmlInit != null) {
+            return (this.disableHtmlInit);
+        }
+        ValueExpression ve = getValueExpression("disableHtmlInit");
+        if (ve != null) {
+            try {
+                return Boolean.valueOf(Boolean.TRUE.equals(ve.getValue(getFacesContext().getELContext())));
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            // default value
+            return Boolean.FALSE;
+        }
     }
 
     public void setDisableHtmlInit(Boolean disableHtmlInit) {
@@ -65,20 +78,20 @@ public class UIHtmlEditor extends UIInput {
     }
 
     public String getCols() {
-         if (cols != null) {
-                return cols;
+        if (cols != null) {
+            return cols;
+        }
+        ValueExpression ve = getValueExpression("cols");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
             }
-            ValueExpression ve = getValueExpression("cols");
-            if (ve != null) {
-                try {
-                    return (String) ve.getValue(getFacesContext().getELContext());
-                } catch (ELException e) {
-                    throw new FacesException(e);
-                }
-            } else {
-                // default value
-                return "100";
-            }
+        } else {
+            // default value
+            return "100";
+        }
     }
 
     public void setCols(String cols) {
@@ -86,20 +99,20 @@ public class UIHtmlEditor extends UIInput {
     }
 
     public String getRows() {
-         if (rows != null) {
-                return rows;
+        if (rows != null) {
+            return rows;
+        }
+        ValueExpression ve = getValueExpression("rows");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
             }
-            ValueExpression ve = getValueExpression("rows");
-            if (ve != null) {
-                try {
-                    return (String) ve.getValue(getFacesContext().getELContext());
-                } catch (ELException e) {
-                    throw new FacesException(e);
-                }
-            } else {
-                // default value
-                return "25";
-            }
+        } else {
+            // default value
+            return "25";
+        }
     }
 
     public void setRows(String rows) {
@@ -179,7 +192,8 @@ public class UIHtmlEditor extends UIInput {
 
     @Override
     public Object saveState(FacesContext context) {
-        return new Object[] { super.saveState(context), width, height, editorSelector, cols, rows, disableHtmlInit };
+        return new Object[] { super.saveState(context), width, height,
+                editorSelector, cols, rows, disableHtmlInit };
     }
 
     @Override
