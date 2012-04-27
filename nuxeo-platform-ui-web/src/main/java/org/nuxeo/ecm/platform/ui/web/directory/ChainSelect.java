@@ -125,6 +125,12 @@ public class ChainSelect extends UIInput {
      */
     protected String defaultRootKey;
 
+    /**
+     * New attribute to handle bad behaviour on ajax re-render, forcing local
+     * cache refresh
+     *
+     * @since 5.6
+     */
     protected Boolean resetCacheOnUpdate;
 
     public boolean isAllowBranchSelection() {
@@ -770,6 +776,9 @@ public class ChainSelect extends UIInput {
         }
     }
 
+    /**
+     * @since 5.6
+     */
     public Boolean getResetCacheOnUpdate() {
         if (resetCacheOnUpdate != null) {
             return resetCacheOnUpdate;
@@ -787,6 +796,9 @@ public class ChainSelect extends UIInput {
         }
     }
 
+    /**
+     * @since 5.6
+     */
     public void setResetCacheOnUpdate(Boolean resetCacheOnUpdate) {
         this.resetCacheOnUpdate = resetCacheOnUpdate;
     }

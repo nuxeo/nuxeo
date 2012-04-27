@@ -368,7 +368,7 @@
     </attribute>
   </tag>
 
-  <!--  chain selects -->
+  <!-- chain selects -->
   <tag>
     <name>chainSelectListbox</name>
     <tag-class>org.nuxeo.ecm.ui.web.directory.ChainSelectListbox</tag-class>
@@ -534,6 +534,13 @@
       <description>
         Parent key to filter on to get a directory roots. Defaults to null if
         not set.
+      </description>
+    </attribute>
+    <attribute>
+      <name>resetCacheOnUpdate</name>
+      <description>
+        Boolean value to force cache refresh on update, useful when
+        using this tag in Ajax requests. Available since 5.6, defaults to false.
       </description>
     </attribute>
   </tag>
