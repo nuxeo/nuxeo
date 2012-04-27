@@ -125,6 +125,8 @@ public class ChainSelect extends UIInput {
      */
     protected String defaultRootKey;
 
+    protected Boolean resetCacheOnUpdate;
+
     public boolean isAllowBranchSelection() {
         return allowBranchSelection;
     }
@@ -177,11 +179,12 @@ public class ChainSelect extends UIInput {
         keyList = (List<String>) values[19];
         onchange = (String) values[20];
         defaultRootKey = (String) values[21];
+        resetCacheOnUpdate = (Boolean) values[22];
     }
 
     @Override
     public Object saveState(FacesContext arg0) {
-        Object[] values = new Object[22];
+        Object[] values = new Object[23];
         values[0] = super.saveState(arg0);
         values[1] = componentValue;
         values[2] = optionList;
@@ -204,6 +207,7 @@ public class ChainSelect extends UIInput {
         values[19] = keyList;
         values[20] = onchange;
         values[21] = defaultRootKey;
+        values[22] = resetCacheOnUpdate;
         return values;
     }
 
@@ -763,6 +767,40 @@ public class ChainSelect extends UIInput {
                 context.addMessage(getClientId(context), message);
                 setValid(false);
             }
+        }
+    }
+
+    public Boolean getResetCacheOnUpdate() {
+        if (resetCacheOnUpdate != null) {
+            return resetCacheOnUpdate;
+        }
+        ValueExpression ve = getValueExpression("resetCacheOnUpdate");
+        if (ve != null) {
+            try {
+                return Boolean.valueOf(Boolean.TRUE.equals(ve.getValue(getFacesContext().getELContext())));
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            // default value
+            return Boolean.FALSE;
+        }
+    }
+
+    public void setResetCacheOnUpdate(Boolean resetCacheOnUpdate) {
+        this.resetCacheOnUpdate = resetCacheOnUpdate;
+    }
+
+    /**
+     * Override update method to reset cached value and ensure good re-render
+     * in ajax
+     *
+     * @since 5.6
+     */
+    public void processUpdates(FacesContext context) {
+        super.processUpdates(context);
+        if (Boolean.TRUE.equals(getResetCacheOnUpdate()) && isValid()) {
+            componentValue = null;
         }
     }
 
