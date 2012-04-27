@@ -34,13 +34,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
@@ -69,6 +72,8 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
+    protected static final String TENANT_ID_FIELD = "tenantId";
+
     protected final Map<String, Field> schemaFieldMap;
 
     protected final List<String> storedFieldNames;
@@ -91,6 +96,8 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     private final boolean autoincrementIdField;
 
+    private final boolean computeMultiTenantId;
+
     final SQLDirectory directory;
 
     protected SQLStaticFilter[] staticFilters;
@@ -103,7 +110,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     private final Dialect dialect;
 
-    protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
+    protected JDBCLogger logger = new JDBCLogger("SQLDirectory");;
 
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
             boolean managedSQLSession) throws DirectoryException {
@@ -121,6 +128,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         this.substringMatchType = config.getSubstringMatchType();
         this.autoincrementIdField = config.isAutoincrementIdField();
         this.staticFilters = config.getStaticFilters();
+        this.computeMultiTenantId = config.isComputeMultiTenantId();
         acquireConnection();
     }
 
@@ -174,6 +182,17 @@ public class SQLSession extends BaseSession implements EntrySource {
             if (hasEntry(id)) {
                 throw new DirectoryException(String.format(
                         "Entry with id %s already exists", id));
+            }
+
+            if (hasMultiTenantSupport()) {
+                String tenantId = getCurrentTenantId();
+                if (!StringUtils.isBlank(tenantId)) {
+                    fieldMap.put(TENANT_ID_FIELD, tenantId);
+                    if (computeMultiTenantId) {
+                        fieldMap.put(idField,
+                                computeMultiTenantDirectoryId(tenantId, id));
+                    }
+                }
             }
         }
 
@@ -229,8 +248,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     throw new DirectoryException("Cannot get generated key");
                 }
                 if (logger.isLogEnabled()) {
-                    logger.logResultSet(rs,
-                            Collections.singletonList(column));
+                    logger.logResultSet(rs, Collections.singletonList(column));
                 }
                 Serializable rawId = column.getFromResultSet(rs, 1);
                 fieldMap.put(idField, rawId);
@@ -635,6 +653,15 @@ public class SQLSession extends BaseSession implements EntrySource {
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);
+
+        if (hasMultiTenantSupport()) {
+            // filter entries on the tenantId field also
+            String tenantId = getCurrentTenantId();
+            if (!StringUtils.isBlank(tenantId)) {
+                filterMap.put(TENANT_ID_FIELD, tenantId);
+            }
+        }
+
         try {
             // build count query statement
             StringBuilder whereClause = new StringBuilder();
@@ -658,7 +685,8 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
                 String leftSide = column.getQuotedName();
                 String operator;
-                boolean substring = fulltext != null && fulltext.contains(columnName);
+                boolean substring = fulltext != null
+                        && fulltext.contains(columnName);
                 if ("".equals(value) && dialect.hasNullEmptyString()
                         && !substring) {
                     // see NXP-6172, empty values are Null in Oracle
@@ -1025,6 +1053,22 @@ public class SQLSession extends BaseSession implements EntrySource {
      */
     public Connection getSqlConnection() {
         return sqlConnection;
+    }
+
+    /**
+     * Returns {@code true} if this directory supports multi tenancy,
+     * {@code false} otherwise.
+     */
+    protected boolean hasMultiTenantSupport() {
+        return table.getColumn(TENANT_ID_FIELD) != null;
+    }
+
+    /**
+     * Returns the tenant id of the logged user if any, {@code null} otherwise.
+     */
+    protected String getCurrentTenantId() {
+        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+        return principal != null ? principal.getTenantId() : null;
     }
 
 }

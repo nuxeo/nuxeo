@@ -125,6 +125,9 @@ public class SQLDirectoryDescriptor {
     @XNode("nativeCase")
     public Boolean nativeCase;
 
+    @XNode("computeMultiTenantId")
+    private boolean computeMultiTenantId = true;
+
     public String getDataSourceName() {
         return dataSourceName;
     }
@@ -355,6 +358,17 @@ public class SQLDirectoryDescriptor {
         return staticFilters;
     }
 
+    /**
+     * Returns {@code true} if a multi tenant id should be computed for this
+     * directory, if the directory has support for multi tenancy, {@code false}
+     * otherwise.
+     *
+     * @since 5.6
+     */
+    public boolean isComputeMultiTenantId() {
+        return computeMultiTenantId;
+    }
+
     public void merge(SQLDirectoryDescriptor other) {
         if (dbUser == null) {
             dbUser = other.dbUser;
@@ -414,6 +428,8 @@ public class SQLDirectoryDescriptor {
         if (nativeCase == null) {
             nativeCase = other.nativeCase;
         }
+
+        computeMultiTenantId = other.computeMultiTenantId;
 
         // References
         // for now only reuse the old descriptor

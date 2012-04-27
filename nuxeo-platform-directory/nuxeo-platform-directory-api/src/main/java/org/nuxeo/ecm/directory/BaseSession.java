@@ -44,6 +44,8 @@ public abstract class BaseSession implements Session {
 
     protected static final String READONLY_ENTRY_FLAG = "READONLY_ENTRY";
 
+    protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
+
     /**
      * Returns a bare document model suitable for directory implementations.
      * <p>
@@ -144,6 +146,17 @@ public abstract class BaseSession implements Session {
         ScopedMap contextData = entry.getContextData();
         contextData.putScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG,
                 Boolean.FALSE);
+    }
+
+    /**
+     * Compute a multi tenant directory id based on the given {@code tenantId}.
+     *
+     * @return the computed directory id
+     * @since 5.6
+     */
+    public static String computeMultiTenantDirectoryId(String tenantId,
+            String id) {
+        return String.format(MULTI_TENANT_ID_FORMAT, tenantId, id);
     }
 
 }
