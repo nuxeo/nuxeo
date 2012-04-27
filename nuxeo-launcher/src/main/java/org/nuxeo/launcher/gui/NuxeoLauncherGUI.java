@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.artofsolving.jodconverter.util.PlatformUtils;
+import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
@@ -195,7 +196,12 @@ public class NuxeoLauncherGUI {
 
             @Override
             public void run() {
-                launcher.doStartAndWait();
+                try {
+                    launcher.doStartAndWait();
+                } catch (PackageException e) {
+                    log.error("Could not initialize the packaging subsystem", e);
+                    System.exit(1);
+                }
                 updateServerStatus();
             }
         });

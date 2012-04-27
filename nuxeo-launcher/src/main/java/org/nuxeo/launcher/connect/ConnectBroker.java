@@ -22,12 +22,20 @@ package org.nuxeo.launcher.connect;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.connect.CallbackHolder;
+import org.nuxeo.connect.NuxeoConnectClient;
+import org.nuxeo.connect.data.DownloadablePackage;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
+import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
@@ -41,37 +49,136 @@ import org.nuxeo.launcher.info.PackageInfo;
 /*
  * @since 5.6
  */
-public class StandalonePackageManager {
+public class ConnectBroker {
 
-    private static final Log log = LogFactory.getLog(StandalonePackageManager.class);
+    private static final Log log = LogFactory.getLog(ConnectBroker.class);
 
     private Environment env;
 
     private StandaloneUpdateService service;
 
+    private CallbackHolder cbHolder;
+
     private CommandSetInfo cset = new CommandSetInfo();
 
-    public StandalonePackageManager(Environment env) {
+    private String targetPlatform;
+
+    public ConnectBroker(Environment env) throws IOException, PackageException {
         this.env = env;
+        service = new StandaloneUpdateService(env);
+        service.initialize();
+        cbHolder = new StandaloneCallbackHolder(env, service);
+        NuxeoConnectClient.setCallBackHolder(cbHolder);
+        targetPlatform = env.getProperty("org.nuxeo.distribution.name" + "-" + "org.nuxeo.distribution.version");
     }
 
-    public StandaloneUpdateService getUpdateService() throws IOException,
-            PackageException {
-        if (service == null) {
-            service = new StandaloneUpdateService(env);
-            service.initialize();
-        }
+    public String getCLID() throws NoCLID {
+        return LogicalInstanceIdentifier.instance().getCLID();
+    }
+
+    public StandaloneUpdateService getUpdateService() {
         return service;
+    }
+
+    public PackageManager getPackageManager() {
+        return NuxeoConnectClient.getPackageManager();
     }
 
     public CommandSetInfo getCommandSet() {
         return cset;
     }
 
+    protected boolean isLocalPackageId(String pkgId) {
+        List<LocalPackage> localPackages = getPkgList();
+        boolean foundId = false;
+        for (LocalPackage pkg : localPackages) {
+            if (pkg.getId().equals(pkgId)) {
+                foundId = true;
+                break;
+            }
+        }
+        return foundId;
+    }
+
+    protected boolean isRemotePackageId(String pkgId) {
+        List<DownloadablePackage> remotePackages = NuxeoConnectClient.getPackageManager().listAllPackages();
+        boolean foundId = false;
+        for (DownloadablePackage pkg : remotePackages) {
+            if (pkg.getId().equals(pkgId)) {
+                foundId = true;
+                break;
+            }
+        }
+        return foundId;
+    }
+
+    protected boolean isLocalPackageName(String pkgName) {
+        List<LocalPackage> localPackages = getPkgList();
+        boolean foundName = false;
+        for (LocalPackage pkg : localPackages) {
+            if (pkg.getName().equals(pkgName)) {
+                foundName = true;
+                break;
+            }
+        }
+        return foundName;
+    }
+
+    protected boolean isInstalledPackageName(String pkgName) {
+        List<LocalPackage> localPackages = getPkgList();
+        boolean foundName = false;
+        for (LocalPackage pkg : localPackages) {
+            if (pkg.getState() != PackageState.INSTALLED) {
+                continue;
+            }
+            if (pkg.getName().equals(pkgName)) {
+                foundName = true;
+                break;
+            }
+        }
+        return foundName;
+    }
+
+    protected boolean isRemotePackageName(String pkgName) {
+        List<DownloadablePackage> remotePackages = NuxeoConnectClient.getPackageManager().listAllPackages();
+        boolean foundName = false;
+        for (DownloadablePackage pkg : remotePackages) {
+            if (pkg.getName().equals(pkgName)) {
+                foundName = true;
+                break;
+            }
+        }
+        return foundName;
+    }
+
+    protected File getLocalPackageFile(String pkgFile) {
+        boolean foundFile = false;
+        if (pkgFile.startsWith("file:")) {
+            pkgFile = pkgFile.substring(5);
+        }
+        File fileToCheck = new File(pkgFile);
+        if (fileToCheck.exists()) {
+            foundFile = true;
+        } else {
+            fileToCheck = new File(env.getServerHome(), pkgFile);
+            if (fileToCheck.exists()) {
+                foundFile = true;
+            }
+        }
+        if (foundFile) {
+            return fileToCheck;
+        } else {
+            return null;
+        }
+    }
+
+    protected boolean isLocalPackageFile(String pkgFile) {
+        return (getLocalPackageFile(pkgFile) != null);
+    }
+
     public List<LocalPackage> getPkgList() {
         try {
-            StandaloneUpdateService pus = getUpdateService();
-            return pus.getPackages();
+            return service.getPackages();
         } catch (Exception e) {
             log.error("Could not read package list");
             return null;
@@ -145,10 +252,9 @@ public class StandalonePackageManager {
         CommandInfo cmdInfo = new CommandInfo();
         cmdInfo.name = CommandInfo.CMD_RESET;
         try {
-            StandaloneUpdateService pus = getUpdateService();
-            pus.reset();
+            service.reset();
             log.info("Packages reset done: All packages were marked as DOWNLOADED");
-            List<LocalPackage> localPackages = pus.getPackages();
+            List<LocalPackage> localPackages = service.getPackages();
             for (LocalPackage localPackage : localPackages) {
                 cmdInfo.packages.add(new PackageInfo(localPackage));
             }
@@ -168,8 +274,7 @@ public class StandalonePackageManager {
         cmdInfo.name = CommandInfo.CMD_UNINSTALL;
         cmdInfo.param = pkgId;
         try {
-            StandaloneUpdateService pus = getUpdateService();
-            LocalPackage pkg = pus.getPackage(pkgId);
+            LocalPackage pkg = service.getPackage(pkgId);
             if (pkg == null) {
                 throw new PackageException("Package not found: " + pkgId);
             }
@@ -182,7 +287,7 @@ public class StandalonePackageManager {
                 throw e;
             }
             // Refresh state
-            pkg = pus.getPackage(pkgId);
+            pkg = service.getPackage(pkgId);
             cmdInfo.packages.add(new PackageInfo(pkg));
             cmdInfo.exitCode = 0;
             cset.commands.add(cmdInfo);
@@ -200,8 +305,7 @@ public class StandalonePackageManager {
         cmdInfo.name = CommandInfo.CMD_REMOVE;
         cmdInfo.param = pkgId;
         try {
-            StandaloneUpdateService pus = getUpdateService();
-            LocalPackage pkg = pus.getPackage(pkgId);
+            LocalPackage pkg = service.getPackage(pkgId);
             if (pkg == null) {
                 throw new PackageException("Package not found: " + pkgId);
             }
@@ -209,14 +313,14 @@ public class StandalonePackageManager {
                     || (pkg.getState() == PackageState.INSTALLED)) {
                 pkgUninstall(pkgId);
                 // Refresh state
-                pkg = pus.getPackage(pkgId);
+                pkg = service.getPackage(pkgId);
             }
             if (pkg.getState() != PackageState.DOWNLOADED) {
                 throw new PackageException(
                         "Can only remove packages in DOWNLOADED, INSTALLED or STARTED state");
             }
             log.info("Removing " + pkgId);
-            pus.removePackage(pkgId);
+            service.removePackage(pkgId);
             PackageInfo pkgInfo = new PackageInfo(pkg);
             pkgInfo.state = PackageState.REMOTE;
             cmdInfo.packages.add(pkgInfo);
@@ -236,28 +340,23 @@ public class StandalonePackageManager {
         cmdInfo.name = CommandInfo.CMD_ADD;
         cmdInfo.param = packageFileName;
         try {
-            StandaloneUpdateService pus = getUpdateService();
-            if (packageFileName.startsWith("file:")) {
-                packageFileName = packageFileName.substring(5);
-            }
-            // Validate filename exists relative to current or NUXEO_HOME dir
-            File fileToAdd = new File(packageFileName);
-            if (!fileToAdd.exists()) {
-                fileToAdd = new File(env.getServerHome(), packageFileName);
-                if (!fileToAdd.exists()) {
-                    throw new FileNotFoundException("Cannot find "
-                            + packageFileName
-                            + " relative to current directory "
-                            + "or to NUXEO_HOME");
-                }
+            File fileToAdd = getLocalPackageFile(packageFileName);
+            if (fileToAdd == null) {
+                throw new FileNotFoundException("File not found");
             }
             log.info("Adding " + packageFileName);
-            LocalPackage pkg = pus.addPackage(fileToAdd);
+            LocalPackage pkg = service.addPackage(fileToAdd);
             cmdInfo.packages.add(new PackageInfo(pkg));
             cmdInfo.exitCode = 0;
             cset.commands.add(cmdInfo);
             return pkg;
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
+            log.error("Cannot find " + packageFileName
+                    + " relative to current directory or to NUXEO_HOME");
+            cmdInfo.exitCode = 1;
+            cset.commands.add(cmdInfo);
+            return null;
+        } catch (PackageException e) {
             log.error("Failed to add package: " + packageFileName, e);
             cmdInfo.exitCode = 1;
             cset.commands.add(cmdInfo);
@@ -270,8 +369,7 @@ public class StandalonePackageManager {
         cmdInfo.name = CommandInfo.CMD_INSTALL;
         cmdInfo.param = pkgId;
         try {
-            StandaloneUpdateService pus = getUpdateService();
-            LocalPackage pkg = pus.getPackage(pkgId);
+            LocalPackage pkg = service.getPackage(pkgId);
             if (pkg == null) {
                 // Assume this is a filename - try to add
                 pkg = pkgAdd(pkgId);
@@ -291,7 +389,7 @@ public class StandalonePackageManager {
                 throw e;
             }
             // Refresh state
-            pkg = pus.getPackage(pkgId);
+            pkg = service.getPackage(pkgId);
             cmdInfo.packages.add(new PackageInfo(pkg));
             cmdInfo.exitCode = 0;
             cset.commands.add(cmdInfo);
@@ -401,6 +499,49 @@ public class StandalonePackageManager {
         }
         return errorValue == 0;
 
+    }
+
+    public boolean pkgRequest(List<String> pkgsToAdd,
+            List<String> pkgsToInstall, List<String> pkgsToUninstall,
+            List<String> pkgsToRemove) {
+        // Add local files
+        for (String pkgToAdd : pkgsToAdd) {
+            pkgAdd(pkgToAdd);
+        }
+        // Build solver request
+        if ((pkgsToInstall.size() != 0) || (pkgsToUninstall.size() != 0)
+                || (pkgsToRemove.size() != 0)) {
+            List<String> solverInstall = new ArrayList<String>();
+            List<String> solverRemove = new ArrayList<String>();
+            List<String> solverUpgrade = new ArrayList<String>();
+            // If install request is a file name, add to cache and get the id
+            List<String> namesOrIdsToInstall = new ArrayList<String>();
+            for (String pkgToInstall : pkgsToInstall) {
+                if (isLocalPackageFile(pkgToInstall)) {
+                    LocalPackage addedPkg = pkgAdd(pkgToInstall);
+                    namesOrIdsToInstall.add(addedPkg.getId());
+                    // TODO: set flag to prefer local package
+                } else {
+                    namesOrIdsToInstall.add(pkgToInstall);
+                }
+            }
+            // For names, check whether they are new installs or upgrades
+            for (String pkgToInstall : namesOrIdsToInstall) {
+                if (isInstalledPackageName(pkgToInstall)) {
+                    solverUpgrade.add(pkgToInstall);
+                } else {
+                    solverInstall.add(pkgToInstall);
+                }
+            }
+            // Add packages to remove to uninstall list
+            solverRemove.addAll(pkgsToUninstall);
+            solverRemove.addAll(pkgsToRemove);
+            DependencyResolution resolution = getPackageManager().resolveDependencies(solverInstall, solverRemove, solverUpgrade, targetPlatform);
+            // TODO: act on the resolution
+        }
+        // Remove "pkgsToRemove" packages from local cache
+        // TODO
+        return false;
     }
 
 }

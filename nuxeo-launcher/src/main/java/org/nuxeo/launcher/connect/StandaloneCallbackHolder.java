@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
+import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 
@@ -37,9 +38,9 @@ public class StandaloneCallbackHolder implements CallbackHolder {
 
     protected boolean testMode = false;
 
-    public StandaloneCallbackHolder(Environment env) {
+    public StandaloneCallbackHolder(Environment env) throws IOException, PackageException {
         this.env = env;
-        pus = (PackageUpdateService) new StandalonePackageManager(env);
+        pus = new ConnectBroker(env).getUpdateService();
     }
 
     public StandaloneCallbackHolder(Environment env, StandaloneUpdateService pus) {
