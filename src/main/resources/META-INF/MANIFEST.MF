@@ -12,4 +12,6 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/multi-tenant-service.xml,
  OSGI-INF/listeners-contrib.xml,
  OSGI-INF/contentviews-contrib.xml,
- OSGI-INF/operations-contrib.xml
+ OSGI-INF/operations-contrib.xml,
+ OSGI-INF/directories-contrib.xml,
+ OSGI-INF/usermanager-contrib.xml

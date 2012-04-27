@@ -17,9 +17,9 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED;
-import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,6 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MultiTenantListener implements EventListener {
 
+    public static final String DOMAIN_TYPE = "Domain";
+
     @Override
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
@@ -44,24 +46,23 @@ public class MultiTenantListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
 
-        if (EMPTY_DOCUMENTMODEL_CREATED.equals(event.getName())) {
-            DocumentModel doc = docCtx.getSourceDocument();
-            CoreSession session = docCtx.getCoreSession();
-            if ("Domain".equals(doc.getType())) {
-                MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
-                if (multiTenantService.isTenantIsolationEnabled(session)) {
-                    doc.addFacet(TENANT_CONFIG_FACET);
-                }
-            }
-        }
-
         if (DOCUMENT_CREATED.equals(event.getName())) {
             DocumentModel doc = docCtx.getSourceDocument();
             CoreSession session = docCtx.getCoreSession();
-            if ("Domain".equals(doc.getType())) {
+            if (DOMAIN_TYPE.equals(doc.getType())) {
                 MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
                 if (multiTenantService.isTenantIsolationEnabled(session)) {
                     multiTenantService.enableTenantIsolationFor(session, doc);
+                    session.save();
+                }
+            }
+        } else if (DOCUMENT_REMOVED.equals(event.getName())) {
+            DocumentModel doc = docCtx.getSourceDocument();
+            CoreSession session = docCtx.getCoreSession();
+            if (DOMAIN_TYPE.equals(doc.getType())) {
+                MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+                if (multiTenantService.isTenantIsolationEnabled(session)) {
+                    multiTenantService.disableTenantIsolationFor(session, doc);
                     session.save();
                 }
             }

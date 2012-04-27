@@ -48,6 +48,13 @@
       <filter-id>allowForTenantConfig</filter-id>
     </action>
 
+    <action id="TAB_TENANT_RIGHTS" link="/incl/tabs/document_rights.xhtml" order="50"
+      label="action.view.rights" icon="/icons/file.gif">
+      <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+      <filter-id>rights</filter-id>
+      <filter-id>allowForTenantConfig</filter-id>
+    </action>
+
     <action id="TAB_TENANT_LOCAL_CONFIGURATION"
       link="/incl/tabs/local_configuration.xhtml" order="70"
       label="action.view.local.configuration" icon="/icons/file.gif">
@@ -93,9 +100,9 @@
       </rule>
     </filter>
 
-    <filter id="rights" append="true">
-      <rule grant="false">
-        <facet>TenantConfig</facet>
+    <filter id="only_for_manager">
+      <rule grant="true">
+        <condition>#{currentUser.manager}</condition>
       </rule>
     </filter>
 

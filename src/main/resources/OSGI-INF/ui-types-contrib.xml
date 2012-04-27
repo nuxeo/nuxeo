@@ -29,7 +29,6 @@
       </layouts>
       <layouts mode="create">
         <layout>heading</layout>
-        <layout>tenant_configuration</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>

@@ -90,8 +90,8 @@
           <property name="required">true</property>
         </properties>
         <widgetModes>
-          <mode value="create">
-            #{nxu:test(multiTenantActions.isTenantIsolationEnabled(), 'edit', 'hidden')}
+          <mode value="edit">
+            #{nxu:test(multiTenantActions.isTenantIsolationEnabled(), 'view', 'hidden')}
           </mode>
         </widgetModes>
       </widget>
@@ -111,6 +111,9 @@
         </properties>
         <widgetModes>
           <mode value="create">
+            hidden
+          </mode>
+          <mode value="edit">
             #{nxu:test(multiTenantActions.isTenantIsolationEnabled(), 'edit', 'hidden')}
           </mode>
         </widgetModes>
@@ -259,8 +262,8 @@
         <selectOptions>
           <option itemLabel="None" itemValue="" />
           <options value="#{multiTenantActions.tenants}"
-            var="doc" itemValue="#{doc.tenantconfig.tenantId}"
-            itemLabel="#{doc.title}" />
+            var="doc" itemValue="#{doc.tenant.id}"
+            itemLabel="#{doc.tenant.label}" />
         </selectOptions>
       </widget>
       <widget name="tenantIdView" type="text">

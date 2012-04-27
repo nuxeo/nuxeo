@@ -20,7 +20,7 @@ package org.nuxeo.ecm.multi.tenant;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_GROUP_SUFFIX;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_PROPERTY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_GROUP_PREFIX;
-import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_MEMBERS_GROUP_SUFFIX;
+import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantAdministratorsGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +45,8 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
     public List<String> getGroupsForUser(final NuxeoPrincipalImpl nuxeoPrincipal)
             throws Exception {
         final List<String> groups = new ArrayList<String>();
-        final String tenantId = (String) nuxeoPrincipal.getModel().getProperty(
-                "user", "tenantId");
+        final String tenantId = (String) nuxeoPrincipal.getModel().getPropertyValue(
+                "user:tenantId");
         if (!StringUtils.isBlank(tenantId)) {
             String defaultRepositoryName = Framework.getLocalService(
                     RepositoryManager.class).getDefaultRepository().getName();
@@ -67,15 +67,11 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
                         List<DocumentModel> docs = session.query(query);
                         if (!docs.isEmpty()) {
                             DocumentModel tenant = docs.get(0);
-                            groups.add(TENANT_GROUP_PREFIX + tenant.getId()
-                                    + TENANT_MEMBERS_GROUP_SUFFIX);
                             List<String> tenantAdministrators = (List<String>) tenant.getPropertyValue(TENANT_ADMINISTRATORS_PROPERTY);
                             if (tenantAdministrators.contains(nuxeoPrincipal.getName())) {
-                                groups.add(TENANT_GROUP_PREFIX + tenant.getId()
-                                        + TENANT_ADMINISTRATORS_GROUP_SUFFIX);
+                                groups.add(computeTenantAdministratorsGroup(tenantId));
                             }
                         }
-
                     }
                 }.runUnrestricted();
             } finally {

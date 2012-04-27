@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/friendships/friendships">
+
+  <xs:element name="id" type="xs:string" />
+  <xs:element name="label" type="xs:string" />
+  <xs:element name="docId" type="xs:string" />
+
+</xs:schema>

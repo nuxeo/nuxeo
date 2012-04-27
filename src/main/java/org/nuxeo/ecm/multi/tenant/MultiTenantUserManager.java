@@ -20,28 +20,26 @@ package org.nuxeo.ecm.multi.tenant;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public interface MultiTenantService {
+public class MultiTenantUserManager extends UserManagerWithComputedGroups {
 
-    boolean isTenantIsolationEnabled(CoreSession session)
-            throws ClientException;
-
-    void enableTenantIsolation(CoreSession session) throws ClientException;
-
-    void disableTenantIsolation(CoreSession session) throws ClientException;
-
-    void enableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException;
-
-    void disableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException;
-
-    List<DocumentModel> getTenants() throws ClientException;
-
+    @Override
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
+            boolean anonymous, List<String> groups) throws ClientException {
+        NuxeoPrincipal nuxeoPrincipal = super.makePrincipal(userEntry,
+                anonymous, groups);
+        if (nuxeoPrincipal instanceof NuxeoPrincipalImpl) {
+            nuxeoPrincipal = new MultiTenantPrincipal(
+                    (NuxeoPrincipalImpl) nuxeoPrincipal);
+        }
+        return nuxeoPrincipal;
+    }
 }

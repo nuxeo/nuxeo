@@ -48,7 +48,7 @@ public class MultiTenantActions implements Serializable {
 
     public List<DocumentModel> getTenants() throws ClientException {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
-        return multiTenantService.getTenants(documentManager);
+        return multiTenantService.getTenants();
     }
 
     public boolean isTenantIsolationEnabled() throws ClientException {

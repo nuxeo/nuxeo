@@ -17,31 +17,22 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
-import java.util.List;
-
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_GROUP_SUFFIX;
+import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_GROUP_PREFIX;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public interface MultiTenantService {
+public class MultiTenantHelper {
 
-    boolean isTenantIsolationEnabled(CoreSession session)
-            throws ClientException;
+    private MultiTenantHelper() {
+        // helper class
+    }
 
-    void enableTenantIsolation(CoreSession session) throws ClientException;
-
-    void disableTenantIsolation(CoreSession session) throws ClientException;
-
-    void enableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException;
-
-    void disableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException;
-
-    List<DocumentModel> getTenants() throws ClientException;
+    public static String computeTenantAdministratorsGroup(String tenantId) {
+        return TENANT_GROUP_PREFIX + tenantId
+                + TENANT_ADMINISTRATORS_GROUP_SUFFIX;
+    }
 
 }
