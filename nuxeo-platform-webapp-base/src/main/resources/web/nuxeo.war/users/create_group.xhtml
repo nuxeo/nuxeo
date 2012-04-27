@@ -30,18 +30,14 @@
               action="#{groupManagementActions.createGroup(true)}"
               styleClass="button"
               reRender="groupsPanel,facesStatusMessagePanel"
-              eventsQueue="adminCenterQueue">
-              <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
-            </a4j:commandButton>
+              eventsQueue="adminCenterQueue" />
             <a4j:commandButton
               id="button_save"
               value="#{messages['command.save']}"
               action="#{groupManagementActions.createGroup}"
               styleClass="button"
               reRender="groupsPanel,facesStatusMessagePanel"
-              eventsQueue="adminCenterQueue">
-              <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
-            </a4j:commandButton>
+              eventsQueue="adminCenterQueue" />
             <a4j:commandButton
               action="#{groupManagementActions.toggleShowCreateForm}" immediate="true"
               value="#{messages['command.cancel']}" styleClass="button"
