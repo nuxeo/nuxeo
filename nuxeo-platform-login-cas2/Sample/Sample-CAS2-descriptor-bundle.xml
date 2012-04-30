@@ -11,6 +11,7 @@
       point="authenticators">
       <authenticationPlugin
               name="CAS2_AUTH">
+       <needStartingURLSaving>true</needStartingURLSaving>
        <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="ticketKey">ticket</parameter>
