@@ -36,7 +36,7 @@ function AutomationWrapper(operationId,opts) {
             xhr.setRequestHeader('X-NXVoidOperation', voidOp);
         },
         url: targetUrl,
-        timeout: 10000,
+        timeout: 30000,
         error: function(xhr, status, e) {
           if (failureCB) {
               failureCB(xhr,status,"No Data");
@@ -83,7 +83,7 @@ function AutomationWrapper(operationId,opts) {
             xhr.setRequestHeader('X-NXVoidOperation', voidOp);
         },
         url: targetUrl,
-        timeout: 10000,
+        timeout: 30000,
         error: function(xhr, status, e) {
           log("Failed to execute");
           if (failureCB) {
@@ -95,10 +95,10 @@ function AutomationWrapper(operationId,opts) {
                 errorMessage = parsedError.error
               }
             }
-              failureCB(xhr,xhr.status,errorMessage);
-            } else {
+            failureCB(xhr,status,errorMessage);
+          } else {
               log("Error, Status =" + status);
-            }
+          }
         },
         success: function(data, status,xhr) {
           log("Executed OK : " + status);
