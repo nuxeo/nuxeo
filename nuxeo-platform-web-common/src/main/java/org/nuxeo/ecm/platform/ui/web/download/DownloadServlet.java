@@ -270,7 +270,7 @@ public class DownloadServlet extends HttpServlet {
             resp.setHeader("Content-Disposition", contentDisposition);
             resp.setContentType(blob.getMimeType());
 
-            int fileSize = (int) blob.getLength();
+            long fileSize = blob.getLength();
             if (fileSize > 0) {
                 String range = req.getHeader("Range");
                 ByteRange byteRange = null;
@@ -287,11 +287,16 @@ public class DownloadServlet extends HttpServlet {
                             "Content-Range",
                             "bytes " + byteRange.getStart() + "-"
                                     + byteRange.getEnd() + "/" + fileSize);
-                    resp.setContentLength(byteRange.getLength());
+                    long length = byteRange.getLength();
+                    if (length < Integer.MAX_VALUE) {
+                        resp.setContentLength((int)length);
+                    }
                     resp.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                     writeStream(in, out, byteRange);
                 } else {
-                    resp.setContentLength(fileSize);
+                    if (fileSize < Integer.MAX_VALUE) {
+                        resp.setContentLength((int)fileSize);
+                    }
                     writeStream(in, out, new ByteRange(0, fileSize - 1));
                 }
             }
@@ -354,19 +359,19 @@ public class DownloadServlet extends HttpServlet {
             ByteRange range) throws IOException {
         BufferingServletOutputStream.stopBuffering(out);
         byte[] buffer = new byte[BUFFER_SIZE];
-        int read;
-        int offset = range.getStart();
+        long read;
+        long offset = range.getStart();
         in.skip(offset);
         while (offset <= range.getEnd() && (read = in.read(buffer)) != -1) {
             read = Math.min(read, range.getEnd() - offset + 1);
-            out.write(buffer, 0, read);
+            out.write(buffer, 0, (int)read);
             out.flush();
             offset += BUFFER_SIZE;
         }
 
     }
 
-    public static ByteRange parseRange(String range, int fileSize)
+    public static ByteRange parseRange(String range, long fileSize)
             throws ClientException {
         // Do no support multiple ranges
         if (!range.startsWith("bytes=") || range.indexOf(',') >= 0) {
@@ -378,8 +383,8 @@ public class DownloadServlet extends HttpServlet {
         }
         String start = range.substring(6, sepIndex).trim();
         String end = range.substring(sepIndex + 1).trim();
-        int rangeStart = 0;
-        int rangeEnd = fileSize - 1;
+        long rangeStart = 0;
+        long rangeEnd = fileSize - 1;
         if (start.isEmpty()) {
             if (end.isEmpty()) {
                 throw new ClientException("Cannot parse range : " + range);
@@ -403,24 +408,24 @@ public class DownloadServlet extends HttpServlet {
 
     public static class ByteRange {
 
-        private int start;
+        private long start;
 
-        private int end;
+        private long end;
 
-        public ByteRange(int rangeStart, int rangeEnd) {
+        public ByteRange(long rangeStart, long rangeEnd) {
             start = rangeStart;
             end = rangeEnd;
         }
 
-        public int getStart() {
+        public long getStart() {
             return start;
         }
 
-        public int getEnd() {
+        public long getEnd() {
             return end;
         }
 
-        public int getLength() {
+        public long getLength() {
             return end - start + 1;
         }
     }
