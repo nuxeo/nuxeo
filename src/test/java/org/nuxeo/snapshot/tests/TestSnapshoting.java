@@ -2,6 +2,7 @@ package org.nuxeo.snapshot.tests;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -91,6 +92,21 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
 
     }
 
+    protected void dumpDBContent() throws Exception {
+        DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=0 order by ecm:path");
+        for (DocumentModel doc : docs) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(doc.getPathAsString());
+            sb.append(" - ");
+            sb.append(doc.getVersionLabel());
+            sb.append(" -- ");
+            for (String facet : doc.getFacets()) {
+                sb.append(facet + ",");
+            }
+            System.out.println(sb.toString());
+        }
+    }
+
     @Test
     public void testSnapShot() throws Exception {
 
@@ -115,6 +131,17 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
             // System.out.println(doc.getName() + "-" + doc.getVersionLabel());
         }
         assertEquals("0.1", snapshot.getDocument().getVersionLabel());
+
+        // check that the facet has been added for all child
+        DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=1 order by ecm:path");
+        for (DocumentModel doc : docs) {
+            if (doc.isFolder() && !doc.hasFacet(Snapshot.FACET)) {
+                System.out.println("ERR : doc " + doc.getPathAsString()
+                        + " has no shapshot schema");
+                assertTrue(doc.hasFacet(Snapshot.FACET));
+            }
+            assertTrue(doc.hasFacet("Versionable"));
+        }
 
         // redo a check in : should be identical
         snapshotable = root.getAdapter(Snapshotable.class);
@@ -155,5 +182,31 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
             }
         }
         assertEquals("0.2", snapshot.getDocument().getVersionLabel());
+
+        // now delete a folder
+        session.removeDocument(folder13.getRef());
+
+        // redo a check in : should change versioning of head
+        snapshotable = root.getAdapter(Snapshotable.class);
+        assertNotNull(snapshotable);
+
+        snapshot = snapshotable.createSnapshot(VersioningOption.MINOR);
+        System.out.println(snapshot.toString());
+        for (Snapshot snap : snapshot.getFlatTree()) {
+            DocumentModel doc = snap.getDocument();
+            if (doc.getName().equals("folder1")) {
+                assertEquals("0.3", doc.getVersionLabel());
+            } else {
+                assertEquals("0.1", doc.getVersionLabel());
+            }
+        }
+        assertEquals("0.3", snapshot.getDocument().getVersionLabel());
+
+        // now restore
+        // snapshot.restore("0.2");
+        // System.out.println(snapshot.toString());
+
+        // dumpDBContent();
+
     }
 }

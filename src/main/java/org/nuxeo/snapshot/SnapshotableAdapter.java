@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -85,6 +86,9 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
         if (!doc.hasFacet(Snapshot.FACET)) {
             doc.addFacet(Snapshot.FACET);
+        }
+        if (!doc.hasFacet("Versionable")) {
+            doc.addFacet("Versionable");
         }
 
         if (!doc.hasSchema("snapshot")) {
@@ -226,10 +230,85 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return sb.toString();
     }
 
-    @Override
-    public DocumentModel restore() throws ClientException {
-        // TODO Auto-generated method stub
+    protected DocumentModel getVersionForLabel(DocumentModel target,
+            String versionLabel) throws ClientException {
+        List<DocumentModel> versions = target.getCoreSession().getVersions(
+                target.getRef());
+        for (DocumentModel version : versions) {
+            if (version.getVersionLabel().equals(versionLabel)) {
+                return version;
+            }
+        }
         return null;
+    }
+
+    protected DocumentModel getCheckoutDocument(DocumentModel target)
+            throws ClientException {
+        if (target.isVersion()) {
+            target = target.getCoreSession().getDocument(
+                    new IdRef(doc.getSourceId()));
+        }
+        return target;
+    }
+
+    protected DocumentModel restore(DocumentModel leafVersion,
+            DocumentModel target) throws ClientException {
+
+        CoreSession session = doc.getCoreSession();
+
+        if (leafVersion == null) {
+            return null;
+        }
+
+        boolean isVersion = leafVersion.isVersion();
+
+        // restore leaf
+        target = session.restoreToVersion(target.getRef(), leafVersion.getRef());
+
+        if (target.isFolder()) {
+            DocumentModelList existingChildren = target.getCoreSession().getChildren(
+                    target.getRef());
+            if (existingChildren.size() > 0) {
+                DocumentModel container = session.createDocumentModel(
+                        target.getPathAsString(), "tmp", target.getType());
+                container = session.createDocument(container);
+                for (DocumentModel oldChild : existingChildren) {
+                    session.move(oldChild.getRef(), container.getRef(),
+                            oldChild.getName());
+                }
+
+                // session.removeChildren(target.getRef());
+                // throw new
+                // ClientException("After restore folder is not empty");
+            }
+        }
+
+        doc = leafVersion;
+
+        isVersion = leafVersion.isVersion();
+        isVersion = doc.isVersion();
+
+        // restore children
+        for (DocumentModel child : getChildren()) {
+            DocumentModel placeholder = session.createDocumentModel(
+                    target.getPathAsString(), child.getName(), child.getType());
+            placeholder = session.createDocument(placeholder);
+
+            placeholder.addFacet(Snapshot.FACET);
+            placeholder.addFacet("Versionable");
+            new SnapshotableAdapter(child).restore(child, placeholder);
+        }
+
+        return target;
+    }
+
+    @Override
+    public DocumentModel restore(String versionLabel) throws ClientException {
+        DocumentModel target = getCheckoutDocument(doc);
+        DocumentModel leafVersion = getVersionForLabel(target, versionLabel);
+        boolean isVersion = leafVersion.isVersion();
+        doc = restore(leafVersion, target);
+        return doc;
     }
 
 }

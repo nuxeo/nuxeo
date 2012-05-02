@@ -16,7 +16,7 @@ public interface Snapshot extends Snapshotable {
 
     List<Snapshot> getFlatTree() throws ClientException;
 
-    DocumentModel restore() throws ClientException;
+    DocumentModel restore(String versionLabel) throws ClientException;
 
     DocumentModel getDocument();
 
