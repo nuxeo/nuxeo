@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
@@ -40,6 +39,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
+ *
  */
 public class ChainSelectListboxComponent extends UIInput {
 
@@ -47,36 +47,32 @@ public class ChainSelectListboxComponent extends UIInput {
 
     public static final String COMPONENT_FAMILY = "nxdirectory.chainSelectListbox";
 
-    // never used
     private static final Log log = LogFactory.getLog(ChainSelectListboxComponent.class);
 
-    // never used
     public boolean ajaxUpdated = false;
 
     private String directoryName;
 
     private VocabularyEntryList directoryValues;
 
-    private Boolean displayIdAndLabel;
+    private Boolean displayIdAndLabel = false;
 
-    private Boolean displayObsoleteEntries;
+    private Boolean displayObsoleteEntries = false;
 
     private String onchange;
 
     private int index;
 
-    private String displayIdAndLabelSeparator;
+    private String displayIdAndLabelSeparator = " ";
 
     private String cssStyle;
 
     private String cssStyleClass;
 
-    // never used
     private String size;
 
-    private Boolean localize;
+    private Boolean localize = false;
 
-    // never used
     private String displayValueOnlySeparator;
 
     private String ordering;
@@ -104,10 +100,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public String getDisplayIdAndLabelSeparator() {
-        if (displayIdAndLabelSeparator != null) {
-            return displayIdAndLabelSeparator;
-        }
-        return getStringProperty("displayIdAndLabelSeparator", " ");
+        return displayIdAndLabelSeparator;
     }
 
     public void setDisplayIdAndLabelSeparator(String displayIdAndLabelSeparator) {
@@ -158,10 +151,12 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public String getDirectoryName() {
-        if (directoryName != null) {
+        ValueBinding vb = getValueBinding("directoryName");
+        if (vb != null) {
+            return (String) vb.getValue(FacesContext.getCurrentInstance());
+        } else {
             return directoryName;
         }
-        return getStringProperty("directoryName", null);
     }
 
     public void setDirectoryName(String newDirectory) {
@@ -191,10 +186,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public Boolean getDisplayIdAndLabel() {
-        if (displayIdAndLabel != null) {
-            return displayIdAndLabel;
-        }
-        return getBooleanProperty("displayIdAndLabel", Boolean.FALSE);
+        return displayIdAndLabel;
     }
 
     public void setDisplayIdAndLabel(Boolean displayIdAndLabel) {
@@ -202,10 +194,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public Boolean getDisplayObsoleteEntries() {
-        if (displayObsoleteEntries != null) {
-            return displayObsoleteEntries;
-        }
-        return getBooleanProperty("displayObsoleteEntries", Boolean.FALSE);
+        return displayObsoleteEntries;
     }
 
     public void setDisplayObsoleteEntries(Boolean showObsolete) {
@@ -217,10 +206,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public String getOnchange() {
-        if (onchange != null) {
-            return onchange;
-        }
-        return getStringProperty("onchange", null);
+        return onchange;
     }
 
     public ChainSelect getChain() {
@@ -232,9 +218,9 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public Object getProperty(String name) {
-        ValueExpression ve = getValueExpression(name);
-        if (ve != null) {
-            return ve.getValue(FacesContext.getCurrentInstance().getELContext());
+        ValueBinding vb = getValueBinding(name);
+        if (vb != null) {
+            return vb.getValue(FacesContext.getCurrentInstance());
         } else {
             return getAttributes().get(name);
         }
@@ -267,6 +253,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     /**
+     *
      * @return position of this component in the parent children list
      */
     public Integer getIndex() {
@@ -284,10 +271,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public String getCssStyle() {
-        if (cssStyle != null) {
-            return cssStyle;
-        }
-        return getStringProperty("cssStyle", null);
+        return cssStyle;
     }
 
     public void setCssStyle(String cssStyle) {
@@ -295,10 +279,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public String getCssStyleClass() {
-        if (cssStyleClass != null) {
-            return cssStyleClass;
-        }
-        return getStringProperty("cssStyleClass", null);
+        return cssStyleClass;
     }
 
     public void setCssStyleClass(String cssStyleClass) {
@@ -306,10 +287,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public String getSize() {
-        if (size != null) {
-            return size;
-        }
-        return getStringProperty("size", null);
+        return size;
     }
 
     public void setSize(String size) {
@@ -317,10 +295,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public Boolean getLocalize() {
-        if (localize != null) {
-            return localize;
-        }
-        return getBooleanProperty("localize", Boolean.FALSE);
+        return localize;
     }
 
     public void setLocalize(Boolean localize) {
@@ -336,8 +311,7 @@ public class ChainSelectListboxComponent extends UIInput {
         index = getIndex();
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        Boolean displayObsoleteEntries = getDisplayObsoleteEntries();
-        if (!Boolean.TRUE.equals(displayObsoleteEntries)) {
+        if (!displayObsoleteEntries) {
             filter.put("obsolete", 0);
         }
 
@@ -374,9 +348,6 @@ public class ChainSelectListboxComponent extends UIInput {
             list = DirectoryHelper.getSelectItems(directoryValues, filter);
         }
 
-        boolean localize = Boolean.TRUE.equals(getLocalize());
-        boolean displayIdAndLabel = Boolean.TRUE.equals(getDisplayIdAndLabel());
-        String displayIdAndLabelSeparator = getDisplayIdAndLabelSeparator();
         for (DirectorySelectItem item : list) {
             String id = (String) item.getValue();
             String label = item.getLabel();
@@ -392,7 +363,6 @@ public class ChainSelectListboxComponent extends UIInput {
             }
             item.setDisplayedLabel(displayedLabel);
         }
-        String ordering = getOrdering();
         if (ordering != null && !"".equals(ordering)) {
             Collections.sort(list, new DirectorySelectItemComparator(ordering));
         }
@@ -508,10 +478,7 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     public String getOrdering() {
-        if (ordering != null) {
-            return ordering;
-        }
-        return getStringProperty("ordering", null);
+        return ordering;
     }
 
     public void setOrdering(String ordering) {
@@ -521,16 +488,9 @@ public class ChainSelectListboxComponent extends UIInput {
     public String getDisplay() {
         if (display != null) {
             return display;
-        }
-        String resDisplay = getStringProperty("display", null);
-        if (resDisplay != null) {
-            return resDisplay;
-        }
-        Boolean displayIdAndLabel = getDisplayIdAndLabel();
-        if (Boolean.TRUE.equals(displayIdAndLabel)) {
+        } else if (Boolean.TRUE.equals(displayIdAndLabel)) {
             return "idAndLabel";
         }
-        // default value
         return "label";
     }
 
