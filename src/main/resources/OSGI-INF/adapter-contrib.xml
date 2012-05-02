@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.snapshot.adapterContrib">
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+
+    <adapter
+      class="org.nuxeo.snapshot.Snapshot" factory="org.nuxeo.snapshot.SnapshotAdapterFactory" />
+
+    <adapter
+      class="org.nuxeo.snapshot.Snapshotable" factory="org.nuxeo.snapshot.SnapshotAdapterFactory" />
+
+
+  </extension>
+
+</component>
