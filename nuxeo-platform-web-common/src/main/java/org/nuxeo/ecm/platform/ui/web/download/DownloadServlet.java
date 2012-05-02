@@ -248,7 +248,7 @@ public class DownloadServlet extends HttpServlet {
             resp.setContentType(blob.getMimeType());
 
             long fileSize = blob.getLength();
-            if (fileSize > 0) {
+            if (fileSize > 0 && fileSize < Integer.MAX_VALUE) {
                 resp.setContentLength((int) fileSize);
             }
 
