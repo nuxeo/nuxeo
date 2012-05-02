@@ -44,12 +44,16 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected String passwordKey = PASSWORD_KEY;
 
+    protected String getLoginPage() {
+        return loginPage;
+    }
+
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
         try {
             log.debug("Forward to Login Screen");
             Map<String, String> parameters = new HashMap<String, String>();
-            String redirectUrl = baseURL + loginPage;
+            String redirectUrl = baseURL + getLoginPage();
             @SuppressWarnings("unchecked")
             Enumeration<String> paramNames = httpRequest.getParameterNames();
             while (paramNames.hasMoreElements()) {
@@ -125,7 +129,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
     public List<String> getUnAuthenticatedURLPrefix() {
         // Login Page is unauthenticated !
         List<String> prefix = new ArrayList<String>();
-        prefix.add(loginPage);
+        prefix.add(getLoginPage());
         return prefix;
     }
 
