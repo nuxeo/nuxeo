@@ -395,13 +395,19 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
           },
           function(xhr,status,errorMessage) {
             cancelHandler.cancelUpload();
-            if (status==403) {
-              alert("Security Error : \n" + errorMessage);
+            if (status == "timeout") {
+            	alert("Request timeout, unknown status");
+            } else if (xhr.readyState != 4) {
+            	alert("No response from server");
             } else {
-              if (errorMessage && errorMessage != 'null') {
-                alert("Server Error : \n" + errorMessage);
+              if (xhr.status==403) {
+                alert("Security Error : \n" + errorMessage);
               } else {
-                alert("Unknown Server Error");
+                if (errorMessage && errorMessage != 'null') {
+                  alert("Server Error : \n" + errorMessage);
+                } else {
+                  alert("Unknown Server Error");
+                }
               }
             }
             window.location.href=window.location.href;
