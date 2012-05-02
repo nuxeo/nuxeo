@@ -64,7 +64,7 @@ Requirement
 ============
 
 packages: 
-  sysstat logtail postgresql-client
+  sysstat atop logtail postgresql-client
 EOF
 }
 
@@ -165,6 +165,14 @@ SAR_PID=$PID_DIR/sysstat-sar.pid
 # default is 2h monitoring (5sx1440)
 SAR_INTERVAL=5
 SAR_COUNT=1440
+
+### 
+# atop
+ATOP_DATA=$LOG_DIR/atop.raw
+ATOP_PID=$LOG_DIR/atop.pid
+# default is 2h monitoring (5sx1440)
+ATOP_INTERVAL=5
+ATOP_COUNT=1440
 
 ###
 # jmxstat
@@ -366,6 +374,26 @@ ORDER BY pg_relation_size(indexrelid) DESC LIMIT 15;
 SELECT relname, idx_tup_fetch + seq_tup_read AS total_reads
 FROM pg_stat_all_tables WHERE idx_tup_fetch + seq_tup_read != 0
 ORDER BY total_reads desc LIMIT 15;
+SELECT now() - query_start AS duration, current_query FROM pg_stat_activity
+  WHERE current_query != '<IDLE>' ORDER BY duration DESC;
+SELECT database, gid FROM pg_prepared_xacts;
+SELECT pg_size_pretty(COUNT(*) * 8192) as buffered FROM  pg_buffercache;
+SELECT c.relname, pg_size_pretty(count(*) * 8192) as buffered, round(100.0 * count(*) /
+(SELECT setting FROM pg_settings
+WHERE name='shared_buffers')::integer,1)
+AS buffers_percent,
+round(100.0 * count(*) * 8192 /
+coalesce(pg_relation_size(c.oid),1), 1)
+AS percent_of_relation
+FROM pg_class c
+INNER JOIN pg_buffercache b
+ON b.relfilenode = c.relfilenode
+INNER JOIN pg_database d
+ON (b.reldatabase = d.oid AND d.datname = current_database())
+WHERE pg_relation_size(c.oid) != 0
+GROUP BY c.oid,c.relname
+ORDER BY 3 DESC
+LIMIT 20;
 \di+
 SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
 EXPLAIN ANALYZE SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
@@ -412,6 +440,10 @@ start() {
         $LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > /dev/null
     fi
 
+    [ -r "$ATOP_DATA" ] && rm -f $ATOP_DATA
+    atop -w $ATOP_DATA $ATOP_INTERVAL $ATOP_COUNT >/dev/null 2>&1 &
+    echo $! > $ATOP_PID
+
     # misc
     rm -f $LOG_DIR/misc-*.txt
     log_misc $LOG_DIR/misc-start.txt
@@ -444,6 +476,9 @@ stop() {
         kill -9 `cat "$JMXSTAT_PID"`
         sleep 1
         rm -f $JMXSTAT_PID
+        kill -9 `cat "$ATOP_PID"`
+        sleep 1
+        rm -f $ATOP_PID
 
         if [ "$pglog" = "true" ]; then
             $LOGTAIL -f $PG_LOG -o $PG_LOG_OFFSET > $PG_MON_LOG
