@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.forms.layoutDemo.complexWidget.contrib">
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.complexWidget.contrib">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
@@ -15,7 +14,7 @@
           <widget>complexWidget</widget>
         </row>
       </rows>
-      <widget name="complexWidget" type="template">
+      <widget name="complexWidget" type="complex">
         <labels>
           <label mode="any">Complex widget</label>
         </labels>
@@ -23,11 +22,14 @@
         <fields>
           <field>lds:complexField</field>
         </fields>
-        <properties mode="any">
+        <!-- since 5.6, using a widget of type 'complex' is enough -->
+        <!--
+          <properties mode="any">
           <property name="template">
-            /widgets/complex_widget_template.xhtml
+          /widgets/complex_list_item_widget_template.xhtml
           </property>
-        </properties>
+          </properties>
+        -->
         <subWidgets>
           <widget name="stringComplexItem" type="text">
             <fields>

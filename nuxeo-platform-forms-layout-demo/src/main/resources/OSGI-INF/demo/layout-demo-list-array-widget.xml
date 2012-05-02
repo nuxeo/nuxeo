@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.forms.layoutDemo.listArrayWidget.contrib">
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.listArrayWidget.contrib">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
@@ -28,9 +27,12 @@
         </properties>
         <subWidgets>
           <widget name="listItem" type="text">
-            <fields>
+            <!-- since 5.6, empty mapping is useless -->
+            <!--
+              <fields>
               <field></field>
-            </fields>
+              </fields>
+            -->
             <labels>
               <label mode="any"></label>
             </labels>

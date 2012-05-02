@@ -78,15 +78,10 @@
           </property>
         </properties>
         <subWidgets>
-          <widget name="prop" type="template">
+          <widget name="prop" type="complex">
             <labels>
               <label mode="any"></label>
             </labels>
-            <properties mode="any">
-              <property name="template">
-                /widgets/complex_list_item_widget_template.xhtml
-              </property>
-            </properties>
             <properties widgetMode="edit">
               <property name="display">inline</property>
             </properties>

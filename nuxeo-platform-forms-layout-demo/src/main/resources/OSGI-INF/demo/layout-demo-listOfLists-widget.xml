@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.forms.layoutDemo.listOfListsWidget.contrib">
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.listOfListsWidget.contrib">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
@@ -27,15 +26,18 @@
           <property name="diff">true</property>
         </properties>
         <subWidgets>
-          <widget name="listOfListsItem" type="template">
+          <widget name="listOfListsItem" type="complex">
             <labels>
               <label mode="any">List of lists item</label>
             </labels>
-            <properties mode="any">
+            <!-- since 5.6, using a widget of type 'complex' is enough -->
+            <!--
+              <properties mode="any">
               <property name="template">
-                /widgets/complex_list_item_widget_template.xhtml
+              /widgets/complex_list_item_widget_template.xhtml
               </property>
-            </properties>
+              </properties>
+            -->
             <!-- subwidgets for complex -->
             <subWidgets>
               <widget name="stringItem" type="text">
@@ -78,9 +80,12 @@
                     <labels>
                       <label mode="any"></label>
                     </labels>
-                    <fields>
+                    <!-- since 5.6, empty mapping is useless -->
+                    <!--
+                      <fields>
                       <field></field>
-                    </fields>
+                      </fields>
+                    -->
                   </widget>
                 </subWidgets>
               </widget>
