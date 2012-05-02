@@ -159,7 +159,7 @@ window['_pr_isIE6'] = function () {
   var PR_PLAIN = 'pln';
 
   /** token style for an sgml tag. */
-  var PR_TAG = 'tag';
+  var PR_TAG = 'xmltag';
   /** token style for a markup declaration such as a DOCTYPE. */
   var PR_DECLARATION = 'dec';
   /** token style for embedded source. */

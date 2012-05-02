@@ -7,7 +7,7 @@
 .lit { color: #066; }
 .pun { color: #660; }
 .pln { color: #000; }
-.tag { color: #008; }
+.xmltag { color: #008; }
 .atn { color: #606; }
 .atv { color: #080; }
 .dec { color: #606; }
@@ -21,7 +21,7 @@ pre.prettyprint { padding: 2px; border: 1px solid #888; }
   .lit { color: #044; }
   .pun { color: #440; }
   .pln { color: #000; }
-  .tag { color: #006; font-weight: bold; }
+  .xmltag { color: #006; font-weight: bold; }
   .atn { color: #404; }
   .atv { color: #060; }
 }
