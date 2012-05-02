@@ -1449,6 +1449,30 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryPathSegment() throws Exception {
+        String statement;
+        ObjectList res;
+        List<ObjectData> objects;
+
+        statement = "SELECT nuxeo:pathSegment FROM File ORDER BY nuxeo:pathSegment";
+        res = query(statement);
+        objects = res.getObjects();
+        assertEquals(3, res.getNumItems().intValue());
+        assertEquals("testfile1",
+                getValue(objects.get(0), NuxeoTypeHelper.NX_PATH_SEGMENT));
+        assertEquals("testfile2",
+                getValue(objects.get(1), NuxeoTypeHelper.NX_PATH_SEGMENT));
+        assertEquals("testfile4",
+                getValue(objects.get(2), NuxeoTypeHelper.NX_PATH_SEGMENT));
+
+        statement = "SELECT cmis:name FROM File WHERE nuxeo:pathSegment = 'testfile1'";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("testfile1_Title",
+                getValue(res.getObjects().get(0), "cmis:name"));
+    }
+
+    @Test
     public void testQueryVersions() throws Exception {
         String statement;
         ObjectList res;
