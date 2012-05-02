@@ -289,16 +289,18 @@ public final class FaceletHandlerHelper {
             List<String> excludedProperties, boolean bindFirstFieldDefinition) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         if (bindFirstFieldDefinition) {
+            TagAttribute valueAttr = null;
             FieldDefinition field = null;
             FieldDefinition[] fields = widget.getFieldDefinitions();
             if (fields != null && fields.length > 0) {
                 field = fields[0];
-                TagAttribute valueAttr = createAttribute(
-                        "value",
-                        ValueExpressionHelper.createExpressionString(
-                                widget.getValueName(), field));
-                attrs.add(valueAttr);
             }
+            // bind value to first field definition or current value name
+            valueAttr = createAttribute(
+                    "value",
+                    ValueExpressionHelper.createExpressionString(
+                            widget.getValueName(), field));
+            attrs.add(valueAttr);
         }
         // fill with widget properties
         List<TagAttribute> propertyAttrs = getTagAttributes(

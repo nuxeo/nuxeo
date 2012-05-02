@@ -106,19 +106,21 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FaceletHandlerHelper helper, String id, Widget widget, boolean addId) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         FieldDefinition[] fields = widget.getFieldDefinitions();
+        FieldDefinition boundField = null;
         if (fields != null && fields.length > 0) {
-            FieldDefinition field = fields[0];
-            String bareExpression = ValueExpressionHelper.createBareExpressionString(
-                    widget.getValueName(), field);
-            String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-            String localizedExpression = String.format("%s[%s]", bundleName,
-                    bareExpression);
-            String expression = String.format("#{%s ? %s : %s}",
-                    "widget.properties.localize", localizedExpression,
-                    bareExpression);
-            TagAttribute valueAttr = helper.createAttribute("value", expression);
-            attrs.add(valueAttr);
+            boundField = fields[0];
         }
+        String bareExpression = ValueExpressionHelper.createBareExpressionString(
+                widget.getValueName(), boundField);
+        String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
+        String localizedExpression = String.format("%s[%s]", bundleName,
+                bareExpression);
+        String expression = String.format("#{%s ? %s : %s}",
+                "widget.properties.localize", localizedExpression,
+                bareExpression);
+        TagAttribute valueAttr = helper.createAttribute("value", expression);
+        attrs.add(valueAttr);
+
         // fill with widget properties
         Map<String, Serializable> widgetPropsClone = new HashMap<String, Serializable>();
         Map<String, Serializable> widgetProps = widget.getProperties();

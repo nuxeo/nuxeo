@@ -104,11 +104,10 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FaceletHandler[] subHandlers, String widgetTagConfigId,
             String template) throws WidgetException {
         FaceletHandler leaf = new LeafFaceletHandler();
-        List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
-
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
-        if (fieldDefs != null) {
-            // expose field variables
+        List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
+        // expose field variables
+        if (fieldDefs != null && fieldDefs.length > 0) {
             for (int i = 0; i < fieldDefs.length; i++) {
                 if (i == 0) {
                     paramHandlers.add(getFieldParamHandler(ctx, tagConfig,
@@ -119,8 +118,13 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                         leaf, widget, widgetTagConfigId, fieldDefs[i],
                         Integer.valueOf(i)));
             }
+        } else {
+            // expose value as first parameter
+            paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
+                    leaf, widget, widgetTagConfigId, null, null));
+            paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
+                    leaf, widget, widgetTagConfigId, null, Integer.valueOf(0)));
         }
-
         // expose widget properties too
         WebLayoutManager layoutService;
         try {
