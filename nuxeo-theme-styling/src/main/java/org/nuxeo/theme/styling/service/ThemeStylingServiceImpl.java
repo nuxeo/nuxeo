@@ -354,6 +354,10 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         ResourceType newResource = resourceReg.getResource(resourceName);
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         typeRegistry.register(newResource);
+        // Need to update resource ordering here as we just registered a new
+        // resource
+        ThemeManager themeManager = Manager.getThemeManager();
+        themeManager.updateResourceOrdering();
     }
 
     protected void unregisterResourceToThemeService(ResourceType resource) {
@@ -776,6 +780,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     }
                 }
             }
+            // Not sure if needed but just in case
+            ThemeManager themeManager = Manager.getThemeManager();
+            themeManager.updateResourceOrdering();
         }
     }
 
