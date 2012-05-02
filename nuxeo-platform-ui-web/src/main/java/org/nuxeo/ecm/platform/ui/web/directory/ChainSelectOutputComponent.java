@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.el.ELException;
+import javax.el.ValueExpression;
+import javax.faces.FacesException;
 import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
@@ -39,7 +42,6 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
  * Component to display a chained directory entry.
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectOutputComponent extends UIOutput {
 
@@ -173,7 +175,14 @@ public class ChainSelectOutputComponent extends UIOutput {
     }
 
     public boolean getLocalize() {
-        return Boolean.TRUE.equals(localize);
+        Boolean ret;
+        ValueBinding vb = getValueBinding("localize");
+        if (vb != null) {
+            ret = (Boolean) vb.getValue(getFacesContext());
+        } else {
+            ret = localize;
+        }
+        return Boolean.TRUE.equals(ret);
     }
 
     public void setLocalize(boolean localize) {
@@ -244,7 +253,14 @@ public class ChainSelectOutputComponent extends UIOutput {
     }
 
     public boolean getDisplayObsoleteEntries() {
-        return Boolean.TRUE.equals(displayObsoleteEntries);
+        Boolean ret;
+        ValueBinding vb = getValueBinding("displayObsoleteEntries");
+        if (vb != null) {
+            ret = (Boolean) vb.getValue(getFacesContext());
+        } else {
+            ret = displayObsoleteEntries;
+        }
+        return Boolean.TRUE.equals(ret);
     }
 
     /**
@@ -345,7 +361,19 @@ public class ChainSelectOutputComponent extends UIOutput {
     }
 
     public String getCssStyle() {
-        return cssStyle;
+        if (cssStyle != null) {
+            return cssStyle;
+        }
+        ValueExpression ve = getValueExpression("cssStyle");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return null;
+        }
     }
 
     public void setCssStyle(String cssStyle) {
@@ -353,7 +381,19 @@ public class ChainSelectOutputComponent extends UIOutput {
     }
 
     public String getCssStyleClass() {
-        return cssStyleClass;
+        if (cssStyleClass != null) {
+            return cssStyleClass;
+        }
+        ValueExpression ve = getValueExpression("cssStyleClass");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return null;
+        }
     }
 
     public void setCssStyleClass(String cssStyleClass) {

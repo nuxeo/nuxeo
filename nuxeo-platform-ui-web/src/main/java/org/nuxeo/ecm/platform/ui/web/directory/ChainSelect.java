@@ -78,15 +78,15 @@ public class ChainSelect extends UIInput {
 
     private Integer size;
 
-    private boolean localize;
+    private Boolean localize;
 
-    private boolean multiSelect = false;
+    private Boolean multiSelect;
 
-    private boolean allowRootSelection = false;
+    private Boolean allowRootSelection;
 
-    private boolean allowBranchSelection = false;
+    private Boolean allowBranchSelection;
 
-    private boolean qualifiedParentKeys = false;
+    private Boolean qualifiedParentKeys;
 
     private Selection[] selections;
 
@@ -103,7 +103,7 @@ public class ChainSelect extends UIInput {
 
     private String cssStyleClass;
 
-    private boolean multiParentSelect = false;
+    private Boolean multiParentSelect;
 
     /**
      * The index of the last selection box that was selected.
@@ -134,7 +134,11 @@ public class ChainSelect extends UIInput {
     protected Boolean resetCacheOnUpdate;
 
     public boolean isAllowBranchSelection() {
-        return allowBranchSelection;
+        if (allowBranchSelection != null) {
+            return allowBranchSelection.booleanValue();
+        }
+        return Boolean.TRUE.equals(getBooleanProperty("allowBranchSelection",
+                false));
     }
 
     public void setAllowBranchSelection(boolean allowBranchSelection) {
@@ -142,7 +146,11 @@ public class ChainSelect extends UIInput {
     }
 
     public boolean isAllowRootSelection() {
-        return allowRootSelection;
+        if (allowRootSelection != null) {
+            return allowRootSelection.booleanValue();
+        }
+        return Boolean.TRUE.equals(getBooleanProperty("allowRootSelection",
+                false));
     }
 
     public void setAllowRootSelection(boolean allowRootSelection) {
@@ -234,9 +242,11 @@ public class ChainSelect extends UIInput {
         setValid(true);
         rebuildOptions();
 
+        boolean multiParentSelect = isMultiParentSelect();
         if (!multiParentSelect) {
             componentValue = selections;
             String[] value = encodeValue(componentValue);
+            boolean multiSelect = isMultiSelect();
             if (!multiSelect) {
                 setSubmittedValue(value[0]);
             } else {
@@ -341,7 +351,10 @@ public class ChainSelect extends UIInput {
     }
 
     public Boolean getLocalize() {
-        return localize;
+        if (localize != null) {
+            return localize;
+        }
+        return getBooleanProperty("localize", false);
     }
 
     public void setLocalize(Boolean localize) {
@@ -349,7 +362,10 @@ public class ChainSelect extends UIInput {
     }
 
     public String getCssStyle() {
-        return cssStyle;
+        if (cssStyle != null) {
+            return cssStyle;
+        }
+        return getStringProperty("cssStyle", null);
     }
 
     public void setCssStyle(String cssStyle) {
@@ -357,7 +373,10 @@ public class ChainSelect extends UIInput {
     }
 
     public String getCssStyleClass() {
-        return cssStyleClass;
+        if (cssStyleClass != null) {
+            return cssStyleClass;
+        }
+        return getStringProperty("cssStyleClass", null);
     }
 
     public void setCSsStyleClass(String cssStyleClass) {
@@ -368,15 +387,7 @@ public class ChainSelect extends UIInput {
         if (onchange != null) {
             return onchange;
         }
-        ValueExpression ve = getValueExpression("onchange");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        }
-        return null;
+        return getStringProperty("onchange", null);
     }
 
     public void setOnchange(String onchange) {
@@ -430,19 +441,6 @@ public class ChainSelect extends UIInput {
         // }
     }
 
-    private void rebuildOptions(int index) {
-        ChainSelectListboxComponent component = getComponent(index);
-
-        if (component == null) {
-            return;
-        }
-
-        // LinkedHashMap<String, DirectorySelectItem> options =
-        // component.rebuildOptions();
-
-        // optionList[index] = options;
-    }
-
     public ChainSelectListboxComponent getComponent(int i) {
         List<UIComponent> children = getChildren();
         for (UIComponent child : children) {
@@ -489,11 +487,14 @@ public class ChainSelect extends UIInput {
     }
 
     public boolean isMultiSelect() {
-        return multiSelect;
+        if (multiSelect != null) {
+            return multiSelect.booleanValue();
+        }
+        return Boolean.TRUE.equals(getBooleanProperty("multiSelect", false));
     }
 
     public void setMultiSelect(boolean multiSelect) {
-        this.multiSelect = multiSelect;
+        this.multiSelect = Boolean.valueOf(multiSelect);
     }
 
     public Selection[] getSelections() {
@@ -501,7 +502,11 @@ public class ChainSelect extends UIInput {
     }
 
     public boolean isQualifiedParentKeys() {
-        return qualifiedParentKeys;
+        if (qualifiedParentKeys != null) {
+            return qualifiedParentKeys.booleanValue();
+        }
+        return Boolean.TRUE.equals(getBooleanProperty("qualifiedParentKeys",
+                false));
     }
 
     public void setQualifiedParentKeys(boolean fullyQualifiedParentKey) {
@@ -512,7 +517,7 @@ public class ChainSelect extends UIInput {
         if (displayValueOnly != null) {
             return displayValueOnly;
         }
-        return false;
+        return getBooleanProperty("displayValueOnly", false);
     }
 
     public void setDisplayValueOnly(Boolean displayValueOnly) {
@@ -520,7 +525,10 @@ public class ChainSelect extends UIInput {
     }
 
     public String getDisplayValueOnlyStyle() {
-        return displayValueOnlyStyle;
+        if (displayValueOnlyStyle != null) {
+            return displayValueOnlyStyle;
+        }
+        return getStringProperty("displayValueOnlyStyle", null);
     }
 
     public void setDisplayValueOnlyStyle(String displayValueOnlyStyle) {
@@ -528,28 +536,36 @@ public class ChainSelect extends UIInput {
     }
 
     public String getDisplayValueOnlyStyleClass() {
-        return displayValueOnlyStyleClass;
+        if (displayValueOnlyStyleClass != null) {
+            return displayValueOnlyStyleClass;
+        }
+        return getStringProperty("displayValueOnlyStyleClass", null);
     }
 
     public void setDisplayValueOnlyStyleClass(String displayValueOnlyStyleClass) {
         this.displayValueOnlyStyleClass = displayValueOnlyStyleClass;
     }
 
-    public boolean getMultiParentSelect() {
-        return multiParentSelect;
+    public boolean isMultiParentSelect() {
+        if (multiParentSelect != null) {
+            return multiParentSelect.booleanValue();
+        }
+        return Boolean.TRUE.equals(getBooleanProperty("multiParentSelect",
+                false));
     }
 
     public void setMultiParentSelect(boolean multiParentSelect) {
-        this.multiParentSelect = multiParentSelect;
+        this.multiParentSelect = Boolean.valueOf(multiParentSelect);
         if (multiParentSelect) {
-            multiSelect = true;
+            setMultiSelect(true);
         }
     }
 
     public String[] encodeValue(Selection[] selections) {
         String[] keys = new String[selections.length];
+        String keySep = getKeySeparator();
         for (int i = 0; i < selections.length; i++) {
-            keys[i] = selections[i].getValue(keySeparator);
+            keys[i] = selections[i].getValue(keySep);
         }
         return keys;
     }
@@ -564,6 +580,7 @@ public class ChainSelect extends UIInput {
                 return;
             }
             String[] rows;
+            boolean multiSelect = isMultiSelect();
             if (multiSelect) {
                 if (value instanceof String[]) {
                     rows = (String[]) value;
@@ -592,6 +609,7 @@ public class ChainSelect extends UIInput {
                 componentValue[i] = createSelection(columns);
             }
 
+            boolean multiParentSelect = isMultiParentSelect();
             if (multiParentSelect) {
                 selections = new Selection[1];
                 selections[0] = new Selection(new DirectorySelectItem[0]);
@@ -642,6 +660,7 @@ public class ChainSelect extends UIInput {
                 }
             } else {
                 String parentId;
+                boolean qualifiedParentKeys = isQualifiedParentKeys();
                 if (qualifiedParentKeys) {
                     parentId = StringUtils.join(keyList.iterator(),
                             getKeySeparator());
@@ -736,7 +755,10 @@ public class ChainSelect extends UIInput {
     }
 
     public String getKeySeparator() {
-        return keySeparator != null ? keySeparator : DEFAULT_KEY_SEPARATOR;
+        if (keySeparator != null) {
+            return keySeparator;
+        }
+        return getStringProperty("keySeparator", DEFAULT_KEY_SEPARATOR);
     }
 
     public void setKeySeparator(String keySeparator) {
@@ -744,7 +766,10 @@ public class ChainSelect extends UIInput {
     }
 
     public String getDefaultRootKey() {
-        return defaultRootKey;
+        if (defaultRootKey != null) {
+            return defaultRootKey;
+        }
+        return getStringProperty("defaultRootKey", null);
     }
 
     public void setDefaultRootKey(String defaultRootKey) {
@@ -765,6 +790,7 @@ public class ChainSelect extends UIInput {
             }
 
             String[] rows = StringUtils.split(newValueStr, getKeySeparator());
+            boolean allowBranchSelection = isAllowBranchSelection();
             if (!allowBranchSelection && rows.length != size) {
                 String messageStr = ComponentUtils.translate(context,
                         "label.chainSelect.incomplete_selection");
@@ -783,17 +809,7 @@ public class ChainSelect extends UIInput {
         if (resetCacheOnUpdate != null) {
             return resetCacheOnUpdate;
         }
-        ValueExpression ve = getValueExpression("resetCacheOnUpdate");
-        if (ve != null) {
-            try {
-                return Boolean.valueOf(Boolean.TRUE.equals(ve.getValue(getFacesContext().getELContext())));
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return Boolean.FALSE;
-        }
+        return getBooleanProperty("resetCacheOnUpdate", false);
     }
 
     /**

@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class SelectManyListboxComponent extends DirectoryAwareComponent {
 
@@ -64,7 +63,10 @@ public class SelectManyListboxComponent extends DirectoryAwareComponent {
     }
 
     public String getDisplayValueOnlySeparator() {
-        return displayValueOnlySeparator;
+        if (displayValueOnlySeparator != null) {
+            return displayValueOnlySeparator;
+        }
+        return getStringProperty("displayValueOnlySeparator", null);
     }
 
     public void setDisplayValueOnlySeparator(String displayValueOnlySeparator) {
