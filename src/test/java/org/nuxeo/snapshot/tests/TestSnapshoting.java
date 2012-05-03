@@ -1,6 +1,9 @@
 package org.nuxeo.snapshot.tests;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -11,7 +14,7 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.snapshot.Snapshot;
 import org.nuxeo.snapshot.Snapshotable;
-import static org.junit.Assert.*;
+import org.nuxeo.snapshot.SnapshotableAdapter;
 
 public class TestSnapshoting extends SQLRepositoryTestCase {
 
@@ -125,8 +128,15 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
             sb.append(doc.getVersionLabel());
             sb.append(" -- ");
             sb.append(doc.getTitle());
-            sb.append(" -- refetch name :");
-            sb.append(session.getDocument(doc.getRef()).getName());
+            if (doc.hasSchema(SnapshotableAdapter.SCHEMA)) {
+                sb.append(" [ ");
+                String[] uuids = (String[]) doc.getPropertyValue(SnapshotableAdapter.CHILDREN_PROP);
+                for (String uuid : uuids) {
+                    sb.append(uuid);
+                    sb.append(",");
+                }
+                sb.append(" } ");
+            }
             System.out.println(sb.toString());
         }
         System.out.println("\n############### \n ");
@@ -231,6 +241,9 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
         // save the content for later test
         String hash02 = getContentHash();
 
+        // dumpVersionsContent();
+
+        session.save();
         // now delete a folder
         session.removeDocument(folder13.getRef());
 
