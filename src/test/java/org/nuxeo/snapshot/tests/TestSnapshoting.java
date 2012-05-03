@@ -18,6 +18,8 @@ import org.nuxeo.snapshot.SnapshotableAdapter;
 
 public class TestSnapshoting extends SQLRepositoryTestCase {
 
+    boolean verbose = false;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -106,24 +108,26 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
     }
 
     protected void dumpDBContent() throws Exception {
-        System.out.println("\n############### \n Dump Live docs");
+        System.out.println("\nDumping Live docs in repository");
         DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=0 order by ecm:path");
         for (DocumentModel doc : docs) {
             StringBuffer sb = new StringBuffer();
             sb.append(doc.getPathAsString());
             sb.append(" - ");
             sb.append(doc.getVersionLabel());
+            sb.append(" -- ");
+            sb.append(doc.getTitle());
             System.out.println(sb.toString());
         }
-        System.out.println("\n############### \n ");
+        System.out.println("\n");
     }
 
     protected void dumpVersionsContent() throws Exception {
-        System.out.println("\n############### \n Dump versions");
+        System.out.println("\nDumping versions in repository");
         DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=1");
         for (DocumentModel doc : docs) {
             StringBuffer sb = new StringBuffer();
-            sb.append(doc.getName());
+            sb.append(doc.getPathAsString());
             sb.append(" - ");
             sb.append(doc.getVersionLabel());
             sb.append(" -- ");
@@ -139,7 +143,7 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
             }
             System.out.println(sb.toString());
         }
-        System.out.println("\n############### \n ");
+        System.out.println("\n");
     }
 
     protected String getContentHash() throws Exception {
@@ -161,9 +165,13 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testSnapShot() throws Exception {
+    public void testSnapShotTreeAndRestore() throws Exception {
 
         buildTree();
+        if (verbose) {
+            System.out.println("## Initial Tree");
+            dumpDBContent();
+        }
 
         Snapshotable snapshotable = root.getAdapter(Snapshotable.class);
         assertNotNull(snapshotable);
@@ -172,7 +180,10 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
 
         assertNotNull(snapshot);
 
-        // System.out.println(snapshot.toString());
+        if (verbose) {
+            System.out.println("## Initial Tree Snapshot");
+            System.out.println(snapshot.toString());
+        }
 
         for (Snapshot snap : snapshot.getFlatTree()) {
             DocumentModel doc = snap.getDocument();
@@ -181,7 +192,6 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
             } else {
                 assertEquals("0.1", doc.getVersionLabel());
             }
-            // System.out.println(doc.getName() + "-" + doc.getVersionLabel());
         }
         assertEquals("0.1", snapshot.getDocument().getVersionLabel());
 
@@ -219,12 +229,21 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
         doc1311.setPropertyValue("dc:description", "forced checkout");
         doc1311 = session.saveDocument(doc1311);
 
+        session.save();
+        if (verbose) {
+            System.out.println("## new Tree after updating a doc");
+            dumpDBContent();
+        }
+
         // redo a check in : should change versioning of a branch
         snapshotable = root.getAdapter(Snapshotable.class);
         assertNotNull(snapshotable);
 
         snapshot = snapshotable.createSnapshot(VersioningOption.MINOR);
-        // System.out.println(snapshot.toString());
+        if (verbose) {
+            System.out.println("## new Snapshot of the tree");
+            System.out.println(snapshot.toString());
+        }
 
         for (Snapshot snap : snapshot.getFlatTree()) {
             DocumentModel doc = snap.getDocument();
@@ -247,13 +266,23 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
         // now delete a folder
         session.removeDocument(folder13.getRef());
 
+        if (verbose) {
+            System.out.println("## new Tree after cutting a branch");
+            dumpDBContent();
+        }
+
         // redo a check in : should change versioning of head
         snapshotable = root.getAdapter(Snapshotable.class);
         assertNotNull(snapshotable);
 
         snapshot = snapshotable.createSnapshot(VersioningOption.MINOR);
         String snapshot03 = snapshot.toString();
-        // System.out.println(snapshot03);
+
+        if (verbose) {
+            System.out.println("## new Snapshot of the tree");
+            System.out.println(snapshot03);
+        }
+
         for (Snapshot snap : snapshot.getFlatTree()) {
             DocumentModel doc = snap.getDocument();
             if (doc.getName().equals("folder1")) {
@@ -280,7 +309,10 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
         // snapshot object should not have changed
         assertEquals(snapshot03, snapshot.toString());
 
-        // dumpDBContent();
+        if (verbose) {
+            System.out.println("## new Tree after restore on version 0.2");
+            dumpDBContent();
+        }
 
     }
 }
