@@ -30,13 +30,60 @@ button {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f1f2f3');
 }
 
-#content { padding: .5em; overflow: auto }
-
-.tools { background-color: #f7f7f7; padding: .5em }
+#content, .content { clear: both; padding: .5em; overflow: auto }
+.content h2 { border-bottom: 1px solid #3399ff; margin: 0 0 .5em; padding: .3em 0 .4em; text-align: center }
 
 #nxDocumentList { width:98%; margin:0 auto }
 
 .fullScale { font-size: 125% }
+.clear { clear: both }
+.floatL { float: left }
+.floatR { float: right }
+.paddingR { padding-right: 1.5em }
+.paddingL { padding-left: 1.5em }
+
+/* Top gray tool bar */
+.tools { background-color: #f4f4f4; line-height: 150%; padding: .5em }
+.linkButton, .linkButton:link { background-color: #fff;
+   border: 1px solid #ccc;
+   border-radius: 2px;
+   color: #333;
+   margin: 0 .5em 0 0;
+   padding: .1em .3em .2em;
+   text-decoration: none }
+.linkButton:hover { border-color: #9d9d9d }
+
+/* Tables */
+.dataList { background: white none repeat scroll 0% 0%; border-collapse: collapse; margin: 0; width: 100% }
+
+.dataList thead th { border-bottom: 1px solid #c7c7c7; color: #666;
+  padding: .5em .3em; text-align: left; font-size: 11px; font-weight: normal }
+
+.dataList thead th a, .dataList thead th a:link { color: #fff; text-decoration: none }
+.dataList thead th a:visited, .dataList thead th a:active { color: #fff }
+.dataList thead th a:hover { color: #fff; text-decoration: underline }
+
+.dataList td { border-style: none none solid; border-width: 1px; border-color: #c7c7c7; font-size: 11px; line-height: 110%; margin: 0; padding: .5em .3em; vertical-align: top }
+
+.dataList .iconColumn { width: 20px; text-align: center }
+.dataOutput td table td { border: 0 none transparent }
+
+/* Pagination controls */
+#pageNavigationControls span {
+color: #757575;
+font-size: 1.1em;
+font-weight: bold;
+margin: 1em .5em;
+vertical-align: top }
+
+#pageNavigationControls {
+border-bottom: 1px solid #3399ff;
+margin: 0;
+padding: .3em 0 0;
+text-align: center;
+margin-bottom: .5em }
+
+#pageNavigationControls input { margin-left: 5px }
 
 /* Form elements */
 textarea { border: 1px solid #bbb;
@@ -48,6 +95,18 @@ textarea { border: 1px solid #bbb;
     font-size: 1em;
     line-height: 18px;
     padding: .3em }
+
+.createDocument h3 { border-bottom: 1px solid #eee; font-size: 13px; padding: 0 0 1em }
+.createDocument .border { border: 1px solid #ddd }
+.createDocument input.input, .createDocument textarea.input { width: 180px }
+.createDocument td { vertical-align: top }
+.createDocument .actions { margin-top: 5px }
+.createDocument .actions input, .createDocument .actions button {background-color: #fefefe; cursor: pointer}
+.createDocument .actions input:hover, .createDocument .actions button:hover {border-color:#333}
+textarea { font-size:11px }
+
+.center { text-align: center }
+table.create { margin: auto }
 
 /* Override GWT default values */
 iframe.gwt-Frame { overflow: auto!important; overflow-x: scroll!important }
