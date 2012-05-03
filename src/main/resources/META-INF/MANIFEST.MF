@@ -5,5 +5,6 @@ Bundle-SymbolicName: org.nuxeo.snapshot;singleton:=true
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/adapter-contrib.xml,
- OSGI-INF/version-policy-contrib.xml
+ OSGI-INF/version-policy-contrib.xml,
+ OSGI-INF/publisher-contrib.xml
 

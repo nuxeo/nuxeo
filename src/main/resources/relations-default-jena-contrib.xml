@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.relations.services.DefaultJenaGraph">
+
+  <require>org.nuxeo.ecm.platform.relations.jena</require>
+  <require>org.nuxeo.ecm.platform.publisher.relations.contrib</require>
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="resourceadapters">
+    <adapter namespace="http://www.nuxeo.org/document/uid/"
+      class="org.nuxeo.ecm.platform.relations.adapters.DocumentModelResourceAdapter" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="default" type="jena">
+      <option name="backend">memory</option>
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/</namespace>
+        <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
+        <namespace name="pTree">http://www.nuxeo.org/publication/tree/</namespace>
+      </namespaces>
+    </graph>
+    <graph name="publication" type="jena">
+      <option name="backend">memory</option>
+      <option name="datasource">java:/nxrelations-default-jena</option>
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/1.1/</namespace>
+        <namespace name="nuxeo">http://www.nuxeo.org/document/uid/</namespace>
+        <namespace name="pTree">http://www.nuxeo.org/publication/tree/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>
