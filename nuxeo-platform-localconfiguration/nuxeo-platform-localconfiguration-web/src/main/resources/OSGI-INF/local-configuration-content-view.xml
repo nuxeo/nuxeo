@@ -27,14 +27,14 @@
         <property name="hideSubLabels">true</property>
       </properties>
       <subWidgets>
-        <widget name="complexListItem" type="template">
+        <widget name="complexListItem" type="complex">
           <labels>
             <label mode="any"></label>
           </labels>
+          <fields>
+            <field></field>
+          </fields>
           <properties mode="any">
-            <property name="template">
-              /widgets/complex_list_item_widget_template.xhtml
-            </property>
             <property name="hideSubLabels">true</property>
             <property name="display">inline</property>
           </properties>
