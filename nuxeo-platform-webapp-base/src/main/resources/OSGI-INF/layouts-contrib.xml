@@ -1837,6 +1837,9 @@
           <label mode="any">password.verify</label>
         </labels>
         <translated>true</translated>
+        <fields>
+          <field schema="user">password</field>
+        </fields>
         <widgetModes>
           <mode value="create">edit</mode>
           <mode value="editPassword">edit</mode>
