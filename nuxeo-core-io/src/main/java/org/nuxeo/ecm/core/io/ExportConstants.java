@@ -16,7 +16,7 @@ package org.nuxeo.ecm.core.io;
 
 /**
  * Constants that provide the types for which the reader are for.
- *
+ * 
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
  */
 public final class ExportConstants {
@@ -46,6 +46,8 @@ public final class ExportConstants {
     public static final String LIFECYCLE_POLICY_TAG = "lifecycle-policy";
 
     public static final String ACCESS_CONTROL_TAG = "access-control";
+
+    public static final String FACET_TAG = "facet";
 
     public static final String SCHEMA_TAG = "schema";
 

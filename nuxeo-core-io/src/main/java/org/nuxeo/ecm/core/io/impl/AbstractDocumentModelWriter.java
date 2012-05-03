@@ -73,8 +73,7 @@ public abstract class AbstractDocumentModelWriter extends
 
     protected int unsavedDocuments = 0;
 
-    private final Map<DocumentLocation, DocumentLocation> translationMap
-            = new HashMap<DocumentLocation, DocumentLocation>();
+    private final Map<DocumentLocation, DocumentLocation> translationMap = new HashMap<DocumentLocation, DocumentLocation>();
 
     /**
      *
@@ -143,6 +142,10 @@ public abstract class AbstractDocumentModelWriter extends
         String lifeCycleState = system.element(
                 ExportConstants.LIFECYCLE_STATE_TAG).getText();
         doc.putContextData("initialLifecycleState", lifeCycleState);
+
+        // loadFacets before schemas so that additional schemas are not skipped
+        loadFacetsInfo(doc, xdoc.getDocument());
+
         // then load schemas data
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
@@ -170,6 +173,8 @@ public abstract class AbstractDocumentModelWriter extends
         // load schemas data
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
+        loadFacetsInfo(doc, xdoc.getDocument());
+
         doc = session.saveDocument(doc);
 
         unsavedDocuments += 1;
@@ -187,10 +192,34 @@ public abstract class AbstractDocumentModelWriter extends
     }
 
     @SuppressWarnings("unchecked")
+    protected boolean loadFacetsInfo(DocumentModel docModel, Document doc)
+            throws ClientException {
+        boolean added = false;
+        Element system = doc.getRootElement().element(
+                ExportConstants.SYSTEM_TAG);
+        if (system == null) {
+            return false;
+        }
+
+        Iterator<Element> facets = system.elementIterator(ExportConstants.FACET_TAG);
+        while (facets.hasNext()) {
+            Element element = facets.next();
+            String facet = element.getTextTrim();
+            if (!docModel.hasFacet(facet)) {
+                docModel.addFacet(facet);
+                added = true;
+            }
+        }
+
+        return added;
+    }
+
+    @SuppressWarnings("unchecked")
     protected void loadSystemInfo(DocumentModel docModel, Document doc)
             throws ClientException {
         Element system = doc.getRootElement().element(
                 ExportConstants.SYSTEM_TAG);
+
         Element accessControl = system.element(ExportConstants.ACCESS_CONTROL_TAG);
         if (accessControl == null) {
             return;
@@ -315,8 +344,8 @@ public abstract class AbstractDocumentModelWriter extends
                 while (it.hasNext()) {
                     Element el = it.next();
                     String name = el.getName();
-                    Object value = getElementData(xdoc, el, ctype.getField(
-                            el.getName()).getType());
+                    Object value = getElementData(xdoc, el,
+                            ctype.getField(el.getName()).getType());
                     map.put(name, value);
                 }
                 return map;

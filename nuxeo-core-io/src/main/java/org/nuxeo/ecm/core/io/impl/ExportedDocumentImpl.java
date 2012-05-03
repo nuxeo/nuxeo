@@ -251,6 +251,10 @@ public class ExportedDocumentImpl implements ExportedDocument {
             log.error(e, e);
         } // end of lifecycle
 
+        // facets
+        for (String facet : doc.getFacets()) {
+            systemElement.addElement(ExportConstants.FACET_TAG).addText(facet);
+        }
         // write security
         Element acpElement = systemElement.addElement(ExportConstants.ACCESS_CONTROL_TAG);
         ACP acp = doc.getACP();
@@ -291,7 +295,9 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
         // extract the element content
         if (type.isSimpleType()) {
-            element.addText(type.encode(value));
+            // use CDATA to avoid any bad interaction between content and
+            // envelope
+            element.addCDATA(type.encode(value));
         } else if (type.isComplexType()) {
             ComplexType ctype = (ComplexType) type;
             if (TypeConstants.isContentType(ctype)) {

@@ -23,17 +23,22 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
- * A login module that is propagating the login information into the core login stack.
+ * A login module that is propagating the login information into the core login
+ * stack.
  * <p>
- * This login module doesn't make any authentication - it is called only after the authentication 
- * is successfully done by a previous login module.
+ * This login module doesn't make any authentication - it is called only after
+ * the authentication is successfully done by a previous login module.
  * <p>
- * The static method of this class can also be used to manage the current login stack.  
- * 
- * @author  eionica@nuxeo.com
- * 
+ * The static method of this class can also be used to manage the current login
+ * stack.
+ *
+ * @author eionica@nuxeo.com
+ *
  */
 public class ClientLoginModule implements LoginModule {
 
@@ -64,11 +69,31 @@ public class ClientLoginModule implements LoginModule {
         return entry;
     }
 
+    /**
+     * Returns the current logged {@link NuxeoPrincipal} from the login stack
+     *
+     * @since 5.6
+     */
+    public static NuxeoPrincipal getCurrentPrincipal() {
+        LoginStack.Entry entry = getCurrentLogin();
+        if (entry != null) {
+            Principal p = entry.getPrincipal();
+            if (p instanceof NuxeoPrincipal) {
+                return (NuxeoPrincipal) p;
+            } else if (LoginComponent.isSystemLogin(p)) {
+                return new SystemPrincipal(p.getName());
+            }
+        }
+        return null;
+    }
 
     private Subject subject;
+
     private Map sharedState;
+
     // active login stack
     private LoginStack stack;
+
     // whether or not the login was propagated
     private boolean commited = false;
 
@@ -80,13 +105,14 @@ public class ClientLoginModule implements LoginModule {
             Map sharedState, Map options) {
         this.subject = subject;
         this.sharedState = sharedState;
-        // Check if login must be propagated to entire JVM or only to the current thread.
+        // Check if login must be propagated to entire JVM or only to the
+        // current thread.
         // the default is per-thread login
         boolean globalLogin = true;
-        String global = (String)options.get("global");
+        String global = (String) options.get("global");
         if (global != null) {
             globalLogin = Boolean.parseBoolean(global);
-        }        
+        }
         if (globalLogin) {
             // propagate the login only for the current thread
             stack = threadInstance.get();
@@ -96,11 +122,10 @@ public class ClientLoginModule implements LoginModule {
         }
     }
 
-
     @Override
     public boolean login() throws LoginException {
-        // this login module doesn't make any user authentication 
-        // it simply propagate the login to the login stack. 
+        // this login module doesn't make any user authentication
+        // it simply propagate the login to the login stack.
         // So it must be put after the authenticating module.
         // The authenticating module should update the sharedState map
         // with the login info.
@@ -112,12 +137,12 @@ public class ClientLoginModule implements LoginModule {
         Principal p = null;
         Object user = sharedState.get("javax.security.auth.login.name");
         if (user instanceof Principal) {
-            p = (Principal)user;
+            p = (Principal) user;
         } else {
             Set<Principal> principals = subject.getPrincipals();
             if (!principals.isEmpty()) {
                 p = principals.iterator().next();
-            }            
+            }
         }
         if (p != null) {
             Object credential = sharedState.get("javax.security.auth.login.password");

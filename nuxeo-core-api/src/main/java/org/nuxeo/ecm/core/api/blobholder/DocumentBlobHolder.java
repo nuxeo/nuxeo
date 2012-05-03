@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,17 +27,18 @@ import org.nuxeo.ecm.core.utils.BlobsExtractor;
 /**
  * {@link BlobHolder} implementation based on a {@link DocumentModel} and a
  * XPath.
- *
+ * 
  * @author tiry
  */
-public class
-        DocumentBlobHolder extends AbstractBlobHolder {
+public class DocumentBlobHolder extends AbstractBlobHolder {
 
     protected final DocumentModel doc;
 
     protected final String xPath;
 
     protected String xPathFilename;
+
+    protected List<Blob> blobList = null;
 
     /**
      * Constructor with filename property for compatibility (when filename was
@@ -109,7 +111,31 @@ public class
 
     @Override
     public List<Blob> getBlobs() throws ClientException {
-        return new BlobsExtractor().getBlobs(doc);
+        if (blobList == null) {
+            List<Blob> blobs = new BlobsExtractor().getBlobs(doc);
+            Blob main = getBlob();
+            if (main != null) {
+                // be sure the "main" blob is always in first position
+                Iterator<Blob> bi = blobs.iterator();
+                while (bi.hasNext()) {
+                    Blob blob = bi.next();
+                    if (blob.getDigest() != null) {
+                        if (blob.getDigest().equals(main.getDigest())) {
+                            bi.remove();
+                            break;
+                        }
+                    } else if (blob.getFilename() != null) {
+                        if (blob.getFilename().equals(main.getFilename())) {
+                            bi.remove();
+                            break;
+                        }
+                    }
+                }
+                blobs.add(0, main);
+            }
+            blobList = blobs;
+        }
+        return blobList;
     }
 
 }

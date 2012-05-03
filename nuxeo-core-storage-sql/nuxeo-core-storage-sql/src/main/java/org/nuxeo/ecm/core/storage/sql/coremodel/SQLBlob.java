@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.storage.sql.Binary;
 
 /**
  * A {@link Blob} wrapping a {@link Binary} value.
- *
+ * 
  * @author Florent Guillaume
  * @author Bogdan Stefanescu
  */
@@ -65,4 +65,13 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
         return binary;
     }
 
+    @Override
+    public String getDigest() {
+        String digest = super.getDigest();
+        if (digest == null) {
+            return binary.getDigest();
+        } else {
+            return digest;
+        }
+    }
 }

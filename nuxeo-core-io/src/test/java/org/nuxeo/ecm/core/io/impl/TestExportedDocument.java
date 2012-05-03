@@ -14,17 +14,17 @@
 
 package org.nuxeo.ecm.core.io.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.jmock.Expectations;
 import org.dom4j.io.XMLWriter;
+import org.jmock.Expectations;
+import org.junit.Test;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -42,30 +42,33 @@ public class TestExportedDocument extends NXRuntimeTestCase {
     public void testExportedDocument() throws Exception {
 
         final DocumentModel model = jmcontext.mock(DocumentModel.class);
-        jmcontext.checking(new Expectations() {{
-            atLeast(1).of (model).getId();
-            will(returnValue("My id"));
-            atLeast(1).of (model).getType();
-            will(returnValue("My type"));
-            atLeast(1).of (model).getRef();
-            will(returnValue(new IdRef("My id")));
-            atLeast(1).of (model).getName();
-            will(returnValue(null));
-            atLeast(1).of (model).getCurrentLifeCycleState();
-            will(returnValue(null));
-            atLeast(1).of (model).getLifeCyclePolicy();
-            will(returnValue(null));
-            atLeast(1).of (model).getACP();
-            will(returnValue(null));
-            atLeast(1).of (model).getSchemas();
-            will(returnValue(new String[0]));
-            atLeast(1).of (model).getRepositoryName();
-            will(returnValue(null));
-            atLeast(1).of (model).getPath();
-            will(returnValue(new Path("my-path")));
-            atLeast(1).of (model).getPathAsString();
-            will(returnValue("/my/path/"));
-        }});
+        jmcontext.checking(new Expectations() {
+            {
+                atLeast(1).of(model).getId();
+                will(returnValue("My id"));
+                atLeast(1).of(model).getType();
+                will(returnValue("My type"));
+                atLeast(1).of(model).getRef();
+                will(returnValue(new IdRef("My id")));
+                atLeast(1).of(model).getName();
+                will(returnValue(null));
+                atLeast(1).of(model).getCurrentLifeCycleState();
+                will(returnValue(null));
+                atLeast(1).of(model).getLifeCyclePolicy();
+                will(returnValue(null));
+                atLeast(1).of(model).getACP();
+                will(returnValue(null));
+                atLeast(1).of(model).getSchemas();
+                will(returnValue(new String[0]));
+                atLeast(1).of(model).getRepositoryName();
+                will(returnValue(null));
+                atLeast(1).of(model).getPath();
+                will(returnValue(new Path("my-path")));
+                atLeast(1).of(model).getPathAsString();
+                will(returnValue("/my/path/"));
+                atLeast(1).of(model).getFacets();
+            }
+        });
 
         ExportedDocument exportedDoc = new ExportedDocumentImpl(model);
 
@@ -77,6 +80,7 @@ public class TestExportedDocument extends NXRuntimeTestCase {
         Writer writer = new StringWriter();
         XMLWriter xmlWriter = new XMLWriter(writer);
         xmlWriter.write(exportedDoc.getDocument());
+
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<document id=\"My id\"><system><type>My type</type>"
                 + "<path>my-path</path><access-control/></system></document>",
