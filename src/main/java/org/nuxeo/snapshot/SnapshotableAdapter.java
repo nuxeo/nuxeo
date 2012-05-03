@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -14,7 +16,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.schema.FacetNames;
 
 public class SnapshotableAdapter implements Snapshot, Serializable {
 
@@ -22,9 +26,11 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     protected DocumentModel doc;
 
-    public static final String SCHEMA = "Snapshot";
+    public static final String SCHEMA = "snapshot";
 
     public static final String CHILDREN_PROP = "snap:children";
+
+    public static final String NAME_PROP = "snap:originalName";
 
     public SnapshotableAdapter(DocumentModel doc) {
         this.doc = doc;
@@ -40,7 +46,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     protected DocumentRef createLeafVersion(DocumentModel targetDoc,
             VersioningOption option) throws ClientException {
-        if (targetDoc.isFolder() && !targetDoc.hasSchema("snapshot")) {
+        if (targetDoc.isFolder() && !targetDoc.hasSchema(SCHEMA)) {
             throw new ClientException(
                     "Can not version a folder that has not snapshot schema");
         }
@@ -58,7 +64,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
         DocumentModel version = doc.getCoreSession().getDocument(versionRef);
 
-        if (version.isFolder() && !version.hasSchema("snapshot")) {
+        if (version.isFolder() && !version.hasSchema(SCHEMA)) {
             throw new ClientException("Error while creating version");
         }
 
@@ -87,22 +93,17 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         if (!doc.hasFacet(Snapshot.FACET)) {
             doc.addFacet(Snapshot.FACET);
         }
-        if (!doc.hasFacet("Versionable")) {
-            doc.addFacet("Versionable");
+
+        if (!doc.hasFacet(FacetNames.VERSIONABLE)) {
+            doc.addFacet(FacetNames.VERSIONABLE);
         }
 
-        if (!doc.hasSchema("snapshot")) {
+        if (!doc.hasSchema(SCHEMA)) {
             throw new ClientException("snapshot schema not added !");
         }
 
         DocumentModelList children = doc.getCoreSession().getChildren(
                 doc.getRef());
-
-        /*
-         * if (children.size() == 0) { doc =
-         * doc.getCoreSession().saveDocument(doc); return new
-         * SnapshotableAdapter(createLeafVersionAndFetch(option)); }
-         */
 
         String[] vuuids = new String[children.size()];
 
@@ -130,6 +131,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
         if (mustSnapshot) {
             doc.setPropertyValue(CHILDREN_PROP, vuuids);
+            doc.setPropertyValue(NAME_PROP, doc.getName());
             doc = doc.getCoreSession().saveDocument(doc);
             return new SnapshotableAdapter(createLeafVersionAndFetch(option));
         } else {
@@ -139,38 +141,42 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         }
     }
 
-    @Override
-    public List<DocumentModel> getChildren() throws ClientException {
-
-        if (!doc.isVersion()) {
+    protected List<DocumentModel> getChildren(DocumentModel target)
+            throws ClientException {
+        if (!target.isVersion()) {
             throw new ClientException("Not a version:");
         }
 
-        if (!doc.isFolder()) {
+        if (!target.isFolder()) {
             return Collections.emptyList();
         }
 
-        if (doc.isFolder() && !doc.hasSchema("snapshot")) {
+        if (target.isFolder() && !target.hasSchema(SCHEMA)) {
             throw new ClientException(
                     "Folderish children should have the snapshot schema");
         }
 
         try {
 
-            String[] uuids = (String[]) doc.getPropertyValue(CHILDREN_PROP);
+            String[] uuids = (String[]) target.getPropertyValue(CHILDREN_PROP);
 
             if (uuids != null && uuids.length > 0) {
                 DocumentRef[] refs = new DocumentRef[uuids.length];
                 for (int i = 0; i < uuids.length; i++) {
                     refs[i] = new IdRef(uuids[i]);
                 }
-                return doc.getCoreSession().getDocuments(refs);
+                return target.getCoreSession().getDocuments(refs);
             }
         } catch (PropertyException e) {
             e.printStackTrace();
         }
 
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<DocumentModel> getChildren() throws ClientException {
+        return getChildren(doc);
     }
 
     @Override
@@ -252,7 +258,8 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     }
 
     protected DocumentModel restore(DocumentModel leafVersion,
-            DocumentModel target) throws ClientException {
+            DocumentModel target, boolean first, DocumentModelList olddocs)
+            throws ClientException {
 
         CoreSession session = doc.getCoreSession();
 
@@ -260,45 +267,80 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             return null;
         }
 
-        boolean isVersion = leafVersion.isVersion();
+        if (target.isFolder() && first) {
+            // save all subtree
+            olddocs = session.query("select * from Document where ecm:path STARTSWITH '"
+                    + target.getPathAsString() + "'");
+            if (olddocs.size() > 0) {
+                DocumentModel container = session.createDocumentModel(
+                        target.getPath().removeLastSegments(1).toString(),
+                        target.getName() + "_tmp", target.getType());
+                container = session.createDocument(container);
+                for (DocumentModel oldChild : olddocs) {
+                    session.move(oldChild.getRef(), container.getRef(),
+                            oldChild.getName());
+                }
+                olddocs.add(container);
+            }
+        }
 
         // restore leaf
         target = session.restoreToVersion(target.getRef(), leafVersion.getRef());
 
-        if (target.isFolder()) {
-            DocumentModelList existingChildren = target.getCoreSession().getChildren(
-                    target.getRef());
-            if (existingChildren.size() > 0) {
-                DocumentModel container = session.createDocumentModel(
-                        target.getPathAsString(), "tmp", target.getType());
-                container = session.createDocument(container);
-                for (DocumentModel oldChild : existingChildren) {
-                    session.move(oldChild.getRef(), container.getRef(),
-                            oldChild.getName());
-                }
+        // restore children
+        for (DocumentModel child : getChildren(leafVersion)) {
 
-                // session.removeChildren(target.getRef());
-                // throw new
-                // ClientException("After restore folder is not empty");
+            String liveUUID = child.getVersionSeriesId();
+            DocumentModel placeholder = null;
+            for (DocumentModel doc : olddocs) {
+                if (doc.getId().equals(liveUUID)) {
+                    placeholder = doc;
+                    break;
+                }
+            }
+            if (placeholder == null) {
+                if (session.exists(new IdRef(liveUUID))) {
+                    placeholder = session.getDocument(new IdRef(liveUUID));
+                }
+            }
+            if (placeholder != null) {
+                olddocs.remove(placeholder);
+                session.move(placeholder.getRef(), target.getRef(),
+                        placeholder.getName());
+            } else {
+                String name = child.getName();
+                // name will be null if there is no checkecout version
+                // need to rebuild name
+                if (name == null && child.hasSchema(SCHEMA)) {
+                    name = (String) child.getPropertyValue(NAME_PROP);
+                }
+                if (name == null && child.getTitle() != null) {
+                    name = IdUtils.generateId(child.getTitle(), "-", true, 24);
+                    ;
+                }
+                if (name == null) {
+                    name = child.getType() + System.currentTimeMillis();
+                }
+                placeholder = new DocumentModelImpl((String) null,
+                        child.getType(), liveUUID, new Path(name), null, null,
+                        target.getRef(), null, null, null, null);
+                placeholder.putContextData(CoreSession.IMPORT_CHECKED_IN,
+                        Boolean.TRUE);
+                placeholder.addFacet(Snapshot.FACET);
+                placeholder.addFacet(FacetNames.VERSIONABLE);
+                session.importDocuments(Collections.singletonList(placeholder));
+                placeholder = session.getDocument(new IdRef(liveUUID));
+            }
+
+            new SnapshotableAdapter(child).restore(child, placeholder, false,
+                    olddocs);
+        }
+
+        if (first) {
+            for (DocumentModel old : olddocs) {
+                session.removeDocument(old.getRef());
             }
         }
-
-        doc = leafVersion;
-
-        isVersion = leafVersion.isVersion();
-        isVersion = doc.isVersion();
-
-        // restore children
-        for (DocumentModel child : getChildren()) {
-            DocumentModel placeholder = session.createDocumentModel(
-                    target.getPathAsString(), child.getName(), child.getType());
-            placeholder = session.createDocument(placeholder);
-
-            placeholder.addFacet(Snapshot.FACET);
-            placeholder.addFacet("Versionable");
-            new SnapshotableAdapter(child).restore(child, placeholder);
-        }
-
         return target;
     }
 
@@ -306,9 +348,8 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     public DocumentModel restore(String versionLabel) throws ClientException {
         DocumentModel target = getCheckoutDocument(doc);
         DocumentModel leafVersion = getVersionForLabel(target, versionLabel);
-        boolean isVersion = leafVersion.isVersion();
-        doc = restore(leafVersion, target);
-        return doc;
+        DocumentModel restoredDoc = restore(leafVersion, target, true, null);
+        return restoredDoc;
     }
 
 }

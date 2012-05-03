@@ -10,5 +10,6 @@
   </xs:simpleType>
 
   <xs:element name="children" type="nxs:childrenList"/>
+  <xs:element name="originalName" type="xs:string"/>
 
 </xs:schema>
