@@ -57,12 +57,6 @@ public class SystemHomePage extends AdminCenterBasePage {
             // return true;
             // }
             // }.waitUntil();
-            //
-            // TODO TA: This issue seems to have been fixed for the latest
-            // Selenium release 2.21
-            // See http://code.google.com/p/selenium/issues/detail?id=3544
-            // Once it is released and we upgrade to it, lets try enabling the
-            // confirmation alert again.
         } else {
             return null;
         }

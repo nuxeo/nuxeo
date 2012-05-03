@@ -55,11 +55,6 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
             // ignore
         }
         alert.accept();
-        // TODO TA: This issue seems to have been fixed for the latest
-        // Selenium release 2.21
-        // See http://code.google.com/p/selenium/issues/detail?id=3544
-        // Once it is released and we upgrade to it, lets try removing the
-        // Thread.sleep.
         return asPage(UsersTabSubPage.class);
     }
 
