@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.platform.TemplateSources.types.contrib">
+<component name="org.nuxeo.snapshot.ecmtypes.contrib">
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
   <require>org.nuxeo.ecm.platform.types</require>
@@ -7,44 +7,31 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
 
-    <type id="TemplateSource" coretype="TemplateSource">
-      <label>Document template</label>
-      <icon>/icons/sourcetemplate.png</icon>
-      <bigIcon>/icons/sourcetemplate_100.png</bigIcon>
+     <type id="SnapshotableFolder" coretype="Folder">
+      <label>Versionable Folder</label>
+      <icon>/icons/VFolder.png</icon>
+      <bigIcon>/icons/VFolder_100.png</bigIcon>
+      <icon-expanded>/icons/VFolder.png</icon-expanded>
+      <category>Collaborative</category>
+      <description>Versionable Folder</description>
       <default-view>view_documents</default-view>
-      <category>SimpleDocument</category>
-     <layouts mode="create">
-       <layout>heading</layout>
-       <layout>templateOptionsWizard</layout>
-       <layout>templateOptions</layout>
-       <layout>fileWithoutTemplate</layout>
-      </layouts>
-      <layouts mode="view">
-        <layout>heading</layout>
-        <layout>templateOptions</layout>
-        <layout>templateParams</layout>
-        <layout>linkedTemplateBasedDocs</layout>
-      </layouts>
-      <layouts mode="edit">
-        <layout>heading</layout>
-        <!-- <layout>templateOptions</layout>  -->
-        <layout>fileWithoutTemplate</layout>
-      </layouts>
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+        <type>SnapshotableFolder</type>
+      </subtypes>
     </type>
 
-     <type id="Folder" coretype="Folder">
-      <subtypes>
-        <type>TemplateSource</type>
-      </subtypes>
-    </type>
     <type id="Workspace" coretype="Workspace">
       <subtypes>
-        <type>TemplateSource</type>
+        <type>SnapshotableFolder</type>
       </subtypes>
     </type>
-    <type id="TemplateRoot">
+
+    <type id="Folder" coretype="Folder">
       <subtypes>
-        <type>TemplateSource</type>
+        <type>SnapshotableFolder</type>
       </subtypes>
     </type>
 

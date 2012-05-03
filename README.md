@@ -100,6 +100,8 @@ Dumping Live docs in repository
 
 # Using the Addon API
 
+## Simple versioning
+
 The API is provided by an Aadapter system.
 If myfolder is a folderish DocumentModel that you want to snapshot, the code should look like :
 
@@ -112,4 +114,7 @@ In order to be seen as "Snapshotable", your folderish object must have the facet
       <facet name="Snapshotable"/>
     </doctype>
 
+## Publishing
+
+This addons also provides a contribution to the publisher service so that you can publish a tree via the publisher.
 

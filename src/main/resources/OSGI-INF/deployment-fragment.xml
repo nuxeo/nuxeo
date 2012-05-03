@@ -3,34 +3,8 @@
 
   <require>org.nuxeo.ecm.platform.lang</require>
 
- <extension target="web#STD-AUTH-FILTER">
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/nxrendition/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/nxtemplate/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-
-  </extension>
 
   <extension target="faces-config#NAVIGATION">
-    <navigation-case>
-      <from-outcome>editTemplateRelatedData</from-outcome>
-      <to-view-id>/edit_template_data.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>associateTemplate</from-outcome>
-      <to-view-id>/associateTemplate.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
 
   </extension>
 
@@ -40,6 +14,7 @@
       <include>web/nuxeo.war/**</include>
     </unzip>
 
+<!--
     <delete path="${bundle.fileName}.tmp" />
     <mkdir path="${bundle.fileName}.tmp" />
     <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
@@ -51,6 +26,7 @@
     <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr.properties"
       to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
     <delete path="${bundle.fileName}.tmp" />
+ -->
 
   </install>
 
