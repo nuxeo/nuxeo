@@ -50,6 +50,8 @@ public final class FieldDiffHelper {
 
     private static final String SYSTEM_ELEMENT = "system";
 
+    private static final String FACET_ELEMENT = "facet";
+
     private static final String SCHEMA_ELEMENT = "schema";
 
     private static final String NAME_ATTRIBUTE = "name";
@@ -148,20 +150,23 @@ public final class FieldDiffHelper {
                 // or an element nested in <system>.
                 if (SCHEMA_ELEMENT.equals(parentNode.getNodeName())
                         || SYSTEM_ELEMENT.equals(parentNode.getNodeName())) {
-                    field = currentNode.getLocalName();
-                    if (PropertyType.isSimpleType(propertyType)) {
-                        propertyHierarchy.add(new PropertyHierarchyNode(
-                                propertyType, null));
-                    } else if (PropertyType.isListType(propertyType)
-                            && propertyHierarchy.isEmpty()) {
-                        propertyHierarchy.add(new PropertyHierarchyNode(
-                                propertyType, null));
-                    } else if (PropertyType.isComplexType(propertyType)
-                            && propertyHierarchy.isEmpty()) {
-                        propertyHierarchy.add(new PropertyHierarchyNode(
-                                propertyType, null));
+                    String currentNodeLocalName = currentNode.getLocalName();
+                    // TODO: manage better the facet case
+                    if (!FACET_ELEMENT.equals(currentNodeLocalName)) {
+                        field = currentNodeLocalName;
+                        if (PropertyType.isSimpleType(propertyType)) {
+                            propertyHierarchy.add(new PropertyHierarchyNode(
+                                    propertyType, null));
+                        } else if (PropertyType.isListType(propertyType)
+                                && propertyHierarchy.isEmpty()) {
+                            propertyHierarchy.add(new PropertyHierarchyNode(
+                                    propertyType, null));
+                        } else if (PropertyType.isComplexType(propertyType)
+                                && propertyHierarchy.isEmpty()) {
+                            propertyHierarchy.add(new PropertyHierarchyNode(
+                                    propertyType, null));
+                        }
                     }
-
                 }
                 currentNode = parentNode;
                 currentNodeName = currentNode.getNodeName();
