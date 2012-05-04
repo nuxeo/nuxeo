@@ -47,19 +47,20 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         EventService service = Framework.getService(EventService.class);
         EventServiceImpl serviceImpl = (EventServiceImpl) service;
 
+        int N = 2;
         List<EventListenerDescriptor> inLineDescs = serviceImpl.getEventListenerList().getInlineListenersDescriptors();
-        assertEquals(1, inLineDescs.size());
-        assertEquals(1, serviceImpl.getEventListenerList().getInLineListeners().size());
+        assertEquals(N, inLineDescs.size());
+        assertEquals(N, serviceImpl.getEventListenerList().getInLineListeners().size());
 
         // check enable flag
         EventListenerDescriptor desc =  inLineDescs.get(0);
         desc.setEnabled(false);
         serviceImpl.addEventListener(desc);
-        assertEquals(0, serviceImpl.getEventListenerList().getInLineListeners().size());
+        assertEquals(N - 1, serviceImpl.getEventListenerList().getInLineListeners().size());
 
         desc.setEnabled(true);
         serviceImpl.addEventListener(desc);
-        assertEquals(1, serviceImpl.getEventListenerList().getInLineListeners().size());
+        assertEquals(N, serviceImpl.getEventListenerList().getInLineListeners().size());
 
         // test PostCommit
         url = EventListenerTest.class.getClassLoader().getResource("test-PostCommitListeners.xml");
