@@ -22,6 +22,7 @@
 </c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
+  <c:if test="#{not empty field}">
     <nxu:set var="image_url"
      value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}"
      cache="true">
@@ -31,19 +32,22 @@
           width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
       </c:if>
     </nxu:set>
+  </c:if>
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
-  <nxp:html>
-    <nxu:set var="image_url"
-     value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}"
-     cache="true">
-      <c:if test="#{not empty image_url}">
-        <img src="#{image_url}"
-          title="#{field.filename}" alt="#{field.filename}"
-          width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
-      </c:if>
-    </nxu:set>
-  </nxp:html>
+  <c:if test="#{not empty field}">
+    <nxp:html>
+      <nxu:set var="image_url"
+       value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}"
+       cache="true">
+        <c:if test="#{not empty image_url}">
+          <img src="#{image_url}"
+            title="#{field.filename}" alt="#{field.filename}"
+            width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
+        </c:if>
+      </nxu:set>
+    </nxp:html>
+  </c:if>
 </c:if>
 </div>
