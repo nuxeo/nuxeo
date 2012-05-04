@@ -66,7 +66,7 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             XslFilter htmlHeaderXslFilter = new XslFilter();
 
             ContentHandler postProcess = htmlHeaderXslFilter.xsl(
-                    transformHandler, "xslfilter/htmlheader.xsl");
+                    transformHandler, "xslfilter/htmldiffheader.xsl");
 
             // TODO: use Seam locale
             Locale locale = Locale.getDefault();
