@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 import static org.nuxeo.ecm.core.work.api.Work.State.SUSPENDED;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -130,7 +131,11 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(CATEGORY, work.getCategory());
         assertEquals(QUEUE, service.getCategoryQueueId(CATEGORY));
         WorkQueueDescriptor qd = service.getWorkQueueDescriptor(QUEUE);
+        assertEquals("SleepWork", qd.id);
+        assertEquals("Sleep Work Queue", qd.name);
         assertEquals(2, qd.maxThreads);
+        assertEquals(1234, qd.clearCompletedAfterSeconds);
+        assertEquals(Collections.singleton("SleepWork"), qd.categories);
     }
 
     @Test

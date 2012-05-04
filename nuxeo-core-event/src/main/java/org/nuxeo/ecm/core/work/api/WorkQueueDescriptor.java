@@ -40,6 +40,9 @@ public class WorkQueueDescriptor {
     @XNode("maxThreads")
     public int maxThreads;
 
+    @XNode("clearCompletedAfterSeconds")
+    public int clearCompletedAfterSeconds = 3600;
+
     @XNodeList(value = "category", type = HashSet.class, componentType = String.class)
     public Set<String> categories;
 
@@ -49,6 +52,7 @@ public class WorkQueueDescriptor {
         o.id = id;
         o.name = name;
         o.maxThreads = maxThreads;
+        o.clearCompletedAfterSeconds = clearCompletedAfterSeconds;
         o.categories = new HashSet<String>(categories);
         return o;
     }
@@ -56,6 +60,7 @@ public class WorkQueueDescriptor {
     public void merge(WorkQueueDescriptor other) {
         name = other.name;
         maxThreads = other.maxThreads;
+        clearCompletedAfterSeconds = other.clearCompletedAfterSeconds;
         categories.addAll(other.categories);
     }
 

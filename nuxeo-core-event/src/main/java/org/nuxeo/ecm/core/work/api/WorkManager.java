@@ -230,4 +230,10 @@ public interface WorkManager {
      */
     void clearCompletedWork(long completionTime);
 
+    /**
+     * Clears the list of completed work instances older than what's configured
+     * for each queue.
+     */
+    void cleanup();
+
 }

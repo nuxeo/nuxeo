@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -660,6 +661,21 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     public synchronized void clearCompletedWork(long completionTime) {
         for (WorkThreadPoolExecutor executor : executors.values()) {
             executor.clearCompleted(completionTime);
+        }
+    }
+
+    @Override
+    public synchronized void cleanup() {
+        log.debug("Clearing old completed work");
+        for (Entry<String, WorkThreadPoolExecutor> es : executors.entrySet()) {
+            String queueId = es.getKey();
+            WorkThreadPoolExecutor executor = es.getValue();
+            WorkQueueDescriptor descr = workQueueDescriptors.get(queueId);
+            long delay = descr.clearCompletedAfterSeconds * 1000L;
+            if (delay > 0) {
+                long completionTime = System.currentTimeMillis() - delay;
+                executor.clearCompleted(completionTime);
+            }
         }
     }
 

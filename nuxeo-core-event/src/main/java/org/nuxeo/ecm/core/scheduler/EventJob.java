@@ -103,7 +103,7 @@ public class EventJob implements Job {
             boolean tx = TransactionHelper.startTransaction();
 
             // send event
-            log.info("Sending scheduled event id=" + eventId + ", category="
+            log.debug("Sending scheduled event id=" + eventId + ", category="
                     + eventCategory + ", username=" + username);
             boolean ok = false;
             try {
