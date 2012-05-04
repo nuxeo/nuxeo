@@ -7,7 +7,7 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
 
-     <type id="SnapshotableFolder" coretype="Folder">
+     <type id="SnapshotableFolder" coretype="SnapshotableFolder">
       <label>Versionable Folder</label>
       <icon>/icons/VFolder.png</icon>
       <bigIcon>/icons/VFolder_100.png</bigIcon>
@@ -21,6 +21,13 @@
         <type>Note</type>
         <type>SnapshotableFolder</type>
       </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
     </type>
 
     <type id="Workspace" coretype="Workspace">

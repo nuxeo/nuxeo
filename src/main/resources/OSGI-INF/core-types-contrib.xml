@@ -19,6 +19,7 @@
 
     <doctype name="SnapshotableFolder" extends="Folder">
       <facet name="Snapshotable"/>
+      <facet name="Publishable"/>
     </doctype>
 
   </extension>
