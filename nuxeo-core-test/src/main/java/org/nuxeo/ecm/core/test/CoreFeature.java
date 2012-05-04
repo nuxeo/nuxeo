@@ -130,14 +130,17 @@ public class CoreFeature extends SimpleFeature {
 
     protected void cleanupSession(FeaturesRunner runner) {
         CoreSession session  = repository.getSession();
+        // wait for any async thread to finish (e.g. fulltext indexing) as
+        // apparently concurrent fulltext indexing of document that has just
+        // been deleted can trigger the core (SessionImpl) to try to re-create
+        // the row either in the hierarchy or in the fulltext tables and violate
+        // integrity constraints of the database
+        waitForAsyncCompletion();
+        if (session == null) {
+            // session was never properly created, error during setup
+            return;
+        }
         try {
-            // wait for any async thread to finish (e.g. fulltext indexing) as
-            // apparently concurrent fulltext indexing of document that has
-            // just
-            // been deleted can trigger the core (SessionImpl) to try to
-            // re-create the row either in the hierarchy or in the fulltext
-            // tables and violate integrity constraints of the database
-            waitForAsyncCompletion();
             session.removeChildren(new PathRef("/"));
             session.save();
             // wait for async events potentially triggered by the repo clean up
