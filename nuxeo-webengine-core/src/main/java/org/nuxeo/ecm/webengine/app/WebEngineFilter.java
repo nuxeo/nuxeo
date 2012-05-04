@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.webengine.app;
 
@@ -44,25 +45,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * The session synchronization is done only if NuxeoRequestControllerFilter was
  * not already done it and stateful flag for the request path is true.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngineFilter implements Filter {
-
-    // private Log log = LogFactory.getLog(WebEngineFilter.class);
-
-    /**
-     * Framework property to control whether tx is started by webengine by
-     * default
-     */
-    public static final String TX_AUTO = "org.nuxeo.webengine.tx.auto";
-
-    /**
-     * Framework property giving the default session scope - stateful or
-     * stateless.
-     */
-    public static final String STATEFULL = "org.nuxeo.webengine.session.stateful";
 
     protected WebEngine engine;
 
@@ -72,9 +56,7 @@ public class WebEngineFilter implements Filter {
 
     protected static Log log = LogFactory.getLog(WebEngineFilter.class);
 
-    // protected boolean enableJsp = false;
-    // private static boolean isTaglibLoaded = false;
-
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         initIfNeeded();
     }
@@ -84,21 +66,14 @@ public class WebEngineFilter implements Filter {
             return;
         }
         engine = Framework.getLocalService(WebEngine.class);
-        String v = Framework.getProperty(TX_AUTO, "true");
-        isAutoTxEnabled = Boolean.parseBoolean(v);
-        v = Framework.getProperty(STATEFULL, "false");
-        isStatefull = Boolean.parseBoolean(v);
-        // String v =
-        // Framework.getProperty("org.nuxeo.ecm.webengine.enableJsp");
-        // if ("true".equals(v)) {
-        // enableJsp = true;
-        // }
     }
 
+    @Override
     public void destroy() {
         engine = null;
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
         initIfNeeded();
@@ -107,7 +82,7 @@ public class WebEngineFilter implements Filter {
             HttpServletResponse resp = (HttpServletResponse) response;
             PathDescriptor pd = engine.getRequestConfiguration().getMatchingConfiguration(
                     req);
-            Config config = new Config(req, pd, isAutoTxEnabled, isStatefull);
+            Config config = new Config(req, pd);
             AbstractWebContext ctx = initRequest(config, req, resp);
             if (config.txStarted) {
                 resp = new BufferingHttpServletResponse(resp);
@@ -146,21 +121,6 @@ public class WebEngineFilter implements Filter {
             request.setCharacterEncoding("UTF-8");
         }
         // response.setCharacterEncoding("UTF-8");
-        // TODO: remove this
-        // if (enableJsp) {
-        // WebEngine engine = Framework.getLocalService(WebEngine.class);
-        // if (!isTaglibLoaded) {
-        // synchronized (this) {
-        // if (!isTaglibLoaded) {
-        // engine.loadJspTaglib(this);
-        // isTaglibLoaded = true;
-        // }
-        // }
-        // }
-        // engine.initJspRequestSupport(this, request,
-        // response);
-        // }
-
     }
 
     public void postRequest(HttpServletRequest request,
@@ -211,10 +171,8 @@ public class WebEngineFilter implements Filter {
         }
     }
 
-    static class Config {
+    protected static class Config {
         boolean autoTx;
-
-        boolean stateful;
 
         boolean txStarted;
 
@@ -224,15 +182,8 @@ public class WebEngineFilter implements Filter {
 
         String pathInfo;
 
-        public Config(HttpServletRequest req, PathDescriptor pd,
-                boolean autoTx, boolean stateful) {
-            if (pd == null) {
-                this.autoTx = autoTx;
-                this.stateful = stateful;
-            } else {
-                this.autoTx = pd.isAutoTx(autoTx);
-                this.stateful = pd.isStateful(stateful);
-            }
+        public Config(HttpServletRequest req, PathDescriptor pd) {
+            autoTx = pd == null ? true : pd.isAutoTx(true);
             pathInfo = req.getPathInfo();
             if (pathInfo == null || pathInfo.length() == 0) {
                 pathInfo = "/";
@@ -249,8 +200,6 @@ public class WebEngineFilter implements Filter {
             sb.append(pathInfo);
             sb.append("\nAuto TX:");
             sb.append(autoTx);
-            sb.append("\nStateful:");
-            sb.append(stateful);
             sb.append("\nStatic:");
             sb.append(isStatic);
             return sb.toString();

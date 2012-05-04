@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,13 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.webengine;
 
-import java.util.Arrays;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.ecm.webengine.util.PathMatcher;
 
 /**
@@ -33,13 +31,6 @@ import org.nuxeo.ecm.webengine.util.PathMatcher;
  * transaction handling is done. The default is to start a transaction for any
  * path but: [^/]+/skin/.*
  * <p>
- * If <b>stateful</b> flag is set (the default is false) then the core session
- * which is provided to the JAX-RS resource (through
- * {@link UserSession#getCoreSession()}) will be reused for each request in the
- * same HTPP session (i.e. the core session is stored in the HTTP Session and
- * closed when the session expires). By default the provided core session has a
- * REQUEST scope (it is closed automatically when request ends).
- * <p>
  * The <b>value</b> attribute is required and must be used to specify the path
  * pattern. The path pattern is either a prefix or a regular expression. If the
  * <b>regex</b> parameter is true (the default is false) then the value will be
@@ -47,9 +38,6 @@ import org.nuxeo.ecm.webengine.util.PathMatcher;
  * 'prefix'. Paths are relative to the webengine servlet (i.e. they correspond
  * to the servlet path info in the JAX-RS servlet) - and always begin with a
  * '/'.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("path")
 public class PathDescriptor implements Comparable<PathDescriptor> {
@@ -63,21 +51,9 @@ public class PathDescriptor implements Comparable<PathDescriptor> {
     @XNode("@autoTx")
     protected Boolean autoTx;
 
-    @XNode("@stateful")
-    protected Boolean stateful;
-
-    private PathMatcher matcher;
+    protected PathMatcher matcher;
 
     public PathDescriptor() {
-
-    }
-
-    public PathDescriptor(String value, boolean regex, boolean autoTx,
-            boolean stateful) {
-        this.value = value;
-        this.regex = regex;
-        this.autoTx = autoTx;
-        this.stateful = stateful;
     }
 
     public PathMatcher getMatcher() {
@@ -92,16 +68,8 @@ public class PathDescriptor implements Comparable<PathDescriptor> {
         return autoTx;
     }
 
-    public Boolean getStateful() {
-        return stateful;
-    }
-
     public boolean isAutoTx(boolean defaultValue) {
         return autoTx == null ? defaultValue : autoTx.booleanValue();
-    }
-
-    public boolean isStateful(boolean defaultValue) {
-        return stateful == null ? defaultValue : stateful.booleanValue();
     }
 
     public PathMatcher createMatcher() {
@@ -140,7 +108,7 @@ public class PathDescriptor implements Comparable<PathDescriptor> {
 
     @Override
     public String toString() {
-        return value + "; autoTx: " + autoTx + "; stateful: " + stateful;
+        return value + "; autoTx: " + autoTx;
     }
 
     @Override
@@ -156,16 +124,4 @@ public class PathDescriptor implements Comparable<PathDescriptor> {
         return len2 - len1;
     }
 
-    public static void main(String[] args) {
-        PathDescriptor[] pds = new PathDescriptor[] {
-                new PathDescriptor("/a/b/d/.*\\.gif", true, false, false),
-                new PathDescriptor("/a", false, false, false),
-                new PathDescriptor("/a/b/c", false, false, false),
-                new PathDescriptor("/b", false, false, false),
-                new PathDescriptor("/b/c", false, false, false) };
-        Arrays.sort(pds);
-        for (PathDescriptor pd : pds) {
-            System.out.println(pd.value);
-        }
-    }
 }
