@@ -859,6 +859,13 @@
         <artifactId>nuxeo-agenda</artifactId>
         <version>${nuxeo.agenda.version}</version>
       </dependency>
+
+      <!-- Multi Tenant Management -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-multi-tenant</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
