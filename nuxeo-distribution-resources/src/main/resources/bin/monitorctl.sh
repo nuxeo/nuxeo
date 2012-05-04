@@ -417,6 +417,13 @@ vacuum() {
 }
 
 start() {
+    # full GC
+    invoke_fgc
+
+    # log heap histo
+    NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+    $JAVA_HOME/bin/jmap -histo $NXPID > $LOG_DIR/heap-histo-start.txt
+
     # start sar
     if moncheckalive; then
         die "Monitoring is already running with pid `cat $SAR_PID`"
@@ -496,6 +503,13 @@ stop() {
             $HERE/twiddle.sh invoke 'jboss.system:type=ServerInfo' listThreadCpuUtilization > $LOG_DIR/thread-usage-end.html
             $HERE/twiddle.sh invoke "jboss.system:type=ServerInfo" listMemoryPools true >> $LOG_DIR/thread-usage-end.html
         fi
+        # full GC
+        invoke_fgc
+
+        # log heap histo
+        NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+        $JAVA_HOME/bin/jmap -histo $NXPID > $LOG_DIR/heap-histo-end.txt
+
         echo "Monitoring stopped."
         archive
         return 0
@@ -524,6 +538,25 @@ archive() {
     (cd `dirname $LOG_DIR`; tar czf $ARCH_FILE $logdir/*.txt $logdir/*.log $logdir/*.html)
     echo "Done: $ARCH_FILE"
 }
+
+
+invoke_fgc() {
+    if [ ! -z $JMXSTAT ]; then
+       NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
+       echo "Invoking Full GC"
+       $JMXSTAT localhost:1089 --performGC $NXPID
+    else
+       [ -z $JMXSH ] && die "You need to enable JMX and install jmxstat or JMXSH"
+       cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH
+jmx_connect -h localhost -p 1089
+set MBEAN java.lang:type=Memory
+set ATTROP gc
+jmx_invoke
+jmx_close
+EOF
+   fi
+}
+
 
 case "$1" in
     status)
@@ -585,14 +618,7 @@ case "$1" in
         $JAVA_HOME/bin/jmap -histo $NXPID
         ;;
     invoke-fgc)
-        [ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
-        cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH 
-jmx_connect -h localhost -p 1089
-set MBEAN java.lang:type=Memory
-set ATTROP gc
-jmx_invoke
-jmx_close
-EOF
+	invoke_fgc
         ;;
     disable-cm|disable-contention-monitoring)
         [ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
