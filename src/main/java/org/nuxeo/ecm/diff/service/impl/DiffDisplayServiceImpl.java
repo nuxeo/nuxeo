@@ -128,11 +128,6 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     }
 
-    public List<String> getDefaultTypeDiffDisplay() {
-        return diffDisplayContribs.get(DEFAULT_DIFF_DISPLAY_TYPE);
-
-    }
-
     public Map<String, DiffBlockDefinition> getDiffBlockDefinitions() {
         return diffBlockContribs;
     }
@@ -161,12 +156,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                         leftDoc, rightDoc);
             } else {
                 LOGGER.info(String.format(
-                        "No diffDisplay contribution was defined for the type '%s' => looking for the default (Document) diffDisplay contribution.",
+                        "No diffDisplay contribution was defined for the type '%s' => using default diff display.",
                         leftDocType));
             }
         } else {
             LOGGER.info(String.format(
-                    "The 2 documents don't have the same type ('%s'/'%s') => looking for the default (Document) diffDisplay contribution.",
+                    "The 2 documents don't have the same type ('%s'/'%s') => using default diff display.",
                     leftDocType, rightDocType));
         }
         return getDefaultDiffDisplayBlocks(docDiff, leftDoc, rightDoc);
@@ -176,16 +171,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException {
 
-        List<String> diffBlockRefs = getDefaultTypeDiffDisplay();
-        if (diffBlockRefs != null) {
-            LOGGER.info("Found the default (Document) diffDisplay contribution => using it to display the diff.");
-            return getDiffDisplayBlocks(getDiffBlockDefinitions(diffBlockRefs),
-                    docDiff, leftDoc, rightDoc);
-        } else {
-            LOGGER.info("The default (Document) diffDisplay contribution was not found => using the document type schemas and fields to display the diff (random schema and field order).");
-            return getDiffDisplayBlocks(getRawDiffBlockDefinitions(docDiff),
-                    docDiff, leftDoc, rightDoc);
-        }
+        return getDiffDisplayBlocks(getDefaultDiffBlockDefinitions(docDiff),
+                docDiff, leftDoc, rightDoc);
     }
 
     /**
@@ -264,19 +251,23 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected final List<DiffBlockDefinition> getRawDiffBlockDefinitions(
+    protected final List<DiffBlockDefinition> getDefaultDiffBlockDefinitions(
             DocumentDiff docDiff) {
 
         List<DiffBlockDefinition> diffBlockDefs = new ArrayList<DiffBlockDefinition>();
 
         for (String schemaName : docDiff.getSchemaNames()) {
-            SchemaDiff schemaDiff = docDiff.getSchemaDiff(schemaName);
-            List<DiffFieldDefinition> fieldDefs = new ArrayList<DiffFieldDefinition>();
-            for (String fieldName : schemaDiff.getFieldNames()) {
-                fieldDefs.add(new DiffFieldDefinitionImpl(schemaName, fieldName));
+            // TODO: enable to configure the system elements display
+            if (!FieldDiffHelper.SYSTEM_ELEMENT.equals(schemaName)) {
+                SchemaDiff schemaDiff = docDiff.getSchemaDiff(schemaName);
+                List<DiffFieldDefinition> fieldDefs = new ArrayList<DiffFieldDefinition>();
+                for (String fieldName : schemaDiff.getFieldNames()) {
+                    fieldDefs.add(new DiffFieldDefinitionImpl(schemaName,
+                            fieldName));
+                }
+                diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName, null,
+                        fieldDefs));
             }
-            diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName, null,
-                    fieldDefs));
         }
 
         return diffBlockDefs;

@@ -8,11 +8,11 @@
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffDisplay">
 
-    <!-- Override Document diffDisplay -->
-    <diffDisplay type="Document">
+    <!-- Override File diffDisplay -->
+    <diffDisplay type="File">
       <diffBlocks>
         <diffBlock name="heading" />
-        <diffBlock name="file" />
+        <diffBlock name="files" />
         <diffBlock name="testNoFields" />
       </diffBlocks>
     </diffDisplay>

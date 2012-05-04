@@ -34,13 +34,9 @@ import org.nuxeo.ecm.diff.model.DocumentDiff;
  */
 public interface DiffDisplayService extends Serializable {
 
-    String DEFAULT_DIFF_DISPLAY_TYPE = "Document";
-
     Map<String, List<String>> getDiffDisplays();
 
     List<String> getDiffDisplay(String type);
-
-    List<String> getDefaultTypeDiffDisplay();
 
     Map<String, DiffBlockDefinition> getDiffBlockDefinitions();
 

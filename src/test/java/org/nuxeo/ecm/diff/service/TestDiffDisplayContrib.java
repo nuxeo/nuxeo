@@ -16,14 +16,18 @@
  */
 package org.nuxeo.ecm.diff.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.runner.RunWith;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
@@ -58,8 +62,7 @@ public class TestDiffDisplayContrib {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(3, diffDisplays.size());
-        assertTrue(diffDisplays.containsKey("Document"));
+        assertEquals(2, diffDisplays.size());
         assertTrue(diffDisplays.containsKey("File"));
         assertTrue(diffDisplays.containsKey("Note"));
 
@@ -67,13 +70,14 @@ public class TestDiffDisplayContrib {
         List<String> diffDisplay = diffDisplayService.getDiffDisplay("Test");
         assertNull(diffDisplay);
 
-        // Check default (Document) diffDisplay contrib
-        diffDisplay = diffDisplayService.getDefaultTypeDiffDisplay();
+        // Check File diffDisplay contrib
+        diffDisplay = diffDisplayService.getDiffDisplay("File");
         assertNotNull(diffDisplay);
 
         List<String> expectedDiffDisplay = new ArrayList<String>();
         expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
+        expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
         // Check that order is taken into account
@@ -81,16 +85,6 @@ public class TestDiffDisplayContrib {
         expectedDiffDisplay.remove(0);
         expectedDiffDisplay.add(diffBlockRef);
         assertFalse(expectedDiffDisplay.equals(diffDisplay));
-
-        // Check File diffDisplay contrib
-        diffDisplay = diffDisplayService.getDiffDisplay("File");
-        assertNotNull(diffDisplay);
-
-        expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("heading");
-        expectedDiffDisplay.add("dublincore");
-        expectedDiffDisplay.add("files");
-        assertEquals(expectedDiffDisplay, diffDisplay);
 
         // Check Note diffDisplay contrib
         diffDisplay = diffDisplayService.getDiffDisplay("Note");
@@ -143,8 +137,8 @@ public class TestDiffDisplayContrib {
         fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "heading", null, fields);
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("heading",
+                null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check that order is taken into account

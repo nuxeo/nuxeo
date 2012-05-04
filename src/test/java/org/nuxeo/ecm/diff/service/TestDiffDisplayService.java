@@ -83,7 +83,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
 
         // --------------------------------------------------------------------
         // Check diff display for 2 documents of a different type: Note / File
-        // => must fall back on the default (Document) diffDisplay contrib.
+        // => must fall back on the default diff display.
         // --------------------------------------------------------------------
 
         // Create left and right docs
@@ -109,16 +109,16 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         assertNotNull(diffDisplayBlocks);
         assertEquals(1, diffDisplayBlocks.size());
 
-        // Check diff display block
+        // Check diff display blocks
         DiffDisplayBlock diffDisplayBlock = diffDisplayBlocks.get(0);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.heading", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
-                Arrays.asList("title"));
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 2,
+                Arrays.asList("title", "creator"));
 
         // -----------------------------------------------------------------
         // Check diff display for 2 documents of the same type but with no
         // diffDisplay contrib defined for this type: OtherSampleType
-        // => must fall back on the default (Document) diffDisplay contrib.
+        // => must fall back on the default diff display.
         // -----------------------------------------------------------------
 
         // Create left and right docs
@@ -139,13 +139,18 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff,
                 leftDoc, rightDoc);
         assertNotNull(diffDisplayBlocks);
-        assertEquals(1, diffDisplayBlocks.size());
+        assertEquals(2, diffDisplayBlocks.size());
 
-        // Check diff display block
+        // Check diff display blocks
         diffDisplayBlock = diffDisplayBlocks.get(0);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.heading", 1);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
         checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
                 Arrays.asList("title"));
+
+        diffDisplayBlock = diffDisplayBlocks.get(1);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.simpletypes", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "simpletypes", 1,
+                Arrays.asList("boolean"));
 
         // -----------------------------------------------------------------
         // Check diff display for 2 documents of the same type with a

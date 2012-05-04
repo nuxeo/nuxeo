@@ -4,13 +4,6 @@
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffDisplay">
 
-    <diffDisplay type="Document">
-      <diffBlocks>
-        <diffBlock name="heading" />
-        <diffBlock name="dublincore" />
-      </diffBlocks>
-    </diffDisplay>
-
     <diffDisplay type="File">
       <diffBlocks>
         <diffBlock name="heading" />

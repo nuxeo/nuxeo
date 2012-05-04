@@ -48,15 +48,15 @@ public final class FieldDiffHelper {
 
     private static final Log LOGGER = LogFactory.getLog(FieldDiffHelper.class);
 
-    private static final String SYSTEM_ELEMENT = "system";
+    public static final String SYSTEM_ELEMENT = "system";
 
-    private static final String FACET_ELEMENT = "facet";
+    public static final String FACET_ELEMENT = "facet";
 
-    private static final String SCHEMA_ELEMENT = "schema";
+    public static final String SCHEMA_ELEMENT = "schema";
 
-    private static final String NAME_ATTRIBUTE = "name";
+    public static final String NAME_ATTRIBUTE = "name";
 
-    private static final String TYPE_ATTRIBUTE = "type";
+    public static final String TYPE_ATTRIBUTE = "type";
 
     /**
      * Computes a field diff.

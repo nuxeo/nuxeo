@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.diff.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -24,10 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.runner.RunWith;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,7 +44,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- * Tests the {@link DiffDisplayService}.
+ * Tests the {@link DiffDisplayService} for the default diff display.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
@@ -50,9 +52,8 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @Deploy({
         "org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml",
-        "org.nuxeo.diff",
-        "org.nuxeo.diff.test:OSGI-INF/test-no-default-diff-display-contrib.xml" })
-public class TestDiffDisplayServiceNoDefaultContrib extends
+        "org.nuxeo.diff" })
+public class TestDiffDisplayServiceDefaultDisplay extends
         DiffDisplayServiceTestCase {
 
     @Inject
@@ -107,16 +108,19 @@ public class TestDiffDisplayServiceNoDefaultContrib extends
         List<DiffDisplayBlock> diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(
                 docDiff, leftDoc, rightDoc);
         assertNotNull(diffDisplayBlocks);
-        assertEquals(3, diffDisplayBlocks.size());
+        // TODO: uncomment if system elements are taken into account
+        // assertEquals(3, diffDisplayBlocks.size());
+        assertEquals(2, diffDisplayBlocks.size());
 
         // Check diff display blocks
         for (DiffDisplayBlock diffDisplayBlock : diffDisplayBlocks) {
 
-            if (checkDiffDisplayBlock(diffDisplayBlock,
-                    "label.diffBlock.system", 1)) {
-                checkDiffDisplayBlockSchema(diffDisplayBlock, "system", 2,
-                        Arrays.asList("type", "path"));
-            } else if (checkDiffDisplayBlock(diffDisplayBlock,
+            /*
+             * if (checkDiffDisplayBlock(diffDisplayBlock,
+             * "label.diffBlock.system", 1)) {
+             * checkDiffDisplayBlockSchema(diffDisplayBlock, "system", 2,
+             * Arrays.asList("type", "path")); } else
+             */if (checkDiffDisplayBlock(diffDisplayBlock,
                     "label.diffBlock.dublincore", 1)) {
                 checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 3,
                         Arrays.asList("title", "subjects", "creator"));
