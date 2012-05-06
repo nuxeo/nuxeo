@@ -64,13 +64,13 @@
                     <nxu:set var="fieldName" value="#{fn:substring(fieldFullName, indexOfColon + 1, fieldFullName.length())}" cache="true">
                       <div>
                         <h:outputLink id="openContentDiffFancyBox_#{schemaName}_#{fieldName}_any2html"
-                          value="javascript:showFancyBox('#{diffActions.getContentDiffFancyBoxURL(schemaName, fieldName)}', '90%', '90%', 'no');">
+                          value="javascript:showFancyBox('#{diffActions.getContentDiffFancyBoxURL(schemaName, fieldName)}','90%','90%','no');">
                           <h:outputText value="#{messages['diff.content.keepLayout.link.title']}"/>
                         </h:outputLink>
                       </div>
                       <div>
                         <h:outputLink id="openContentDiffFancyBox_#{schemaName}_#{fieldName}_any2text"
-                          value="javascript:showFancyBox('#{diffActions.getContentDiffFancyBoxURL(schemaName, fieldName, 'text')}', '90%', '90%', 'no');">
+                          value="javascript:showFancyBox('#{diffActions.getContentDiffFancyBoxURL(schemaName, fieldName, 'text')}','90%','90%','no');">
                           <h:outputText value="#{messages['diff.content.noLayout.link.title']}"/>
                         </h:outputLink>
                       </div>
