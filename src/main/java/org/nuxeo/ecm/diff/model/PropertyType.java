@@ -38,6 +38,7 @@ public final class PropertyType {
 
     public static final String DOUBLE = "double";
 
+    // TODO: remove?
     public static final String BINARY = "binary";
 
     public static final String CONTENT = "content";
