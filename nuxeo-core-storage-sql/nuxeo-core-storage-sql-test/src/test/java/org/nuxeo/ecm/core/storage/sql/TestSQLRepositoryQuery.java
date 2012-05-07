@@ -101,7 +101,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     /**
      * Creates the following structure of documents:
-     *
+     * 
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -1551,6 +1551,9 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         session.removeDocument(doc.getRef());
         session.save();
 
+        // wait for async version removal
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+
         // version gone as well
         dml = session.query(query);
         assertTrue(dml.isEmpty());
@@ -1780,7 +1783,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         createDocs();
         sleepForFulltext();
-        assertTrue(EventStatsHolder.getAsyncHandlersCallStats().containsKey("sql-storage-binary-text"));
+        assertTrue(EventStatsHolder.getAsyncHandlersCallStats().containsKey(
+                "sql-storage-binary-text"));
         String query;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(

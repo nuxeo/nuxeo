@@ -13,11 +13,15 @@
 
 package org.nuxeo.ecm.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSessionFactory;
 import org.nuxeo.ecm.core.versioning.DefaultVersionRemovalPolicy;
+import org.nuxeo.ecm.core.versioning.OrphanVersionRemovalFilter;
 import org.nuxeo.ecm.core.versioning.VersionRemovalPolicy;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -25,9 +29,10 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * Service used to register session factories and version removal policies.
- *
+ * 
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class CoreService extends DefaultComponent {
 
@@ -36,6 +41,12 @@ public class CoreService extends DefaultComponent {
     private ComponentContext context;
 
     private VersionRemovalPolicy versionRemovalPolicy;
+
+    private List<OrphanVersionRemovalFilter> orphanVersionRemovalFilters = new ArrayList<OrphanVersionRemovalFilter>();
+
+    public List<OrphanVersionRemovalFilter> getOrphanVersionRemovalFilters() {
+        return orphanVersionRemovalFilters;
+    }
 
     public VersionRemovalPolicy getVersionRemovalPolicy() {
         if (versionRemovalPolicy == null) {
@@ -62,8 +73,8 @@ public class CoreService extends DefaultComponent {
                 if (contrib instanceof CoreServiceFactoryDescriptor) {
                     registerSessionFactory((CoreServiceFactoryDescriptor) contrib);
                 } else {
-                    log.error("Invalid contribution to extension point 'sessionFactory': " +
-                            contrib.getClass().getName());
+                    log.error("Invalid contribution to extension point 'sessionFactory': "
+                            + contrib.getClass().getName());
                 }
             }
         } else if ("versionRemovalPolicy".equals(point)) {
@@ -71,8 +82,17 @@ public class CoreService extends DefaultComponent {
                 if (contrib instanceof CoreServicePolicyDescriptor) {
                     registerVersionRemovalPolicy((CoreServicePolicyDescriptor) contrib);
                 } else {
-                    log.error("Invalid contribution to extension point 'versionRemovalPolicy': " +
-                            contrib.getClass().getName());
+                    log.error("Invalid contribution to extension point 'versionRemovalPolicy': "
+                            + contrib.getClass().getName());
+                }
+            }
+        } else if ("orphanVersionRemovalFilter".equals(point)) {
+            for (Object contrib : extension.getContributions()) {
+                if (contrib instanceof CoreServiceOrphanVersionRemovalFilterDescriptor) {
+                    registerOrphanVersionRemovalFilter((CoreServiceOrphanVersionRemovalFilterDescriptor) contrib);
+                } else {
+                    log.error("Invalid contribution to extension point 'orphanVersionRemovalFilter': "
+                            + contrib.getClass().getName());
                 }
             }
         } else {
@@ -100,6 +120,17 @@ public class CoreService extends DefaultComponent {
         try {
             versionRemovalPolicy = (VersionRemovalPolicy) context.getRuntimeContext().loadClass(
                     klass).newInstance();
+        } catch (Exception e) {
+            log.error("Failed to instantiate versionRemovalPolicy: " + klass, e);
+        }
+    }
+
+    private void registerOrphanVersionRemovalFilter(
+            CoreServiceOrphanVersionRemovalFilterDescriptor desc) {
+        String klass = desc.getKlass();
+        try {
+            orphanVersionRemovalFilters.add((OrphanVersionRemovalFilter) context.getRuntimeContext().loadClass(
+                    klass).newInstance());
         } catch (Exception e) {
             log.error("Failed to instantiate versionRemovalPolicy: " + klass, e);
         }

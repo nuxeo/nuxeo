@@ -5,7 +5,7 @@
   The core service provides a way to register session factories.
   Session factories are used by clients to open sessions on core repositories.
   Each type of client may implement its factory.
- 
+
   For now there are 2 type of sessions:
   - local sessions
   - remote sessions (i.e. EJB remote interfaces)
@@ -42,5 +42,16 @@
     <object
       class="org.nuxeo.ecm.core.CoreServicePolicyDescriptor" />
   </extension-point>
- 
+
+  <extension-point name="orphanVersionRemovalFilter">
+    <documentation>
+      Used to register filter that are used by the default VersionRemovalPolicy implementation to check asynchronously what versions can really be removed.
+      <code>
+        <filter class="..."/>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.core.CoreServiceOrphanVersionRemovalFilterDescriptor" />
+  </extension-point>
+
 </component>
