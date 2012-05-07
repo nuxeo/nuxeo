@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * Light weight {@link DocumentModel} implementation Only holds
  * {@link DocumentRef}, RepositoryName, name, path and context data. Used to
  * reduce memory footprint of {@link Event} stacked in {@link EventBundle}.
- *
+ * 
  * @author Thierry Delprat
  */
 public class ShallowDocumentModel implements DocumentModel {
@@ -69,6 +69,8 @@ public class ShallowDocumentModel implements DocumentModel {
 
     private final ScopedMap contextData;
 
+    private final Set<String> facets;
+
     public ShallowDocumentModel(DocumentModel doc) {
         id = doc.getId();
         repoName = doc.getRepositoryName();
@@ -78,6 +80,7 @@ public class ShallowDocumentModel implements DocumentModel {
         isFolder = doc.isFolder();
         isVersion = doc.isVersion();
         contextData = doc.getContextData();
+        facets = doc.getFacets();
     }
 
     @Override
@@ -231,7 +234,7 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public Set<String> getFacets() {
-        throw new UnsupportedOperationException();
+        return facets;
     }
 
     @Override
@@ -331,7 +334,7 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public boolean hasFacet(String facet) {
-        throw new UnsupportedOperationException();
+        return facets.contains(facet);
     }
 
     @Override
