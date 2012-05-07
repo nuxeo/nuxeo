@@ -35,6 +35,7 @@
           #{noteActions.translateImageLinks(field_0)}
         </property>
         <property name="cssClass">note_content_block</property>
+        <property name="displayContentDiffLinks">true</property>
       </properties>
     </widget>
 

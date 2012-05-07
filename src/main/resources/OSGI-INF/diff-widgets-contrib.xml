@@ -50,6 +50,9 @@
       <categories>
         <category>diff</category>
       </categories>
+      <properties mode="any">
+        <property name="displayContentDiffLinks">true</property>
+      </properties>
     </widget>
 
     <widget name="complex" type="template">
@@ -149,11 +152,12 @@
         <field>note:note</field>
         <field>note:mime_type</field>
       </fields>
-      <properties mode="view">
+      <properties mode="any">
         <property name="translatedHtml">
           #{noteActions.translateImageLinks(field_0)}
         </property>
         <property name="cssClass">note_content_block</property>
+        <property name="displayContentDiffLinks">true</property>
       </properties>
     </widget>
 
@@ -165,6 +169,9 @@
         <label mode="any">label.summary.download.file</label>
       </labels>
       <translated>true</translated>
+      <properties mode="any">
+        <property name="displayContentDiffLinks">true</property>
+      </properties>
     </widget>
 
     <widget name="files:files" type="list">

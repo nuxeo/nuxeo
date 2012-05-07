@@ -429,6 +429,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     }
 
     // TODO: should not be hardcoded
+    // => use HTML guesser?
     protected final void putMimetypeDiffDisplay(String schemaName,
             String fieldName, Map<String, Serializable> schemaMap,
             DocumentModel doc) throws ClientException {
