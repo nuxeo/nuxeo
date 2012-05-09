@@ -40,17 +40,15 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.CompoundFilter;
-import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.webapp.clipboard.ClipboardActionsBean;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 
 @Name("startupHelper")
@@ -171,35 +169,35 @@ public class StartupHelper implements Serializable {
                 restHelper.setLocaleString(localeStr);
             }
 
-            if (!DOMAINS_VIEW.equals(result)) {
-                // we're not redirecting to the domains view. Don't initialize
-                // further,
-                // we assume it has been done or something went wrong
+            // more than one repo
+            if (SERVERS_VIEW.equals(result)) {
                 return result;
             }
 
-            // get the domains from selected server
-            DocumentModel rootDocument = documentManager.getRootDocument();
-            FacetFilter facetFilter = new FacetFilter(
-                    FacetNames.HIDDEN_IN_NAVIGATION, false);
-            LifeCycleFilter lcFilter = new LifeCycleFilter(
-                    ClipboardActionsBean.DELETED_LIFECYCLE_STATE, false);
-            CompoundFilter complexFilter = new CompoundFilter(facetFilter,
-                    lcFilter);
-            DocumentModelList domains = documentManager.getChildren(
-                    rootDocument.getRef(), null, SecurityConstants.READ,
-                    complexFilter, null);
-
-            webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
+            String query = "SELECT * FROM Document WHERE ecm:primaryType = 'Domain' AND "
+                    + NXQL.ECM_MIXINTYPE
+                    + " <> '"
+                    + FacetNames.HIDDEN_IN_NAVIGATION + "' AND "
+                    + NXQL.ECM_LIFECYCLESTATE
+                    + " <> '"
+                    + LifeCycleConstants.DELETED_STATE + "'";
+            DocumentModelList domains = documentManager.query(query);
             if (domains.size() == 1) {
                 // select and go to the unique domain
                 return navigationContext.navigateToDocument(domains.get(0),
                         viewId);
             }
 
-            // zero or several domains: let the user decide what to do
-            navigationContext.navigateToDocument(rootDocument);
-            return DOMAINS_VIEW;
+            // zero or several domains: let the user decide what to do if he has
+            // right on the Root document
+            DocumentModel rootDocument = documentManager.getRootDocument();
+            if (documentManager.hasPermission(rootDocument.getRef(),
+                    SecurityConstants.READ_CHILDREN)) {
+                navigationContext.navigateToDocument(rootDocument);
+                return DOMAINS_VIEW;
+            }
+
+            return result;
         } catch (ClientException e) {
             // avoid pages.xml contribution to catch exceptions silently
             // hiding the cause of the problem to developers
