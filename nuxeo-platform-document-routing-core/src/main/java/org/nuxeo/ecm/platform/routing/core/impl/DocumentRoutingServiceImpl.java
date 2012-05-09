@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Alexandre Russel
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
@@ -51,7 +52,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author arussel
+ * The implementation of the routing service.
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
@@ -473,4 +474,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public boolean isRoutable(DocumentModel doc) {
+        if (doc == null) {
+            return false;
+        }
+        String type = doc.getType();
+        // TODO make configurable
+        return type.equals("File") || type.equals("Note");
+    }
+
 }

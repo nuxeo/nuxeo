@@ -163,6 +163,10 @@ public class DocumentRoutingActionsBean implements Serializable {
         relatedRouteModelDocumentId = null;
     }
 
+    public boolean isRoutable() {
+        return getDocumentRoutingService().isRoutable(navigationContext.getCurrentDocument());
+    }
+
     public String startRoute() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
@@ -646,7 +650,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                 stepId));
         DocumentModel parentDoc = documentManager.getDocument(routeElementDocToMove.getParentRef());
         ExecutionTypeValues executionType = ExecutionTypeValues.valueOf((String) parentDoc.getPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
-        if (DocumentRoutingConstants.ExecutionTypeValues.parallel.equals(executionType)) {
+        if (!DocumentRoutingConstants.ExecutionTypeValues.serial.equals(executionType)) {
             facesMessages.add(
                     StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(

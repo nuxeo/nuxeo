@@ -44,7 +44,6 @@
       label="label.document.routing.related.route">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>isRoutable</filter-id>
-      <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
     <action id="CANCEL_RELATED_ROUTE" link="#{routingActions.cancelRoute()}"
@@ -149,7 +148,7 @@
       <filter-id>isEditableRoute</filter-id>
       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
-    
+
     <action id="newDocument">
       <filter-id>create</filter-id>
       <filter-id>isNotDraftRouteModel</filter-id>
@@ -170,7 +169,7 @@
 
     <filter id="isRoutable">
       <rule grant="true">
-        <facet>Routable</facet>
+        <condition>#{routingActions.isRoutable()}</condition>
       </rule>
     </filter>
 
@@ -204,7 +203,7 @@
       </rule>
       <rule grant="true">
         <permission>Manage everything</permission>
-      </rule>      
+      </rule>
     </filter>
 
 
@@ -244,7 +243,7 @@
         </condition>
       </rule>
     </filter>
-    
+
     <filter id="isNotDraftRouteModel">
       <rule grant="false">
         <condition>

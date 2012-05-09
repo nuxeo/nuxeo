@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,32 +12,34 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     mcedica
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.routing.api.exception;
 
+import org.nuxeo.ecm.core.api.ClientException;
+
 /**
-*
-* @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
-*
-*/
-public class DocumentRouteAlredayLockedException extends DocumentRouteException {
+ * Basic document routing exception.
+ *
+ * @since 5.6
+ */
+public class DocumentRouteException extends ClientException {
 
     private static final long serialVersionUID = 1L;
 
-    public DocumentRouteAlredayLockedException() {
+    public DocumentRouteException() {
     }
 
-    public DocumentRouteAlredayLockedException(String message) {
+    public DocumentRouteException(String message) {
         super(message);
     }
 
-    public DocumentRouteAlredayLockedException(Throwable th) {
-        super(th);
+    public DocumentRouteException(Throwable cause) {
+        super(cause);
     }
 
-    public DocumentRouteAlredayLockedException(String message, Throwable th) {
-        super(message, th);
+    public DocumentRouteException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }

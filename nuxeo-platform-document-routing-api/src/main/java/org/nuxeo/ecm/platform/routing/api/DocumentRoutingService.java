@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Alexandre Russel
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.routing.api;
 
@@ -28,12 +29,10 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedEx
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 
 /**
- * The DocumentRoutingService allows manipulate {@link DocumentRoute}.
- *
- * @author arussel
- *
+ * The DocumentRoutingService allows manipulation of {@link DocumentRoute DocumentRoutes}.
  */
 public interface DocumentRoutingService {
+
     /**
      * Create a new {@link DocumentRoute} instance from this
      * {@link DocumentRoute} model.
@@ -292,5 +291,13 @@ public interface DocumentRoutingService {
      */
     boolean isLockedByCurrentUser(DocumentRoute routeModel, CoreSession session)
             throws ClientException;
+
+    /**
+     * Checks if the given document can be associated to a DocumentRoute.
+     *
+     * @param doc the document
+     * @return {@code true} if the document can be routed
+     */
+    boolean isRoutable(DocumentModel doc);
 
 }

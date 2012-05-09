@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.routing.api;
 
 /**
  * @author arussel
- * 
+ *
  */
 public interface DocumentRoutingConstants {
 
@@ -70,7 +70,12 @@ public interface DocumentRoutingConstants {
     String DOCUMENT_ROUTING_ACL = "routing";
 
     enum ExecutionTypeValues {
-        serial, parallel
+        /** Serial running of children nodes. */
+        serial,
+        /** Parallel running of children nodes. */
+        parallel,
+        /** Running of the nodes decided by the graph state. */
+        graph
     }
 
     // event

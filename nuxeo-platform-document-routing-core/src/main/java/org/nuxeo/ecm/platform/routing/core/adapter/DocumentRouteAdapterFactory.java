@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.ConditionalRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteElementImpl;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteImpl;
 import org.nuxeo.ecm.platform.routing.core.impl.DocumentRouteStepsContainerImpl;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.ParallelRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.SerialRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.StepElementRunner;
@@ -50,6 +51,8 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
                 return new DocumentRouteImpl(doc, new SerialRunner());
             case parallel:
                 return new DocumentRouteImpl(doc, new ParallelRunner());
+            case graph:
+                return new DocumentRouteImpl(doc, new GraphRunner());
             }
         } else if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
             return new DocumentRouteElementImpl(doc, new StepElementRunner());
@@ -65,6 +68,9 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
             case parallel:
                 return new DocumentRouteStepsContainerImpl(doc,
                         new ParallelRunner());
+            case graph:
+                return new DocumentRouteStepsContainerImpl(doc,
+                        new GraphRunner());
             }
         }
         return null;

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:node="http://www.nuxeo.org/ecm/schemas/route_node/"
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/route_node/">
+
+  <xs:element name="nodeId" type="xs:string" />
+  <xs:element name="variables" type="node:variables" />
+  <xs:element name="inputChain" type="xs:string" />
+  <xs:element name="outputChain" type="xs:string" />
+  <xs:element name="transitions" type="node:transitions" />
+  <xs:element name="startDate" type="xs:date" />
+  <xs:element name="endDate" type="xs:date" />
+  <xs:element name="mergeStyle" type="xs:string" />
+  <xs:element name="start" type="xs:boolean" />
+  <xs:element name="stop" type="xs:boolean" />
+
+  <xs:complexType name="variables">
+    <xs:sequence>
+      <xs:element name="variable" type="node:variable"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="variable">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="value" type="xs:string" />
+      <!-- type? -->
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transitions">
+    <xs:sequence>
+      <xs:element name="transition" type="node:transition"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transition">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="targetId" type="xs:string" />
+      <!-- ... -->
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="stringList">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+</xs:schema>
