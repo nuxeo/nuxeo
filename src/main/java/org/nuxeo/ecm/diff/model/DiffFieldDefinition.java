@@ -19,8 +19,6 @@ package org.nuxeo.ecm.diff.model;
 import java.io.Serializable;
 import java.util.List;
 
-import org.nuxeo.ecm.diff.service.impl.DiffFieldItemDescriptor;
-
 /**
  * Diff field definition interface.
  *
