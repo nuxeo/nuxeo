@@ -1790,8 +1790,15 @@ public abstract class NuxeoLauncher {
     protected void testparser() throws IOException, PackageException {
         PackageManager pm = getConnectBroker().getPackageManager();
         pm.setResolver("p2cudf");
-        DependencyResolution resolution = pm.resolveDependencies("nuxeo-dm",
+        DependencyResolution resolution = pm.resolveDependencies(
+                "nuxeo-dm:5.6-SNAPSHOT", null);
+
+        ConnectBroker pkgman = getConnectBroker();
+        boolean cmdOK = pkgman.pkgRequest(null,
+                Arrays.asList(new String[] { "nuxeo-dm:5.6-SNAPSHOT" }), null,
                 null);
-        log.info(resolution);
+        if (!cmdOK) {
+            errorValue = 3;
+        }
     }
 }

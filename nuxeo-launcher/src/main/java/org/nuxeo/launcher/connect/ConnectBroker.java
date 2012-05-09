@@ -46,7 +46,7 @@ import org.nuxeo.launcher.info.CommandInfo;
 import org.nuxeo.launcher.info.CommandSetInfo;
 import org.nuxeo.launcher.info.PackageInfo;
 
-/*
+/**
  * @since 5.6
  */
 public class ConnectBroker {
@@ -69,7 +69,8 @@ public class ConnectBroker {
         service.initialize();
         cbHolder = new StandaloneCallbackHolder(env, service);
         NuxeoConnectClient.setCallBackHolder(cbHolder);
-        targetPlatform = env.getProperty("org.nuxeo.distribution.name" + "-" + "org.nuxeo.distribution.version");
+        targetPlatform = env.getProperty(Environment.DISTRIBUTION_NAME + "-"
+                + Environment.DISTRIBUTION_VERSION);
     }
 
     public String getCLID() throws NoCLID {
@@ -505,15 +506,16 @@ public class ConnectBroker {
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
         // Add local files
-        for (String pkgToAdd : pkgsToAdd) {
-            pkgAdd(pkgToAdd);
+        if (pkgsToAdd != null) {
+            for (String pkgToAdd : pkgsToAdd) {
+                pkgAdd(pkgToAdd);
+            }
         }
         // Build solver request
-        if ((pkgsToInstall.size() != 0) || (pkgsToUninstall.size() != 0)
-                || (pkgsToRemove.size() != 0)) {
-            List<String> solverInstall = new ArrayList<String>();
-            List<String> solverRemove = new ArrayList<String>();
-            List<String> solverUpgrade = new ArrayList<String>();
+        List<String> solverInstall = new ArrayList<String>();
+        List<String> solverRemove = new ArrayList<String>();
+        List<String> solverUpgrade = new ArrayList<String>();
+        if (pkgsToInstall != null) {
             // If install request is a file name, add to cache and get the id
             List<String> namesOrIdsToInstall = new ArrayList<String>();
             for (String pkgToInstall : pkgsToInstall) {
@@ -533,15 +535,22 @@ public class ConnectBroker {
                     solverInstall.add(pkgToInstall);
                 }
             }
-            // Add packages to remove to uninstall list
-            solverRemove.addAll(pkgsToUninstall);
-            solverRemove.addAll(pkgsToRemove);
-            DependencyResolution resolution = getPackageManager().resolveDependencies(solverInstall, solverRemove, solverUpgrade, targetPlatform);
-            // TODO: act on the resolution
         }
+        // Add packages to remove to uninstall list
+        if (pkgsToUninstall != null) {
+            solverRemove.addAll(pkgsToUninstall);
+        }
+        if (pkgsToRemove != null) {
+            solverRemove.addAll(pkgsToRemove);
+        }
+        DependencyResolution resolution = getPackageManager().resolveDependencies(
+                solverInstall, solverRemove, solverUpgrade, targetPlatform);
+        log.info(resolution);
+        // TODO: act on the resolution
+
         // Remove "pkgsToRemove" packages from local cache
         // TODO
-        return false;
+        return true;
     }
 
 }
