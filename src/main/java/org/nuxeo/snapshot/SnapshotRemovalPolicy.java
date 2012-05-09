@@ -2,23 +2,22 @@ package org.nuxeo.snapshot;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.versioning.DefaultVersionRemovalPolicy;
-import org.nuxeo.ecm.core.versioning.VersionRemovalPolicy;
+import org.nuxeo.ecm.core.versioning.OrphanVersionRemovalFilter;
 
-public class SnapshotRemovalPolicy extends DefaultVersionRemovalPolicy
-        implements VersionRemovalPolicy {
+import edu.emory.mathcs.backport.java.util.Collections;
 
-    protected boolean canRemoveVersions(Session session, Document doc) {
+public class SnapshotRemovalPolicy implements OrphanVersionRemovalFilter {
+
+    protected boolean canRemoveVersions(CoreSession session, DocumentModel doc,
+            List<String> uuids) {
         IterableQueryResult result = null;
         try {
-            List<String> uuids = doc.getVersionsIds();
             StringBuffer nxql = new StringBuffer(
                     "select ecm:uuid from Document where ");
             nxql.append(SnapshotableAdapter.CHILDREN_PROP + "/* IN (");
@@ -45,12 +44,14 @@ public class SnapshotRemovalPolicy extends DefaultVersionRemovalPolicy
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void removeVersions(Session session, Document doc,
-            CoreSession coreSession) throws ClientException {
-        // don't remove orphans for uuids part of a snapshot
-        if (canRemoveVersions(session, doc)) {
-            super.removeVersions(session, doc, coreSession);
+    public List<String> getRemovableVersionIds(CoreSession session,
+            ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs) {
+
+        if (canRemoveVersions(session, deletedLiveDoc, versionUUIDs)) {
+            return Collections.emptyList();
         }
+        return versionUUIDs;
     }
 }
