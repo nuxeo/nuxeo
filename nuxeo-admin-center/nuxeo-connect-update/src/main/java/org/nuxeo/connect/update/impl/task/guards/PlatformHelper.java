@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,18 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.impl.task.guards;
 
-import org.nuxeo.common.Environment;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * This class can be used to check if the current platform match a given
- * platform. For example in a command you may want a guard that
- *
- * TODO: define the platform string format.
+ * platform. For example in a command you may want a guard that define the
+ * platform string format.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -33,9 +31,13 @@ public class PlatformHelper {
 
     protected final String version;
 
+    private ConfigurationGenerator cg;
+
     public PlatformHelper() {
-        name = Framework.getProperty("org.nuxeo.ecm.product.name");
-        version = Framework.getProperty("org.nuxeo.ecm.product.version");
+        cg = new ConfigurationGenerator();
+        cg.init();
+        name = cg.getUserConfig().getProperty("org.nuxeo.ecm.product.name");
+        version = cg.getUserConfig().getProperty("org.nuxeo.ecm.product.version");
     }
 
     public String getName() {
@@ -49,22 +51,23 @@ public class PlatformHelper {
     /**
      * Test whether or not the current platform is same as (or compatible) with
      * the given one.
+     *
+     * @return not implemented, always return true
      */
     public boolean matches(String platform) {
-        // TODO
         return true;
     }
 
     public boolean isTomcat() {
-        return Environment.getDefault().isTomcat();
+        return cg.isTomcat;
     }
 
     public boolean isJBoss() {
-        return Environment.getDefault().isJBoss();
+        return cg.isJBoss;
     }
 
     public boolean isJetty() {
-        return Environment.getDefault().isJetty();
+        return cg.isJetty;
     }
 
     public boolean isWindows() {
