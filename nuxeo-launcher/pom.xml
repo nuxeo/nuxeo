@@ -107,7 +107,7 @@
               <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
               <filters>
                 <filter>
-                  <artifact>org.nuxeo.shell:*</artifact>
+                  <artifact>*:*</artifact>
                   <excludes>
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>

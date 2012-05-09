@@ -15,7 +15,6 @@
       <fileset dir="src/main/resources" />
       <filterset>
         <filter token="TITLE" value="Nuxeo Content Browser" />
-        <filter token="VERSION" value="${nuxeo.distribution.version}" />
         <filter token="VERSION" value="1.0" />
       </filterset>
     </copy>
@@ -30,7 +29,6 @@
       <fileset dir="src/main/resources" />
       <filterset>
         <filter token="TITLE" value="Nuxeo Content Browser for CMF" />
-        <filter token="VERSION" value="${nuxeo.distribution.version}" />
         <filter token="VERSION" value="1.0-cmf" />
       </filterset>
     </copy>

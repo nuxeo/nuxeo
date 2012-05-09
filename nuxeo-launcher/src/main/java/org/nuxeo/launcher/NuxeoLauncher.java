@@ -70,6 +70,7 @@ import org.json.XML;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
@@ -549,7 +550,8 @@ public abstract class NuxeoLauncher {
         return cmdLine;
     }
 
-    public static void main(String[] args) throws ConfigurationException, IOException, PackageException {
+    public static void main(String[] args) throws ConfigurationException,
+            IOException, PackageException {
         CommandLine cmdLine = null;
         try {
             cmdLine = parseOptions(args);
@@ -583,7 +585,8 @@ public abstract class NuxeoLauncher {
      * @throws PackageException
      * @throws IOException
      */
-    public static void launch(final NuxeoLauncher launcher) throws IOException, PackageException {
+    public static void launch(final NuxeoLauncher launcher) throws IOException,
+            PackageException {
         int exitStatus = 0;
         boolean commandSucceeded = true;
         if (launcher.command == null) {
@@ -613,7 +616,9 @@ public abstract class NuxeoLauncher {
                             System.exit(1);
                         }
                     } catch (PackageException e) {
-                        log.error("Could not initialize the packaging subsystem", e);
+                        log.error(
+                                "Could not initialize the packaging subsystem",
+                                e);
                         launcher.removeShutdownHook();
                         System.exit(1);
                     }
@@ -804,7 +809,8 @@ public abstract class NuxeoLauncher {
      * @return true if the server started successfully
      * @throws PackageException
      */
-    public boolean doStartAndWait(boolean logProcessOutput) throws PackageException {
+    public boolean doStartAndWait(boolean logProcessOutput)
+            throws PackageException {
         boolean commandSucceeded = false;
         if (doStart(logProcessOutput)) {
             addShutdownHook();
@@ -1517,10 +1523,10 @@ public abstract class NuxeoLauncher {
         return env;
     }
 
-    protected ConnectBroker getConnectBroker() throws IOException, PackageException {
+    protected ConnectBroker getConnectBroker() throws IOException,
+            PackageException {
         if (connectBroker == null) {
-            connectBroker = new ConnectBroker(
-                    getDistributionEnvironment());
+            connectBroker = new ConnectBroker(getDistributionEnvironment());
         }
         return connectBroker;
     }
@@ -1532,7 +1538,8 @@ public abstract class NuxeoLauncher {
         cset = pkgman.getCommandSet();
     }
 
-    protected boolean pkgAdd(String[] params) throws IOException, PackageException {
+    protected boolean pkgAdd(String[] params) throws IOException,
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1547,7 +1554,8 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-    protected boolean pkgInstall(String[] params) throws IOException, PackageException {
+    protected boolean pkgInstall(String[] params) throws IOException,
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
@@ -1566,7 +1574,8 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-    protected boolean pkgUninstall(String[] params) throws IOException, PackageException {
+    protected boolean pkgUninstall(String[] params) throws IOException,
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1581,7 +1590,8 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-    protected boolean pkgRemove(String[] params) throws IOException, PackageException {
+    protected boolean pkgRemove(String[] params) throws IOException,
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1780,6 +1790,8 @@ public abstract class NuxeoLauncher {
     protected void testparser() throws IOException, PackageException {
         PackageManager pm = getConnectBroker().getPackageManager();
         pm.setResolver("p2cudf");
-        pm.resolveDependencies("nuxeo-dm", null);
+        DependencyResolution resolution = pm.resolveDependencies("nuxeo-dm",
+                null);
+        log.info(resolution);
     }
 }

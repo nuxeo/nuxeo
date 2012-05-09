@@ -36,6 +36,9 @@
   <logger name="org.nuxeo.launcher">
     <level value="INFO" />
   </logger>
+  <logger name="org.nuxeo.connect">
+    <level value="INFO" />
+  </logger>
   <logger name="org.nuxeo.ecm.admin">
     <level value="INFO" />
   </logger>
