@@ -1,8 +1,25 @@
-package org.nuxeo.ecm.platform.publisher.impl.finder;
+/*
+ * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo
+ */
+
+package org.nuxeo.ecm.platform.publisher.helper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -24,20 +41,26 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.schema.TypeService;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
-public abstract class AbstractRootSectionsFinder extends
-        UnrestrictedSessionRunner implements RootSectionFinder {
+/**
+ * Helper class to manage:
+ * <ul>
+ * <li>unrestricted fetch of Sections
+ * <li>filtering according to user rights
+ * </ul>
+ *
+ * @author tiry
+ */
+public class RootSectionsFinder extends UnrestrictedSessionRunner {
 
-    public static final String SCHEMA_PUBLISHING = "publishing";
+    protected static final String SCHEMA_PUBLISHING = "publishing";
 
-    public static final String SECTIONS_PROPERTY_NAME = "publish:sections";
+    protected static final String SECTIONS_PROPERTY_NAME = "publish:sections";
 
-    protected static Set<String> sectionRootTypes;
+    protected Set<String> sectionRootTypes;
 
-    protected static Set<String> sectionTypes;
+    protected Set<String> sectionTypes;
 
     protected CoreSession userSession;
 
@@ -49,27 +72,20 @@ public abstract class AbstractRootSectionsFinder extends
 
     protected DocumentModel currentDocument;
 
-    protected static final Log log = LogFactory.getLog(AbstractRootSectionsFinder.class);
+    private static final Log log = LogFactory.getLog(RootSectionsFinder.class);
 
-    protected abstract void computeUserSectionRoots(DocumentModel currentDoc)
-            throws ClientException;
-
-    protected abstract String buildQuery(String path);
-
-    protected abstract void computeUnrestrictedRoots(CoreSession session)
-            throws ClientException;
-
-    public AbstractRootSectionsFinder(CoreSession userSession) {
+    public RootSectionsFinder(CoreSession userSession,
+            Set<String> sectionRootTypes, Set<String> sectionTypes) {
         super(userSession);
+        this.sectionRootTypes = sectionRootTypes;
         this.userSession = userSession;
+        this.sectionTypes = sectionTypes;
     }
 
-    @Override
     public void reset() {
         this.currentDocument = null;
     }
 
-    @Override
     public DocumentModelList getAccessibleSectionRoots(DocumentModel currentDoc)
             throws ClientException {
         if ((currentDocument == null)
@@ -79,7 +95,6 @@ public abstract class AbstractRootSectionsFinder extends
         return accessibleSectionRoots;
     }
 
-    @Override
     public DocumentModelList getSectionRootsForWorkspace(
             DocumentModel currentDoc, boolean addDefaultSectionRoots)
             throws ClientException {
@@ -103,13 +118,11 @@ public abstract class AbstractRootSectionsFinder extends
                 unrestrictedSectionRootFromWorkspaceConfig, true);
     }
 
-    @Override
     public DocumentModelList getSectionRootsForWorkspace(
             DocumentModel currentDoc) throws ClientException {
         return getSectionRootsForWorkspace(currentDoc, false);
     }
 
-    @Override
     public DocumentModelList getDefaultSectionRoots(boolean onlyHeads,
             boolean addDefaultSectionRoots) throws ClientException {
         if (unrestrictedDefaultSectionRoot == null) {
@@ -130,10 +143,25 @@ public abstract class AbstractRootSectionsFinder extends
         return getFiltredSectionRoots(unrestrictedDefaultSectionRoot, onlyHeads);
     }
 
-    @Override
     public DocumentModelList getDefaultSectionRoots(boolean onlyHeads)
             throws ClientException {
         return getDefaultSectionRoots(onlyHeads, false);
+    }
+
+    protected void computeUserSectionRoots(DocumentModel currentDoc)
+            throws ClientException {
+        this.currentDocument = currentDoc;
+        this.runUnrestricted();
+
+        if (currentDoc != null) {
+            if (!unrestrictedSectionRootFromWorkspaceConfig.isEmpty()) {
+                accessibleSectionRoots = getFiltredSectionRoots(
+                        unrestrictedSectionRootFromWorkspaceConfig, true);
+            } else {
+                accessibleSectionRoots = getFiltredSectionRoots(
+                        unrestrictedDefaultSectionRoot, true);
+            }
+        }
     }
 
     protected DocumentModelList getFiltredSectionRoots(List<String> rootPaths,
@@ -230,12 +258,11 @@ public abstract class AbstractRootSectionsFinder extends
 
     protected DocumentModelList getDefaultSectionRoots(CoreSession session)
             throws ClientException {
-        // XXX replace by a query !!!
         DocumentModelList sectionRoots = new DocumentModelListImpl();
         DocumentModelList domains = session.getChildren(
                 session.getRootDocument().getRef(), "Domain");
         for (DocumentModel domain : domains) {
-            for (String sectionRootNameType : getSectionRootTypes()) {
+            for (String sectionRootNameType : sectionRootTypes) {
                 DocumentModelList children = session.getChildren(
                         domain.getRef(), sectionRootNameType);
                 sectionRoots.addAll(children);
@@ -244,7 +271,7 @@ public abstract class AbstractRootSectionsFinder extends
         return sectionRoots;
     }
 
-    protected DocumentModelList getSectionRootsFromWorkspaceConfig(
+    private DocumentModelList getSectionRootsFromWorkspaceConfig(
             DocumentModel workspace, CoreSession session)
             throws ClientException {
 
@@ -279,45 +306,6 @@ public abstract class AbstractRootSectionsFinder extends
     @Override
     public void run() throws ClientException {
         computeUnrestrictedRoots(session);
-    }
-
-    protected Set<String> getSectionRootTypes() {
-        if (sectionRootTypes == null) {
-            sectionRootTypes = getTypeNamesForFacet(FacetNames.MASTER_PUBLISH_SPACE);
-            if (sectionRootTypes == null) {
-                sectionRootTypes = new HashSet<String>();
-            }
-        }
-        return sectionRootTypes;
-    }
-
-    protected Set<String> getTypeNamesForFacet(String facetName) {
-        TypeService schemaService;
-        try {
-            // XXX should use getService(SchemaManager.class)
-            schemaService = (TypeService) Framework.getRuntime().getComponent(
-                    TypeService.NAME);
-        } catch (Exception e) {
-            log.error("Exception in retrieving publish spaces : ", e);
-            return null;
-        }
-
-        Set<String> publishRoots = schemaService.getTypeManager().getDocumentTypeNamesForFacet(
-                facetName);
-        if (publishRoots == null || publishRoots.isEmpty()) {
-            return null;
-        }
-        return publishRoots;
-    }
-
-    protected Set<String> getSectionTypes() {
-        if (sectionTypes == null) {
-            sectionTypes = getTypeNamesForFacet(FacetNames.MASTER_PUBLISH_SPACE);
-            if (sectionTypes == null) {
-                sectionTypes = new HashSet<String>();
-            }
-        }
-        return sectionTypes;
     }
 
 }

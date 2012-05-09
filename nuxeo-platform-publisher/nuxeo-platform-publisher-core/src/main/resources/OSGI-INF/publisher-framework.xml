@@ -123,19 +123,5 @@
         class="org.nuxeo.ecm.platform.publisher.rules.ValidatorsRuleDescriptor"/>
   </extension-point>
 
-  <extension-point name="rootSectionFinderFactory">
-    <documentation>
-      A factory is used to create the RootSectionFinder implementation that is used in the PublisherTree administration and in the RootSectionsPublicationTree implementation.
-      <code>
-        <rootSectionFinderFactory
-            class="org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder"/>
-      </code>
-
-      @author Thierry Delprat (td@nuxeo.com)
-    </documentation>
-    <object
-        class="org.nuxeo.ecm.platform.publisher.descriptors.RootSectionFinderFactoryDescriptor"/>
-  </extension-point>
-
 
 </component>

@@ -34,8 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Sorter;
-import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.ecm.webapp.tree.DocumentTreeNode;
@@ -48,8 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("adminPublishActions")
 @Scope(ScopeType.CONVERSATION)
-public class AdministrationPublishActions extends AbstractPublishActions
-        implements Serializable {
+public class AdministrationPublishActions extends AbstractPublishActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,7 +55,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
 
     public static final String PUBLICATION_TREE_PLUGIN_NAME = "publication";
 
-    protected transient RootSectionFinder rootFinder;
+    protected transient RootSectionsFinder rootFinder;
 
     protected transient RootSectionsManager rootSectionsManager;
 
@@ -79,10 +77,9 @@ public class AdministrationPublishActions extends AbstractPublishActions
         return getRootFinder().getDefaultSectionRoots(true, true);
     }
 
-    protected RootSectionFinder getRootFinder() {
+    protected RootSectionsFinder getRootFinder() {
         if (rootFinder == null) {
-            PublisherService ps = Framework.getLocalService(PublisherService.class);
-            rootFinder = ps.getRootSectionFinder(documentManager);
+            rootFinder = RootSectionsFinderHelper.getRootSectionsFinder(documentManager);
         }
         return rootFinder;
     }
@@ -162,8 +159,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
 
     public DocumentModelList getSelectedSections() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return getRootFinder().getSectionRootsForWorkspace(currentDocument,
-                true);
+        return getRootFinder().getSectionRootsForWorkspace(currentDocument, true);
     }
 
     public String removeSection(String sectionId) throws ClientException {
