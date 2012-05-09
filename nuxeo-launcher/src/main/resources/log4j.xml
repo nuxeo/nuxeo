@@ -45,6 +45,9 @@
   <logger name="org.nuxeo.runtime.deployment.preprocessor">
     <level value="INFO" />
   </logger>
+  <logger name="org.eclipse.equinox.p2.cudf">
+    <level value="WARN" />
+  </logger>
 
   <!-- ======================= -->
   <!-- Setup the Root category -->
