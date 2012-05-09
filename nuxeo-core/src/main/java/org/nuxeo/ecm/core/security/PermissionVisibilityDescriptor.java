@@ -31,7 +31,7 @@ public class PermissionVisibilityDescriptor {
     @XNode("@type")
     private String typeName = "";
 
-    private List<PermissionUIItemDescriptor> items;
+    private final List<PermissionUIItemDescriptor> items = new ArrayList<PermissionUIItemDescriptor>();
 
     private String[] sortedPermissionNames;
 
@@ -40,7 +40,6 @@ public class PermissionVisibilityDescriptor {
 
     public PermissionVisibilityDescriptor(PermissionVisibilityDescriptor pvd) {
         typeName = pvd.typeName;
-        items = new ArrayList<PermissionUIItemDescriptor>(pvd.items.size());
         for (PermissionUIItemDescriptor pid : pvd.items) {
             items.add(new PermissionUIItemDescriptor(pid));
         }
@@ -48,7 +47,8 @@ public class PermissionVisibilityDescriptor {
 
     @XNodeList(value = "item", type = PermissionUIItemDescriptor[].class, componentType = PermissionUIItemDescriptor.class)
     protected void setPermissionUIItems(PermissionUIItemDescriptor[] items) {
-        this.items = Arrays.asList(items);
+        this.items.clear();
+        this.items.addAll(Arrays.asList(items));
         sortedPermissionNames = null;
     }
 
