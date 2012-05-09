@@ -148,9 +148,8 @@ public class RenditionServiceImpl extends DefaultComponent implements
                     "label.cannot.render.without.main.blob");
         }
 
-        Blob mainBlob;
         try {
-            mainBlob = bh.getBlob();
+            bh.getBlob();
         } catch (ClientException e) {
             throw new RenditionException("Error while retrieving Main Blob", e);
         }
