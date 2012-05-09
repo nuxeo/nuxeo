@@ -106,6 +106,7 @@
     <module>nuxeo-signature</module>
     <module>nuxeo-rating</module>
     <module>nuxeo-agenda</module>
+    <module>nuxeo-multi-tenant</module>
   </modules>
 
   <dependencyManagement>
