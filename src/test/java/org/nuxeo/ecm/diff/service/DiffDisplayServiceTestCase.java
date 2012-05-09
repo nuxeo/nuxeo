@@ -16,13 +16,15 @@
  */
 package org.nuxeo.ecm.diff.service;
 
-import java.io.Serializable;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
+import org.nuxeo.ecm.diff.model.PropertyDiffDisplay;
 
 /**
  * Super class for diff display service test cases.
@@ -45,7 +47,7 @@ public class DiffDisplayServiceTestCase {
         assertEquals(label, diffDisplayBlock.getLabel());
 
         // Check schema count on left value
-        Map<String, Map<String, Serializable>> value = diffDisplayBlock.getLeftValue();
+        Map<String, Map<String, PropertyDiffDisplay>> value = diffDisplayBlock.getLeftValue();
         assertNotNull(value);
         assertEquals(schemaCount, value.size());
 
@@ -72,7 +74,7 @@ public class DiffDisplayServiceTestCase {
             int fieldCount, List<String> fieldNames) {
 
         // Check fields on left value
-        Map<String, Serializable> fields = diffDisplayBlock.getLeftValue().get(
+        Map<String, PropertyDiffDisplay> fields = diffDisplayBlock.getLeftValue().get(
                 schemaName);
         assertNotNull(fields);
         assertEquals(fieldCount, fields.size());

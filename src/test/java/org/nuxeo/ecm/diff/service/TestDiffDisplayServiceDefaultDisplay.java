@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
+import org.nuxeo.ecm.diff.model.PropertyDiffDisplay;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -144,7 +145,7 @@ public class TestDiffDisplayServiceDefaultDisplay extends
         }
 
         // Check schema count on left value
-        Map<String, Map<String, Serializable>> value = diffDisplayBlock.getLeftValue();
+        Map<String, Map<String, PropertyDiffDisplay>> value = diffDisplayBlock.getLeftValue();
         if (value == null || schemaCount != value.size()) {
             return false;
         }
@@ -166,7 +167,7 @@ public class TestDiffDisplayServiceDefaultDisplay extends
             int fieldCount, List<String> fieldNames) {
 
         // Check fields on left value
-        Map<String, Serializable> fields = diffDisplayBlock.getLeftValue().get(
+        Map<String, PropertyDiffDisplay> fields = diffDisplayBlock.getLeftValue().get(
                 schemaName);
         if (fields == null || fieldCount != fields.size()) {
             return false;

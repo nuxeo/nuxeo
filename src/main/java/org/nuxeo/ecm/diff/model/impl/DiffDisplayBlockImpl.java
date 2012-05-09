@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
+import org.nuxeo.ecm.diff.model.PropertyDiffDisplay;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 
 /**
@@ -34,17 +35,17 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
 
     protected String label;
 
-    protected Map<String, Map<String, Serializable>> leftValue;
+    protected Map<String, Map<String, PropertyDiffDisplay>> leftValue;
 
-    protected Map<String, Map<String, Serializable>> rightValue;
+    protected Map<String, Map<String, PropertyDiffDisplay>> rightValue;
 
     protected Map<String, Map<String, Serializable>> contentDiffValue;
 
     protected LayoutDefinition layoutDefinition;
 
     public DiffDisplayBlockImpl(String label,
-            Map<String, Map<String, Serializable>> leftValue,
-            Map<String, Map<String, Serializable>> rightValue,
+            Map<String, Map<String, PropertyDiffDisplay>> leftValue,
+            Map<String, Map<String, PropertyDiffDisplay>> rightValue,
             Map<String, Map<String, Serializable>> contentDiffValue,
             LayoutDefinition layoutDefinition) {
         this.label = label;
@@ -62,19 +63,19 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
         this.label = label;
     }
 
-    public Map<String, Map<String, Serializable>> getLeftValue() {
+    public Map<String, Map<String, PropertyDiffDisplay>> getLeftValue() {
         return leftValue;
     }
 
-    public void setLeftValue(Map<String, Map<String, Serializable>> leftValue) {
+    public void setLeftValue(Map<String, Map<String, PropertyDiffDisplay>> leftValue) {
         this.leftValue = leftValue;
     }
 
-    public Map<String, Map<String, Serializable>> getRightValue() {
+    public Map<String, Map<String, PropertyDiffDisplay>> getRightValue() {
         return rightValue;
     }
 
-    public void setRightValue(Map<String, Map<String, Serializable>> rightValue) {
+    public void setRightValue(Map<String, Map<String, PropertyDiffDisplay>> rightValue) {
         this.rightValue = rightValue;
     }
 

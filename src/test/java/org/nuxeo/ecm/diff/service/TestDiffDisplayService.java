@@ -16,17 +16,18 @@
  */
 package org.nuxeo.ecm.diff.service;
 
-import java.io.Serializable;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.runner.RunWith;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,6 +39,8 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DocumentDiffRepositoryInit;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
+import org.nuxeo.ecm.diff.model.PropertyDiffDisplay;
+import org.nuxeo.ecm.diff.model.impl.PropertyDiffDisplayImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -148,7 +151,8 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
                 Arrays.asList("title"));
 
         diffDisplayBlock = diffDisplayBlocks.get(1);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.simpletypes", 1);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.simpletypes",
+                1);
         checkDiffDisplayBlockSchema(diffDisplayBlock, "simpletypes", 1,
                 Arrays.asList("boolean"));
 
@@ -231,10 +235,12 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         assertEquals("label.diffBlock.heading", diffDisplayBlock.getLabel());
 
         // Check left value
-        Map<String, Map<String, Serializable>> expectedValue = new HashMap<String, Map<String, Serializable>>();
-        Map<String, Serializable> expectedFields = new HashMap<String, Serializable>();
-        expectedFields.put("title", "My first sample");
-        expectedFields.put("description", "description");
+        Map<String, Map<String, PropertyDiffDisplay>> expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
+        Map<String, PropertyDiffDisplay> expectedFields = new HashMap<String, PropertyDiffDisplay>();
+        expectedFields.put("title", new PropertyDiffDisplayImpl(
+                "My first sample", PropertyDiffDisplay.RED_BACKGROUND_COLOR));
+        expectedFields.put("description", new PropertyDiffDisplayImpl(
+                "description", PropertyDiffDisplay.RED_BACKGROUND_COLOR));
         // Calendar cal =
         // DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
         // Calendar.DECEMBER, 29, 11, 24, 25);
@@ -251,10 +257,12 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         assertEquals(expectedValue, diffDisplayBlock.getLeftValue());
 
         // Check right value
-        expectedValue = new HashMap<String, Map<String, Serializable>>();
-        expectedFields = new HashMap<String, Serializable>();
-        expectedFields.put("title", "My second sample");
-        expectedFields.put("description", null);
+        expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
+        expectedFields = new HashMap<String, PropertyDiffDisplay>();
+        expectedFields.put("title", new PropertyDiffDisplayImpl(
+                "My second sample", PropertyDiffDisplay.GREEN_BACKGROUND_COLOR));
+        expectedFields.put("description", new PropertyDiffDisplayImpl(null,
+                PropertyDiffDisplay.GREEN_BACKGROUND_COLOR));
         // cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
         // Calendar.DECEMBER, 30, 12, 05, 02);
         // expectedFields.put("modified", cal.getTime());
@@ -322,9 +330,12 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         assertEquals("label.dublincore.title", wDef.getLabel(BuiltinModes.ANY));
         assertTrue(wDef.isTranslated());
         FieldDefinition[] fieldDefs = wDef.getFieldDefinitions();
-        assertEquals(1, fieldDefs.length);
+        assertEquals(2, fieldDefs.length);
         FieldDefinition fieldDef = fieldDefs[0];
-        assertEquals("dublincore:title", fieldDef.getPropertyName());
+        assertEquals("dublincore:title/value", fieldDef.getPropertyName());
+        fieldDef = fieldDefs[1];
+        assertEquals("dublincore:title/backgroundColor",
+                fieldDef.getPropertyName());
 
         wDef = layoutDef.getWidgetDefinition("dublincore:description");
         assertNotNull(wDef);
@@ -334,9 +345,12 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
                 wDef.getLabel(BuiltinModes.ANY));
         assertTrue(wDef.isTranslated());
         fieldDefs = wDef.getFieldDefinitions();
-        assertEquals(1, fieldDefs.length);
+        assertEquals(2, fieldDefs.length);
         fieldDef = fieldDefs[0];
-        assertEquals("dublincore:description", fieldDef.getPropertyName());
+        assertEquals("dublincore:description/value", fieldDef.getPropertyName());
+        fieldDef = fieldDefs[1];
+        assertEquals("dublincore:description/backgroundColor",
+                fieldDef.getPropertyName());
 
         // wDef = layoutDef.getWidgetDefinition("dublincore:modified");
         // assertNotNull(wDef);
