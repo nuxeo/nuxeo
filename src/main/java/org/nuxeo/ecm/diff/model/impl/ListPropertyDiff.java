@@ -25,7 +25,7 @@ import org.nuxeo.ecm.diff.model.PropertyDiff;
 
 /**
  * Implementation of PropertyDiff for a list property.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class ListPropertyDiff extends PropertyDiff {
@@ -45,7 +45,7 @@ public class ListPropertyDiff extends PropertyDiff {
 
     /**
      * Gets the diff.
-     * 
+     *
      * @param index the index
      * @return the diff
      */
@@ -55,7 +55,7 @@ public class ListPropertyDiff extends PropertyDiff {
 
     /**
      * Puts the diff.
-     * 
+     *
      * @param index the index
      * @param diff the diff
      * @return the property diff
@@ -66,7 +66,7 @@ public class ListPropertyDiff extends PropertyDiff {
 
     /**
      * Put all diff.
-     * 
+     *
      * @param otherDiff the other diff
      */
     public void putAllDiff(ListPropertyDiff otherDiff) {
@@ -75,8 +75,8 @@ public class ListPropertyDiff extends PropertyDiff {
 
     /**
      * Size.
-     * 
-     * @return the int
+     *
+     * @return the diff map size
      */
     public int size() {
         return diffMap.size();
@@ -88,7 +88,7 @@ public class ListPropertyDiff extends PropertyDiff {
 
     /**
      * Gets the diff indexes.
-     * 
+     *
      * @return the diff indexes
      */
     public List<Integer> getDiffIndexes() {

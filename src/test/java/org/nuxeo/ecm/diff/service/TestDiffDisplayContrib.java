@@ -31,8 +31,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
+import org.nuxeo.ecm.diff.model.DiffFieldItemDefinition;
 import org.nuxeo.ecm.diff.model.impl.DiffBlockDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffFieldDefinitionImpl;
+import org.nuxeo.ecm.diff.model.impl.DiffFieldItemDefinitionImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -175,9 +177,9 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("file", "content"));
-        List<String> items = new ArrayList<String>();
-        items.add("file");
+        fields.add(new DiffFieldDefinitionImpl("file", "content", true));
+        List<DiffFieldItemDefinition> items = new ArrayList<DiffFieldItemDefinition>();
+        items.add(new DiffFieldItemDefinitionImpl("file", true));
         fields.add(new DiffFieldDefinitionImpl("files", "files", items));
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files",
                 null, fields);
@@ -188,7 +190,7 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("note", "note"));
+        fields.add(new DiffFieldDefinitionImpl("note", "note", true));
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note", null,
                 fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);

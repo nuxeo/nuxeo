@@ -93,16 +93,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         String leftDocId = (String) req.getAttributes().get("leftDocId");
         String rightDocId = (String) req.getAttributes().get("rightDocId");
         String xpath = (String) req.getAttributes().get("fieldXPath");
-        // TODO: remove?
-        xpath = xpath.replace("-", "/");
-        // TODO: need to manage subPath?
-//        List<String> segments = req.getResourceRef().getSegments();
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 7; i < segments.size(); i++) {
-//            sb.append(segments.get(i));
-//            sb.append("/");
-//        }
-//        String subPath = sb.substring(0, sb.length() - 1);
+        xpath = xpath.replace("--", "/");
 
         // Default conversion type is any2html
         ContentDiffConversionType conversionType = ContentDiffConversionType.html;
@@ -115,7 +106,6 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
 
         try {
             xpath = URLDecoder.decode(xpath, "UTF-8");
-            //subPath = URLDecoder.decode(subPath, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error(e);
         }
@@ -164,26 +154,16 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         response.setHeader("Pragma", "no-cache");
 
         try {
-            //if (StringUtils.isEmpty(subPath)) {
-                handleContentDiff(res, contentDiffBlobs.get(0), "text/html");
-                return;
-            // } else {
-            // for (Blob blob : contentDiffBlobs) {
-            // if (subPath.equals(blob.getFilename())) {
-            // handleContentDiff(res, blob, blob.getMimeType());
-            // return;
-            // }
-            //
-            // }
-            //           }
+            handleContentDiff(res, contentDiffBlobs.get(0), "text/html");
+            return;
         } catch (IOException e) {
             handleError(res, e);
         }
     }
 
     private List<Blob> initCachedContentDiffBlobs(Response res, String xpath,
-            ContentDiffConversionType conversionType,
-            boolean blobPostProcessing) throws ClientException {
+            ContentDiffConversionType conversionType, boolean blobPostProcessing)
+            throws ClientException {
 
         ContentDiffAdapter contentDiffAdapter = null;
 

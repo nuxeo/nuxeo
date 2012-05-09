@@ -268,77 +268,77 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Gets the content diff fancy box url.
+     * Gets the content diff fancybox url for the property with xpath
+     * {@code propertyXPath}.
      *
-     * @param schemaName the schema name
-     * @param fieldName the field name
-     * @return the content diff fancy box url
+     * @param propertyLabel the property label
+     * @param propertyXPath the property xpath
+     * @return the content diff fancybox url
      */
-    public String getContentDiffFancyBoxURL(String schemaName, String fieldName) {
+    public String getContentDiffFancyBoxURL(String propertyLabel,
+            String propertyXPath) {
 
-        return getContentDiffFancyBoxURL(schemaName, fieldName, null);
+        return getContentDiffFancyBoxURL(propertyLabel, propertyXPath, null);
     }
 
     /**
-     * Gets the content diff fancy box url.
+     * Gets the content diff fancybox url for the property with xpath
+     * {@code propertyXPath} using {@code conversionType}.
      *
-     * @param schemaName the schema name
-     * @param fieldName the field name
+     * @param propertyLabel the property label
+     * @param propertyXPath the property xpath
      * @param conversionType the conversion type
-     * @return the content diff fancy box url
+     * @return the content diff fancybox url
      */
-    public String getContentDiffFancyBoxURL(String schemaName,
-            String fieldName, String conversionType) {
+    public String getContentDiffFancyBoxURL(String propertyLabel,
+            String propertyXPath, String conversionType) {
 
-        if (StringUtils.isEmpty(schemaName) || StringUtils.isEmpty(fieldName)) {
-            log.error("Cannot get content diff fancybox URL with a null schemaName or a null fieldName.");
+        if (StringUtils.isEmpty(propertyXPath)) {
+            log.error("Cannot get content diff fancybox URL with a null propertyXPath.");
             return null;
         }
         return ContentDiffHelper.getContentDiffFancyBoxURL(
-                navigationContext.getCurrentDocument(), schemaName, fieldName,
-                conversionType);
+                navigationContext.getCurrentDocument(), propertyLabel,
+                propertyXPath, conversionType);
     }
 
     /**
      * Gets the content diff url.
      *
-     * @param schemaName the schema name
-     * @param fieldName the field name
+     * @param propertyXPath the property xpath
      * @param conversionTypeParam the conversion type param
      * @return the content diff url
      */
-    public String getContentDiffURL(String schemaName, String fieldName,
+    public String getContentDiffURL(String propertyXPath,
             String conversionTypeParam) {
 
         if (leftDoc == null || rightDoc == null) {
             log.error("Cannot get content diff URL with a null leftDoc or a null rightDoc.");
             return null;
         }
-        if (StringUtils.isEmpty(schemaName) || StringUtils.isEmpty(fieldName)) {
+        if (StringUtils.isEmpty(propertyXPath)) {
             log.error("Cannot get content diff URL with a null schemaName or a null fieldName.");
             return null;
         }
-        String xpath = schemaName + ":" + fieldName;
         ContentDiffConversionType conversionType = null;
         if (!StringUtils.isEmpty(conversionTypeParam)) {
             conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
         }
         return ContentDiffHelper.getContentDiffURL(
                 navigationContext.getCurrentDocument().getRepositoryName(),
-                leftDoc, rightDoc, xpath, conversionType);
+                leftDoc, rightDoc, propertyXPath, conversionType);
     }
 
     /**
      * Gets the content diff with blob post processing url.
      *
-     * @param schemaName the schema name
-     * @param fieldName the field name
+     * @param propertyXPath the property xpath
      * @param conversionTypeParam the conversion type param
      * @return the content diff with blob post processing url
      */
-    public String getContentDiffWithBlobPostProcessingURL(String schemaName,
-            String fieldName, String conversionTypeParam) {
-        return getContentDiffURL(schemaName, fieldName, conversionTypeParam)
+    public String getContentDiffWithBlobPostProcessingURL(String propertyXPath,
+            String conversionTypeParam) {
+        return getContentDiffURL(propertyXPath, conversionTypeParam)
                 + "?blobPostProcessing=true";
     }
 

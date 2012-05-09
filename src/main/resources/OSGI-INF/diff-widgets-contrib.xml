@@ -11,7 +11,6 @@
       </categories>
     </widget>
 
-    <!-- TODO: display true/false? -->
     <widget name="boolean" type="checkbox">
       <categories>
         <category>diff</category>
@@ -50,9 +49,6 @@
       <categories>
         <category>diff</category>
       </categories>
-      <properties mode="any">
-        <property name="displayContentDiffLinks">true</property>
-      </properties>
     </widget>
 
     <widget name="complex" type="template">
@@ -109,6 +105,17 @@
       </properties>
     </widget>
 
+    <widget name="contentDiffLinks" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <properties mode="any">
+        <property name="template">
+          /widgets/content_diff_links_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
     <!-- Specific widgets: name = property xpath -->
     <widget name="system:path" type="text">
       <categories>
@@ -157,7 +164,6 @@
           #{noteActions.translateImageLinks(field_0)}
         </property>
         <property name="cssClass">note_content_block</property>
-        <property name="displayContentDiffLinks">true</property>
       </properties>
     </widget>
 
@@ -170,7 +176,6 @@
       </labels>
       <translated>true</translated>
       <properties mode="any">
-        <property name="displayContentDiffLinks">true</property>
       </properties>
     </widget>
 

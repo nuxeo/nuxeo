@@ -61,12 +61,12 @@
 
     <diffBlock name="files" label="label.diffBlock.files">
       <fields>
-        <field schema="file" name="content" />
+        <field schema="file" name="content" displayContentDiffLinks="true" />
         <field schema="files" name="files">
           <items>
             <!-- Display the file only, not the filename which is managed 
               by the file widget type -->
-            <item>file</item>
+            <item name="file" displayContentDiffLinks="true" />
           </items>
         </field>
       </fields>
@@ -74,7 +74,7 @@
 
     <diffBlock name="note" label="label.diffBlock.note">
       <fields>
-        <field schema="note" name="note" />
+        <field schema="note" name="note" displayContentDiffLinks="true" />
       </fields>
     </diffBlock>
 

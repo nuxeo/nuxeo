@@ -36,9 +36,9 @@ public final class ContentDiffHelper {
 
     private static final String CONTENT_DIFF_FANCYBOX_VIEW = "content_diff_fancybox";
 
-    private static final String SCHEMA_URL_PARAM_NAME = "schemaName";
+    private static final String LABEL_URL_PARAM_NAME = "label";
 
-    private static final String FIELD_URL_PARAM_NAME = "fieldName";
+    private static final String XPATH_URL_PARAM_NAME = "xPath";
 
     private static final String CONVERSION_TYPE_URL_PARAM_NAME = "conversionType";
 
@@ -56,13 +56,13 @@ public final class ContentDiffHelper {
      * Gets the content diff fancy box url.
      *
      * @param currentDoc the current doc
-     * @param schemaName the schema name
-     * @param fieldName the field name
+     * @param propertyLabel the property label
+     * @param propertyXPath the property xpath
      * @param conversionType the conversion type
      * @return the content diff fancy box url
      */
     public static String getContentDiffFancyBoxURL(DocumentModel currentDoc,
-            String schemaName, String fieldName, String conversionType) {
+            String propertyLabel, String propertyXPath, String conversionType) {
 
         DocumentLocation docLocation = new DocumentLocationImpl(
                 currentDoc.getRepositoryName(), currentDoc.getRef());
@@ -72,13 +72,13 @@ public final class ContentDiffHelper {
         StringBuilder urlSb = new StringBuilder(
                 urlPolicyService.getUrlFromDocumentView(docView, null));
         urlSb.append("?");
-        urlSb.append(SCHEMA_URL_PARAM_NAME);
+        urlSb.append(LABEL_URL_PARAM_NAME);
         urlSb.append("=");
-        urlSb.append(schemaName);
+        urlSb.append(propertyLabel);
         urlSb.append("&");
-        urlSb.append(FIELD_URL_PARAM_NAME);
+        urlSb.append(XPATH_URL_PARAM_NAME);
         urlSb.append("=");
-        urlSb.append(fieldName);
+        urlSb.append(propertyXPath);
         if (!StringUtils.isEmpty(conversionType)) {
             urlSb.append("&");
             urlSb.append(CONVERSION_TYPE_URL_PARAM_NAME);
@@ -108,16 +108,16 @@ public final class ContentDiffHelper {
      *
      * @param leftDoc the left doc
      * @param rightDoc the right doc
-     * @param xpath the xpath
+     * @param propertyXPath the property xpath
      * @param conversionType the conversion type
      * @return the content diff url
      */
     public static String getContentDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, String xpath,
+            DocumentModel rightDoc, String propertyXPath,
             ContentDiffConversionType conversionType) {
 
         return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
-                rightDoc, xpath, conversionType);
+                rightDoc, propertyXPath, conversionType);
     }
 
     /**
@@ -126,16 +126,16 @@ public final class ContentDiffHelper {
      * @param repositoryName the repository name
      * @param leftDoc the left doc
      * @param rightDoc the right doc
-     * @param xpath the xpath
+     * @param propertyXPath the xpath
      * @param conversionType the conversion type
      * @return the content diff url
      */
     public static String getContentDiffURL(String repositoryName,
-            DocumentModel leftDoc, DocumentModel rightDoc, String xpath,
-            ContentDiffConversionType conversionType) {
+            DocumentModel leftDoc, DocumentModel rightDoc,
+            String propertyXPath, ContentDiffConversionType conversionType) {
 
-        if (xpath == null) {
-            xpath = CONTENT_DIFF_URL_DEFAULT_XPATH;
+        if (propertyXPath == null) {
+            propertyXPath = CONTENT_DIFF_URL_DEFAULT_XPATH;
         }
 
         StringBuilder sb = new StringBuilder();
@@ -147,7 +147,7 @@ public final class ContentDiffHelper {
         sb.append("/");
         sb.append(rightDoc.getId());
         sb.append("/");
-        sb.append(xpath);
+        sb.append(propertyXPath);
         sb.append("/");
         if (conversionType != null) {
             sb.append(conversionType.name());

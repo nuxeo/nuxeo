@@ -1,15 +1,15 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <nxu:set var="schemaName" value="#{param['schemaName']}" cache="true">
-  <nxu:set var="fieldName" value="#{param['fieldName']}" cache="true">
+  <nxu:set var="propertyLabel" value="#{param['label']}" cache="true">
+  <nxu:set var="propertyXPath" value="#{param['xPath']}" cache="true">
   <nxu:set var="conversionType" value="#{param['conversionType']}" cache="true">
   
   <h2>
-    <h:outputText value="#{messages[nxu:concat('label.', nxu:concat(schemaName, nxu:concat('.', fieldName)))]}" />
+    <h:outputText value="#{messages[propertyLabel]}" />
   </h2>
   
-  <iframe src="#{diffActions.getContentDiffURL(schemaName, fieldName, conversionType)}" id="fancybox-frame"
+  <iframe src="#{diffActions.getContentDiffURL(propertyXPath, conversionType)}" id="fancybox-frame"
     frameborder="1" width="100%" scrolling="auto">
   </iframe>
   

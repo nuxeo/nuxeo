@@ -16,24 +16,17 @@
  */
 package org.nuxeo.ecm.diff.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nuxeo.common.xmap.annotation.XNode;
-import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Diff field descriptor.
+ * Diff field item descriptor.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
-@XObject("field")
-public class DiffFieldDescriptor {
-
-    @XNode("@schema")
-    public String schema;
+@XObject("item")
+public class DiffFieldItemDescriptor {
 
     @XNode("@name")
     public String name;
@@ -41,31 +34,12 @@ public class DiffFieldDescriptor {
     @XNode("@displayContentDiffLinks")
     public boolean displayContentDiffLinks;
 
-    @XNodeList(value = "items/item", type = ArrayList.class, componentType = DiffFieldItemDescriptor.class)
-    public List<DiffFieldItemDescriptor> items;
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    public List<DiffFieldItemDescriptor> getItems() {
-        return items;
-    }
-
-    public void setItems(List<DiffFieldItemDescriptor> items) {
-        this.items = items;
     }
 
     public boolean isDisplayContentDiffLinks() {

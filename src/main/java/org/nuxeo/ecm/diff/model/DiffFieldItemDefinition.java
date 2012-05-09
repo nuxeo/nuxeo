@@ -17,29 +17,19 @@
 package org.nuxeo.ecm.diff.model;
 
 import java.io.Serializable;
-import java.util.List;
-
-import org.nuxeo.ecm.diff.service.impl.DiffFieldItemDescriptor;
 
 /**
- * Diff field definition interface.
+ * Diff field item definition interface.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
-public interface DiffFieldDefinition extends Serializable {
+public interface DiffFieldItemDefinition extends Serializable {
 
     /**
-     * Gets the field schema.
+     * Gets the item name.
      *
-     * @return the field schema
-     */
-    String getSchema();
-
-    /**
-     * Gets the field name.
-     *
-     * @return the field name
+     * @return the item name
      */
     String getName();
 
@@ -49,12 +39,4 @@ public interface DiffFieldDefinition extends Serializable {
      * @return true, if must display content diff links
      */
     boolean isDisplayContentDiffLinks();
-
-    /**
-     * Gets the field items.
-     *
-     * @return the field items
-     */
-    List<DiffFieldItemDefinition> getItems();
-
 }

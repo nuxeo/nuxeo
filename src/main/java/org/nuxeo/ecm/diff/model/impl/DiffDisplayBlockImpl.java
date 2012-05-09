@@ -38,7 +38,6 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
 
     protected Map<String, Map<String, Serializable>> rightValue;
 
-    // TODO: remove?
     protected Map<String, Map<String, Serializable>> contentDiffValue;
 
     protected LayoutDefinition layoutDefinition;
