@@ -149,6 +149,10 @@ public class Environment {
     // Handy parameter to distinguish from (Server)home
     private File runtimeHome;
 
+    public static final String DISTRIBUTION_NAME = "org.nuxeo.distribution.name";
+
+    public static final String DISTRIBUTION_VERSION = "org.nuxeo.distribution.version";
+
     public Environment(File home) {
         this(home, null);
     }
