@@ -174,7 +174,7 @@ public class StartupHelper implements Serializable {
                 return result;
             }
 
-            String query = "SELECT * FROM Document WHERE ecm:primaryType = 'Domain' AND "
+            String query = "SELECT * FROM Domain WHERE "
                     + NXQL.ECM_MIXINTYPE
                     + " <> '"
                     + FacetNames.HIDDEN_IN_NAVIGATION + "' AND "
