@@ -95,7 +95,7 @@ public class TransporterServer {
         try {
             return connector.getInvokerLocator();
         } catch (Exception e) {
-            throw new Error("Failed to get locator URI", e);
+            throw new RuntimeException("Failed to get locator URI", e);
         }
     }
 

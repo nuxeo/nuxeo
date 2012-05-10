@@ -37,7 +37,9 @@ public class DelegateLoader implements SharedClassLoader {
             addUrl = loader.getClass().getDeclaredMethod("addURL", URL.class);
             addUrl.setAccessible(true);
         } catch (Exception e) {
-            throw new Error("Failed to create a shared delegate loader for classloader: "+loader, e);
+            throw new RuntimeException(
+                    "Failed to create a shared delegate loader for classloader: "
+                            + loader, e);
         }
     }
 
@@ -46,7 +48,8 @@ public class DelegateLoader implements SharedClassLoader {
         try {
             addUrl.invoke(loader, url);
         } catch (Throwable e) {
-            throw new Error("Failed to add an URL to this loader: "+url, e);
+            throw new RuntimeException("Failed to add an URL to this loader: "
+                    + url, e);
         }
     }
 

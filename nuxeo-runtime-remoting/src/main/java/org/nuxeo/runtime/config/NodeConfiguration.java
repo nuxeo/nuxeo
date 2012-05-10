@@ -82,7 +82,8 @@ public class NodeConfiguration implements Serializable, Cloneable {
             try {
                 configuration = new NodeConfiguration();
             } catch (MalformedURLException e) {
-                throw new Error("Faiuled to initialize Node Configuration", e);
+                throw new RuntimeException(
+                        "Failed to initialize Node Configuration", e);
             }
         }
         return configuration;

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Stephane Lacoin
  */
@@ -51,7 +51,7 @@ public class InlineRef implements StreamRef {
         try {
             return InlineURLFactory.newURL(content);
         } catch (Exception e) {
-            throw new Error("Cannot encode inline:... URL", e);
+            throw new RuntimeException("Cannot encode inline:... URL", e);
         }
     }
 

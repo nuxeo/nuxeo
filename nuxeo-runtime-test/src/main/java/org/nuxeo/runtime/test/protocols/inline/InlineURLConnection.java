@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Stephane Lacoin
  */
@@ -33,7 +33,7 @@ public class InlineURLConnection extends URLConnection {
         try {
             content = InlineURLFactory.newObject(Object.class, url);
         } catch (IOException e) {
-            throw new Error("Cannot decode data from " + url, e);
+            throw new RuntimeException("Cannot decode data from " + url, e);
         }
     }
 

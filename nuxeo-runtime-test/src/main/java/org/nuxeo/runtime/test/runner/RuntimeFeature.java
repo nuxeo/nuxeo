@@ -166,7 +166,8 @@ public class RuntimeFeature extends SimpleFeature {
             // harness = null;
         }
         if (NuxeoContainer.isInstalled()) {
-            throw new Error("Nuxeo container is still installed", NuxeoContainer.getInstallContext());
+            throw new RuntimeException("Nuxeo container is still installed",
+                    NuxeoContainer.getInstallContext());
         }
     }
 

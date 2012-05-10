@@ -114,7 +114,7 @@ public class DeploymentPreprocessor {
 
     protected void init(ContainerDescriptor cd) throws Exception {
         cd.context = new CommandContextImpl(cd.directory);
-        // 
+        //
         initSeamHotDeploy(cd.context);
         // run container install instructions if any
         if (cd.install != null) {
@@ -147,7 +147,7 @@ public class DeploymentPreprocessor {
             log.info("Nuxeo's Seam HotReload is not enabled");
             return;
         }
-        
+
         log.info("Nuxeo's Seam HotReload is enabled");
         ctx.put(SEAM_HOT_RELOAD_SYSTEM_PROP, "true");
         System.setProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "true");
@@ -372,7 +372,7 @@ public class DeploymentPreprocessor {
             fd.name = file.getName();
             processManifest(fd, fd.name, mf);
         } else {
-            throw new Error(
+            throw new RuntimeException(
                     "Compat: Fragments without a name must reside in an OSGi bundle");
         }
     }
@@ -442,7 +442,7 @@ public class DeploymentPreprocessor {
             jar2Id.put(fileName, id);
             fd.name = id;
             if (fd.requires != null && !fd.requires.isEmpty()) {
-                throw new Error(
+                throw new RuntimeException(
                         "In compatibility mode you must not use <require> tags for OSGi bundles - use Require-Bundle manifest header instead. Bundle: "
                                 + fileName);
             }

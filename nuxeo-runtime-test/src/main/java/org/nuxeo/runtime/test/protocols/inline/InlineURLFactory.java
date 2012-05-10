@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Stephane Lacoin
  */
@@ -37,7 +37,7 @@ public class InlineURLFactory {
         try {
             URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(new InlineURLStreamHandlerFactory());
         } catch (Exception e) {
-            throw new Error("Cannot install inline URLs", e);
+            throw new RuntimeException("Cannot install inline URLs", e);
         }
     }
 
@@ -54,7 +54,8 @@ public class InlineURLFactory {
         try {
             return clazz.cast(ois.readObject());
         } catch (ClassNotFoundException e) {
-            throw new Error("Cannot decode, object is not of class " + clazz.getSimpleName(), e);
+            throw new RuntimeException("Cannot decode, object is not of class "
+                    + clazz.getSimpleName(), e);
         }
     }
 

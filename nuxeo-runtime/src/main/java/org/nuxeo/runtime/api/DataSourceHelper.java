@@ -126,7 +126,8 @@ public class DataSourceHelper {
             try {
                 resolved = NamingManager.getObjectInstance(resolved,  new CompositeName(jndiName), context, null);
             } catch (Exception e) {
-                throw new Error("Cannot get access to " + jndiName, e);
+                throw new RuntimeException("Cannot get access to " + jndiName,
+                        e);
             }
         }
         return (DataSource)resolved;

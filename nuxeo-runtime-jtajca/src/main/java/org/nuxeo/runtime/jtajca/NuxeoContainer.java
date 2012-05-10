@@ -108,7 +108,7 @@ public class NuxeoContainer {
      */
     public static synchronized void install() throws NamingException {
         if (installContext != null) {
-            throw new Error("Nuxeo container already installed");
+            throw new RuntimeException("Nuxeo container already installed");
         }
         install(new TransactionManagerConfiguration(),
                 new ConnectionManagerConfiguration());
@@ -155,7 +155,7 @@ public class NuxeoContainer {
 
     public static synchronized void uninstall() throws NamingException {
         if (installContext == null) {
-            throw new Error("Nuxeo container not installed");
+            throw new RuntimeException("Nuxeo container not installed");
         }
         try {
             removeBinding(JNDI_TRANSACTION_MANAGER);

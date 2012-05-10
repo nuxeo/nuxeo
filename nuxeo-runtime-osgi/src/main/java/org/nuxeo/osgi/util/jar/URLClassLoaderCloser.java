@@ -48,8 +48,9 @@ public class URLClassLoaderCloser  {
         try {
             introspectClassLoader(loader);
         } catch (Exception e) {
-            throw new Error("Cannot introspect url class loader " + loader, e);
-    }
+            throw new RuntimeException("Cannot introspect url class loader "
+                    + loader, e);
+        }
     }
 
     protected void introspectClassLoader(URLClassLoader loader) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException {
@@ -129,7 +130,8 @@ public class URLClassLoaderCloser  {
             jar = (JarFile) jarField.get(loader);
             jarField.set(loader, null);
         } catch (Exception e) {
-            throw new Error("Cannot use reflection on url class path", e);
+            throw new RuntimeException(
+                    "Cannot use reflection on url class path", e);
         }
         jar.close();
         return true;

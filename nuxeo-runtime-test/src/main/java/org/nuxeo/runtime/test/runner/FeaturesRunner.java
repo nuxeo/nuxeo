@@ -281,7 +281,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         try {
             testCreated(test);
         } catch (Exception e) {
-            throw new Error("Failed to prepare test instance: " + test, e);
+            throw new RuntimeException("Failed to prepare test instance: "
+                    + test, e);
         }
         return test;
     }

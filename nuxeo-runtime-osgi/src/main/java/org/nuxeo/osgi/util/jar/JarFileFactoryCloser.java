@@ -38,7 +38,8 @@ public class JarFileFactoryCloser {
         try {
             introspectClasses();
         } catch (Exception e) {
-            throw new Error("Cannot introspect jar file factory class", e);
+            throw new RuntimeException(
+                    "Cannot introspect jar file factory class", e);
         }
     }
 
@@ -70,7 +71,8 @@ public class JarFileFactoryCloser {
                     new Object[] { location });
             factoryCloseMethod.invoke(factory, jar);
         } catch (Exception e) {
-            throw new Error("Cannot use reflection on jar file factory", e);
+            throw new RuntimeException(
+                    "Cannot use reflection on jar file factory", e);
         }
         jar.close();
     }

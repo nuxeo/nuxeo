@@ -132,7 +132,7 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
         }
         return null;
     }
-    
+
     @Override
     public InputStream getResourceAsStream(String name)  {
         InputStream is = super.getResourceAsStream(name);
@@ -143,7 +143,7 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
             try {
                 is = cl.getLocalResourceAsStream(name);
             } catch (IOException e) {
-               throw new Error("Cannot read input from " + name, e);
+                throw new RuntimeException("Cannot read input from " + name, e);
             }
             if (is != null) {
                 return is;
