@@ -159,7 +159,7 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         try {
             current = TransactionHelper.lookupTransactionManager().getTransaction();
         } catch (Exception e) {
-            throw new Error("no tx", e);
+            throw new RuntimeException("no tx", e);
         }
         Transaction main = threadBound.get();
         if (main.equals(current)) {

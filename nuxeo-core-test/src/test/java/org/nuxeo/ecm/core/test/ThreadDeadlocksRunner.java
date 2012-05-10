@@ -27,7 +27,7 @@ public class ThreadDeadlocksRunner {
                         }
                     }
                     if (isRepoOwned == false) {
-                        throw new Error("Repo not owned");
+                        throw new RuntimeException("Repo not owned");
                     }
                     synchronized (mgr) {
                         isMgrOwned = true;
@@ -63,7 +63,7 @@ public class ThreadDeadlocksRunner {
                 }
 
                 if (isMgrOwned == false) {
-                    throw new Error("Mgr is not owned");
+                    throw new RuntimeException("Mgr is not owned");
                 }
 
                 synchronized (mgr) {

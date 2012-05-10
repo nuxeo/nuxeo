@@ -86,27 +86,27 @@ public class CanMonitorTransactions {
         executor = Executors.newSingleThreadExecutor();
     }
 
-    protected void begin() throws Error {
+    protected void begin() {
         try {
             tm.begin();
         } catch (Exception cause) {
-            throw new Error("Cannot start new transacton", cause);
+            throw new RuntimeException("Cannot start new transacton", cause);
         }
     }
 
-    protected void rollback() throws Error {
+    protected void rollback() {
         try {
             tm.rollback();
         } catch (Exception cause) {
-            throw new Error("Cannot rollback transaction", cause);
+            throw new RuntimeException("Cannot rollback transaction", cause);
         }
     }
 
-    protected void commit() throws Error {
+    protected void commit() {
         try {
             tm.commit();
         } catch (Exception cause) {
-            throw new Error("Cannot commit transaction", cause);
+            throw new RuntimeException("Cannot commit transaction", cause);
         }
     }
 

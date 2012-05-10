@@ -74,7 +74,8 @@ public class RepositoryResolver {
             // from SQLRepositoryFactory called by descriptor at registration
             return ((SQLRepository) repo).repository;
         } else {
-            throw new Error("Unknown repository class: " + repo.getClass().getName());
+            throw new RuntimeException("Unknown repository class: "
+                    + repo.getClass().getName());
         }
     }
 
@@ -88,10 +89,12 @@ public class RepositoryResolver {
             try {
                 return getBinaryManagerFromConnectionFactory(repo);
             } catch (Exception e) {
-                throw new Error("Cannot get access to binary manager through the connection factory", e);
+                throw new RuntimeException(
+                        "Cannot get access to binary manager through the connection factory",
+                        e);
             }
         }
-        throw new Error("Unknown repository class: " + repoClass);
+        throw new RuntimeException("Unknown repository class: " + repoClass);
     }
 
     protected static BinaryManager getBinaryManagerFromConnectionFactory(Repository repo) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {

@@ -54,7 +54,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
 
     public void registerHandler(DocumentStoreHandlerDescriptor desc) {
         if (desc.handler == null) {
-            throw new Error(
+            throw new RuntimeException(
                     "Class wasn't resolved or new instance failed, check logs");
         }
         handlers.put(desc.id, desc);

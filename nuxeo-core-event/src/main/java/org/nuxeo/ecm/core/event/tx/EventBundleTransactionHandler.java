@@ -91,7 +91,7 @@ public class EventBundleTransactionHandler {
         try {
             return tm.suspend();
         } catch (SystemException e) {
-            throw new Error("Cannob suspend main transaction", e);
+            throw new RuntimeException("Cannot suspend main transaction", e);
         }
     }
 
@@ -102,7 +102,7 @@ public class EventBundleTransactionHandler {
         try {
             tm.resume(mainTx);
         } catch (Exception e) {
-            throw new Error("Cannot resume main tx", e);
+            throw new RuntimeException("Cannot resume main tx", e);
         } finally {
             mainTx = null;
         }

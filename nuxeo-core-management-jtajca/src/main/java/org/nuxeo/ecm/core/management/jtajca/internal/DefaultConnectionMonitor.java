@@ -33,7 +33,7 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * @author matic
- * 
+ *
  */
 public class DefaultConnectionMonitor implements ConnectionMonitor {
 
@@ -59,7 +59,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         unbindManagementInterface();
         monitor = null;
     }
-    
+
     public static AbstractConnectionManager lookup() {
         ConnectionManager cm = NuxeoContainer.getConnectionManager();
         if (cm == null) { // try setup through NuxeoConnectionManagerFactory
@@ -67,19 +67,19 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
                 InitialContext ic = new InitialContext();
                 cm = (ConnectionManager) ic.lookup("java:comp/env/NuxeoConnectionManager");
             } catch (NamingException cause) {
-                throw new Error("Cannot lookup tx manager", cause);
+                throw new RuntimeException("Cannot lookup tx manager", cause);
             }
         }
         if (!(cm instanceof NuxeoContainer.ConnectionManagerWrapper)) {
-            throw new Error("Nuxeo container not installed");
+            throw new RuntimeException("Nuxeo container not installed");
         }
         try {
             Field f = NuxeoContainer.ConnectionManagerWrapper.class.getDeclaredField("cm");
             f.setAccessible(true);
             return (AbstractConnectionManager) f.get(cm);
         } catch (Exception cause) {
-            throw new Error("Cannot access to geronimo connection manager",
-                    cause);
+            throw new RuntimeException(
+                    "Cannot access to geronimo connection manager", cause);
         }
     }
 
@@ -90,7 +90,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
             mbs = ManagementFactory.getPlatformMBeanServer();
             mbs.registerMBean(monitor, new ObjectName(ConnectionMonitor.NAME));
         } catch (Exception cause) {
-            throw new Error("Cannot register tx monitor", cause);
+            throw new RuntimeException("Cannot register tx monitor", cause);
         }
     }
 
@@ -98,7 +98,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         try {
             mbs.unregisterMBean(new ObjectName(ConnectionMonitor.NAME));
         } catch (Exception e) {
-            throw new Error("Cannot unregister tx monitor");
+            throw new RuntimeException("Cannot unregister tx monitor");
         } finally {
             mbs = null;
         }
@@ -146,7 +146,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         return cm.getPartitionMinSize();
     }
 
- 
+
     @Override
     public void setPartitionMinSize(int minSize) {
        cm.setPartitionMinSize(minSize);

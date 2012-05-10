@@ -166,7 +166,8 @@ public class NetServer {
         try {
             return holder.getServlet();
         } catch (ServletException e) {
-            throw new Error("No such servlet " + serverDescriptor.getUrl() + ":" + servletName, e);
+            throw new RuntimeException("No such servlet "
+                    + serverDescriptor.getUrl() + ":" + servletName, e);
         }
     }
 

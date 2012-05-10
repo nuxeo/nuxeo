@@ -13,7 +13,8 @@ public class JettyTransactionalListener implements ServletContextListener {
         try {
             NuxeoContainer.install();
         } catch (NamingException e) {
-            throw new Error("Cannot install jtajca in jetty naming context", e);
+            throw new RuntimeException(
+                    "Cannot install jtajca in jetty naming context", e);
         }
     }
 
@@ -22,7 +23,8 @@ public class JettyTransactionalListener implements ServletContextListener {
         try {
             NuxeoContainer.uninstall();
         } catch (NamingException e) {
-            throw new Error("Cannot uninstall jtajca in jetty naming context", e);
+            throw new RuntimeException(
+                    "Cannot uninstall jtajca in jetty naming context", e);
         }
     }
 

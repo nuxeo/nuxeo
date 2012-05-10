@@ -126,7 +126,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
         try {
             return clazz.newInstance();
         } catch (Exception e) {
-            throw new Error("Cannot instanciate " + clazz.getSimpleName(), e);
+            throw new RuntimeException("Cannot instantiate " + clazz.getSimpleName(), e);
         }
     }
 
@@ -221,7 +221,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
             try {
                 DatabaseHelper.DATABASE.tearDown();
             } catch (SQLException e) {
-                throw new Error("Cannot release database", e);
+                throw new RuntimeException("Cannot release database", e);
             }
         }
     }

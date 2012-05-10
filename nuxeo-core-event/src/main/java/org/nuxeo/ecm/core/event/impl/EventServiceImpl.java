@@ -107,10 +107,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
             }
         }
         if (!notTerminated.isEmpty()) {
-            throw new Error("Asynch services are still running : " + notTerminated);
+            throw new RuntimeException("Asynch services are still running : "
+                    + notTerminated);
         }
         if (asyncExec.shutdown(timeoutMillis) == false) {
-            throw new Error("Async executor is still running, timeout expired");
+            throw new RuntimeException(
+                    "Async executor is still running, timeout expired");
         }
     }
 
@@ -145,11 +147,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
             }
         }
         if (!notCompleted.isEmpty()) {
-            throw new Error("Async tasks are still running : " + notCompleted);
+            throw new RuntimeException("Async tasks are still running : "
+                    + notCompleted);
         }
         try {
             if (!asyncExec.waitForCompletion(timeout)) {
-                throw new Error("Async event listeners thread pool is not terminated");
+                throw new RuntimeException(
+                        "Async event listeners thread pool is not terminated");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

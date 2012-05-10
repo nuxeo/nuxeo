@@ -82,7 +82,7 @@ public class LocalSession extends AbstractSession {
                     } else if (LoginComponent.isSystemLogin(p)) {
                         principal = new SystemPrincipal(p.getName());
                     } else {
-                        throw new Error("Unsupported principal: "
+                        throw new RuntimeException("Unsupported principal: "
                                 + p.getClass());
                     }
                 }

@@ -47,7 +47,7 @@ public abstract class CallerPrincipalProvider {
                 try {
                     cpp = (CallerPrincipalProvider) Class.forName(cn).newInstance();
                 } catch (Exception e) {
-                    throw new Error(
+                    throw new RuntimeException(
                             "Failed to register the caller principal provider: "
                                     + cn, e);
                 }

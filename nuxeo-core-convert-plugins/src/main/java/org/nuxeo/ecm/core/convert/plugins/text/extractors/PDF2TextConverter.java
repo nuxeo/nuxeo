@@ -64,8 +64,8 @@ public class PDF2TextConverter implements Converter {
                 f.setAccessible(true);
                 return f.get(this);
             } catch (Exception e) {
-                throw new Error("Cannot get access to PDFStreamEngine fields",
-                        e);
+                throw new RuntimeException(
+                        "Cannot get access to PDFStreamEngine fields", e);
             }
         }
 
