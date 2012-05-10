@@ -34,14 +34,7 @@ public class GroupsPageProvider extends AbstractGroupsPageProvider {
         if ("*".equals(searchString)) {
             groups = searchAllGroups();
         } else if (!StringUtils.isEmpty(searchString)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            // XXX: search only on id, better conf should be set in
-            // user manager interface
-            filter.put(userManager.getGroupIdField(), searchString);
-            // parameters must be serializable so copy keySet to
-            // HashSet
-            groups = userManager.searchGroups(filter, new HashSet<String>(
-                    filter.keySet()));
+            groups = userManager.searchGroups(searchString);
         }
         return groups;
     }
