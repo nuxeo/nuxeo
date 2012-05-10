@@ -89,8 +89,8 @@ function doAutomationRequest(nxParams) {
 }
 
 function requestCompleted(response, nxParams) {
+    hideWaitMessage();
     if (response.data) {
-        hideWaitMessage();
         hideOAuthInProgress();
         if (response.data['entity-type'] == "documents" ) { // old behavior for 'documents' output type
             if (nxParams.usePagination) {
@@ -117,7 +117,6 @@ function requestCompleted(response, nxParams) {
                 'height=600,width=800', onOpen, onClose);
         showOAuthPrompt(popup.createOpenerOnClick(), popup.createApprovedOnClick());
     } else if ( response.rc == 204 ) { // operation successful but not data
-    	hideWaitMessage();
         hideOAuthInProgress();
     } else {
     	showErrorMessage("No data received from server: ", response.errors);
