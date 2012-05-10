@@ -16,6 +16,7 @@ mail.store.protocol=pop3
 mail.store.host=${mail.store.protocol}.nosuchhost.nosuchdomain.com
 mail.store.port=110
 mail.store.user=anonymous
+mail.store.password=secret
 # Mail transport
 mail.transport.protocol=smtp
 mail.transport.usetls=false
@@ -23,6 +24,7 @@ mail.transport.host=localhost
 mail.transport.host=${mail.transport.protocol}.nosuchhost.nosuchdomain.com
 mail.transport.port=25
 mail.transport.user=anonymous
+mail.transport.password=secret
 mail.transport.auth=false
 # User who will receive mail
 mail.user=nobody
