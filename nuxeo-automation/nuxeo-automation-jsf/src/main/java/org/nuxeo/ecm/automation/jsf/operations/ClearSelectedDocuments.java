@@ -8,7 +8,6 @@
  *
  * Contributors:
  */
-
 package org.nuxeo.ecm.automation.jsf.operations;
 
 import org.nuxeo.ecm.automation.core.Constants;
@@ -18,17 +17,18 @@ import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 /**
- * @author Anahide Tchertchian
+ * @since 5.6
+ * @author Laurent Doguin
  */
-@Operation(id = ClearClipboard.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Clipboard", description = "Clear the clipboard content.")
-public class ClearClipboard {
+@Operation(id = ClearSelectedDocuments.ID, category = Constants.CAT_UI, requires = Constants.SEAM_CONTEXT, label = "Clear Selected Documents", description = "Clear the selected documents list.", since = "5.6")
+public class ClearSelectedDocuments {
 
-    public static final String ID = "Seam.ClearClipboard";
+    public static final String ID = "Seam.ClearSelectedDocuments";
 
     @OperationMethod
     public void run() {
         OperationHelper.getDocumentListManager().resetWorkingList(
-                DocumentsListsManager.CLIPBOARD);
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
     }
 
 }
