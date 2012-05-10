@@ -5,7 +5,7 @@
   xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   id="#{widget.id}">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
-<f:subview rendered="#{not empty field}"><nxdir:directoryEntryOutput
+<f:subview rendered="#{not empty field_0}"><nxdir:directoryEntryOutput
     directoryName="topic"
     value="#{fn:split(field_0, '/')[0]}"
     localize="true" />/<nxdir:directoryEntryOutput
@@ -19,14 +19,16 @@
   <nxp:html>
     <nxdir:chainSelectOutput id="#{widget.id}_viewselect"
       directoryNameList="topic,subtopic"
-      value="#{field}" localize="true" display="label"
+      value="#{field_0}" localize="true" display="label"
       keySeparator="/" entrySeparator="" />
   </nxp:html>
 </c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
-  <nxdir:chainSelectOutput id="#{widget.id}_viewselect"
-    directoryNameList="topic,subtopic"
-    value="#{field}" localize="true" display="label"
-    keySeparator="/" entrySeparator="" />
+  <div class="#{field_1}">
+    <nxdir:chainSelectOutput id="#{widget.id}_viewselect"
+      directoryNameList="topic,subtopic"
+      value="#{field_0}" localize="true" display="label"
+      keySeparator="/" entrySeparator="" />
+  </div>
 </c:if>
 </f:subview>

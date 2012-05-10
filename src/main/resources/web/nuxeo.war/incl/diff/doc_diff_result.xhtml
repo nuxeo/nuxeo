@@ -7,19 +7,12 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout" class="docDiffResult">
   
   <style type="text/css">
-    /*
-    div .emptyTextDiff {width: 60px;}    
-    div.textDiff, div .emptyTextDiff {float: left; margin-bottom: 0.1em; padding: 0 0.4em;}
-    .listItemIndex {float: left; padding-right: 0.5em; font-style: italic;}
-    .textDiff.leftDiff, .emptyTextDiff.leftDiff {background-color:#FFDDDD;}
-    .textDiff.rightDiff, .emptyTextDiff.rightDiff {background-color:#DDFFDD;}
-    .italic {font-style: italic;}
-    */
     
     #diffHeader {margin-bottom: 0.5em; padding: 0 0.5em 0.5em 0.5em;}
     #diffHeader .dataInput {margin-top: 0;}
     #diffHeader h2 {padding: 0;}
     #diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover {color: #000000;}
+    #diffHeader .diffSubTitle {padding-left: 5px; font-style: italic;}
     
     .docDiffResult .foldableBox .boxBody {padding: 0.5em;}
     .docDiffResult .dataInput {width: 100%;}
@@ -33,6 +26,10 @@
     .docDiffResult .dataInput .diffDisplayTable th, .docDiffResult .dataInput .diffDisplayTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
     .docDiffResult .dataInput .diffDisplayTable th {background-color:  #EEEFF0; padding: 0.1em 0.5em; text-align: center; font-weight: bold;}
     .docDiffResult .note_content_block {border:none; margin: 0; padding: 0;}
+    
+    /*.docDiffResult .noBackgroundColor {}*/
+    .docDiffResult .redBackgroundColor {display: block; min-height: 18px; min-width: 40px; padding: 0px 4px; background-color: #FDC6C6;}
+    .docDiffResult .greenBackgroundColor {display: block; min-height: 18px; min-width: 40px; padding: 0px 4px; background-color: #CCFFCC;}
     
     .docDiffResult .contentDiffLink {margin-right: 10px;}
     
@@ -78,6 +75,7 @@
             </td>
           </tr>
         </table>
+        <h:outputText value="#{messages['document.diff.subTitle']}" styleClass="diffSubTitle" />
       </div>
     
       <c:if test="#{empty defaultDiffDisplayBlocks}">

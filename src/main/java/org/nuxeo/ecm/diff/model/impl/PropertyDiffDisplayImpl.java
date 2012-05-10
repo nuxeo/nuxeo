@@ -32,16 +32,15 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
 
     protected Serializable value;
 
-    protected String backgroundColor = DEFAULT_BACKGROUND_COLOR;
+    protected String styleClass = DEFAULT_STYLE_CLASS;
 
     public PropertyDiffDisplayImpl(Serializable value) {
         this.value = value;
     }
 
-    public PropertyDiffDisplayImpl(Serializable value,
-            String backgroundColor) {
+    public PropertyDiffDisplayImpl(Serializable value, String styleClass) {
         this.value = value;
-        this.backgroundColor = backgroundColor;
+        this.styleClass = styleClass;
     }
 
     public Serializable getValue() {
@@ -52,12 +51,12 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         this.value = value;
     }
 
-    public String getBackgroundColor() {
-        return backgroundColor;
+    public String getStyleClass() {
+        return styleClass;
     }
 
-    public void setBackgroundColor(String backgroundColor) {
-        this.backgroundColor = backgroundColor;
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
     }
 
     @Override
@@ -70,21 +69,17 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
             return false;
         }
         Serializable otherValue = ((PropertyDiffDisplay) other).getValue();
-        Serializable otherBackgroundColor = ((PropertyDiffDisplay) other).getBackgroundColor();
-        if (value == null && otherValue == null
-                && backgroundColor == null && otherBackgroundColor == null) {
+        Serializable otherStyleClass = ((PropertyDiffDisplay) other).getStyleClass();
+        if (value == null && otherValue == null && styleClass == null
+                && otherStyleClass == null) {
             return true;
         }
-        return value == null && otherValue == null
-                && backgroundColor != null
-                && backgroundColor.equals(otherBackgroundColor)
-                || backgroundColor == null && otherBackgroundColor == null
-                && value != null
-                && value.equals(otherValue)
-                || value != null
-                && value.equals(otherValue)
-                && backgroundColor != null
-                && backgroundColor.equals(otherBackgroundColor);
+        return value == null && otherValue == null && styleClass != null
+                && styleClass.equals(otherStyleClass) || styleClass == null
+                && otherStyleClass == null && value != null
+                && value.equals(otherValue) || value != null
+                && value.equals(otherValue) && styleClass != null
+                && styleClass.equals(otherStyleClass);
     }
 
     @Override
@@ -92,7 +87,7 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         StringBuilder sb = new StringBuilder();
         sb.append(value);
         sb.append(" (");
-        sb.append(backgroundColor);
+        sb.append(styleClass);
         sb.append(")");
         return sb.toString();
     }

@@ -5,44 +5,76 @@
     point="widgets">
 
     <!-- Generic widgets: name = diff property type, see: org.nuxeo.ecm.diff.model.PropertyType -->
-    <widget name="string" type="text">
+    <widget name="string" type="template">
       <categories>
         <category>diff</category>
       </categories>
-    </widget>
-
-    <widget name="boolean" type="checkbox">
-      <categories>
-        <category>diff</category>
-      </categories>
-    </widget>
-
-    <widget name="date" type="datetime">
-      <categories>
-        <category>diff</category>
-      </categories>
-      <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+      <properties mode="any">
+        <property name="widgetType">text</property>
+        <property name="template">
+          /widgets/generic_diff_widget_template.xhtml
         </property>
       </properties>
     </widget>
 
-    <widget name="integer" type="int">
+    <widget name="boolean" type="template">
       <categories>
         <category>diff</category>
       </categories>
+      <properties mode="any">
+        <property name="widgetType">checkbox</property>
+        <property name="template">
+          /widgets/generic_diff_widget_template.xhtml
+        </property>
+      </properties>
     </widget>
 
-    <widget name="long" type="int">
+    <widget name="date" type="template">
       <categories>
         <category>diff</category>
       </categories>
+      <properties mode="any">
+        <property name="widgetType">datetime</property>
+        <property name="template">
+          /widgets/generic_diff_widget_template.xhtml
+        </property>
+      </properties>
     </widget>
 
-    <widget name="double" type="double">
+    <widget name="integer" type="template">
       <categories>
         <category>diff</category>
       </categories>
+      <properties mode="any">
+        <property name="widgetType">int</property>
+        <property name="template">
+          /widgets/generic_diff_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="long" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <properties mode="any">
+        <property name="widgetType">int</property>
+        <property name="template">
+          /widgets/generic_diff_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="double" type="template">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <properties mode="any">
+        <property name="widgetType">double</property>
+        <property name="template">
+          /widgets/generic_diff_widget_template.xhtml
+        </property>
+      </properties>
     </widget>
 
     <widget name="content" type="file">

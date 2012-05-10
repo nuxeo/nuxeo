@@ -238,9 +238,9 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         Map<String, Map<String, PropertyDiffDisplay>> expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
         Map<String, PropertyDiffDisplay> expectedFields = new HashMap<String, PropertyDiffDisplay>();
         expectedFields.put("title", new PropertyDiffDisplayImpl(
-                "My first sample", PropertyDiffDisplay.RED_BACKGROUND_COLOR));
+                "My first sample", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedFields.put("description", new PropertyDiffDisplayImpl(
-                "description", PropertyDiffDisplay.RED_BACKGROUND_COLOR));
+                "description", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         // Calendar cal =
         // DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
         // Calendar.DECEMBER, 29, 11, 24, 25);
@@ -260,9 +260,9 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
         expectedFields = new HashMap<String, PropertyDiffDisplay>();
         expectedFields.put("title", new PropertyDiffDisplayImpl(
-                "My second sample", PropertyDiffDisplay.GREEN_BACKGROUND_COLOR));
+                "My second sample", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedFields.put("description", new PropertyDiffDisplayImpl(null,
-                PropertyDiffDisplay.GREEN_BACKGROUND_COLOR));
+                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         // cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
         // Calendar.DECEMBER, 30, 12, 05, 02);
         // expectedFields.put("modified", cal.getTime());
@@ -326,7 +326,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         WidgetDefinition wDef = layoutDef.getWidgetDefinition("dublincore:title");
         assertNotNull(wDef);
         assertEquals("dublincore:title", wDef.getName());
-        assertEquals("text", wDef.getType());
+        assertEquals("template", wDef.getType());
         assertEquals("label.dublincore.title", wDef.getLabel(BuiltinModes.ANY));
         assertTrue(wDef.isTranslated());
         FieldDefinition[] fieldDefs = wDef.getFieldDefinitions();
@@ -334,13 +334,12 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         FieldDefinition fieldDef = fieldDefs[0];
         assertEquals("dublincore:title/value", fieldDef.getPropertyName());
         fieldDef = fieldDefs[1];
-        assertEquals("dublincore:title/backgroundColor",
-                fieldDef.getPropertyName());
+        assertEquals("dublincore:title/styleClass", fieldDef.getPropertyName());
 
         wDef = layoutDef.getWidgetDefinition("dublincore:description");
         assertNotNull(wDef);
         assertEquals("dublincore:description", wDef.getName());
-        assertEquals("text", wDef.getType());
+        assertEquals("template", wDef.getType());
         assertEquals("label.dublincore.description",
                 wDef.getLabel(BuiltinModes.ANY));
         assertTrue(wDef.isTranslated());
@@ -349,7 +348,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         fieldDef = fieldDefs[0];
         assertEquals("dublincore:description/value", fieldDef.getPropertyName());
         fieldDef = fieldDefs[1];
-        assertEquals("dublincore:description/backgroundColor",
+        assertEquals("dublincore:description/styleClass",
                 fieldDef.getPropertyName());
 
         // wDef = layoutDef.getWidgetDefinition("dublincore:modified");

@@ -58,6 +58,10 @@
                   <nxl:widget widget="#{widget}" value="#{rightValue}" />
                 </nxu:set>
               </td>
+              <c:if test="#{fn:length(layoutRow.widgets) == 1}">
+                <td class="contentDiffColumn">
+                </td>
+              </c:if>  
             </c:if>
             <c:if test="#{widgetIndex == 1}">
               <td class="contentDiffColumn">
