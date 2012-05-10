@@ -184,6 +184,7 @@ public class StartupHelper implements Serializable {
             DocumentModelList domains = documentManager.query(query);
             if (domains.size() == 1) {
                 // select and go to the unique domain
+                webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
                 return navigationContext.navigateToDocument(domains.get(0),
                         viewId);
             }
@@ -193,6 +194,7 @@ public class StartupHelper implements Serializable {
             DocumentModel rootDocument = documentManager.getRootDocument();
             if (documentManager.hasPermission(rootDocument.getRef(),
                     SecurityConstants.READ_CHILDREN)) {
+                webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
                 navigationContext.navigateToDocument(rootDocument);
                 return DOMAINS_VIEW;
             }
