@@ -128,7 +128,7 @@ public class URLStreamHandlerFactoryInstaller {
             try {
                 handlers = (Hashtable<?, ?>) handlersField.get(null);
             } catch (Exception e) {
-                throw new Error("Cannot clear URL handlers cache");
+                throw new RuntimeException("Cannot clear URL handlers cache");
             }
             if (handlers != null) {
                 handlers.clear();
