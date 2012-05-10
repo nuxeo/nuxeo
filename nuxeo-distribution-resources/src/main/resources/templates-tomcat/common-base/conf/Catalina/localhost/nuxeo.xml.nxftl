@@ -51,14 +51,18 @@
 
   <Resource auth="Container" name="Mail" type="javax.mail.Session"
 	mail.store.protocol="${mail.store.protocol}"
-	mail.pop3.host="${mail.pop3.host}"
-	mail.pop3.user="${mail.user}"
 	mail.transport.protocol="${mail.transport.protocol}"
-	mail.smtp.host="${mail.smtp.host}" mail.smtp.port="${mail.smtp.port}"
-	mail.smtp.starttls.enable="${mail.smtp.usetls}"
-	mail.smtp.auth="${mail.smtp.auth}"
-	mail.smtp.user="${mail.smtp.username}"
-	password="${mail.smtp.password}" mail.from="${mail.from}"
+	mail.${mail.store.protocol}.host="${mail.store.host}"
+        mail.${mail.store.protocol}.port="${mail.store.port}"
+	mail.${mail.store.protocol}.user="${mail.store.user}"
+	mail.${mail.store.protocol}.password="${mail.store.password}"
+	mail.${mail.transport.protocol}.host="${mail.transport.host}" 
+        mail.${mail.transport.protocol}.port="${mail.transport.port}"
+	mail.${mail.transport.protocol}.starttls.enable="${mail.transport.usetls}"
+	mail.${mail.transport.protocol}.auth="${mail.transport.auth}"
+	mail.${mail.transport.protocol}.user="${mail.transport.username}"
+	mail.${mail.transport.protocol}.password="${mail.transport.password}"
+        mail.from="${mail.from}"
 	mail.debug="${mail.debug}" />
 
 </Context>

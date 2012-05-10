@@ -11,15 +11,21 @@ nuxeo.db.commonds=jdbc/nuxeo
 nuxeo.db.validationQuery=
 nuxeo.db.user_separator_key=,
 
-# Mail server protocol
+# Mail server 
 mail.store.protocol=pop3
+mail.store.host=${mail.store.protocol}.nosuchhost.nosuchdomain.com
+mail.store.port=110
+mail.store.user=anonymous
+# Mail transport
 mail.transport.protocol=smtp
-# Use TLS for SMTP connections
-mail.smtp.usetls=false
+mail.transport.usetls=false
+mail.transport.host=localhost
+mail.transport.host=${mail.transport.protocol}.nosuchhost.nosuchdomain.com
+mail.transport.port=25
+mail.transport.user=anonymous
+mail.transport.auth=false
 # User who will receive mail
 mail.user=nobody
-# Mail server
-mail.pop3.host=pop3.nosuchhost.nosuchdomain.com
 # Enable debugging output from the javamail classes
 mail.debug=false
 
