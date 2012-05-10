@@ -221,7 +221,7 @@
       </labels>
       <translated>true</translated>
       <properties mode="any">
-        <property name="template">/widgets/subjects_item_widget.xhtml
+        <property name="template">/widgets/subjects_item_widget_template.xhtml
         </property>
       </properties>
     </widget>
@@ -249,7 +249,7 @@
       </labels>
       <translated>true</translated>
       <properties mode="any">
-        <property name="template">/widgets/contributors_item_widget.xhtml
+        <property name="template">/widgets/contributors_item_widget_template.xhtml
         </property>
       </properties>
     </widget>
