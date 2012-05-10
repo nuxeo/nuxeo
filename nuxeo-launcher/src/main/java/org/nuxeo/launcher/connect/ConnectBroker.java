@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -32,6 +33,8 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.data.DownloadablePackage;
+import org.nuxeo.connect.data.DownloadingPackage;
+import org.nuxeo.connect.downloads.ConnectDownloadManager;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.packages.PackageManager;
@@ -52,6 +55,8 @@ import org.nuxeo.launcher.info.PackageInfo;
 public class ConnectBroker {
 
     private static final Log log = LogFactory.getLog(ConnectBroker.class);
+
+    private static final int PACKAGES_DOWNLOAD_TIMEOUT_SECONDS = 300;
 
     private Environment env;
 
@@ -502,6 +507,52 @@ public class ConnectBroker {
 
     }
 
+    protected boolean downloadPackages(List<String> packagesToDownload) {
+        if (packagesToDownload == null) {
+            return true;
+        }
+        CommandInfo cmdInfo = new CommandInfo();
+        cmdInfo.name = CommandInfo.CMD_ADD;
+        // Queue downloads
+        for (String pkg : packagesToDownload) {
+            try {
+                getPackageManager().download(pkg);
+            } catch (Exception e) {
+                log.error("Cannot download packages", e);
+                return false;
+            }
+        }
+        // Check progress
+        ConnectDownloadManager cdm = NuxeoConnectClient.getDownloadManager();
+        List<DownloadingPackage> pkgs = cdm.listDownloadingPackages();
+        long startTime = new Date().getTime();
+        long deltaTime = 0;
+        do {
+            for (DownloadingPackage pkg : pkgs) {
+                if (pkg.isCompleted()) {
+                    if (!pkg.isDigestOk()) {
+                        log.error("Wrong digest for package " + pkg.getName());
+                        return false;
+                    }
+                    pkgs.remove(pkg);
+                }
+            }
+            deltaTime = (new Date().getTime() - startTime) / 1000;
+        } while (deltaTime < PACKAGES_DOWNLOAD_TIMEOUT_SECONDS
+                && pkgs.size() > 0);
+        // TODO: populate command info with packages
+        // Did everything get downloaded?
+        if (pkgs.size() > 0) {
+            log.error("Timeout while trying to download pacakges");
+            cmdInfo.exitCode = 1;
+            cset.commands.add(cmdInfo);
+            return false;
+        }
+        cmdInfo.exitCode = 0;
+        cset.commands.add(cmdInfo);
+        return true;
+    }
+
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
@@ -546,10 +597,41 @@ public class ConnectBroker {
         DependencyResolution resolution = getPackageManager().resolveDependencies(
                 solverInstall, solverRemove, solverUpgrade, targetPlatform);
         log.info(resolution);
-        // TODO: act on the resolution
-
+        if (resolution.isFailed()) {
+            log.error("Could not reolve dependencies");
+            return false;
+        }
+        // Download remote packages
+        if (!downloadPackages(resolution.getDownloadPackageIds())) {
+            log.error("Aborting packages change request");
+            return false;
+        }
+        // Install packages
+        List<String> resolutionInstallations = resolution.getInstallPackageIds();
+        for (String pkg : resolutionInstallations) {
+            LocalPackage newPkg = pkgInstall(pkg);
+            if (newPkg == null) {
+                log.error("Failed to install " + pkg);
+                return false;
+            }
+        }
+        // Uninstall packages
+        List<String> resolutionUninstallations = resolution.getRemovePackageIds();
+        for (String pkg : resolutionUninstallations) {
+            LocalPackage oldPkg = pkgUninstall(pkg);
+            if (oldPkg == null) {
+                log.error("Failed to uninstall " + pkg);
+                return false;
+            }
+        }
         // Remove "pkgsToRemove" packages from local cache
-        // TODO
+        for (String pkg : pkgsToRemove) {
+            LocalPackage removedPkg = pkgRemove(pkg);
+            if (removedPkg == null) {
+                log.error("Failed to remove " + pkg);
+                // Don't error out on failed (cache) removal
+            }
+        }
         return true;
     }
 
