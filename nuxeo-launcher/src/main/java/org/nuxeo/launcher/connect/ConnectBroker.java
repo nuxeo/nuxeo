@@ -543,7 +543,7 @@ public class ConnectBroker {
         // TODO: populate command info with packages
         // Did everything get downloaded?
         if (pkgs.size() > 0) {
-            log.error("Timeout while trying to download pacakges");
+            log.error("Timeout while trying to download packages");
             cmdInfo.exitCode = 1;
             cset.commands.add(cmdInfo);
             return false;
@@ -598,7 +598,7 @@ public class ConnectBroker {
                 solverInstall, solverRemove, solverUpgrade, targetPlatform);
         log.info(resolution);
         if (resolution.isFailed()) {
-            log.error("Could not reolve dependencies");
+            log.error("Could not resolve dependencies");
             return false;
         }
         // Download remote packages
@@ -625,11 +625,13 @@ public class ConnectBroker {
             }
         }
         // Remove "pkgsToRemove" packages from local cache
-        for (String pkg : pkgsToRemove) {
-            LocalPackage removedPkg = pkgRemove(pkg);
-            if (removedPkg == null) {
-                log.error("Failed to remove " + pkg);
-                // Don't error out on failed (cache) removal
+        if (pkgsToRemove != null) {
+            for (String pkg : pkgsToRemove) {
+                LocalPackage removedPkg = pkgRemove(pkg);
+                if (removedPkg == null) {
+                    log.error("Failed to remove " + pkg);
+                    // Don't error out on failed (cache) removal
+                }
             }
         }
         return true;
