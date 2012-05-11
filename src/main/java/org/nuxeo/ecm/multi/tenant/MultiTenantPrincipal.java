@@ -21,7 +21,6 @@ import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantAdminist
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

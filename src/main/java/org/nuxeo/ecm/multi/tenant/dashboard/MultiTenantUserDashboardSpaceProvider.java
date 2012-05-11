@@ -23,5 +23,6 @@ import org.nuxeo.ecm.user.center.dashboard.UserDashboardSpaceProvider;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public class MultiTenantUserDashboardSpaceProvider extends UserDashboardSpaceProvider {
+public class MultiTenantUserDashboardSpaceProvider extends
+        UserDashboardSpaceProvider {
 }

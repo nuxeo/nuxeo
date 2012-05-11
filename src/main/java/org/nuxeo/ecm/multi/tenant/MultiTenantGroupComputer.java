@@ -17,9 +17,7 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
-import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_GROUP_SUFFIX;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_PROPERTY;
-import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_GROUP_PREFIX;
 import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantAdministratorsGroup;
 
 import java.util.ArrayList;
