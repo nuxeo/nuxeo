@@ -98,6 +98,8 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_TEMPLATE_DBNAME = "nuxeo.dbtemplate";
 
+    public static final String PARAM_TEMPLATE_DBTYPE = "nuxeo.db.type";
+
     public static final String PARAM_TEMPLATES_NODB = "nuxeo.nodbtemplates";
 
     public static final String OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
@@ -1065,7 +1067,7 @@ public class ConfigurationGenerator {
         serverConfigurator.checkPaths();
         serverConfigurator.removeExistingLocks();
         checkAddressesAndPorts();
-        if (!"default".equals(userConfig.getProperty(PARAM_TEMPLATE_DBNAME))) {
+        if (!"default".equals(userConfig.getProperty(PARAM_TEMPLATE_DBTYPE))) {
             try {
                 checkDatabaseConnection(
                         userConfig.getProperty(PARAM_TEMPLATE_DBNAME),
