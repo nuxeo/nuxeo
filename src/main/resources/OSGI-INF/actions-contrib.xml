@@ -44,7 +44,16 @@
       link="/incl/tabs/tenant_configuration.xhtml" order="40"
       label="label.tenant.configuration" icon="/icons/file.gif">
       <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
-      <filter-id>manage</filter-id>
+      <filter id="tenantManagers">
+        <rule grant="true">
+          <permission>WriteProperties</permission>
+          <condition>#{currentUser.manager}</condition>
+        </rule>
+        <rule grant="true">
+          <permission>WriteProperties</permission>
+          <condition>#{currentUser.administrator}</condition>
+        </rule>
+      </filter>
       <filter-id>allowForTenantConfig</filter-id>
     </action>
 

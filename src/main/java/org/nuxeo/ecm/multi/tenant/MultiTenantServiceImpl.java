@@ -19,6 +19,7 @@ package org.nuxeo.ecm.multi.tenant;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANTS_DIRECTORY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
@@ -150,13 +151,12 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         ACL acl = acp.getOrCreateACL();
         UserManager userManager = Framework.getLocalService(UserManager.class);
         for (String adminGroup : userManager.getAdministratorsGroups()) {
-            acl.add(new ACE(adminGroup, EVERYTHING, true));
+            acl.add(new ACE(adminGroup, WRITE_PROPERTIES, true));
         }
 
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
-        acl.add(new ACE(tenantAdministratorsGroup,
-                SecurityConstants.EVERYTHING, true));
-        acl.add(new ACE(EVERYONE, SecurityConstants.EVERYTHING, false));
+        acl.add(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
+        acl.add(new ACE(EVERYONE, EVERYTHING, false));
         doc.setACP(acp, true);
     }
 
