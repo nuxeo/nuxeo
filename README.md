@@ -23,7 +23,7 @@ The comparison also takes into account blob-type properties.
 	- $M2_REPO/org/outerj/daisy/daisydiff/1.2-NX1/daisydiff-1.2-NX1.jar
 	- $M2_REPO/org/eclipse/core/runtime/eclipse-core-runtime/20070801/eclipse-core-runtime-20070801.jar
 	
-	_These librairies are fetched from Nuxeo Maven repositories and installed in your Maven local repository when building nuxeo-diff._
+	These librairies are fetched from Nuxeo Maven repositories and installed in your Maven local repository when building nuxeo-diff.
 	
 - Start Nuxeo and have a try!
 
@@ -40,11 +40,11 @@ A _diffDisplay_ contribution represents a number of _diffBlocks_ that you want t
 It is bound to a document type.  
 A _diffBlock_ contribution represents a number of properties (fields) that you want to display (see next section).
 
-When asking for comparison between 2 versions of a document, the _diffDisplay_ bound to the document type is used.
+When asking for the comparison between 2 versions of a document, the _diffDisplay_ bound to the document type is used.
 If no _diffDisplay_ is found for this type a fall back is done on the default diff display mode: one block per document schema and for each block all the fields of the schema that are different.  
 _Beware that in this case the order of the schemas and of the fields is undefined._
 
-When asking for comparison between 2 documents, if they are of the same type, the _diffDisplay_ bound to this type is used.
+When asking for the comparison between 2 documents, if they are of the same type, the _diffDisplay_ bound to this type is used.
 If no _diffDisplay_ is found for this type or if the documents are not of the same type a fall back is done on the default diff display mode.
 
 For example, this is the _diffDisplay_ contribution bound to the _File_ type:
@@ -100,7 +100,7 @@ This is used for the _files_ field of the _files_ diff block:
 
 If no _items_ are specified, all the property items are displayed.
 
-For content properties (that hold a blob) or string ones you can set the _displayContentDiffLinks_ to _true_ on a _field_ or an _item_ to display the content diff links.
+For content properties (that hold a blob) or string ones you can set the _displayContentDiffLinks_ attribute to _true_ on a _field_ or an _item_ to display the content diff links.
 These links will open a fancybox showing the detailed content diff using the usual green and red colors to distinguish the added/removed parts of the content.
 For now, 2 links are displayed: _Textual diff_ based on a text conversion and _Html diff_ based on an html conversion (keeps the content layout).
 See the _Content diff_ section for more information.
@@ -163,9 +163,9 @@ and the following widgets to the _widgets_ extension point of the _org.nuxeo.ecm
 
 When rendering the "myCustomBlock" _diffBlock_, the _DiffDisplayService_ will:
 
-- Look for a specific widget definition named "file:content" in the _LayoutStore_, find it and use it for _<field schema="file" name="content" />_.
+- Look for a specific widget definition named "file:content" in the _LayoutStore_, find it and use it for the "file:content" field.
 
-- Look for a specific widget definition named "dublincore:title" in the _LayoutStore_, won't find it and therefore will look for a generic widget definition named with the field type, ie. "string", find it and use it for _<field schema="dublincore" name="title" />_.
+- Look for a specific widget definition named "dublincore:title" in the _LayoutStore_, won't find it and therefore will look for a generic widget definition named with the field type, ie. "string", find it and use it for the dublincore:title field.
 
 In this use case, the "string" generic widget definition is sufficient to display the "dublincore:title" field.  
 It uses a widget of type "text" with "label.dublincore.title" as a label and "dublincore:title" as a field definition.    
@@ -232,7 +232,7 @@ For a complex property, lets take the example of a "complextypes:complex" proper
 
 - To display the complex property, nothing special is needed so the "complex" generic widget definition can be used.
   
-- To display the "directoryItem", the "string" generic widget definition doesn't match our needs: it would display the directory entry code stored in the backend whereas we want to display its label.  
+- To display the "directoryItem" item, the "string" generic widget definition doesn't match our needs: it would display the directory entry code stored in the backend whereas we want to display its label.  
 So we need a specific widget definition for the "directoryItem" subwidget to use the "selectOneDirectory" widget type bound to the "myDirectory" directory.  
 As for a list item, the name of this widget definition must match the xpath of the complex property item, ie. "complextypes:complex/directoryItem".
 
@@ -271,23 +271,23 @@ Therefore, two widget definitions are involved:
 
 ###### Useful widget properties
 
-You can use the following properties on a list widget (typically "scalarList", "complexList" or "files:files"):
+You can use the following properties on a list widget definition (typically "scalarList", "complexList" or "files:files"):
 
 `<property name="displayAllItems">[true|false]</property>`  
-If true, all the list items will be displayed, otherwise only the different ones.
+If set to _true_, all the list items will be displayed, otherwise only the different ones will be.
     
 `<property name="displayItemIndexes">[true|false]</property>`  
-If true, a subwidget will be added to the widget definition to display the list item indexes.
+If set to _true_, a subwidget will be added to the widget definition to display the list item indexes.
 
-You can use the following property on a complex widget (typically "complex"):
+You can use the following property on a complex widget definition (typically "complex"):
 
 `<property name="display">[inline|*]</property>`  
-If inline the complex items will be displayed as a table with one line and one column per item, otherwise as a table with one column and one line per item.  
+If set to _inline_ the complex items will be displayed as a table with one line and one column per item, otherwise as a table with one column and one line per item.  
 
 ##### About the value bound to the diff widgets
 
 If you take a look at the _layout_diff_template.xhtml_, you will see that the _value_ passed to the _<nxl:widget>_ tag is _#{value.leftValue}_ or _#{value.rightValue}_, _value_ being the object passed to the _<nxl:layout>_ tag _value_ attribute: _diffDisplayBlock_, of type _DiffDisplayBlockImpl_.  
-The _leftValue_ and _rightValue_ members of _DiffDisplayBlockImpl_ are of type _Map<String, Map<String, PropertyDiffDisplay>>_. The first level Map keys are schema names, the second level ones are field keys.    
+The _leftValue_ and _rightValue_ members of _DiffDisplayBlockImpl_ are of type Map<String, Map<String, PropertyDiffDisplay>>. The first level Map keys are schema names, the second level ones are field keys.    
 Finally, the _PropertyDiffDisplay_ object has two members: _value_ and _styleClass_, _value_ holding the value to display and _styleClass_ the css style class to apply to the &lt;span&gt; wrapping the value.
 
 For example if we compare two documents where only the "dublincore:title" property is different ("My first doc" and "My second doc") we could have the following _diffDisplayBlock_ object:
@@ -313,10 +313,10 @@ By default, only the items of a complex property or of a list property where the
 
 - The specific widgets needed when the generic ones don't match your needs. Typically for a date property if you need to change the date format, or for a property bound to a directory to specifiy the directory name. Also don't forget that you can contribute a specific widget for a complex property item or a list item, using the item xpath.
 
-- The labels for each _diffBlock_, each widget and each subwidget in your messages_*.properties files.  
+- The labels for each _diffBlock_, each widget and each subwidget in your _messages*.properties_ files.  
 For example:
 
-        label.diffBlock.custom=My custom diff block
+        label.diffBlock.custom=My custom diff block title
         label.customSchema.customField=Custom field
         label.customSchema.customField.firstComplexItem=First item of the complex custom field
 
