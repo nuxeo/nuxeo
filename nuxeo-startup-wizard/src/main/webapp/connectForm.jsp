@@ -3,8 +3,11 @@
 <%
 String cbUrl = (String) request.getAttribute("callBackUrl");
 
-String formUrl = "https://connect.nuxeo.com/nuxeo/site/connect/embeddedTrial/form";
-// String formUrl = "https://connect-test.nuxeo.com/nuxeo/site/connect/embeddedTrial/form";
+String connectUrl = collector.getConfigurationParam("org.nuxeo.connect.url");
+if (connectUrl.equals("")) {
+    connectUrl = "https://connect.nuxeo.com/nuxeo/site/";
+}
+String formUrl = connectUrl + "connect/embeddedTrial/form";
 formUrl = formUrl + "?WizardCB=" + cbUrl;
 formUrl = formUrl + "&source=wizard&pkg=" + ctx.getDistributionKey();
 
