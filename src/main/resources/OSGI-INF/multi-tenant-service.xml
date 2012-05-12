@@ -13,4 +13,11 @@
       interface="org.nuxeo.ecm.multi.tenant.MultiTenantService" />
   </service>
 
+  <extension-point name="configuration">
+    <documentation>
+      The multi tenant configuration
+    </documentation>
+    <object class="org.nuxeo.ecm.multi.tenant.MultiTenantConfiguration" />
+  </extension-point>
+
 </component>

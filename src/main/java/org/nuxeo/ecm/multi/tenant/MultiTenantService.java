@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface MultiTenantService {
 
+    String getTenantDocumentType();
+
     boolean isTenantIsolationEnabled(CoreSession session)
             throws ClientException;
 

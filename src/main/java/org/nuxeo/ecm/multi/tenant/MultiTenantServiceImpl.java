@@ -44,18 +44,28 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public class MultiTenantServiceImpl implements MultiTenantService {
+public class MultiTenantServiceImpl extends DefaultComponent implements
+        MultiTenantService {
 
     private static final Log log = LogFactory.getLog(MultiTenantServiceImpl.class);
 
-    public static final String TENANT_ACL_NAME = "tenantACP";
+    public static final String CONFIGURATION_EP = "configuration";
+
+    private MultiTenantConfiguration configuration;
 
     private Boolean isTenantIsolationEnabled;
+
+    @Override
+    public String getTenantDocumentType() {
+        return configuration.getTenantDocumentType();
+    }
 
     @Override
     public boolean isTenantIsolationEnabled(CoreSession session)
@@ -81,8 +91,9 @@ public class MultiTenantServiceImpl implements MultiTenantService {
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
-                    String query = "SELECT * FROM Document WHERE ecm:primaryType = 'Domain'";
-                    List<DocumentModel> docs = session.query(query);
+                    String query = "SELECT * FROM Document WHERE ecm:primaryType = '%s'";
+                    List<DocumentModel> docs = session.query(String.format(
+                            query, configuration.getTenantDocumentType()));
                     for (DocumentModel doc : docs) {
                         enableTenantIsolationFor(session, doc);
                     }
@@ -223,4 +234,26 @@ public class MultiTenantServiceImpl implements MultiTenantService {
         }
     }
 
+    @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (CONFIGURATION_EP.equals(extensionPoint)) {
+            if (configuration != null) {
+                log.warn("Overriding existing multi tenant configuration");
+            }
+            configuration = (MultiTenantConfiguration) contribution;
+        }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (CONFIGURATION_EP.equals(extensionPoint)) {
+            if (configuration.equals(contribution)) {
+                configuration = null;
+            }
+        }
+    }
 }

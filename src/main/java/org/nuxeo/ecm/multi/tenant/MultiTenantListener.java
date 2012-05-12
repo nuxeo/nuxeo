@@ -35,21 +35,25 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MultiTenantListener implements EventListener {
 
-    public static final String DOMAIN_TYPE = "Domain";
-
     @Override
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
-        DocumentEventContext docCtx = (DocumentEventContext) ctx;
 
+        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        String tenantDocumentType = multiTenantService.getTenantDocumentType();
+        if (tenantDocumentType == null) {
+            return;
+        }
+
+        DocumentEventContext docCtx = (DocumentEventContext) ctx;
         if (DOCUMENT_CREATED.equals(event.getName())) {
             DocumentModel doc = docCtx.getSourceDocument();
             CoreSession session = docCtx.getCoreSession();
-            if (DOMAIN_TYPE.equals(doc.getType())) {
-                MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+            if (tenantDocumentType.equals(doc.getType())) {
+
                 if (multiTenantService.isTenantIsolationEnabled(session)) {
                     multiTenantService.enableTenantIsolationFor(session, doc);
                     session.save();
@@ -58,8 +62,7 @@ public class MultiTenantListener implements EventListener {
         } else if (DOCUMENT_REMOVED.equals(event.getName())) {
             DocumentModel doc = docCtx.getSourceDocument();
             CoreSession session = docCtx.getCoreSession();
-            if (DOMAIN_TYPE.equals(doc.getType())) {
-                MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+            if (tenantDocumentType.equals(doc.getType())) {
                 if (multiTenantService.isTenantIsolationEnabled(session)) {
                     multiTenantService.disableTenantIsolationFor(session, doc);
                     session.save();
