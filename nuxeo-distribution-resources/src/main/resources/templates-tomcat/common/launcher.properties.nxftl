@@ -1,0 +1,4 @@
+org.nuxeo.app.preprocessing=false
+<#if "${nuxeo.server.sdk}" == "true">
+org.nuxeo.app.installReloadTimer=true
+</#if>

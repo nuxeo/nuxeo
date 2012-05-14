@@ -17,8 +17,14 @@
 
   <!-- define custom loader that is responsible to start nuxeo runtime (it extends
     the default one) -->
+<#if "${nuxeo.server.sdk}" == "false">
   <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader"
     loaderClass="org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader" />
+<#else>
+  <Valve className="org.nuxeo.runtime.tomcat.dev.DevValve" />
+  <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader"
+    loaderClass="org.nuxeo.runtime.tomcat.NuxeoDevWebappClassLoader" />
+</#if>
 
 <#if "${nuxeo.server.ContextSecurityGrabber.disable}" != "true">
   <Listener className="org.nuxeo.runtime.tomcat.ContextSecurityGrabber" />
