@@ -22,24 +22,29 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.jar.JarFile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author matic
  *
  */
 public class JarFileFactoryCloser {
 
-    Object factory;
+    private static final Log log = LogFactory.getLog(JarFileFactoryCloser.class);
 
-    Method factoryGetMethod;
+    protected Object factory;
 
-    Method factoryCloseMethod;
+    protected Method factoryGetMethod;
+
+    protected Method factoryCloseMethod;
 
     public JarFileFactoryCloser() {
         try {
             introspectClasses();
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Cannot introspect jar file factory class", e);
+            log.error("Cannot introspect jar file factory class", e);
+            factory = null;
         }
     }
 
@@ -65,6 +70,9 @@ public class JarFileFactoryCloser {
     }
 
     public void close(URL location) throws IOException  {
+        if (factory == null) {
+            return;
+        }
         JarFile jar = null;
         try {
             jar = (JarFile) factoryGetMethod.invoke(factory,

@@ -44,12 +44,10 @@ public class JarFileCloser {
 
     protected JarFileFactoryCloser factoryCloser = new JarFileFactoryCloser();
 
-
     public JarFileCloser(URLClassLoader resourcesCL, ClassLoader appCL)  {
         if (appCL instanceof URLClassLoader) {
             applicationCloser = new URLClassLoaderCloser((URLClassLoader)appCL);
         }
-        factoryCloser = new JarFileFactoryCloser();
     }
 
 
