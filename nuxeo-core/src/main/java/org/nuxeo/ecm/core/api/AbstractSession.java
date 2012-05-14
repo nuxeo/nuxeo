@@ -1352,8 +1352,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         final List<DocumentModel> docsList = new ArrayList<DocumentModel>();
         try {
             Document doc = resolveReference(docRef);
-            String rootPath = getSession().getRootDocument().getPath();
-            while (!doc.getPath().equals(rootPath)) {
+            while (doc != null && !"/".equals(doc.getPath())) {
                 // XXX OG: shouldn't we check BROWSE and READ_PROPERTIES
                 // instead?
                 if (!hasPermission(doc, READ)) {
