@@ -116,7 +116,7 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
  * <p>
  * The only aspect not implemented is the session management that should be
  * handled by subclasses.
- * 
+ *
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
@@ -177,7 +177,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     /**
      * Internal method: Gets the current session based on the client session id.
-     * 
+     *
      * @return the repository session
      */
     public abstract Session getSession() throws ClientException;
@@ -380,7 +380,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * Sends change notifications to core event listeners. The event contains
      * info with older document (before version change) and newer doc (current
      * document).
-     * 
+     *
      * @param oldDocument
      * @param newDocument
      * @param options additional info to pass to the event
@@ -450,7 +450,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     /**
      * Gets the document model for the given core document.
-     * 
+     *
      * @param doc the document
      * @return the document model
      */
@@ -465,7 +465,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     /**
      * Gets the document model for the given core document, preserving the
      * contextData.
-     * 
+     *
      * @param doc the document
      * @return the document model
      */
@@ -896,7 +896,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * <p>
      * If name is null, a name is generated. If name is already used, a random
      * suffix is appended to it.
-     * 
+     *
      * @return a unique name within given parent's children
      */
     public String generateDocumentName(Document parent, String name)
@@ -2126,7 +2126,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * Send a core event for the creation of a new check in version. The source
      * document is the live document model used as the source for the checkin,
      * not the archived version it-self.
-     * 
+     *
      * @param docModel work document that has been checked-in as a version
      * @param checkedInVersionRef document ref of the new checked-in version
      * @param options initial option map, or null
@@ -2346,7 +2346,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     /**
      * Update the proxy for doc in the given section to point to the new target.
      * Do nothing if there are several proxies.
-     * 
+     *
      * @return the proxy if it was updated, or {@code null} if none or several
      *         were found
      */
@@ -3060,7 +3060,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * Operations must be reworked to use the new event model. In order for
      * operation notification to work the event compatibility bundle must be
      * deployed.
-     * 
+     *
      * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in
      *      nuxeo-core-event-compat
      */
@@ -3085,7 +3085,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
      * Operations must be reworked to use the new event model. In order for
      * operation notification to work the event compatibility bundle must be
      * deployed.
-     * 
+     *
      * @see org.nuxeo.ecm.core.event.compat.CompatibilityListener in
      *      nuxeo-core-event-compat
      */
