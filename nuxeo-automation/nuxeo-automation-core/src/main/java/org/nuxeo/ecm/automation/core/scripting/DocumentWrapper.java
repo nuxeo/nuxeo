@@ -84,6 +84,14 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.getPath().append(relative).toString();
     }
 
+    /**
+     * @return the document ref
+     * @since 5.6
+     */
+    public DocumentRef getRef() {
+        return doc.getRef();
+    }
+
     public DocumentRef resolvePathAsRef(String relative) {
         return new PathRef(doc.getPath().append(relative).toString());
     }
@@ -189,8 +197,8 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
     }
 
     /**
-     * The behavior of this method was changed -> it is checking if an xpath
-     * has a value attached.
+     * The behavior of this method was changed -> it is checking if an xpath has
+     * a value attached.
      */
     @Override
     public boolean containsValue(Object value) {
