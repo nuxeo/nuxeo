@@ -18,11 +18,11 @@
   <target name="run-selenium-tests" depends="run-selenium" />
   <target name="add-smtp-conf">
     <antcall target="set-conf">
-      <param name="name" value="mail.smtp.host" />
+      <param name="name" value="mail.transport.host" />
       <param name="value" value="merguez.in.nuxeo.com" />
     </antcall>
     <antcall target="set-conf">
-      <param name="name" value="mail.smtp.port" />
+      <param name="name" value="mail.transport.port" />
       <param name="value" value="2500" />
     </antcall>
     <antcall target="set-conf">
