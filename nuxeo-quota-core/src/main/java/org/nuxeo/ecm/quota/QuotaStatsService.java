@@ -19,6 +19,7 @@ package org.nuxeo.ecm.quota;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
@@ -37,7 +38,8 @@ public interface QuotaStatsService {
      * <p>
      * Call all the registered {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s.
      */
-    void updateStatistics(DocumentEventContext docCtx, String eventName);
+    void updateStatistics(DocumentEventContext docCtx, String eventName)
+            throws ClientException;
 
     /**
      * Compute the initial statistics for the given @{code updaterName}.
@@ -55,10 +57,5 @@ public interface QuotaStatsService {
      * Returns the progress status of {@code updaterName}.
      */
     String getProgressStatus(String updaterName);
-
-    /**
-     * Clears the progress status of {@code updaterName}.
-     */
-    void clearProgressStatus(String updaterName);
 
 }

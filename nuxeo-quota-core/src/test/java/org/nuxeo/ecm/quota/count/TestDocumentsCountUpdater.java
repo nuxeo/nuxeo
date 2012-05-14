@@ -13,8 +13,8 @@
  *
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.quota.count;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_DES
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_FACET;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,22 +34,19 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.ecm.quota.QuotaStatsService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
-/**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.5
- */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -282,13 +280,13 @@ public class TestDocumentsCountUpdater {
         session.save();
 
         String updaterName = "documentsCountUpdater";
-        quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
-        while (quotaStatsService.getProgressStatus(updaterName) != null) {
-            // wait for the computation to complete
-            Thread.sleep(2000);
-        }
+        quotaStatsService.launchInitialStatisticsComputation(updaterName,
+                session.getRepositoryName());
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
+        workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
 
-        session.save();
+        session.save(); // process invalidations
         testDocumentsCount();
     }
 

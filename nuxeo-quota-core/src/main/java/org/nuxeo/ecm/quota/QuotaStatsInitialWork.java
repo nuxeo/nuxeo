@@ -13,67 +13,79 @@
  *
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.quota;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Task doing an initial statistics computation for a defined
+ * Work doing an initial statistics computation for a defined
  * {@link QuotaStatsUpdater}.
  *
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.5
+ * @since 5.6
  */
-public class InitialStatisticsComputationTask implements Runnable {
+public class QuotaStatsInitialWork extends AbstractWork {
 
-    private static final Log log = LogFactory.getLog(InitialStatisticsComputationTask.class);
+    public static final String CATEGORY_QUOTA_INITIAL = "quotaInitialStatistics";
 
     private final String updaterName;
 
     private final String repositoryName;
 
-    public InitialStatisticsComputationTask(String updaterName,
+    public QuotaStatsInitialWork(String updaterName,
             String repositoryName) {
         this.updaterName = updaterName;
         this.repositoryName = repositoryName;
     }
 
     @Override
-    public void run() {
-        final QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
-        TransactionHelper.startTransaction();
-        try {
-            new UnrestrictedSessionRunner(repositoryName) {
-                @Override
-                public void run() throws ClientException {
-                    quotaStatsService.computeInitialStatistics(updaterName,
-                            session);
-                }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            TransactionHelper.setTransactionRollbackOnly();
-            log.error(e, e);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-            quotaStatsService.clearProgressStatus(updaterName);
-        }
+    public String getCategory() {
+        return CATEGORY_QUOTA_INITIAL;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof InitialStatisticsComputationTask) {
-            InitialStatisticsComputationTask otherTask = (InitialStatisticsComputationTask) o;
-            return updaterName.equals(otherTask.updaterName);
+    public String getTitle() {
+        return "Quota Statistics " + updaterName;
+    }
+
+    @Override
+    public void work() throws ClientException {
+        new UnrestrictedSessionRunner(repositoryName) {
+            @Override
+            public void run() throws ClientException {
+                QuotaStatsService service = Framework.getLocalService(QuotaStatsService.class);
+                service.computeInitialStatistics(updaterName, session);
+            }
+        }.runUnrestricted();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof QuotaStatsInitialWork)) {
+            return false;
         }
-        return false;
+        QuotaStatsInitialWork other = (QuotaStatsInitialWork) object;
+        return new EqualsBuilder().append(updaterName, other.updaterName).append(
+                repositoryName, other.repositoryName).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(updaterName).append(repositoryName).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("updaterName", updaterName).append(
+                "repositoryName", repositoryName).toString();
     }
 
 }
