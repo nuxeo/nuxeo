@@ -403,8 +403,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
         List<ContentViewLayout> resultLayouts = newDesc.getResultLayouts();
         if (resultLayouts != null) {
-            Boolean appendResultLayout = newDesc.appendResultLayouts;
-            if (Boolean.TRUE.equals(appendResultLayout)) {
+            Boolean appendResultLayout = newDesc.getAppendResultLayouts();
+            if (Boolean.TRUE.equals(appendResultLayout)
+                    || resultLayouts.isEmpty()) {
                 List<ContentViewLayout> allLayouts = new ArrayList<ContentViewLayout>();
                 if (oldDesc.resultLayouts != null) {
                     allLayouts.addAll(oldDesc.resultLayouts);

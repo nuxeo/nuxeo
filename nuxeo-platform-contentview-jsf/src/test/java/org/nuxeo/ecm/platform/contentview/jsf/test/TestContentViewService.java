@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,8 +29,6 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
@@ -188,6 +192,13 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("current document children overriden", header.getTitle());
         assertEquals("/icons/document_listing_icon.png", header.getIconPath());
         assertFalse(header.isTranslateTitle());
+
+        // check that result layouts are not emptied after merge (see NXP-9333)
+        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
+        assertNotNull(contentView);
+        List<ContentViewLayout> rl = contentView.getResultLayouts();
+        assertNotNull(rl);
+        assertEquals(1, rl.size());
     }
 
     @Test
