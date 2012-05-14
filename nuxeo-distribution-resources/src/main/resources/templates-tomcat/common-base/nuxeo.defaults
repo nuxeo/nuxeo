@@ -13,14 +13,14 @@ nuxeo.db.user_separator_key=,
 
 # Mail server 
 mail.store.protocol=pop3
-mail.store.host=${mail.store.protocol}.nosuchhost.nosuchdomain.com
+mail.store.host=localhost
 mail.store.user=anonymous
 mail.store.password=secret
 mail.store.port=-1
 # Mail transport
 mail.transport.protocol=smtp
 mail.transport.usetls=false
-mail.transport.host=${mail.transport.protocol}.nosuchhost.nosuchdomain.com
+mail.transport.host=localhost
 mail.transport.port=-1
 mail.transport.user=anonymous
 mail.transport.password=secret
@@ -29,5 +29,6 @@ mail.transport.auth=false
 mail.user=nobody
 # Enable debugging output from the javamail classes
 mail.debug=false
+mail.from=noreply@nuxeo.com
 
 nuxeo.server.emptySessionPath=false

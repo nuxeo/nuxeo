@@ -39,16 +39,6 @@ nuxeo.db.transactiontimeout=300
 
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 
-# SMTP gateway server
-mail.transport.host=localhost
-# Mail server port
-mail.transport.port=25
-mail.transport.auth=false
-mail.transport.username=anonymous
-mail.transport.password=password
-# The address mail will be from
-mail.from=noreply@nuxeo.com
-
 # The protocol used to connect to OpenOffice
 # Can be either SOCKET or PIPE, default is SOCKET
 jod.connection.protocol=SOCKET
