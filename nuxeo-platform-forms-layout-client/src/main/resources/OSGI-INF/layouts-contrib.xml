@@ -1987,7 +1987,15 @@
           <p>
             If the widget is marked as handling labels (marker available on all
             widgets since 5.6), the header will be displayed. Otherwise it will
-            never bee displayed.
+            never be displayed.
+          </p>
+          <p>
+            This widget also accepts custom properties to add forms around some
+            of its subwidgets. If the property with name
+            "nxw_addForm_#{widgetIndex}" is present and resolves to true, then a
+            form will be added around the subwidgets at index #{widegtIndex}.
+            For instance, adding a property "nxw_addForm_0" with value true, the
+            first subwidget will be surrounded with a form.
           </p>
         </description>
         <categories>

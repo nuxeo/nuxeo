@@ -1,4 +1,5 @@
 <c:if test="true"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -11,7 +12,17 @@
     <c:if test="#{not widget.translated}">#{widget.label}</c:if>
   </c:if>
   <nxl:subWidget>
-    <nxl:widget widget="#{widget}" value="#{field}" />
+    <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+    <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+    <c:if test="#{addForm}">
+      <h:form id="#{layout.id}_#{widget.id}_form"
+        enctype="multipart/form-data">
+        <nxl:widget widget="#{widget}" value="#{field}" />
+      </h:form>
+    </c:if>
+    <c:if test="#{not addForm}">
+      <nxl:widget widget="#{widget}" value="#{field}" />
+    </c:if>
   </nxl:subWidget>
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
@@ -21,7 +32,17 @@
       <c:if test="#{not widget.translated}">#{widget.label}</c:if>
     </c:if>
     <nxl:subWidget>
-      <nxl:widget widget="#{widget}" value="#{field}" />
+      <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+      <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+      <c:if test="#{addForm}">
+        <h:form id="#{layout.id}_#{widget.id}_form"
+          enctype="multipart/form-data">
+          <nxl:widget widget="#{widget}" value="#{field}" />
+        </h:form>
+      </c:if>
+      <c:if test="#{not addForm}">
+        <nxl:widget widget="#{widget}" value="#{field}" />
+      </c:if>
     </nxl:subWidget>
   </nxp:html>
 </c:if>
@@ -61,7 +82,17 @@
                   <c:if test="#{widget.translated}">#{messages[widget.label]}</c:if>
                   <c:if test="#{not widget.translated}">#{widget.label}</c:if>
                 </span>
-                <nxl:widget widget="#{widget}" value="#{field}" />
+                <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+                <c:if test="#{addForm}">
+                  <h:form id="#{layout.id}_#{widget.id}_form"
+                    enctype="multipart/form-data">
+                    <nxl:widget widget="#{widget}" value="#{field}" />
+                  </h:form>
+                </c:if>
+                <c:if test="#{not addForm}">
+                  <nxl:widget widget="#{widget}" value="#{field}" />
+                </c:if>
               </span>
             </c:if>
           </nxl:subWidget>
@@ -69,17 +100,44 @@
         <c:otherwise>
           <c:if test="#{displaySubLabels}">
             <c:if test="#{not empty widget.subWidgets}">
-              <table>
+              <table style="width:100%;">
                 <tbody>
                   <nxl:subWidget>
                     <tr class="#{widgetProperty_subStyleClass}">
-                      <td class="labelColumn #{widgetProperty_subHeaderStyleClass}">
-                        <c:if test="#{widget.translated}">#{messages[widget.label]}</c:if>
-                        <c:if test="#{not widget.translated}">#{widget.label}</c:if>
-                      </td>
-                      <td class="fieldColumn">
-                        <nxl:widget widget="#{widget}" value="#{field}" />
-                      </td>
+                      <c:if test="#{widget.handlingLabels}">
+                        <td class="fieldColumn" colspan="2">
+                          <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                          <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+                          <c:if test="#{addForm}">
+                            <h:form id="#{layout.id}_#{widget.id}_form"
+                              enctype="multipart/form-data">
+                              <nxl:widget widget="#{widget}" value="#{field}" />
+                            </h:form>
+                          </c:if>
+                          <c:if test="#{not addForm}">
+                            <nxl:widget widget="#{widget}" value="#{field}" />
+                          </c:if>
+                        </td>
+                      </c:if>
+                      <c:if test="#{not widget.handlingLabels}">
+                        <td class="labelColumn #{widgetProperty_subHeaderStyleClass}">
+                          <c:if test="#{widget.translated}">#{messages[widget.label]}</c:if>
+                          <c:if test="#{not widget.translated}">#{widget.label}</c:if>
+                        </td>
+                        <td class="fieldColumn">
+                          <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                          <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+                          <c:if test="#{addForm}">
+                            <h:form id="#{layout.id}_#{widget.id}_form"
+                              enctype="multipart/form-data">
+                              <nxl:widget widget="#{widget}" value="#{field}" />
+                            </h:form>
+                          </c:if>
+                          <c:if test="#{not addForm}">
+                            <nxl:widget widget="#{widget}" value="#{field}" />
+                          </c:if>
+                        </td>
+                      </c:if>
                     </tr>
                   </nxl:subWidget>
                 </tbody>
