@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -1217,6 +1218,40 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 0).getRef());
 
         assertEquals(root.getPathAsString(), shouldBeRoot.getPathAsString());
+    }
+
+    public void testGetParentDocuments() throws ClientException {
+        List<DocumentModel> docs;
+
+        DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
+        folder1 = session.createDocument(folder1);
+        DocumentModel folder2 = new DocumentModelImpl("/folder1", "folder2", "Folder");
+        folder2 = session.createDocument(folder2);
+        DocumentModel file1 = new DocumentModelImpl("/folder1/folder2", "file1", "File");
+        file1 = session.createDocument(file1);
+        session.save();
+        docs = session.getParentDocuments(file1.getRef());
+        assertEquals(3, docs.size());
+        assertEquals("folder1", docs.get(0).getName());
+        assertEquals("folder2", docs.get(1).getName());
+        assertEquals("file1", docs.get(2).getName());
+
+        // root
+
+        docs = session.getParentDocuments(session.getRootDocument().getRef());
+        assertEquals(0, docs.size());
+
+        // relation, check as admin
+
+        closeSession();
+        session = openSessionAs(new UserPrincipal("adm", null, false, true));
+        DocumentModel rel = session.createDocumentModel(null, "myrel",
+                "Relation");
+        rel = session.createDocument(rel);
+        session.save();
+        docs = session.getParentDocuments(rel.getRef());
+        assertEquals(1, docs.size());
+        assertEquals("myrel", docs.get(0).getName());
     }
 
     public void testHasChildren() throws ClientException {
