@@ -6,27 +6,28 @@
   xmlns:f="http://java.sun.com/jsf/core">
 
   <h:form>
-    <table class="dataOutput">
-      <tbody>
-        <tr>
-          <td>
-            #{messages['label.multi.tenant.domain.isolation']}
-          </td>
-          <td>
-            <c:if test="#{multiTenantActions.tenantIsolationEnabled}">
-              <h:commandButton value="#{messages['label.local.configuration.disable']}"
-                action="#{multiTenantActions.disableTenantIsolation()}"
-                styleClass="button" />
-            </c:if>
-            <c:if test="#{not multiTenantActions.tenantIsolationEnabled}">
-              <h:commandButton value="#{messages['label.local.configuration.enable']}"
-                action="#{multiTenantActions.enableTenantIsolation()}"
-                styleClass="button" />
-            </c:if>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <c:if test="#{multiTenantActions.tenantIsolationEnabled}">
+      <p>
+        <h:outputText value="#{messages['label.multi.tenant.administration']} " />
+        <h:outputText value="#{messages['label.multi.tenant.enabled']}" styleClass="summary_unlocked" />
+      </p>
+      <p>
+        <h:commandButton value="#{messages['label.local.configuration.disable']}"
+          action="#{multiTenantActions.disableTenantIsolation()}"
+          styleClass="button" />
+      </p>
+    </c:if>
+    <c:if test="#{not multiTenantActions.tenantIsolationEnabled}">
+      <p>
+        <h:outputText value="#{messages['label.multi.tenant.administration']} " />
+        <h:outputText value="#{messages['label.multi.tenant.disabled']}" styleClass="summary_locked" />
+      </p>
+      <p>
+      <h:commandButton value="#{messages['label.local.configuration.enable']}"
+        action="#{multiTenantActions.enableTenantIsolation()}"
+        styleClass="button" />
+      </p>
+    </c:if>
   </h:form>
 
 </div>
