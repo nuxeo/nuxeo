@@ -260,7 +260,7 @@ public class Mailer {
         }
 
         public void send() throws MessagingException {
-            this.session.getTransport().sendMessage(this, this.getAllRecipients());
+            Transport.send(this);
         }
 
     }
