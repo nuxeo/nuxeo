@@ -9,7 +9,7 @@
     <c:if test="#{multiTenantActions.tenantIsolationEnabled}">
       <p>
         <h:outputText value="#{messages['label.multi.tenant.administration']} " />
-        <h:outputText value="#{messages['label.multi.tenant.enabled']}" styleClass="summary_unlocked" />
+        <h:outputText value="#{messages['label.multi.tenant.enabled']}" styleClass="success" />
       </p>
       <p>
         <h:commandButton value="#{messages['label.local.configuration.disable']}"
@@ -20,7 +20,7 @@
     <c:if test="#{not multiTenantActions.tenantIsolationEnabled}">
       <p>
         <h:outputText value="#{messages['label.multi.tenant.administration']} " />
-        <h:outputText value="#{messages['label.multi.tenant.disabled']}" styleClass="summary_locked" />
+        <h:outputText value="#{messages['label.multi.tenant.disabled']}" styleClass="warning" />
       </p>
       <p>
       <h:commandButton value="#{messages['label.local.configuration.enable']}"
