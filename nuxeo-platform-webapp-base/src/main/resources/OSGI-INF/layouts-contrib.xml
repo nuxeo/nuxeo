@@ -1457,7 +1457,7 @@
               </rows>
               <widget name="initialLayoutName" type="selectOneResource">
                 <labels>
-                  <label mode="any">Initial layout name</label>
+                  <label mode="any">Layout(s)</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
@@ -1476,13 +1476,14 @@
               </widget>
               <widget name="toggledLayoutName" type="selectOneResource">
                 <labels>
-                  <label mode="any">Toggled layout name</label>
+                  <label mode="any">Toggled layout(s)</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
                     The layout to display after toggling the
                     mode. Also accepts a list of multiple layout names,
-                    separated by commas.
+                    separated by commas. If not filled, defaults to the initial
+                    layout name(s).
                   </label>
                 </helpLabels>
                 <fields>

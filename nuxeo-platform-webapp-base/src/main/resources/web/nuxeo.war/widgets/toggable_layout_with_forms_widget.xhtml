@@ -41,6 +41,9 @@
     <nxu:set var="showEditOptions"
       value="#{nxu:test(empty widgetProperty_showEditOptions, false, widgetProperty_showEditOptions)}"
       cache="true">
+    <nxu:set var="toggledLayoutName"
+      value="#{nxu:test(empty widgetProperty_toggledLayoutName, widgetProperty_initialLayoutName, widgetProperty_toggledLayoutName)}"
+      cache="true">
 
     <nxu:valueHolder
       id="#{widget.id}_modeValueHolder"
@@ -101,7 +104,7 @@
             selfRendered="true">
 
             <nxl:layout
-              name="#{widgetProperty_toggledLayoutName}"
+              name="#{toggledLayoutName}"
               category="#{widgetProperty_category}"
               mode="#{layoutWidgetMode}"
               value="#{field}"
@@ -216,7 +219,7 @@
             enctype="multipart/form-data">
 
             <nxl:layout
-              name="#{widgetProperty_toggledLayoutName}"
+              name="#{toggledLayoutName}"
               category="#{widgetProperty_category}"
               mode="#{layoutWidgetMode}"
               value="#{field}"
@@ -302,6 +305,7 @@
 
     </nxu:valueHolder>
 
+    </nxu:set>
     </nxu:set>
     </nxu:set>
     </nxu:set>

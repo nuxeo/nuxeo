@@ -2332,11 +2332,11 @@
               </rows>
               <widget name="name" type="text">
                 <labels>
-                  <label mode="any">Layout name(s)</label>
+                  <label mode="any">Layout(s)</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The layout name. Since 5.6, this attibute
+                    The layout name. Since 5.6, this attribute
                     accepts a list of multiple layout names, separated by
                     commas.
                   </label>
