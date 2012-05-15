@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="nuxeo-diff" default="web-tomcat" basedir=".">
+<project name="nuxeo-diff-jsf" default="web-tomcat" basedir=".">
 
   <property file="build.properties" />
 
