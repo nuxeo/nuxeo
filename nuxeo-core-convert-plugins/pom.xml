@@ -46,8 +46,8 @@
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>jempbox</artifactId>
     </dependency>
-    <!-- ICU is an optional dependency for PDFBox but is required at runtime to
-    support right to left language handling -->
+    <!-- ICU is an optional dependency for PDFBox but is required at runtime 
+      to support right to left language handling -->
     <dependency>
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
@@ -107,6 +107,21 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

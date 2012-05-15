@@ -19,39 +19,41 @@
 
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
 
 /**
  * @author Anahide Tchertchian
  */
-public class TestMailConverter extends BaseConverterTest {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+public class TestMailConverter extends SimpleConverterTest {
 
     private static final String CONVERTER_NAME = "rfc822totext";
-
-    protected ConversionService cs;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        cs = Framework.getLocalService(ConversionService.class);
-        assertNotNull(cs);
-    }
 
     private static Blob getTestBlob(String filePath) {
         File file = FileUtils.getResourceFileFromContext(filePath);
         return new FileBlob(file);
     }
+
+    @Inject
+    protected ConversionService cs;
 
     @Test
     public void testTextEmailTransformation() throws Exception {
@@ -120,7 +122,8 @@ public class TestMailConverter extends BaseConverterTest {
             expected = getTestBlob(
                     "test-docs/email/text_and_html_with_attachments.txt").getString();
         }
-        assertTrue(FileUtils.areFilesContentEquals(expected.trim(), actual.trim()));
+        assertTrue(FileUtils.areFilesContentEquals(expected.trim(),
+                actual.trim()));
     }
 
     @Test
@@ -148,7 +151,8 @@ public class TestMailConverter extends BaseConverterTest {
         } else {
             expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");
         }
-        assertTrue(FileUtils.areFilesContentEquals(expected.getString().trim(), result.getString().trim()));
+        assertTrue(FileUtils.areFilesContentEquals(expected.getString().trim(),
+                result.getString().trim()));
     }
 
 }

@@ -35,9 +35,17 @@
     <converter name="msoffice2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.MSOffice2TextConverter">
       <sourceMimeType>application/msword</sourceMimeType>
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+    
+    <converter name="docx2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.DOCX2TextConverter">
       <sourceMimeType>
         application/vnd.openxmlformats-officedocument.wordprocessingml.document
       </sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+    
+    <converter name="pptx2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.PPTX2TextConverter">
       <sourceMimeType>
         application/vnd.openxmlformats-officedocument.presentationml.presentation
       </sourceMimeType>

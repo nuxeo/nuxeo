@@ -14,6 +14,7 @@
  * Contributors:
  *     Nuxeo
  *     Antoine Taillefer
+ *
  */
 
 package org.nuxeo.ecm.core.convert.plugins.text.extractors;
@@ -27,19 +28,20 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * Based on Apache JackRabbit OOo converter.
+ * Docx to text converter: parses the Open XML text document to read its
+ * content.
  */
-public class OOo2TextConverter extends XmlZip2TextConverter {
+public class DOCX2TextConverter extends XmlZip2TextConverter {
 
-    private static final String CONTENT_ZIP_ENTRY_NAME = "content.xml";
+    private static final String WORD_DOCUMENT_ZIP_ENTRY_NAME = "word/document.xml";
 
     protected void readXmlZipContent(ZipInputStream zis, XMLReader reader,
             StringBuilder sb) throws IOException, SAXException {
 
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {
-            if (CONTENT_ZIP_ENTRY_NAME.equals(zipEntry.getName())) {
-                OOoXmlContentHandler contentHandler = new OOoXmlContentHandler();
+            if (WORD_DOCUMENT_ZIP_ENTRY_NAME.equals(zipEntry.getName())) {
+                OpenXmlContentHandler contentHandler = new OpenXmlContentHandler();
                 reader.setContentHandler(contentHandler);
                 reader.parse(new InputSource(zis));
                 sb.append(contentHandler.getContent());

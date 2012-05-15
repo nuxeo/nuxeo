@@ -12,20 +12,20 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Nuxeo
+ *     Antoine Taillefer
  */
 
 package org.nuxeo.ecm.core.convert.plugins.tests;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Before;
-import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -33,27 +33,15 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public abstract class BaseConverterTest extends NXRuntimeTestCase {
+public abstract class AbstractConverterTest {
 
-    protected BaseConverterTest() {
+    protected final boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return (os.indexOf("win") >= 0);
     }
 
-    protected BaseConverterTest(String name) {
-        super(name);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
-    }
-
-    protected static BlobHolder getBlobFromPath(String path) {
+    protected final BlobHolder getBlobFromPath(String path) {
         File file = FileUtils.getResourceFileFromContext(path);
         assertTrue(file.length() > 0);
         return new SimpleBlobHolder(new FileBlob(file));
@@ -79,12 +67,12 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
         assertNotNull(result);
 
         String textContent = result.getBlob().getString();
-        assertTrue(textContent.trim().startsWith("Hello"));
+        checkTextConversion(textContent);
         return textContent;
     }
 
-    protected void doTestAny2TextConverter(String srcMT, String converterName,
-            String fileName) throws Exception {
+    protected String doTestAny2TextConverter(String srcMT,
+            String converterName, String fileName) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -100,14 +88,16 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
         BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
-        assertTrue(result.getBlob().getString().trim().startsWith("Hello"));
+
+        String textContent = result.getBlob().getString();
+        checkAny2TextConversion(textContent);
+        return textContent;
     }
 
-    protected void doTestArabicTextConverter(String srcMT, String converter,
+    protected String doTestArabicTextConverter(String srcMT, String converter,
             String fileName) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
-
         assertTrue(cs.isConverterAvailable(converter).isAvailable());
 
         String converterName = cs.getConverterName(srcMT, "text/plain");
@@ -122,25 +112,16 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
         BlobHolder result = cs.convert(converterName, hg, null);
         assertNotNull(result);
-        String textContent = result.getBlob().getString().trim();
 
-        // this is the wikipedia article for "Internet"
-        assertTrue(textContent.contains("\u0625\u0646\u062a\u0631\u0646\u062a"));
-
-        // other words
-        assertTrue(textContent.contains("\u062a\u0645\u062b\u064a\u0644"));
-        assertTrue(textContent.contains("\u0644\u0634\u0628\u0643\u0629"));
-        assertTrue(textContent.contains("\u0645\u0646"));
-        assertTrue(textContent.contains("\u0627\u0644\u0637\u0631\u0642"));
-        assertTrue(textContent.contains("\u0641\u064a"));
-        assertTrue(textContent.contains("\u062c\u0632\u0621"));
-        assertTrue(textContent.contains("\u0628\u0633\u064a\u0637"));
-        assertTrue(textContent.contains("\u0645\u0646"));
-        assertTrue(textContent.contains("FTP"));
+        String textContent = result.getBlob().getString();
+        checkArabicConversion(textContent);
+        return textContent;
     }
 
-    public static boolean isWindows() {
-        String os = System.getProperty("os.name").toLowerCase();
-        return (os.indexOf("win") >= 0);
-    }
+    protected abstract void checkTextConversion(String textContent);
+
+    protected abstract void checkAny2TextConversion(String textContent);
+
+    protected abstract void checkArabicConversion(String textContent);
+
 }

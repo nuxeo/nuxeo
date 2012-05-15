@@ -20,16 +20,11 @@ package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
 import java.util.Stack;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class OOoXmlContentHandler extends DefaultHandler {
-
-    protected static final Log log = LogFactory.getLog(OOoXmlContentHandler.class);
+public class OpenXmlContentHandler extends DefaultHandler {
 
     protected final StringBuffer sb = new StringBuffer();
 
@@ -45,35 +40,20 @@ public class OOoXmlContentHandler extends DefaultHandler {
     public void startElement(String namespaceURI, String localName,
             String qName, Attributes atts) throws SAXException {
         path.push(qName);
-        // Text element
-        if (qName.startsWith("text:")) {
+        // Text element of a docx or pptx document
+        if (qName.equals("w:t") || qName.equals("a:t")) {
             dumpText = true;
         }
-        // Heading (Writer only): add a new line.
-        // If the heading's outline level is > 1 (not the document title), add
-        // an extra new line.
-        if (qName.equals("text:h")) {
+        // If the paragraph's style is "styleX" with X > 1 (this is a heading,
+        // but not the document title), add a new line.
+        if (qName.equals("w:pStyle")
+                && !"style0".equals(atts.getValue("w:val"))
+                && !"style1".equals(atts.getValue("w:val"))) {
             sb.append("\n");
-            String outlineLevelAtt = atts.getValue("text:outline-level");
-            if (!StringUtils.isEmpty(outlineLevelAtt)) {
-                int outlineLevel = -1;
-                try {
-                    outlineLevel = Integer.parseInt(outlineLevelAtt);
-                } catch (NumberFormatException nfe) {
-                    log.warn("Attribute 'text:outline-level' on element 'text:h' has a non integer value.");
-                }
-                if (outlineLevel > 1) {
-                    sb.append("\n");
-                }
-            }
+
         }
         // Paragraph: add a new line
-        if (qName.equals("text:p")) {
-            sb.append("\n");
-        }
-        // Page (Impress only): add a new line if not the first one
-        if (qName.equals("draw:page")
-                && !"page1".equals(atts.getValue("draw:name"))) {
+        if (qName.equals("w:p") || qName.equals("a:p")) {
             sb.append("\n");
         }
     }
@@ -91,7 +71,7 @@ public class OOoXmlContentHandler extends DefaultHandler {
     public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
         path.pop();
-        if (path.isEmpty() || !path.lastElement().startsWith("text:")) {
+        if (path.isEmpty() || !path.lastElement().equals("w:t")) {
             dumpText = false;
         }
     }

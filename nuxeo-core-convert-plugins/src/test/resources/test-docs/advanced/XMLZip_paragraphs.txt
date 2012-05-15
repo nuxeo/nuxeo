@@ -1,0 +1,24 @@
+
+This is the title of an Open Document or Open XML document!
+
+The document
+has new lines.
+
+And paragraphs (this is the title of the first one).
+Content of the first paragraph. Content of the first paragraph. Content of the first paragraph. Content of the first paragraph. Content of the first paragraph. Content of the first paragraph. Content of the first paragraph. Content of the first paragraph. Content of the first paragraph. Content of the first paragraph. Content of the first paragraph.
+Second part of the first paragraph. Second part of the first paragraph. Second part of the first paragraph. Second part of the first paragraph. Second part of the first paragraph. Second part of the first paragraph.
+
+Third part.
+
+Second paragraph: lets talk about cinema.
+La Strada (English: The Road) is a 1954 Italian drama film directed by Federico Fellini and starring Anthony Quinn, Giulietta Masina, and Richard Basehart. Written by Fellini, Tullio Pinelli, and Ennio Flaiano, the film is about a naïve young woman who is sold to a brutish man who takes her on the road as part of his itinerant show. La Strada won the Academy Award for Best Foreign Language Film in 1956, the first presented in that category.
+
+Text after 2 new lines.
+
+
+Now lets play with accents.
+E accent aigu : é
+E accent grave : è
+E accent circonflexe : ê
+E tréma : ë
+Et bien d'autres encore : &~#{[|`\çà@]}”()'-_=+$*ù%/§!:;,?.<>
