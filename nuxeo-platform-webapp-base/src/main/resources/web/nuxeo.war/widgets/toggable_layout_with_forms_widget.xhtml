@@ -41,15 +41,21 @@
     <nxu:set var="showEditOptions"
       value="#{nxu:test(empty widgetProperty_showEditOptions, false, widgetProperty_showEditOptions)}"
       cache="true">
-    <nxu:set var="toggledLayoutName"
-      value="#{nxu:test(empty widgetProperty_toggledLayoutName, widgetProperty_initialLayoutName, widgetProperty_toggledLayoutName)}"
-      cache="true">
 
     <nxu:valueHolder
       id="#{widget.id}_modeValueHolder"
       var="layoutWidgetMode"
       defaultValue="#{initialMode}"
       submitChanges="false">
+    <c:if test="false">
+      set toggled layout name after layout widget mode is set so that
+      the variable "layoutWidgetMode" can be used to resolve the accurate
+      layout. For instance Studio can generate expressions like:
+      #{layoutWidgetMode == 'edit'? 'myLayout@edit': 'myLayout@view'}
+    </c:if>
+    <nxu:set var="toggledLayoutName"
+      value="#{nxu:test(empty widgetProperty_toggledLayoutName, widgetProperty_initialLayoutName, widgetProperty_toggledLayoutName)}"
+      cache="false">
 
       <c:if test="#{layoutWidgetMode == initialMode}">
 
@@ -303,9 +309,9 @@
 
       </c:if>
 
+    </nxu:set>
     </nxu:valueHolder>
 
-    </nxu:set>
     </nxu:set>
     </nxu:set>
     </nxu:set>

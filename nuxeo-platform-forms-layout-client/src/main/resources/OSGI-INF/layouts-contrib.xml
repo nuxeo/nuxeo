@@ -2330,7 +2330,7 @@
                   <widget>template</widget>
                 </row>
               </rows>
-              <widget name="name" type="text">
+              <widget name="name" type="selectOneResource">
                 <labels>
                   <label mode="any">Layout(s)</label>
                 </labels>
@@ -2346,6 +2346,7 @@
                 </fields>
                 <properties widgetMode="any">
                   <property name="required">true</property>
+                  <property name="resourceName">layouts</property>
                 </properties>
               </widget>
               <widget name="mode" type="text">
