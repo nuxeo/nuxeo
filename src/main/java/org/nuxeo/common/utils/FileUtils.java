@@ -108,6 +108,21 @@ public final class FileUtils {
     }
 
     public static byte[] readBytes(InputStream in) throws IOException {
+        return readBytes(in, true);
+    }
+
+    /**
+     * Reads bytes from an {@link InputStream}, closes it afterwards if
+     * {@code closeInputStream} is true, and writes the bytes to a byte array.
+     *
+     * @param in the input stream
+     * @param closeInputStream if true the input stream is closed after being
+     *            read
+     * @return a byte array that contains the bytes read from the input stream
+     * @throws IOException if an error occurs while reading the input stream
+     */
+    public static byte[] readBytes(InputStream in, boolean closeInputStream)
+            throws IOException {
         byte[] buffer = createBuffer(in.available());
         int w = 0;
         try {
@@ -124,7 +139,9 @@ public final class FileUtils {
                 }
             } while ((read = in.read(buffer, w, len)) != -1);
         } finally {
-            in.close();
+            if (closeInputStream) {
+                in.close();
+            }
         }
         if (buffer.length > w) { // compact buffer
             byte[] b = new byte[w];
@@ -627,7 +644,8 @@ public final class FileUtils {
 
         if (expected.length() != source.length()) {
             // Prevent from comparing files with Windows EOL
-            return expected.replace("\r\n", "\n").equals(source.replace("\r\n", "\n"));
+            return expected.replace("\r\n", "\n").equals(
+                    source.replace("\r\n", "\n"));
         } else {
             return expected.equals(source);
         }
