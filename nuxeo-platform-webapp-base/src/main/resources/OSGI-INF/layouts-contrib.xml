@@ -1425,9 +1425,6 @@
                   <widget>toggledLayoutName</widget>
                 </row>
                 <row>
-                  <widget>template</widget>
-                </row>
-                <row>
                   <widget>styleClass</widget>
                 </row>
                 <row>
@@ -1453,6 +1450,9 @@
                 </row>
                 <row>
                   <widget>cancelActionLabel</widget>
+                </row>
+                <row>
+                  <widget>template</widget>
                 </row>
               </rows>
               <widget name="initialLayoutName" type="selectOneResource">
