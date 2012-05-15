@@ -749,37 +749,46 @@
           <widget>mail.transport.protocol</widget>
         </row>
         <row>
-          <widget>mail.pop3.host</widget>
+          <widget>mail.store.host</widget>
+        </row>
+        <row>
+          <widget>mail.store.port</widget>
+        </row>
+        <row>
+          <widget>mail.store.user</widget>
+        </row>
+        <row>
+          <widget>mail.store.password</widget>
         </row>
         <row>
           <widget>mail.debug</widget>
         </row>
         <row>
-          <widget>mail.smtp.host</widget>
+          <widget>mail.transport.host</widget>
         </row>
         <row>
-          <widget>mail.smtp.port</widget>
+          <widget>mail.transport.port</widget>
         </row>
         <row>
-          <widget>mail.smtp.auth</widget>
+          <widget>mail.transport.auth</widget>
         </row>
         <!-- <row> -->
         <!-- <properties mode="any"> -->
         <!-- <property name="hideWidgetLabel">true</property> -->
         <!-- </properties> -->
-        <!-- <widget>mail_smtp_auth_decorator</widget> -->
+        <!-- <widget>mail_Transport_auth_decorator</widget> -->
         <!-- </row> -->
         <row>
-          <widget>mail.smtp.username</widget>
+          <widget>mail.transport.user</widget>
         </row>
         <row>
-          <widget>mail.smtp.password</widget>
+          <widget>mail.transport.password</widget>
         </row>
         <row>
           <widget>mail.from</widget>
         </row>
         <row>
-          <widget>mail.smtp.usetls</widget>
+          <widget>mail.transport.usetls</widget>
         </row>
         <row>
           <widget>mail.user</widget>
@@ -856,13 +865,13 @@
           <property name="required">false</property>
         </properties>
       </widget>
-      <widget name="mail.pop3.host" type="text">
+      <widget name="mail.store.host" type="text">
         <labels>
-          <label mode="any">label.setup.mail.pop3.host</label>
+          <label mode="any">label.setup.mail.store.host</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.pop3.host']</field>
+          <field>['mail.store.host']</field>
         </fields>
         <properties mode="edit">
           <property name="size">50</property>
@@ -870,6 +879,50 @@
           <property name="required">false</property>
         </properties>
       </widget>
+       <widget name="mail.store.port" type="int">
+        <labels>
+          <label mode="any">label.setup.mail.store.port</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.store.port']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">5</property>
+          <property name="maxlength">5</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+     <widget name="mail.store.user" type="text">
+        <labels>
+          <label mode="any">label.setup.mail.store.user</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.store.user']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">50</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+      <widget name="mail.store.password" type="secret">
+        <labels>
+          <label mode="any">label.setup.mail.store.password</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['mail.store.password']</field>
+        </fields>
+        <properties mode="edit">
+          <property name="size">20</property>
+          <property name="styleClass">dataInputText</property>
+          <property name="required">false</property>
+        </properties>
+      </widget>
+ 
       <widget name="mail.debug" type="checkbox">
         <labels>
           <label mode="any">label.setup.mail.debug</label>
@@ -883,13 +936,13 @@
           <property name="required">false</property>
         </properties>
       </widget>
-      <widget name="mail.smtp.host" type="text">
+      <widget name="mail.transport.host" type="text">
         <labels>
-          <label mode="any">label.setup.mail.smtp.host</label>
+          <label mode="any">label.setup.mail.transport.host</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.smtp.host']</field>
+          <field>['mail.transport.host']</field>
         </fields>
         <properties mode="edit">
           <property name="size">50</property>
@@ -897,13 +950,13 @@
           <property name="required">false</property>
         </properties>
       </widget>
-      <widget name="mail.smtp.port" type="int">
+      <widget name="mail.transport.port" type="int">
         <labels>
-          <label mode="any">label.setup.mail.smtp.port</label>
+          <label mode="any">label.setup.mail.transport.port</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.smtp.port']</field>
+          <field>['mail.transport.port']</field>
         </fields>
         <properties mode="edit">
           <property name="size">5</property>
@@ -912,13 +965,13 @@
           <property name="required">false</property>
         </properties>
       </widget>
-      <widget name="mail.smtp.auth" type="checkbox">
+      <widget name="mail.transport.auth" type="checkbox">
         <labels>
-          <label mode="any">label.setup.mail.smtp.auth</label>
+          <label mode="any">label.setup.mail.transport.auth</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.smtp.auth']</field>
+          <field>['mail.transport.auth']</field>
         </fields>
         <properties mode="edit">
           <property name="styleClass">dataInputText</property>
@@ -930,28 +983,28 @@
         <!-- </properties> -->
       </widget>
       <!-- not used -->
-      <widget name="mail_smtp_auth_decorator" type="template">
+      <widget name="mail_transport_auth_decorator" type="template">
         <properties mode="any">
           <property name="template">
-            /incl/sysinfo/widgets/mail_smtp_auth_ajax_panel.xhtml
+            /incl/sysinfo/widgets/mail_Transport_auth_ajax_panel.xhtml
           </property>
           <property name="ajaxPanelId">admin_setup_mail_ajaxPanel</property>
           <property name="rendered">#{true}</property>
-          <!-- <property name="rendered">#{value['mail.smtp.auth']==true}</property> -->
+          <!-- <property name="rendered">#{value['mail.transport.auth']==true}</property> -->
         </properties>
         <subWidgets>
-          <widget name="mail.smtp.username" type="text">
+          <widget name="mail.transport.user" type="text">
             <!-- <widgetModes> -->
             <!-- <mode value="any"> -->
-            <!-- #{value['mail.smtp.auth']!=true?'hidden':mode} -->
+            <!-- #{value['mail.transport.auth']!=true?'hidden':mode} -->
             <!-- </mode> -->
             <!-- </widgetModes> -->
             <labels>
-              <label mode="any">label.setup.mail.smtp.username</label>
+              <label mode="any">label.setup.mail.transport.user</label>
             </labels>
             <translated>true</translated>
             <fields>
-              <field>['mail.smtp.username']</field>
+              <field>['mail.transport.user']</field>
             </fields>
             <properties mode="edit">
               <property name="size">50</property>
@@ -959,18 +1012,18 @@
               <property name="required">false</property>
             </properties>
           </widget>
-          <widget name="mail.smtp.password" type="secret">
+          <widget name="mail.transport.password" type="secret">
             <!-- <widgetModes> -->
             <!-- <mode value="any"> -->
-            <!-- #{value['mail.smtp.auth']!=true?'hidden':mode} -->
+            <!-- #{value['mail.transport.auth']!=true?'hidden':mode} -->
             <!-- </mode> -->
             <!-- </widgetModes> -->
             <labels>
-              <label mode="any">label.setup.mail.smtp.password</label>
+              <label mode="any">label.setup.mail.transport.password</label>
             </labels>
             <translated>true</translated>
             <fields>
-              <field>['mail.smtp.password']</field>
+              <field>['mail.transport.password']</field>
             </fields>
             <properties mode="edit">
               <property name="size">20</property>
@@ -980,13 +1033,13 @@
           </widget>
         </subWidgets>
       </widget>
-      <widget name="mail.smtp.username" type="text">
+      <widget name="mail.transport.user" type="text">
         <labels>
-          <label mode="any">label.setup.mail.smtp.username</label>
+          <label mode="any">label.setup.mail.transport.user</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.smtp.username']</field>
+          <field>['mail.transport.user']</field>
         </fields>
         <properties mode="edit">
           <property name="size">50</property>
@@ -994,13 +1047,13 @@
           <property name="required">false</property>
         </properties>
       </widget>
-      <widget name="mail.smtp.password" type="secret">
+      <widget name="mail.transport.password" type="secret">
         <labels>
-          <label mode="any">label.setup.mail.smtp.password</label>
+          <label mode="any">label.setup.mail.transport.password</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.smtp.password']</field>
+          <field>['mail.transport.password']</field>
         </fields>
         <properties mode="edit">
           <property name="size">20</property>
@@ -1022,13 +1075,13 @@
           <property name="required">false</property>
         </properties>
       </widget>
-      <widget name="mail.smtp.usetls" type="checkbox">
+      <widget name="mail.transport.usetls" type="checkbox">
         <labels>
-          <label mode="any">label.setup.mail.smtp.usetls</label>
+          <label mode="any">label.setup.mail.transport.usetls</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.smtp.usetls']</field>
+          <field>['mail.transport.usetls']</field>
         </fields>
         <properties mode="edit">
           <property name="styleClass">dataInputText</property>

@@ -77,10 +77,10 @@ public class SetupWizardActionBean implements Serializable {
             "nuxeo.db.max-pool-size", "nuxeo.vcs.min-pool-size",
             "nuxeo.vcs.max-pool-size", "nuxeo.notification.eMailSubjectPrefix",
             "mailservice.user", "mailservice.password", "mail.store.protocol",
-            "mail.transport.protocol", "mail.pop3.host", "mail.debug",
-            "mail.smtp.host", "mail.smtp.port", "mail.smtp.auth",
-            "mail.smtp.username", "mail.smtp.password", "mail.from",
-            "mail.user", "mail.smtp.usetls", "nuxeo.http.proxy.host",
+            "mail.transport.protocol", "mail.store.host", "mail.store.port", "mail.store.user", "mail.store.password", "mail.debug",
+            "mail.transport.host", "mail.transport.port", "mail.transport.auth",
+            "mail.transport.user", "mail.transport.password", "mail.from",
+            "mail.user", "mail.transport.usetls", "nuxeo.http.proxy.host",
             "nuxeo.http.proxy.port", "nuxeo.http.proxy.login",
             "nuxeo.http.proxy.password" };
 
@@ -252,7 +252,7 @@ public class SetupWizardActionBean implements Serializable {
 
         // Remove empty values for password keys
         for (String pwdKey : new String[] { "nuxeo.db.password",
-                "mailservice.password", "mail.smtp.password",
+                "mailservice.password", "mail.transport.password",
                 "nuxeo.http.proxy.password" }) {
             if (StringUtils.isEmpty(parameters.get(pwdKey))) {
                 parameters.remove(pwdKey);
