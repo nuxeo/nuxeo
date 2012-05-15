@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.forms.layout.core.service.LayoutStoreImpl;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.functions.LayoutFunctions;
@@ -69,6 +70,7 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagConfig;
+import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
  * Layout service implementation.
@@ -482,8 +484,13 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         String widgetTypeName = widget.getType();
         WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeName);
         if (handler == null) {
-            log.error(String.format("No widget handler found for type '%s'",
-                    widgetTypeName));
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+            String message = String.format(
+                    "No widget handler found for type '%s'", widgetTypeName);
+            log.error(message);
+            ComponentHandler output = helper.getErrorComponentHandler(null,
+                    message);
+            return output;
         } else {
             FaceletHandler[] subHandlers = null;
             Widget[] subWidgets = widget.getSubWidgets();
@@ -504,7 +511,6 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                     widget, subHandlers);
             return fHandler;
         }
-        return null;
     }
 
     @Override
