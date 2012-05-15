@@ -1,6 +1,10 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+  <style type="text/css">
+    #content-diff-frame {display: block; width: 100%; border: none;}
+  </style>
+  
   <nxu:set var="propertyLabel" value="#{param['label']}" cache="true">
   <nxu:set var="propertyXPath" value="#{param['xPath']}" cache="true">
   <nxu:set var="conversionType" value="#{param['conversionType']}" cache="true">
@@ -9,7 +13,7 @@
     <h:outputText value="#{messages[propertyLabel]}" />
   </h2>
   
-  <iframe src="#{diffActions.getContentDiffURL(propertyXPath, conversionType)}" id="fancybox-frame"
+  <iframe src="#{diffActions.getContentDiffURL(propertyXPath, conversionType)}" id="content-diff-frame"
     frameborder="1" width="100%" scrolling="auto">
   </iframe>
   
@@ -22,7 +26,7 @@
       var fancyBox = jQuery('#fancybox-content', window.parent.document);
       if (fancyBox.length > 0 &amp;&amp; fancyBox.height() > 0) {
         // we know we are in a fancybox
-        jQuery('#fancybox-frame').height(fancyBox.height() - 20);
+        jQuery('#content-diff-frame').height(fancyBox.height() - 40);
       }
     });
   </script>
