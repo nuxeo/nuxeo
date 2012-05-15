@@ -26,7 +26,7 @@ mail.smtp.usetls=false
 # User who will receive mail
 mail.user=nobody
 # Mail server
-mail.pop3.host=pop3.nosuchhost.nosuchdomain.com
+mail.store.host=pop3.nosuchhost.nosuchdomain.com
 # Enable debugging output from the javamail classes
 mail.debug=false
 

@@ -220,6 +220,14 @@ public class ConfigurationGenerator {
                 PARAM_TEMPLATES_PARSING_EXTENSIONS);
         tempPM.put("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key");
         tempPM.put("nuxeo.server.tomcat-admin.port", "nuxeo.server.tomcat_admin.port");
+        tempPM.put("mail.pop3.host", "mail.store.host");
+        tempPM.put("mail.pop3.port", "mail.store.port");
+        tempPM.put("mail.smtp.host", "mail.transport.host");
+        tempPM.put("mail.smtp.port", "mail.transport.port");
+        tempPM.put("mail.smtp.username", "mail.transport.user");
+        tempPM.put("mail.smtp.password", "mail.transport.password");
+        tempPM.put("mail.smtp.usetls", "mail.transport.usetls");
+        tempPM.put("mail.smtp.auth", "mail.transport.auth");
         parametersMigration = tempPM;
     }
 
