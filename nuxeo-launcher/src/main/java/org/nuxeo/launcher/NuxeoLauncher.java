@@ -69,8 +69,6 @@ import org.json.JSONException;
 import org.json.XML;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
-import org.nuxeo.connect.packages.PackageManager;
-import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
@@ -1538,13 +1536,13 @@ public abstract class NuxeoLauncher {
         cset = pkgman.getCommandSet();
     }
 
-    protected boolean pkgAdd(String[] params) throws IOException,
+    protected boolean pkgAdd(String[] pkgNames) throws IOException,
             PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
-        for (String param : params) {
-            pkg = pkgman.pkgAdd(param);
+        for (String pkgName : pkgNames) {
+            pkg = pkgman.pkgAdd(pkgName);
             cmdOK = cmdOK && (pkg != null);
         }
         cset = pkgman.getCommandSet();
@@ -1554,7 +1552,7 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-    protected boolean pkgInstall(String[] params) throws IOException,
+    protected boolean pkgInstall(String[] pkgIDs) throws IOException,
             PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
@@ -1563,8 +1561,8 @@ public abstract class NuxeoLauncher {
                     configurationGenerator.getInstallFile(), true);
         }
         LocalPackage pkg;
-        for (String param : params) {
-            pkg = pkgman.pkgInstall(param);
+        for (String pkgID : pkgIDs) {
+            pkg = pkgman.pkgInstall(pkgID);
             cmdOK = cmdOK && (pkg != null);
         }
         cset = pkgman.getCommandSet();
@@ -1574,13 +1572,13 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-    protected boolean pkgUninstall(String[] params) throws IOException,
+    protected boolean pkgUninstall(String[] pkgIDs) throws IOException,
             PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
-        for (String param : params) {
-            pkg = pkgman.pkgUninstall(param);
+        for (String pkgID : pkgIDs) {
+            pkg = pkgman.pkgUninstall(pkgID);
             cmdOK = cmdOK && (pkg != null);
         }
         cset = pkgman.getCommandSet();
@@ -1590,13 +1588,13 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-    protected boolean pkgRemove(String[] params) throws IOException,
+    protected boolean pkgRemove(String[] pkgIDs) throws IOException,
             PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
-        for (String param : params) {
-            pkg = pkgman.pkgRemove(param);
+        for (String pkgID : pkgIDs) {
+            pkg = pkgman.pkgRemove(pkgID);
             cmdOK = cmdOK && (pkg != null);
         }
         cset = pkgman.getCommandSet();
@@ -1788,12 +1786,8 @@ public abstract class NuxeoLauncher {
     }
 
     protected void testparser() throws IOException, PackageException {
-        PackageManager pm = getConnectBroker().getPackageManager();
-        pm.setResolver("p2cudf");
-        DependencyResolution resolution = pm.resolveDependencies(
-                "nuxeo-dm:5.6-SNAPSHOT", null);
-
         ConnectBroker pkgman = getConnectBroker();
+        pkgman.getPackageManager().setResolver("p2cudf");
         boolean cmdOK = pkgman.pkgRequest(null,
                 Arrays.asList(new String[] { "nuxeo-dm:5.6-SNAPSHOT" }), null,
                 null);

@@ -48,6 +48,11 @@
   <logger name="org.eclipse.equinox.p2.cudf">
     <level value="WARN" />
   </logger>
+  <!-- Hide warning from HttpMethodBase: << Going to buffer response body of large
+    or unknown size. Using getResponseBodyAsStream instead is recommended. >> -->
+  <logger name="org.apache.commons.httpclient.methods.PostMethod">
+    <level value="ERROR" />
+  </logger>
 
   <!-- ======================= -->
   <!-- Setup the Root category -->

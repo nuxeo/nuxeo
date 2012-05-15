@@ -606,15 +606,6 @@ public class ConnectBroker {
             log.error("Aborting packages change request");
             return false;
         }
-        // Install packages
-        List<String> resolutionInstallations = resolution.getInstallPackageIds();
-        for (String pkg : resolutionInstallations) {
-            LocalPackage newPkg = pkgInstall(pkg);
-            if (newPkg == null) {
-                log.error("Failed to install " + pkg);
-                return false;
-            }
-        }
         // Uninstall packages
         List<String> resolutionUninstallations = resolution.getRemovePackageIds();
         for (String pkg : resolutionUninstallations) {
@@ -632,6 +623,15 @@ public class ConnectBroker {
                     log.error("Failed to remove " + pkg);
                     // Don't error out on failed (cache) removal
                 }
+            }
+        }
+        // Install packages
+        List<String> resolutionInstallations = resolution.getInstallPackageIds();
+        for (String pkg : resolutionInstallations) {
+            LocalPackage newPkg = pkgInstall(pkg);
+            if (newPkg == null) {
+                log.error("Failed to install " + pkg);
+                return false;
             }
         }
         return true;
