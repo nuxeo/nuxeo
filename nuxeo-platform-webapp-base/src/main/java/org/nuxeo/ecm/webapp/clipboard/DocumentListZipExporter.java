@@ -87,7 +87,7 @@ public class DocumentListZipExporter {
             StringBuilder blobList, boolean exportAllBlobs)
             throws ClientException, IOException {
 
-        String title = (String) doc.getProperty("dublincore", "title");
+        String title = doc.getTitle();
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
             // NXP-2334 : skip deleted docs
