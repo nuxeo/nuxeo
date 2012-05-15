@@ -142,6 +142,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             contentDiffBlobs = initCachedContentDiffBlobs(res, xpath,
                     conversionType, blobPostProcessing);
         } catch (Exception e) {
+            e.printStackTrace();
             handleError(res, "Unable to get content diff.");
             return;
         }
