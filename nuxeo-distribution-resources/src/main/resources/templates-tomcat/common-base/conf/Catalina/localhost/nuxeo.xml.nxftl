@@ -23,7 +23,7 @@
 <#else>
   <Valve className="org.nuxeo.runtime.tomcat.dev.DevValve" />
   <Loader className="org.nuxeo.runtime.tomcat.NuxeoWebappLoader"
-    loaderClass="org.nuxeo.runtime.tomcat.NuxeoDevWebappClassLoader" />
+    loaderClass="org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader" />
 </#if>
 
 <#if "${nuxeo.server.ContextSecurityGrabber.disable}" != "true">
