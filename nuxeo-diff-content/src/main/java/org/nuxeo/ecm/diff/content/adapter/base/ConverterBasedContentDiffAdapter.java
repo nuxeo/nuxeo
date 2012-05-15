@@ -14,6 +14,7 @@
  */
 package org.nuxeo.ecm.diff.content.adapter.base;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +27,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
-import org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -102,8 +103,6 @@ public class ConverterBasedContentDiffAdapter extends
         log.debug("Mime type of other doc for HTML content diff = "
                 + otherDocMimeType);
 
-        // TODO: if conversionType == "text/plain", use TextContentDiffer?
-
         // Check doc mime types, if a common mime type is found, look for the
         // associated content differ.
         if (adaptedDocMimeType != null && otherDocMimeType != null
@@ -121,15 +120,21 @@ public class ConverterBasedContentDiffAdapter extends
         // common mime type.
         // Fall back on a Html conversion + HtmlContentDiffer.
         String converterName = conversionType.getValue();
-        Blob adaptedDocHtmlConvertedBlob = getHtmlConvertedBlob(
-                adaptedDocBlobHolder, converterName);
-        Blob otherDocHtmlConvertedBlob = getHtmlConvertedBlob(
-                otherDocBlobHolder, converterName);
+        Blob adaptedDocConvertedBlob = getConvertedBlob(adaptedDocBlobHolder,
+                converterName);
+        Blob otherDocConvertedBlob = getConvertedBlob(otherDocBlobHolder,
+                converterName);
 
-        HtmlContentDiffer htmlContentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
-        blobResults = htmlContentDiffer.getContentDiff(
-                adaptedDocHtmlConvertedBlob, otherDocHtmlConvertedBlob,
-                adaptedDoc, otherDoc);
+        // In the case of text conversion, we need to transform the blob strings
+        // to replace all occurrences of "\n" with "<br />", since they will
+        // then be displayed by the HtmlContentDiffer.
+        if (ContentDiffConversionType.text.equals(conversionType)) {
+            adaptedDocConvertedBlob = getHtmlStringBlob(adaptedDocConvertedBlob);
+            otherDocConvertedBlob = getHtmlStringBlob(otherDocConvertedBlob);
+        }
+        MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
+        blobResults = contentDiffer.getContentDiff(adaptedDocConvertedBlob,
+                otherDocConvertedBlob, adaptedDoc, otherDoc);
         return blobResults;
     }
 
@@ -200,8 +205,8 @@ public class ConverterBasedContentDiffAdapter extends
         return defaultFieldXPath;
     }
 
-    protected Blob getHtmlConvertedBlob(BlobHolder blobHolder,
-            String converterName) throws ContentDiffException {
+    protected Blob getConvertedBlob(BlobHolder blobHolder, String converterName)
+            throws ContentDiffException {
 
         if (converterName == null) {
             log.debug(String.format(
@@ -222,6 +227,19 @@ public class ConverterBasedContentDiffAdapter extends
             throw new ContentDiffException("Error during conversion", e);
         } catch (Exception e) {
             throw new ContentDiffException("Unexpected Error", e);
+        }
+    }
+
+    protected StringBlob getHtmlStringBlob(Blob blob)
+            throws ContentDiffException {
+        try {
+            return new StringBlob(
+                    blob.getString().replace("&", "&amp;").replace("<", "&lt;").replace(
+                            ">", "&gt;").replace("\n", "<br />"));
+        } catch (IOException ioe) {
+            throw new ContentDiffException(String.format(
+                    "Could not get string from blob %s", blob.getFilename()),
+                    ioe);
         }
     }
 
