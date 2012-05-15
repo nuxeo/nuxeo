@@ -39,16 +39,13 @@ public class PlainTextContentDiffer implements MimeTypeContentDiffer {
 
         // TODO: test XML entities (&, ', "", ...)
 
-        // TODO: check StringBlob, throw exception if not
-
         List<Blob> blobResults = new ArrayList<Blob>();
 
         diff_match_patch dmp = new diff_match_patch();
 
         LinkedList<Diff> diffs;
         try {
-            diffs = dmp.diff_main(((StringBlob) leftBlob).getString(),
-                    ((StringBlob) rightBlob).getString());
+            diffs = dmp.diff_main(leftBlob.getString(), rightBlob.getString());
         } catch (IOException ioe) {
             throw new ContentDiffException(
                     "Error while processing plain text diff.", ioe);
