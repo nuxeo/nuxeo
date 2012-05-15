@@ -305,34 +305,37 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     public void close() throws DirectoryException {
-        if (sourceInfos == null) {
-            return;
-        }
-        DirectoryException exc = null;
-        for (SourceInfo sourceInfo : sourceInfos) {
-            for (SubDirectoryInfo subDirectoryInfo : sourceInfo.subDirectoryInfos) {
-                Session session = subDirectoryInfo.session;
-                subDirectoryInfo.session = null;
-                if (session != null) {
-                    try {
-                        session.close();
-                    } catch (DirectoryException e) {
-                        // remember exception, we want to close all session
-                        // first
-                        if (exc == null) {
-                            exc = e;
-                        } else {
-                            // we can't reraise both, log this one
-                            log.error("Error closing directory "
-                                    + subDirectoryInfo.dirName, e);
+        try {
+            if (sourceInfos == null) {
+                return;
+            }
+            DirectoryException exc = null;
+            for (SourceInfo sourceInfo : sourceInfos) {
+                for (SubDirectoryInfo subDirectoryInfo : sourceInfo.subDirectoryInfos) {
+                    Session session = subDirectoryInfo.session;
+                    subDirectoryInfo.session = null;
+                    if (session != null) {
+                        try {
+                            session.close();
+                        } catch (DirectoryException e) {
+                            // remember exception, we want to close all session
+                            // first
+                            if (exc == null) {
+                                exc = e;
+                            } else {
+                                // we can't reraise both, log this one
+                                log.error("Error closing directory "
+                                        + subDirectoryInfo.dirName, e);
+                            }
                         }
                     }
                 }
+                if (exc != null) {
+                    throw exc;
+                }
             }
-        }
-        directory.removeSession(this);
-        if (exc != null) {
-            throw exc;
+        } finally {
+            directory.removeSession(this);
         }
     }
 
@@ -431,8 +434,9 @@ public class MultiDirectorySession extends BaseSession {
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {
                         try {
-                            map.put(e.getValue(), entry.getProperty(
-                                    dirInfo.dirSchemaName, e.getKey()));
+                            map.put(e.getValue(),
+                                    entry.getProperty(dirInfo.dirSchemaName,
+                                            e.getKey()));
                         } catch (ClientException e1) {
                             throw new DirectoryException(e1);
                         }
@@ -486,8 +490,9 @@ public class MultiDirectorySession extends BaseSession {
                     }
                     // put entry data in map
                     for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
-                        map.put(e.getValue(), entry.getProperty(
-                                dirInfo.dirSchemaName, e.getKey()));
+                        map.put(e.getValue(),
+                                entry.getProperty(dirInfo.dirSchemaName,
+                                        e.getKey()));
                     }
                     if (BaseSession.isReadOnlyEntry(entry)) {
                         readOnlyEntries.add(id);
@@ -504,8 +509,9 @@ public class MultiDirectorySession extends BaseSession {
                         existingIds.add(id);
                         // put entry data in map
                         for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
-                            map.put(e.getValue(), entry.getProperty(
-                                    dirInfo.dirSchemaName, e.getKey()));
+                            map.put(e.getValue(),
+                                    entry.getProperty(dirInfo.dirSchemaName,
+                                            e.getKey()));
                         }
                     } else {
                         log.warn(String.format(
@@ -745,8 +751,9 @@ public class MultiDirectorySession extends BaseSession {
                         counts.put(id, counts.get(id) + 1);
                     }
                     for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
-                        map.put(e.getValue(), entry.getProperty(
-                                dirInfo.dirSchemaName, e.getKey()));
+                        map.put(e.getValue(),
+                                entry.getProperty(dirInfo.dirSchemaName,
+                                        e.getKey()));
                     }
                     if (BaseSession.isReadOnlyEntry(entry)) {
                         readOnlyEntries.add(id);
