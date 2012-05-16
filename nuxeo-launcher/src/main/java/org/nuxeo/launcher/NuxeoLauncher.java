@@ -639,10 +639,7 @@ public abstract class NuxeoLauncher {
                 || "mp-reset".equalsIgnoreCase(launcher.command)) {
             launcher.checkNoRunningServer();
         }
-
-        if ("gui".equalsIgnoreCase(launcher.command)) {
-            launcher.getGUI();
-        } else if ("status".equalsIgnoreCase(launcher.command)) {
+        if ("status".equalsIgnoreCase(launcher.command)) {
             log.warn(launcher.status());
             if (launcher.isStarted()) {
                 log.info(launcher.getStartupSummary());
@@ -1400,16 +1397,7 @@ public abstract class NuxeoLauncher {
      */
     private void setArgs(CommandLine cmdLine) {
         this.cmdLine = cmdLine;
-        String[] argList = cmdLine.getArgs();
-        command = argList[0];
-        log.debug("Launcher command: " + command);
-        // Command parameters
-        if (argList.length > 1) {
-            params = Arrays.copyOfRange(argList, 1, argList.length);
-            log.debug("Command parameters: " + params);
-        } else {
-            params = new String[0];
-        }
+        extractCommandAndParams(cmdLine.getArgs());
         // Use GUI?
         if (cmdLine.hasOption(OPTION_GUI)) {
             useGui = Boolean.valueOf(cmdLine.getOptionValue(OPTION_GUI));
@@ -1417,7 +1405,8 @@ public abstract class NuxeoLauncher {
                     + new Boolean(useGui).toString());
         } else if (OPTION_GUI.equalsIgnoreCase(command)) {
             useGui = true;
-            command = null;
+            // Shift params and extract command if there is one
+            extractCommandAndParams(params);
         } else {
             if (PlatformUtils.isWindows()) {
                 useGui = true;
@@ -1433,6 +1422,22 @@ public abstract class NuxeoLauncher {
         }
         if (cmdLine.hasOption(OPTION_JSON)) {
             setJSONOutput();
+        }
+    }
+
+    private void extractCommandAndParams(String[] args) {
+        if (args.length > 0) {
+            command = args[0];
+            log.debug("Launcher command: " + command);
+            // Command parameters
+            if (args.length > 1) {
+                params = Arrays.copyOfRange(args, 1, args.length);
+                log.debug("Command parameters: " + params);
+            } else {
+                params = new String[0];
+            }
+        } else {
+            command = null;
         }
     }
 
@@ -1492,6 +1497,7 @@ public abstract class NuxeoLauncher {
         log.error("\tjvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.");
         log.error("\n\nCommands list:");
         log.error("\thelp\t\t\tPrint this message.");
+        log.error("\tgui\t\t\tStart the graphical interface.");
         log.error("\tstart\t\t\tStart Nuxeo server in background, waiting for effective start. "
                 + "Useful for batch executions requiring the server being immediately available after the script returned.");
         log.error("\tstop\t\t\tStop any Nuxeo server started with the same nuxeo.conf file.");

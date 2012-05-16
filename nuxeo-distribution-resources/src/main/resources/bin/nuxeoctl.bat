@@ -153,7 +153,7 @@ REM *****  Check for gui/nogui parameter *****
 if "%1" == "nogui" (
   goto GUI_NO
 ) else if "%1" == "gui" (
-  goto GUI_YES
+  goto GUI_DONE
 ) else if "%1" == "--gui=false" (
   goto GUI_DONE
 ) else if "%1" == "--gui=true" (

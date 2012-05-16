@@ -27,9 +27,6 @@ MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+
 ## Backward compatibility
 cmdargs=( "$@" )
 for ((i=0; i<$#; i++)); do
-  if [ "${cmdargs[$i]}" = "gui" ]; then
-    cmdargs[$i]="--gui=true"
-  fi
   if [ "${cmdargs[$i]}" = "nogui" ]; then
     cmdargs[$i]="--gui=false"
   fi
@@ -107,7 +104,7 @@ EOF
 # Force IPv4
 JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
 
-if [[ ! "x$@" =~ --gui=true ]]; then
+if [[ ! "x$@" =~ --gui=true ]] && [[ ! "x$@" =~ " gui" ]]; then
   # Set AWT headless
   JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true"
 fi
