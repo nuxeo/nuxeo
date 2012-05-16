@@ -50,7 +50,7 @@
   </logger>
   <!-- Hide warning from HttpMethodBase: << Going to buffer response body of large
     or unknown size. Using getResponseBodyAsStream instead is recommended. >> -->
-  <logger name="org.apache.commons.httpclient.methods.PostMethod">
+  <logger name="org.apache.commons.httpclient.HttpMethodBase">
     <level value="ERROR" />
   </logger>
 
