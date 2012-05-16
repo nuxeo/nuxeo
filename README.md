@@ -11,20 +11,20 @@ The comparison also takes into account blob-type properties.
 
 - Install maven 2.2.1+ and build _nuxeo-diff_ by running:
 
-		mvn clean install
-		
+    mvn clean install
+
 - Deploy _nuxeo-diff_ in the Nuxeo server by running:
 
-		cp */target/*-5.6-SNAPSHOT.jar $NUXEO_HOME/nxserver/plugins/
+    cp */target/*-5.6-SNAPSHOT.jar $NUXEO_HOME/nxserver/plugins/
 
 - Copy the following third-party librairies in $NUXEO_HOME/nxserver/lib/:
 
-	- $M2_REPO/xmlunit/xmlunit/1.3/xmlunit-1.3.jar
-	- $M2_REPO/org/outerj/daisy/daisydiff/1.2-NX1/daisydiff-1.2-NX1.jar
-	- $M2_REPO/org/eclipse/core/runtime/eclipse-core-runtime/20070801/eclipse-core-runtime-20070801.jar
-	
-	These librairies are fetched from Nuxeo Maven repositories and installed in your Maven local repository when building nuxeo-diff.
-	
+  - $M2_REPO/xmlunit/xmlunit/1.3/xmlunit-1.3.jar
+  - $M2_REPO/org/outerj/daisy/daisydiff/1.2-NX1/daisydiff-1.2-NX1.jar
+  - $M2_REPO/org/eclipse/core/runtime/eclipse-core-runtime/20070801/eclipse-core-runtime-20070801.jar
+
+  These librairies are fetched from Nuxeo Maven repositories and installed in your Maven local repository when building nuxeo-diff.
+
 - Start Nuxeo and have a try!
 
 ## Configuring
