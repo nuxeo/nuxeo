@@ -238,7 +238,7 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
     public void testSaveFilteredConfiguration() throws ConfigurationException {
         String propToSave1 = "nuxeo.notification.eMailSubjectPrefix";
         String valueToSave1 = "[Nuxeo test]";
-        String propToSave2 = "mail.smtp.username";
+        String propToSave2 = "mail.transport.user";
         String valueToSave2 = "tester";
         assertTrue(configGenerator.init());
         assertTrue(configGenerator.isConfigurable());
