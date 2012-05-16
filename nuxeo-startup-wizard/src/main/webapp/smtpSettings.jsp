@@ -3,7 +3,7 @@
 <h1><fmt:message key="label.smtpSettings" /></h1>
 
 <%
-String smtpAuthType = collector.getConfigurationParam("mail.smtp.auth");
+String smtpAuthType = collector.getConfigurationParam("mail.transport.auth");
 String smtpAuthSettingStyle="display:none";
 if (smtpAuthType==null || smtpAuthType.equals("")) {
     smtpAuthType="false";
@@ -38,22 +38,22 @@ function updateSmtpSettings() {
 <%@ include file="includes/feedback.jsp" %>
   <table>
     <tr>
-      <td class="labelCell"><fmt:message key="label.mail.smtp.host"/></td>
-      <td><input type="text" name="mail.smtp.host" value="<%=collector.getConfigurationParam("mail.smtp.host") %>"/></td>
+      <td class="labelCell"><fmt:message key="label.mail.transport.host"/></td>
+      <td><input type="text" name="mail.transport.host" value="<%=collector.getConfigurationParam("mail.transport.host") %>"/></td>
     </tr><tr>
-      <td colspan="2" class="helpCell"><fmt:message key="label.mail.smtp.host.help"/></td>
+      <td colspan="2" class="helpCell"><fmt:message key="label.mail.transport.host.help"/></td>
     </tr>
     <tr>
-      <td class="labelCell"><fmt:message key="label.mail.smtp.port"/></td>
-      <td><input type="text" name="mail.smtp.port" value="<%=collector.getConfigurationParam("mail.smtp.port") %>" size="4" /></td>
+      <td class="labelCell"><fmt:message key="label.mail.transport.port"/></td>
+      <td><input type="text" name="mail.transport.port" value="<%=collector.getConfigurationParam("mail.transport.port") %>" size="4" /></td>
     </tr><tr>
-      <td colspan="2" class="helpCell"><fmt:message key="label.mail.smtp.port.help"/></td>
+      <td colspan="2" class="helpCell"><fmt:message key="label.mail.transport.port.help"/></td>
     </tr>
 
     <tr>
-      <td class="labelCell"><fmt:message key="label.mail.smtp.auth"/></td>
+      <td class="labelCell"><fmt:message key="label.mail.transport.auth"/></td>
       <td>
-  <select id="smtpAuthTypeSelector" name="mail.smtp.auth" onchange="updateSmtpSettings()">
+  <select id="smtpAuthTypeSelector" name="mail.transport.auth" onchange="updateSmtpSettings()">
      <option
      <%if ("false".equals(smtpAuthType) ){%>
      selected
@@ -67,23 +67,23 @@ function updateSmtpSettings() {
   </select>
   </td>
   </tr><tr>
-  <td colspan="2" class="helpCell"><fmt:message key="label.mail.smtp.auth.help"/></td>
+  <td colspan="2" class="helpCell"><fmt:message key="label.mail.transport.auth.help"/></td>
   </tr>
   </table>
 
   <div id="smtpAuthSettings" style="<%=smtpAuthSettingStyle%>">
   <table>
     <tr>
-      <td class="labelCell"><fmt:message key="label.mail.smtp.username"/></td>
-      <td><input type="text" name="mail.smtp.username" value="<%=collector.getConfigurationParam("mail.smtp.username") %>"/></td>
+      <td class="labelCell"><fmt:message key="label.mail.transport.user"/></td>
+      <td><input type="text" name="mail.transport.user" value="<%=collector.getConfigurationParam("mail.transport.user") %>"/></td>
     </tr><tr>
-      <td colspan="2" class="helpCell"><fmt:message key="label.mail.smtp.username.help"/></td>
+      <td colspan="2" class="helpCell"><fmt:message key="label.mail.transport.user.help"/></td>
     </tr>
     <tr>
-      <td class="labelCell"><fmt:message key="label.mail.smtp.password"/></td>
-      <td><input type="password" name="mail.smtp.password" value="<%=collector.getConfigurationParam("mail.smtp.password") %>"/></td>
+      <td class="labelCell"><fmt:message key="label.mail.transport.password"/></td>
+      <td><input type="password" name="mail.transport.password" value="<%=collector.getConfigurationParam("mail.transport.password") %>"/></td>
     </tr><tr>
-      <td colspan="2" class="helpCell"><fmt:message key="label.mail.smtp.password.help"/></td>
+      <td colspan="2" class="helpCell"><fmt:message key="label.mail.transport.password.help"/></td>
     </tr>
 
   </table>

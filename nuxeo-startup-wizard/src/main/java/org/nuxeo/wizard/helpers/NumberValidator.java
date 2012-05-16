@@ -32,7 +32,7 @@ public class NumberValidator {
 
     private static Matcher matcher;
 
-    private static final String NUMBER_PATTERN = "^(\\d)+$";
+    private static final String NUMBER_PATTERN = "^[-](\\d)+$";
 
     public static synchronized boolean validate(String ip) {
         if (pattern == null) {

@@ -327,21 +327,21 @@ public class RouterServlet extends HttpServlet {
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
 
-        if (collector.getConfigurationParam("mail.smtp.auth").equals("true")) {
-            if (collector.getConfigurationParam("mail.smtp.username").isEmpty()) {
-                ctx.trackError("mail.smtp.username",
-                        "error.mail.smtp.username.required");
+        if (collector.getConfigurationParam("mail.transport.auth").equals("true")) {
+            if (collector.getConfigurationParam("mail.transport.user").isEmpty()) {
+                ctx.trackError("mail.transport.user",
+                        "error.mail.transport.user.required");
             }
-            if (collector.getConfigurationParam("mail.smtp.password").isEmpty()) {
-                ctx.trackError("mail.smtp.password",
-                        "error.mail.smtp.password.required");
+            if (collector.getConfigurationParam("mail.transport.password").isEmpty()) {
+                ctx.trackError("mail.transport.password",
+                        "error.mail.transport.password.required");
             }
         }
 
-        if (!collector.getConfigurationParam("mail.smtp.port").isEmpty()) {
-            if (!NumberValidator.validate(collector.getConfigurationParam("mail.smtp.port"))) {
-                ctx.trackError("mail.smtp.port",
-                        "error.mail.smtp.port.mustbeanumber");
+        if (!collector.getConfigurationParam("mail.transport.port").isEmpty()) {
+            if (!NumberValidator.validate(collector.getConfigurationParam("mail.transport.port"))) {
+                ctx.trackError("mail.transport.port",
+                        "error.mail.transport.port.mustbeanumber");
             }
         }
 
