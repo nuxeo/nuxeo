@@ -17,7 +17,7 @@
       </h:outputFormat>
     </p>
 
-    <h:inputText class="permalinkFocus" value="#{nxd:documentUrl(currentDocument)}"
+    <h:inputText class="permalinkFocus" value="#{nxd:complexDocumentUrl('id',currentDocument,null,null,false)}"
       readonly="true" onclick="javascript:this.focus();this.select();" />
   </div>
 
