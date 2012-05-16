@@ -46,8 +46,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
-import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
+import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -142,7 +142,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             contentDiffBlobs = initCachedContentDiffBlobs(res, xpath,
                     conversionType, blobPostProcessing);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             handleError(res, "Unable to get content diff.");
             return;
         }
