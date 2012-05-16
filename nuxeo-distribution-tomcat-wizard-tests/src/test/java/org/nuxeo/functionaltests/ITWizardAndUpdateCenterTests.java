@@ -144,20 +144,20 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertNotNull(smtpPage);
         assertEquals("SMTP Settings", smtpPage.getTitle());
         // check port validation
-        assertTrue(smtpPage.selectOption("mail.smtp.auth", "false"));
-        smtpPage.fillInput("mail.smtp.host", SMTP_SERVER_HOST);
-        smtpPage.fillInput("mail.smtp.port", "AAA");
+        assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
+        smtpPage.fillInput("mail.transport.host", SMTP_SERVER_HOST);
+        smtpPage.fillInput("mail.transport.port", "AAA");
         smtpPage = smtpPage.next(WizardPage.class, false);
         assertTrue(smtpPage.hasError());
 
         // check login/password validation
-        smtpPage.fillInput("mail.smtp.port", SMTP_SERVER_PORT);
-        assertTrue(smtpPage.selectOption("mail.smtp.auth", "true"));
-        smtpPage.clearInput("mail.smtp.username");
-        smtpPage.clearInput("mail.smtp.password");
+        smtpPage.fillInput("mail.transport.port", SMTP_SERVER_PORT);
+        assertTrue(smtpPage.selectOption("mail.transport.auth", "true"));
+        smtpPage.clearInput("mail.transport.username");
+        smtpPage.clearInput("mail.transport.password");
         smtpPage = smtpPage.next(WizardPage.class, false);
         assertTrue(smtpPage.hasError());
-        assertTrue(smtpPage.selectOption("mail.smtp.auth", "false"));
+        assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
 
         // **********************
         // Connect Form
@@ -288,7 +288,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage smtpPage = dbPage.next();
         assertNotNull(smtpPage);
         assertEquals("SMTP Settings", smtpPage.getTitle());
-        assertTrue(smtpPage.selectOption("mail.smtp.auth", "false"));
+        assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
 
         // **********************
         // Connect Form
@@ -346,7 +346,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         // Check setup parameters
         SystemHomePage systemPage = connectHome.getSystemHomePage();
-        String smtpHost = systemPage.getConfig("mail.smtp.host");
+        String smtpHost = systemPage.getConfig("mail.transport.host");
         assertEquals(SMTP_SERVER_HOST, smtpHost);
 
         // Go to Update Center
