@@ -598,7 +598,6 @@ public class ConnectBroker {
                 solverInstall, solverRemove, solverUpgrade, targetPlatform);
         log.info(resolution);
         if (resolution.isFailed()) {
-            log.error("Could not resolve dependencies");
             return false;
         }
         // Download remote packages
@@ -607,30 +606,24 @@ public class ConnectBroker {
             return false;
         }
         // Uninstall packages
-        List<String> resolutionUninstallations = resolution.getRemovePackageIds();
-        for (String pkg : resolutionUninstallations) {
-            LocalPackage oldPkg = pkgUninstall(pkg);
-            if (oldPkg == null) {
-                log.error("Failed to uninstall " + pkg);
+        List<String> packageIds = resolution.getRemovePackageIds();
+        for (String pkgId : packageIds) {
+            if (pkgUninstall(pkgId) == null) {
                 return false;
             }
         }
         // Remove "pkgsToRemove" packages from local cache
         if (pkgsToRemove != null) {
             for (String pkg : pkgsToRemove) {
-                LocalPackage removedPkg = pkgRemove(pkg);
-                if (removedPkg == null) {
-                    log.error("Failed to remove " + pkg);
+                if (pkgRemove(pkg) == null) {
                     // Don't error out on failed (cache) removal
                 }
             }
         }
         // Install packages
-        List<String> resolutionInstallations = resolution.getInstallPackageIds();
-        for (String pkg : resolutionInstallations) {
-            LocalPackage newPkg = pkgInstall(pkg);
-            if (newPkg == null) {
-                log.error("Failed to install " + pkg);
+        packageIds = resolution.getInstallPackageIds();
+        for (String pkgId : packageIds) {
+            if (pkgInstall(pkgId) == null) {
                 return false;
             }
         }

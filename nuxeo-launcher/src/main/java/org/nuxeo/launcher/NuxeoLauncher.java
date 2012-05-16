@@ -98,6 +98,55 @@ import org.w3c.dom.NodeList;
  */
 public abstract class NuxeoLauncher {
 
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_NODEPS = "nodeps";
+
+    private static final String OPTION_NODEPS_DESC = "Ignore package dependencies and constraints";
+
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_GUI = "gui";
+
+    private static final String OPTION_GUI_DESC = "Use graphical interface";
+
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_JSON = "json";
+
+    private static final String OPTION_JSON_DESC = "Output JSON for mp-commands";
+
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_XML = "xml";
+
+    private static final String OPTION_XML_DESC = "Output XML for mp-commands";
+
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_DEBUG = "debug";
+
+    private static final String OPTION_DEBUG_DESC = "Activate debug messages";
+
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_QUIET = "quiet";
+
+    private static final String OPTION_QUIET_DESC = "Suppress information messages";
+
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_HELP = "help";
+
+    private static final String OPTION_HELP_DESC = "Show detailed help";
+
     // Fallback to avoid an error when the log dir is not initialized
     static {
         if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
@@ -201,11 +250,13 @@ public abstract class NuxeoLauncher {
 
     private static boolean debug = false;
 
-    private static boolean xmlOutput = false;
+    private boolean xmlOutput = false;
 
-    private static boolean jsonOutput = false;
+    private boolean jsonOutput = false;
 
     private ConnectBroker connectBroker = null;
+
+    private CommandLine cmdLine;
 
     /**
      * @since 5.5
@@ -239,10 +290,16 @@ public abstract class NuxeoLauncher {
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         this.configurationGenerator = configurationGenerator;
+        configurationGenerator.init();
+        statusServletClient = new StatusServletClient(configurationGenerator);
+        statusServletClient.setKey(configurationGenerator.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_STATUS_KEY));
+
         processManager = getOSProcessManager();
         processRegex = "^(?!/bin/sh).*"
                 + Pattern.quote(configurationGenerator.getNuxeoConf().getPath())
                 + ".*" + Pattern.quote(getServerPrint()) + ".*$";
+
         // Set OS-specific decorations
         if (PlatformUtils.isMac()) {
             System.setProperty(
@@ -479,30 +536,34 @@ public abstract class NuxeoLauncher {
         if (launcherOptions == null) {
             launcherOptions = new Options();
             // help option
-            OptionBuilder.withLongOpt("help");
-            OptionBuilder.withDescription("Show detailed help");
+            OptionBuilder.withLongOpt(OPTION_HELP);
+            OptionBuilder.withDescription(OPTION_HELP_DESC);
             launcherOptions.addOption(OptionBuilder.create("h"));
             // Quiet option
-            OptionBuilder.withLongOpt("quiet");
-            OptionBuilder.withDescription("Suppress information messages");
+            OptionBuilder.withLongOpt(OPTION_QUIET);
+            OptionBuilder.withDescription(OPTION_QUIET_DESC);
             launcherOptions.addOption(OptionBuilder.create("q"));
             // Debug option
-            OptionBuilder.withLongOpt("debug");
-            OptionBuilder.withDescription("Activate debug messages");
+            OptionBuilder.withLongOpt(OPTION_DEBUG);
+            OptionBuilder.withDescription(OPTION_DEBUG_DESC);
             launcherOptions.addOption(OptionBuilder.create("d"));
             // XML option
-            OptionBuilder.withLongOpt("xml");
-            OptionBuilder.withDescription("Output XML for mp-commands");
+            OptionBuilder.withLongOpt(OPTION_XML);
+            OptionBuilder.withDescription(OPTION_XML_DESC);
             launcherOptions.addOption(OptionBuilder.create());
             // JSON option
-            OptionBuilder.withLongOpt("json");
-            OptionBuilder.withDescription("Output JSON for mp-commands");
+            OptionBuilder.withLongOpt(OPTION_JSON);
+            OptionBuilder.withDescription(OPTION_JSON_DESC);
             launcherOptions.addOption(OptionBuilder.create());
             // GUI option
-            OptionBuilder.withLongOpt("gui");
+            OptionBuilder.withLongOpt(OPTION_GUI);
             OptionBuilder.hasArg();
             OptionBuilder.withArgName("true|false");
-            OptionBuilder.withDescription("Use graphical interface");
+            OptionBuilder.withDescription(OPTION_GUI_DESC);
+            launcherOptions.addOption(OptionBuilder.create());
+            // Package management option
+            OptionBuilder.withLongOpt(OPTION_NODEPS);
+            OptionBuilder.withDescription(OPTION_NODEPS_DESC);
             launcherOptions.addOption(OptionBuilder.create());
         }
     }
@@ -515,31 +576,26 @@ public abstract class NuxeoLauncher {
         initParserOptions();
         CommandLineParser parser = new PosixParser();
         CommandLine cmdLine = null;
-        Boolean stopAfterParsing = false;
+        Boolean stopAfterParsing = true;
         try {
             cmdLine = parser.parse(launcherOptions, args);
-            if (cmdLine.hasOption("h")) {
+            if (cmdLine.hasOption(OPTION_HELP)
+                    || cmdLine.getArgList().contains(OPTION_HELP)) {
                 printLongHelp();
-                stopAfterParsing = true;
-            } else if (cmdLine.getArgs().length == 0) {
+            } else if (cmdLine.getArgList().isEmpty()) {
                 printShortHelp();
-                stopAfterParsing = true;
-            } else if (cmdLine.getArgs()[0].equals("help")) {
-                printLongHelp();
-                stopAfterParsing = true;
+            } else {
+                stopAfterParsing = false;
             }
         } catch (UnrecognizedOptionException e) {
             log.error(e.getMessage());
             printShortHelp();
-            stopAfterParsing = true;
         } catch (MissingArgumentException e) {
             log.error(e.getMessage());
             printShortHelp();
-            stopAfterParsing = true;
         } catch (ParseException e) {
             log.error("Error while parsing command line: " + e.getMessage());
             printShortHelp();
-            stopAfterParsing = true;
         } finally {
             if (stopAfterParsing) {
                 throw new ParseException("Invalid command line");
@@ -550,29 +606,15 @@ public abstract class NuxeoLauncher {
 
     public static void main(String[] args) throws ConfigurationException,
             IOException, PackageException {
-        CommandLine cmdLine = null;
         try {
-            cmdLine = parseOptions(args);
+            final NuxeoLauncher launcher = createLauncher(args);
+            if (launcher.useGui && launcher.getGUI() == null) {
+                launcher.setGUI(new NuxeoLauncherGUI(launcher));
+            }
+            launch(launcher);
         } catch (ParseException e) {
             System.exit(1);
         }
-        if (cmdLine.hasOption("q")) {
-            setQuiet();
-        }
-        if (cmdLine.hasOption("d")) {
-            setDebug();
-        }
-        if (cmdLine.hasOption("xml")) {
-            setXMLOutput();
-        }
-        if (cmdLine.hasOption("json")) {
-            setJSONOutput();
-        }
-        final NuxeoLauncher launcher = createLauncher(cmdLine);
-        if (launcher.useGui && launcher.getGUI() == null) {
-            launcher.setGUI(new NuxeoLauncherGUI(launcher));
-        }
-        launch(launcher);
     }
 
     /**
@@ -588,7 +630,18 @@ public abstract class NuxeoLauncher {
         int exitStatus = 0;
         boolean commandSucceeded = true;
         if (launcher.command == null) {
-            // Nothing to do
+            return;
+        }
+        if ("mp-add".equalsIgnoreCase(launcher.command)
+                || "mp-install".equalsIgnoreCase(launcher.command)
+                || "mp-uninstall".equalsIgnoreCase(launcher.command)
+                || "mp-remove".equalsIgnoreCase(launcher.command)
+                || "mp-reset".equalsIgnoreCase(launcher.command)) {
+            launcher.checkNoRunningServer();
+        }
+
+        if ("gui".equalsIgnoreCase(launcher.command)) {
+            launcher.getGUI();
         } else if ("status".equalsIgnoreCase(launcher.command)) {
             log.warn(launcher.status());
             if (launcher.isStarted()) {
@@ -647,35 +700,44 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.pack();
         } else if ("mp-list".equalsIgnoreCase(launcher.command)) {
             launcher.pkgList();
-            launcher.printXMLOutput();
         } else if ("mp-add".equalsIgnoreCase(launcher.command)) {
-            launcher.checkNoRunningServer();
-            commandSucceeded = commandSucceeded && launcher.pkgAdd(params);
-            launcher.printXMLOutput();
+            if (launcher.hasOption(OPTION_NODEPS)) {
+                commandSucceeded = launcher.pkgAdd(params);
+            } else {
+                commandSucceeded = launcher.pkgRequest(Arrays.asList(params),
+                        null, null, null);
+            }
         } else if ("mp-install".equalsIgnoreCase(launcher.command)) {
-            launcher.checkNoRunningServer();
-            commandSucceeded = commandSucceeded && launcher.pkgInstall(params);
-            launcher.printXMLOutput();
+            if (launcher.hasOption(OPTION_NODEPS)) {
+                commandSucceeded = launcher.pkgInstall(params);
+            } else {
+                commandSucceeded = launcher.pkgRequest(null,
+                        Arrays.asList(params), null, null);
+            }
         } else if ("mp-uninstall".equalsIgnoreCase(launcher.command)) {
-            launcher.checkNoRunningServer();
-            commandSucceeded = commandSucceeded
-                    && launcher.pkgUninstall(params);
-            launcher.printXMLOutput();
+            if (launcher.hasOption(OPTION_NODEPS)) {
+                commandSucceeded = launcher.pkgUninstall(params);
+            } else {
+                commandSucceeded = launcher.pkgRequest(null, null,
+                        Arrays.asList(params), null);
+            }
         } else if ("mp-remove".equalsIgnoreCase(launcher.command)) {
-            launcher.checkNoRunningServer();
-            commandSucceeded = commandSucceeded && launcher.pkgRemove(params);
-            launcher.printXMLOutput();
+            if (launcher.hasOption(OPTION_NODEPS)) {
+                commandSucceeded = launcher.pkgRemove(params);
+            } else {
+                commandSucceeded = launcher.pkgRequest(null, null, null,
+                        Arrays.asList(params));
+            }
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
-            launcher.checkNoRunningServer();
-            commandSucceeded = commandSucceeded && launcher.pkgReset();
-            launcher.printXMLOutput();
+            commandSucceeded = launcher.pkgReset();
         } else if ("showconf".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = commandSucceeded && launcher.showConfig();
-        } else if ("testparser".equalsIgnoreCase(launcher.command)) {
-            launcher.testparser();
+            commandSucceeded = launcher.showConfig();
         } else {
             printLongHelp();
             commandSucceeded = false;
+        }
+        if (launcher.command.startsWith("mp-")) {
+            launcher.printXMLOutput();
         }
         if (!commandSucceeded) {
             exitStatus = launcher.errorValue;
@@ -683,6 +745,10 @@ public abstract class NuxeoLauncher {
         if (exitStatus != 0) {
             System.exit(exitStatus);
         }
+    }
+
+    private boolean hasOption(String option) {
+        return cmdLine.hasOption(option);
     }
 
     /**
@@ -1294,25 +1360,22 @@ public abstract class NuxeoLauncher {
 
     /**
      * @throws ParseException
-     * @throws ConfigurationException
-     * @deprecated since 5.6; use {@link #createLauncher(CommandLine)} instead
-     * @since 5.5
-     */
-    @Deprecated
-    public static NuxeoLauncher createLauncher(String[] args)
-            throws ConfigurationException, ParseException {
-        return createLauncher(parseOptions(args));
-    }
-
-    /**
-     * @param cmdLine Program arguments
      * @return a NuxeoLauncher instance specific to current server (JBoss,
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
-     * @since 5.6
+     * @since 5.5
      */
-    public static NuxeoLauncher createLauncher(CommandLine cmdLine)
-            throws ConfigurationException {
+    public static NuxeoLauncher createLauncher(String[] args)
+            throws ConfigurationException, ParseException {
+        CommandLine cmdLine = parseOptions(args);
+        // Common options to the Launcher and the ConfigurationGenerator
+        if (cmdLine.hasOption(OPTION_QUIET) || cmdLine.hasOption(OPTION_XML)
+                || cmdLine.hasOption(OPTION_JSON)) {
+            setQuiet();
+        }
+        if (cmdLine.hasOption(OPTION_DEBUG)) {
+            setDebug();
+        }
         NuxeoLauncher launcher;
         ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
         if (cg.isJBoss) {
@@ -1325,10 +1388,6 @@ public abstract class NuxeoLauncher {
             throw new ConfigurationException("Unknown server!");
         }
         launcher.setArgs(cmdLine);
-        cg.init();
-        launcher.statusServletClient = new StatusServletClient(cg);
-        launcher.statusServletClient.setKey(cg.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_STATUS_KEY));
         return launcher;
     }
 
@@ -1340,21 +1399,25 @@ public abstract class NuxeoLauncher {
      *            Must not be null or empty.
      */
     private void setArgs(CommandLine cmdLine) {
+        this.cmdLine = cmdLine;
         String[] argList = cmdLine.getArgs();
         command = argList[0];
         log.debug("Launcher command: " + command);
+        // Command parameters
         if (argList.length > 1) {
             params = Arrays.copyOfRange(argList, 1, argList.length);
+            log.debug("Command parameters: " + params);
         } else {
             params = new String[0];
         }
-        for (String param : params) {
-            log.debug("Command parameter: " + param);
-        }
-        if (cmdLine.hasOption("gui")) {
-            useGui = Boolean.valueOf(cmdLine.getOptionValue("gui"));
-            log.debug("GUI: " + cmdLine.getOptionValue("gui") + " -> "
+        // Use GUI?
+        if (cmdLine.hasOption(OPTION_GUI)) {
+            useGui = Boolean.valueOf(cmdLine.getOptionValue(OPTION_GUI));
+            log.debug("GUI: " + cmdLine.getOptionValue(OPTION_GUI) + " -> "
                     + new Boolean(useGui).toString());
+        } else if (OPTION_GUI.equalsIgnoreCase(command)) {
+            useGui = true;
+            command = null;
         } else {
             if (PlatformUtils.isWindows()) {
                 useGui = true;
@@ -1363,6 +1426,13 @@ public abstract class NuxeoLauncher {
                 useGui = false;
                 log.debug("GUI: option not set - platform is not Windows -> do not start GUI");
             }
+        }
+        // Output format
+        if (cmdLine.hasOption(OPTION_XML)) {
+            setXMLOutput();
+        }
+        if (cmdLine.hasOption(OPTION_JSON)) {
+            setJSONOutput();
         }
     }
 
@@ -1384,22 +1454,20 @@ public abstract class NuxeoLauncher {
         Log4JHelper.setDebug("org.nuxeo.launcher", true, true, "FILE");
     }
 
-    protected static void setXMLOutput() {
+    protected void setXMLOutput() {
         xmlOutput = true;
-        setQuiet();
     }
 
-    protected static void setJSONOutput() {
+    protected void setJSONOutput() {
         jsonOutput = true;
         setXMLOutput();
     }
 
     public static void printShortHelp() {
-        initParserOptions();
-        String cmdLineSyntax = "nuxeoctl [options] <command> [command parameters]";
         HelpFormatter help = new HelpFormatter();
         help.setSyntaxPrefix("Usage: ");
-        help.printHelp(cmdLineSyntax, launcherOptions);
+        help.printHelp("nuxeoctl [options] <command> [command parameters]",
+                launcherOptions);
     }
 
     public static void printLongHelp() {
@@ -1785,14 +1853,26 @@ public abstract class NuxeoLauncher {
         return true;
     }
 
-    protected void testparser() throws IOException, PackageException {
+    /**
+     * @since 5.6
+     * @param pkgsToAdd
+     * @param pkgsToInstall
+     * @param pkgsToUninstall
+     * @param pkgsToRemove
+     * @return true if request execution was fine
+     * @throws IOException
+     * @throws PackageException
+     */
+    protected boolean pkgRequest(List<String> pkgsToAdd,
+            List<String> pkgsToInstall, List<String> pkgsToUninstall,
+            List<String> pkgsToRemove) throws IOException, PackageException {
         ConnectBroker pkgman = getConnectBroker();
-        pkgman.getPackageManager().setResolver("p2cudf");
-        boolean cmdOK = pkgman.pkgRequest(null,
-                Arrays.asList(new String[] { "nuxeo-dm:5.6-SNAPSHOT" }), null,
-                null);
+        boolean cmdOK = pkgman.pkgRequest(pkgsToAdd, pkgsToInstall,
+                pkgsToUninstall, pkgsToRemove);
         if (!cmdOK) {
             errorValue = 3;
         }
+        return cmdOK;
     }
+
 }
