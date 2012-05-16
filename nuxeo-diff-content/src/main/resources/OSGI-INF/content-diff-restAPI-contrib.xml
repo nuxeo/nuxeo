@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.diff.restAPI.contrib">
+<component name="org.nuxeo.ecm.diff.content.restAPI.contrib">
 
   <extension
     target="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"
@@ -11,7 +11,7 @@
     </documentation>
 
     <restletPlugin name="contentDiff"
-      class="org.nuxeo.ecm.diff.restlet.ContentDiffRestlet" enabled="true"
+      class="org.nuxeo.ecm.diff.content.restlet.ContentDiffRestlet" enabled="true"
       useSeam="true">
       <urlPatterns>
         <urlPattern>/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/

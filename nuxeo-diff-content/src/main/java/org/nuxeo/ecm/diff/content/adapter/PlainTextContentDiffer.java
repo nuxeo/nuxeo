@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
-import org.nuxeo.ecm.diff.differs.diff_match_patch;
-import org.nuxeo.ecm.diff.differs.diff_match_patch.Diff;
+import org.nuxeo.ecm.diff.content.differs.diff_match_patch;
+import org.nuxeo.ecm.diff.content.differs.diff_match_patch.Diff;
 
 public class PlainTextContentDiffer implements MimeTypeContentDiffer {
 

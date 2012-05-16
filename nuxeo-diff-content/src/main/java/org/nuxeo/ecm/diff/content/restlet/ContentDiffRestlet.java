@@ -15,7 +15,7 @@
  *     Antoine Taillefer
  */
 
-package org.nuxeo.ecm.diff.restlet;
+package org.nuxeo.ecm.diff.content.restlet;
 
 import java.io.File;
 import java.io.FileInputStream;

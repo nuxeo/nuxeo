@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.nuxeo.ecm.diff.differs;
+package org.nuxeo.ecm.diff.content.differs;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
