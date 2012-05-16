@@ -36,12 +36,12 @@ nuxeo.db.transactiontimeout=300
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 
 # SMTP gateway server
-mail.smtp.host=localhost
+mail.transport.host=localhost
 # Mail server port
-mail.smtp.port=25
-mail.smtp.auth=false
-mail.smtp.username=anonymous
-mail.smtp.password=password
+mail.transport.port=25
+mail.transport.auth=false
+mail.transport.user=anonymous
+mail.transport.password=password
 # The address mail will be from
 mail.from=noreply@nuxeo.com
 

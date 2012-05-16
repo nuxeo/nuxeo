@@ -22,7 +22,7 @@ org.nuxeo.ecm.instance.description=Nuxeo ECM server
 mail.store.protocol=pop3
 mail.transport.protocol=smtp
 # Use TLS for SMTP connections
-mail.smtp.usetls=false
+mail.transport.usetls=false
 # User who will receive mail
 mail.user=nobody
 # Mail server
