@@ -83,6 +83,25 @@
                   <label mode="any">Boolean item</label>
                 </labels>
               </widget>
+              <widget name="2fieldsWidget" type="template">
+                <fields>
+                  <field>stringComplexItem2</field>
+                  <field>stringComplexItem3</field>
+                </fields>
+                <labels>
+                  <label mode="any">2 fields</label>
+                </labels>
+                <properties widgetMode="edit">
+                  <property name="required">true</property>
+                </properties>
+                <properties mode="any">
+                  <property name="label1">First field:</property>
+                  <property name="label2">Second field:</property>
+                  <property name="template">
+                    /layoutDemo/widgets/2fields_widget_template.xhtml
+                  </property>
+                </properties>
+              </widget>
             </subWidgets>
           </widget>
         </subWidgets>

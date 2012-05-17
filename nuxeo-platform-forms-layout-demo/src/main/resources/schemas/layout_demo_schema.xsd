@@ -45,6 +45,8 @@
       <xs:element name="dateComplexItem" type="xs:date" />
       <xs:element name="intComplexItem" type="xs:int" />
       <xs:element name="booleanComplexItem" type="xs:boolean" />
+      <xs:element name="stringComplexItem2" type="xs:string" />
+      <xs:element name="stringComplexItem3" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
 
