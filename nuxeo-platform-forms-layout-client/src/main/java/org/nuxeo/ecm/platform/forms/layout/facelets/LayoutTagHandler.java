@@ -171,12 +171,12 @@ public class LayoutTagHandler extends TagHandler {
         }
 
         // add additional properties put on tag
-        Map<String, Serializable> additionalProperties = new HashMap<String, Serializable>();
+        Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();
         List<String> reservedVars = Arrays.asList(reservedVarsArray);
         for (TagAttribute var : vars) {
             String localName = var.getLocalName();
             if (!reservedVars.contains(localName)) {
-                additionalProperties.put(localName, var.getValue());
+                additionalProps.put(localName, var.getValue());
             }
         }
 
@@ -185,12 +185,12 @@ public class LayoutTagHandler extends TagHandler {
         VariableMapper orig = ctx.getVariableMapper();
         VariableMapper vm = new VariableMapperWrapper(orig);
         ctx.setVariableMapper(vm);
-        Map<String, ValueExpression> variables = getVariablesForLayoutBuild(
-                ctx, modeValue);
+        Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx,
+                modeValue);
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         try {
-            for (Map.Entry<String, ValueExpression> var : variables.entrySet()) {
+            for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
                 vm.setVariable(var.getKey(), var.getValue());
             }
 
@@ -212,8 +212,8 @@ public class LayoutTagHandler extends TagHandler {
                         applyErrorHandler(ctx, parent, helper, errMsg);
                     } else {
                         applyLayoutHandler(ctx, parent, helper, layoutService,
-                                layoutInstance, templateValue,
-                                additionalProperties, variables);
+                                layoutInstance, templateValue, additionalProps,
+                                vars);
                     }
                 }
             }
@@ -230,8 +230,8 @@ public class LayoutTagHandler extends TagHandler {
                             layoutDef, modeValue, valueName, selectedRowsValue,
                             selectAllByDefaultValue);
                     applyLayoutHandler(ctx, parent, helper, layoutService,
-                            layoutInstance, templateValue,
-                            additionalProperties, variables);
+                            layoutInstance, templateValue, additionalProps,
+                            vars);
                 }
 
             }
@@ -278,16 +278,16 @@ public class LayoutTagHandler extends TagHandler {
     protected void applyLayoutHandler(FaceletContext ctx, UIComponent parent,
             FaceletHandlerHelper helper, WebLayoutManager layoutService,
             Layout layoutInstance, String templateValue,
-            Map<String, Serializable> additionalProperties,
-            Map<String, ValueExpression> variables) throws IOException,
+            Map<String, Serializable> additionalProps,
+            Map<String, ValueExpression> vars) throws IOException,
             FacesException, ELException {
 
         // set unique id on layout
         layoutInstance.setId(helper.generateLayoutId(layoutInstance.getName()));
 
         // add additional properties put on tag
-        if (additionalProperties != null && !additionalProperties.isEmpty()) {
-            for (Map.Entry<String, Serializable> entry : additionalProperties.entrySet()) {
+        if (additionalProps != null && !additionalProps.isEmpty()) {
+            for (Map.Entry<String, Serializable> entry : additionalProps.entrySet()) {
                 layoutInstance.setProperty(entry.getKey(), entry.getValue());
             }
         }
@@ -312,10 +312,10 @@ public class LayoutTagHandler extends TagHandler {
                     RenderVariables.layoutVariables.layout.name(), layoutVe);
 
             // expose all variables through an alias tag handler
-            variables.putAll(getVariablesForLayoutRendering(ctx, layoutService,
+            vars.putAll(getVariablesForLayoutRendering(ctx, layoutService,
                     layoutInstance));
             FaceletHandler handler = helper.getAliasTagHandler(
-                    layoutTagConfigId, variables, includeHandler);
+                    layoutTagConfigId, vars, includeHandler);
 
             // apply
             handler.apply(ctx, parent);
@@ -329,20 +329,18 @@ public class LayoutTagHandler extends TagHandler {
 
     protected Map<String, ValueExpression> getVariablesForLayoutBuild(
             FaceletContext ctx, String modeValue) {
-        Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+        Map<String, ValueExpression> vars = new HashMap<String, ValueExpression>();
         ValueExpression valueExpr = value.getValueExpression(ctx, Object.class);
-        variables.put(RenderVariables.globalVariables.value.name(), valueExpr);
-        variables.put(RenderVariables.globalVariables.document.name(),
-                valueExpr);
-        variables.put(RenderVariables.globalVariables.layoutValue.name(),
-                valueExpr);
+        vars.put(RenderVariables.globalVariables.value.name(), valueExpr);
+        vars.put(RenderVariables.globalVariables.document.name(), valueExpr);
+        vars.put(RenderVariables.globalVariables.layoutValue.name(), valueExpr);
         ExpressionFactory eFactory = ctx.getExpressionFactory();
         ValueExpression modeVe = eFactory.createValueExpression(modeValue,
                 String.class);
-        variables.put(RenderVariables.globalVariables.layoutMode.name(), modeVe);
+        vars.put(RenderVariables.globalVariables.layoutMode.name(), modeVe);
         // mode as alias to layoutMode
-        variables.put(RenderVariables.globalVariables.mode.name(), modeVe);
-        return variables;
+        vars.put(RenderVariables.globalVariables.mode.name(), modeVe);
+        return vars;
     }
 
     /**
@@ -352,13 +350,13 @@ public class LayoutTagHandler extends TagHandler {
     protected Map<String, ValueExpression> getVariablesForLayoutRendering(
             FaceletContext ctx, WebLayoutManager layoutService,
             Layout layoutInstance) {
-        Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+        Map<String, ValueExpression> vars = new HashMap<String, ValueExpression>();
         ExpressionFactory eFactory = ctx.getExpressionFactory();
 
         // expose layout value
         ValueExpression layoutVe = eFactory.createValueExpression(
                 layoutInstance, Layout.class);
-        variables.put(RenderVariables.layoutVariables.layout.name(), layoutVe);
+        vars.put(RenderVariables.layoutVariables.layout.name(), layoutVe);
 
         // expose layout properties too
         for (Map.Entry<String, Serializable> prop : layoutInstance.getProperties().entrySet()) {
@@ -377,11 +375,11 @@ public class LayoutTagHandler extends TagHandler {
                 value = String.format("#{%s.properties.%s}",
                         RenderVariables.layoutVariables.layout.name(), key);
             }
-            variables.put(name,
+            vars.put(name,
                     eFactory.createValueExpression(ctx, value, Object.class));
         }
 
-        return variables;
+        return vars;
     }
 
     protected void applyErrorHandler(FaceletContext ctx, UIComponent parent,
