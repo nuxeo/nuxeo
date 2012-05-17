@@ -20,10 +20,11 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.faces.FacesException;
 
 import org.apache.commons.logging.Log;
@@ -46,7 +47,6 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.ui.DecorateHandler;
-import com.sun.facelets.tag.ui.ParamHandler;
 
 /**
  * Template widget type.
@@ -83,48 +83,50 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                 templateAttr);
         String widgetTagConfigId = widget.getTagConfigId();
-        TagConfig config = TagConfigFactory.createTagConfig(
-                tagConfig,
-                widgetTagConfigId,
-                attributes,
-                getNextHandler(ctx, tagConfig, helper, widget, subHandlers,
-                        widgetTagConfigId, template));
-        return new DecorateHandler(config);
+        FaceletHandler nextHandler = leaf;
+        if (subHandlers != null) {
+            nextHandler = new CompositeFaceletHandler(subHandlers);
+        }
+
+        TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
+                widgetTagConfigId, attributes, nextHandler);
+
+        Map<String, ValueExpression> variables = getVariablesForRendering(ctx,
+                helper, widget, subHandlers, widgetTagConfigId, template);
+        DecorateHandler includeHandler = new DecorateHandler(config);
+        FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId,
+                variables, includeHandler);
+        return handler;
     }
 
     /**
-     * Computes the next handler, adding param handlers.
-     * <p>
-     * Makes available the field values in templates using the format
-     * "field_0", "field_1", etc. and also the widget properties using the
-     * format "widgetProperty_thePropertyName".
+     * Computes variables for rendering, making available the field values in
+     * templates using the format "field_0", "field_1", etc. and also the
+     * widget properties using the format "widgetProperty_thePropertyName".
      */
-    protected FaceletHandler getNextHandler(FaceletContext ctx,
-            TagConfig tagConfig, FaceletHandlerHelper helper, Widget widget,
+    protected Map<String, ValueExpression> getVariablesForRendering(
+            FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
             FaceletHandler[] subHandlers, String widgetTagConfigId,
-            String template) throws WidgetException {
-        FaceletHandler leaf = new LeafFaceletHandler();
+            String template) {
+        Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+        ExpressionFactory eFactory = ctx.getExpressionFactory();
+
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
-        List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
         // expose field variables
         if (fieldDefs != null && fieldDefs.length > 0) {
             for (int i = 0; i < fieldDefs.length; i++) {
                 if (i == 0) {
-                    paramHandlers.add(getFieldParamHandler(ctx, tagConfig,
-                            helper, leaf, widget, widgetTagConfigId,
-                            fieldDefs[i], null));
+                    addFieldVariable(variables, ctx, widget, fieldDefs[i], null);
                 }
-                paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
-                        leaf, widget, widgetTagConfigId, fieldDefs[i],
-                        Integer.valueOf(i)));
+                addFieldVariable(variables, ctx, widget, fieldDefs[i],
+                        Integer.valueOf(i));
             }
         } else {
             // expose value as first parameter
-            paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
-                    leaf, widget, widgetTagConfigId, null, null));
-            paramHandlers.add(getFieldParamHandler(ctx, tagConfig, helper,
-                    leaf, widget, widgetTagConfigId, null, Integer.valueOf(0)));
+            addFieldVariable(variables, ctx, widget, null, null);
+            addFieldVariable(variables, ctx, widget, null, Integer.valueOf(0));
         }
+
         // expose widget properties too
         WebLayoutManager layoutService;
         try {
@@ -137,44 +139,29 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
             String key = prop.getKey();
-            TagAttribute name = helper.createAttribute("name", String.format(
-                    "%s_%s",
-                    RenderVariables.widgetVariables.widgetProperty.name(), key));
-            TagAttribute value;
+            String name = String.format("%s_%s",
+                    RenderVariables.widgetVariables.widgetProperty.name(), key);
+            String value;
             Serializable valueInstance = prop.getValue();
             if (!layoutService.referencePropertyAsExpression(key,
                     valueInstance, widget.getType(), widget.getMode(), template)) {
                 // FIXME: this will not be updated correctly using ajax
-                value = helper.createAttribute("value", (String) valueInstance);
+                value = (String) valueInstance;
             } else {
                 // create a reference so that it's a real expression and it's
                 // not kept (cached) in a component value on ajax refresh
-                value = helper.createAttribute("value", String.format(
-                        "#{%s.properties.%s}",
-                        RenderVariables.widgetVariables.widget.name(), key));
+                value = String.format("#{%s.properties.%s}",
+                        RenderVariables.widgetVariables.widget.name(), key);
             }
-            TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    widgetTagConfigId,
-                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
-            paramHandlers.add(new ParamHandler(config));
+            variables.put(name,
+                    eFactory.createValueExpression(ctx, value, Object.class));
         }
-
-        List<FaceletHandler> handlers = new ArrayList<FaceletHandler>();
-        if (subHandlers != null) {
-            for (FaceletHandler handler : subHandlers) {
-                handlers.add(handler);
-            }
-        }
-        handlers.addAll(paramHandlers);
-
-        return new CompositeFaceletHandler(
-                handlers.toArray(new FaceletHandler[] {}));
+        return variables;
     }
 
-    protected ParamHandler getFieldParamHandler(FaceletContext ctx,
-            TagConfig tagConfig, FaceletHandlerHelper helper,
-            FaceletHandler leaf, Widget widget, String widgetTagConfigId,
-            FieldDefinition fieldDef, Integer index) {
+    protected void addFieldVariable(Map<String, ValueExpression> variables,
+            FaceletContext ctx, Widget widget, FieldDefinition fieldDef,
+            Integer index) {
         String computedName;
         if (index == null) {
             computedName = String.format("%s",
@@ -183,14 +170,13 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             computedName = String.format("%s_%s",
                     RenderVariables.widgetVariables.field.name(), index);
         }
-        TagAttribute name = helper.createAttribute("name", computedName);
         String computedValue = ValueExpressionHelper.createExpressionString(
                 widget.getValueName(), fieldDef);
-        TagAttribute value = helper.createAttribute("value", computedValue);
-        TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                widgetTagConfigId,
-                FaceletHandlerHelper.getTagAttributes(name, value), leaf);
-        return new ParamHandler(config);
+
+        ExpressionFactory eFactory = ctx.getExpressionFactory();
+        variables.put(
+                computedName,
+                eFactory.createValueExpression(ctx, computedValue, Object.class));
     }
 
     /**

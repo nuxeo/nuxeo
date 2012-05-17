@@ -39,7 +39,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
-import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -47,14 +46,12 @@ import org.nuxeo.runtime.api.Framework;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.CompositeFaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 import com.sun.facelets.tag.ui.IncludeHandler;
-import com.sun.facelets.tag.ui.ParamHandler;
 
 /**
  * Layout tag handler.
@@ -300,17 +297,15 @@ public class LayoutTagHandler extends TagHandler {
         }
         if (!StringUtils.isBlank(templateValue)) {
             final String layoutTagConfigId = layoutInstance.getTagConfigId();
-            TagConfig config = TagConfigFactory.createTagConfig(
-                    this.config,
+            TagAttribute srcAttr = helper.createAttribute("src", templateValue);
+            TagConfig config = TagConfigFactory.createTagConfig(this.config,
                     layoutTagConfigId,
-                    FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
-                            "src", templateValue)),
-                    getNextHandler(ctx, this.config, helper, layoutService,
-                            layoutInstance, layoutTagConfigId));
+                    FaceletHandlerHelper.getTagAttributes(srcAttr), nextHandler);
             FaceletHandler includeHandler = new IncludeHandler(config);
 
             // expose layout variables
-            variables.putAll(getVariablesForLayoutRendering(ctx, layoutInstance));
+            variables.putAll(getVariablesForLayoutRendering(ctx, layoutService,
+                    layoutInstance));
             FaceletHandler handler = helper.getAliasTagHandler(
                     layoutTagConfigId, variables, includeHandler);
 
@@ -322,7 +317,6 @@ public class LayoutTagHandler extends TagHandler {
                     layoutInstance.getName());
             applyErrorHandler(ctx, parent, helper, errMsg);
         }
-
     }
 
     protected Map<String, ValueExpression> getVariablesForLayoutBuild(
@@ -343,69 +337,43 @@ public class LayoutTagHandler extends TagHandler {
         return variables;
     }
 
+    /**
+     * Computes variables for rendering, making available the layout instance
+     * and its properties to the context.
+     */
     protected Map<String, ValueExpression> getVariablesForLayoutRendering(
-            FaceletContext ctx, Layout layoutInstance) {
+            FaceletContext ctx, WebLayoutManager layoutService,
+            Layout layoutInstance) {
         Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
         ExpressionFactory eFactory = ctx.getExpressionFactory();
+
         // expose layout value
         ValueExpression layoutVe = eFactory.createValueExpression(
                 layoutInstance, Layout.class);
         variables.put(RenderVariables.layoutVariables.layout.name(), layoutVe);
-        return variables;
-    }
-
-    /**
-     * Returns the {@link FaceletHandler} to apply after the layout handler,
-     * exposing layout properties to the context using {@link ParamHandler}
-     * handlers.
-     */
-    protected FaceletHandler getNextHandler(FaceletContext ctx,
-            TagConfig tagConfig, FaceletHandlerHelper helper,
-            WebLayoutManager layoutService, Layout layoutInstance,
-            String layoutTagConfigId) throws WidgetException {
-        FaceletHandler leaf = new LeafFaceletHandler();
-        List<ParamHandler> paramHandlers = new ArrayList<ParamHandler>();
-
-        {
-            TagAttribute name = helper.createAttribute("name",
-                    RenderVariables.layoutVariables.layout.name());
-            TagAttribute value = helper.createAttribute("value", "#{layout}");
-            TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    layoutTagConfigId,
-                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
-            paramHandlers.add(new ParamHandler(config));
-        }
 
         // expose layout properties too
         for (Map.Entry<String, Serializable> prop : layoutInstance.getProperties().entrySet()) {
             String key = prop.getKey();
-            TagAttribute name = helper.createAttribute("name", String.format(
-                    "%s_%s",
-                    RenderVariables.layoutVariables.layoutProperty.name(), key));
-            TagAttribute value;
+            String name = String.format("%s_%s",
+                    RenderVariables.layoutVariables.layoutProperty.name(), key);
+            String value;
             Serializable valueInstance = prop.getValue();
             if (!layoutService.referencePropertyAsExpression(key,
                     valueInstance, null, null, null)) {
                 // FIXME: this will not be updated correctly using ajax
-                value = helper.createAttribute("value", (String) valueInstance);
+                value = (String) valueInstance;
             } else {
                 // create a reference so that it's a real expression and it's
                 // not kept (cached) in a component value on ajax refresh
-                value = helper.createAttribute("value", String.format(
-                        "#{%s.properties.%s}",
-                        RenderVariables.layoutVariables.layout.name(), key));
+                value = String.format("#{%s.properties.%s}",
+                        RenderVariables.layoutVariables.layout.name(), key);
             }
-            TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
-                    layoutTagConfigId,
-                    FaceletHandlerHelper.getTagAttributes(name, value), leaf);
-            paramHandlers.add(new ParamHandler(config));
+            variables.put(name,
+                    eFactory.createValueExpression(ctx, value, Object.class));
         }
 
-        List<FaceletHandler> children = new ArrayList<FaceletHandler>();
-        children.addAll(paramHandlers);
-        children.add(nextHandler);
-        return new CompositeFaceletHandler(
-                children.toArray(new FaceletHandler[] {}));
+        return variables;
     }
 
     protected void applyErrorHandler(FaceletContext ctx, UIComponent parent,
