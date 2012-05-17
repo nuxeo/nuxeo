@@ -303,7 +303,15 @@ public class LayoutTagHandler extends TagHandler {
                     FaceletHandlerHelper.getTagAttributes(srcAttr), nextHandler);
             FaceletHandler includeHandler = new IncludeHandler(config);
 
-            // expose layout variables
+            // expose layout instance to variable mapper to ensure good
+            // resolution of properties
+            ExpressionFactory eFactory = ctx.getExpressionFactory();
+            ValueExpression layoutVe = eFactory.createValueExpression(
+                    layoutInstance, Layout.class);
+            ctx.getVariableMapper().setVariable(
+                    RenderVariables.layoutVariables.layout.name(), layoutVe);
+
+            // expose all variables through an alias tag handler
             variables.putAll(getVariablesForLayoutRendering(ctx, layoutService,
                     layoutInstance));
             FaceletHandler handler = helper.getAliasTagHandler(
