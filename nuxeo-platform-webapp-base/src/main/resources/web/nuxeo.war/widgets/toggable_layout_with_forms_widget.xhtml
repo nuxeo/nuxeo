@@ -21,7 +21,7 @@
       value="#{nxu:test(empty widgetProperty_toggledMode, 'edit', widgetProperty_toggledMode)}"
       cache="true">
     <nxu:set var="canToggleMode"
-      value="#{nxu:test(empty widgetProperty_canToggleMode, nxd:hasPermission(field, 'Write'), widgetProperty_canToggleMode)}"
+      value="#{nxu:test(empty widgetProperty_canToggleMode, nxd:hasPermission(fieldOrValue, 'Write'), widgetProperty_canToggleMode)}"
       cache="true">
     <nxu:set var="initialActionLabel"
       value="#{nxu:test(empty widgetProperty_initialActionLabel, messages['action.view.modification'], nxu:test(widget.translated, messages[widgetProperty_initialActionLabel], widgetProperty_initialActionLabel))}"
@@ -65,7 +65,7 @@
             name="#{widgetProperty_initialLayoutName}"
             category="#{widgetProperty_category}"
             mode="#{layoutWidgetMode}"
-            value="#{field}"
+            value="#{fieldOrValue}"
             template="#{widgetProperty_template}"
             selectedRows="#{widgetProperty_selectedRows}"
             selectAllByDefault="#{widgetProperty_selectAllByDefault}" />
@@ -113,14 +113,14 @@
               name="#{toggledLayoutName}"
               category="#{widgetProperty_category}"
               mode="#{layoutWidgetMode}"
-              value="#{field}"
+              value="#{fieldOrValue}"
               template="#{widgetProperty_template}"
               selectedRows="#{widgetProperty_selectedRows}"
               selectAllByDefault="#{widgetProperty_selectAllByDefault}" />
 
-            <c:if test="#{showEditOptions and nxd:isDocumentModel(field)}">
+            <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
               <nxl:layout name="document_edit_form_options"
-                mode="#{layoutWidgetMode}" value="#{field}" />
+                mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
             </c:if>
 
             <p class="buttonsGadget">
@@ -228,14 +228,14 @@
               name="#{toggledLayoutName}"
               category="#{widgetProperty_category}"
               mode="#{layoutWidgetMode}"
-              value="#{field}"
+              value="#{fieldOrValue}"
               template="#{widgetProperty_template}"
               selectedRows="#{widgetProperty_selectedRows}"
               selectAllByDefault="#{widgetProperty_selectAllByDefault}" />
 
-            <c:if test="#{showEditOptions and nxd:isDocumentModel(field)}">
+            <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
               <nxl:layout name="document_edit_form_options"
-                mode="#{layoutWidgetMode}" value="#{field}" />
+                mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
             </c:if>
 
             <p class="buttonsGadget">
