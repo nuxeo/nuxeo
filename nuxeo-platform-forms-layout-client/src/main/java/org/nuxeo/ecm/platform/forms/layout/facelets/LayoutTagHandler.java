@@ -314,8 +314,14 @@ public class LayoutTagHandler extends TagHandler {
             // expose all variables through an alias tag handler
             vars.putAll(getVariablesForLayoutRendering(ctx, layoutService,
                     layoutInstance));
+
+            List<String> blockedPatterns = new ArrayList<String>();
+            blockedPatterns.add(RenderVariables.layoutVariables.layout.name());
+            blockedPatterns.add(RenderVariables.layoutVariables.layoutProperty.name()
+                    + "_*");
+
             FaceletHandler handler = helper.getAliasTagHandler(
-                    layoutTagConfigId, vars, includeHandler);
+                    layoutTagConfigId, vars, blockedPatterns, includeHandler);
 
             // apply
             handler.apply(ctx, parent);

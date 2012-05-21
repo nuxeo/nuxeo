@@ -251,7 +251,7 @@ public class WidgetTagHandler extends MetaTagHandler {
                     valueExpr);
 
             FaceletHandler handlerWithVars = helper.getAliasTagHandler(
-                    widget.getTagConfigId(), variables, handler);
+                    widget.getTagConfigId(), variables, null, handler);
             // apply
             handlerWithVars.apply(ctx, parent);
 

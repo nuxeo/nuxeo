@@ -20,12 +20,15 @@
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
@@ -63,11 +66,17 @@ public class SetTagHandler extends AliasTagHandler {
      */
     protected final TagAttribute resolveTwice;
 
+    /**
+     * @since 5.6
+     */
+    protected final TagAttribute blockPatterns;
+
     public SetTagHandler(TagConfig config) {
         super(config, null);
         var = getRequiredAttribute("var");
         value = getAttribute("value");
         resolveTwice = getAttribute("resolveTwice");
+        blockPatterns = getAttribute("blockPatterns");
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -113,7 +122,35 @@ public class SetTagHandler extends AliasTagHandler {
         AliasVariableMapper target = new AliasVariableMapper(id);
         target.setVariable(varStr, ve);
 
+        if (blockPatterns != null) {
+            String blocked = blockPatterns.getValue(ctx);
+            if (!StringUtils.isEmpty(blocked)) {
+                // split on "," character
+                target.setBlockedPatterns(resolveBlockPatterns(blocked));
+            }
+        }
+
         apply(ctx, parent, target);
+    }
+
+    protected List<String> resolveBlockPatterns(String value) {
+        List<String> res = new ArrayList<String>();
+        if (value != null) {
+            if (value.contains(",")) {
+                // parse potential multiple patterns
+                String[] names = value.split(",");
+                for (String name : names) {
+                    if (!StringUtils.isBlank(name)) {
+                        name = name.trim();
+                        res.add(name);
+                    }
+                }
+            } else {
+                value = value.trim();
+                res.add(value);
+            }
+        }
+        return res;
     }
 
 }

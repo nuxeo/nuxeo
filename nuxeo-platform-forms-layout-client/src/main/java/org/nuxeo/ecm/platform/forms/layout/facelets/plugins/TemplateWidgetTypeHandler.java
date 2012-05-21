@@ -20,7 +20,9 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.el.ExpressionFactory;
@@ -101,9 +103,16 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
         Map<String, ValueExpression> variables = getVariablesForRendering(ctx,
                 helper, widget, subHandlers, widgetTagConfigId, template);
+
+        List<String> blockedPatterns = new ArrayList<String>();
+        blockedPatterns.add(RenderVariables.widgetVariables.field.name() + "*");
+        blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
+        blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name()
+                + "_*");
+
         DecorateHandler includeHandler = new DecorateHandler(config);
         FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId,
-                variables, includeHandler);
+                variables, blockedPatterns, includeHandler);
         return handler;
     }
 

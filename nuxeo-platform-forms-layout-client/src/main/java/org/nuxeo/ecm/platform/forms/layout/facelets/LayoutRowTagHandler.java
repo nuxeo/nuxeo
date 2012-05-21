@@ -20,7 +20,9 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
@@ -111,8 +113,15 @@ public class LayoutRowTagHandler extends TagHandler {
                     RenderVariables.columnVariables.layoutColumnIndex.name(),
                     rowIndexVe);
 
+            List<String> blockedPatterns = new ArrayList<String>();
+            blockedPatterns.add(RenderVariables.rowVariables.layoutRow.name());
+            blockedPatterns.add(RenderVariables.rowVariables.layoutRowIndex.name());
+            blockedPatterns.add(RenderVariables.columnVariables.layoutColumn.name());
+            blockedPatterns.add(RenderVariables.columnVariables.layoutColumnIndex.name());
+
             FaceletHandler handler = helper.getAliasTagHandler(
-                    row.getTagConfigId(), variables, nextHandler);
+                    row.getTagConfigId(), variables, blockedPatterns,
+                    nextHandler);
             handler.apply(ctx, parent);
             rowCounter++;
         }

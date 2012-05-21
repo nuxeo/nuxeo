@@ -593,7 +593,7 @@ public final class FaceletHandlerHelper {
 
     /**
      * @deprecated since 5.4.2, use
-     *             {@link FaceletHandlerHelper#getAliasTagHandler(String, Map, FaceletHandler)}
+     *             {@link FaceletHandlerHelper#getAliasTagHandler(String, Map, List, FaceletHandler)
      *             instead.
      */
     @Deprecated
@@ -602,14 +602,30 @@ public final class FaceletHandlerHelper {
         return getAliasTagHandler(null, variables, nextHandler);
     }
 
+    /**
+     * @since 5.4.2
+     * @deprecated since 5.6, use
+     *             {@link #getAliasTagHandler(String, Map, List, FaceletHandler)}
+     */
+    @Deprecated
     public FaceletHandler getAliasTagHandler(String tagConfigId,
             Map<String, ValueExpression> variables, FaceletHandler nextHandler) {
+        return getAliasTagHandler(tagConfigId, variables, null, nextHandler);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public FaceletHandler getAliasTagHandler(String tagConfigId,
+            Map<String, ValueExpression> variables,
+            List<String> blockedPatterns, FaceletHandler nextHandler) {
         FaceletHandler currentHandler = nextHandler;
         if (variables != null) {
             // XXX also set id ? cache ?
             TagConfig config = TagConfigFactory.createTagConfig(tagConfig,
                     tagConfigId, getTagAttributes(), nextHandler);
-            currentHandler = new AliasTagHandler(config, variables);
+            currentHandler = new AliasTagHandler(config, variables,
+                    blockedPatterns);
         }
         return currentHandler;
     }

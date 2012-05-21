@@ -264,6 +264,20 @@
         Set to "false" by default. Available since 5.5.
       </description>
     </attribute>
+    <attribute>
+      <name>blockPatterns</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String indicating that some variables in existing context should be
+        "blocked" e.g resolve to null. This is useful when trying to isolate
+        a resolution context. Accepted syntax is a comma separated list of the
+        variables names, accepting character "*" at the end as a wild card.
+        Blocked variabled include the ones exposed via tags c:set, nxu:set, as
+        well as variables exposed by the layout system.
+        Example: "widget, widgetProperty*". Available since 5.6.
+      </description>
+    </attribute>
     <example>
       <![CDATA[
 <nxu:set var="actions" value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST')}" cache="true">

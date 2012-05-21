@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.ui.web.binding.alias;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.el.ValueExpression;
@@ -26,8 +27,6 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.sun.facelets.el.VariableMapperWrapper;
 
 /**
  * Variable mapper that holds value expressions. It can be exposed to the
@@ -51,6 +50,8 @@ public class AliasVariableMapper extends VariableMapper {
     protected String id;
 
     protected Map<String, ValueExpression> vars;
+
+    protected List<String> blockedPatterns;
 
     public AliasVariableMapper() {
         super();
@@ -86,11 +87,14 @@ public class AliasVariableMapper extends VariableMapper {
     }
 
     public VariableMapper getVariableMapperForBuild(VariableMapper orig) {
-        VariableMapper vm = new VariableMapperWrapper(orig);
-        if (this.vars != null) {
-            for (Map.Entry<String, ValueExpression> var : this.vars.entrySet()) {
-                vm.setVariable(var.getKey(), new AliasValueExpression(this.id,
-                        var.getKey()));
+        AliasVariableMapperWrapper vm = new AliasVariableMapperWrapper(orig,
+                getBlockedPatterns());
+        Map<String, ValueExpression> vars = getVariables();
+        if (vars != null) {
+            String id = getId();
+            for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
+                vm.setVariable(var.getKey(),
+                        new AliasValueExpression(id, var.getKey()));
             }
         }
         return vm;
@@ -98,6 +102,14 @@ public class AliasVariableMapper extends VariableMapper {
 
     public Map<String, ValueExpression> getVariables() {
         return vars;
+    }
+
+    public List<String> getBlockedPatterns() {
+        return blockedPatterns;
+    }
+
+    public void setBlockedPatterns(List<String> blockedPatterns) {
+        this.blockedPatterns = blockedPatterns;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

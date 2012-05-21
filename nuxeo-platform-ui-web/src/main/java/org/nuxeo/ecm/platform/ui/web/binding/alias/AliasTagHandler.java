@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.binding.alias;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
@@ -66,12 +67,23 @@ public class AliasTagHandler extends MetaTagHandler {
 
     protected final Map<String, ValueExpression> variables;
 
+    protected final List<String> blockedPatterns;
+
     public AliasTagHandler(TagConfig config,
             Map<String, ValueExpression> variables) {
+        this(config, variables, null);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public AliasTagHandler(TagConfig config,
+            Map<String, ValueExpression> variables, List<String> blockedPatterns) {
         super(config);
         id = getAttribute("id");
         cache = getAttribute("cache");
         this.variables = variables;
+        this.blockedPatterns = blockedPatterns;
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -87,12 +99,14 @@ public class AliasTagHandler extends MetaTagHandler {
             cacheValue = cache.getBoolean(ctx);
         }
         AliasVariableMapper target = new AliasVariableMapper();
+        target.setBlockedPatterns(blockedPatterns);
         if (variables != null) {
             for (Map.Entry<String, ValueExpression> var : variables.entrySet()) {
                 if (cacheValue) {
                     // resolve value and put it as is in variables
                     Object res = var.getValue().getValue(ctx);
-                    target.setVariable(var.getKey(),
+                    target.setVariable(
+                            var.getKey(),
                             ctx.getExpressionFactory().createValueExpression(
                                     res, Object.class));
                 } else {
@@ -141,7 +155,8 @@ public class AliasTagHandler extends MetaTagHandler {
         }
 
         // update value held
-        c.setValueExpression("value",
+        c.setValueExpression(
+                "value",
                 ctx.getExpressionFactory().createValueExpression(alias,
                         AliasVariableMapper.class));
 
