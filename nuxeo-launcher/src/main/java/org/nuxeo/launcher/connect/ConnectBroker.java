@@ -118,43 +118,43 @@ public class ConnectBroker {
         return foundId;
     }
 
-    protected boolean isLocalPackageName(String pkgName) {
+    protected String getLocalPackageIdFromName(String pkgName) {
         List<LocalPackage> localPackages = getPkgList();
-        boolean foundName = false;
+        String foundId = null;
         for (LocalPackage pkg : localPackages) {
             if (pkg.getName().equals(pkgName)) {
-                foundName = true;
+                foundId = pkg.getId();
                 break;
             }
         }
-        return foundName;
+        return foundId;
     }
 
-    protected boolean isInstalledPackageName(String pkgName) {
+    protected String getInstalledPackageIdFromName(String pkgName) {
         List<LocalPackage> localPackages = getPkgList();
-        boolean foundName = false;
+        String foundId = null;
         for (LocalPackage pkg : localPackages) {
             if (pkg.getState() != PackageState.INSTALLED) {
                 continue;
             }
             if (pkg.getName().equals(pkgName)) {
-                foundName = true;
+                foundId = pkg.getId();
                 break;
             }
         }
-        return foundName;
+        return foundId;
     }
 
-    protected boolean isRemotePackageName(String pkgName) {
+    protected String getRemotePackageIdFromName(String pkgName) {
         List<DownloadablePackage> remotePackages = NuxeoConnectClient.getPackageManager().listAllPackages();
-        boolean foundName = false;
+        String foundId = null;
         for (DownloadablePackage pkg : remotePackages) {
             if (pkg.getName().equals(pkgName)) {
-                foundName = true;
+                foundId = pkg.getId();
                 break;
             }
         }
-        return foundName;
+        return foundId;
     }
 
     protected File getLocalPackageFile(String pkgFile) {
@@ -282,6 +282,14 @@ public class ConnectBroker {
         try {
             LocalPackage pkg = service.getPackage(pkgId);
             if (pkg == null) {
+                // Check whether this is the name of an installed package
+                String realPkgId = getInstalledPackageIdFromName(pkgId);
+                if (realPkgId != null) {
+                    pkgId = realPkgId;
+                    pkg = service.getPackage(realPkgId);
+                }
+            }
+            if (pkg == null) {
                 throw new PackageException("Package not found: " + pkgId);
             }
             log.info("Uninstalling " + pkgId);
@@ -312,6 +320,14 @@ public class ConnectBroker {
         cmdInfo.param = pkgId;
         try {
             LocalPackage pkg = service.getPackage(pkgId);
+            if (pkg == null) {
+                // Check whether this is the name of a local package
+                String realPkgId = getLocalPackageIdFromName(pkgId);
+                if (realPkgId != null) {
+                    pkgId = realPkgId;
+                    pkg = service.getPackage(realPkgId);
+                }
+            }
             if (pkg == null) {
                 throw new PackageException("Package not found: " + pkgId);
             }
@@ -377,15 +393,38 @@ public class ConnectBroker {
         try {
             LocalPackage pkg = service.getPackage(pkgId);
             if (pkg == null) {
+                // Check whether this is the name of a local package
+                String realPkgId = getLocalPackageIdFromName(pkgId);
+                if (realPkgId != null) {
+                    pkgId = realPkgId;
+                    pkg = service.getPackage(realPkgId);
+                }
+            }
+            if (pkg == null) {
+                // Check whether this is the name of a remote package
+                String realPkgId = getRemotePackageIdFromName(pkgId);
+                if (realPkgId != null) {
+                    List<String> downloadList = new ArrayList<String>();
+                    downloadList.add(realPkgId);
+                    if (!downloadPackages(downloadList)) {
+                        throw new PackageException(
+                                "Failed to download package " + pkgId);
+                    } else {
+                        pkgId = realPkgId;
+                        pkg = service.getPackage(realPkgId);
+                    }
+                }
+            }
+            if (pkg == null) {
                 // Assume this is a filename - try to add
                 pkg = pkgAdd(pkgId);
-                // Validate "add" went OK
-                if (pkg == null) {
-                    throw new PackageException("Package not found: " + pkgId);
-                }
-                pkgId = pkg.getId();
-                cmdInfo.param = pkgId;
             }
+            if (pkg == null) {
+                // Nothing worked - can't find the package anywhere
+                throw new PackageException("Package not found: " + pkgId);
+            }
+            pkgId = pkg.getId();
+            cmdInfo.param = pkgId;
             log.info("Installing " + pkgId);
             Task installTask = pkg.getInstallTask();
             try {
@@ -507,6 +546,7 @@ public class ConnectBroker {
 
     }
 
+    @SuppressWarnings("unused")
     protected boolean downloadPackages(List<String> packagesToDownload) {
         if (packagesToDownload == null) {
             return true;
@@ -530,7 +570,8 @@ public class ConnectBroker {
         do {
             for (DownloadingPackage pkg : pkgs) {
                 if (pkg.isCompleted()) {
-                    if (!pkg.isDigestOk()) {
+                    // Digest check not correctly implemented
+                    if (false && !pkg.isDigestOk()) {
                         log.error("Wrong digest for package " + pkg.getName());
                         return false;
                     }
@@ -580,7 +621,7 @@ public class ConnectBroker {
             }
             // For names, check whether they are new installs or upgrades
             for (String pkgToInstall : namesOrIdsToInstall) {
-                if (isInstalledPackageName(pkgToInstall)) {
+                if (getInstalledPackageIdFromName(pkgToInstall) != null) {
                     solverUpgrade.add(pkgToInstall);
                 } else {
                     solverInstall.add(pkgToInstall);
