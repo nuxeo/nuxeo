@@ -28,17 +28,12 @@ import java.util.regex.Pattern;
  */
 public class NumberValidator {
 
-    private static Pattern pattern;
-
-    private static Matcher matcher;
-
-    private static final String NUMBER_PATTERN = "^[-](\\d)+$";
-
     public static synchronized boolean validate(String ip) {
-        if (pattern == null) {
-            pattern = Pattern.compile(NUMBER_PATTERN);
+        try {
+          Long.valueOf(ip);
+        } catch (NumberFormatException e) {
+          return false;
         }
-        matcher = pattern.matcher(ip);
-        return matcher.matches();
+        return true;
     }
 }
