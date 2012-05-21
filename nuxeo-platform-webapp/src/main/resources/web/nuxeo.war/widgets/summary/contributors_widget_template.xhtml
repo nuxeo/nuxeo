@@ -8,7 +8,9 @@
   <c:forEach var="contributor"
     items="#{currentDocument.dc.contributors}">
     <span class="tag user creator">
-      <a href="#{baseURL}user/#{contributor}"><h:outputText>#{nxu:userFullName(contributor)}</h:outputText></a>
+      <a href="#{baseURL}user/#{contributor}">
+        <h:outputText value="#{nxu:userFullName(contributor)}" />
+      </a>
     </span>
   </c:forEach>
 </div>

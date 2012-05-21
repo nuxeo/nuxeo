@@ -6,9 +6,9 @@
     point="widgettypes">
 
     <documentation>
-      The widget types from this contribution are intended to be used in the
-      summary view. All these widgets are bound to the currentDocument in the
-      Seam context.
+      The widget types from this contribution are intended to be
+      used in the summary view. All these widgets are bound to the
+      currentDocument in the Seam context.
     </documentation>
 
     <widgetType name="summary_current_document_actions">
@@ -17,7 +17,7 @@
         <title>Actions (lock, restore version)</title>
         <description>
           <p>
-            This widgets displays the actions on the current document
+            This widget displays the actions on the current document
             (lock/unlock and undelete by default).
           </p>
           <p>
@@ -48,7 +48,7 @@
         <sinceVersion>5.4.2</sinceVersion>
         <title>Custom actions</title>
         <description>
-          <p>This widgets displays custom actions on the current document.</p>
+          <p>This widget displays custom actions on the current document.</p>
           <p>
             It will display actions in the category given in the 'category'
             property (defaults to 'DOCUMENT_SUMMARY_CUSTOM_ACTIONS' when not
@@ -58,6 +58,7 @@
         </description>
         <categories>
           <category>summary</category>
+          <category>tab_designer</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
@@ -105,7 +106,7 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Description</title>
         <description>
-          <p>This widgets displays the description of the currentDocument.</p>
+          <p>This widget displays the description of the currentDocument.</p>
           <p>
             It requires the following variables to be present in the EL context:
             <ul>
@@ -134,19 +135,20 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Files</title>
         <description>
-          <p>This widgets displays the files held by the currentDocument</p>
+          <p>This widget displays the files held by the currentDocument</p>
           <p>
             It requires the following variables to be present in the EL context:
             <ul>
               <li>currentDocument: the current document</li>
               <li>
-                currentDocumentAsBlobHolder : the BlobHolder on the
+                currentDocumentAsBlobHolder: the BlobHolder on the
                 currentDocument
               </li>
               <li>
-                conversionActions : the Seam Bean wrapping the conversionService
+                conversionActions: the Seam Bean wrapping the
+                conversionService
               </li>
-              <li>liveEditHelper : the Seam Bean encapsulating LiveEdit</li>
+              <li>liveEditHelper: the Seam Bean encapsulating LiveEdit</li>
             </ul>
           </p>
         </description>
@@ -171,12 +173,12 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>View layout</title>
         <description>
-          <p>This widgets displays the view layouts of the currentDocument</p>
+          <p>This widget displays the view layouts of the currentDocument</p>
           <p>
             It requires the following variables to be present in the EL context:
             <ul>
               <li>currentDocument: the current document</li>
-              <li>currentDocumentType : the Type of the current document</li>
+              <li>currentDocumentType: the type of the current document</li>
             </ul>
           </p>
         </description>
@@ -202,7 +204,7 @@
         <title>Dublincore</title>
         <description>
           <p>
-            This widgets displays the dublincore layout of the currentDocument
+            This widget displays the dublincore layout of the currentDocument.
           </p>
           <p>
             It requires the following variables to be present in the EL context:
@@ -232,8 +234,8 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Tagging</title>
         <description>
-          This widgets displays the tags for the currentDocument and allow to
-          add new ones. This widgets requires the tag service to be deployed.
+          This widget displays the tags for the currentDocument and
+          allows to add new ones. It requires the tag service to be deployed.
         </description>
         <categories>
           <category>summary</category>
@@ -256,8 +258,8 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Relations</title>
         <description>
-          This widgets displays the in/out relations for the currentDocument.
-          This widgets requires the Relation service to be deployed.
+          This widget displays the in/out relations for the
+          currentDocument. It requires the Relation service to be deployed.
         </description>
         <categories>
           <category>summary</category>
@@ -280,8 +282,8 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Comments</title>
         <description>
-          This widgets displays the comments for the currentDocument. This
-          widgets requires the Comment service to be deployed.
+          This widget displays the comments for the currentDocument.
+          It requires the Comment service to be deployed.
         </description>
         <categories>
           <category>summary</category>
@@ -304,8 +306,8 @@
         <sinceVersion>5.3.1</sinceVersion>
         <title>Publications</title>
         <description>
-          This widgets displays the publications of the currentDocument. This
-          widgets requires the Publisher service to be deployed.
+          This widget displays the publications of the
+          currentDocument. It requires the Publisher service to be deployed.
         </description>
         <categories>
           <category>summary</category>
@@ -329,8 +331,12 @@
         <title>Life cycle state and version</title>
         <description>
           <p>
-            This widgets displays the life-cycle state and version of the
+            This widget displays the life-cycle state and version of the
             currentDocument.
+          </p>
+          <p>
+            Since 5.6, this widget is not used by default, it's replaced by the
+            widget named "summary_current_document_states".
           </p>
           <p>
             It requires the following variables to be present in the EL context:
@@ -365,7 +371,7 @@
         <title>Tasks</title>
         <description>
           <p>
-            This widgets displays the single tasks (out of a process instance)
+            This widget displays the single tasks (out of a process instance)
             attached to current document model.
           </p>
           <p>
@@ -400,7 +406,8 @@
         <title>States</title>
         <description>
           <p>
-            This widgets displays current document states
+            This widget displays current document state (life cycle state and
+            lock status)
           </p>
         </description>
         <categories>
@@ -422,10 +429,10 @@
     <widgetType name="summary_current_document_contributors">
       <configuration>
         <sinceVersion>5.6</sinceVersion>
-        <title>States</title>
+        <title>Contributors</title>
         <description>
           <p>
-            This widgets displays document contributors
+            This widget displays the document contributors.
           </p>
         </description>
         <categories>
@@ -448,52 +455,38 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="summary_current_document_description"
-      type="summary_current_document_description" />
+    <widget name="summary_current_document_description" type="summary_current_document_description" />
 
-    <widget name="summary_current_document_actions"
-      type="summary_current_document_actions" />
+    <widget name="summary_current_document_actions" type="summary_current_document_actions" />
 
-    <widget name="summary_current_document_custom_actions"
-      type="summary_current_document_custom_actions">
+    <widget name="summary_current_document_custom_actions" type="summary_current_document_custom_actions">
       <labels>
         <!-- <label mode="any">label.summary.customActions</label> -->
         <label mode="any"></label>
       </labels>
     </widget>
 
-    <widget name="summary_current_document_files"
-      type="summary_current_document_files" />
+    <widget name="summary_current_document_files" type="summary_current_document_files" />
 
-    <widget name="summary_current_document_view"
-      type="summary_current_document_view" />
+    <widget name="summary_current_document_view" type="summary_current_document_view" />
 
-    <widget name="summary_current_document_tagging"
-      type="summary_current_document_tagging" />
+    <widget name="summary_current_document_tagging" type="summary_current_document_tagging" />
 
-    <widget name="summary_current_document_dublincore"
-      type="summary_current_document_dublincore" />
+    <widget name="summary_current_document_dublincore" type="summary_current_document_dublincore" />
 
-    <widget name="summary_current_document_relations"
-      type="summary_current_document_relations" />
+    <widget name="summary_current_document_relations" type="summary_current_document_relations" />
 
-    <widget name="summary_current_document_comments"
-      type="summary_current_document_comments" />
+    <widget name="summary_current_document_comments" type="summary_current_document_comments" />
 
-    <widget name="summary_current_document_publications"
-      type="summary_current_document_publications" />
+    <widget name="summary_current_document_publications" type="summary_current_document_publications" />
 
-    <widget name="summary_current_document_lc_and_version"
-      type="summary_current_document_lc_and_version" />
+    <widget name="summary_current_document_lc_and_version" type="summary_current_document_lc_and_version" />
 
-    <widget name="summary_current_document_single_tasks"
-      type="summary_current_document_single_tasks" />
+    <widget name="summary_current_document_single_tasks" type="summary_current_document_single_tasks" />
 
-    <widget name="summary_current_document_states"
-      type="summary_current_document_states" />
+    <widget name="summary_current_document_states" type="summary_current_document_states" />
 
-    <widget name="summary_current_document_contributors"
-      type="summary_current_document_contributors" />
+    <widget name="summary_current_document_contributors" type="summary_current_document_contributors" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"

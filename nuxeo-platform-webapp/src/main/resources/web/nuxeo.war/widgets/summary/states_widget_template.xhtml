@@ -9,5 +9,6 @@
     value="#{messages[currentDocument.currentLifeCycleState]}"
     styleClass="sticker" />
   <h:outputText value="#{messages['label.document.lock']}"
-    styleClass="sticker warningLabel" rendered="#{!empty currentDocumentLockDetails}" />
+    styleClass="sticker warningLabel"
+    rendered="#{!empty currentDocumentLockDetails}" />
 </div>

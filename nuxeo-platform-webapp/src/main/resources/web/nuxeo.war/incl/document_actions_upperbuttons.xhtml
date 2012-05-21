@@ -4,6 +4,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
+
   <h:form id="documentActionsUpperButtons">
     <div class="globalActionBar">
       <nxu:set var="category"
@@ -22,23 +23,21 @@
             <!-- Display rollover after 5 actions -->
             <c:if test="#{actions.size>5}">
               <ul class="actionList">
-                <li class="dropDownMenu button dropdown">More
-                <ul class="actionSubList">
-                  <c:forEach var="action" begin="5"
-                    end="#{actions.size-1}" step="1" items="#{actions}">
-                    <li><nxh:commandLink
-                        action="#{action.getLink()}"
-                        immediate="#{action.immediate}"
-                        onclick="#{action.confirm}">
-                        <h:graphicImage value="#{action.icon}"
-                          rendered="#{not empty action.icon}"
-                          title="#{messages[action.label]}"
-                          alt="#{messages[action.label]}"
-                          styleClass="smallIcon" />
-                        <h:outputText value="#{messages[action.label]}" />
-                      </nxh:commandLink></li>
-                  </c:forEach>
-                </ul>
+                <li class="dropDownMenu button dropdown">
+                  <h:outputText value="#{messages['label.summary.actions.more']}" />
+                  <ul class="actionSubList">
+                    <c:forEach var="action" begin="5"
+                      end="#{actions.size-1}" step="1" items="#{actions}">
+                      <li>
+                        <ui:decorate template="/incl/generic_action_template.xhtml">
+                          <ui:param name="idPrefix" value="more" />
+                          <ui:define name="inside_action">
+                            <h:outputText value="#{messages[action.label]}" />
+                          </ui:define>
+                        </ui:decorate>
+                      </li>
+                    </c:forEach>
+                  </ul>
                 </li>
               </ul>
               <script type="text/javascript">
