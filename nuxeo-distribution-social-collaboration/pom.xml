@@ -62,6 +62,30 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-user-registration-web</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.rating</groupId>
+      <artifactId>nuxeo-rating-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.rating</groupId>
+      <artifactId>nuxeo-rating-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.rating</groupId>
+      <artifactId>nuxeo-rating-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-wall</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-agenda</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
