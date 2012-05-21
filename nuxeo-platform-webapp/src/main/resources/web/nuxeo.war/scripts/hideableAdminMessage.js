@@ -6,7 +6,7 @@ jQuery(function() {
   var hide = jQuery('<a><img src="icons/action_clipboard_remove.gif" alt="hide" /></a>').attr({href: '#'}).click(function() {
     var parent = jQuery(this).parent();
     parent.fadeOut();
-    jQuery.cookie(buildCookieName(parent), true, {expires: 7});
+    jQuery.cookie(buildCookieName(parent), true);
     return false;
   });
   hide.addClass('hideBtn')

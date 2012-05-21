@@ -27,9 +27,8 @@
 
     function onMissing() {
       var gcfdiv = jQuery('#gcfdiv')
-      var link = jQuery('<a>#{messages['chromeframe.link']}</a>').attr({href: 'http://www.google.com/chromeframe?hl=fr&amp;prefersystemlevel=true'})
-      gcfdiv.html('#{messages['chromeframe.message']}')
-      gcfdiv.append(link);
+      var link = jQuery('<span>#{messages['chromeframe.message']}</span> <a>#{messages['chromeframe.link']}</a>').attr({href: 'http://www.google.com/chromeframe?hl=fr&amp;prefersystemlevel=true'})
+      gcfdiv.prepend(link);
 
       gcfdiv.css('display', 'block')
     }
