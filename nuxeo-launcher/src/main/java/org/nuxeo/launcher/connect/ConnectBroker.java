@@ -551,8 +551,6 @@ public class ConnectBroker {
         if (packagesToDownload == null) {
             return true;
         }
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_ADD;
         // Queue downloads
         for (String pkg : packagesToDownload) {
             try {
@@ -567,31 +565,43 @@ public class ConnectBroker {
         List<DownloadingPackage> pkgs = cdm.listDownloadingPackages();
         long startTime = new Date().getTime();
         long deltaTime = 0;
+        boolean downloadOk = true;
         do {
+            List<DownloadingPackage> pkgsCompleted = new ArrayList<DownloadingPackage>();
             for (DownloadingPackage pkg : pkgs) {
                 if (pkg.isCompleted()) {
                     // Digest check not correctly implemented
+                    pkgsCompleted.add(pkg);
+                    CommandInfo cmdInfo = new CommandInfo();
+                    cmdInfo.name = CommandInfo.CMD_ADD;
+                    cmdInfo.param = pkg.getId();
+                    cset.commands.add(cmdInfo);
                     if (false && !pkg.isDigestOk()) {
                         log.error("Wrong digest for package " + pkg.getName());
-                        return false;
+                        cmdInfo.exitCode = 1;
+                        downloadOk = false;
+                    } else {
+                        cmdInfo.exitCode = 0;
                     }
-                    pkgs.remove(pkg);
                 }
             }
+            pkgs.removeAll(pkgsCompleted);
             deltaTime = (new Date().getTime() - startTime) / 1000;
         } while (deltaTime < PACKAGES_DOWNLOAD_TIMEOUT_SECONDS
                 && pkgs.size() > 0);
-        // TODO: populate command info with packages
         // Did everything get downloaded?
-        if (pkgs.size() > 0) {
-            log.error("Timeout while trying to download packages");
+        for (DownloadingPackage pkg : pkgs) {
+            CommandInfo cmdInfo = new CommandInfo();
+            cmdInfo.name = CommandInfo.CMD_ADD;
+            cmdInfo.param = pkg.getId();
             cmdInfo.exitCode = 1;
             cset.commands.add(cmdInfo);
-            return false;
         }
-        cmdInfo.exitCode = 0;
-        cset.commands.add(cmdInfo);
-        return true;
+        if (pkgs.size() > 0) {
+            log.error("Timeout while trying to download packages");
+            downloadOk = false;
+        }
+        return downloadOk;
     }
 
     public boolean pkgRequest(List<String> pkgsToAdd,
