@@ -70,11 +70,17 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     @XNode("@immediate")
     protected boolean immediate = false;
 
+    /**
+     * @since 5.6
+     */
     @XNode("@type")
     protected String type = null;
 
+    /**
+     * @since 5.6
+     */
     @XNodeMap(value = "properties", key = "@name", type = HashMap.class, componentType = ActionPropertiesDescriptor.class)
-    Map<String, ActionPropertiesDescriptor> properties = new HashMap<String, ActionPropertiesDescriptor>();
+    protected Map<String, ActionPropertiesDescriptor> properties = new HashMap<String, ActionPropertiesDescriptor>();
 
     private boolean available = true;
 
@@ -276,18 +282,30 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         return (Action) super.clone();
     }
 
+    /**
+     * @since 5.6
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * @since 5.6
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * @since 5.6
+     */
     public Map<String, ActionPropertiesDescriptor> getProperties() {
         return properties;
     }
 
+    /**
+     * @since 5.6
+     */
     public void setProperties(Map<String, ActionPropertiesDescriptor> properties) {
         this.properties = properties;
     }

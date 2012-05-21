@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -31,8 +29,6 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class ActionContributionHandler extends
         ContributionFragmentRegistry<Action> {
-
-    private final Log log = LogFactory.getLog(ActionContributionHandler.class);
 
     protected ActionRegistry actionReg;
 

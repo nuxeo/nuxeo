@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * UI type action compatibility descriptor from category action
  *
+ * @since 5.6
  */
 @XObject("typeCompatibility")
 public class TypeCompatibility {

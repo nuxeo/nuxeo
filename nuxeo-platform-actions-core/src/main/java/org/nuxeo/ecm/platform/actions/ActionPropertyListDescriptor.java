@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Action property list descriptor
  *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @since 5.6
  */
 @XObject("propertyList")
 public class ActionPropertyListDescriptor implements Serializable {
