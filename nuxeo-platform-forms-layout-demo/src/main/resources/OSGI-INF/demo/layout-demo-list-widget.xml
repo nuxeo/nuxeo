@@ -27,12 +27,12 @@
         </properties>
         <subWidgets>
           <widget name="listItem" type="text">
-            <!-- since 5.6, empty mapping is useless -->
-            <!--
-              <fields>
-              <field></field>
-              </fields>
-            -->
+            <fields>
+              <field>#{value}</field>
+              <!-- equivalent field definition alternative:
+                <field></field>
+              -->
+            </fields>
             <labels>
               <label mode="any"></label>
             </labels>
