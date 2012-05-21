@@ -1578,27 +1578,10 @@ public abstract class NuxeoLauncher {
                 PARAM_NUXEO_URL);
     }
 
-    protected Environment getDistributionEnvironment() {
-        Environment env = new Environment(
-                configurationGenerator.getRuntimeHome());
-        env.init();
-        env.setServerHome(configurationGenerator.getNuxeoHome());
-        env.setData(new File(
-                configurationGenerator.getUserConfig().getProperty(
-                        Environment.NUXEO_DATA_DIR)));
-        env.setLog(new File(configurationGenerator.getUserConfig().getProperty(
-                Environment.NUXEO_LOG_DIR)));
-        env.setTemp(new File(
-                configurationGenerator.getUserConfig().getProperty(
-                        Environment.NUXEO_TMP_DIR)));
-        env.loadProperties(configurationGenerator.getUserConfig());
-        return env;
-    }
-
     protected ConnectBroker getConnectBroker() throws IOException,
             PackageException {
         if (connectBroker == null) {
-            connectBroker = new ConnectBroker(getDistributionEnvironment());
+            connectBroker = new ConnectBroker(configurationGenerator.getEnv());
         }
         return connectBroker;
     }

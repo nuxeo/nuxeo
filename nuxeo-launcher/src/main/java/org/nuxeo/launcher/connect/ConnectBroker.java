@@ -74,8 +74,8 @@ public class ConnectBroker {
         service.initialize();
         cbHolder = new StandaloneCallbackHolder(env, service);
         NuxeoConnectClient.setCallBackHolder(cbHolder);
-        targetPlatform = env.getProperty(Environment.DISTRIBUTION_NAME + "-"
-                + Environment.DISTRIBUTION_VERSION);
+        targetPlatform = env.getProperty(Environment.DISTRIBUTION_NAME) + "-"
+                + env.getProperty(Environment.DISTRIBUTION_VERSION);
     }
 
     public String getCLID() throws NoCLID {
