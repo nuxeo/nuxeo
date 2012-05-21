@@ -6,35 +6,6 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout" class="docDiffResult">
   
-  <style type="text/css">
-    
-    #diffHeader {margin-bottom: 0.5em; padding: 0 0.5em 0.5em 0.5em;}
-    #diffHeader .dataInput {margin-top: 0;}
-    #diffHeader h2 {padding: 0;}
-    #diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover {color: #000000;}
-    #diffHeader .diffSubTitle {padding-left: 5px; font-style: italic;}
-    
-    .docDiffResult .foldableBox .boxBody {padding: 0.5em;}
-    .docDiffResult .dataInput {width: 100%;}
-    
-    .docDiffResult .dataInput td {padding: 0.4em 0.3em;}
-    .docDiffResult .dataInput td.labelColumn {width: 16%; padding-right: 20px; text-align: left;}
-    .docDiffResult .dataInput td.fieldColumn {width: 34%;}
-    .docDiffResult .dataInput td.contentDiffColumn {width: 16%; vertical-align: top;}
-        
-    /*.docDiffResult .dataInput .diffDisplayTable {width: 100%;}*/
-    .docDiffResult .dataInput .diffDisplayTable th, .docDiffResult .dataInput .diffDisplayTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
-    .docDiffResult .dataInput .diffDisplayTable th {background-color:  #EEEFF0; padding: 0.1em 0.5em; text-align: center; font-weight: bold;}
-    .docDiffResult .note_content_block {border:none; margin: 0; padding: 0;}
-    
-    /*.docDiffResult .noBackgroundColor {}*/
-    .docDiffResult .redBackgroundColor {display: block; min-height: 18px; min-width: 40px; padding: 0px 4px; background-color: #FDC6C6;}
-    .docDiffResult .greenBackgroundColor {display: block; min-height: 18px; min-width: 40px; padding: 0px 4px; background-color: #CCFFCC;}
-    
-    .docDiffResult .contentDiffLink {margin-right: 10px;}
-    
-  </style>
-  
   <c:if test="#{!diffActions.documentDiffAvailable}">
     <h2>
       <h:outputText value="#{messages['document.diff.noDiffAvailable']}"/>

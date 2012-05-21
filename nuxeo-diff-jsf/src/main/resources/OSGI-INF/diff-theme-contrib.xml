@@ -3,7 +3,27 @@
 
   <require>org.nuxeo.theme.nuxeo.default</require>
 
-  <!-- Application settings -->
+  <!-- Theme pages -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="galaxy/default">
+      <styles append="true">
+        <style>diff</style>
+      </styles>
+    </themePage>
+
+  </extension>
+
+  <!-- Styles -->
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+
+    <style name="diff">
+      <src>themes/css/diff_result.css</src>
+    </style>
+
+  </extension>
+
+  <!-- Mapping between views and theme pages -->
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
 
