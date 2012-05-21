@@ -15,7 +15,7 @@ The comparison also takes into account blob-type properties.
 
 - Deploy _nuxeo-diff_ in the Nuxeo server by running:
 
-    cp */target/*-5.6-SNAPSHOT.jar $NUXEO_HOME/nxserver/plugins/
+    cp -r \*/target/\*-5.6-SNAPSHOT.jar $NUXEO_HOME/nxserver/plugins/
 
 - Copy the following third-party librairies in $NUXEO_HOME/nxserver/lib/:
 
