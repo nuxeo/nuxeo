@@ -48,7 +48,7 @@ public class RenderVariables {
     }
 
     public enum widgetVariables {
-        widget, widgetIndex, field, widgetProperty
+        widget, widgetIndex, field, widgetProperty, fieldOrValue,
     }
 
 }

@@ -10,8 +10,9 @@
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   id="#{widget.id}">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
-  <nxu:set var="numberOfSubWidgets" value="#{fn:length(widget.subWidgets)}" cache="true">
-    <nxu:inputList value="#{field}" model="model"
+  <nxu:set var="numberOfSubWidgets"
+    value="#{fn:length(widget.subWidgets)}" cache="true">
+    <nxu:inputList value="#{fieldOrValue}" model="model"
       rendered="#{not empty field}">
       <nxl:subWidget>
         <nxl:widget widget="#{widget}" value="#{model.rowData}" />
@@ -23,8 +24,9 @@
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>
-    <nxu:set var="numberOfSubWidgets" value="#{fn:length(widget.subWidgets)}" cache="true">
-      <nxu:inputList value="#{field}" model="model"
+    <nxu:set var="numberOfSubWidgets"
+      value="#{fn:length(widget.subWidgets)}" cache="true">
+      <nxu:inputList value="#{fieldOrValue}" model="model"
         rendered="#{not empty field}">
         <nxl:subWidget>
           <nxl:widget widget="#{widget}" value="#{model.rowData}" />
@@ -41,7 +43,8 @@
 
   <table>
     <tbody>
-      <nxu:inputList value="#{field}" id="#{widget.id}_table" model="model"
+      <nxu:inputList value="#{fieldOrValue}"
+        id="#{widget.id}_table" model="model"
         rendered="#{not empty field}">
         <c:choose>
           <c:when test="#{widgetProperty_display == 'inline'}">
@@ -89,7 +92,8 @@
       <c:set value="#{widget.fieldDefinitions[0].propertyName}"
         var="propValueForTemplate"/>
 
-      <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
+      <nxu:inputList value="#{fieldOrValue}"
+        id="#{widget.id}_input" model="model"
         template="#{nxd:propertyDefaultValue(propValueForTemplate)}"
         required="#{widget.required}" diff="#{widget.properties['diff']}">
 
@@ -115,7 +119,8 @@
                 <f:param name="index" value="#{model.rowIndex}" />
                 <f:param name="type" value="movedown" />
               </a4j:commandLink>
-              <h:graphicImage value="/icons/inactive_go_down.png" rendered="#{model.rowIndex == model.rowCount - 1}" />
+              <h:graphicImage value="/icons/inactive_go_down.png"
+                rendered="#{model.rowIndex == model.rowCount - 1}" />
 
               <a4j:commandLink immediate="true"
                 actionListener="#{editableListBean.performAction}"
@@ -126,7 +131,8 @@
                 <f:param name="index" value="#{model.rowIndex}" />
                 <f:param name="type" value="moveup" />
               </a4j:commandLink>
-              <h:graphicImage value="/icons/inactive_go_up.png" rendered="#{model.rowIndex == 0}" />
+              <h:graphicImage value="/icons/inactive_go_up.png"
+                rendered="#{model.rowIndex == 0}" />
             </c:if>
           </h:panelGroup>
 

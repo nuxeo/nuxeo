@@ -103,14 +103,13 @@ public class DirectorySelectManyWidgetTypeHandler extends
                         (String) properties.get("value"));
             }
             FieldDefinition[] fields = widget.getFieldDefinitions();
-            FieldDefinition boundField = null;
             if (fields != null && fields.length > 0) {
-                boundField = fields[0];
+                FieldDefinition field = fields[0];
+                valueAttr = helper.createAttribute(
+                        RenderVariables.globalVariables.value.name(),
+                        ValueExpressionHelper.createExpressionString(
+                                widget.getValueName(), field));
             }
-            valueAttr = helper.createAttribute(
-                    RenderVariables.globalVariables.value.name(),
-                    ValueExpressionHelper.createExpressionString(
-                            widget.getValueName(), boundField));
             if (valueAttr == null) {
                 // don't bother
                 return leaf;

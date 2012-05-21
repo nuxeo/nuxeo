@@ -17,11 +17,11 @@
     <c:if test="#{addForm}">
       <h:form id="#{layout.id}_#{widget.id}_form"
         enctype="multipart/form-data">
-        <nxl:widget widget="#{widget}" value="#{field}" />
+        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
       </h:form>
     </c:if>
     <c:if test="#{not addForm}">
-      <nxl:widget widget="#{widget}" value="#{field}" />
+      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
     </c:if>
   </nxl:subWidget>
 </c:if>
@@ -37,11 +37,11 @@
       <c:if test="#{addForm}">
         <h:form id="#{layout.id}_#{widget.id}_form"
           enctype="multipart/form-data">
-          <nxl:widget widget="#{widget}" value="#{field}" />
+          <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
         </h:form>
       </c:if>
       <c:if test="#{not addForm}">
-        <nxl:widget widget="#{widget}" value="#{field}" />
+        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
       </c:if>
     </nxl:subWidget>
   </nxp:html>
@@ -74,6 +74,7 @@
     <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}">
 
       <c:choose>
+
         <c:when test="#{widgetProperty_display == 'inline'}">
           <nxl:subWidget>
             <c:if test="#{displaySubLabels}">
@@ -87,19 +88,21 @@
                 <c:if test="#{addForm}">
                   <h:form id="#{layout.id}_#{widget.id}_form"
                     enctype="multipart/form-data">
-                    <nxl:widget widget="#{widget}" value="#{field}" />
+                    <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
                   </h:form>
                 </c:if>
                 <c:if test="#{not addForm}">
-                  <nxl:widget widget="#{widget}" value="#{field}" />
+                  <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
                 </c:if>
               </span>
             </c:if>
           </nxl:subWidget>
         </c:when>
+
         <c:otherwise>
-          <c:if test="#{displaySubLabels}">
-            <c:if test="#{not empty widget.subWidgets}">
+          <c:if test="#{not empty widget.subWidgets}">
+
+            <c:if test="#{displaySubLabels}">
               <table style="width:100%;">
                 <tbody>
                   <nxl:subWidget>
@@ -111,11 +114,11 @@
                           <c:if test="#{addForm}">
                             <h:form id="#{layout.id}_#{widget.id}_form"
                               enctype="multipart/form-data">
-                              <nxl:widget widget="#{widget}" value="#{field}" />
+                              <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
                             </h:form>
                           </c:if>
                           <c:if test="#{not addForm}">
-                            <nxl:widget widget="#{widget}" value="#{field}" />
+                            <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
                           </c:if>
                         </td>
                       </c:if>
@@ -130,11 +133,11 @@
                           <c:if test="#{addForm}">
                             <h:form id="#{layout.id}_#{widget.id}_form"
                               enctype="multipart/form-data">
-                              <nxl:widget widget="#{widget}" value="#{field}" />
+                              <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
                             </h:form>
                           </c:if>
                           <c:if test="#{not addForm}">
-                            <nxl:widget widget="#{widget}" value="#{field}" />
+                            <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
                           </c:if>
                         </td>
                       </c:if>
@@ -143,15 +146,28 @@
                 </tbody>
               </table>
             </c:if>
-          </c:if>
-          <c:if test="#{not displaySubLabels}">
-            <nxl:subWidget>
-              <div class="#{widgetProperty_subStyleClass}">
-                <nxl:widget widget="#{widget}" value="#{field}" />
-              </div>
-            </nxl:subWidget>
+
+            <c:if test="#{not displaySubLabels}">
+              <nxl:subWidget>
+                <div class="#{widgetProperty_subStyleClass}">
+                  <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                  <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+                  <c:if test="#{addForm}">
+                    <h:form id="#{layout.id}_#{widget.id}_form"
+                      enctype="multipart/form-data">
+                      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                    </h:form>
+                  </c:if>
+                  <c:if test="#{not addForm}">
+                    <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                  </c:if>
+                </div>
+              </nxl:subWidget>
+            </c:if>
+
           </c:if>
         </c:otherwise>
+
       </c:choose>
     
     </div>

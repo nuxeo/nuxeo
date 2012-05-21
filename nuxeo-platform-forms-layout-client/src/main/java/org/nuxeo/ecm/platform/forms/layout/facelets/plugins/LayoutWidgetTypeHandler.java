@@ -21,14 +21,12 @@ import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
-import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.TagConfigFactory;
-import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 
 import com.sun.facelets.FaceletContext;
@@ -57,7 +55,7 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
         String widgetMode = widget.getMode();
 
         TagAttributes attributes = helper.getTagAttributes(widget,
-                Arrays.asList(new String[] { "mode" }), true);
+                Arrays.asList(new String[] { "mode" }), true, true);
         attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                 helper.createAttribute("id", widgetId));
 
@@ -72,20 +70,6 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                 helper.createAttribute("mode", modeValue));
-
-        // value is required on layout tag => generate it to map the parent
-        // widget or layout value if not set through field definitions (or
-        // explicitly through properties)
-        FieldDefinition[] fields = widget.getFieldDefinitions();
-        Serializable valueFromProps = widget.getProperty("value");
-        if ((fields == null || fields.length == 0) && valueFromProps == null) {
-            TagAttribute valueAttr = helper.createAttribute(
-                    "value",
-                    ValueExpressionHelper.createExpressionString(
-                            widget.getValueName(), null));
-            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                    valueAttr);
-        }
 
         FaceletHandler leaf = null;
         if (subHandlers != null) {

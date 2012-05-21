@@ -1852,6 +1852,10 @@
             &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
             iterating over items in other modes.
           </p>
+          <p>
+            Since 5.6, it will apply to the current value (e.g. the layout or
+            parent widget value) if no field definition is given.
+          </p>
         </description>
         <demo id="listWidget" previewEnabled="false" />
         <categories>
@@ -1931,6 +1935,10 @@
             a map-like. Each of the map items rendering is done through sub
             widgets configuration.
           </p>
+          <p>
+            Since 5.6, it will apply to the current value (e.g. the layout or
+            parent widget value) if no field definition is given.
+          </p>
         </description>
         <demo id="complexWidget" previewEnabled="false" />
         <categories>
@@ -1993,9 +2001,13 @@
             This widget also accepts custom properties to add forms around some
             of its subwidgets. If the property with name
             "nxw_addForm_#{widgetIndex}" is present and resolves to true, then a
-            form will be added around the subwidgets at index #{widegtIndex}.
+            form will be added around the subwidgets at index #{widgetIndex}.
             For instance, adding a property "nxw_addForm_0" with value true, the
             first subwidget will be surrounded with a form.
+          </p>
+          <p>
+            It will apply to the current value (e.g. the layout or parent
+            widget value) if no field definition is given.
           </p>
         </description>
         <categories>
@@ -2307,6 +2319,10 @@
           <p>
             Widgets using this type can provide properties accepted on a
             &lt;nxl:layout /&gt; tag in all modes.
+          </p>
+          <p>
+            Since 5.6, it will apply to the current value (e.g. the layout or
+            parent widget value) if no field definition is given.
           </p>
         </description>
         <categories>

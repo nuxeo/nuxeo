@@ -282,25 +282,51 @@ public final class FaceletHandlerHelper {
         return addTagAttribute(widgetAttrs, createAttribute("id", id));
     }
 
+    public TagAttributes getTagAttributes(Widget widget) {
+        return getTagAttributes(widget, null, true);
+    }
+
     /**
      * @since 5.5
      */
     public TagAttributes getTagAttributes(Widget widget,
             List<String> excludedProperties, boolean bindFirstFieldDefinition) {
+        return getTagAttributes(widget, excludedProperties,
+                bindFirstFieldDefinition, false);
+    }
+
+    /**
+     * Return tag attributes for this widget, including value mapping from
+     * field definitions and properties
+     *
+     * @since 5.6
+     * @param widget the widget to generate tag attributes for
+     * @param excludedProperties the properties to exclude from tag attributes
+     * @param bindFirstFieldDefinition if true, the first field definition will
+     *            be bound to the tag attribute named "value"
+     * @param defaultToValue if true, and there are no field definitions, tag
+     *            attribute namped "value" will be mapped to the current widget
+     *            value name (e.g the layout value in most cases, or the parent
+     *            widget value if widget is a sub widdget)
+     */
+    public TagAttributes getTagAttributes(Widget widget,
+            List<String> excludedProperties, boolean bindFirstFieldDefinition,
+            boolean defaultToValue) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         if (bindFirstFieldDefinition) {
-            TagAttribute valueAttr = null;
             FieldDefinition field = null;
             FieldDefinition[] fields = widget.getFieldDefinitions();
             if (fields != null && fields.length > 0) {
                 field = fields[0];
             }
-            // bind value to first field definition or current value name
-            valueAttr = createAttribute(
-                    "value",
-                    ValueExpressionHelper.createExpressionString(
-                            widget.getValueName(), field));
-            attrs.add(valueAttr);
+            if (field != null || defaultToValue) {
+                // bind value to first field definition or current value name
+                TagAttribute valueAttr = createAttribute(
+                        "value",
+                        ValueExpressionHelper.createExpressionString(
+                                widget.getValueName(), field));
+                attrs.add(valueAttr);
+            }
         }
         // fill with widget properties
         List<TagAttribute> propertyAttrs = getTagAttributes(
@@ -312,13 +338,9 @@ public final class FaceletHandlerHelper {
         return getTagAttributes(attrs);
     }
 
-    public TagAttributes getTagAttributes(Widget widget) {
-        return getTagAttributes(widget, null, true);
-    }
-
     /**
-     * @since 5.5, signature changed on 5.6 to include widgetType and
-     *        widgetMode.
+     * @since 5.5, signature changed on 5.6 to include parameters widgetType
+     *        and widgetMode.
      */
     public List<TagAttribute> getTagAttributes(
             Map<String, Serializable> properties,

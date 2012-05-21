@@ -61,6 +61,14 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     public static final String TEMPLATE_PROPERTY_NAME = "template";
 
+    /**
+     * Property that can be put on the widget type definition to decide whether
+     * the widget type should bind to parent value when no field is set
+     *
+     * @since 5.6
+     */
+    public static final String BIND_VALUE_IF_NO_FIELD_PROPERTY_NAME = "bindValueIfNoField";
+
     @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
@@ -113,19 +121,29 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
         // expose field variables
+        FieldDefinition firstField = null;
         if (fieldDefs != null && fieldDefs.length > 0) {
             for (int i = 0; i < fieldDefs.length; i++) {
                 if (i == 0) {
                     addFieldVariable(variables, ctx, widget, fieldDefs[i], null);
+                    firstField = fieldDefs[i];
                 }
                 addFieldVariable(variables, ctx, widget, fieldDefs[i],
                         Integer.valueOf(i));
             }
-        } else {
+        } else if (getBindValueIfNoFieldValue(widget)) {
             // expose value as first parameter
             addFieldVariable(variables, ctx, widget, null, null);
             addFieldVariable(variables, ctx, widget, null, Integer.valueOf(0));
         }
+
+        // add binding "fieldOrValue" available since 5.6, in case template
+        // widget is always supposed to bind value when no field is defined
+        String computedValue = ValueExpressionHelper.createExpressionString(
+                widget.getValueName(), firstField);
+        variables.put(
+                RenderVariables.widgetVariables.fieldOrValue.name(),
+                eFactory.createValueExpression(ctx, computedValue, Object.class));
 
         // expose widget properties too
         WebLayoutManager layoutService;
@@ -164,8 +182,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             Integer index) {
         String computedName;
         if (index == null) {
-            computedName = String.format("%s",
-                    RenderVariables.widgetVariables.field.name());
+            computedName = RenderVariables.widgetVariables.field.name();
         } else {
             computedName = String.format("%s_%s",
                     RenderVariables.widgetVariables.field.name(), index);
@@ -180,7 +197,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
     }
 
     /**
-     * Returns the template value.
+     * Returns the "template" property value, looking up on the widget type
+     * definition first, and on the widget definition if not found.
      */
     protected String getTemplateValue(Widget widget) {
         // lookup in the widget type configuration
@@ -190,6 +208,29 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             template = (String) widget.getProperty(TEMPLATE_PROPERTY_NAME);
         }
         return template;
+    }
+
+    /**
+     * Returns the "bindValueIfNoField" property value, looking up on the
+     * widget type definition first, and on the widget definition if not found.
+     *
+     * @since 5.6
+     * @param widget
+     * @return
+     */
+    protected boolean getBindValueIfNoFieldValue(Widget widget) {
+        Object value = getProperty(BIND_VALUE_IF_NO_FIELD_PROPERTY_NAME);
+        if (value == null) {
+            value = widget.getProperty(BIND_VALUE_IF_NO_FIELD_PROPERTY_NAME);
+        }
+        if (value == null) {
+            return false;
+        }
+        if (value instanceof Boolean) {
+            return Boolean.TRUE.equals(value);
+        }
+        return Boolean.TRUE.equals(Boolean.valueOf(value.toString()));
+
     }
 
     /**

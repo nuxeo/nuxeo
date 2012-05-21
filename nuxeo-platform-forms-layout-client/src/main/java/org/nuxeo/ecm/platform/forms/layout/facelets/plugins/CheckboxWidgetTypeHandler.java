@@ -109,19 +109,18 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FaceletHandlerHelper helper, String id, Widget widget, boolean addId) {
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         FieldDefinition[] fields = widget.getFieldDefinitions();
-        FieldDefinition boundField = null;
         if (fields != null && fields.length > 0) {
-            boundField = fields[0];
+            FieldDefinition field = fields[0];
+            String bareExpression = ValueExpressionHelper.createBareExpressionString(
+                    widget.getValueName(), field);
+            String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
+            String messageYes = String.format("%s['label.yes']", bundleName);
+            String messageNo = String.format("%s['label.no']", bundleName);
+            String expression = String.format("#{%s ? %s : %s}",
+                    bareExpression, messageYes, messageNo);
+            TagAttribute valueAttr = helper.createAttribute("value", expression);
+            attrs.add(valueAttr);
         }
-        String bareExpression = ValueExpressionHelper.createBareExpressionString(
-                widget.getValueName(), boundField);
-        String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-        String messageYes = String.format("%s['label.yes']", bundleName);
-        String messageNo = String.format("%s['label.no']", bundleName);
-        String expression = String.format("#{%s ? %s : %s}", bareExpression,
-                messageYes, messageNo);
-        TagAttribute valueAttr = helper.createAttribute("value", expression);
-        attrs.add(valueAttr);
 
         // fill with widget properties
         List<TagAttribute> propertyAttrs = helper.getTagAttributes(
