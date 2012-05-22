@@ -29,8 +29,8 @@
           </ui:include>
         </f:subview>
 
-        <c:forEach id="#{widget.id}_tagsTable" var="tag"
-          items="#{currentDocumentTags}"
+        <nxu:dataList id="#{widget.id}_tagsTable" var="tag"
+          value="#{currentDocumentTags}"
           rendered="#{not empty currentDocumentTags}">
 
           <span class="tag tagLink">
@@ -48,7 +48,7 @@
 
           </span>
 
-        </c:forEach>
+        </nxu:dataList>
 
         <c:if test="#{tagActions.addTag}">
 
