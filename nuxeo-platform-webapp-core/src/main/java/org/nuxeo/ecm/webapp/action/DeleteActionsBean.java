@@ -495,10 +495,6 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean restoreActionDisplay() throws ClientException {
-        if (getCanRestoreCurrentDoc() && isTrashManagementEnabled()) {
-            return true;
-        } else {
-            return false;
-        }
+        return getCanRestoreCurrentDoc() && isTrashManagementEnabled();
     }
 }
