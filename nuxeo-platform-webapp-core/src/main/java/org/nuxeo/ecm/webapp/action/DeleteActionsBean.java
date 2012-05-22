@@ -494,4 +494,11 @@ public class DeleteActionsBean extends InputController implements
         resultsProvidersCache.invalidate(DELETED_CHILDREN_BY_COREAPI);
     }
 
+    public boolean restoreActionDisplay() throws ClientException {
+        if (getCanRestoreCurrentDoc() && isTrashManagementEnabled()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
