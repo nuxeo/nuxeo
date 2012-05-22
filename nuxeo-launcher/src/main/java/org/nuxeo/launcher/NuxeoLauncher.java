@@ -1858,6 +1858,7 @@ public abstract class NuxeoLauncher {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = pkgman.pkgRequest(pkgsToAdd, pkgsToInstall,
                 pkgsToUninstall, pkgsToRemove);
+        cset = pkgman.getCommandSet();
         if (!cmdOK) {
             errorValue = 3;
         }
