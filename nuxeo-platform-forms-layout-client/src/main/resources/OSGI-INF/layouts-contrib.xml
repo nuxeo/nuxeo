@@ -1415,6 +1415,13 @@
           <mode>edit</mode>
           <mode>view</mode>
         </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>true</complex>
+          <supportedTypes>
+            <type>*</type>
+          </supportedTypes>
+        </fields>
         <acceptingSubWidgets>true</acceptingSubWidgets>
         <properties>
           <layouts mode="any">
