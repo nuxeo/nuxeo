@@ -9,29 +9,23 @@ a:hover { text-decoration: underline }
 
 img { border: none }
 
-button {
-  line-height: 100%;
+button { line-height: 100%;
   cursor: pointer;
   color: #333;
   text-align: center;
   text-decoration: none;
-  padding: 0.1em 0.5em 0.2em;
+  padding: .1em .5em .2em;
   margin:.5em 1em .5em 0;
-  text-shadow: 0 1px 1px rgba(0,0,0,.3);
   -webkit-border-radius: .3em;
   -moz-border-radius: .3em;
   border-radius: .3em;
-  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
-  -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
-  box-shadow: 0 1px 2px rgba(0,0,0,.2);
 	border: solid 1px #da7c0c;
 	background: -moz-linear-gradient(top, #ffffff 0%, #eaeaea 100%) #f1f2f3;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#eaeaea)) #f1f2f3;
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f1f2f3');
-}
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f1f2f3');}
 
 #content, .content { clear: both; padding: .5em; overflow: auto }
-.content h2 { border-bottom: 1px solid #3399ff; margin: 0 0 .5em; padding: .3em 0 .4em; text-align: center }
+.content h2 { border-bottom: 1px solid #39f; margin: 0 0 .5em; padding: .3em 0 .4em; text-align: center }
 
 #nxDocumentList { width:98%; margin:0 auto }
 
@@ -41,6 +35,10 @@ button {
 .floatR { float: right }
 .paddingR { padding-right: 1.5em }
 .paddingL { padding-left: 1.5em }
+.boldLabel { font-weight: bold }
+.textAlignC, .center { text-align: center }
+
+.warning { background-color: #fff7b0 }
 
 /* Top gray tool bar */
 .tools { background-color: #f4f4f4; line-height: 150%; padding: .5em }
@@ -53,20 +51,31 @@ button {
    text-decoration: none }
 .linkButton:hover { border-color: #9d9d9d }
 
+/* Top white tool bar */
+.header { border-bottom: 1px solid #ddd; margin: 2px 0 5px; padding: 0 0 5px }
+.header h3 { float: left; margin: 3px 0 0 }
+
+/* Breadcrumb */
+.breadcrumb { font-size: 9px }
+
+/* Search box */
+input.searchBox { font: 11px 'Lucida Grande',Verdana,Arial,sans-serif; padding: 1px 3px 0 1px }
+
 /* Tables */
 .dataList { background: white none repeat scroll 0% 0%; border-collapse: collapse; margin: 0; width: 100% }
 
-.dataList thead th { border-bottom: 1px solid #c7c7c7; color: #666;
-  padding: .5em .3em; text-align: left; font-size: 11px; font-weight: normal }
+.dataList thead th { border-bottom: 1px solid #c7c7c7; color: #666; font-size: 11px; font-weight: normal; padding: .5em .3em; text-align: left }
 
 .dataList thead th a, .dataList thead th a:link { color: #fff; text-decoration: none }
 .dataList thead th a:visited, .dataList thead th a:active { color: #fff }
 .dataList thead th a:hover { color: #fff; text-decoration: underline }
 
-.dataList td { border-style: none none solid; border-width: 1px; border-color: #c7c7c7; font-size: 11px; line-height: 110%; margin: 0; padding: .5em .3em; vertical-align: top }
+.dataList td { border-style: none none solid; border-width: 1px; border-color: #c7c7c7; font-size: 11px; line-height: 110%; margin: 0; padding: .6em .3em; vertical-align: top }
 
-.dataList .iconColumn { width: 20px; text-align: center }
+.dataList .iconColumn { text-align: center; width: 20px }
 .dataOutput td table td { border: 0 none transparent }
+
+.dataRowEven { background-color: #f2f7fc }
 
 /* Pagination controls */
 #pageNavigationControls span {
@@ -77,7 +86,7 @@ margin: 1em .5em;
 vertical-align: top }
 
 #pageNavigationControls {
-border-bottom: 1px solid #3399ff;
+border-bottom: 1px solid #39f;
 margin: 0;
 padding: .3em 0 0;
 text-align: center;
@@ -96,17 +105,29 @@ textarea { border: 1px solid #bbb;
     line-height: 18px;
     padding: .3em }
 
-.createDocument h3 { border-bottom: 1px solid #eee; font-size: 13px; padding: 0 0 1em }
-.createDocument .border { border: 1px solid #ddd }
-.createDocument input.input, .createDocument textarea.input { width: 180px }
-.createDocument td { vertical-align: top }
-.createDocument .actions { margin-top: 5px }
-.createDocument .actions input, .createDocument .actions button {background-color: #fefefe; cursor: pointer}
-.createDocument .actions input:hover, .createDocument .actions button:hover {border-color:#333}
-textarea { font-size:11px }
+.creationForm { text-align: center }
+.creationForm table { font-size: 13px; margin: 0 auto }
+.creationForm h3 { border-bottom: 1px solid #eee; font-size: 13px; padding: 0 0 1em }
+.creationForm input, .creationForm textarea { border: 1px solid #ddd; width: 160px }
+.creationForm td { vertical-align: top }
+.creationForm .actions { margin-top: 5px }
+.creationForm .actions input, .creationForm .actions button { background-color: #fefefe; cursor: pointer; margin: 0 .5em; width: auto }
+.creationForm .actions input:hover, .creationForm .actions button:hover { border-color: #333 }
+textarea { font-size: 11px }
 
-.center { text-align: center }
-table.create { margin: auto }
+.creationForm table.create { margin: auto }
+
+.required { background:transparent url(../icons/required.gif) top right no-repeat; padding:0 1em 0 0 }
+
+/* Tooltips */
+a.button { text-decoration: none; position: relative }
+a.disabled { cursor: default }
+.tooltip { text-decoration: none; margin-left: -999em; position: absolute; background-color: #f9f9f9; border: 1px solid #ccc; border-radius: 3px; color: #333; padding: 5px; z-index: 9999 }
+a.button:hover .tooltip { text-decoration: none; box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1); font-family: Lucida,Geneva,sans-serif; margin-left: 0; position: absolute; top: -7px; right: 25px; width: 120px; z-index: 9999 }
+
+/* FancyBox message */
+.fancyContent { padding: 10px }
+.fancyMessage { font-size: 110%; padding-bottom: 10px; text-align: center }
 
 /* Override GWT default values */
 iframe.gwt-Frame { overflow: auto!important; overflow-x: scroll!important }
