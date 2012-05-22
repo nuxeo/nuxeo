@@ -39,8 +39,8 @@
                 <rich:treeNode
                   highlightedClass="treeNodeHighlightedClass"
                   selectedClass="treeNodeSelectedClass"
-                   oncomplete="jQuery('span.popupTarget').contextMenu('popupMenu');">
-                  <div id="nodeRefTarget:#{node.document.id}" class="nxDropTarget">
+                  oncomplete="jQuery('span.popupTarget').contextMenu('popupMenu');">
+                  <div id="nodeRefTarget:#{node.document.id}" class="nxDropTarget#{currentDocument.id == node.document.id ? ' selected' : ''}">
                     <span class="popupTarget" docRef="#{node.document.ref}">
                       <nxd:restDocumentLink document="#{node.document}"
                         styleClass="treeLink">
