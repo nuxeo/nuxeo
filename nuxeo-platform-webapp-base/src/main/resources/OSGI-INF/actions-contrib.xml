@@ -108,10 +108,23 @@
       order="70" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION</category>
     </action>
+
+    <action id="restoreVersion" link="#{deleteActions.restoreCurrentDocument}"
+      order="1" label="command.undeleteDocs" immediate="true">
+      <category>DOCUMENT_SUMMARY_CUSTOM_ACTIONS</category>
+      <filter-id>restoreVersionDisplay</filter-id>
+    </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
+
+    <filter id="restoreVersionDisplay">
+      <rule grant="true">
+        <condition>#{deleteActions.restoreActionDisplay()}
+        </condition>
+      </rule>
+    </filter>
 
     <filter id="seamHotReloadIsEnabled">
       <rule grant="true">
