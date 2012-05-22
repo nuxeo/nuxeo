@@ -125,20 +125,21 @@
       </li>
       <li>
         dateFormater(String): returns a date format pattern using format given
-        in parameter. Accepted values: short, medium, long, full.
+        in parameter. Accepted values: short, shortWithCentury (since 5.6),
+        medium, long, full.
       </li>
       <li>
         basicDateFormater(String): returns a date format pattern using the
-        default format "short".
+        default format "shortWithCentury".
       </li>
       <li>
         dateAndTimeFormater(String): returns a date and time format pattern
-        using format given in parameter. Accepted values: short, medium, long,
-        full.
+        using format given in parameter. Accepted values: short,
+        shortWithCentury, medium, long, full.
       </li>
       <li>
         basicDateAndTimeFormater(String): returns a date and time format pattern
-        using the default format "short".
+        using the default format "shortWithCentury".
       </li>
       <li>
         combineLists(List...): returns an aggregate list with the elements all

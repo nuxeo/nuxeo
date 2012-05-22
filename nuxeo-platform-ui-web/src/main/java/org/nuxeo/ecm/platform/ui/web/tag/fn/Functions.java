@@ -120,6 +120,8 @@ public final class Functions {
     static final Map<String, String> mapOfDateLength = new HashMap<String, String>() {
         {
             put("short", String.valueOf(DateFormat.SHORT));
+            put("shortWithCentury".toLowerCase(),
+                    "shortWithCentury".toLowerCase());
             put("medium", String.valueOf(DateFormat.MEDIUM));
             put("long", String.valueOf(DateFormat.LONG));
             put("full", String.valueOf(DateFormat.FULL));
@@ -237,8 +239,8 @@ public final class Functions {
     /**
      * Returns the full name of a user, or its username if user if not found.
      * <p>
-     * Since 5.5, returns null if given username is null (instead of
-     * returning the current user full name).
+     * Since 5.5, returns null if given username is null (instead of returning
+     * the current user full name).
      */
     @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
@@ -357,15 +359,25 @@ public final class Functions {
         return StringUtils.isBlank(label) ? name : label;
     }
 
+    /**
+     * Return the date format to handle date taking the user's locale into
+     * account.
+     */
     public static String dateFormater(String formatLength) {
         // A map to store temporary available date format
         FacesContext context = FacesContext.getCurrentInstance();
         Locale locale = context.getViewRoot().getLocale();
 
-        int style = Integer.parseInt(mapOfDateLength.get(formatLength.toLowerCase()));
-        DateFormat aDateFormat = DateFormat.getDateInstance(
-                Integer.parseInt(mapOfDateLength.get(formatLength.toLowerCase())),
-                locale);
+        int style = DateFormat.SHORT;
+        String styleString = mapOfDateLength.get(formatLength.toLowerCase());
+        boolean addCentury = false;
+        if ("shortWithCentury".toLowerCase().equals(styleString)) {
+            addCentury = true;
+        } else {
+            style = Integer.parseInt(styleString);
+        }
+
+        DateFormat aDateFormat = DateFormat.getDateInstance(style, locale);
 
         // Cast to SimpleDateFormat to make "toPattern" method available
         SimpleDateFormat format = (SimpleDateFormat) aDateFormat;
@@ -373,19 +385,25 @@ public final class Functions {
         // return the date pattern
         String pattern = format.toPattern();
 
-        if (style == DateFormat.SHORT) {
+        if (style == DateFormat.SHORT && addCentury) {
             // hack to add century on generated pattern
             pattern = pattern.replace("yy", "yyyy");
         }
         return pattern;
     }
 
-    // method to format date in the standard short format
+    /**
+     * Return the date format to handle date taking the user's locale into
+     * account. Uses the pseudo "shortWithCentury" format.
+     */
     public static String basicDateFormater() {
-        return dateFormater("short");
+        return dateFormater("shortWithCentury");
     }
 
-    // method to format date and time considering user's local
+    /**
+     * Return the date format to handle date and time taking the user's locale
+     * into account.
+     */
     public static String dateAndTimeFormater(String formatLength) {
 
         // A map to store temporary available date format
@@ -393,7 +411,15 @@ public final class Functions {
         FacesContext context = FacesContext.getCurrentInstance();
         Locale locale = context.getViewRoot().getLocale();
 
-        int style = Integer.parseInt(mapOfDateLength.get(formatLength.toLowerCase()));
+        int style = DateFormat.SHORT;
+        String styleString = mapOfDateLength.get(formatLength.toLowerCase());
+        boolean addCentury = false;
+        if ("shortWithCentury".toLowerCase().equals(styleString)) {
+            addCentury = true;
+        } else {
+            style = Integer.parseInt(styleString);
+        }
+
         DateFormat aDateFormat = DateFormat.getDateTimeInstance(style, style,
                 locale);
 
@@ -403,16 +429,19 @@ public final class Functions {
         // return the date pattern
         String pattern = format.toPattern();
 
-        if (style == DateFormat.SHORT) {
+        if (style == DateFormat.SHORT && addCentury) {
             // hack to add century on generated pattern
             pattern = pattern.replace("yy", "yyyy");
         }
         return pattern;
     }
 
-    // method to format date and time in the standard short format
+    /**
+     * Return the date format to handle date and time taking the user's locale
+     * into account. Uses the pseudo "shortWithCentury" format.
+     */
     public static String basicDateAndTimeFormater() {
-        return dateAndTimeFormater("short");
+        return dateAndTimeFormater("shortWithCentury");
     }
 
     public static String printFileSize(String size) {
@@ -562,8 +591,8 @@ public final class Functions {
     /**
      * Transform the parameter in entry according to these unit systems:
      * <ul>
-     * <li> SI prefixes: k/M/G for kilo, mega, giga </li>
-     * <li> IEC prefixes: Ki/Mi/Gi for kibi, mebi, gibi </li>
+     * <li>SI prefixes: k/M/G for kilo, mega, giga</li>
+     * <li>IEC prefixes: Ki/Mi/Gi for kibi, mebi, gibi</li>
      * </ul>
      *
      * @param m : binary prefix multiplier
@@ -646,7 +675,7 @@ public final class Functions {
 
     public static List<Object> combineLists(List<? extends Object>... lists) {
         List<Object> combined = new ArrayList<Object>();
-        for (List<? extends Object> list: lists) {
+        for (List<? extends Object> list : lists) {
             combined.addAll(list);
         }
         return combined;
