@@ -503,7 +503,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             if (!additionnalInfo.containsKey("validationBaseUrl")) {
                 String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
                 Path path = new Path(StringUtils.isBlank(baseUrl) ? "/" : baseUrl);
-                path.append(getConfiguration(configurationName).getValidationRelUrl());
+                path = path.append(getConfiguration(configurationName).getValidationRelUrl());
                 additionnalInfo.put("validationBaseURL", path.toString());
             }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
@@ -719,7 +719,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         Map<String, Object> input = new HashMap<String, Object>();
         additionalInfos.put("validationBaseURL", BaseURL.getBaseURL()
                 + getConfiguration(registrationDoc).getValidationRelUrl());
-        input.putAll(additionalInfos);
+        input.put("info", additionalInfos);
         input.put("userAlreadyExists",
                 checkUserFromRegistrationExistence(registrationDoc));
         input.put(REGISTRATION_DATA_DOC, registrationDoc);
