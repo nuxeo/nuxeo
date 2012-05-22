@@ -73,6 +73,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.rating</groupId>
+      <artifactId>nuxeo-rating-gadget</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.rating</groupId>
       <artifactId>nuxeo-rating-web</artifactId>
     </dependency>
 
