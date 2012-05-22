@@ -33,9 +33,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.QName;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
@@ -140,8 +142,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffDisplayContribs;
     }
 
-    public List<String> getDiffDisplay(String type) {
-        return diffDisplayContribs.get(type);
+    public List<String> getDiffDisplay(String docType) {
+        return diffDisplayContribs.get(docType);
 
     }
 
@@ -161,25 +163,39 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         String rightDocType = rightDoc.getType();
         if (leftDocType.equals(rightDocType)) {
             LOGGER.info(String.format(
-                    "The 2 documents have the same type '%s' => looking for a diffDisplay contribution defined for this type.",
+                    "The 2 documents have the same type '%s' => looking for a diffDisplay contribution defined for this type or the nearest super type.",
                     leftDocType));
-            List<String> diffBlockRefs = getDiffDisplay(leftDocType);
+            List<String> diffBlockRefs = getNearestSuperTypeDiffDisplay(leftDocType);
             if (diffBlockRefs != null) {
                 LOGGER.info(String.format(
-                        "Found a diffDisplay contribution defined for the type '%s' => using it to display the diff.",
+                        "Found a diffDisplay contribution defined for the type '%s' or one of its super type => using it to display the diff.",
                         leftDocType));
                 return getDiffDisplayBlocks(
                         getDiffBlockDefinitions(diffBlockRefs), docDiff,
                         leftDoc, rightDoc);
             } else {
                 LOGGER.info(String.format(
-                        "No diffDisplay contribution was defined for the type '%s' => using default diff display.",
+                        "No diffDisplay contribution was defined for the type '%s' or one of its super type => using default diff display.",
                         leftDocType));
             }
         } else {
             LOGGER.info(String.format(
-                    "The 2 documents don't have the same type ('%s'/'%s') => using default diff display.",
+                    "The 2 documents don't have the same type: '%s'/'%s' => looking for a diffDisplay contribution defined for the nearest common super type.",
                     leftDocType, rightDocType));
+            List<String> diffBlockRefs = getNearestSuperTypeDiffDisplay(
+                    leftDocType, rightDocType);
+            if (diffBlockRefs != null) {
+                LOGGER.info(String.format(
+                        "Found a diffDisplay contribution defined for a common super type of the types '%s'/'%s' => using it to display the diff.",
+                        leftDocType, rightDocType));
+                return getDiffDisplayBlocks(
+                        getDiffBlockDefinitions(diffBlockRefs), docDiff,
+                        leftDoc, rightDoc);
+            } else {
+                LOGGER.info(String.format(
+                        "No diffDisplay contribution was defined for any of the common super types of the types '%s'/'%s' => using default diff display.",
+                        leftDocType, rightDocType));
+            }
         }
         return getDefaultDiffDisplayBlocks(docDiff, leftDoc, rightDoc);
     }
@@ -192,6 +208,54 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 docDiff, leftDoc, rightDoc);
     }
 
+    protected List<String> getNearestSuperTypeDiffDisplay(String docTypeName)
+            throws ClientException {
+
+        List<String> diffDisplay = getDiffDisplay(docTypeName);
+        Type docType = getSchemaManager().getDocumentType(docTypeName);
+        while (diffDisplay == null && docType != null) {
+            Type superType = docType.getSuperType();
+            if (superType != null) {
+                diffDisplay = getDiffDisplay(superType.getName());
+            }
+            docType = superType;
+        }
+        return diffDisplay;
+    }
+
+    protected List<String> getNearestSuperTypeDiffDisplay(
+            String leftDocTypeName, String rightDocTypeName)
+            throws ClientException {
+
+        List<String> diffDisplay = null;
+
+        List<String> leftDocSuperTypeNames = new ArrayList<String>();
+        List<String> rightDocSuperTypeNames = new ArrayList<String>();
+        leftDocSuperTypeNames.add(leftDocTypeName);
+        rightDocSuperTypeNames.add(rightDocTypeName);
+
+        Type leftDocType = getSchemaManager().getDocumentType(leftDocTypeName);
+        Type rightDocType = getSchemaManager().getDocumentType(rightDocTypeName);
+        if (leftDocType != null && rightDocType != null) {
+            Type[] leftDocTypeHierarchy = leftDocType.getTypeHierarchy();
+            for (Type type : leftDocTypeHierarchy) {
+                leftDocSuperTypeNames.add(type.getName());
+            }
+            Type[] rightDocTypeHierarchy = rightDocType.getTypeHierarchy();
+            for (Type type : rightDocTypeHierarchy) {
+                rightDocSuperTypeNames.add(type.getName());
+            }
+        }
+
+        for (String superTypeName : leftDocSuperTypeNames) {
+            if (rightDocSuperTypeNames.contains(superTypeName)) {
+                return getNearestSuperTypeDiffDisplay(superTypeName);
+            }
+        }
+
+        return diffDisplay;
+    }
+
     /**
      * Registers a diff display contrib.
      *
@@ -199,27 +263,27 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
      */
     protected final void registerDiffDisplay(DiffDisplayDescriptor descriptor) {
 
-        String type = descriptor.getType();
-        if (!StringUtils.isEmpty(type)) {
+        String docType = descriptor.getType();
+        if (!StringUtils.isEmpty(docType)) {
             boolean enabled = descriptor.isEnabled();
             // Check existing diffDisplay contrib for this type
-            List<String> diffDisplay = diffDisplayContribs.get(type);
+            List<String> diffDisplay = diffDisplayContribs.get(docType);
             if (diffDisplay != null) {
                 // If !enabled remove contrib
                 if (!enabled) {
-                    diffDisplayContribs.remove(type);
+                    diffDisplayContribs.remove(docType);
                 }
                 // Else override contrib (no merge)
                 // TODO: implement merge
                 else {
-                    diffDisplayContribs.put(type,
+                    diffDisplayContribs.put(docType,
                             getDiffBlockRefs(descriptor.getDiffBlocks()));
                 }
             }
             // No existing diffDisplay contrib for this
             // type and enabled => add contrib
             else if (enabled) {
-                diffDisplayContribs.put(type,
+                diffDisplayContribs.put(docType,
                         getDiffBlockRefs(descriptor.getDiffBlocks()));
             }
         }
@@ -1454,10 +1518,30 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     }
 
     /**
+     * Gets the schema manager.
+     *
+     * @return the schema manager
+     * @throws ClientException if the schema manager cannot be found
+     */
+    protected final SchemaManager getSchemaManager() throws ClientException {
+
+        SchemaManager schemaManager;
+        try {
+            schemaManager = Framework.getService(SchemaManager.class);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        }
+        if (schemaManager == null) {
+            throw new ClientException("SchemaManager service is null.");
+        }
+        return schemaManager;
+    }
+
+    /**
      * Gets the layout store service.
      *
      * @return the layout store service
-     * @throws ClientException the client exception
+     * @throws ClientException if the layout store service cannot be found
      */
     protected final LayoutStore getLayoutStore() throws ClientException {
 

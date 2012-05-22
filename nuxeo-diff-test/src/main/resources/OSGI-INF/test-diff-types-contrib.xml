@@ -38,6 +38,14 @@
       <schema name="note" />
     </doctype>
 
+    <doctype name="ExtendedNote" extends="Note">
+      <schema name="simpletypes" />
+    </doctype>
+
+    <doctype name="ExtendedExtendedNote" extends="ExtendedNote">
+      <schema name="complextypes" />
+    </doctype>
+
   </extension>
 
 </component>

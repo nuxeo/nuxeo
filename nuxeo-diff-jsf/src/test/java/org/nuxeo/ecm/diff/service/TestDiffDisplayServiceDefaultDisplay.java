@@ -21,7 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,7 +55,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml",
         "org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml",
         "org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml",
-        "org.nuxeo.diff.jsf:OSGI-INF/diff-widgets-contrib.xml"})
+        "org.nuxeo.diff.jsf:OSGI-INF/diff-widgets-contrib.xml" })
 public class TestDiffDisplayServiceDefaultDisplay extends
         DiffDisplayServiceTestCase {
 
@@ -70,14 +69,13 @@ public class TestDiffDisplayServiceDefaultDisplay extends
     protected DiffDisplayService diffDisplayService;
 
     /**
-     * Test diff display service with no default (Document) diffDisplay contrib.
+     * Tests the default diff display on 2 documents of a different type.
      *
-     * @throws ClientException the client exception
-     * @throws ParseException
+     * @throws ClientException if an error occurs while creating the docs, doing
+     *             the diff or getting the dif display blocks
      */
     @Test
-    public void testDiffDisplayServiceNoDefaultContrib()
-            throws ClientException, ParseException {
+    public void testDefaultDiffDisplay() throws ClientException {
 
         // Create left and right docs
         DocumentModel leftDoc = session.createDocumentModel("Note");

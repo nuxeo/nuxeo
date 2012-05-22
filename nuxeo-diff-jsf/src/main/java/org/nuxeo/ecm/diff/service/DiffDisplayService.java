@@ -36,7 +36,7 @@ public interface DiffDisplayService extends Serializable {
 
     Map<String, List<String>> getDiffDisplays();
 
-    List<String> getDiffDisplay(String type);
+    List<String> getDiffDisplay(String docType);
 
     Map<String, DiffBlockDefinition> getDiffBlockDefinitions();
 

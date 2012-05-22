@@ -92,6 +92,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
 
         // --------------------------------------------------------------------
         // Check diff display for 2 documents of a different type: Note / File
+        // with no diffDisplay contrib defined for a common super type
         // => must fall back on the default diff display.
         // --------------------------------------------------------------------
 
@@ -125,9 +126,9 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
                 Arrays.asList("title", "creator"));
 
         // -----------------------------------------------------------------
-        // Check diff display for 2 documents of the same type but with no
-        // diffDisplay contrib defined for this type: OtherSampleType
-        // => must fall back on the default diff display.
+        // Check diff display for 2 documents of the same type: OtherSampleType
+        // with no diffDisplay contrib defined for this type or one of its
+        // super types => must fall back on the default diff display.
         // -----------------------------------------------------------------
 
         // Create left and right docs
@@ -163,8 +164,8 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
                 Arrays.asList("boolean"));
 
         // -----------------------------------------------------------------
-        // Check diff display for 2 documents of the same type with a
-        // diffDisplay contrib defined for this type: Note
+        // Check diff display for 2 documents of the same type: Note with a
+        // diffDisplay contrib defined for this type.
         // => must use it!
         // -----------------------------------------------------------------
 
@@ -181,6 +182,94 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         rightDoc.setPropertyValue("dc:creator", "Jack");
         rightDoc.setPropertyValue("note:note",
                 "The content of my second note written by Jack is still short.");
+        rightDoc = session.createDocument(rightDoc);
+
+        // Do doc diff
+        docDiff = docDiffService.diff(session, leftDoc, rightDoc);
+
+        // Get diff display blocks
+        diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff,
+                leftDoc, rightDoc);
+        assertNotNull(diffDisplayBlocks);
+        assertEquals(3, diffDisplayBlocks.size());
+
+        // Check diff display blocks
+        diffDisplayBlock = diffDisplayBlocks.get(0);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.heading", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
+                Arrays.asList("title"));
+
+        diffDisplayBlock = diffDisplayBlocks.get(1);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
+                Arrays.asList("creator"));
+
+        diffDisplayBlock = diffDisplayBlocks.get(2);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.note", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "note", 2,
+                Arrays.asList("note"));
+
+        // -----------------------------------------------------------------
+        // Check diff display for 2 documents of the same type: ExtendedNote
+        // with a diffDisplay contrib defined for one of its super type: Note =>
+        // must use it!
+        // -----------------------------------------------------------------
+
+        // Create left and right docs
+        leftDoc = session.createDocumentModel("ExtendedNote");
+        leftDoc.setPropertyValue("dc:title", "My extended note");
+        leftDoc.setPropertyValue("dc:creator", "Jack");
+        leftDoc.setPropertyValue("note:note", "Joe is not rich, nor is Jack.");
+        leftDoc = session.createDocument(leftDoc);
+
+        rightDoc = session.createDocumentModel("ExtendedNote");
+        rightDoc.setPropertyValue("dc:title", "My second extended note");
+        rightDoc.setPropertyValue("dc:creator", "Joe");
+        rightDoc.setPropertyValue("note:note", "Joe is much richer than Jack.");
+        rightDoc = session.createDocument(rightDoc);
+
+        // Do doc diff
+        docDiff = docDiffService.diff(session, leftDoc, rightDoc);
+
+        // Get diff display blocks
+        diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff,
+                leftDoc, rightDoc);
+        assertNotNull(diffDisplayBlocks);
+        assertEquals(3, diffDisplayBlocks.size());
+
+        // Check diff display blocks
+        diffDisplayBlock = diffDisplayBlocks.get(0);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.heading", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
+                Arrays.asList("title"));
+
+        diffDisplayBlock = diffDisplayBlocks.get(1);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
+                Arrays.asList("creator"));
+
+        diffDisplayBlock = diffDisplayBlocks.get(2);
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.note", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "note", 2,
+                Arrays.asList("note"));
+
+        // -----------------------------------------------------------------
+        // Check diff display for 2 documents of a different type:
+        // ExtendedNote/ExtendedExtendedNote with a diffDisplay contrib defined
+        // for a common super type: Note => must use it!
+        // -----------------------------------------------------------------
+
+        // Create left and right docs
+        leftDoc = session.createDocumentModel("ExtendedNote");
+        leftDoc.setPropertyValue("dc:title", "My extended note");
+        leftDoc.setPropertyValue("dc:creator", "Jack");
+        leftDoc.setPropertyValue("note:note", "Joe is not rich, nor is Jack.");
+        leftDoc = session.createDocument(leftDoc);
+
+        rightDoc = session.createDocumentModel("ExtendedExtendedNote");
+        rightDoc.setPropertyValue("dc:title", "My extended extended note");
+        rightDoc.setPropertyValue("dc:creator", "Joe");
+        rightDoc.setPropertyValue("note:note", "Joe is much richer than Jack.");
         rightDoc = session.createDocument(rightDoc);
 
         // Do doc diff
