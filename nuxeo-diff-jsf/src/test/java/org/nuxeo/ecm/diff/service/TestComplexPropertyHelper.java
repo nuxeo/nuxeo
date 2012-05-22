@@ -14,16 +14,18 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.diff.web;
+package org.nuxeo.ecm.diff.service;
 
-import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.diff.service.ComplexPropertyHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;

@@ -14,7 +14,7 @@
  * Contributors:
  *     ataillefer
  */
-package org.nuxeo.ecm.diff.web;
+package org.nuxeo.ecm.diff.service;
 
 import java.util.ArrayList;
 import java.util.List;
