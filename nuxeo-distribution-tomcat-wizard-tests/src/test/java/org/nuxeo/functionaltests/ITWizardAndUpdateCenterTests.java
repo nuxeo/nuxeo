@@ -142,7 +142,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // SMTP Settings
         WizardPage smtpPage = dbPage.next(true);
         assertNotNull(smtpPage);
-        assertEquals("SMTP Settings", smtpPage.getTitle());
+        assertEquals("SMTP transport settings", smtpPage.getTitle());
         // check port validation
         assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
         smtpPage.fillInput("mail.transport.host", SMTP_SERVER_HOST);
@@ -153,7 +153,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // check login/password validation
         smtpPage.fillInput("mail.transport.port", SMTP_SERVER_PORT);
         assertTrue(smtpPage.selectOption("mail.transport.auth", "true"));
-        smtpPage.clearInput("mail.transport.username");
+        smtpPage.clearInput("mail.transport.user");
         smtpPage.clearInput("mail.transport.password");
         smtpPage = smtpPage.next(WizardPage.class, false);
         assertTrue(smtpPage.hasError());

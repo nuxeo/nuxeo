@@ -62,4 +62,33 @@
     </dependency>
   </dependencies>
 
+ <build>
+   <plugins>
+     <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>firebug</groupId>
+                  <artifactId>firebug</artifactId>
+                  <type>xpi</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                  <destFileName>firebug.xpi</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+     </plugin>
+   </plugins>
+ </build>
 </project>

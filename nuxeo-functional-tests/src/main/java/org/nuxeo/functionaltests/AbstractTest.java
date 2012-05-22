@@ -92,8 +92,6 @@ public abstract class AbstractTest {
 
     private static final String FIREBUG_M2 = "firebug/firebug/1.6.2-fx";
 
-    private static final String M2_REPO = "repository/";
-
     private static final int PROXY_PORT = 4444;
 
     private static final String HAR_NAME = "http-headers.json";
@@ -243,31 +241,7 @@ public abstract class AbstractTest {
     }
 
     protected static void addFireBug(FirefoxProfile profile) throws Exception {
-        File xpi = null;
-        List<String> clf = getClassLoaderFiles();
-        for (String f : clf) {
-            if (f.endsWith("/" + FIREBUG_XPI)) {
-                xpi = new File(f);
-            }
-        }
-        if (xpi == null) {
-            String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll(
-                    "/$", "");
-            // try to guess the location in the M2 repo
-            for (String f : clf) {
-                if (f.contains(customM2Repo)) {
-                    String m2 = f.substring(0, f.indexOf(customM2Repo)
-                            + customM2Repo.length());
-                    xpi = new File(m2 + "/" + FIREBUG_M2 + "/" + FIREBUG_XPI);
-                    break;
-                }
-            }
-        }
-        if (xpi == null || !xpi.exists()) {
-            throw new RuntimeException(FIREBUG_XPI
-                    + " not found in classloader or local M2 repository");
-        }
-        profile.addExtension(xpi);
+        profile.addExtension(AbstractTest.class, "/firebug.xpi");
         // avoid "first run" page
         profile.setPreference("extensions.firebug.currentVersion",
                 FIREBUG_VERSION);
