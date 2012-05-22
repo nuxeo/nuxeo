@@ -3,6 +3,25 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/document_route_instance/">
 
   <xs:include schemaLocation="base.xsd" />
+
   <xs:element name="participatingDocuments" type="nxs:stringList" />
+  <xs:element name="variables" type="nxs:variables" />
+
+
+  <xs:complexType name="variables">
+    <xs:sequence>
+      <xs:element name="variable" type="nxs:variable"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="variable">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="value" type="xs:string" />
+      <!-- type? -->
+    </xs:sequence>
+  </xs:complexType>
+
 
 </xs:schema>

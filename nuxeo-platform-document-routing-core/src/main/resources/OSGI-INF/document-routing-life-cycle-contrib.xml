@@ -68,6 +68,48 @@
         <state name="canceled"></state>
       </states>
     </lifecycle>
+    <lifecycle name="routeNode" defaultInitial="ready">
+      <transitions>
+        <transition name="to_draft" destinationState="draft">
+          <description>to draft</description>
+        </transition>
+        <transition name="to_ready" destinationState="ready">
+          <description>to ready</description>
+        </transition>
+        <transition name="to_waiting" destinationState="waiting">
+          <description>to waiting</description>
+        </transition>
+        <transition name="to_suspended" destinationState="suspended">
+          <description>to suspended</description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="draft" description="Draft" initial="true">
+          <transitions>
+            <transition>to_ready</transition>
+          </transitions>
+        </state>
+        <state name="ready" description="Ready">
+          <transitions>
+            <transition>to_waiting</transition>
+            <transition>to_suspended</transition>
+            <transition>to_draft</transition>
+          </transitions>
+        </state>
+        <state name="waiting" description="Waiting for merge">
+          <transitions>
+            <transition>to_suspended</transition>
+            <transition>to_ready</transition>
+          </transitions>
+        </state>
+        <state name="suspended" description="Suspended for task">
+          <transitions>
+            <transition>to_waiting</transition>
+            <transition>to_ready</transition>
+          </transitions>
+        </state>
+      </states>
+    </lifecycle>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
@@ -86,6 +128,7 @@
         documentRouteElement
       </type>
       <type name="DocumentRouteStep">documentRouteElement</type>
+      <type name="RouteNode">routeNode</type>
     </types>
   </extension>
 

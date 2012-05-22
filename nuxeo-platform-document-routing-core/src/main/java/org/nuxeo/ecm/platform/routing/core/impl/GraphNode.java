@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.Set;
+
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
+
 /**
  * A node for a route graph. Represents operation chains, associated task and
  * form, output transitions and their conditions, etc.
@@ -29,16 +33,95 @@ public interface GraphNode {
      */
     enum State {
         /** Node is ready. */
-        READY,
+        READY("ready"),
         /** Merge node is waiting for more incoming transitions. */
-        WAITING,
+        WAITING("waiting"),
+        /** While executing input phase. Not persisted. */
+        RUNNING_INPUT,
         /** Task node is waiting for task to be done. */
-        SUSPENDED
+        SUSPENDED("suspended"),
+        /** While executing output phase. Not persisted. */
+        RUNNING_OUTPUT;
+
+        private final String lifeCycle;
+
+        private State() {
+            lifeCycle = null;
+        }
+
+        private State(String lifeCycle) {
+            this.lifeCycle = lifeCycle;
+        }
+
+        public String getLifeCycle() {
+            return lifeCycle;
+        }
+
+        public static State fromString(String s) {
+            return State.valueOf(s.toLowerCase());
+        }
     }
+
+    /**
+     * Get the node state.
+     *
+     * @return the node state
+     */
+    State getState();
+
+    /**
+     * Set the node state.
+     *
+     * @param state the node state
+     */
+    void setState(State state);
 
     /**
      * Checks if this is the start node.
      */
     boolean isStart();
+
+    /**
+     * Checks if this is a stop node.
+     */
+    boolean isStop();
+
+    /**
+     * Checks if this is a merge node.
+     */
+    boolean isMerge();
+
+    /**
+     * Get input chain.
+     *
+     * @return the input chain
+     */
+    String getInputChain();
+
+    /**
+     * Get output chain.
+     *
+     * @return the output chain
+     */
+    String getOutputChain();
+
+    /**
+     * Checks it this node has an associated user task.
+     */
+    boolean hasTask();
+
+    /**
+     * Increments the execution counter for this node.
+     */
+    void incrementCount();
+
+    /**
+     * Executes an Automation chain in the context of this node.
+     *
+     * @param chainId the chain
+     */
+    void executeChain(String chainId) throws DocumentRouteException;
+
+    Set<String> evaluateTransitionConditions() throws DocumentRouteException;
 
 }

@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 
 /**
@@ -39,5 +44,33 @@ public interface GraphRoute {
      * @return the start node
      */
     GraphNode getStartNode() throws DocumentRouteException;
+
+    /**
+     * Gets the ids of attached documents.
+     *
+     * @return a list of document ids
+     */
+    List<String> getAttachedDocumentIds();
+
+    /**
+     * Gets the attached documents.
+     *
+     * @return a list of documents
+     */
+    DocumentModelList getAttachedDocuments();
+
+    /**
+     * Gets the graph variables.
+     *
+     * @return the map of variables
+     */
+    Map<String, Serializable> getVariables();
+
+    /**
+     * Sets the graph variables.
+     *
+     * @param map the map of variables
+     */
+    void setVariables(Map<String, Serializable> map);
 
 }
