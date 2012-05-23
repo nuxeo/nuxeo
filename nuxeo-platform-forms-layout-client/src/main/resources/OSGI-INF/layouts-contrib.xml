@@ -2039,6 +2039,9 @@
                   <widget>foldable</widget>
                 </row>
                 <row>
+                  <widget>foldedByDefault</widget>
+                </row>
+                <row>
                   <widget>headerStyleClass</widget>
                 </row>
                 <row>
@@ -2069,6 +2072,20 @@
                 </helpLabels>
                 <fields>
                   <field>foldable</field>
+                </fields>
+              </widget>
+              <widget name="foldedByDefault" type="checkbox">
+                <labels>
+                  <label mode="any">Folded by default</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, and property "foldable" is also set to true,
+                    the box will be folded by default. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldedByDefault</field>
                 </fields>
               </widget>
               <widget name="showIfEmpty" type="checkbox">

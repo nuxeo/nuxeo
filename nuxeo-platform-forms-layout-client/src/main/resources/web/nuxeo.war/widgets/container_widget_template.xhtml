@@ -53,7 +53,7 @@
     <c:if test="#{showHeader}">
       <c:choose>
         <c:when test="#{widgetProperty_foldable}">
-          <h3 class="unfolded">
+          <h3 class="#{nxu:test(widgetProperty_foldedByDefault, 'folded', 'unfolded')}">
             <a href="#nogo" onclick="return toggleBox(this)">
               <span class="#{widgetProperty_headerStyleClass}">
                 <c:if test="#{widget.translated}">#{messages[widget.label]}</c:if>
@@ -71,7 +71,8 @@
       </c:choose>
     </c:if>
 
-    <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}">
+    <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}"
+      style="#{nxu:test(widgetProperty_foldedByDefault, 'display: none;', '')}">
 
       <c:choose>
 
