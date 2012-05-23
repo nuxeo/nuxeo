@@ -689,40 +689,42 @@ public class ConnectBroker {
         if (pkgsToRemove != null) {
             solverRemove.addAll(pkgsToRemove);
         }
-        DependencyResolution resolution = getPackageManager().resolveDependencies(
-                solverInstall, solverRemove, solverUpgrade, targetPlatform);
-        log.info(resolution);
-        if (resolution.isFailed()) {
-            return false;
-        }
-        // Download remote packages
-        if (!downloadPackages(resolution.getDownloadPackageIds())) {
-            log.error("Aborting packages change request");
-            return false;
-        }
-        // Uninstall packages
-        List<String> packageIds = resolution.getRemovePackageIds();
-        for (String pkgId : packageIds) {
-            if (pkgUninstall(pkgId) == null) {
+        if ((solverInstall.size() != 0) || (solverRemove.size() != 0)
+                || (solverUpgrade.size() != 0)) {
+            DependencyResolution resolution = getPackageManager().resolveDependencies(
+                    solverInstall, solverRemove, solverUpgrade, targetPlatform);
+            log.info(resolution);
+            if (resolution.isFailed()) {
                 return false;
             }
-        }
-        // Remove "pkgsToRemove" packages from local cache
-        if (pkgsToRemove != null) {
-            for (String pkg : pkgsToRemove) {
-                if (pkgRemove(pkg) == null) {
-                    // Don't error out on failed (cache) removal
+            // Download remote packages
+            if (!downloadPackages(resolution.getDownloadPackageIds())) {
+                log.error("Aborting packages change request");
+                return false;
+            }
+            // Uninstall packages
+            List<String> packageIds = resolution.getRemovePackageIds();
+            for (String pkgId : packageIds) {
+                if (pkgUninstall(pkgId) == null) {
+                    return false;
                 }
             }
-        }
-        // Install packages
-        packageIds = resolution.getInstallPackageIds();
-        for (String pkgId : packageIds) {
-            if (pkgInstall(pkgId) == null) {
-                return false;
+            // Remove "pkgsToRemove" packages from local cache
+            if (pkgsToRemove != null) {
+                for (String pkg : pkgsToRemove) {
+                    if (pkgRemove(pkg) == null) {
+                        // Don't error out on failed (cache) removal
+                    }
+                }
+            }
+            // Install packages
+            packageIds = resolution.getInstallPackageIds();
+            for (String pkgId : packageIds) {
+                if (pkgInstall(pkgId) == null) {
+                    return false;
+                }
             }
         }
         return true;
     }
-
 }
