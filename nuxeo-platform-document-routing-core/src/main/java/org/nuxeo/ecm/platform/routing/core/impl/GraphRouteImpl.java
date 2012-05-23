@@ -33,15 +33,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 
 /**
  * @since 5.6
  */
-public class GraphRouteImpl implements GraphRoute {
+public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String PROP_VARIABLES = "docri:variables";
 
@@ -49,20 +49,24 @@ public class GraphRouteImpl implements GraphRoute {
 
     public static final String PROP_VAR_VALUE = "value";
 
-    protected final DocumentModel doc;
+    /** To be used through getter. */
+    protected List<GraphNode> nodes;
 
-    protected final List<GraphNode> nodes;
-
-    public GraphRouteImpl(DocumentRouteElement element)
-            throws DocumentRouteException {
-        this.doc = element.getDocument();
-        this.nodes = computeNodes();
+    public GraphRouteImpl(DocumentModel doc) {
+        super(doc, new GraphRunner());
     }
 
-    protected List<GraphNode> computeNodes() throws DocumentRouteException {
+    public Collection<GraphNode> getNodes() {
+        if (nodes == null) {
+            nodes = computeNodes();
+        }
+        return nodes;
+    }
+
+    protected List<GraphNode> computeNodes() {
         try {
-            CoreSession session = doc.getCoreSession();
-            DocumentModelList children = session.getChildren(doc.getRef());
+            CoreSession session = document.getCoreSession();
+            DocumentModelList children = session.getChildren(document.getRef());
             List<GraphNode> nodes = new ArrayList<GraphNode>(children.size());
             for (DocumentModel doc : children) {
                 // TODO use adapters
@@ -72,22 +76,13 @@ public class GraphRouteImpl implements GraphRoute {
             }
             return nodes;
         } catch (ClientException e) {
-            throw new DocumentRouteException(e);
-        }
-    }
-
-    @Override
-    public String getName() {
-        try {
-            return doc.getTitle();
-        } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
     @Override
     public GraphNode getStartNode() throws DocumentRouteException {
-        for (GraphNode node : nodes) {
+        for (GraphNode node : getNodes()) {
             if (node.isStart()) {
                 return node;
             }
@@ -96,15 +91,11 @@ public class GraphRouteImpl implements GraphRoute {
                 + getName());
     }
 
-    public Collection<GraphNode> getNodes() {
-        return nodes;
-    }
-
     @Override
     public Map<String, Serializable> getVariables() {
         try {
             @SuppressWarnings("unchecked")
-            List<Map<String, Serializable>> vars = (List<Map<String, Serializable>>) doc.getPropertyValue(PROP_VARIABLES);
+            List<Map<String, Serializable>> vars = (List<Map<String, Serializable>>) document.getPropertyValue(PROP_VARIABLES);
             Map<String, Serializable> map = new LinkedHashMap<String, Serializable>();
             for (Map<String, Serializable> var : vars) {
                 String name = (String) var.get(PROP_VAR_NAME);
@@ -127,35 +118,25 @@ public class GraphRouteImpl implements GraphRoute {
                 m.put(PROP_VAR_VALUE, es.getValue());
                 vars.add(m);
             }
-            doc.setPropertyValue(PROP_VARIABLES, (Serializable) vars);
-            CoreSession session = doc.getCoreSession();
-            session.saveDocument(doc);
-            session.save();
+            document.setPropertyValue(PROP_VARIABLES, (Serializable) vars);
+            CoreSession session = document.getCoreSession();
+            session.saveDocument(document);
+            // session.save(); // done by caller
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
     @Override
-    public List<String> getAttachedDocumentIds() {
+    public DocumentModelList getAttachedDocumentModels() {
         try {
             @SuppressWarnings("unchecked")
-            List<String> ids = (List<String>) doc.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
-            return ids;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
-    @Override
-    public DocumentModelList getAttachedDocuments() {
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> ids = (List<String>) doc.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
+            List<String> ids = (List<String>) document.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
             ArrayList<DocumentRef> docRefs = new ArrayList<DocumentRef>();
             for (String id : ids) {
                 docRefs.add(new IdRef(id));
             }
-            return doc.getCoreSession().getDocuments(
+            return document.getCoreSession().getDocuments(
                     docRefs.toArray(new DocumentRef[0]));
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

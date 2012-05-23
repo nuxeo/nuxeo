@@ -18,6 +18,12 @@
         <transition name="toDone" destinationState="done">
           <description>the element finishes</description>
         </transition>
+        <transition name="toWaiting" destinationState="waiting">
+          <description>the element waits for a join</description>
+        </transition>
+        <transition name="toSuspended" destinationState="suspended">
+          <description>the element waits for a task</description>
+        </transition>
         <transition name="backToReady" destinationState="ready">
           <description>the element finishes</description>
         </transition>
@@ -46,6 +52,8 @@
         <state name="ready" description="The element is ready" initial="true">
           <transitions>
             <transition>toRunning</transition>
+            <transition>toWaiting</transition>
+            <transition>toSuspended</transition>
             <transition>toCanceled</transition>
             <transition>toDraft</transition>
           </transitions>
@@ -65,47 +73,24 @@
             <transition>toDraft</transition>
           </transitions>
         </state>
-        <state name="canceled"></state>
-      </states>
-    </lifecycle>
-    <lifecycle name="routeNode" defaultInitial="ready">
-      <transitions>
-        <transition name="to_draft" destinationState="draft">
-          <description>to draft</description>
-        </transition>
-        <transition name="to_ready" destinationState="ready">
-          <description>to ready</description>
-        </transition>
-        <transition name="to_waiting" destinationState="waiting">
-          <description>to waiting</description>
-        </transition>
-        <transition name="to_suspended" destinationState="suspended">
-          <description>to suspended</description>
-        </transition>
-      </transitions>
-      <states>
-        <state name="draft" description="Draft" initial="true">
+        <state name="waiting" description="The element waits for a join">
           <transitions>
-            <transition>to_ready</transition>
+            <transition>toReady</transition>
+            <transition>toSuspended</transition>
+            <transition>toDraft</transition>
           </transitions>
         </state>
-        <state name="ready" description="Ready">
+        <state name="suspended" description="The element waits for a task">
           <transitions>
-            <transition>to_waiting</transition>
-            <transition>to_suspended</transition>
-            <transition>to_draft</transition>
+            <transition>toReady</transition>
+            <transition>toWaiting</transition>
+            <transition>toDraft</transition>
           </transitions>
         </state>
-        <state name="waiting" description="Waiting for merge">
+        <state name="canceled" description="The element is cancelled">
           <transitions>
-            <transition>to_suspended</transition>
-            <transition>to_ready</transition>
-          </transitions>
-        </state>
-        <state name="suspended" description="Suspended for task">
-          <transitions>
-            <transition>to_waiting</transition>
-            <transition>to_ready</transition>
+            <transition>backToReady</transition>
+            <transition>toDraft</transition>
           </transitions>
         </state>
       </states>
@@ -128,7 +113,7 @@
         documentRouteElement
       </type>
       <type name="DocumentRouteStep">documentRouteElement</type>
-      <type name="RouteNode">routeNode</type>
+      <type name="RouteNode">documentRouteElement</type>
     </types>
   </extension>
 

@@ -33,34 +33,59 @@ public interface GraphNode {
      */
     enum State {
         /** Node is ready. */
-        READY("ready"),
+        READY("ready", "toReady"),
         /** Merge node is waiting for more incoming transitions. */
-        WAITING("waiting"),
+        WAITING("waiting", "toWaiting"),
         /** While executing input phase. Not persisted. */
         RUNNING_INPUT,
         /** Task node is waiting for task to be done. */
-        SUSPENDED("suspended"),
+        SUSPENDED("suspended", "toSuspended"),
         /** While executing output phase. Not persisted. */
         RUNNING_OUTPUT;
 
-        private final String lifeCycle;
+        private final String lifeCycleState;
+
+        private final String transition;
 
         private State() {
-            lifeCycle = null;
+            lifeCycleState = null;
+            transition = null;
         }
 
-        private State(String lifeCycle) {
-            this.lifeCycle = lifeCycle;
+        private State(String lifeCycleState, String transition) {
+            this.lifeCycleState = lifeCycleState;
+            this.transition = transition;
         }
 
-        public String getLifeCycle() {
-            return lifeCycle;
+        /**
+         * Corresponding lifecycle state.
+         */
+        public String getLifeCycleState() {
+            return lifeCycleState;
+        }
+
+        /**
+         * Transition leading to this state.
+         */
+        public String getTransition() {
+            return transition;
         }
 
         public static State fromString(String s) {
-            return State.valueOf(s.toLowerCase());
+            try {
+                return State.valueOf(s.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(s);
+            }
         }
     }
+
+    /**
+     * Get the node id.
+     *
+     * @return the node id
+     */
+    String getId();
 
     /**
      * Get the node state.

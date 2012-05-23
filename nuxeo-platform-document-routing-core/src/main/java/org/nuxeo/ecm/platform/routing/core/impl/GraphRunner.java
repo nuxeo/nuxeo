@@ -19,18 +19,12 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Runs the proper nodes depending on the graph state.
@@ -51,7 +45,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
 
     protected void startGraph(CoreSession session, DocumentRouteElement element)
             throws DocumentRouteException {
-        GraphRoute graph = new GraphRouteImpl(element);
+        GraphRoute graph = (GraphRoute) element;
         // TODO graph.setRunning();
         // TODO event
         runGraph(graph, graph.getStartNode());
@@ -135,7 +129,6 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 nodes.addFirst(node);
             }
         }
-
     }
 
 }

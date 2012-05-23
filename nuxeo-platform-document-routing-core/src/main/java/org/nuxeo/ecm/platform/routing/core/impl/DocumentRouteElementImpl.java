@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class DocumentRouteElementImpl implements DocumentRouteElement,
         DocumentRouteStep {
@@ -57,6 +57,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         this.runner = runner;
     }
 
+    @Override
     public DocumentModelList getAttachedDocuments(CoreSession session) {
         List<String> docIds = getDocumentRoute(session).getAttachedDocuments();
         List<DocumentRef> refs = new ArrayList<DocumentRef>();
@@ -91,6 +92,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         return parent.getAdapter(DocumentRoute.class);
     }
 
+    @Override
     public DocumentModel getDocument() {
         return document;
     }
@@ -208,6 +210,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         followTransition(ElementLifeCycleTransistion.toReady, session, true);
     }
 
+    @Override
     public void validate(CoreSession session) throws ClientException {
         setValidated(session);
         setReadOnly(session);
@@ -239,16 +242,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
             ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
             routingACL.add(new ACE(SecurityConstants.EVERYONE,
                     SecurityConstants.READ, true));
-
             // block rights inheritance
-            ACL inheritedACL = acp.getOrCreateACL(ACL.INHERITED_ACL);
-            inheritedACL.add(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
-
             ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
             localACL.add(new ACE(SecurityConstants.EVERYONE,
                     SecurityConstants.EVERYTHING, false));
-
             doc.setACP(acp, true);
             session.saveDocument(doc);
         }
@@ -368,6 +365,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         }
     }
 
+    @Override
     public void cancel(CoreSession session) {
         runner.cancel(session, this);
     }
@@ -377,6 +375,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
         followTransition(ElementLifeCycleTransistion.toCanceled, session, false);
     }
 
+    @Override
     public boolean isModifiable() {
         return (isDraft() || isReady() || isRunning());
     }

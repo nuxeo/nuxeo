@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -236,16 +235,12 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             if (instance == null) {
                 return;
             }
-            ACP acp = new ACPImpl();
+            ACP acp = instance.getACP();
             // remove READ for everyone
             ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
             routingACL.remove(new ACE(SecurityConstants.EVERYONE,
                     SecurityConstants.READ, true));
             // unblock rights inheritance
-            ACL inheritedACL = acp.getOrCreateACL(ACL.INHERITED_ACL);
-            inheritedACL.remove(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
-
             ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
             localACL.remove(new ACE(SecurityConstants.EVERYONE,
                     SecurityConstants.EVERYTHING, false));

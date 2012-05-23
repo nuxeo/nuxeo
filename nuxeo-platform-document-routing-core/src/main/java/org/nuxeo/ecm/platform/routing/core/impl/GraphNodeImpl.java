@@ -28,8 +28,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
@@ -49,9 +47,12 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.6
  */
-public class GraphNodeImpl implements GraphNode {
+public class GraphNodeImpl extends DocumentRouteElementImpl implements
+        GraphNode {
 
-    private static final Log log = LogFactory.getLog(GraphNodeImpl.class);
+    private static final long serialVersionUID = 1L;
+
+    public static final String PROP_NODE_ID = "rnode:nodeId";
 
     public static final String PROP_START = "rnode:start";
 
@@ -83,23 +84,13 @@ public class GraphNodeImpl implements GraphNode {
 
     public static final String PROP_TRANS_RESULT = "result";
 
-    protected final DocumentModel doc;
-
     protected final GraphRouteImpl graph;
 
     protected State localState;
 
     public GraphNodeImpl(DocumentModel doc, GraphRouteImpl graph) {
-        this.doc = doc;
+        super(doc, new GraphRunner());
         this.graph = graph;
-    }
-
-    protected Object getProperty(String propertyName) {
-        try {
-            return doc.getPropertyValue(propertyName);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
     }
 
     protected boolean getBoolean(String propertyName) {
@@ -107,11 +98,16 @@ public class GraphNodeImpl implements GraphNode {
     }
 
     protected CoreSession getSession() {
-        return doc.getCoreSession();
+        return document.getCoreSession();
     }
 
     protected void saveDocument() throws ClientException {
-        getSession().saveDocument(doc);
+        getSession().saveDocument(document);
+    }
+
+    @Override
+    public String getId() {
+        return (String) getProperty(PROP_NODE_ID);
     }
 
     @Override
@@ -120,7 +116,7 @@ public class GraphNodeImpl implements GraphNode {
             if (localState != null) {
                 return localState;
             }
-            String s = doc.getCurrentLifeCycleState();
+            String s = document.getCurrentLifeCycleState();
             return State.fromString(s);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -133,18 +129,17 @@ public class GraphNodeImpl implements GraphNode {
             if (state == null) {
                 throw new NullPointerException("null state");
             }
-            String lc = state.getLifeCycle();
+            String lc = state.getLifeCycleState();
             if (lc == null) {
                 localState = state;
                 return;
             } else {
                 localState = null;
-                String oldLc = doc.getCurrentLifeCycleState();
+                String oldLc = document.getCurrentLifeCycleState();
                 if (lc.equals(oldLc)) {
                     return;
                 }
-                String transition = "to_" + lc;
-                doc.followTransition(transition);
+                document.followTransition(state.getTransition());
                 saveDocument();
             }
         } catch (ClientException e) {
@@ -190,7 +185,7 @@ public class GraphNodeImpl implements GraphNode {
             if (count == null) {
                 count = Long.valueOf(0);
             }
-            doc.setPropertyValue(PROP_COUNT,
+            document.setPropertyValue(PROP_COUNT,
                     Long.valueOf(count.longValue() + 1));
             saveDocument();
         } catch (ClientException e) {
@@ -206,7 +201,7 @@ public class GraphNodeImpl implements GraphNode {
     protected Map<String, Serializable> getVariables() {
         try {
             @SuppressWarnings("unchecked")
-            List<Map<String, Serializable>> vars = (List<Map<String, Serializable>>) doc.getPropertyValue(PROP_VARIABLES);
+            List<Map<String, Serializable>> vars = (List<Map<String, Serializable>>) document.getPropertyValue(PROP_VARIABLES);
             Map<String, Serializable> map = new LinkedHashMap<String, Serializable>();
             for (Map<String, Serializable> var : vars) {
                 String name = (String) var.get(PROP_VAR_NAME);
@@ -233,7 +228,7 @@ public class GraphNodeImpl implements GraphNode {
                 m.put(PROP_VAR_VALUE, es.getValue());
                 vars.add(m);
             }
-            doc.setPropertyValue(PROP_VARIABLES, (Serializable) vars);
+            document.setPropertyValue(PROP_VARIABLES, (Serializable) vars);
             saveDocument();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -249,14 +244,20 @@ public class GraphNodeImpl implements GraphNode {
         context.putAll(graphVariables);
         context.putAll(nodeVariables);
         // workflow context
-        context.put("workflowId", graph.getName());
+        // context.put("workflowId", graph.get);
         context.put("initiator", "");
         context.put("documents", "");
+        context.put("workflowStartTime", "");
         // node context
-        context.put("", "");
+        context.put("nodeId", getId());
+        context.put("state", getState().name().toLowerCase());
+        context.put("nodeStartTime", ""); // TODO
         // task context
-        context.put("", "");
-        context.setInput(graph.getAttachedDocuments());
+        context.put("assignees", ""); // TODO
+        context.put("comment", ""); // TODO filled by form
+        context.put("status", ""); // TODO filled by form
+        // associated docs
+        context.setInput(graph.getAttachedDocumentModels());
         return context;
     }
 
@@ -266,9 +267,6 @@ public class GraphNodeImpl implements GraphNode {
         if (StringUtils.isEmpty(chainId)) {
             return;
         }
-
-        // context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-        // element);
 
         // get variables from node and graph
         Map<String, Serializable> graphVariables = graph.getVariables();
@@ -324,8 +322,7 @@ public class GraphNodeImpl implements GraphNode {
             Set<String> targetIds = new HashSet<String>();
             OperationContext context = getContext(graph.getVariables(),
                     getVariables());
-            @SuppressWarnings("unchecked")
-            ListProperty transProps = (ListProperty) doc.getProperty(PROP_TRANSITIONS);
+            ListProperty transProps = (ListProperty) document.getProperty(PROP_TRANSITIONS);
             for (Property p : transProps) {
                 MapProperty prop = (MapProperty) p;
                 String transitionId = (String) prop.get(PROP_TRANS_NAME).getValue();

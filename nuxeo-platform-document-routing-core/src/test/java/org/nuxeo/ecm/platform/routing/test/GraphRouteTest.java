@@ -16,13 +16,10 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues.graph;
-
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +31,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -72,6 +70,8 @@ public class GraphRouteTest {
     public void setUp() {
         routing = Framework.getLocalService(DocumentRoutingService.class);
         assertNotNull(routing);
+        // init user tables now (cleaner debug)
+        Framework.getLocalService(UserManager.class);
     }
 
     protected DocumentModel createRoute(String name) throws ClientException,
@@ -91,20 +91,27 @@ public class GraphRouteTest {
 
     @Test
     public void testRunGraphRoute() throws ClientException {
-        DocumentModel routeDoc = createRoute("route");
 
+        // doc
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        session.createDocument(doc);
+
+        // route
+        DocumentModel routeDoc = createRoute("route");
         DocumentModel node1Doc = createNode(routeDoc, "node1");
         node1Doc.setPropertyValue(RNODE_START, Boolean.TRUE);
         session.saveDocument(node1Doc);
-
         DocumentModel node2Doc = createNode(routeDoc, "node2");
         node2Doc.setPropertyValue(RNODE_STOP, Boolean.TRUE);
         session.saveDocument(node2Doc);
 
-        session.save();
-
+        // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
-        route.run(session);
+        // draft -> validated
+        route = routing.validateRouteModel(route, session);
+
+        // create instance and start
+        route = routing.createNewInstance(route, doc.getId(), session, true);
     }
 
 }
