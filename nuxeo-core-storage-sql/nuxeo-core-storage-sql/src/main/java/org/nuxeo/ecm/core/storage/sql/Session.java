@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -387,13 +388,23 @@ public interface Session extends Connection {
     Node getLastVersion(Serializable versionSeriesId) throws StorageException;
 
     /**
-     * Creates a binary value given an input stream.
+     * Creates a binary value given an stream source.
      *
-     * @param in the input stream
+     * @param source the input stream
      * @return the binary value
      * @throws StorageException
      */
-    Binary getBinary(InputStream in) throws StorageException;
+    Binary getBinary(InputStream source) throws StorageException;
+
+    /**
+     * Creates a binary value given an stream source.
+     *
+     * @since 5.6
+     * @param source the file stream
+     * @return the binary value
+     * @throws StorageException
+     */
+    Binary getBinary(FileSource source) throws StorageException;
 
     /**
      * Finds the proxies for a document. If the parent is not null, the search

@@ -22,12 +22,14 @@ import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
@@ -46,7 +48,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  *
  * @author Florent Guillaume
  */
-public class DefaultBinaryManager implements BinaryManager {
+public class DefaultBinaryManager implements BinaryManager, BinaryManagerStreamSupport {
 
     private static final Log log = LogFactory.getLog(DefaultBinaryManager.class);
 
@@ -148,38 +150,27 @@ public class DefaultBinaryManager implements BinaryManager {
         return NullBinaryScrambler.INSTANCE;
     }
 
+
     @Override
-    public Binary getBinary(InputStream in) throws IOException {
+    public Binary getBinary(FileSource source) throws IOException {
+        String  digest = storeAndDigest(source);
+
+        File file = getFileForDigest(digest, false);
         /*
-         * First, write the input stream to a temporary file, while computing a
-         * digest.
+         * Now we can build the Binary.
          */
-        File tmp = File.createTempFile("create_", ".tmp", tmpDir);
-        try {
-            String digest;
-            OutputStream out = new FileOutputStream(tmp);
-            try {
-                digest = storeAndDigest(in, out);
-            } finally {
-                in.close();
-                out.close();
-            }
-            /*
-             * Move the tmp file to its destination.
-             */
-            File file = getFileForDigest(digest, true);
-            tmp.renameTo(file); // atomic move, fails if already there
-            if (!file.exists()) {
-                throw new IOException("Could not create file: " + file);
-            }
-            /*
-             * Now we can build the Binary.
-             */
-            return getBinaryScrambler().getUnscrambledBinary(file, digest,
-                    repositoryName);
-        } finally {
-            tmp.delete(); // fails if the move was successful
-        }
+        return getBinaryScrambler().getUnscrambledBinary(file, digest,
+                repositoryName);
+    }
+
+    public Binary getBinary(InputStream in) throws IOException {
+        String digest = storeAndDigest(in);
+        File file = getFileForDigest(digest, false);
+        /*
+         * Now we can build the Binary.
+         */
+        return getBinaryScrambler().getUnscrambledBinary(file, digest,
+                repositoryName);
     }
 
     @Override
@@ -219,6 +210,53 @@ public class DefaultBinaryManager implements BinaryManager {
             dir.mkdirs();
         }
         return new File(dir, digest);
+    }
+
+    protected String storeAndDigest(FileSource source)  throws IOException {
+        File sourceFile = source.getFile();
+        InputStream in = source.getStream();
+        OutputStream out = new NullOutputStream();
+        String digest;
+        try {
+            digest = storeAndDigest(in, out);
+        } finally {
+            in.close();
+            out.close();
+        }
+        File  digestFile = getFileForDigest(digest, true);
+        sourceFile.renameTo(digestFile);
+        source.setFile(digestFile);
+        return digest;
+    }
+
+    protected String storeAndDigest(InputStream in) throws IOException {
+        File tmp = File.createTempFile("create_", ".tmp", tmpDir);
+        OutputStream out = new FileOutputStream(tmp);
+        /*
+         * First, write the input stream to a temporary file, while computing a
+         * digest.
+         */
+        try {
+            String digest;
+            try {
+                digest = storeAndDigest(in, out);
+            } finally {
+                in.close();
+                out.close();
+            }
+            /*
+             * Move the tmp file to its destination.
+             */
+            File file = getFileForDigest(digest, true);
+            tmp.renameTo(file); // atomic move, fails if already there
+            if (!file.exists()) {
+                throw new IOException("Could not create file: " + file);
+            }
+            return digest;
+        } finally {
+            tmp.delete();
+        }
+
     }
 
     public static final int MIN_BUF_SIZE = 8 * 1024; // 8 kB
