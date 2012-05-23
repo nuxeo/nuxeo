@@ -3123,6 +3123,29 @@
         <version>2.21.0</version>
       </dependency>
       <dependency>
+        <groupId>biz.neustar</groupId>
+        <artifactId>browsermob-proxy</artifactId>
+        <version>2.0-beta-6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>net.oauth.core</groupId>
         <artifactId>oauth</artifactId>
         <version>20090531</version>
