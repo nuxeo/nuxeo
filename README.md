@@ -62,3 +62,19 @@ mandatory once you specify a keystore) :
 - nuxeo.s3storage.crypt.key.alias = the key alias
 - nuxeo.s3storage.crypt.key.password = the key password
 
+
+## About Nuxeo
+
+Nuxeo provides a modular, extensible Java-based [open source software
+platform for enterprise content management] [5] and packaged applications
+for [document management] [6], [digital asset management] [7] and
+[case management] [8]. Designed by developers for developers, the Nuxeo
+platform offers a modern architecture, a powerful plug-in model and
+extensive packaging capabilities for building content applications.
+
+[5]: http://www.nuxeo.com/en/products/ep
+[6]: http://www.nuxeo.com/en/products/document-management
+[7]: http://www.nuxeo.com/en/products/dam
+[8]: http://www.nuxeo.com/en/products/case-management
+
+More information on: <http://www.nuxeo.com/>
