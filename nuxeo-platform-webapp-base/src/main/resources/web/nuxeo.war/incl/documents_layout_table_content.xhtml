@@ -18,6 +18,8 @@
   - layoutName: layout to use for listing rendering, mandatory
   - selectedResultLayoutColumns: list of result column names to display,
     optional, defaults to the layout default columns configuration.
+  - hideTopPaginationControls: only display the bottom page selectors
+    (available since 5.6).
 </c:if>
 
   <ui:insert name="empty_folder_label">
@@ -27,14 +29,16 @@
 
   <ui:insert name="error_message" />
 
-  <ui:insert name="pageNavigationControls">
-    <c:if test="#{useAjaxPagination}">
-      <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
-    </c:if>
-    <c:if test="#{not useAjaxPagination}">
-      <ui:include src="/pagination/pageNavigationControls.xhtml" />
-    </c:if>
-  </ui:insert>
+  <c:if test="#{not hideTopPaginationControls}">
+    <ui:insert name="pageNavigationControls">
+      <c:if test="#{useAjaxPagination}">
+        <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
+      </c:if>
+      <c:if test="#{not useAjaxPagination}">
+        <ui:include src="/pagination/pageNavigationControls.xhtml" />
+      </c:if>
+    </ui:insert>
+  </c:if>
 
   <c:choose>
 

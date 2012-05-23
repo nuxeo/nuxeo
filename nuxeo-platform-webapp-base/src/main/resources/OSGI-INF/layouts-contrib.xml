@@ -1059,6 +1059,9 @@
                   <widget>useAjaxPagination</widget>
                 </row>
                 <row>
+                  <widget>hideTopPaginationControls</widget>
+                </row>
+                <row>
                   <widget>defaultPageSize</widget>
                 </row>
                 <row>
@@ -1157,6 +1160,21 @@
                 </helpLabels>
                 <fields>
                   <field>useAjaxPagination</field>
+                </fields>
+              </widget>
+              <widget name="hideTopPaginationControls" type="checkbox">
+                <labels>
+                  <label mode="any">Show only bottom pagination controls</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, pagination actions (first,
+                    previous, next, last) actions will only be displayed below
+                    the results. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideTopPaginationControls</field>
                 </fields>
               </widget>
               <widget name="defaultPageSize" type="int">
