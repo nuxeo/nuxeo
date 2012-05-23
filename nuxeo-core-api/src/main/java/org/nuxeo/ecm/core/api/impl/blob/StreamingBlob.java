@@ -187,7 +187,6 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
             try {
                 persistedTmpFile = File.createTempFile(
                         "NXCore-persisted-StreamingBlob-", ".tmp");
-                persistedTmpFile.deleteOnExit();
                 in = src.getStream();
                 out = new FileOutputStream(persistedTmpFile);
                 copy(in, out);
@@ -199,6 +198,10 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
             }
         }
         return this;
+    }
+
+    public boolean isTemporary() {
+        return persistedTmpFile != null;
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
