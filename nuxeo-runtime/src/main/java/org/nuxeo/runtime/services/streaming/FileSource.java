@@ -25,7 +25,7 @@ import java.io.InputStream;
  */
 public class FileSource extends AbstractStreamSource {
 
-    protected final File file;
+    protected File file;
 
     public FileSource(File file) {
         this.file = file;
@@ -50,4 +50,10 @@ public class FileSource extends AbstractStreamSource {
         return file;
     }
 
+    /**
+     * @since 5.6
+     **/
+    public void setFile(File file) {
+        this.file = file;
+    }
 }
