@@ -1094,8 +1094,9 @@ public class SQLSession implements Session {
         StreamSource source;
         try {
             if (blob instanceof StreamingBlob) {
-                source = ((StreamingBlob) blob).getStreamSource();
-                if (source instanceof FileSource) {
+                StreamingBlob sb = (StreamingBlob) blob;
+                source = sb.getStreamSource();
+                if (source instanceof FileSource && sb.isTemporary()) {
                     return session.getBinary((FileSource)source);
                 }
             }

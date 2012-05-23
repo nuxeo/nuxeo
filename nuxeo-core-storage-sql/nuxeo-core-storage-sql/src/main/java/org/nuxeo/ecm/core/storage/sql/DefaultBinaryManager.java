@@ -26,6 +26,7 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -228,7 +229,10 @@ public class DefaultBinaryManager implements BinaryManager, BinaryManagerStreamS
             out.close();
         }
         File  digestFile = getFileForDigest(digest, true);
-        sourceFile.renameTo(digestFile);
+        if (!sourceFile.renameTo(digestFile)) {
+            FileUtils.copy(sourceFile, digestFile);
+            sourceFile.delete();
+        }
         source.setFile(digestFile);
         return digest;
     }
