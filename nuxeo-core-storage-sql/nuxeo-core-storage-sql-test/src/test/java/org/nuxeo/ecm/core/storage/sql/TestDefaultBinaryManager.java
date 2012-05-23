@@ -16,13 +16,20 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDefaultBinaryManager extends NXRuntimeTestCase {
@@ -98,6 +105,19 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         assertEquals(3, status.sizeBinariesGC);
         // one file gone
         assertEquals(2, countFiles(binaryManager.getStorageDir()));
+    }
+
+    @Test
+    public void testStreamingCopies() throws IOException {
+        DefaultBinaryManager binaryManager = new DefaultBinaryManager();
+        binaryManager.initialize(new RepositoryDescriptor());
+        assertEquals(0, countFiles(binaryManager.getStorageDir()));
+        File file = File.createTempFile("test-", ".data", binaryManager.getStorageDir());
+        FileUtils.writeFile(file, CONTENT.getBytes("UTF-8"));
+        FileSource source = new FileSource(file);
+        binaryManager.storeAndDigest(source);
+        assertFalse(file.exists());
+        assertTrue(source.getFile().exists());
     }
 
     protected static int countFiles(File dir) {

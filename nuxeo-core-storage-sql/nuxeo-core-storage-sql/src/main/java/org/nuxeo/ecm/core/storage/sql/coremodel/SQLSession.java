@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -31,11 +32,13 @@ import java.util.regex.Pattern;
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
@@ -67,6 +70,8 @@ import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual
@@ -677,14 +682,7 @@ public class SQLSession implements Session {
         return docs;
     }
 
-    // called by SQLContentProperty
-    protected Binary getBinary(InputStream in) throws DocumentException {
-        try {
-            return session.getBinary(in);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
-    }
+
 
     /**
      * Resolves a node given its absolute path, or given an existing node and a
@@ -1082,6 +1080,35 @@ public class SQLSession implements Session {
      */
     public void requireReadAclsUpdate() {
         session.requireReadAclsUpdate();
+    }
+
+    /**
+     * @param blob
+     * @return
+     * @throws DocumentException
+     */
+    public Binary getBinary(Blob blob) throws DocumentException {
+        if (blob instanceof SQLBlob) {
+            return ((SQLBlob) blob).binary;
+        }
+        StreamSource source;
+        try {
+            if (blob instanceof StreamingBlob) {
+                source = ((StreamingBlob) blob).getStreamSource();
+                if (source instanceof FileSource) {
+                    return session.getBinary((FileSource)source);
+                }
+            }
+            InputStream stream;
+            try {
+                stream = blob.getStream();
+            } catch (IOException e) {
+                throw new DocumentException(e);
+            }
+            return session.getBinary(stream);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
 }

@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -19,9 +20,12 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Node;
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * A {@link SQLContentProperty} gives access to a blob, which consists of a
@@ -79,25 +83,7 @@ public class SQLContentProperty extends SQLComplexProperty {
             map = new HashMap<String, Object>();
             Blob blob = (Blob) value;
             Binary binary;
-            if (blob instanceof SQLBlob) {
-                binary = ((SQLBlob) blob).binary;
-            } else {
-                InputStream stream;
-                try {
-                    stream = blob.getStream();
-                } catch (IOException e) {
-                    throw new DocumentException(e);
-                }
-                try {
-                    binary = session.getBinary(stream);
-                } finally {
-                    try {
-                        stream.close();
-                    } catch (IOException e) {
-                        throw new DocumentException(e);
-                    }
-                }
-            }
+            binary = session.getBinary(blob);
             String filename = blob.getFilename();
             String mimeType = blob.getMimeType();
             if (mimeType == null) {

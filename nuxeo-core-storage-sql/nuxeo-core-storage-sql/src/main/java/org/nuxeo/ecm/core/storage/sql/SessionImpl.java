@@ -60,6 +60,8 @@ import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -260,9 +262,23 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Binary getBinary(InputStream in) throws StorageException {
+    public Binary getBinary(FileSource source) throws StorageException {
+        BinaryManager mgr = repository.getBinaryManager();
         try {
-            return repository.getBinaryManager().getBinary(in);
+            if (mgr instanceof BinaryManagerStreamSupport) {
+                return ((BinaryManagerStreamSupport) mgr).getBinary(source);
+            }
+            return mgr.getBinary(source.getStream());
+        } catch (IOException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    @Override
+    public Binary getBinary(InputStream in) throws StorageException {
+        BinaryManager mgr = repository.getBinaryManager();
+        try {
+            return mgr.getBinary(in);
         } catch (IOException e) {
             throw new StorageException(e);
         }

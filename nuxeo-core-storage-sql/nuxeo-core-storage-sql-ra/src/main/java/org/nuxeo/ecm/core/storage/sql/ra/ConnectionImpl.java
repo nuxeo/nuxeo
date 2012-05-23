@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * A connection is a handle to the underlying storage. It is returned by the
@@ -158,6 +159,11 @@ public class ConnectionImpl implements Session {
     @Override
     public Binary getBinary(InputStream in) throws StorageException {
         return getSession().getBinary(in);
+    }
+
+    @Override
+    public Binary getBinary(FileSource source) throws StorageException {
+        return getSession().getBinary(source);
     }
 
     @Override
