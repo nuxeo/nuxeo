@@ -448,15 +448,27 @@ public class ConnectBroker {
     }
 
     public boolean listPending(File commandsFile) {
-        return executePending(commandsFile, false);
+        return executePending(commandsFile, false, false);
     }
 
+    /**
+     * @since 5.6
+     * @param commandsFile File containing the commands to execute
+     * @param doExecute Whether to execute or list the actions
+     * @param useResolver Whether to use full resolution or just execute
+     *            individual actions
+     */
     @SuppressWarnings("unchecked")
-    public boolean executePending(File commandsFile, boolean doExecute) {
+    public boolean executePending(File commandsFile, boolean doExecute,
+            boolean useResolver) {
         int errorValue = 0;
         if (!commandsFile.isFile()) {
             return false;
         }
+        List<String> pkgsToAdd = new ArrayList<String>();
+        List<String> pkgsToInstall = new ArrayList<String>();
+        List<String> pkgsToUninstall = new ArrayList<String>();
+        List<String> pkgsToRemove = new ArrayList<String>();
         List<String> lines;
         try {
             lines = FileUtils.readLines(commandsFile);
@@ -466,7 +478,11 @@ public class ConnectBroker {
                 if (split.length == 2) {
                     if (split[0].equals(CommandInfo.CMD_INSTALL)) {
                         if (doExecute) {
-                            pkgInstall(split[1]);
+                            if (useResolver) {
+                                pkgsToInstall.add(split[1]);
+                            } else {
+                                pkgInstall(split[1]);
+                            }
                         } else {
                             CommandInfo cmdInfo = new CommandInfo();
                             cmdInfo.name = CommandInfo.CMD_INSTALL;
@@ -477,7 +493,11 @@ public class ConnectBroker {
                         }
                     } else if (split[0].equals(CommandInfo.CMD_ADD)) {
                         if (doExecute) {
-                            pkgAdd(split[1]);
+                            if (useResolver) {
+                                pkgsToAdd.add(split[1]);
+                            } else {
+                                pkgAdd(split[1]);
+                            }
                         } else {
                             CommandInfo cmdInfo = new CommandInfo();
                             cmdInfo.name = CommandInfo.CMD_ADD;
@@ -488,7 +508,11 @@ public class ConnectBroker {
                         }
                     } else if (split[0].equals(CommandInfo.CMD_UNINSTALL)) {
                         if (doExecute) {
-                            pkgUninstall(split[1]);
+                            if (useResolver) {
+                                pkgsToUninstall.add(split[1]);
+                            } else {
+                                pkgUninstall(split[1]);
+                            }
                         } else {
                             CommandInfo cmdInfo = new CommandInfo();
                             cmdInfo.name = CommandInfo.CMD_UNINSTALL;
@@ -499,7 +523,11 @@ public class ConnectBroker {
                         }
                     } else if (split[0].equals(CommandInfo.CMD_REMOVE)) {
                         if (doExecute) {
-                            pkgRemove(split[1]);
+                            if (useResolver) {
+                                pkgsToRemove.add(split[1]);
+                            } else {
+                                pkgRemove(split[1]);
+                            }
                         } else {
                             CommandInfo cmdInfo = new CommandInfo();
                             cmdInfo.name = CommandInfo.CMD_REMOVE;
@@ -514,7 +542,11 @@ public class ConnectBroker {
                 } else if (split.length == 1) {
                     if (line.length() > 0 && !line.startsWith("#")) {
                         if (doExecute) {
-                            pkgInstall(line);
+                            if (useResolver) {
+                                pkgsToInstall.add(line);
+                            } else {
+                                pkgInstall(line);
+                            }
                         } else {
                             CommandInfo cmdInfo = new CommandInfo();
                             cmdInfo.name = CommandInfo.CMD_INSTALL;
@@ -531,6 +563,13 @@ public class ConnectBroker {
                 }
             }
             if (doExecute) {
+                if (useResolver) {
+                    boolean success = pkgRequest(pkgsToAdd, pkgsToInstall,
+                            pkgsToUninstall, pkgsToRemove);
+                    if (!success) {
+                        errorValue = 2;
+                    }
+                }
                 if (errorValue != 0) {
                     File bak = new File(commandsFile.getPath() + ".bak");
                     bak.delete();
