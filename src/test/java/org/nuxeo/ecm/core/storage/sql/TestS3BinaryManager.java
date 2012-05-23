@@ -22,8 +22,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import static org.junit.Assert.*;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 import org.nuxeo.ecm.core.storage.sql.S3BinaryManager.S3LazyBinary;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -88,6 +90,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testS3BinaryManager() throws Exception {
         if (DISABLED) {
             return; // test disabled
@@ -124,6 +127,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
     /**
      * NOTE THAT THIS TEST WILL REMOVE ALL FILES IN THE BUCKET!!!
      */
+    @Test
     public void testS3BinaryManagerGC() throws Exception {
         if (DISABLED) {
             return; // test disabled
