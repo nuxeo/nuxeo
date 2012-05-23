@@ -107,6 +107,7 @@
     <module>nuxeo-rating</module>
     <module>nuxeo-agenda</module>
     <module>nuxeo-multi-tenant</module>
+    <module>nuxeo-core-binarymanager-s3</module>
   </modules>
 
   <dependencyManagement>
@@ -870,6 +871,13 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-multi-tenant</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Amazon AWS S3 storage for blobs -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-s3</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
