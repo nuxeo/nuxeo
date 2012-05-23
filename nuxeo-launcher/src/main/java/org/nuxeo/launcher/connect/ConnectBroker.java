@@ -90,6 +90,11 @@ public class ConnectBroker {
         return NuxeoConnectClient.getPackageManager();
     }
 
+    public void refreshCache() {
+        getPackageManager().flushCache();
+        NuxeoConnectClient.getPackageManager().listAllPackages();
+    }
+
     public CommandSetInfo getCommandSet() {
         return cset;
     }

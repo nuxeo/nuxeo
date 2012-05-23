@@ -728,6 +728,8 @@ public abstract class NuxeoLauncher {
             }
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgReset();
+        } else if ("mp-update".equalsIgnoreCase(launcher.command)) {
+            commandSucceeded = launcher.pkgRefreshCache();
         } else if ("showconf".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.showConfig();
         } else {
@@ -1512,6 +1514,7 @@ public abstract class NuxeoLauncher {
         log.error("\tpack <target>\t\tBuild a static archive. Same as the \"pack\" Shell script.");
         log.error("\tshowconf\t\tDisplay the instance configuration.");
         log.error("\tmp-list\t\t\tList marketplace packages.");
+        log.error("\tmp-update\t\tUpdate cache of marketplace packages list.");
         log.error("\tmp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
         log.error("\tmp-install\t\tRun marketplace package installation. "
                 + "It is automatically called at startup if installAfterRestart.log exists. "
@@ -1871,6 +1874,20 @@ public abstract class NuxeoLauncher {
             errorValue = 3;
         }
         return cmdOK;
+    }
+
+    /**
+     * Update the cached list of remote packages
+     * 
+     * @since 5.6
+     * @return true
+     * @throws IOException
+     * @throws PackageException
+     */
+    protected boolean pkgRefreshCache() throws IOException, PackageException {
+        ConnectBroker pkgman = getConnectBroker();
+        pkgman.refreshCache();
+        return true;
     }
 
 }
