@@ -369,14 +369,44 @@ public class ConnectBroker {
         try {
             File fileToAdd = getLocalPackageFile(packageFileName);
             if (fileToAdd == null) {
-                throw new FileNotFoundException("File not found");
+                String pkgId = null;
+                if (isRemotePackageId(packageFileName)) {
+                    // Check whether this is a remote package ID
+                    pkgId = packageFileName;
+                } else {
+                    // Check whether this is a remote package name
+                    pkgId = getRemotePackageIdFromName(packageFileName);
+                }
+                if (pkgId == null) {
+                    throw new FileNotFoundException("File not found");
+                }
+                List<String> downloadList = new ArrayList<String>();
+                downloadList.add(pkgId);
+                log.info("Downloading " + packageFileName);
+                if (!downloadPackages(downloadList)) {
+                    throw new PackageException("Failed to download package "
+                            + pkgId);
+                } else {
+                    // TODO: fix race condition
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        // Ignore
+                    }
+                    LocalPackage pkg = service.getPackage(pkgId);
+                    if (pkg == null) {
+                        log.info("NULL");
+                    }
+                    return pkg;
+                }
+            } else {
+                log.info("Adding " + packageFileName);
+                LocalPackage pkg = service.addPackage(fileToAdd);
+                cmdInfo.packages.add(new PackageInfo(pkg));
+                cmdInfo.exitCode = 0;
+                cset.commands.add(cmdInfo);
+                return pkg;
             }
-            log.info("Adding " + packageFileName);
-            LocalPackage pkg = service.addPackage(fileToAdd);
-            cmdInfo.packages.add(new PackageInfo(pkg));
-            cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
-            return pkg;
         } catch (FileNotFoundException e) {
             log.error("Cannot find " + packageFileName
                     + " relative to current directory or to NUXEO_HOME");
@@ -401,27 +431,11 @@ public class ConnectBroker {
                 // Check whether this is the name of a local package
                 String realPkgId = getLocalPackageIdFromName(pkgId);
                 if (realPkgId != null) {
-                    pkgId = realPkgId;
                     pkg = service.getPackage(realPkgId);
                 }
             }
             if (pkg == null) {
-                // Check whether this is the name of a remote package
-                String realPkgId = getRemotePackageIdFromName(pkgId);
-                if (realPkgId != null) {
-                    List<String> downloadList = new ArrayList<String>();
-                    downloadList.add(realPkgId);
-                    if (!downloadPackages(downloadList)) {
-                        throw new PackageException(
-                                "Failed to download package " + pkgId);
-                    } else {
-                        pkgId = realPkgId;
-                        pkg = service.getPackage(realPkgId);
-                    }
-                }
-            }
-            if (pkg == null) {
-                // Assume this is a filename - try to add
+                // We don't know this package, try to add it first
                 pkg = pkgAdd(pkgId);
             }
             if (pkg == null) {
@@ -569,8 +583,11 @@ public class ConnectBroker {
             }
             if (doExecute) {
                 if (useResolver) {
+                    String platformSave = targetPlatform;
+                    targetPlatform = null;
                     boolean success = pkgRequest(pkgsToAdd, pkgsToInstall,
                             pkgsToUninstall, pkgsToRemove);
+                    targetPlatform = platformSave;
                     if (!success) {
                         errorValue = 2;
                     }
