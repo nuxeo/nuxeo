@@ -1,0 +1,23 @@
+<component name="org.nuxeo.ecm.platform.routing.graph.operations.test"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation
+      class="org.nuxeo.ecm.platform.routing.test.TestOperationSetTitle" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+    <chain id="testchain_title1">
+      <operation id="Document.Routing.Test.SetTitle">
+        <param type="string" name="title">title 1</param>
+      </operation>
+    </chain>
+    <chain id="testchain_title2">
+      <operation id="Document.Routing.Test.SetTitle">
+        <param type="string" name="title">title 2</param>
+      </operation>
+    </chain>
+  </extension>
+</component>

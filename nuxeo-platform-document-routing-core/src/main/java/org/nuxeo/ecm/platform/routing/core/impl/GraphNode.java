@@ -16,8 +16,12 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
-import java.util.Set;
+import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 
 /**
@@ -27,6 +31,40 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
  * @since 5.6
  */
 public interface GraphNode {
+
+    String PROP_NODE_ID = "rnode:nodeId";
+
+    String PROP_START = "rnode:start";
+
+    String PROP_STOP = "rnode:stop";
+
+    String PROP_MERGE = "rnode:merge";
+
+    String PROP_COUNT = "rnode:count";
+
+    String PROP_INPUT_CHAIN = "rnode:inputChain";
+
+    String PROP_OUTPUT_CHAIN = "rnode:outputChain";
+
+    String PROP_HAS_TASK = "rnode:hasTask";
+
+    String PROP_VARIABLES = "rnode:variables";
+
+    String PROP_VAR_NAME = "name";
+
+    String PROP_VAR_VALUE = "value";
+
+    String PROP_TRANSITIONS = "rnode:transitions";
+
+    String PROP_TRANS_NAME = "name";
+
+    String PROP_TRANS_TARGET = "targetId";
+
+    String PROP_TRANS_CONDITION = "condition";
+
+    String PROP_TRANS_RESULT = "result";
+
+    String PROP_TRANS_CHAIN = "chain";
 
     /**
      * The internal state of a node.
@@ -77,6 +115,43 @@ public interface GraphNode {
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException(s);
             }
+        }
+    }
+
+    class Transition implements Comparable<Transition> {
+
+        public MapProperty prop;
+
+        public String id;
+
+        public String condition;
+
+        public String chain;
+
+        public String target;
+
+        protected Transition(Property p) throws ClientException {
+            prop = (MapProperty) p;
+            id = (String) prop.get(PROP_TRANS_NAME).getValue();
+            condition = (String) prop.get(PROP_TRANS_CONDITION).getValue();
+            chain = (String) prop.get(PROP_TRANS_CHAIN).getValue();
+            target = (String) prop.get(PROP_TRANS_TARGET).getValue();
+        }
+
+        protected void setResult(boolean bool) throws ClientException {
+            prop.get(PROP_TRANS_RESULT).setValue(Boolean.valueOf(bool));
+        }
+
+        @Override
+        public int compareTo(Transition other) {
+            return id.compareTo(other.id);
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("id", id).append(
+                    "condition", condition).append("chain", chain).append(
+                    "target", target).toString();
         }
     }
 
@@ -147,6 +222,23 @@ public interface GraphNode {
      */
     void executeChain(String chainId) throws DocumentRouteException;
 
-    Set<String> evaluateTransitionConditions() throws DocumentRouteException;
+    /**
+     * Executes an Automation chain in the context of this node for a given
+     * transition
+     *
+     * @param transition the transition
+     */
+    void executeTransitionChain(Transition transition)
+            throws DocumentRouteException;
+
+    /**
+     * Evaluates transition conditions and returns the transitions that were
+     * true.
+     * <p>
+     * Transitions are evaluated and ordered by transition id order.
+     *
+     * @return the true transitions
+     */
+    List<Transition> evaluateTransitions() throws DocumentRouteException;
 
 }

@@ -17,7 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 
 /**
  * Runs the proper nodes depending on the graph state.
@@ -33,37 +34,62 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
  */
 public class GraphRunner extends AbstractRunner implements ElementRunner {
 
+    /**
+     * Maximum number of steps we do before deciding that this graph is looping.
+     */
+    public static final int MAX_LOOPS = 100;
+
     @Override
     public void run(CoreSession session, DocumentRouteElement element) {
         try {
             startGraph(session, element);
-            session.save();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
     protected void startGraph(CoreSession session, DocumentRouteElement element)
-            throws DocumentRouteException {
+            throws ClientException {
+        element.setRunning(session);
         GraphRoute graph = (GraphRoute) element;
-        // TODO graph.setRunning();
-        // TODO event
-        runGraph(graph, graph.getStartNode());
+        boolean done = runGraph(graph, graph.getStartNode());
+        if (done) {
+            element.setDone(session);
+        }
+        session.save();
     }
 
-    public void resumeGraph(GraphRoute graph, GraphNode node, Object data)
-            throws DocumentRouteException {
+    public void resumeGraph(CoreSession session, GraphRoute graph,
+            GraphNode node, Object data) throws ClientException {
         // TODO data
-        runGraph(graph, node);
-        // TODO session.save();
+        boolean done = runGraph(graph, node);
+        if (done) {
+            ((DocumentRouteElement) graph).setDone(session);
+        }
+        session.save();
     }
 
-    protected void runGraph(GraphRoute graph, GraphNode initialNode)
+    /**
+     * Runs the graph starting with the given node.
+     *
+     * @param graph the graph
+     * @param initialNode the initial node to run
+     * @return {@code true} if the graph execution is done, {@code false} if
+     *         there are still suspended nodes
+     */
+    protected boolean runGraph(GraphRoute graph, GraphNode initialNode)
             throws DocumentRouteException {
         LinkedList<GraphNode> nodes = new LinkedList<GraphNode>();
         nodes.add(initialNode);
+        boolean done = false;
+        int count = 0;
         while (!nodes.isEmpty()) {
             GraphNode node = nodes.pop();
+            count++;
+            if (count > MAX_LOOPS) {
+                throw new DocumentRouteException("Execution is looping, node: "
+                        + node);
+            }
             State jump = null;
             switch (node.getState()) {
             case READY:
@@ -106,29 +132,38 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 break;
             case RUNNING_OUTPUT:
                 node.executeChain(node.getOutputChain());
-                Set<String> targetIds = node.evaluateTransitionConditions();
-
-                // TODO evaluate all the output transition conditions and store
-                // their result
-                // TODO for each condition that is true, add the target node to
-                // the pending nodes
+                List<Transition> trueTrans = node.evaluateTransitions();
                 node.incrementCount();
                 node.setState(State.READY);
                 if (node.isStop()) {
-                    // TODO if the node has a stop flag then stop the workflow
-                    // TODO If the workflow is stopped by a stop flag and there
-                    // are still pending nodes, then it’s a workflow execution
-                    // error (bad workflow definition, there should have been a
-                    // merge to cancel other tasks).
+                    if (!nodes.isEmpty()) {
+                        throw new DocumentRouteException(
+                                String.format(
+                                        "Route %s stopped with still pending nodes: %s",
+                                        graph, nodes));
+                    }
+                    done = true;
+                } else {
+                    if (trueTrans.isEmpty()) {
+                        throw new DocumentRouteException(
+                                "No transition evaluated to true from node "
+                                        + node);
+                    }
+                    for (Transition t : trueTrans) {
+                        node.executeTransitionChain(t);
+                        nodes.addLast(graph.getNode(t.target));
+                    }
                 }
                 break;
             }
             if (jump != null) {
                 node.setState(jump);
                 // loop again on this node
+                count--;
                 nodes.addFirst(node);
             }
         }
+        return done;
     }
 
 }

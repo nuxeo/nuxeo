@@ -17,17 +17,18 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
@@ -38,7 +39,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
-import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -52,45 +52,21 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     private static final long serialVersionUID = 1L;
 
-    public static final String PROP_NODE_ID = "rnode:nodeId";
-
-    public static final String PROP_START = "rnode:start";
-
-    public static final String PROP_STOP = "rnode:stop";
-
-    public static final String PROP_MERGE = "rnode:merge";
-
-    public static final String PROP_COUNT = "rnode:count";
-
-    public static final String PROP_INPUT_CHAIN = "rnode:inputChain";
-
-    public static final String PROP_OUTPUT_CHAIN = "rnode:outputChain";
-
-    public static final String PROP_HAS_TASK = "rnode:hasTask";
-
-    public static final String PROP_VARIABLES = "rnode:variables";
-
-    public static final String PROP_VAR_NAME = "name";
-
-    public static final String PROP_VAR_VALUE = "value";
-
-    public static final String PROP_TRANSITIONS = "rnode:transitions";
-
-    public static final String PROP_TRANS_NAME = "name";
-
-    public static final String PROP_TRANS_TARGET = "targetId";
-
-    public static final String PROP_TRANS_CONDITION = "condition";
-
-    public static final String PROP_TRANS_RESULT = "result";
-
     protected final GraphRouteImpl graph;
 
     protected State localState;
 
+    /** To be used through getter. */
+    protected List<Transition> transitions;
+
     public GraphNodeImpl(DocumentModel doc, GraphRouteImpl graph) {
         super(doc, new GraphRunner());
         this.graph = graph;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append(getId()).toString();
     }
 
     protected boolean getBoolean(String propertyName) {
@@ -263,6 +239,17 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     @Override
     public void executeChain(String chainId) throws DocumentRouteException {
+        executeChain(chainId, null);
+    }
+
+    @Override
+    public void executeTransitionChain(Transition transition)
+            throws DocumentRouteException {
+        executeChain(transition.chain, transition.id);
+    }
+
+    public void executeChain(String chainId, String transitionId)
+            throws DocumentRouteException {
         // TODO events
         if (StringUtils.isEmpty(chainId)) {
             return;
@@ -272,6 +259,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         Map<String, Serializable> graphVariables = graph.getVariables();
         Map<String, Serializable> nodeVariables = getVariables();
         OperationContext context = getContext(graphVariables, nodeVariables);
+        if (transitionId != null) {
+            context.put("transition", transitionId);
+        }
 
         AutomationService automationService = Framework.getLocalService(AutomationService.class);
         try {
@@ -315,21 +305,36 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
-    @Override
-    public Set<String> evaluateTransitionConditions()
-            throws DocumentRouteException {
+    protected List<Transition> computeTransitions() {
         try {
-            Set<String> targetIds = new HashSet<String>();
+            ListProperty props = (ListProperty) document.getProperty(PROP_TRANSITIONS);
+            List<Transition> trans = new ArrayList<Transition>(props.size());
+            for (Property p : props) {
+                trans.add(new Transition(p));
+            }
+            Collections.sort(trans);
+            return trans;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public List<Transition> getTransitions() {
+        if (transitions == null) {
+            transitions = computeTransitions();
+        }
+        return transitions;
+    }
+
+    @Override
+    public List<Transition> evaluateTransitions() throws DocumentRouteException {
+        try {
+            List<Transition> trueTrans = new ArrayList<Transition>();
             OperationContext context = getContext(graph.getVariables(),
                     getVariables());
-            ListProperty transProps = (ListProperty) document.getProperty(PROP_TRANSITIONS);
-            for (Property p : transProps) {
-                MapProperty prop = (MapProperty) p;
-                String transitionId = (String) prop.get(PROP_TRANS_NAME).getValue();
-                String condition = (String) prop.get(PROP_TRANS_CONDITION).getValue();
-
-                context.put("transition", transitionId);
-                Expression expr = Scripting.newExpression(condition);
+            for (Transition t : getTransitions()) {
+                context.put("transition", t.id);
+                Expression expr = Scripting.newExpression(t.condition);
                 Object res = null;
                 try {
                     res = expr.eval(context);
@@ -341,23 +346,29 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                     throw e;
                 } catch (Exception e) {
                     throw new DocumentRouteException(
-                            "Error evaluating condition: " + condition, e);
+                            "Error evaluating condition: " + t.condition, e);
+                }
+                if (!(res instanceof Boolean)) {
+                    throw new DocumentRouteException(
+                            "Condition for transition " + t + " of node '"
+                                    + getId() + "' of graph '"
+                                    + graph.getName()
+                                    + "' does not evaluate to a boolean: "
+                                    + t.condition);
                 }
                 boolean bool = Boolean.TRUE.equals(res);
-                prop.get(PROP_TRANS_RESULT).setValue(Boolean.valueOf(bool));
+                t.setResult(bool);
                 if (bool) {
-                    String targetId = (String) prop.get(PROP_TRANS_TARGET).getValue();
-                    targetIds.add(targetId);
+                    trueTrans.add(t);
                 }
             }
             saveDocument();
-            return targetIds;
+            return trueTrans;
         } catch (DocumentRouteException e) {
             throw e;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
-
     }
 
 }

@@ -16,27 +16,40 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues.graph;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
 
@@ -52,26 +65,46 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.userworkspace.types", //
         "org.nuxeo.ecm.platform.routing.core", //
 })
-@LocalDeploy("org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml")
+@LocalDeploy({
+        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml",
+        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml" })
 public class GraphRouteTest {
 
     protected static final String TYPE_ROUTE_NODE = "RouteNode";
 
-    protected static final String RNODE_START = "rnode:start";
-
-    protected static final String RNODE_STOP = "rnode:stop";
+    @Inject
+    protected RuntimeHarness harness;
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
+    @Inject
     protected DocumentRoutingService routing;
 
+    // init userManager now for early user tables creation (cleaner debug)
+    @Inject
+    protected UserManager userManager;
+
+    // a doc, associated to the route
+    protected DocumentModel doc;
+
+    // the route model we'll use
+    protected DocumentModel routeDoc;
+
     @Before
-    public void setUp() {
-        routing = Framework.getLocalService(DocumentRoutingService.class);
+    public void setUp() throws Exception {
         assertNotNull(routing);
-        // init user tables now (cleaner debug)
-        Framework.getLocalService(UserManager.class);
+
+        doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:title", "file");
+        doc = session.createDocument(doc);
+
+        routeDoc = createRoute("myroute");
+    }
+
+    @After
+    public void tearDown() {
+        // breakpoint here to examine database after test
     }
 
     protected DocumentModel createRoute(String name) throws ClientException,
@@ -79,6 +112,9 @@ public class GraphRouteTest {
         DocumentModel route = session.createDocumentModel("/", name,
                 DOCUMENT_ROUTE_DOCUMENT_TYPE);
         route.setPropertyValue(EXECUTION_TYPE_PROPERTY_NAME, graph.name());
+        route.setPropertyValue("dc:title", name);
+        route.setPropertyValue(ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                (Serializable) Collections.singletonList(doc.getId()));
         return session.createDocument(route);
     }
 
@@ -86,32 +122,146 @@ public class GraphRouteTest {
             throws ClientException, PropertyException {
         DocumentModel node = session.createDocumentModel(
                 route.getPathAsString(), name, TYPE_ROUTE_NODE);
+        node.setPropertyValue(GraphNode.PROP_NODE_ID, name);
         return session.createDocument(node);
     }
 
-    @Test
-    public void testRunGraphRoute() throws ClientException {
+    protected Map<String, Serializable> transition(String name, String target,
+            String condition) throws ClientException {
+        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        m.put(GraphNode.PROP_TRANS_NAME, name);
+        m.put(GraphNode.PROP_TRANS_TARGET, target);
+        m.put(GraphNode.PROP_TRANS_CONDITION, condition);
+        return m;
+    }
 
-        // doc
-        DocumentModel doc = session.createDocumentModel("/", "file", "File");
-        session.createDocument(doc);
+    protected Map<String, Serializable> transition(String name, String target,
+            String condition, String chainId) throws ClientException {
+        Map<String, Serializable> m = transition(name, target, condition);
+        m.put(GraphNode.PROP_TRANS_CHAIN, chainId);
+        return m;
+    }
 
-        // route
-        DocumentModel routeDoc = createRoute("route");
-        DocumentModel node1Doc = createNode(routeDoc, "node1");
-        node1Doc.setPropertyValue(RNODE_START, Boolean.TRUE);
-        session.saveDocument(node1Doc);
-        DocumentModel node2Doc = createNode(routeDoc, "node2");
-        node2Doc.setPropertyValue(RNODE_STOP, Boolean.TRUE);
-        session.saveDocument(node2Doc);
+    protected void setTransitions(DocumentModel node,
+            Map<String, Serializable>... transitions) throws ClientException {
+        node.setPropertyValue(GraphNode.PROP_TRANSITIONS,
+                (Serializable) Arrays.asList(transitions));
+    }
 
+    protected DocumentRoute instantiateAndRun() throws ClientException {
         // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
         // draft -> validated
         route = routing.validateRouteModel(route, session);
-
         // create instance and start
         route = routing.createNewInstance(route, doc.getId(), session, true);
+        return route;
+    }
+
+    @Test
+    public void testExceptionIfNoStartNode() throws Exception {
+        // route
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1 = session.saveDocument(node1);
+        try {
+            instantiateAndRun();
+            fail("Should throw because no start node");
+        } catch (ClientRuntimeException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("No start node for graph"));
+        }
+    }
+
+    @Test
+    public void testExceptionIfNoTrueTransition() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1 = session.saveDocument(node1);
+        try {
+            instantiateAndRun();
+            fail("Should throw because no transition is true");
+        } catch (ClientRuntimeException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("No transition evaluated to true"));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExceptionIfTransitionIsNotBoolean() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans1", "node1", "'notaboolean'"));
+        node1 = session.saveDocument(node1);
+        try {
+            instantiateAndRun();
+            fail("Should throw because transition condition is no bool");
+        } catch (ClientRuntimeException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("does not evaluate to a boolean"));
+        }
+    }
+
+    @Test
+    public void testOneNodeStartStop() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node1 = session.saveDocument(node1);
+        DocumentRoute route = instantiateAndRun();
+        assertTrue(route.isDone());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExceptionIfLooping() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans1", "node1", "true"));
+        node1 = session.saveDocument(node1);
+        try {
+            instantiateAndRun();
+            fail("Should throw because execution is looping");
+        } catch (ClientRuntimeException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("Execution is looping"));
+        }
+    }
+
+    @Test
+    public void testAutomationChains() throws Exception {
+        assertEquals("file", doc.getTitle());
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
+        node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_title2");
+        node1 = session.saveDocument(node1);
+        DocumentRoute route = instantiateAndRun();
+        assertTrue(route.isDone());
+        doc.refresh();
+        assertEquals("title 2", doc.getTitle());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSimpleTransition() throws Exception {
+        assertEquals("file", doc.getTitle());
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1,
+                transition("trans1", "node2", "true", "testchain_title1"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+
+        DocumentRoute route = instantiateAndRun();
+
+        assertTrue(route.isDone());
+        doc.refresh();
+        assertEquals("title 1", doc.getTitle());
     }
 
 }

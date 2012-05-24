@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,6 +57,11 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         super(doc, new GraphRunner());
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append(getName()).toString();
+    }
+
     public Collection<GraphNode> getNodes() {
         if (nodes == null) {
             nodes = computeNodes();
@@ -74,6 +80,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
                     nodes.add(new GraphNodeImpl(doc, this));
                 }
             }
+            // TODO compute loop transitions on the graph
             return nodes;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -89,6 +96,17 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         }
         throw new DocumentRouteException("No start node for graph: "
                 + getName());
+    }
+
+    @Override
+    public GraphNode getNode(String id) throws DocumentRouteException {
+        for (GraphNode node : getNodes()) {
+            if (node.getId().equals(id)) {
+                return node;
+            }
+        }
+        throw new DocumentRouteException("No node with id: " + id
+                + " in graph: " + getName());
     }
 
     @Override
