@@ -23,8 +23,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -40,9 +44,11 @@ import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.ValidationStatus;
+import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.info.CommandInfo;
@@ -123,43 +129,76 @@ public class ConnectBroker {
         return foundId;
     }
 
-    protected String getLocalPackageIdFromName(String pkgName) {
-        List<LocalPackage> localPackages = getPkgList();
+    protected String getBestIdForNameInList(String pkgName,
+            List<? extends Package> pkgList) {
         String foundId = null;
-        for (LocalPackage pkg : localPackages) {
+        SortedMap<Version, String> foundPkgs = new TreeMap<Version, String>();
+        SortedMap<Version, String> matchingPkgs = new TreeMap<Version, String>();
+        for (Package pkg : pkgList) {
             if (pkg.getName().equals(pkgName)) {
-                foundId = pkg.getId();
-                break;
+                foundPkgs.put(pkg.getVersion(), pkg.getId());
+                if (Arrays.asList(pkg.getTargetPlatforms()).contains(
+                        targetPlatform)) {
+                    matchingPkgs.put(pkg.getVersion(), pkg.getId());
+                }
             }
         }
+        if (matchingPkgs.size() != 0) {
+            foundId = matchingPkgs.get(matchingPkgs.lastKey());
+        } else if (foundPkgs.size() != 0) {
+            foundId = foundPkgs.get(foundPkgs.lastKey());
+        }
         return foundId;
+
+    }
+
+    protected boolean matchesPlatform(String requestPkgStr,
+            List<DownloadablePackage> allPackages,
+            Map<String, DownloadablePackage> allPackagesByID,
+            Map<String, List<DownloadablePackage>> allPackagesByName)
+                    throws PackageException {
+        // Try ID match first
+        if (allPackagesByID.containsKey(requestPkgStr)) {
+            return Arrays.asList(
+                    allPackagesByID.get(requestPkgStr).getTargetPlatforms()).contains(
+                            targetPlatform);
+        }
+        // Fallback on name match
+        List<DownloadablePackage> allPackagesForName = allPackagesByName.get(requestPkgStr);
+        if (allPackagesForName == null) {
+            throw new PackageException("Package not found: " + requestPkgStr);
+        }
+        for (DownloadablePackage pkg : allPackagesForName) {
+            if (requestPkgStr.equals(pkg.getName())) {
+                if (Arrays.asList(pkg.getTargetPlatforms()).contains(
+                        targetPlatform)) {
+                    return true;
+                }
+            }
+        }
+        // No match or not compatible
+        return false;
+    }
+
+    protected String getLocalPackageIdFromName(String pkgName) {
+        return getBestIdForNameInList(pkgName, getPkgList());
     }
 
     protected String getInstalledPackageIdFromName(String pkgName) {
         List<LocalPackage> localPackages = getPkgList();
-        String foundId = null;
+        List<LocalPackage> installedPackages = new ArrayList<LocalPackage>();
         for (LocalPackage pkg : localPackages) {
             if (pkg.getState() != PackageState.INSTALLED) {
                 continue;
             }
-            if (pkg.getName().equals(pkgName)) {
-                foundId = pkg.getId();
-                break;
-            }
+            installedPackages.add(pkg);
         }
-        return foundId;
+        return getBestIdForNameInList(pkgName, installedPackages);
     }
 
     protected String getRemotePackageIdFromName(String pkgName) {
-        List<DownloadablePackage> remotePackages = NuxeoConnectClient.getPackageManager().listAllPackages();
-        String foundId = null;
-        for (DownloadablePackage pkg : remotePackages) {
-            if (pkg.getName().equals(pkgName)) {
-                foundId = pkg.getId();
-                break;
-            }
-        }
-        return foundId;
+        return getBestIdForNameInList(pkgName,
+                NuxeoConnectClient.getPackageManager().listAllPackages());
     }
 
     protected File getLocalPackageFile(String pkgFile) {
@@ -389,7 +428,7 @@ public class ConnectBroker {
                 } else {
                     // TODO: fix race condition
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         // Ignore
                     }
@@ -583,11 +622,8 @@ public class ConnectBroker {
             }
             if (doExecute) {
                 if (useResolver) {
-                    String platformSave = targetPlatform;
-                    targetPlatform = null;
                     boolean success = pkgRequest(pkgsToAdd, pkgsToInstall,
                             pkgsToUninstall, pkgsToRemove);
-                    targetPlatform = platformSave;
                     if (!success) {
                         errorValue = 2;
                     }
@@ -708,8 +744,31 @@ public class ConnectBroker {
         }
         if ((solverInstall.size() != 0) || (solverRemove.size() != 0)
                 || (solverUpgrade.size() != 0)) {
+            // Check whether we need to relax restriction to targetPlatform
+            String requestPlatform = targetPlatform;
+            List<String> requestPackages = new ArrayList<String>();
+            requestPackages.addAll(solverInstall);
+            requestPackages.addAll(solverRemove);
+            requestPackages.addAll(solverUpgrade);
+            List<DownloadablePackage> allPackages = NuxeoConnectClient.getPackageManager().listAllPackages();
+            Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
+            Map<String, List<DownloadablePackage>> allPackagesByName = NuxeoConnectClient.getPackageManager().getAllPackagesByName();
+            try {
+                for (String requestPackage : requestPackages) {
+                    if (!matchesPlatform(requestPackage, allPackages,
+                            allPackagesByID, allPackagesByName)) {
+                        requestPlatform = null;
+                        break;
+                    }
+                }
+            } catch (PackageException e) {
+                log.error(e);
+                return false;
+            }
+
             DependencyResolution resolution = getPackageManager().resolveDependencies(
-                    solverInstall, solverRemove, solverUpgrade, targetPlatform);
+                    solverInstall, solverRemove, solverUpgrade, requestPlatform);
+
             log.info(resolution);
             if (resolution.isFailed()) {
                 return false;
@@ -719,6 +778,13 @@ public class ConnectBroker {
                 log.error("Aborting packages change request");
                 return false;
             }
+            // TODO: fix race condition
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+
             // Uninstall packages
             List<String> packageIds = resolution.getRemovePackageIds();
             for (String pkgId : packageIds) {
