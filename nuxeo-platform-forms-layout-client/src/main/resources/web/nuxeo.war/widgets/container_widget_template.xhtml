@@ -6,6 +6,7 @@
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
 <c:set var="showHeader" value="#{widget.handlingLabels and (not empty widget.subWidgets or widgetProperty_showIfEmpty)}" />
+<c:set var="containerWidgetProps" value="#{widget.properties}" />
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
   <c:if test="#{showHeader}">
     <c:if test="#{widget.translated}">#{messages[widget.label]}</c:if>
@@ -13,7 +14,7 @@
   </c:if>
   <nxl:subWidget>
     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-    <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+    <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
     <c:if test="#{addForm}">
       <h:form id="#{layout.id}_#{widget.id}_form"
         enctype="multipart/form-data">
@@ -33,7 +34,7 @@
     </c:if>
     <nxl:subWidget>
       <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-      <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+      <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
       <c:if test="#{addForm}">
         <h:form id="#{layout.id}_#{widget.id}_form"
           enctype="multipart/form-data">
@@ -85,7 +86,7 @@
                   <c:if test="#{not widget.translated}">#{widget.label}</c:if>
                 </span>
                 <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-                <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+                <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
                 <c:if test="#{addForm}">
                   <h:form id="#{layout.id}_#{widget.id}_form"
                     enctype="multipart/form-data">
@@ -111,7 +112,7 @@
                       <c:if test="#{widget.handlingLabels}">
                         <td class="fieldColumn" colspan="2">
                           <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-                          <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+                          <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
                           <c:if test="#{addForm}">
                             <h:form id="#{layout.id}_#{widget.id}_form"
                               enctype="multipart/form-data">
@@ -130,7 +131,7 @@
                         </td>
                         <td class="fieldColumn">
                           <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-                          <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+                          <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
                           <c:if test="#{addForm}">
                             <h:form id="#{layout.id}_#{widget.id}_form"
                               enctype="multipart/form-data">
@@ -152,7 +153,7 @@
               <nxl:subWidget>
                 <div class="#{widgetProperty_subStyleClass}">
                   <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-                  <c:set var="addForm" value="#{layoutRow.properties[addFormName]}" />
+                  <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
                   <c:if test="#{addForm}">
                     <h:form id="#{layout.id}_#{widget.id}_form"
                       enctype="multipart/form-data">
