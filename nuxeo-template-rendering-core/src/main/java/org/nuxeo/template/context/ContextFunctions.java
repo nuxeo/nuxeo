@@ -1,4 +1,4 @@
-package org.nuxeo.template.fm;
+package org.nuxeo.template.context;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,19 +7,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryManager;
-import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
 import org.nuxeo.runtime.api.Framework;
-
-import freemarker.template.TemplateModel;
 
 public class ContextFunctions {
 
     protected final DocumentModel doc;
 
-    protected final DocumentObjectWrapper nuxeoWrapper;
+    protected final DocumentWrapper nuxeoWrapper;
 
-    public ContextFunctions(DocumentModel doc,
-            DocumentObjectWrapper nuxeoWrapper) {
+    public ContextFunctions(DocumentModel doc, DocumentWrapper nuxeoWrapper) {
         this.doc = doc;
         this.nuxeoWrapper = nuxeoWrapper;
     }
@@ -44,10 +40,10 @@ public class ContextFunctions {
         return key;
     }
 
-    public List<TemplateModel> getChildren() throws Exception {
+    public List<Object> getChildren() throws Exception {
         List<DocumentModel> children = doc.getCoreSession().getChildren(
                 doc.getRef());
-        List<TemplateModel> docs = new ArrayList<TemplateModel>();
+        List<Object> docs = new ArrayList<Object>();
         for (DocumentModel child : children) {
             docs.add(nuxeoWrapper.wrap(child));
         }

@@ -1,4 +1,4 @@
-package org.nuxeo.template.fm;
+package org.nuxeo.template.context;
 
 import java.util.List;
 

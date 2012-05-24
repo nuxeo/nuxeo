@@ -65,6 +65,8 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor
 
     public static final String TEMPLATE_TYPE = "JODTemplate";
 
+    protected FMContextBuilder fmContextBuilder = new FMContextBuilder();
+
     @Override
     public List<TemplateInput> getInitialParametersDefinition(Blob blob)
             throws Exception {
@@ -165,7 +167,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor
 
         // add default context vars
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        context.putAll(FMContextBuilder.build(doc));
+        context.putAll(fmContextBuilder.build(doc));
 
         File workingDir = getWorkingDir();
         File generated = new File(workingDir, "JODReportresult");

@@ -15,6 +15,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.context.SimpleContextBuilder;
 import org.nuxeo.template.fm.FMContextBuilder;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
@@ -28,6 +29,8 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
 
     public static final String TEMPLATE_TYPE = "JXLS";
 
+    protected SimpleContextBuilder contextBuilder = new SimpleContextBuilder();
+
     @Override
     public Blob renderTemplate(TemplateBasedDocument templateBasedDocument,
             String templateName) throws Exception {
@@ -37,7 +40,7 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
         List<TemplateInput> params = templateBasedDocument.getParams(templateName);
 
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        Map<String, Object> ctx = FMContextBuilder.build(doc, false);
+        Map<String, Object> ctx = contextBuilder.build(doc);
 
         JXLSBindingResolver resolver = new JXLSBindingResolver();
 

@@ -37,7 +37,7 @@ public class TestJXLSProcessingWithLoops extends SimpleTemplateDocTestCase {
         }
         FMContextBuilder.testAuditEntries = auditEntries;
 
-        // setup redering
+        // setup rendering
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();
         assertNotNull(testDoc);
@@ -67,6 +67,9 @@ public class TestJXLSProcessingWithLoops extends SimpleTemplateDocTestCase {
         assertTrue(xlContent.contains("TestingCat1"));
         assertTrue(xlContent.contains("TestingCat2"));
 
+        assertTrue(xlContent.contains("Subject 1"));
+        assertTrue(xlContent.contains("Subject 2"));
+        assertTrue(xlContent.contains("Subject 3"));
     }
 
     @Override

@@ -45,6 +45,8 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
     public static final String DocX_TEMPLATE_TYPE = "DocX";
 
+    protected FMContextBuilder fmContextBuilder = new FMContextBuilder();
+
     protected String getTemplateFormat(Blob blob) {
         String filename = blob.getFilename();
         if (filename == null && blob instanceof FileBlob) {
@@ -113,7 +115,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
         // fill Freemarker context
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        Map<String, Object> ctx = FMContextBuilder.build(doc);
+        Map<String, Object> ctx = fmContextBuilder.build(doc);
 
         XDocReportBindingResolver resolver = new XDocReportBindingResolver(
                 metadata);

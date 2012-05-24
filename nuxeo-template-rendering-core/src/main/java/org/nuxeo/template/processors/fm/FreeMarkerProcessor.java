@@ -25,6 +25,8 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
 
     protected FreemarkerEngine fmEngine = null;
 
+    protected FMContextBuilder fmContextBuilder = new FMContextBuilder();
+
     protected FreemarkerEngine getEngine() {
         if (fmEngine == null) {
             fmEngine = new FreemarkerEngine();
@@ -41,18 +43,12 @@ public class FreeMarkerProcessor extends AbstractTemplateProcessor implements
                 templateName);
 
         String fmTemplateKey = "main" + System.currentTimeMillis();
-        /*
-         * if (sourceTemplateBlob instanceof SQLBlob) { fmTemplateKey =
-         * fmTemplateKey + ((SQLBlob)
-         * sourceTemplateBlob).getBinary().getDigest(); } else { fmTemplateKey =
-         * fmTemplateKey + System.currentTimeMillis(); }
-         */
 
         String ftl = sourceTemplateBlob.getString();
 
         loader.putTemplate(fmTemplateKey, ftl);
 
-        Map<String, Object> ctx = FMContextBuilder.build(templateBasedDocument,
+        Map<String, Object> ctx = fmContextBuilder.build(templateBasedDocument,
                 templateName);
 
         FMBindingResolver resolver = new FMBindingResolver();
