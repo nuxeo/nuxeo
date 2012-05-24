@@ -1,6 +1,8 @@
 package org.nuxeo.template.context;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,4 +52,15 @@ public class ContextFunctions {
         return docs;
     }
 
+    public String formatDate(Object calendar) {
+        return formatDate(calendar, "MM/dd/yyyy");
+    }
+
+    protected String formatDate(Object calendar, String format) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        if (calendar == null) {
+            return "";
+        }
+        return dateFormat.format(calendar);
+    }
 }

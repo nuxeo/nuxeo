@@ -16,7 +16,6 @@ import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.context.SimpleContextBuilder;
-import org.nuxeo.template.fm.FMContextBuilder;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
 /**
@@ -58,7 +57,7 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
         sourceTemplateBlob.transferTo(input);
 
         XLSTransformer transformer = new XLSTransformer();
-
+        configureTransformer(transformer);
         transformer.transformXLS(input.getAbsolutePath(), ctx,
                 generated.getAbsolutePath());
 
@@ -78,6 +77,11 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
         Framework.trackFile(generated, newBlob);
         return newBlob;
 
+    }
+
+    protected void configureTransformer(XLSTransformer transformer) {
+        // NOP but subclass may use this to register a CellProcessor or a
+        // RowProcessor
     }
 
     @Override

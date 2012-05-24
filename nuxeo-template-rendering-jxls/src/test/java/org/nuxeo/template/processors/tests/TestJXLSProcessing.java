@@ -1,7 +1,9 @@
 package org.nuxeo.template.processors.tests;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.Test;
@@ -52,6 +54,9 @@ public class TestJXLSProcessing extends SimpleTemplateDocTestCase {
         assertTrue(xlContent.contains(testDoc.getTitle()));
         assertTrue(xlContent.contains((String) testDoc.getPropertyValue("dc:description")));
         assertTrue(xlContent.contains("YoVar1"));
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        assertTrue(xlContent.contains(dateFormat.format(Calendar.getInstance().getTime())));
     }
 
     @Override
