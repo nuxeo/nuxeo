@@ -292,7 +292,7 @@ public class InstallHandler extends DefaultObject {
                 return getView("installError").arg(
                         "e",
                         new ClientException(
-                                "Somes packages need to be downloaded before running bulk installation")).arg(
+                                "Some packages need to be downloaded before running bulk installation")).arg(
                         "source", source);
             }
 
