@@ -76,24 +76,12 @@ public class TestDocumentDiffNotSameType extends DiffTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 3, docDiff.getSchemaCount());
-
-        // ---------------------------
-        // Check system elements
-        // ---------------------------
-        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 2);
-
-        // type
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("type"),
-                PropertyType.UNDEFINED, "SampleType", "OtherSampleType");
-        // path
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
-                PropertyType.UNDEFINED, "leftDoc", "rightDoc");
+        assertEquals("Wrong schema count.", 2, docDiff.getSchemaCount());
 
         // ---------------------------
         // Check dublincore schema
         // ---------------------------
-        schemaDiff = checkSchemaDiff(docDiff, "dublincore", 2);
+        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "dublincore", 2);
 
         // title => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("title"),

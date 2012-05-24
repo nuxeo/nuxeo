@@ -345,17 +345,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         List<DiffBlockDefinition> diffBlockDefs = new ArrayList<DiffBlockDefinition>();
 
         for (String schemaName : docDiff.getSchemaNames()) {
-            // TODO: enable to configure the system elements display
-            if (!FieldDiffHelper.SYSTEM_ELEMENT.equals(schemaName)) {
-                SchemaDiff schemaDiff = docDiff.getSchemaDiff(schemaName);
-                List<DiffFieldDefinition> fieldDefs = new ArrayList<DiffFieldDefinition>();
-                for (String fieldName : schemaDiff.getFieldNames()) {
-                    fieldDefs.add(new DiffFieldDefinitionImpl(schemaName,
-                            fieldName));
-                }
-                diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName, null,
-                        fieldDefs));
+            SchemaDiff schemaDiff = docDiff.getSchemaDiff(schemaName);
+            List<DiffFieldDefinition> fieldDefs = new ArrayList<DiffFieldDefinition>();
+            for (String fieldName : schemaDiff.getFieldNames()) {
+                fieldDefs.add(new DiffFieldDefinitionImpl(schemaName, fieldName));
             }
+            diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName, null,
+                    fieldDefs));
         }
 
         return diffBlockDefs;

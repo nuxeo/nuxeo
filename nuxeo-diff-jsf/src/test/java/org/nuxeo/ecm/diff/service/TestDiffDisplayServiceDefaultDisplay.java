@@ -110,19 +110,12 @@ public class TestDiffDisplayServiceDefaultDisplay extends
         List<DiffDisplayBlock> diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(
                 docDiff, leftDoc, rightDoc);
         assertNotNull(diffDisplayBlocks);
-        // TODO: uncomment if system elements are taken into account
-        // assertEquals(3, diffDisplayBlocks.size());
         assertEquals(2, diffDisplayBlocks.size());
 
         // Check diff display blocks
         for (DiffDisplayBlock diffDisplayBlock : diffDisplayBlocks) {
 
-            /*
-             * if (checkDiffDisplayBlock(diffDisplayBlock,
-             * "label.diffBlock.system", 1)) {
-             * checkDiffDisplayBlockSchema(diffDisplayBlock, "system", 2,
-             * Arrays.asList("type", "path")); } else
-             */if (checkDiffDisplayBlock(diffDisplayBlock,
+            if (checkDiffDisplayBlock(diffDisplayBlock,
                     "label.diffBlock.dublincore", 1)) {
                 checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 3,
                         Arrays.asList("title", "subjects", "creator"));

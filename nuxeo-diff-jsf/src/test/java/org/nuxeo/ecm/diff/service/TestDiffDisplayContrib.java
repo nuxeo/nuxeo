@@ -109,8 +109,7 @@ public class TestDiffDisplayContrib {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(5, contribs.size());
-        assertTrue(contribs.containsKey("system"));
+        assertEquals(4, contribs.size());
         assertTrue(contribs.containsKey("heading"));
         assertTrue(contribs.containsKey("dublincore"));
         assertTrue(contribs.containsKey("files"));
@@ -120,27 +119,15 @@ public class TestDiffDisplayContrib {
         DiffBlockDefinition diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("test");
         assertNull(diffBlockDefinition);
 
-        // Check system diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("system");
-        assertNotNull(diffBlockDefinition);
-
-        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("system", "path"));
-        fields.add(new DiffFieldDefinitionImpl("system", "type"));
-        fields.add(new DiffFieldDefinitionImpl("system", "lifecycle-state"));
-        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "system", null, fields);
-        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
-
         // Check heading diffDisplay contrib
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("heading");
         assertNotNull(diffBlockDefinition);
 
-        fields = new ArrayList<DiffFieldDefinition>();
+        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("heading",
-                null, fields);
+        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
+                "heading", null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check that order is taken into account

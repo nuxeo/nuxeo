@@ -26,14 +26,6 @@
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffBlock">
 
-    <diffBlock name="system" label="label.diffBlock.system">
-      <fields>
-        <field schema="system" name="path" />
-        <field schema="system" name="type" />
-        <field schema="system" name="lifecycle-state" />
-      </fields>
-    </diffBlock>
-
     <diffBlock name="heading" label="label.diffBlock.heading">
       <fields>
         <field schema="dublincore" name="title" />

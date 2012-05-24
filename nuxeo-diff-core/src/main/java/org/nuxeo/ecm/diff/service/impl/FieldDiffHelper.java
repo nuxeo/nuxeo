@@ -48,8 +48,6 @@ public final class FieldDiffHelper {
 
     private static final Log LOGGER = LogFactory.getLog(FieldDiffHelper.class);
 
-    public static final String SYSTEM_ELEMENT = "system";
-
     public static final String FACET_ELEMENT = "facet";
 
     public static final String SCHEMA_ELEMENT = "schema";
@@ -123,12 +121,10 @@ public final class FieldDiffHelper {
             List<PropertyHierarchyNode> propertyHierarchy = new ArrayList<PropertyHierarchyNode>();
 
             // Detect a schema element,
-            // for instance: <schema name="dublincore" xmlns:dc="...">,
-            // or the <system> element.
+            // for instance: <schema name="dublincore" xmlns:dc="...">
             Node parentNode = currentNode.getParentNode();
             while (parentNode != null
-                    && !SCHEMA_ELEMENT.equals(currentNodeName)
-                    && !SYSTEM_ELEMENT.equals(currentNodeName)) {
+                    && !SCHEMA_ELEMENT.equals(currentNodeName)) {
 
                 // Get property type
                 String propertyType = getPropertyType(currentNode);
@@ -146,10 +142,8 @@ public final class FieldDiffHelper {
                 }
 
                 // Detect a field element, ie. an element that has a
-                // prefix, for instance: <dc:title>,
-                // or an element nested in <system>.
-                if (SCHEMA_ELEMENT.equals(parentNode.getNodeName())
-                        || SYSTEM_ELEMENT.equals(parentNode.getNodeName())) {
+                // prefix, for instance: <dc:title>.
+                if (SCHEMA_ELEMENT.equals(parentNode.getNodeName())) {
                     String currentNodeLocalName = currentNode.getLocalName();
                     // TODO: manage better the facet case
                     if (!FACET_ELEMENT.equals(currentNodeLocalName)) {
@@ -173,21 +167,19 @@ public final class FieldDiffHelper {
                 parentNode = parentNode.getParentNode();
             }
 
-            // If we found a schema or system element (ie. we did not
+            // If we found a schema element (ie. we did not
             // reached the root element, ie. parentNode != null) and a
             // nested field element, we can compute the diff for this
             // field.
             if (parentNode != null && field != null
                     && !propertyHierarchy.isEmpty()) {
                 String schema = currentNodeName;
-                // Get schema name if not system
-                if (!SYSTEM_ELEMENT.equals(schema)) {
-                    NamedNodeMap attr = currentNode.getAttributes();
-                    if (attr != null && attr.getLength() > 0) {
-                        Node nameAttr = attr.getNamedItem(NAME_ATTRIBUTE);
-                        if (nameAttr != null) {
-                            schema = nameAttr.getNodeValue();
-                        }
+                // Get schema name
+                NamedNodeMap attr = currentNode.getAttributes();
+                if (attr != null && attr.getLength() > 0) {
+                    Node nameAttr = attr.getNamedItem(NAME_ATTRIBUTE);
+                    if (nameAttr != null) {
+                        schema = nameAttr.getNodeValue();
                     }
                 }
 

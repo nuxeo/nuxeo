@@ -87,21 +87,12 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 7, docDiff.getSchemaCount());
-
-        // ---------------------------
-        // Check system elements
-        // ---------------------------
-        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 1);
-
-        // path
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
-                PropertyType.UNDEFINED, "leftDoc", "rightDoc");
+        assertEquals("Wrong schema count.", 6, docDiff.getSchemaCount());
 
         // ---------------------------
         // Check dublincore schema
         // ---------------------------
-        schemaDiff = checkSchemaDiff(docDiff, "dublincore", 6);
+        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "dublincore", 6);
 
         // title => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("title"),
@@ -341,21 +332,12 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
-        assertEquals("Wrong schema count.", 7, docDiff.getSchemaCount());
-
-        // ---------------------------
-        // Check system elements
-        // ---------------------------
-        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "system", 1);
-
-        // path
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("path"),
-                PropertyType.UNDEFINED, "rightDoc", "leftDoc");
+        assertEquals("Wrong schema count.", 6, docDiff.getSchemaCount());
 
         // ---------------------------
         // Check dublincore schema
         // ---------------------------
-        schemaDiff = checkSchemaDiff(docDiff, "dublincore", 6);
+        SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "dublincore", 6);
 
         // title => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("title"),

@@ -112,9 +112,8 @@ public class TestDiffDisplayContribOverride {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(7, contribs.size());
+        assertEquals(6, contribs.size());
         assertTrue(contribs.containsKey("heading"));
-        assertTrue(contribs.containsKey("system"));
         assertTrue(contribs.containsKey("dublincore"));
         assertTrue(contribs.containsKey("files"));
         assertTrue(contribs.containsKey("note"));
@@ -125,27 +124,15 @@ public class TestDiffDisplayContribOverride {
         DiffBlockDefinition diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("testNoFields");
         assertNull(diffBlockDefinition);
 
-        // Check non overridden system diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("system");
-        assertNotNull(diffBlockDefinition);
-
-        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("system", "path"));
-        fields.add(new DiffFieldDefinitionImpl("system", "type"));
-        fields.add(new DiffFieldDefinitionImpl("system", "lifecycle-state"));
-        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "system", null, fields);
-        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
-
         // Check non overridden heading diffDisplay contrib
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("heading");
         assertNotNull(diffBlockDefinition);
 
-        fields = new ArrayList<DiffFieldDefinition>();
+        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("heading",
-                null, fields);
+        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
+                "heading", null, fields);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check overridden dublincore diffDisplay contrib
