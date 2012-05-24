@@ -78,7 +78,7 @@
     <tmpl:allowOverride>false</tmpl:allowOverride>
     <tmpl:templateType>XDocReportProcessor</tmpl:templateType>
     <tmpl:useAsMainContent>false</tmpl:useAsMainContent>
-    <tmpl:templateName />
+    <tmpl:templateName>Note Wrapper</tmpl:templateName>
     <tmpl:applicableTypes>
       <item>all</item>
     </tmpl:applicableTypes>

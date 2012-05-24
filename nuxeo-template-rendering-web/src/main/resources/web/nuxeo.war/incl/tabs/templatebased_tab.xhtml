@@ -19,9 +19,17 @@
    <table>
    <nxu:repeat var="template" value="#{templates}">
     <tr>
-      <td> <nxd:restDocumentLink document="#{template.adaptedDoc}">
+      <td>
+       <nxu:graphicImage
+        value="#{nxd:iconPath(template.adaptedDoc)}" alt="#{template.name}" title="#{template.name}"
+        rendered="#{!empty nxd:iconPath(template.adaptedDoc)}"
+        styleClass="smallIcon" />
+
+          <nxd:restDocumentLink document="#{template.adaptedDoc}">
             #{template.name}
           </nxd:restDocumentLink>
+          <h:outputText value="&#160;" />
+
       </td>
 
          <c:if test="#{template.name == templateBasedActions.getEditableTemplateName()}">

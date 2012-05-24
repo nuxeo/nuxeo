@@ -73,7 +73,7 @@
     <tmpl:allowOverride>false</tmpl:allowOverride>
     <tmpl:templateType>XDocReportProcessor</tmpl:templateType>
     <tmpl:useAsMainContent>true</tmpl:useAsMainContent>
-    <tmpl:templateName />
+    <tmpl:templateName>SpecNux</tmpl:templateName>
     <tmpl:applicableTypes>
       <item>all</item>
     </tmpl:applicableTypes>
