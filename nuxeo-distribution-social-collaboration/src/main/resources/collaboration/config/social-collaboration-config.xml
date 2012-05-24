@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.social.collaboration.config">
 
+  <require>org.nuxeo.ecm.social.user.relationship.layout</require>
+  <require>org.nuxeo.ecm.agenda.ecm.types</require>
+
   <extension target="org.nuxeo.ecm.activity.ActivityStreamService"
     point="activityStreams">
 
@@ -16,8 +19,6 @@
     </activityStream>
 
   </extension>
-
-  <require>org.nuxeo.ecm.social.user.relationship.layout</require>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
@@ -38,6 +39,21 @@
       </rows>
     </layout>
 
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+             point="types">
+    <type id="SocialFolder">
+      <subtypes>
+        <type>VEVENT</type>
+      </subtypes>
+    </type>
+
+    <type id="SocialWorkspace">
+      <subtypes>
+        <type>VEVENT</type>
+      </subtypes>
+    </type>
   </extension>
 
 </component>
