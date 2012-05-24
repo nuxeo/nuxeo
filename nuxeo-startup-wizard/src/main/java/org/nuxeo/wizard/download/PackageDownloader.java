@@ -64,9 +64,9 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class PackageDownloader {
 
@@ -89,8 +89,6 @@ public class PackageDownloader {
     public static final String BASE_URL_KEY = "nuxeo.wizard.packages.url";
 
     public static final String DEFAULT_BASE_URL = "http://cdn.nuxeo.com/"; // nuxeo-XXX/mp
-
-    public static final String WORKDING_DIR_NAME = "setupWizardDownloads";
 
     protected CopyOnWriteArrayList<PendingDownload> pendingDownloads = new CopyOnWriteArrayList<PendingDownload>();
 
@@ -259,12 +257,11 @@ public class PackageDownloader {
     }
 
     protected File getDownloadDirectory() {
-        File nxHome = getConfig().getNuxeoHome();
-        File dir = new File(nxHome, WORKDING_DIR_NAME);
-        if (!dir.exists()) {
-            dir.mkdirs();
+        File mpDir = getConfig().getDistributionMPDir();
+        if (!mpDir.exists()) {
+            mpDir.mkdirs();
         }
-        return dir;
+        return mpDir;
     }
 
     public boolean canReachServer() {

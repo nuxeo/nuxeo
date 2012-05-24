@@ -23,7 +23,6 @@ import java.io.IOException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.wizard.context.Context;
 import org.nuxeo.wizard.context.ParamCollector;
-import org.nuxeo.wizard.download.PackageDownloader;
 
 public class PackageDownloaderHelper {
 
@@ -32,9 +31,8 @@ public class PackageDownloaderHelper {
     protected static File getMarkerFile(Context ctx) {
         ParamCollector collector = ctx.getCollector();
         ConfigurationGenerator cg = collector.getConfigurationGenerator();
-        File nxHome = cg.getNuxeoHome();
-        File dir = new File(nxHome, PackageDownloader.WORKDING_DIR_NAME);
-        return new File(dir, MARKER_FILE);
+        File mpDir = cg.getDistributionMPDir();
+        return new File(mpDir, MARKER_FILE);
     }
 
     public static void markPackageSelectionDone(Context ctx) throws IOException {
