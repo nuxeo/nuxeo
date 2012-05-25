@@ -22,13 +22,25 @@ package org.nuxeo.launcher.connect;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -49,11 +61,14 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.Version;
+import org.nuxeo.connect.update.model.PackageDefinition;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.info.CommandInfo;
 import org.nuxeo.launcher.info.CommandSetInfo;
 import org.nuxeo.launcher.info.PackageInfo;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * @since 5.6
@@ -63,6 +78,12 @@ public class ConnectBroker {
     private static final Log log = LogFactory.getLog(ConnectBroker.class);
 
     private static final int PACKAGES_DOWNLOAD_TIMEOUT_SECONDS = 300;
+
+    public static final String PARAM_MP_DIR = "nuxeo.distribution.marketplace.dir";
+
+    public static final String DISTRIBUTION_MP_DIR_DEFAULT = "setupWizardDownloads";
+
+    public static final String PACKAGES_XML = "packages.xml";
 
     private Environment env;
 
@@ -74,6 +95,8 @@ public class ConnectBroker {
 
     private String targetPlatform;
 
+    private String distributionMPDir;
+
     public ConnectBroker(Environment env) throws IOException, PackageException {
         this.env = env;
         service = new StandaloneUpdateService(env);
@@ -82,6 +105,9 @@ public class ConnectBroker {
         NuxeoConnectClient.setCallBackHolder(cbHolder);
         targetPlatform = env.getProperty(Environment.DISTRIBUTION_NAME) + "-"
                 + env.getProperty(Environment.DISTRIBUTION_VERSION);
+        distributionMPDir = env.getProperty(PARAM_MP_DIR,
+                DISTRIBUTION_MP_DIR_DEFAULT);
+        addDistributionPackages();
     }
 
     public String getCLID() throws NoCLID {
@@ -224,6 +250,131 @@ public class ConnectBroker {
 
     protected boolean isLocalPackageFile(String pkgFile) {
         return (getLocalPackageFile(pkgFile) != null);
+    }
+
+    protected List<String> getDistributionFilenames() {
+        File distributionMPFile = new File(distributionMPDir, PACKAGES_XML);
+        List<String> md5Filenames = new ArrayList<String>();
+        // Try to get md5 files from packages.xml
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true);
+        try {
+            DocumentBuilder builder = docFactory.newDocumentBuilder();
+            Document doc = builder.parse(distributionMPFile);
+            XPathFactory xpFactory = XPathFactory.newInstance();
+            XPath xpath = xpFactory.newXPath();
+            XPathExpression expr = xpath.compile("//package/@md5");
+            NodeList nodes = (NodeList) expr.evaluate(doc,
+                    XPathConstants.NODESET);
+            for (int i = 0; i < nodes.getLength(); i++) {
+                String md5 = nodes.item(i).getNodeValue();
+                if ((md5 != null) && (md5.length() > 0)) {
+                    md5Filenames.add(md5);
+                }
+            }
+        } catch (Exception e) {
+            // Parsing failed - return empty list
+            log.error("Failed parsing " + distributionMPFile, e);
+            return new ArrayList<String>();
+        }
+        return md5Filenames;
+    }
+
+    protected Map<String, PackageDefinition> getDistributionDefinitions(
+            List<String> md5Filenames) {
+        Map<String, PackageDefinition> allDefinitions = new HashMap<String, PackageDefinition>();
+        if (md5Filenames == null) {
+            return allDefinitions;
+        }
+        for (String md5Filename : md5Filenames) {
+            File md5File = new File(distributionMPDir, md5Filename);
+            if (!md5File.exists()) {
+                // distribution file has been deleted
+                continue;
+            }
+            ZipFile zipFile;
+            try {
+                zipFile = new ZipFile(md5File);
+            } catch (ZipException e) {
+                log.warn("Unzip error reading file " + md5File, e);
+                continue;
+            } catch (IOException e) {
+                log.warn("Could not read file " + md5File, e);
+                continue;
+            }
+            try {
+                ZipEntry zipEntry = zipFile.getEntry("package.xml");
+                InputStream in = zipFile.getInputStream(zipEntry);
+                PackageDefinition pd = NuxeoConnectClient.getPackageUpdateService().loadPackage(
+                        in);
+                allDefinitions.put(md5Filename, pd);
+            } catch (Exception e) {
+                log.error("Could not read package description", e);
+                continue;
+            } finally {
+                try {
+                    zipFile.close();
+                } catch (IOException e) {
+                    log.warn("Unexpected error closing file " + md5File, e);
+                }
+            }
+        }
+        return allDefinitions;
+    }
+
+    protected void addDistributionPackage(String md5) {
+        File distributionFile = new File(distributionMPDir, md5);
+        if (distributionFile.exists()) {
+            try {
+                pkgAdd(distributionFile.getCanonicalPath());
+                FileUtils.deleteQuietly(distributionFile);
+            } catch (IOException e) {
+                log.warn("Could not add distribution file " + md5);
+            }
+        }
+    }
+
+    protected void deleteDistributionPackage(String md5) {
+        File distributionFile = new File(distributionMPDir, md5);
+        FileUtils.deleteQuietly(distributionFile);
+    }
+
+    public void addDistributionPackages() {
+        Map<String, PackageDefinition> distributionPackages = getDistributionDefinitions(getDistributionFilenames());
+        if (distributionPackages.isEmpty()) {
+            return;
+        }
+        List<LocalPackage> localPackages = getPkgList();
+        Map<String, LocalPackage> localPackagesById = new HashMap<String, LocalPackage>();
+        if (localPackages != null) {
+            for (LocalPackage pkg : localPackages) {
+                localPackagesById.put(pkg.getId(), pkg);
+            }
+        }
+        for (String md5 : distributionPackages.keySet()) {
+            PackageDefinition md5Pkg = distributionPackages.get(md5);
+            if (localPackagesById.containsKey(md5Pkg.getId())) {
+                // We have the same package Id in the local cache
+                LocalPackage localPackage = localPackagesById.get(md5Pkg.getId());
+                if (localPackage.getVersion().isSnapshot()) {
+                    // - For snapshots, until we have timestamp support, assume
+                    // distribution version is newer than cached version.
+                    // - This may (will) break the server if there are
+                    // dependencies/compatibility changes or it the package is
+                    // in installed state.
+                    if (localPackage.getState() != PackageState.STARTED) {
+                        pkgRemove(localPackage.getId());
+                        addDistributionPackage(md5);
+                    }
+                } else {
+                    // Package is already in cache
+                    deleteDistributionPackage(md5);
+                }
+            } else {
+                // No package with this Id is in cache
+                addDistributionPackage(md5);
+            }
+        }
     }
 
     public List<LocalPackage> getPkgList() {

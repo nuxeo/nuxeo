@@ -328,14 +328,14 @@ public abstract class NuxeoLauncher {
     /**
      * Do not directly call this method without a call to
      * {@link #checkNoRunningServer()}
-     *
+     * 
      * @see #doStart()
      * @throws IOException In case of issue with process.
      * @throws InterruptedException If any thread has interrupted the current
      *             thread.
      */
     protected void start(boolean logProcessOutput) throws IOException,
-    InterruptedException {
+            InterruptedException {
         List<String> startCommand = new ArrayList<String>();
         startCommand.add(getJavaExecutable().getPath());
         startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
@@ -363,9 +363,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * Gets the java options with Nuxeo properties substituted.
-     *
+     * 
      * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
-     *
+     * 
      * @return the java options string.
      */
     protected String getJavaOptsProperty() {
@@ -388,7 +388,7 @@ public abstract class NuxeoLauncher {
      * Check if some server is already running (from another thread) and throw a
      * Runtime exception if it finds one. That method will work where
      * {@link #isRunning()} won't.
-     *
+     * 
      * @throws IllegalThreadStateException Thrown if a server is already
      *             running.
      */
@@ -434,7 +434,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Will wrap, if necessary, the command within a Shell command
-     *
+     * 
      * @param roughCommand Java command which will be run
      * @return wrapped command depending on the OS
      */
@@ -605,7 +605,7 @@ public abstract class NuxeoLauncher {
     }
 
     public static void main(String[] args) throws ConfigurationException,
-    IOException, PackageException {
+            IOException, PackageException {
         try {
             final NuxeoLauncher launcher = createLauncher(args);
             if (launcher.useGui && launcher.getGUI() == null) {
@@ -626,7 +626,7 @@ public abstract class NuxeoLauncher {
      * @throws IOException
      */
     public static void launch(final NuxeoLauncher launcher) throws IOException,
-    PackageException {
+            PackageException {
         int exitStatus = 0;
         boolean commandSucceeded = true;
         if (launcher.command == null) {
@@ -854,7 +854,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Call {@link #doStart(boolean)} with false as parameter.
-     *
+     * 
      * @see #doStart(boolean)
      * @return true if the server started successfully
      * @throws PackageException
@@ -867,9 +867,9 @@ public abstract class NuxeoLauncher {
      * Whereas {@link #doStart()} considers the server as started when the
      * process is running, {@link #doStartAndWait()} waits for effective start
      * by watching the logs
-     *
+     * 
      * @param logProcessOutput Must process output stream must be logged or not.
-     *
+     * 
      * @return true if the server started successfully
      * @throws PackageException
      */
@@ -963,7 +963,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Must be called after {@link #getStartupSummary()}
-     *
+     * 
      * @since 5.5
      * @return last detected status of running Nuxeo server
      */
@@ -987,7 +987,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Starts the server in background.
-     *
+     * 
      * @return true if server successfully started
      * @throws PackageException
      */
@@ -1114,9 +1114,9 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stop stream gobblers contained in the given ArrayList
-     *
+     * 
      * @throws InterruptedException
-     *
+     * 
      * @since 5.5
      * @see #logProcessStreams(Process, boolean)
      */
@@ -1188,7 +1188,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Stops the server.
-     *
+     * 
      * Will try to call specific class for a clean stop, retry
      * {@link #STOP_NB_TRY}, waiting {@link #STOP_SECONDS_BEFORE_NEXT_TRY}
      * between each try, then kill the process if still running.
@@ -1298,7 +1298,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * Configure the server after checking installation
-     *
+     * 
      * @throws ConfigurationException If an installation error is detected or if
      *             configuration fails
      */
@@ -1322,7 +1322,7 @@ public abstract class NuxeoLauncher {
      * Return process status (running or not) as String, depending on OS
      * capability to manage processes. Set status value following
      * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
-     *
+     * 
      * @see #status
      */
     public String status() {
@@ -1394,7 +1394,7 @@ public abstract class NuxeoLauncher {
     /**
      * Sets from program arguments the launcher command and additional
      * parameters.
-     *
+     * 
      * @param cmdLine Program arguments; may be used by launcher implementation.
      *            Must not be null or empty.
      */
@@ -1528,7 +1528,7 @@ public abstract class NuxeoLauncher {
      * Work best with current nuxeoProcess. If nuxeoProcess is null or has
      * exited, then will try to get process ID (so, result in that case depends
      * on OS capabilities).
-     *
+     * 
      * @return true if current process is running or if a running PID is found
      */
     public boolean isRunning() {
@@ -1583,7 +1583,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected ConnectBroker getConnectBroker() throws IOException,
-    PackageException {
+            PackageException {
         if (connectBroker == null) {
             connectBroker = new ConnectBroker(configurationGenerator.getEnv());
         }
@@ -1598,7 +1598,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgAdd(String[] pkgNames) throws IOException,
-    PackageException {
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1614,7 +1614,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgInstall(String[] pkgIDs) throws IOException,
-    PackageException {
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
@@ -1634,7 +1634,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgUninstall(String[] pkgIDs) throws IOException,
-    PackageException {
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1650,7 +1650,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgRemove(String[] pkgIDs) throws IOException,
-    PackageException {
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1806,7 +1806,7 @@ public abstract class NuxeoLauncher {
             } else {
                 File testBase = new File(configurationGenerator.getNuxeoHome(),
                         ConfigurationGenerator.TEMPLATES + File.separator
-                        + template);
+                                + template);
                 if (testBase.exists()) {
                     nxConfig.basetemplates.add(template);
                     log.info("Base template: " + template);
@@ -1867,8 +1867,8 @@ public abstract class NuxeoLauncher {
                             configurationGenerator.getInstallFile(), true, true);
         }
         cmdOK = cmdOK
-                && pkgman.pkgRequest(pkgsToAdd, pkgsToInstall,
-                        pkgsToUninstall, pkgsToRemove);
+                && pkgman.pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall,
+                        pkgsToRemove);
         cset = pkgman.getCommandSet();
         if (!cmdOK) {
             errorValue = 3;
