@@ -51,6 +51,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({
+        "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml",
         "org.nuxeo.diff.core",
         "org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml",
         "org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml",

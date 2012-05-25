@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.io.DocumentXMLExporter;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -40,7 +41,6 @@ import org.nuxeo.ecm.diff.model.impl.ComplexPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.diff.test.DocumentDiffRepositoryInit;
-import org.nuxeo.ecm.diff.xmlexport.DocumentXMLExporter;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -58,7 +58,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(repositoryName = "default", init = DocumentDiffRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.diff.core", "org.nuxeo.diff.test" })
+@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml",
+        "org.nuxeo.diff.core", "org.nuxeo.diff.test" })
 public class TestDocumentDiff extends DiffTestCase {
 
     @Inject
@@ -66,6 +67,9 @@ public class TestDocumentDiff extends DiffTestCase {
 
     @Inject
     protected DocumentDiffService docDiffService;
+
+    @Inject
+    protected DocumentXMLExporter docXMLExporter;
 
     /**
      * Tests doc diff.
@@ -566,7 +570,6 @@ public class TestDocumentDiff extends DiffTestCase {
     protected final void createXMLExportTempFile(DocumentModel doc)
             throws ClientException {
 
-        DocumentXMLExporter docXMLExporter = docDiffService.getDocumentXMLExporter();
         byte[] xmlExportByteArray = docXMLExporter.exportXMLAsByteArray(doc,
                 session);
 

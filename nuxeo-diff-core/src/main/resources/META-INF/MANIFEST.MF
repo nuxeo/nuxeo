@@ -7,5 +7,4 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 5.6
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.diff.core;singleton:=true
-Nuxeo-Component: OSGI-INF/document-xml-export-service.xml,
- OSGI-INF/document-diff-service.xml
+Nuxeo-Component: OSGI-INF/document-diff-service.xml

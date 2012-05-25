@@ -62,6 +62,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(repositoryName = "default", init = DocumentDiffRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({
+        "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml",
         "org.nuxeo.diff.core",
         "org.nuxeo.diff.test",
         "org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml",

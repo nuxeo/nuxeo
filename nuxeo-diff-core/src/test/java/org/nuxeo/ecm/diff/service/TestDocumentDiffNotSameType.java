@@ -51,7 +51,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(repositoryName = "default", init = DocumentDiffNotSameTypeRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.diff.core", "org.nuxeo.diff.test" })
+@Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml",
+        "org.nuxeo.diff.core", "org.nuxeo.diff.test" })
 public class TestDocumentDiffNotSameType extends DiffTestCase {
 
     @Inject

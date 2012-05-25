@@ -23,11 +23,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
-import org.nuxeo.ecm.diff.xmlexport.DocumentXMLExporter;
 
 /**
  * Handles a diff between two documents.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
@@ -36,7 +35,7 @@ public interface DocumentDiffService extends Serializable {
     /**
      * Makes a diff between leftDoc and rightDoc. Returns a DocumentDiff object
      * that wraps the differences, schema by schema and field by field.
-     * 
+     *
      * @param session the session
      * @param leftDoc the left doc
      * @param rightDoc the right doc
@@ -49,7 +48,7 @@ public interface DocumentDiffService extends Serializable {
     /**
      * Makes a diff between leftXML and rightXML. Returns a DocumentDiff object
      * that wraps the differences, schema by schema and field by field.
-     * 
+     *
      * @param leftXML the left XML
      * @param rightXML the right XML
      * @return the document diff
@@ -58,21 +57,13 @@ public interface DocumentDiffService extends Serializable {
     DocumentDiff diff(String leftXML, String rightXML) throws ClientException;
 
     /**
-     * Gets the document XML exporter service.
-     * 
-     * @return the document XML exporter
-     * @throws ClientException the client exception
-     */
-    DocumentXMLExporter getDocumentXMLExporter() throws ClientException;
-
-    /**
      * Configures XMLUnit.
      */
     void configureXMLUnit();
 
     /**
      * Configures the diff.
-     * 
+     *
      * @param diff the diff
      */
     void configureDiff(Diff diff);

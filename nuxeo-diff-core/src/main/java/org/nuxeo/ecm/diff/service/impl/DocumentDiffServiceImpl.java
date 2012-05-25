@@ -29,10 +29,10 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.DocumentXMLExporter;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.impl.DocumentDiffImpl;
 import org.nuxeo.ecm.diff.service.DocumentDiffService;
-import org.nuxeo.ecm.diff.xmlexport.DocumentXMLExporter;
 import org.nuxeo.runtime.api.Framework;
 import org.xml.sax.InputSource;
 
@@ -92,24 +92,6 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     /**
      * {@inheritDoc}
      */
-    public DocumentXMLExporter getDocumentXMLExporter() throws ClientException {
-
-        DocumentXMLExporter docXMLExporter;
-
-        try {
-            docXMLExporter = Framework.getService(DocumentXMLExporter.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
-        if (docXMLExporter == null) {
-            throw new ClientException("DocumentXMLExporter service is null.");
-        }
-        return docXMLExporter;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void configureXMLUnit() {
 
         XMLUnit.setIgnoreWhitespace(true);
@@ -146,6 +128,29 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
                 session));
         rightDocXMLInputSource.setByteStream(docXMLExporter.exportXML(rightDoc,
                 session));
+    }
+
+    /**
+     * Gets the document XML exporter service.
+     *
+     * @return the document XML exporter
+     * @throws ClientException if the document XML exporter service cannot be
+     *             found
+     */
+    protected final DocumentXMLExporter getDocumentXMLExporter()
+            throws ClientException {
+
+        DocumentXMLExporter docXMLExporter;
+
+        try {
+            docXMLExporter = Framework.getService(DocumentXMLExporter.class);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        }
+        if (docXMLExporter == null) {
+            throw new ClientException("DocumentXMLExporter service is null.");
+        }
+        return docXMLExporter;
     }
 
     /**
