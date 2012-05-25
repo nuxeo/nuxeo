@@ -88,6 +88,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     protected static final String DIFF_DISPLAY_EXTENSION_POINT = "diffDisplay";
 
+    protected static final String DIFF_DEFAULT_DISPLAY_EXTENSION_POINT = "diffDefaultDisplay";
+
     protected static final String DIFF_BLOCK_EXTENSION_POINT = "diffBlock";
 
     protected static final String DIFF_WIDGET_CATEGORY = "diff";
@@ -115,6 +117,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     protected static final String DIFF_LIST_WIDGET_VALUE_SUBWIDGET_FIELD = "value";
 
+    /** Diff excluded fields contributions. */
+    protected Map<String, List<String>> diffExcludedFieldsContribs = new HashMap<String, List<String>>();
+
     /** Diff display contributions. */
     protected Map<String, List<String>> diffDisplayContribs = new HashMap<String, List<String>>();
 
@@ -126,7 +131,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
 
-        if (DIFF_DISPLAY_EXTENSION_POINT.equals(extensionPoint)) {
+        if (DIFF_DEFAULT_DISPLAY_EXTENSION_POINT.equals(extensionPoint)) {
+            if (contribution instanceof DiffExcludedFieldsDescriptor) {
+                registerDiffExcludedFields((DiffExcludedFieldsDescriptor) contribution);
+            }
+        } else if (DIFF_DISPLAY_EXTENSION_POINT.equals(extensionPoint)) {
             if (contribution instanceof DiffDisplayDescriptor) {
                 registerDiffDisplay((DiffDisplayDescriptor) contribution);
             }
@@ -136,6 +145,14 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             }
         }
         super.registerContribution(contribution, extensionPoint, contributor);
+    }
+
+    public Map<String, List<String>> getDiffExcludedSchemas() {
+        return diffExcludedFieldsContribs;
+    }
+
+    public List<String> getDiffExcludedFields(String schemaName) {
+        return diffExcludedFieldsContribs.get(schemaName);
     }
 
     public Map<String, List<String>> getDiffDisplays() {
@@ -257,6 +274,40 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     }
 
     /**
+     * Registers a diff excluded fields contrib.
+     *
+     * @param contribution the contribution
+     */
+    protected final void registerDiffExcludedFields(
+            DiffExcludedFieldsDescriptor descriptor) {
+
+        String schemaName = descriptor.getSchema();
+        if (!StringUtils.isEmpty(schemaName)) {
+            boolean enabled = descriptor.isEnabled();
+            // Check existing diffExcludedFields contrib for this schema
+            List<String> diffExcludedFields = diffExcludedFieldsContribs.get(schemaName);
+            if (diffExcludedFields != null) {
+                // If !enabled remove contrib
+                if (!enabled) {
+                    diffExcludedFieldsContribs.remove(schemaName);
+                }
+                // Else override contrib (no merge)
+                // TODO: implement merge
+                else {
+                    diffExcludedFieldsContribs.put(schemaName,
+                            getDiffExcludedFieldRefs(descriptor.getFields()));
+                }
+            }
+            // No existing diffExcludedFields contrib for this
+            // schema and enabled => add contrib
+            else if (enabled) {
+                diffExcludedFieldsContribs.put(schemaName,
+                        getDiffExcludedFieldRefs(descriptor.getFields()));
+            }
+        }
+    }
+
+    /**
      * Registers a diff display contrib.
      *
      * @param contribution the contribution
@@ -297,6 +348,16 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             diffBlockRefs.add(diffBlockRef.getName());
         }
         return diffBlockRefs;
+    }
+
+    protected final List<String> getDiffExcludedFieldRefs(
+            List<DiffFieldDescriptor> diffExcludedFields) {
+
+        List<String> diffExcludedFieldRefs = new ArrayList<String>();
+        for (DiffFieldDescriptor diffExcludedFieldRef : diffExcludedFields) {
+            diffExcludedFieldRefs.add(diffExcludedFieldRef.getName());
+        }
+        return diffExcludedFieldRefs;
     }
 
     protected final void registerDiffBlock(DiffBlockDescriptor descriptor) {
@@ -345,13 +406,22 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         List<DiffBlockDefinition> diffBlockDefs = new ArrayList<DiffBlockDefinition>();
 
         for (String schemaName : docDiff.getSchemaNames()) {
-            SchemaDiff schemaDiff = docDiff.getSchemaDiff(schemaName);
-            List<DiffFieldDefinition> fieldDefs = new ArrayList<DiffFieldDefinition>();
-            for (String fieldName : schemaDiff.getFieldNames()) {
-                fieldDefs.add(new DiffFieldDefinitionImpl(schemaName, fieldName));
+            List<String> diffExcludedFields = getDiffExcludedFields(schemaName);
+            // Only add the schema fields if the whole schema is not excluded
+            if (diffExcludedFields == null || diffExcludedFields.size() > 0) {
+                SchemaDiff schemaDiff = docDiff.getSchemaDiff(schemaName);
+                List<DiffFieldDefinition> fieldDefs = new ArrayList<DiffFieldDefinition>();
+                for (String fieldName : schemaDiff.getFieldNames()) {
+                    // Only add the field if it is not excluded
+                    if (diffExcludedFields == null
+                            || !diffExcludedFields.contains(fieldName)) {
+                        fieldDefs.add(new DiffFieldDefinitionImpl(schemaName,
+                                fieldName));
+                    }
+                }
+                diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName, null,
+                        fieldDefs));
             }
-            diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName, null,
-                    fieldDefs));
         }
 
         return diffBlockDefs;

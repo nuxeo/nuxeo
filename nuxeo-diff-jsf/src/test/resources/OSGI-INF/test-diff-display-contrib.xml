@@ -6,6 +6,18 @@
   </require>
 
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffDefaultDisplay">
+
+    <diffExcludedFields schema="dublincore">
+      <fields>
+        <field name="subjects" />
+        <field name="modified" />
+      </fields>
+    </diffExcludedFields>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffDisplay">
 
     <!-- Override File diffDisplay -->

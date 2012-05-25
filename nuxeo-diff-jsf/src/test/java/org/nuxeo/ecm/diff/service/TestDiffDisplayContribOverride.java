@@ -56,6 +56,34 @@ public class TestDiffDisplayContribOverride {
     protected DiffDisplayService diffDisplayService;
 
     /**
+     * Tests the diff default display contribution.
+     */
+    @Test
+    public void testDiffDefaultDisplayContrib() {
+
+        // Check diffExcludedFields contribs
+        Map<String, List<String>> diffExcludedSchemas = diffDisplayService.getDiffExcludedSchemas();
+        assertNotNull(diffExcludedSchemas);
+        assertEquals(2, diffExcludedSchemas.size());
+        assertTrue(diffExcludedSchemas.containsKey("common"));
+        assertTrue(diffExcludedSchemas.containsKey("dublincore"));
+
+        // Check non overriden "common" diffExcludedFields contrib
+        List<String> diffExcludedFields = diffDisplayService.getDiffExcludedFields("common");
+        assertNotNull(diffExcludedFields);
+        assertTrue(diffExcludedFields.isEmpty());
+
+        // Check new "dublincore" diffExcludedFields contrib
+        diffExcludedFields = diffDisplayService.getDiffExcludedFields("dublincore");
+        assertNotNull(diffExcludedFields);
+
+        List<String> expectedDiffExcludedFields = new ArrayList<String>();
+        expectedDiffExcludedFields.add("subjects");
+        expectedDiffExcludedFields.add("modified");
+        assertEquals(expectedDiffExcludedFields, diffExcludedFields);
+    }
+
+    /**
      * Tests the diff display contribution.
      */
     @Test

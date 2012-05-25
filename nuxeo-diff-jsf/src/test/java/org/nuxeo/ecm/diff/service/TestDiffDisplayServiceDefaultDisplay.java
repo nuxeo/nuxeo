@@ -79,6 +79,11 @@ public class TestDiffDisplayServiceDefaultDisplay extends
 
         // Create left and right docs
         DocumentModel leftDoc = session.createDocumentModel("Note");
+        // Set properties from the "common" schema. They should be ignored in
+        // the diff display since this schema is excluded.
+        leftDoc.setPropertyValue("common:icon", "icons/note.gif");
+        leftDoc.setPropertyValue("common:size", 10);
+        // Set other properties
         leftDoc.setPropertyValue("dc:title", "My note");
         leftDoc.setPropertyValue("dc:subjects", new String[] { "Art",
                 "Architecture" });

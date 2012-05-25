@@ -2,6 +2,14 @@
 <component name="org.nuxeo.ecm.diff.service.DiffDisplayService.contrib">
 
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
+    point="diffDefaultDisplay">
+
+    <diffExcludedFields schema="common" />
+
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffDisplay">
 
     <diffDisplay type="File">
@@ -53,7 +61,8 @@
 
     <diffBlock name="files" label="label.diffBlock.files">
       <fields>
-        <field schema="file" name="content" displayContentDiffLinks="true" />
+        <field schema="file" name="content"
+          displayContentDiffLinks="true" />
         <field schema="files" name="files">
           <items>
             <!-- Display the file only, not the filename which is managed 
@@ -70,21 +79,12 @@
       </fields>
     </diffBlock>
 
-<!--     <diffBlock name="dublincore">
-      <properties mode="any">
-        <property name="label">label.diffBlock.dublincore</property>
-      </properties>
-      <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml
-        </template>
-      </templates>
-      <fields>
-        <field schema="dublincore" name="created" category="truc" />
-        <field schema="dublincore" name="modified" />
-        <field schema="dublincore" name="creator" />
-        <field schema="dublincore" name="lastContributor" />
-      </fields>
-    </diffBlock> -->
+    <!-- <diffBlock name="dublincore"> <properties mode="any"> <property 
+      name="label">label.diffBlock.dublincore</property> </properties> <templates> 
+      <template mode="any">/layouts/layout_default_template.xhtml </template> </templates> 
+      <fields> <field schema="dublincore" name="created" category="truc" /> <field 
+      schema="dublincore" name="modified" /> <field schema="dublincore" name="creator" 
+      /> <field schema="dublincore" name="lastContributor" /> </fields> </diffBlock> -->
 
   </extension>
 

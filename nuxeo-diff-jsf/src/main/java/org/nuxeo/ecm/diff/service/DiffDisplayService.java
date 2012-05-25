@@ -34,6 +34,10 @@ import org.nuxeo.ecm.diff.model.DocumentDiff;
  */
 public interface DiffDisplayService extends Serializable {
 
+    Map<String, List<String>> getDiffExcludedSchemas();
+
+    List<String> getDiffExcludedFields(String schemaName);
+
     Map<String, List<String>> getDiffDisplays();
 
     List<String> getDiffDisplay(String docType);

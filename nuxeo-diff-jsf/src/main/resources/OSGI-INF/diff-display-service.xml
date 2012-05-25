@@ -16,6 +16,38 @@
     <provide interface="org.nuxeo.ecm.diff.service.DiffDisplayService" />
   </service>
 
+  <extension-point name="diffDefaultDisplay">
+    <documentation>
+
+      <pre>
+        The diffDefaultDisplay extension point allows you to
+        contribute a diffExcludedFields contribution to define a set of
+        fields from a given schema that will be
+        excluded from the default
+        diff display in the document diff view (the default diff display
+        takes into account every different field of every common schema
+        between the compared documents, in an undefined order).
+
+        If no
+        fields are specified, the whole schema is excluded.
+      </pre>
+
+      <code>
+        <diffExcludedFields schema="common" />
+        <diffExcludedFields schema="dublincore">
+          <fields>
+            <field name="subjects" />
+            <field name="modified" />
+          </fields>
+        </diffExcludedFields>
+      </code>
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.diff.service.impl.DiffExcludedFieldsDescriptor" />
+  </extension-point>
+
+
   <extension-point name="diffDisplay">
     <documentation>
 

@@ -56,6 +56,28 @@ public class TestDiffDisplayContrib {
     protected DiffDisplayService diffDisplayService;
 
     /**
+     * Tests the diff default display contribution.
+     */
+    @Test
+    public void testDiffDefaultDisplayContrib() {
+
+        // Check diffExcludedFields contribs
+        Map<String, List<String>> diffExcludedSchemas = diffDisplayService.getDiffExcludedSchemas();
+        assertNotNull(diffExcludedSchemas);
+        assertEquals(1, diffExcludedSchemas.size());
+        assertTrue(diffExcludedSchemas.containsKey("common"));
+
+        // Check a non existing diffExcludedFields contrib
+        List<String> diffExcludedFields = diffDisplayService.getDiffExcludedFields("test");
+        assertNull(diffExcludedFields);
+
+        // Check "common" diffExcludedFields contrib
+        diffExcludedFields = diffDisplayService.getDiffExcludedFields("common");
+        assertNotNull(diffExcludedFields);
+        assertTrue(diffExcludedFields.isEmpty());
+    }
+
+    /**
      * Tests the diff display contribution.
      */
     @Test
