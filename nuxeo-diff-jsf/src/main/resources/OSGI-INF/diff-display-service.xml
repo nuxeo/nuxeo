@@ -58,17 +58,20 @@
 
         If the 2 diffed documents have the same type,
         the diffDisplay matching this type is used, otherwise or if such
-        a diffDisplay does not exist, the diffDisplay with the Document
-        type is used.
-        If it does not exist a message is displayed to let
-        the user know that no diffDisplay has been defined.
+        a diffDisplay does not exist, the default diff display is used.
+        The default diff display
+        takes into account every different field
+        of every common schema between the
+        compared documents, in an
+        undefined order.
       </pre>
 
       <code>
-        <diffDisplay type="Document">
+        <diffDisplay type="File">
           <diffBlocks>
-            <diffBlock name="header" />
+            <diffBlock name="heading" />
             <diffBlock name="dublincore" />
+            <diffBlock name="files" />
           </diffBlocks>
         </diffDisplay>
         <diffDisplay type="Note" enabled="false" />
@@ -93,7 +96,7 @@
       </pre>
 
       <code>
-        <diffBlock name="header" label="label.diffBlock.header">
+        <diffBlock name="heading" label="label.diffBlock.heading">
           <fields>
             <field schema="dublincore" name="title" />
             <field schema="dublincore" name="description" />
@@ -101,9 +104,13 @@
         </diffBlock>
         <diffBlock name="files" label="label.diffBlock.files">
           <fields>
+            <field schema="file" name="content"
+              displayContentDiffLinks="true" />
             <field schema="files" name="files">
               <items>
-                <item>file</item>
+                <!-- Display the file only, not the filename which is managed 
+                  by the file widget type -->
+                <item name="file" displayContentDiffLinks="true" />
               </items>
             </field>
           </fields>
