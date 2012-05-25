@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 
 /**
  * @since 5.6
@@ -53,6 +54,9 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     /** To be used through getter. */
     protected List<GraphNode> nodes;
 
+    /** To be used through getter. */
+    protected Map<String, GraphNode> nodesById;
+
     public GraphRouteImpl(DocumentModel doc) {
         super(doc, new GraphRunner());
     }
@@ -64,26 +68,47 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
     public Collection<GraphNode> getNodes() {
         if (nodes == null) {
-            nodes = computeNodes();
+            compute();
         }
         return nodes;
     }
 
-    protected List<GraphNode> computeNodes() {
+    protected void compute() {
         try {
-            CoreSession session = document.getCoreSession();
-            DocumentModelList children = session.getChildren(document.getRef());
-            List<GraphNode> nodes = new ArrayList<GraphNode>(children.size());
-            for (DocumentModel doc : children) {
-                // TODO use adapters
-                if (doc.getType().equals("RouteNode")) {
-                    nodes.add(new GraphNodeImpl(doc, this));
-                }
-            }
+            computeNodes();
+            computeTransitions();
             // TODO compute loop transitions on the graph
-            return nodes;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
+        }
+    }
+
+    protected void computeNodes() throws ClientException {
+        CoreSession session = document.getCoreSession();
+        DocumentModelList children = session.getChildren(document.getRef());
+        nodes = new ArrayList<GraphNode>(children.size());
+        nodesById = new HashMap<String, GraphNode>();
+        for (DocumentModel doc : children) {
+            // TODO use adapters
+            if (doc.getType().equals("RouteNode")) {
+                GraphNode node = new GraphNodeImpl(doc, this);
+                String id = node.getId();
+                if (nodesById.put(id, node) != null) {
+                    throw new DocumentRouteException(
+                            "Duplicate nodes with id: " + id);
+                }
+                nodes.add(node);
+            }
+        }
+    }
+
+    protected void computeTransitions() throws DocumentRouteException {
+        for (GraphNode node : nodes) {
+            List<Transition> tt = node.getOutputTransitions();
+            for (Transition t : tt) {
+                GraphNode target = getNode(t.target);
+                target.initAddInputTransition(t);
+            }
         }
     }
 
@@ -99,14 +124,14 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     }
 
     @Override
-    public GraphNode getNode(String id) throws DocumentRouteException {
-        for (GraphNode node : getNodes()) {
-            if (node.getId().equals(id)) {
-                return node;
-            }
+    public GraphNode getNode(String id) {
+        getNodes(); // compute
+        GraphNode node = nodesById.get(id);
+        if (node != null) {
+            return node;
         }
-        throw new DocumentRouteException("No node with id: " + id
-                + " in graph: " + getName());
+        throw new IllegalArgumentException("No node with id: " + id
+                + " in graph: " + this);
     }
 
     @Override

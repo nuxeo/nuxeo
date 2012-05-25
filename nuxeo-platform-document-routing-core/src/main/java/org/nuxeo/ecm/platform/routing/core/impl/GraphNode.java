@@ -32,6 +32,10 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
  */
 public interface GraphNode {
 
+    String MERGE_ONE = "one";
+
+    String MERGE_ALL = "all";
+
     String PROP_NODE_ID = "rnode:nodeId";
 
     String PROP_START = "rnode:start";
@@ -41,6 +45,8 @@ public interface GraphNode {
     String PROP_MERGE = "rnode:merge";
 
     String PROP_COUNT = "rnode:count";
+
+    String PROP_CANCELED = "rnode:canceled";
 
     String PROP_INPUT_CHAIN = "rnode:inputChain";
 
@@ -120,6 +126,8 @@ public interface GraphNode {
 
     class Transition implements Comparable<Transition> {
 
+        public GraphNode source;
+
         public MapProperty prop;
 
         public String id;
@@ -130,7 +138,14 @@ public interface GraphNode {
 
         public String target;
 
-        protected Transition(Property p) throws ClientException {
+        public boolean result;
+
+        /** Computed by graph. */
+        public boolean loop;
+
+        protected Transition(GraphNode source, Property p)
+                throws ClientException {
+            this.source = source;
             prop = (MapProperty) p;
             id = (String) prop.get(PROP_TRANS_NAME).getValue();
             condition = (String) prop.get(PROP_TRANS_CONDITION).getValue();
@@ -139,6 +154,7 @@ public interface GraphNode {
         }
 
         protected void setResult(boolean bool) throws ClientException {
+            result = bool;
             prop.get(PROP_TRANS_RESULT).setValue(Boolean.valueOf(bool));
         }
 
@@ -150,8 +166,7 @@ public interface GraphNode {
         @Override
         public String toString() {
             return new ToStringBuilder(this).append("id", id).append(
-                    "condition", condition).append("chain", chain).append(
-                    "target", target).toString();
+                    "condition", condition).append("result", result).toString();
         }
     }
 
@@ -192,6 +207,28 @@ public interface GraphNode {
     boolean isMerge();
 
     /**
+     * Checks if the merge is ready to execute (enough input transitions are
+     * present).
+     */
+    boolean canMerge();
+
+    /**
+     * Notes that this node was canceled (increments canceled counter).
+     */
+    void setCanceled();
+
+    /**
+     * Gets the canceled count for this node.
+     * @return
+     */
+    long getCanceledCount();
+
+    /**
+     * Cancels the task if this is a suspended task node.
+     */
+    void cancelTask();
+
+    /**
      * Get input chain.
      *
      * @return the input chain
@@ -221,6 +258,19 @@ public interface GraphNode {
      * @param chainId the chain
      */
     void executeChain(String chainId) throws DocumentRouteException;
+
+    /** Internal during graph init. */
+    void initAddInputTransition(Transition transition);
+
+    /**
+     * Gets the input transitions.
+     */
+    List<Transition> getInputTransitions();
+
+    /**
+     * Gets the output transitions.
+     */
+    List<Transition> getOutputTransitions();
 
     /**
      * Executes an Automation chain in the context of this node for a given

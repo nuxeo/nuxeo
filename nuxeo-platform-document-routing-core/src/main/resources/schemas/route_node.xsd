@@ -26,7 +26,7 @@
   <xs:element name="count" type="xs:int" /> <!-- audit -->
   <xs:element name="startDate" type="xs:date" /> <!-- audit -->
   <xs:element name="endDate" type="xs:date" /> <!-- audit -->
-  <xs:element name="cancelled" type="xs:int" /> <!-- audit -->
+  <xs:element name="canceled" type="xs:int" /> <!-- audit -->
 
 
   <xs:complexType name="variables">
@@ -59,7 +59,7 @@
       <xs:element name="description" type="xs:string" />
       <xs:element name="targetId" type="xs:string" />
       <xs:element name="condition" type="xs:string" />
-      <xs:element name="result" type="xs:boolean" />
+      <xs:element name="result" type="xs:boolean" /> <!-- runtime -->
       <xs:element name="chain" type="xs:string" />
     </xs:sequence>
   </xs:complexType>

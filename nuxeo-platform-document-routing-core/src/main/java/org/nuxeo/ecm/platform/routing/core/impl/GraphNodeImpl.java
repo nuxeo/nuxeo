@@ -29,6 +29,8 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
@@ -50,6 +52,8 @@ import org.nuxeo.runtime.api.Framework;
 public class GraphNodeImpl extends DocumentRouteElementImpl implements
         GraphNode {
 
+    private static final Log log = LogFactory.getLog(GraphNodeImpl.class);
+
     private static final long serialVersionUID = 1L;
 
     protected final GraphRouteImpl graph;
@@ -57,11 +61,15 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     protected State localState;
 
     /** To be used through getter. */
-    protected List<Transition> transitions;
+    protected List<Transition> inputTransitions;
+
+    /** To be used through getter. */
+    protected List<Transition> outputTransitions;
 
     public GraphNodeImpl(DocumentModel doc, GraphRouteImpl graph) {
         super(doc, new GraphRunner());
         this.graph = graph;
+        inputTransitions = new ArrayList<Transition>(2);
     }
 
     @Override
@@ -71,6 +79,20 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     protected boolean getBoolean(String propertyName) {
         return Boolean.TRUE.equals(getProperty(propertyName));
+    }
+
+    protected void incrementProp(String prop) {
+        try {
+            Long count = (Long) getProperty(prop);
+            if (count == null) {
+                count = Long.valueOf(0);
+            }
+            document.setPropertyValue(prop, Long.valueOf(count.longValue() + 1));
+            saveDocument();
+            getSession().save(); // XXX debug
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     protected CoreSession getSession() {
@@ -134,6 +156,18 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
+    public void setCanceled() {
+        log.warn("Canceling " + this); // XXX debug
+        incrementProp(PROP_CANCELED);
+    }
+
+    @Override
+    public long getCanceledCount() {
+        Long c = (Long) getProperty(PROP_CANCELED);
+        return c == null ? 0 : c.longValue();
+    }
+
+    @Override
     public boolean isMerge() {
         String merge = (String) getProperty(PROP_MERGE);
         return StringUtils.isNotEmpty(merge);
@@ -156,17 +190,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     @Override
     public void incrementCount() {
-        try {
-            Long count = (Long) getProperty(PROP_COUNT);
-            if (count == null) {
-                count = Long.valueOf(0);
-            }
-            document.setPropertyValue(PROP_COUNT,
-                    Long.valueOf(count.longValue() + 1));
-            saveDocument();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        incrementProp(PROP_COUNT);
     }
 
     /**
@@ -215,6 +239,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             Map<String, Serializable> graphVariables,
             Map<String, Serializable> nodeVariables) {
         OperationContext context = new OperationContext(getSession());
+        context.setCommit(false); // no session save at end
         // context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
         // element);
         context.putAll(graphVariables);
@@ -305,12 +330,17 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
-    protected List<Transition> computeTransitions() {
+    @Override
+    public void initAddInputTransition(Transition transition) {
+        inputTransitions.add(transition);
+    }
+
+    protected List<Transition> computeOutputTransitions() {
         try {
             ListProperty props = (ListProperty) document.getProperty(PROP_TRANSITIONS);
             List<Transition> trans = new ArrayList<Transition>(props.size());
             for (Property p : props) {
-                trans.add(new Transition(p));
+                trans.add(new Transition(this, p));
             }
             Collections.sort(trans);
             return trans;
@@ -319,11 +349,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
-    public List<Transition> getTransitions() {
-        if (transitions == null) {
-            transitions = computeTransitions();
+    @Override
+    public List<Transition> getOutputTransitions() {
+        if (outputTransitions == null) {
+            outputTransitions = computeOutputTransitions();
         }
-        return transitions;
+        return outputTransitions;
     }
 
     @Override
@@ -332,7 +363,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             List<Transition> trueTrans = new ArrayList<Transition>();
             OperationContext context = getContext(graph.getVariables(),
                     getVariables());
-            for (Transition t : getTransitions()) {
+            for (Transition t : getOutputTransitions()) {
                 context.put("transition", t.id);
                 Expression expr = Scripting.newExpression(t.condition);
                 Object res = null;
@@ -369,6 +400,37 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean canMerge() {
+        int n = 0;
+        List<Transition> inputTransitions = getInputTransitions();
+        for (Transition t : inputTransitions) {
+            if (t.result) {
+                n++;
+            }
+        }
+        String merge = (String) getProperty(PROP_MERGE);
+        if (MERGE_ONE.equals(merge)) {
+            return n > 0;
+        } else if (MERGE_ALL.equals(merge)) {
+            return n == inputTransitions.size();
+        } else {
+            throw new ClientRuntimeException("Illegal merge mode '" + merge
+                    + "' for node " + this);
+        }
+    }
+
+    @Override
+    public List<Transition> getInputTransitions() {
+        return inputTransitions;
+    }
+
+    @Override
+    public void cancelTask() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
 }

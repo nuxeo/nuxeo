@@ -4,19 +4,39 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
     <operation
-      class="org.nuxeo.ecm.platform.routing.test.TestOperationSetTitle" />
+      class="org.nuxeo.ecm.platform.routing.test.TestOperationSetProperty" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="chains">
     <chain id="testchain_title1">
-      <operation id="Document.Routing.Test.SetTitle">
-        <param type="string" name="title">title 1</param>
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:title</param>
+        <param type="string" name="value">title 1</param>
       </operation>
     </chain>
     <chain id="testchain_title2">
-      <operation id="Document.Routing.Test.SetTitle">
-        <param type="string" name="title">title 2</param>
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:title</param>
+        <param type="string" name="value">title 2</param>
+      </operation>
+    </chain>
+    <chain id="testchain_descr1">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:description</param>
+        <param type="string" name="value">descr 1</param>
+      </operation>
+    </chain>
+    <chain id="testchain_descr2">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:description</param>
+        <param type="string" name="value">descr 2</param>
+      </operation>
+    </chain>
+    <chain id="testchain_rights1">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:rights</param>
+        <param type="string" name="value">rights 1</param>
       </operation>
     </chain>
   </extension>

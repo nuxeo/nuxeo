@@ -250,7 +250,8 @@ public class GraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1,
-                transition("trans1", "node2", "true", "testchain_title1"));
+                transition("trans1", "node2", "true", "testchain_title1"),
+                transition("trans2", "node2", "false", "testchain_title2"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
@@ -262,6 +263,133 @@ public class GraphRouteTest {
         assertTrue(route.isDone());
         doc.refresh();
         assertEquals("title 1", doc.getTitle());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testForkMergeAll() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1,
+                transition("trans1", "node2", "true", "testchain_title1"),
+                transition("trans2", "node2", "true", "testchain_descr1"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+
+        DocumentRoute route = instantiateAndRun();
+
+        assertTrue(route.isDone());
+        doc.refresh();
+        assertEquals("title 1", doc.getTitle());
+        assertEquals("descr 1", doc.getPropertyValue("dc:description"));
+        assertEquals("rights 1", doc.getPropertyValue("dc:rights"));
+    }
+
+    // a few more nodes before the merge
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testForkMergeAll2() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans1", "node2", "true"),
+                transition("trans2", "node3", "true"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
+        setTransitions(node2, transition("trans1", "node4", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
+        setTransitions(node3, transition("trans2", "node4", "true"));
+        node3 = session.saveDocument(node3);
+
+        DocumentModel node4 = createNode(routeDoc, "node4");
+        node4.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node4.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node4 = session.saveDocument(node4);
+
+        DocumentRoute route = instantiateAndRun();
+
+        assertTrue(route.isDone());
+        doc.refresh();
+        assertEquals("title 1", doc.getTitle());
+        assertEquals("descr 1", doc.getPropertyValue("dc:description"));
+        assertEquals("rights 1", doc.getPropertyValue("dc:rights"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testForkMergeOne() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans12", "node2", "true"),
+                transition("trans13", "node3", "true"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
+        setTransitions(node2, transition("trans25", "node5", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
+        setTransitions(node3, transition("trans34", "node4", "true"));
+        node3 = session.saveDocument(node3);
+
+        DocumentModel node4 = createNode(routeDoc, "node4");
+        node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr2");
+        setTransitions(node4, transition("trans45", "node5", "true"));
+        node4 = session.saveDocument(node4);
+
+        DocumentModel node5 = createNode(routeDoc, "node5");
+        node5.setPropertyValue(GraphNode.PROP_MERGE, "one");
+        node5.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node5.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node5 = session.saveDocument(node5);
+
+        DocumentRoute route = instantiateAndRun();
+
+        assertTrue(route.isDone());
+
+        doc.refresh();
+        assertEquals("title 1", doc.getTitle());
+        assertEquals("descr 1", doc.getPropertyValue("dc:description"));
+        // didn't go up to descr 2, which was canceled
+        assertEquals("rights 1", doc.getPropertyValue("dc:rights"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testForkMergeWithLoopTransition() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1,
+                transition("trans1", "node2", "true", "testchain_title1"),
+                transition("trans2", "node2", "true", "testchain_descr1"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        setTransitions(node2, transition("transloop", "node1", "false"));
+        node2 = session.saveDocument(node2);
+
+        DocumentRoute route = instantiateAndRun();
+
+        assertTrue(route.isDone());
+        doc.refresh();
+        assertEquals("title 1", doc.getTitle());
+        assertEquals("descr 1", doc.getPropertyValue("dc:description"));
+        assertEquals("rights 1", doc.getPropertyValue("dc:rights"));
     }
 
 }

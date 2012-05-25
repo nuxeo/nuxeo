@@ -28,12 +28,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
-@Operation(id = TestOperationSetTitle.ID, //
+@Operation(id = TestOperationSetProperty.ID, //
 category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, //
-label = "Set Title")
-public class TestOperationSetTitle {
+label = "Set Property")
+public class TestOperationSetProperty {
 
-    public final static String ID = "Document.Routing.Test.SetTitle";
+    public final static String ID = "Document.Routing.Test.SetProperty";
 
     @Context
     protected OperationContext context;
@@ -41,13 +41,15 @@ public class TestOperationSetTitle {
     @Context
     protected CoreSession session;
 
-    @Param(name = "title", required = false)
-    protected String title = "new title";
+    @Param(name = "field", required = true)
+    protected String field;
+
+    @Param(name = "value", required = true)
+    protected String value;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws ClientException {
-        String v = (String) context.get("XXX");
-        doc.setPropertyValue("dc:title", title);
+        doc.setPropertyValue(field, value);
         doc = session.saveDocument(doc);
         return doc;
     }

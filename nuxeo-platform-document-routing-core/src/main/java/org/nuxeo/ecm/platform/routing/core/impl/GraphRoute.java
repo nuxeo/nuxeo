@@ -63,8 +63,8 @@ public interface GraphRoute {
      *
      * @param id
      * @return the node
-     * @throws DocumentRouteException if there is no such node
+     * @throws IllegalArgumentException if there is no such node
      */
-    GraphNode getNode(String id) throws DocumentRouteException;
+    GraphNode getNode(String id) throws IllegalArgumentException;
 
 }
