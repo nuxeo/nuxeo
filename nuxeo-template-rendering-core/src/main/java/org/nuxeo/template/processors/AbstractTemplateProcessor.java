@@ -25,7 +25,6 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
-import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
  * Common code between the implementations of {@link TemplateProcessor}

@@ -10,6 +10,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.api.context.DocumentWrapper;
+import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 /**
@@ -147,5 +149,10 @@ public interface TemplateProcessorService {
      */
     DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc,
             String templateName, boolean save) throws ClientException;
+
+    void addContextExtensions(DocumentModel currentDocument,
+            DocumentWrapper wrapper, Map<String, Object> ctx);
+
+    Map<String, ContextExtensionFactoryDescriptor> getRegistredContextExtensions();
 
 }

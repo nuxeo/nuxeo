@@ -34,6 +34,7 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(TestProcessingWithFileNote.class);
 
     @Override

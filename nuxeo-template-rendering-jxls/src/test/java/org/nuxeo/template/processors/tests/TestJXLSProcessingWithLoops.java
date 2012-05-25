@@ -17,7 +17,7 @@ import org.nuxeo.ecm.core.convert.plugins.text.extractors.XL2TextConverter;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
-import org.nuxeo.template.fm.FMContextBuilder;
+import org.nuxeo.template.context.extensions.AuditExtensionFactory;
 import org.nuxeo.template.processors.jxls.JXLSTemplateProcessor;
 
 public class TestJXLSProcessingWithLoops extends SimpleTemplateDocTestCase {
@@ -35,7 +35,7 @@ public class TestJXLSProcessingWithLoops extends SimpleTemplateDocTestCase {
             entry.setPrincipalName("TestingUser");
             auditEntries.add(entry);
         }
-        FMContextBuilder.testAuditEntries = auditEntries;
+        AuditExtensionFactory.testAuditEntries = auditEntries;
 
         // setup rendering
         TemplateBasedDocument adapter = setupTestDocs();

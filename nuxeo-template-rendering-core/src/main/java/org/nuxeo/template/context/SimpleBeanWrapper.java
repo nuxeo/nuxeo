@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.template.context.DocumentWrapper;
+import org.nuxeo.template.api.context.DocumentWrapper;
 
 public class SimpleBeanWrapper implements DocumentWrapper {
 

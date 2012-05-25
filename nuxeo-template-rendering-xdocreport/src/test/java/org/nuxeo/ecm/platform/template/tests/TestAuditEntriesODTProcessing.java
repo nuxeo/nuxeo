@@ -1,5 +1,9 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +18,8 @@ import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
-import org.nuxeo.template.fm.FMContextBuilder;
+import org.nuxeo.template.context.extensions.AuditExtensionFactory;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
-
-import static org.junit.Assert.*;
 
 public class TestAuditEntriesODTProcessing extends SimpleTemplateDocTestCase {
 
@@ -35,7 +37,7 @@ public class TestAuditEntriesODTProcessing extends SimpleTemplateDocTestCase {
             entry.setPrincipalName("TestingUser");
             auditEntries.add(entry);
         }
-        FMContextBuilder.testAuditEntries = auditEntries;
+        AuditExtensionFactory.testAuditEntries = auditEntries;
 
         TemplateBasedDocument adapter = setupTestDocs();
         DocumentModel testDoc = adapter.getAdaptedDoc();

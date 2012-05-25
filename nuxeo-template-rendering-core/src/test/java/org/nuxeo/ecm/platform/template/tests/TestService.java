@@ -1,5 +1,9 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -7,6 +11,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.TemplateProcessorService;
+import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 import org.nuxeo.template.processors.fm.FreeMarkerProcessor;
 import org.nuxeo.template.processors.xslt.XSLTProcessor;
@@ -113,7 +118,7 @@ public class TestService extends NXRuntimeTestCase {
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
-        // check that the 2 default processors are registred
+        // check that the 2 default processors are registered
         assertNotNull(tps.getProcessor("Freemarker"));
         assertNotNull(tps.getProcessor("XSLTProcessor"));
 
@@ -134,6 +139,20 @@ public class TestService extends NXRuntimeTestCase {
         assertEquals(XSLTProcessor.class.getSimpleName(),
                 processor.getClass().getSimpleName());
 
+        Collection<TemplateProcessorDescriptor> processors = tps.getRegisteredTemplateProcessors();
+        TemplateProcessorDescriptor processorDesc = processors.iterator().next();
+        assertNotNull(processorDesc);
+        assertTrue(processorDesc.getSupportedMimeTypes().size() > 0);
+
+        // test the default Extensions
+        Map<String, ContextExtensionFactoryDescriptor> extensions = tps.getRegistredContextExtensions();
+        assertEquals(3, extensions.size());
+
+        ContextExtensionFactoryDescriptor functions = extensions.get("functions");
+        assertNotNull(functions);
+
+        List<String> aliases = functions.getAliases();
+        assertEquals(2, aliases.size());
     }
 
 }

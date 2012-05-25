@@ -1,4 +1,4 @@
-package org.nuxeo.template.context;
+package org.nuxeo.template.context.extensions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.template.api.context.DocumentWrapper;
 
 public class ContextFunctions {
 
@@ -105,16 +106,6 @@ public class ContextFunctions {
             }
             return result;
         }
-    }
-
-    public List<Object> getChildren() throws Exception {
-        List<DocumentModel> children = doc.getCoreSession().getChildren(
-                doc.getRef());
-        List<Object> docs = new ArrayList<Object>();
-        for (DocumentModel child : children) {
-            docs.add(nuxeoWrapper.wrap(child));
-        }
-        return docs;
     }
 
     public String formatDate(Object calendar) {

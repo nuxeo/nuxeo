@@ -54,4 +54,25 @@
 
   </extension-point>
 
+
+  <extension-point name="contextExtension">
+
+    <documentation>
+
+      <p>
+      Extension allowing to register a new ContentExtensionFactory that will be used to add custom objects inside the rendering context.
+      </p>
+
+      <code>
+
+
+      </code>
+
+    </documentation>
+
+    <object
+      class="org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor" />
+
+  </extension-point>
+
 </component>

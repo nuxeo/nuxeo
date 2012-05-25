@@ -24,6 +24,9 @@ import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.api.context.ContextExtensionFactory;
+import org.nuxeo.template.api.context.DocumentWrapper;
+import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 /**
@@ -40,7 +43,9 @@ public class TemplateProcessorComponent extends DefaultComponent implements
 
     public static final String PROCESSOR_XP = "processor";
 
-    protected List<TemplateProcessorDescriptor> templateProcessors = new ArrayList<TemplateProcessorDescriptor>();
+    public static final String CONTEXT_EXTENSION_XP = "contextExtension";
+
+    protected ContextFactoryRegistry contextExtensionRegistry;
 
     protected TemplateProcessorRegistry processorRegistry;
 
@@ -49,11 +54,13 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         processorRegistry = new TemplateProcessorRegistry();
+        contextExtensionRegistry = new ContextFactoryRegistry();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         processorRegistry = null;
+        contextExtensionRegistry = null;
     }
 
     public void registerContribution(Object contribution,
@@ -61,6 +68,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             throws Exception {
         if (PROCESSOR_XP.equals(extensionPoint)) {
             processorRegistry.addContribution((TemplateProcessorDescriptor) contribution);
+        } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
+            contextExtensionRegistry.addContribution((ContextExtensionFactoryDescriptor) contribution);
         }
     }
 
@@ -69,6 +78,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             throws Exception {
         if (PROCESSOR_XP.equals(extensionPoint)) {
             processorRegistry.removeContribution((TemplateProcessorDescriptor) contribution);
+        } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
+            contextExtensionRegistry.removeContribution((ContextExtensionFactoryDescriptor) contribution);
         }
     }
 
@@ -106,6 +117,29 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             }
         }
         return processor;
+    }
+
+    public void addContextExtensions(DocumentModel currentDocument,
+            DocumentWrapper wrapper, Map<String, Object> ctx) {
+
+        Map<String, ContextExtensionFactoryDescriptor> factories = contextExtensionRegistry.getExtensionFactories();
+        for (String name : factories.keySet()) {
+            ContextExtensionFactory factory = factories.get(name).getExtensionFactory();
+            if (factory != null) {
+                Object ob = factory.getExtension(currentDocument, wrapper, ctx);
+                if (ob != null) {
+                    ctx.put(name, ob);
+                    // also manage aliases
+                    for (String alias : factories.get(name).getAliases()) {
+                        ctx.put(alias, ob);
+                    }
+                }
+            }
+        }
+    }
+
+    public Map<String, ContextExtensionFactoryDescriptor> getRegistredContextExtensions() {
+        return contextExtensionRegistry.getExtensionFactories();
     }
 
     protected TemplateProcessorDescriptor findProcessorByMimeType(String mt) {
