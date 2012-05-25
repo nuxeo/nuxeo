@@ -158,8 +158,8 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field schema="note">note/value</field>
-        <field schema="note">mime_type/value</field>
+        <field>note:note/value</field>
+        <field>note:mime_type/value</field>
       </fields>
       <properties mode="any">
         <property name="translatedHtml">
