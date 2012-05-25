@@ -156,12 +156,12 @@ public class ConnectBroker {
             List<DownloadablePackage> allPackages,
             Map<String, DownloadablePackage> allPackagesByID,
             Map<String, List<DownloadablePackage>> allPackagesByName)
-                    throws PackageException {
+            throws PackageException {
         // Try ID match first
         if (allPackagesByID.containsKey(requestPkgStr)) {
             return Arrays.asList(
                     allPackagesByID.get(requestPkgStr).getTargetPlatforms()).contains(
-                            targetPlatform);
+                    targetPlatform);
         }
         // Fallback on name match
         List<DownloadablePackage> allPackagesForName = allPackagesByName.get(requestPkgStr);
@@ -421,20 +421,15 @@ public class ConnectBroker {
                 }
                 List<String> downloadList = new ArrayList<String>();
                 downloadList.add(pkgId);
-                log.info("Downloading " + packageFileName);
                 if (!downloadPackages(downloadList)) {
                     throw new PackageException("Failed to download package "
                             + pkgId);
                 } else {
-                    // TODO: fix race condition
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        // Ignore
-                    }
                     LocalPackage pkg = service.getPackage(pkgId);
                     if (pkg == null) {
-                        log.info("NULL");
+                        throw new PackageException(
+                                "Failed to find downloaded package in cache "
+                                        + pkgId);
                     }
                     return pkg;
                 }
@@ -645,10 +640,11 @@ public class ConnectBroker {
 
     @SuppressWarnings("unused")
     protected boolean downloadPackages(List<String> packagesToDownload) {
-        if (packagesToDownload == null) {
+        if (packagesToDownload == null || packagesToDownload.isEmpty()) {
             return true;
         }
         // Queue downloads
+        log.info("Downloading " + packagesToDownload + "...");
         for (String pkg : packagesToDownload) {
             try {
                 getPackageManager().download(pkg);
@@ -678,6 +674,7 @@ public class ConnectBroker {
                         cmdInfo.exitCode = 1;
                         downloadOk = false;
                     } else {
+                        log.debug("Completed " + pkg);
                         cmdInfo.exitCode = 0;
                     }
                 }
@@ -758,6 +755,9 @@ public class ConnectBroker {
                     if (!matchesPlatform(requestPackage, allPackages,
                             allPackagesByID, allPackagesByName)) {
                         requestPlatform = null;
+                        log.warn(String.format(
+                                "Relax restriction to target platform %s because of package %s",
+                                targetPlatform, requestPackage));
                         break;
                     }
                 }
@@ -768,7 +768,6 @@ public class ConnectBroker {
 
             DependencyResolution resolution = getPackageManager().resolveDependencies(
                     solverInstall, solverRemove, solverUpgrade, requestPlatform);
-
             log.info(resolution);
             if (resolution.isFailed()) {
                 return false;
@@ -778,13 +777,6 @@ public class ConnectBroker {
                 log.error("Aborting packages change request");
                 return false;
             }
-            // TODO: fix race condition
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // Ignore
-            }
-
             // Uninstall packages
             List<String> packageIds = resolution.getRemovePackageIds();
             for (String pkgId : packageIds) {
