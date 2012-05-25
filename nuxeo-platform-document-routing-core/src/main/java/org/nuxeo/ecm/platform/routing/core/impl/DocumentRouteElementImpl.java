@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -74,6 +75,12 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     @Override
     public void run(CoreSession session) {
         runner.run(session, this);
+    }
+
+    @Override
+    public void resume(CoreSession session, String nodeId,
+            Map<String, Object> data) {
+        runner.resume(session, this, nodeId, data);
     }
 
     @Override

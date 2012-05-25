@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.api;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -118,9 +119,18 @@ public interface DocumentRouteElement extends Serializable {
      * this is a containter it will run its children.
      *
      * @param session
-     * @return true is the element is not done
      */
     void run(CoreSession session);
+
+    /**
+     * Resumes execution on a route node.
+     *
+     * @param session the session
+     * @param nodeId the node id to resume on
+     * @param data the data coming from UI form
+     * @since 5.6
+     */
+    void resume(CoreSession session, String nodeId, Map<String, Object> data);
 
     /**
      * Set this element to the validate state and put it in read only mode.

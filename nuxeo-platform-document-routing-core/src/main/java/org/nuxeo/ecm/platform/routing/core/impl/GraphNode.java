@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -219,6 +220,7 @@ public interface GraphNode {
 
     /**
      * Gets the canceled count for this node.
+     *
      * @return
      */
     long getCanceledCount();
@@ -290,5 +292,12 @@ public interface GraphNode {
      * @return the true transitions
      */
     List<Transition> evaluateTransitions() throws DocumentRouteException;
+
+    /**
+     * Sets the graph and node variables.
+     *
+     * @param map the map of variables
+     */
+    void setAllVariables(Map<String, Object> map);
 
 }

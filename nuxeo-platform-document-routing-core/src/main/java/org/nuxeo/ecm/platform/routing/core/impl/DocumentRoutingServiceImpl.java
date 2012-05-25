@@ -138,6 +138,41 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
+    public void resumeInstance(DocumentRef routeRef, CoreSession session,
+            String nodeId, Map<String, Object> data) {
+        try {
+            new ResumeRouteInstanceRunner(routeRef, session, nodeId, data).runUnrestricted();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public static class ResumeRouteInstanceRunner extends UnrestrictedSessionRunner {
+
+        protected DocumentRef routeRef;
+
+        protected String nodeId;
+
+        protected Map<String, Object> data;
+
+        public ResumeRouteInstanceRunner(DocumentRef routeRef,
+                CoreSession session, String nodeId, Map<String, Object> data) {
+            super(session);
+            this.routeRef = routeRef;
+            this.nodeId = nodeId;
+            this.data = data;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentRoutingEngineService engineService = Framework.getLocalService(DocumentRoutingEngineService.class);
+            DocumentModel routeDoc = session.getDocument(routeRef);
+            DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+            engineService.resume(routeInstance, session, nodeId, data);
+        }
+    }
+
+    @Override
     public List<DocumentRoute> getAvailableDocumentRouteModel(
             CoreSession session) {
         DocumentModelList list = null;

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -263,6 +264,38 @@ public class GraphRouteTest {
         assertTrue(route.isDone());
         doc.refresh();
         assertEquals("title 1", doc.getTitle());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testResume() throws Exception {
+        assertEquals("file", doc.getTitle());
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1,
+                transition("trans12", "node2", "true", "testchain_title1"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        setTransitions(node2, transition("trans23", "node3", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node3 = session.saveDocument(node3);
+
+        DocumentRoute route = instantiateAndRun();
+
+        assertFalse(route.isDone());
+
+        // now resume, as if the task was actually executed
+        Map<String, Object> data = new HashMap<String, Object>();
+        routing.resumeInstance(route.getDocument().getRef(), session, "node2",
+                data);
+
+        route.getDocument().refresh();
+        assertTrue(route.isDone());
     }
 
     @SuppressWarnings("unchecked")

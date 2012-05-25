@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.routing.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -66,6 +67,20 @@ public interface DocumentRoutingService {
      */
     DocumentRoute createNewInstance(DocumentRoute model, String documentId,
             CoreSession session);
+
+    /**
+     * Resumes a route instance.
+     * <p>
+     * Called by the UI action corresponding to a task button.
+     *
+     * @param routeRef the reference to the route instance document
+     * @param session the session
+     * @param nodeId the node id to resume on
+     * @param data the data coming from UI form
+     * @since 5.6
+     */
+    void resumeInstance(DocumentRef routeRef, CoreSession session,
+            String nodeId, Map<String, Object> data);
 
     /**
      * Save a route instance as a new model of route.

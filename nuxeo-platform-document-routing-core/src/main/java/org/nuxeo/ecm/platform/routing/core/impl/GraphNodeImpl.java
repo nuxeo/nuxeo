@@ -235,15 +235,48 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
-    protected OperationContext getContext(
-            Map<String, Serializable> graphVariables,
-            Map<String, Serializable> nodeVariables) {
+    @Override
+    public void setAllVariables(Map<String, Object> map) {
+
+        // get variables from node and graph
+        Map<String, Serializable> graphVariables = graph.getVariables();
+        Map<String, Serializable> nodeVariables = getVariables();
+
+        // set variables back into node and graph
+        boolean changedNodeVariables = false;
+        boolean changedGraphVariables = false;
+        for (Entry<String, Object> es : map.entrySet()) {
+            String key = es.getKey();
+            Serializable value = (Serializable) es.getValue();
+            if (nodeVariables.containsKey(key)) {
+                Serializable oldValue = nodeVariables.get(key);
+                if (!ObjectUtils.equals(value, oldValue)) {
+                    changedNodeVariables = true;
+                    nodeVariables.put(key, value);
+                }
+            } else if (graphVariables.containsKey(key)) {
+                Serializable oldValue = graphVariables.get(key);
+                if (!ObjectUtils.equals(value, oldValue)) {
+                    changedGraphVariables = true;
+                    graphVariables.put(key, value);
+                }
+            }
+        }
+        if (changedNodeVariables) {
+            setVariables(nodeVariables);
+        }
+        if (changedGraphVariables) {
+            graph.setVariables(graphVariables);
+        }
+    }
+
+    protected OperationContext getContext() {
         OperationContext context = new OperationContext(getSession());
         context.setCommit(false); // no session save at end
         // context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
         // element);
-        context.putAll(graphVariables);
-        context.putAll(nodeVariables);
+        context.putAll(graph.getVariables());
+        context.putAll(getVariables());
         // workflow context
         // context.put("workflowId", graph.get);
         context.put("initiator", "");
@@ -280,10 +313,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             return;
         }
 
-        // get variables from node and graph
-        Map<String, Serializable> graphVariables = graph.getVariables();
-        Map<String, Serializable> nodeVariables = getVariables();
-        OperationContext context = getContext(graphVariables, nodeVariables);
+        // get base context
+        OperationContext context = getContext();
         if (transitionId != null) {
             context.put("transition", transitionId);
         }
@@ -302,32 +333,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                     e);
         }
 
-        // set variables back into node and graph
-        boolean changedNodeVariables = false;
-        boolean changedGraphVariables = false;
-        for (Entry<String, Object> es : context.entrySet()) {
-            String key = es.getKey();
-            Serializable value = (Serializable) es.getValue();
-            if (nodeVariables.containsKey(key)) {
-                Serializable oldValue = nodeVariables.get(key);
-                if (!ObjectUtils.equals(value, oldValue)) {
-                    changedNodeVariables = true;
-                    nodeVariables.put(key, value);
-                }
-            } else if (graphVariables.containsKey(key)) {
-                Serializable oldValue = graphVariables.get(key);
-                if (!ObjectUtils.equals(value, oldValue)) {
-                    changedGraphVariables = true;
-                    graphVariables.put(key, value);
-                }
-            }
-        }
-        if (changedNodeVariables) {
-            setVariables(nodeVariables);
-        }
-        if (changedGraphVariables) {
-            graph.setVariables(graphVariables);
-        }
+        setAllVariables(context);
     }
 
     @Override
@@ -361,8 +367,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public List<Transition> evaluateTransitions() throws DocumentRouteException {
         try {
             List<Transition> trueTrans = new ArrayList<Transition>();
-            OperationContext context = getContext(graph.getVariables(),
-                    getVariables());
+            OperationContext context = getContext();
             for (Transition t : getOutputTransitions()) {
                 context.put("transition", t.id);
                 Expression expr = Scripting.newExpression(t.condition);

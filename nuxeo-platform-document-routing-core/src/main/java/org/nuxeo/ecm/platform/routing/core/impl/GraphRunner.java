@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -48,31 +49,37 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
     @Override
     public void run(CoreSession session, DocumentRouteElement element) {
         try {
-            startGraph(session, element);
+            GraphRoute graph = (GraphRoute) element;
+            element.setRunning(session);
+            boolean done = runGraph(graph, graph.getStartNode());
+            if (done) {
+                element.setDone(session);
+            }
+            session.save();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
 
-    protected void startGraph(CoreSession session, DocumentRouteElement element)
-            throws ClientException {
-        element.setRunning(session);
-        GraphRoute graph = (GraphRoute) element;
-        boolean done = runGraph(graph, graph.getStartNode());
-        if (done) {
-            element.setDone(session);
+    @Override
+    public void resume(CoreSession session, DocumentRouteElement element,
+            String nodeId, Map<String, Object> data) {
+        try {
+            GraphRoute graph = (GraphRoute) element;
+            GraphNode node = graph.getNode(nodeId);
+            if (node.getState() != State.SUSPENDED) {
+                throw new DocumentRouteException(
+                        "Cannot resume on non-suspended node: " + node);
+            }
+            node.setAllVariables(data);
+            boolean done = runGraph(graph, node);
+            if (done) {
+                element.setDone(session);
+            }
+            session.save();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
         }
-        session.save();
-    }
-
-    public void resumeGraph(CoreSession session, GraphRoute graph,
-            GraphNode node, Object data) throws ClientException {
-        // TODO data
-        boolean done = runGraph(graph, node);
-        if (done) {
-            ((DocumentRouteElement) graph).setDone(session);
-        }
-        session.save();
     }
 
     /**
@@ -124,8 +131,11 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 }
                 break;
             case SUSPENDED:
-                // TODO set the variables from the task form (this node is the
-                // one through which the workflow was resumed),
+                if (node != initialNode) {
+                    throw new DocumentRouteException(
+                            "Executing unexpected SUSPENDED state");
+                }
+                // resuming, variables have been set by resumeGraph
                 jump = State.RUNNING_OUTPUT;
                 break;
             case RUNNING_OUTPUT:
