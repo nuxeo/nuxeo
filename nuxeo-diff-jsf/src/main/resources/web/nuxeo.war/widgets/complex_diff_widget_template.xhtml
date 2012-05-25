@@ -46,13 +46,18 @@
             <nxl:subWidget>
               <tr>
                 <c:if test="#{displaySubLabels}">
-                  <td>
+                  <td class="subItemCell">
                     <h:outputText value="#{messages[widget.label]}" />
                   </td>
+                  <td class="subItemCell">
+                    <nxl:widget widget="#{widget}" value="#{fieldValue}" />
+                  </td>
                 </c:if>
-                <td>
-                  <nxl:widget widget="#{widget}" value="#{fieldValue}" />
-                </td>
+                <c:if test="#{!displaySubLabels}">
+                  <td>
+                    <nxl:widget widget="#{widget}" value="#{fieldValue}" />
+                  </td>
+                </c:if>
               </tr>
             </nxl:subWidget>
           </tbody>

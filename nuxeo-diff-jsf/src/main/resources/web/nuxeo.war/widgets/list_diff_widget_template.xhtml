@@ -21,6 +21,7 @@
 </c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
+  @#{widgetProperty_hideSubLabels}@
   <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
 
   <table class="diffDisplayTable">
@@ -58,13 +59,18 @@
                   <nxl:subWidget>
                     <tr>
                       <c:if test="#{displaySubLabels}">
-                        <td>
+                        <td class="subItemCell">
                           <h:outputText value="#{messages[widget.label]}" />
                         </td>
+                        <td class="subItemCell">
+                          <nxl:widget widget="#{widget}" value="#{item}" />
+                        </td>
                       </c:if>
-                      <td>
-                        <nxl:widget widget="#{widget}" value="#{item}" />
-                      </td>
+                      <c:if test="#{!displaySubLabels}">
+                        <td>
+                          <nxl:widget widget="#{widget}" value="#{item}" />
+                        </td>
+                      </c:if>
                     </tr>
                   </nxl:subWidget>
                 </table>

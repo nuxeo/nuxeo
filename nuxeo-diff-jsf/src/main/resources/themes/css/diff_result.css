@@ -20,7 +20,8 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 
 /*.docDiffResult .dataInput .diffDisplayTable {width: 100%;}*/
 .docDiffResult .dataInput .diffDisplayTable th, .docDiffResult .dataInput .diffDisplayTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
-.docDiffResult .dataInput .diffDisplayTable th {background-color:  #EEEFF0; padding: 0.1em 0.5em; text-align: center; font-weight: bold;}
+.docDiffResult .dataInput .diffDisplayTable th {background-color: #EEEFF0; padding: 0.1em 0.5em; text-align: center; font-weight: bold;}
+.docDiffResult .dataInput .diffDisplayTable td.subItemCell {width: 48%;}
 .docDiffResult .note_content_block {border:none; margin: 0; padding: 0;}
 
 /*.docDiffResult .noBackgroundColor {}*/
