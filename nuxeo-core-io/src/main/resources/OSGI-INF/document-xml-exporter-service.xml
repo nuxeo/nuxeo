@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.io.DocumentXMLExporter">
+
+  <documentation>
+    This service allows to export a document to XML.
+
+    @author
+    Antoine Taillefer
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.io.impl.DocumentXMLExporterImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.io.DocumentXMLExporter" />
+  </service>
+
+</component>
