@@ -18,34 +18,43 @@ package org.nuxeo.ecm.diff.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Diff block definition interface.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
 public interface DiffBlockDefinition extends Serializable {
 
     /**
-     * Gets the diff block name.
-     * 
-     * @return the schema name
+     * Gets the diff block definition name.
      */
     String getName();
 
     /**
-     * Gets the diff block label.
-     * 
-     * @return the label
+     * Returns the template to use in a given mode.
      */
-    String getLabel();
+    String getTemplate(String mode);
 
     /**
-     * Gets the diff block fields.
-     * 
-     * @return the schema fields
+     * Returns a map of templates by mode.
+     */
+    Map<String, String> getTemplates();
+
+    /**
+     * Returns the list of field definitions.
      */
     List<DiffFieldDefinition> getFields();
 
+    /**
+     * Returns a map of properties to use in a given mode.
+     */
+    Map<String, Serializable> getProperties(String layoutMode);
+
+    /**
+     * Returns a map of properties by mode.
+     */
+    Map<String, Map<String, Serializable>> getProperties();
 }

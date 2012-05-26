@@ -94,6 +94,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     protected static final String DIFF_WIDGET_CATEGORY = "diff";
 
+    protected static final String DIFF_BLOCK_DEFAULT_TEMPLATE_PATH = "/layouts/layout_diff_template.xhtml";
+
+    protected static final String DIFF_BLOCK_LABEL_PROPERTY_NAME = "label";
+
+    protected static final String DIFF_BLOCK_DEFAULT_LABEL_PREFIX = "label.diffBlock.";
+
     protected static final String DIFF_WIDGET_LABEL_PREFIX = "label.";
 
     protected static final String CONTENT_DIFF_LINKS_WIDGET_NAME = "contentDiffLinks";
@@ -395,7 +401,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 diffBlockContribs.put(
                         diffBlockName,
                         new DiffBlockDefinitionImpl(diffBlockName,
-                                descriptor.getLabel(), fields));
+                                descriptor.getTemplates(), fields,
+                                descriptor.getProperties()));
             }
         }
     }
@@ -419,8 +426,20 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                                 fieldName));
                     }
                 }
-                diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName, null,
-                        fieldDefs));
+
+                Map<String, String> defaultDiffBlockTemplates = new HashMap<String, String>();
+                defaultDiffBlockTemplates.put(BuiltinModes.ANY,
+                        DIFF_BLOCK_DEFAULT_TEMPLATE_PATH);
+
+                Map<String, Map<String, Serializable>> defaultDiffBlockProperties = new HashMap<String, Map<String, Serializable>>();
+                Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
+                labelProperty.put(DIFF_BLOCK_LABEL_PROPERTY_NAME,
+                        DIFF_BLOCK_DEFAULT_LABEL_PREFIX + schemaName);
+                defaultDiffBlockProperties.put(BuiltinModes.ANY, labelProperty);
+
+                diffBlockDefs.add(new DiffBlockDefinitionImpl(schemaName,
+                        defaultDiffBlockTemplates, fieldDefs,
+                        defaultDiffBlockProperties));
             }
         }
 
@@ -566,13 +585,16 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
         // Build layout definition
         LayoutDefinition layoutDefinition = new LayoutDefinitionImpl(
-                diffBlockDefinition.getName(), null, null,
-                layoutRowDefinitions, widgetDefinitions);
+                diffBlockDefinition.getName(),
+                diffBlockDefinition.getProperties(),
+                diffBlockDefinition.getTemplates(), layoutRowDefinitions,
+                widgetDefinitions);
 
         // Build diff display block
+        Map<String, Serializable> diffBlockProperties = diffBlockDefinition.getProperties(BuiltinModes.ANY);
         DiffDisplayBlock diffDisplayBlock = new DiffDisplayBlockImpl(
-                diffBlockDefinition.getLabel(), leftValue, rightValue,
-                contentDiffValue, layoutDefinition);
+                (String) diffBlockProperties.get(DIFF_BLOCK_LABEL_PROPERTY_NAME),
+                leftValue, rightValue, contentDiffValue, layoutDefinition);
 
         return diffDisplayBlock;
     }

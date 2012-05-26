@@ -16,17 +16,21 @@
  */
 package org.nuxeo.ecm.diff.model.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.MapUtils;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 
 /**
  * Default implementation of a {@link DiffBlockDefinition}.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
@@ -34,39 +38,56 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
 
     private static final long serialVersionUID = 511776842683091931L;
 
-    protected static final String DIFF_DISPLAY_BLOCK_LABEL_PREFIX = "label.diffBlock.";
-
     protected String name;
 
-    protected String label;
+    protected Map<String, String> templates;
 
     protected List<DiffFieldDefinition> fields;
 
-    public DiffBlockDefinitionImpl(String name, String label,
-            List<DiffFieldDefinition> fields) {
+    protected Map<String, Map<String, Serializable>> properties;
+
+    public DiffBlockDefinitionImpl(String name, Map<String, String> templates,
+            List<DiffFieldDefinition> fields,
+            Map<String, Map<String, Serializable>> properties) {
         this.name = name;
-        if (StringUtils.isEmpty(label)) {
-            this.label = DIFF_DISPLAY_BLOCK_LABEL_PREFIX + name;
-        } else {
-            this.label = label;
-        }
+        this.templates = templates;
         if (fields == null) {
             this.fields = new ArrayList<DiffFieldDefinition>();
         } else {
             this.fields = fields;
         }
+        this.properties = properties;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getLabel() {
-        return label;
+    public String getTemplate(String mode) {
+        if (templates != null) {
+            String template = templates.get(mode);
+            if (template == null) {
+                template = templates.get(BuiltinModes.ANY);
+            }
+            return template;
+        }
+        return null;
+    }
+
+    public Map<String, String> getTemplates() {
+        return templates;
     }
 
     public List<DiffFieldDefinition> getFields() {
         return fields;
+    }
+
+    public Map<String, Serializable> getProperties(String layoutMode) {
+        return WidgetDefinitionImpl.getProperties(properties, layoutMode);
+    }
+
+    public Map<String, Map<String, Serializable>> getProperties() {
+        return properties;
     }
 
     @Override
@@ -88,16 +109,29 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
             return false;
         }
 
+        Map<String, String> otherTemplates = ((DiffBlockDefinition) other).getTemplates();
         List<DiffFieldDefinition> otherFields = ((DiffBlockDefinition) other).getFields();
-        if (CollectionUtils.isEmpty(fields)
-                && CollectionUtils.isEmpty(otherFields)) {
+        Map<String, Map<String, Serializable>> otherProperties = ((DiffBlockDefinition) other).getProperties();
+        if (MapUtils.isEmpty(templates) && MapUtils.isEmpty(otherTemplates)
+                && CollectionUtils.isEmpty(fields)
+                && CollectionUtils.isEmpty(otherFields)
+                && MapUtils.isEmpty(properties)
+                && MapUtils.isEmpty(otherProperties)) {
             return true;
         }
-        if (CollectionUtils.isEmpty(fields)
+        if (MapUtils.isEmpty(templates) && !MapUtils.isEmpty(otherTemplates)
+                || !MapUtils.isEmpty(templates)
+                && MapUtils.isEmpty(otherTemplates)
+                || !templates.equals(otherTemplates)
+                || CollectionUtils.isEmpty(fields)
                 && !CollectionUtils.isEmpty(otherFields)
                 || !CollectionUtils.isEmpty(fields)
                 && CollectionUtils.isEmpty(otherFields)
-                || !fields.equals(otherFields)) {
+                || !fields.equals(otherFields) || MapUtils.isEmpty(properties)
+                && !MapUtils.isEmpty(otherProperties)
+                || !MapUtils.isEmpty(properties)
+                && MapUtils.isEmpty(otherProperties)
+                || !properties.equals(otherProperties)) {
             return false;
         }
 
@@ -106,6 +140,6 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
 
     @Override
     public String toString() {
-        return name + fields;
+        return name + fields + templates + properties;
     }
 }

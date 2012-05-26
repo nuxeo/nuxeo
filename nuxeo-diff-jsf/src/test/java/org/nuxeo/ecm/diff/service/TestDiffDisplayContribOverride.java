@@ -21,7 +21,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,7 @@ import org.nuxeo.ecm.diff.model.DiffFieldItemDefinition;
 import org.nuxeo.ecm.diff.model.impl.DiffBlockDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffFieldDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffFieldItemDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -159,8 +162,17 @@ public class TestDiffDisplayContribOverride {
         List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
+
+        Map<String, String> templates = new HashMap<String, String>();
+        templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
+
+        Map<String, Map<String, Serializable>> properties = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
+        labelProperty.put("label", "label.diffBlock.heading");
+        properties.put(BuiltinModes.ANY, labelProperty);
+
         DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "heading", null, fields);
+                "heading", templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check overridden dublincore diffDisplay contrib
@@ -174,8 +186,10 @@ public class TestDiffDisplayContribOverride {
         fields.add(new DiffFieldDefinitionImpl("dublincore", "lastContributor"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "contributors"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "subjects"));
+
+        labelProperty.put("label", "label.diffBlock.dublincore");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore",
-                null, fields);
+                templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check non overridden files diffDisplay contrib
@@ -187,8 +201,10 @@ public class TestDiffDisplayContribOverride {
         List<DiffFieldItemDefinition> items = new ArrayList<DiffFieldItemDefinition>();
         items.add(new DiffFieldItemDefinitionImpl("file", true));
         fields.add(new DiffFieldDefinitionImpl("files", "files", items));
+
+        labelProperty.put("label", "label.diffBlock.files");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files",
-                null, fields);
+                templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check non overridden note diffDisplay contrib
@@ -197,8 +213,10 @@ public class TestDiffDisplayContribOverride {
 
         fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("note", "note", true));
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note", null,
-                fields);
+
+        labelProperty.put("label", "label.diffBlock.note");
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note",
+                templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check new simpleTypes diffDisplay contrib
@@ -213,8 +231,10 @@ public class TestDiffDisplayContribOverride {
         fields.add(new DiffFieldDefinitionImpl("simpletypes", "date"));
         fields.add(new DiffFieldDefinitionImpl("simpletypes", "htmlText", true));
         fields.add(new DiffFieldDefinitionImpl("simpletypes", "multivalued"));
+
+        labelProperty.put("label", "label.diffBlock.simpleTypes");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "simpleTypes", null, fields);
+                "simpleTypes", templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check new complexTypesAndListOfLists diffDisplay contrib
@@ -235,8 +255,10 @@ public class TestDiffDisplayContribOverride {
         fields.add(new DiffFieldDefinitionImpl("complextypes", "complexList",
                 items));
         fields.add(new DiffFieldDefinitionImpl("listoflists", "listOfLists"));
+
+        labelProperty.put("label", "label.diffBlock.complexTypesAndListOfLists");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "complexTypesAndListOfLists", null, fields);
+                "complexTypesAndListOfLists", templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
     }
 }

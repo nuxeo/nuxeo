@@ -22,7 +22,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,7 @@ import org.nuxeo.ecm.diff.model.DiffFieldItemDefinition;
 import org.nuxeo.ecm.diff.model.impl.DiffBlockDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffFieldDefinitionImpl;
 import org.nuxeo.ecm.diff.model.impl.DiffFieldItemDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -148,8 +151,17 @@ public class TestDiffDisplayContrib {
         List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
+
+        Map<String, String> templates = new HashMap<String, String>();
+        templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
+
+        Map<String, Map<String, Serializable>> properties = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
+        labelProperty.put("label", "label.diffBlock.heading");
+        properties.put(BuiltinModes.ANY, labelProperty);
+
         DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "heading", null, fields);
+                "heading", templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check that order is taken into account
@@ -177,8 +189,10 @@ public class TestDiffDisplayContrib {
         fields.add(new DiffFieldDefinitionImpl("dublincore", "creator"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "contributors"));
         fields.add(new DiffFieldDefinitionImpl("dublincore", "lastContributor"));
+
+        labelProperty.put("label", "label.diffBlock.dublincore");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore",
-                null, fields);
+                templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check files diffDisplay contrib
@@ -190,8 +204,10 @@ public class TestDiffDisplayContrib {
         List<DiffFieldItemDefinition> items = new ArrayList<DiffFieldItemDefinition>();
         items.add(new DiffFieldItemDefinitionImpl("file", true));
         fields.add(new DiffFieldDefinitionImpl("files", "files", items));
+
+        labelProperty.put("label", "label.diffBlock.files");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files",
-                null, fields);
+                templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check note diffDisplay contrib
@@ -200,8 +216,10 @@ public class TestDiffDisplayContrib {
 
         fields = new ArrayList<DiffFieldDefinition>();
         fields.add(new DiffFieldDefinitionImpl("note", "note", true));
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note", null,
-                fields);
+
+        labelProperty.put("label", "label.diffBlock.note");
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note",
+                templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
     }
 }
