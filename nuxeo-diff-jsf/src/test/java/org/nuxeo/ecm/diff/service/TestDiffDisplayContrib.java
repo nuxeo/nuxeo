@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -149,8 +149,9 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffBlockDefinition);
 
         List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "title"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "description"));
 
         Map<String, String> templates = new HashMap<String, String>();
         templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
@@ -176,19 +177,21 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "nature"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "subjects"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "rights"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "source"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "coverage"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "created"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "modified"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "format"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "language"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "expired"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "creator"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "contributors"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "lastContributor"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "nature"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "subjects"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "rights"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "source"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "coverage"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "created"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "modified"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "format"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "language"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "expired"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "creator"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "contributors"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "lastContributor"));
 
         labelProperty.put("label", "label.diffBlock.dublincore");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore",
@@ -200,10 +203,10 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("file", "content", true));
+        fields.add(new DiffFieldDefinitionImpl(null, "file", "content", true));
         List<DiffFieldItemDefinition> items = new ArrayList<DiffFieldItemDefinition>();
         items.add(new DiffFieldItemDefinitionImpl("file", true));
-        fields.add(new DiffFieldDefinitionImpl("files", "files", items));
+        fields.add(new DiffFieldDefinitionImpl(null, "files", "files", items));
 
         labelProperty.put("label", "label.diffBlock.files");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files",
@@ -215,7 +218,7 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("note", "note", true));
+        fields.add(new DiffFieldDefinitionImpl(null, "note", "note", true));
 
         labelProperty.put("label", "label.diffBlock.note");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note",

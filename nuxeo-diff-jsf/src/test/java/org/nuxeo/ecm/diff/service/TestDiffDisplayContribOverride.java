@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -160,8 +160,9 @@ public class TestDiffDisplayContribOverride {
         assertNotNull(diffBlockDefinition);
 
         List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "title"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "description"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "title"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "description"));
 
         Map<String, String> templates = new HashMap<String, String>();
         templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
@@ -180,12 +181,14 @@ public class TestDiffDisplayContribOverride {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "created"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "creator"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "modified"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "lastContributor"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "contributors"));
-        fields.add(new DiffFieldDefinitionImpl("dublincore", "subjects"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "created"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "creator"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "modified"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "lastContributor"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "contributors"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "subjects"));
 
         labelProperty.put("label", "label.diffBlock.dublincore");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore",
@@ -197,10 +200,10 @@ public class TestDiffDisplayContribOverride {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("file", "content", true));
+        fields.add(new DiffFieldDefinitionImpl(null, "file", "content", true));
         List<DiffFieldItemDefinition> items = new ArrayList<DiffFieldItemDefinition>();
         items.add(new DiffFieldItemDefinitionImpl("file", true));
-        fields.add(new DiffFieldDefinitionImpl("files", "files", items));
+        fields.add(new DiffFieldDefinitionImpl(null, "files", "files", items));
 
         labelProperty.put("label", "label.diffBlock.files");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("files",
@@ -212,7 +215,7 @@ public class TestDiffDisplayContribOverride {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("note", "note", true));
+        fields.add(new DiffFieldDefinitionImpl(null, "note", "note", true));
 
         labelProperty.put("label", "label.diffBlock.note");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note",
@@ -224,13 +227,16 @@ public class TestDiffDisplayContribOverride {
         assertNotNull(diffBlockDefinition);
 
         fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl("simpletypes", "string"));
-        fields.add(new DiffFieldDefinitionImpl("simpletypes", "textarea", true));
-        fields.add(new DiffFieldDefinitionImpl("simpletypes", "boolean"));
-        fields.add(new DiffFieldDefinitionImpl("simpletypes", "integer"));
-        fields.add(new DiffFieldDefinitionImpl("simpletypes", "date"));
-        fields.add(new DiffFieldDefinitionImpl("simpletypes", "htmlText", true));
-        fields.add(new DiffFieldDefinitionImpl("simpletypes", "multivalued"));
+        fields.add(new DiffFieldDefinitionImpl(null, "simpletypes", "string"));
+        fields.add(new DiffFieldDefinitionImpl(null, "simpletypes", "textarea",
+                true));
+        fields.add(new DiffFieldDefinitionImpl(null, "simpletypes", "boolean"));
+        fields.add(new DiffFieldDefinitionImpl(null, "simpletypes", "integer"));
+        fields.add(new DiffFieldDefinitionImpl(null, "simpletypes", "date"));
+        fields.add(new DiffFieldDefinitionImpl(null, "simpletypes", "htmlText",
+                true));
+        fields.add(new DiffFieldDefinitionImpl(null, "simpletypes",
+                "multivalued"));
 
         labelProperty.put("label", "label.diffBlock.simpleTypes");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
@@ -247,14 +253,16 @@ public class TestDiffDisplayContribOverride {
         items.add(new DiffFieldItemDefinitionImpl("integerItem"));
         items.add(new DiffFieldItemDefinitionImpl("dateItem"));
         items.add(new DiffFieldItemDefinitionImpl("booleanItem"));
-        fields.add(new DiffFieldDefinitionImpl("complextypes", "complex", items));
+        fields.add(new DiffFieldDefinitionImpl(null, "complextypes", "complex",
+                items));
         items = new ArrayList<DiffFieldItemDefinition>();
         items.add(new DiffFieldItemDefinitionImpl("stringItem", true));
         items.add(new DiffFieldItemDefinitionImpl("dateItem"));
         items.add(new DiffFieldItemDefinitionImpl("integerItem"));
-        fields.add(new DiffFieldDefinitionImpl("complextypes", "complexList",
-                items));
-        fields.add(new DiffFieldDefinitionImpl("listoflists", "listOfLists"));
+        fields.add(new DiffFieldDefinitionImpl(null, "complextypes",
+                "complexList", items));
+        fields.add(new DiffFieldDefinitionImpl(null, "listoflists",
+                "listOfLists"));
 
         labelProperty.put("label", "label.diffBlock.complexTypesAndListOfLists");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(

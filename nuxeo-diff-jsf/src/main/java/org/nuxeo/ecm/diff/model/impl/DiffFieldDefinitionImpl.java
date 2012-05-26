@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.model.impl;
 
@@ -33,6 +33,8 @@ public class DiffFieldDefinitionImpl implements DiffFieldDefinition {
 
     private static final long serialVersionUID = 6192730067253949180L;
 
+    protected String category;
+
     protected String schema;
 
     protected String name;
@@ -41,27 +43,32 @@ public class DiffFieldDefinitionImpl implements DiffFieldDefinition {
 
     protected List<DiffFieldItemDefinition> items;
 
-    public DiffFieldDefinitionImpl(String schema, String name) {
-        this(schema, name, false);
+    public DiffFieldDefinitionImpl(String category, String schema, String name) {
+        this(category, schema, name, false);
     }
 
-    public DiffFieldDefinitionImpl(String schema, String name,
+    public DiffFieldDefinitionImpl(String category, String schema, String name,
             boolean displayContentDiffLinks) {
-        this(schema, name, displayContentDiffLinks,
+        this(category, schema, name, displayContentDiffLinks,
                 new ArrayList<DiffFieldItemDefinition>());
     }
 
-    public DiffFieldDefinitionImpl(String schema, String name,
+    public DiffFieldDefinitionImpl(String category, String schema, String name,
             List<DiffFieldItemDefinition> items) {
-        this(schema, name, false, items);
+        this(category, schema, name, false, items);
     }
 
-    public DiffFieldDefinitionImpl(String schema, String name,
+    public DiffFieldDefinitionImpl(String category, String schema, String name,
             boolean displayContentDiffLinks, List<DiffFieldItemDefinition> items) {
+        this.category = category;
         this.schema = schema;
         this.name = name;
         this.displayContentDiffLinks = displayContentDiffLinks;
         this.items = items;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public String getSchema() {
@@ -90,16 +97,21 @@ public class DiffFieldDefinitionImpl implements DiffFieldDefinition {
             return false;
         }
 
+        String otherCategory = ((DiffFieldDefinition) other).getCategory();
         String otherSchema = ((DiffFieldDefinition) other).getSchema();
         String otherName = ((DiffFieldDefinition) other).getName();
         boolean otherDisplayContentDiffLinks = ((DiffFieldDefinition) other).isDisplayContentDiffLinks();
-        if (schema == null && otherSchema == null && name == null
-                && otherName == null) {
+        if (category == null && otherCategory == null && schema == null
+                && otherSchema == null && name == null && otherName == null) {
             return true;
         }
         if (schema == null || otherSchema == null || name == null
-                || otherName == null || !schema.equals(otherSchema)
-                || !name.equals(otherName)
+                || otherName == null
+                || (category == null && otherCategory != null)
+                || (category != null && otherCategory == null)
+                || (category != null && !category.equals(otherCategory))
+                || (schema != null && !schema.equals(otherSchema))
+                || (name != null && !name.equals(otherName))
                 || displayContentDiffLinks != otherDisplayContentDiffLinks) {
             return false;
         }
@@ -122,8 +134,17 @@ public class DiffFieldDefinitionImpl implements DiffFieldDefinition {
 
     @Override
     public String toString() {
-        return schema + ":" + name + " (displayContentDiffLinks: "
-                + displayContentDiffLinks + ") "
-                + (!CollectionUtils.isEmpty(items) ? items : "");
+        StringBuilder sb = new StringBuilder();
+        sb.append("category=");
+        sb.append(category);
+        sb.append(" / ");
+        sb.append(schema);
+        sb.append(":");
+        sb.append(name);
+        sb.append(" / ");
+        sb.append("displayContentDiffLinks=");
+        sb.append(displayContentDiffLinks);
+        sb.append(!CollectionUtils.isEmpty(items) ? " / " + items : "");
+        return sb.toString();
     }
 }

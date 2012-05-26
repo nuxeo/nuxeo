@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.service.impl;
 
@@ -381,6 +381,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 // Some field descriptors were found => use them to add the
                 // described fields, taking their order into account.
                 for (DiffFieldDescriptor fieldDescriptor : fieldDescriptors) {
+                    String category = fieldDescriptor.getCategory();
                     String schema = fieldDescriptor.getSchema();
                     String name = fieldDescriptor.getName();
                     boolean displayContentDiffLinks = fieldDescriptor.isDisplayContentDiffLinks();
@@ -393,8 +394,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                                     fieldItemDescriptor.getName(),
                                     fieldItemDescriptor.isDisplayContentDiffLinks()));
                         }
-                        fields.add(new DiffFieldDefinitionImpl(schema, name,
-                                displayContentDiffLinks, items));
+                        fields.add(new DiffFieldDefinitionImpl(category,
+                                schema, name, displayContentDiffLinks, items));
                     }
                 }
                 // TODO: implement merge
@@ -422,8 +423,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     // Only add the field if it is not excluded
                     if (diffExcludedFields == null
                             || !diffExcludedFields.contains(fieldName)) {
-                        fieldDefs.add(new DiffFieldDefinitionImpl(schemaName,
-                                fieldName));
+                        fieldDefs.add(new DiffFieldDefinitionImpl(
+                                DIFF_WIDGET_CATEGORY, schemaName, fieldName));
                     }
                 }
 
@@ -493,6 +494,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         List<DiffFieldDefinition> fieldDefinitions = diffBlockDefinition.getFields();
         for (DiffFieldDefinition fieldDefinition : fieldDefinitions) {
 
+            String category = fieldDefinition.getCategory();
+            if (StringUtils.isEmpty(category)) {
+                category = DIFF_WIDGET_CATEGORY;
+            }
             String schemaName = fieldDefinition.getSchema();
             String fieldName = fieldDefinition.getName();
             boolean displayContentDiffLinks = fieldDefinition.isDisplayContentDiffLinks();
@@ -508,12 +513,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
                     // Set property widget definition
                     WidgetDefinition propertyWidgetDefinition = getWidgetDefinition(
-                            propertyName, fieldDiff.getPropertyType(), null,
-                            fieldItemDefs, false);
+                            category, propertyName,
+                            fieldDiff.getPropertyType(), null, fieldItemDefs,
+                            false);
                     widgetDefinitions.add(propertyWidgetDefinition);
                     // Set property widget ref
                     WidgetReferenceImpl propertyWidgetRef = new WidgetReferenceImpl(
-                            DIFF_WIDGET_CATEGORY, propertyName);
+                            category, propertyName);
                     widgetReferences.add(propertyWidgetRef);
 
                     // Check if must display the content diff links widget
@@ -529,11 +535,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     // needed
                     if (displayContentDiffLinks) {
                         WidgetDefinition contentDiffLinksWidgetDefinition = getWidgetDefinition(
-                                propertyName, fieldDiff.getPropertyType(),
-                                null, fieldItemDefs, true);
+                                category, propertyName,
+                                fieldDiff.getPropertyType(), null,
+                                fieldItemDefs, true);
                         widgetDefinitions.add(contentDiffLinksWidgetDefinition);
                         WidgetReferenceImpl contentDiffLinksWidgetRef = new WidgetReferenceImpl(
-                                DIFF_WIDGET_CATEGORY, propertyName
+                                category, propertyName
                                         + CONTENT_DIFF_LINKS_WIDGET_NAME_SUFFIX);
                         widgetReferences.add(contentDiffLinksWidgetRef);
                     }
@@ -1258,8 +1265,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     // TODO: better separate regular and contentDiffLinksWidget cases (call
     // submethods)
-    protected final WidgetDefinition getWidgetDefinition(String propertyName,
-            String propertyType, Field field,
+    protected final WidgetDefinition getWidgetDefinition(String category,
+            String propertyName, String propertyType, Field field,
             List<DiffFieldItemDefinition> complexFieldItemDefs,
             boolean isContentDiffLinksWidget) throws ClientException {
 
@@ -1270,14 +1277,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         if (!isContentDiffLinksWidget) {
             // Look for a specific widget in the "diff" category named with the
             // property name
-            wDef = getLayoutStore().getWidgetDefinition(DIFF_WIDGET_CATEGORY,
-                    propertyName);
+            wDef = getLayoutStore().getWidgetDefinition(category, propertyName);
             if (wDef == null) {
                 isGeneric = true;
                 // Fallback on a generic widget in the "diff" category named
                 // with the property type
-                wDef = getLayoutStore().getWidgetDefinition(
-                        DIFF_WIDGET_CATEGORY, propertyType);
+                wDef = getLayoutStore().getWidgetDefinition(category,
+                        propertyType);
                 if (wDef == null) {
                     throw new ClientException(
                             String.format(
@@ -1289,8 +1295,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             isGeneric = true;
             if (PropertyType.isSimpleType(propertyType)
                     || PropertyType.isContentType(propertyType)) {
-                wDef = getLayoutStore().getWidgetDefinition(
-                        DIFF_WIDGET_CATEGORY, CONTENT_DIFF_LINKS_WIDGET_NAME);
+                wDef = getLayoutStore().getWidgetDefinition(category,
+                        CONTENT_DIFF_LINKS_WIDGET_NAME);
                 if (wDef == null) {
                     throw new ClientException(
                             String.format(
@@ -1300,8 +1306,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             } else {
                 // Get the generic widget in the "diff" category named with
                 // the property type
-                wDef = getLayoutStore().getWidgetDefinition(
-                        DIFF_WIDGET_CATEGORY, propertyType);
+                wDef = getLayoutStore().getWidgetDefinition(category,
+                        propertyType);
                 if (wDef == null) {
                     throw new ClientException(
                             String.format(
@@ -1399,7 +1405,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     wDef = wDef.clone();
                     isCloned = true;
                 }
-                wDef.setSubWidgetDefinitions(getSubWidgetDefinitions(
+                wDef.setSubWidgetDefinitions(getSubWidgetDefinitions(category,
                         propertyName, propertyType, declaringField,
                         complexFieldItemDefs, isDisplayItemIndexes(wDef),
                         isContentDiffLinksWidget));
@@ -1433,7 +1439,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 + DIFF_WIDGET_FIELD_DEFINITION_STYLE_CLASS_SUFFIX;
     }
 
-    protected final WidgetDefinition[] getSubWidgetDefinitions(
+    protected final WidgetDefinition[] getSubWidgetDefinitions(String category,
             String propertyName, String propertyType, Field field,
             List<DiffFieldItemDefinition> complexFieldItemDefs,
             boolean isDisplayItemIndexes, boolean isContentDiffLinks)
@@ -1443,8 +1449,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         // Complex
         if (PropertyType.isComplexType(propertyType)
                 && !PropertyType.isContentType(propertyType)) {
-            subWidgetDefs = getComplexSubWidgetDefinitions(propertyName, field,
-                    complexFieldItemDefs, false, isContentDiffLinks);
+            subWidgetDefs = getComplexSubWidgetDefinitions(category,
+                    propertyName, field, complexFieldItemDefs, false,
+                    isContentDiffLinks);
         }
         // Scalar or content list
         else if (PropertyType.isScalarListType(propertyType)
@@ -1452,6 +1459,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             Field listFieldItem = ComplexPropertyHelper.getListFieldItem(field);
             subWidgetDefs = initSubWidgetDefinitions(isDisplayItemIndexes, 1);
             subWidgetDefs[subWidgetDefs.length - 1] = getWidgetDefinition(
+                    category,
                     getSubPropertyFullName(propertyName,
                             listFieldItem.getName().getLocalName()),
                     ComplexPropertyHelper.getFieldType(listFieldItem),
@@ -1463,15 +1471,15 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         // Complex list
         else if (PropertyType.isComplexListType(propertyType)) {
             Field listFieldItem = ComplexPropertyHelper.getListFieldItem(field);
-            subWidgetDefs = getComplexSubWidgetDefinitions(propertyName,
-                    listFieldItem, complexFieldItemDefs, isDisplayItemIndexes,
-                    isContentDiffLinks);
+            subWidgetDefs = getComplexSubWidgetDefinitions(category,
+                    propertyName, listFieldItem, complexFieldItemDefs,
+                    isDisplayItemIndexes, isContentDiffLinks);
         }
         return subWidgetDefs;
     }
 
     protected final WidgetDefinition[] getComplexSubWidgetDefinitions(
-            String propertyName, Field field,
+            String category, String propertyName, Field field,
             List<DiffFieldItemDefinition> complexFieldItemDefs,
             boolean isDisplayItemIndexes, boolean isContentDiffLinks)
             throws ClientException {
@@ -1486,6 +1494,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
             for (Field complexFieldItem : complexFieldItems) {
                 subWidgetDefs[subWidgetIndex] = getWidgetDefinition(
+                        category,
                         getSubPropertyFullName(propertyName,
                                 complexFieldItem.getName().getLocalName()),
                         ComplexPropertyHelper.getFieldType(complexFieldItem),
@@ -1515,6 +1524,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                             field, complexFieldItemName);
                     if (complexFieldItem != null) {
                         subWidgetDefs[subWidgetIndex] = getWidgetDefinition(
+                                category,
                                 getSubPropertyFullName(propertyName,
                                         complexFieldItemName),
                                 ComplexPropertyHelper.getFieldType(complexFieldItem),

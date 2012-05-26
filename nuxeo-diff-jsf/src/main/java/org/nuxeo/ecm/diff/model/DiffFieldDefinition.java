@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.model;
 
@@ -26,6 +26,12 @@ import java.util.List;
  * @since 5.6
  */
 public interface DiffFieldDefinition extends Serializable {
+
+    /**
+     * Optional category on the field: if this category is filled, the widget
+     * instance will be looked up with this category in the store
+     */
+    String getCategory();
 
     /**
      * Gets the field schema.

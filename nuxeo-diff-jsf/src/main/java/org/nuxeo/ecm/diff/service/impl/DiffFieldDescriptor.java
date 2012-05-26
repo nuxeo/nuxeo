@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.service.impl;
 
@@ -22,6 +22,8 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
+import org.nuxeo.ecm.diff.model.impl.DiffFieldDefinitionImpl;
 
 /**
  * Diff field descriptor.
@@ -31,6 +33,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("field")
 public class DiffFieldDescriptor {
+
+    @XNode("@category")
+    public String category;
 
     @XNode("@schema")
     public String schema;
@@ -44,12 +49,12 @@ public class DiffFieldDescriptor {
     @XNodeList(value = "items/item", type = ArrayList.class, componentType = DiffFieldItemDescriptor.class)
     public List<DiffFieldItemDescriptor> items;
 
-    public String getName() {
-        return name;
+    public String getCategory() {
+        return category;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getSchema() {
@@ -60,12 +65,12 @@ public class DiffFieldDescriptor {
         this.schema = schema;
     }
 
-    public List<DiffFieldItemDescriptor> getItems() {
-        return items;
+    public String getName() {
+        return name;
     }
 
-    public void setItems(List<DiffFieldItemDescriptor> items) {
-        this.items = items;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isDisplayContentDiffLinks() {
@@ -74,5 +79,18 @@ public class DiffFieldDescriptor {
 
     public void setDisplayContentDiffLinks(boolean displayContentDiffLinks) {
         this.displayContentDiffLinks = displayContentDiffLinks;
+    }
+
+    public List<DiffFieldItemDescriptor> getItems() {
+        return items;
+    }
+
+    public void setItems(List<DiffFieldItemDescriptor> items) {
+        this.items = items;
+    }
+
+    public DiffFieldDefinition getDiffFieldDefinition() {
+        return new DiffFieldDefinitionImpl(getCategory(), getSchema(),
+                getName());
     }
 }
