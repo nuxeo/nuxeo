@@ -12,6 +12,13 @@
       <filter-id>canDiffCurrentDocumentSelection</filter-id>
     </action>
 
+    <!-- Trash actions -->
+    <action id="CURRENT_TRASH_SELECTION_DIFF" link="#{diffActions.prepareCurrentTrashSelectionDiff}"
+      label="command.clipboard.diff" order="100">
+      <category>CURRENT_SELECTION_TRASH_LIST</category>
+      <filter-id>canDiffCurrentTrashSelection</filter-id>
+    </action>
+
     <!-- Worklist actions -->
     <action id="CURRENT_DEFAULT_SELECTION_DIFF"
       link="#{diffActions.prepareCurrentDefaultSelectionDiff}" label="command.clipboard.diff"
@@ -41,6 +48,13 @@
     <filter id="canDiffCurrentDocumentSelection">
       <rule grant="true">
         <condition>#{diffActions.canDiffCurrentDocumentSelection}
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="canDiffCurrentTrashSelection">
+      <rule grant="true">
+        <condition>#{diffActions.canDiffCurrentTrashSelection}
         </condition>
       </rule>
     </filter>

@@ -48,6 +48,12 @@
                   <h:outputText value="#{messages['document.diff.backToVersions']}" />
                 </nxd:restDocumentLink>
               </c:if>
+              <c:if test="#{diffActions.diffSelectionType == 'trash'}">
+                <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_MANAGE"
+                  subTab="TAB_TRASH_CONTENT" styleClass="docLink">
+                  <h:outputText value="#{messages['document.diff.backToTrash']}" />
+                </nxd:restDocumentLink>
+              </c:if>
             </td>
           </tr>
         </table>
