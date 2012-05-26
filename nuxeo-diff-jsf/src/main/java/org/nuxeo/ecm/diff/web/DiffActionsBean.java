@@ -80,7 +80,7 @@ public class DiffActionsBean implements Serializable {
 
     protected String selectedVersionId;
 
-    protected boolean isVersionDiff = false;
+    protected String diffSelectionType = DiffSelectionType.content.name();
 
     /**
      * Checks if the diff action is available for the
@@ -140,7 +140,7 @@ public class DiffActionsBean implements Serializable {
      */
     public String prepareCurrentDocumentSelectionDiff() throws ClientException {
 
-        isVersionDiff = false;
+        diffSelectionType = DiffSelectionType.content.name();
         return prepareWorkingListDiff(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
     }
 
@@ -152,7 +152,7 @@ public class DiffActionsBean implements Serializable {
      */
     public String prepareCurrentVersionSelectionDiff() throws ClientException {
 
-        isVersionDiff = true;
+        diffSelectionType = DiffSelectionType.version.name();
         return prepareWorkingListDiff(DocumentsListsManager.CURRENT_VERSION_SELECTION);
     }
 
@@ -164,7 +164,7 @@ public class DiffActionsBean implements Serializable {
      */
     public String prepareCurrentDefaultSelectionDiff() throws ClientException {
 
-        isVersionDiff = false;
+        diffSelectionType = DiffSelectionType.content.name();
         return prepareWorkingListDiff(DocumentsListsManager.DEFAULT_WORKING_LIST);
     }
 
@@ -213,7 +213,7 @@ public class DiffActionsBean implements Serializable {
             leftDoc = docVersion;
             rightDoc = currentDocument;
 
-            isVersionDiff = true;
+            diffSelectionType = DiffSelectionType.version.name();
 
             return DOC_DIFF_VIEW;
         }
@@ -423,11 +423,11 @@ public class DiffActionsBean implements Serializable {
         this.rightDoc = rightDoc;
     }
 
-    public boolean isVersionDiff() {
-        return isVersionDiff;
+    public String getDiffSelectionType() {
+        return diffSelectionType;
     }
 
-    public void setVersionDiff(boolean isVersionDiff) {
-        this.isVersionDiff = isVersionDiff;
+    public void setDiffSelectionType(String diffSelectionType) {
+        this.diffSelectionType = diffSelectionType;
     }
 }

@@ -37,7 +37,12 @@
               </ui:include>
             </td>
             <td class="contentDiffColumn">
-              <c:if test="#{diffActions.versionDiff}">
+              <c:if test="#{diffActions.diffSelectionType == 'content'}">
+                <nxd:restDocumentLink document="#{currentDocument}" styleClass="docLink">
+                  <h:outputText value="#{messages['document.diff.backToCurrentDoc']}" />
+                </nxd:restDocumentLink>
+              </c:if>
+              <c:if test="#{diffActions.diffSelectionType == 'version'}">
                 <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_CONTENT_HISTORY"
                   subTab="TAB_VERSIONS" styleClass="docLink">
                   <h:outputText value="#{messages['document.diff.backToVersions']}" />
