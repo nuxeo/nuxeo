@@ -199,18 +199,17 @@
     <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
 
-    <echo file="${tomcat}/nxserver/data/installAfterRestart-DM.log">file:setupWizardDownloads/${VPCBMPMD5}
-file:setupWizardDownloads/${DMMPMD5}
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-DM.log">init
+install nuxeo-dm
 </echo>
-    <echo file="${tomcat}/nxserver/data/installAfterRestart-SC.log">file:setupWizardDownloads/${VPCBMPMD5}
-file:setupWizardDownloads/${DMMPMD5}
-file:setupWizardDownloads/${SCMPMD5}
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-SC.log">init
+install nuxeo-social-collaboration
 </echo>
-    <echo file="${tomcat}/nxserver/data/installAfterRestart-DAM.log">file:setupWizardDownloads/${VPCBMPMD5}
-file:setupWizardDownloads/${DAMMPMD5}
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-DAM.log">init
+install nuxeo-dam
 </echo>
-    <echo file="${tomcat}/nxserver/data/installAfterRestart-CMF.log">file:setupWizardDownloads/${VPCBCMFMPMD5}
-file:setupWizardDownloads/${CMFMPMD5}
+    <echo file="${tomcat}/nxserver/data/installAfterRestart-CMF.log">init
+install nuxeo-cmf
 </echo>
   </target>
 

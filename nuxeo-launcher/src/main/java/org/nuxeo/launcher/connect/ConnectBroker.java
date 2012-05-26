@@ -107,7 +107,6 @@ public class ConnectBroker {
                 + env.getProperty(Environment.DISTRIBUTION_VERSION);
         distributionMPDir = env.getProperty(PARAM_MP_DIR,
                 DISTRIBUTION_MP_DIR_DEFAULT);
-        addDistributionPackages();
     }
 
     public String getCLID() throws NoCLID {
@@ -327,16 +326,10 @@ public class ConnectBroker {
         if (distributionFile.exists()) {
             try {
                 pkgAdd(distributionFile.getCanonicalPath());
-                FileUtils.deleteQuietly(distributionFile);
             } catch (IOException e) {
                 log.warn("Could not add distribution file " + md5);
             }
         }
-    }
-
-    protected void deleteDistributionPackage(String md5) {
-        File distributionFile = new File(distributionMPDir, md5);
-        FileUtils.deleteQuietly(distributionFile);
     }
 
     public void addDistributionPackages() {
@@ -366,9 +359,6 @@ public class ConnectBroker {
                         pkgRemove(localPackage.getId());
                         addDistributionPackage(md5);
                     }
-                } else {
-                    // Package is already in cache
-                    deleteDistributionPackage(md5);
                 }
             } else {
                 // No package with this Id is in cache
@@ -468,6 +458,14 @@ public class ConnectBroker {
             cset.commands.add(cmdInfo);
             return false;
         }
+    }
+
+    public boolean pkgPurge() throws PackageException {
+        List<String> localIds = new ArrayList<String>();
+        for (LocalPackage pkg : service.getPackages()) {
+            localIds.add(pkg.getId());
+        }
+        return pkgRequest(null, null, null, localIds);
     }
 
     public LocalPackage pkgUninstall(String pkgId) {
@@ -746,10 +744,14 @@ public class ConnectBroker {
                 } else if (split.length == 1) {
                     if (line.length() > 0 && !line.startsWith("#")) {
                         if (doExecute) {
-                            if (useResolver) {
-                                pkgsToInstall.add(line);
+                            if ("init".equals(line)) {
+                                addDistributionPackages();
                             } else {
-                                pkgInstall(line);
+                                if (useResolver) {
+                                    pkgsToInstall.add(line);
+                                } else {
+                                    pkgInstall(line);
+                                }
                             }
                         } else {
                             CommandInfo cmdInfo = new CommandInfo();

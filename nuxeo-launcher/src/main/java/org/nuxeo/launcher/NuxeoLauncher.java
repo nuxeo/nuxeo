@@ -632,7 +632,9 @@ public abstract class NuxeoLauncher {
         if (launcher.command == null) {
             return;
         }
-        if ("mp-add".equalsIgnoreCase(launcher.command)
+        if ("mp-init".equalsIgnoreCase(launcher.command)
+                || "mp-purge".equalsIgnoreCase(launcher.command)
+                || "mp-add".equalsIgnoreCase(launcher.command)
                 || "mp-install".equalsIgnoreCase(launcher.command)
                 || "mp-uninstall".equalsIgnoreCase(launcher.command)
                 || "mp-remove".equalsIgnoreCase(launcher.command)
@@ -697,6 +699,10 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.pack();
         } else if ("mp-list".equalsIgnoreCase(launcher.command)) {
             launcher.pkgList();
+        } else if ("mp-init".equalsIgnoreCase(launcher.command)) {
+            launcher.pkgInit();
+        } else if ("mp-purge".equalsIgnoreCase(launcher.command)) {
+            launcher.pkgPurge();
         } else if ("mp-add".equalsIgnoreCase(launcher.command)) {
             if (launcher.hasOption(OPTION_NODEPS)) {
                 commandSucceeded = launcher.pkgAdd(params);
@@ -1514,6 +1520,7 @@ public abstract class NuxeoLauncher {
         log.error("\tpack <target>\t\tBuild a static archive. Same as the \"pack\" Shell script.");
         log.error("\tshowconf\t\tDisplay the instance configuration.");
         log.error("\tmp-list\t\t\tList marketplace packages.");
+        log.error("\tmp-init\t\t\tPre-cache marketplace packages from the distribution.");
         log.error("\tmp-update\t\tUpdate cache of marketplace packages list.");
         log.error("\tmp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
         log.error("\tmp-install\t\tRun marketplace package installation. "
@@ -1522,6 +1529,7 @@ public abstract class NuxeoLauncher {
         log.error("\tmp-uninstall\t\tUninstall marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
         log.error("\tmp-remove\t\tRemove marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
         log.error("\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
+        log.error("\tmp-purge\t\t\tUninstall and remove all packages from the local cache.");
     }
 
     /**
@@ -1890,4 +1898,31 @@ public abstract class NuxeoLauncher {
         return true;
     }
 
+    /**
+     * Add packages from the distribution to the local cache
+     * 
+     * @throws PackageException
+     * @throws IOException
+     * 
+     * @since 5.6
+     * 
+     */
+    protected void pkgInit() throws IOException, PackageException {
+        ConnectBroker pkgman = getConnectBroker();
+        pkgman.addDistributionPackages();
+    }
+
+    /**
+     * Uninstall and remove all packages from the local cache
+     * 
+     * @throws PackageException
+     * @throws IOException
+     * 
+     * @since 5.6
+     * 
+     */
+    protected boolean pkgPurge() throws PackageException, IOException {
+        ConnectBroker pkgman = getConnectBroker();
+        return pkgman.pkgPurge();
+    }
 }

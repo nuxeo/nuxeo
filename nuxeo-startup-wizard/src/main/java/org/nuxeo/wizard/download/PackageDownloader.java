@@ -413,21 +413,22 @@ public class PackageDownloader {
     public void scheduleDownloadedPackagesForInstallation(
             String installationFilePath) throws IOException {
         List<String> fileEntries = new ArrayList<String>();
+        fileEntries.add("init");
 
         List<DownloadPackage> pkgs = downloadOptions.getPkg4Download();
         List<String> pkgInstallIds = new ArrayList<String>();
         for (DownloadPackage pkg : pkgs) {
             if (pkg.isAlreadyInLocal()) {
-                File file = pkg.getLocalFile();
-                fileEntries.add("install file:" + file.getAbsolutePath());
+                fileEntries.add("install " + pkg.getId());
                 pkgInstallIds.add(pkg.getId());
             } else {
                 for (PendingDownload download : pendingDownloads) {
                     if (download.getPkg().equals(pkg)) {
                         if (download.getStatus() == PendingDownload.VERIFIED) {
                             File file = download.getDowloadingFile();
-                            fileEntries.add("install file:"
+                            fileEntries.add("add file:"
                                     + file.getAbsolutePath());
+                            fileEntries.add("install " + pkg.getId());
                             pkgInstallIds.add(pkg.getId());
                         } else {
                             log.error("One selected package has not been downloaded : "
@@ -435,15 +436,6 @@ public class PackageDownloader {
                         }
                     }
                 }
-            }
-        }
-
-        // make downloaded packages available in Admin Center for later offline
-        // usage
-        for (DownloadPackage pkg : downloadOptions.getAllPackages()) {
-            if (!pkgInstallIds.contains(pkg.getId()) && !needToDownload(pkg)) {
-                fileEntries.add("add file:"
-                        + pkg.getLocalFile().getAbsolutePath());
             }
         }
 
@@ -458,6 +450,7 @@ public class PackageDownloader {
             }
             FileUtils.writeLines(installLog, fileEntries);
         } else {
+            // Should not happen as the file always has "init"
             if (installLog.exists()) {
                 installLog.delete();
             }
