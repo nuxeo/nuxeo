@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.Package;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "package")
@@ -31,7 +31,7 @@ public class PackageInfo {
     public PackageInfo() {
     }
 
-    public PackageInfo(LocalPackage pkg) {
+    public PackageInfo(Package pkg) {
         name = pkg.getName();
         version = pkg.getVersion().toString();
         id = pkg.getId();
