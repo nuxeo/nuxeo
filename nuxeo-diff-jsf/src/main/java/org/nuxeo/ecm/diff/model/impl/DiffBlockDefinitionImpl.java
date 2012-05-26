@@ -122,16 +122,17 @@ public class DiffBlockDefinitionImpl implements DiffBlockDefinition {
         if (MapUtils.isEmpty(templates) && !MapUtils.isEmpty(otherTemplates)
                 || !MapUtils.isEmpty(templates)
                 && MapUtils.isEmpty(otherTemplates)
-                || !templates.equals(otherTemplates)
+                || (templates != null && !templates.equals(otherTemplates))
                 || CollectionUtils.isEmpty(fields)
                 && !CollectionUtils.isEmpty(otherFields)
                 || !CollectionUtils.isEmpty(fields)
                 && CollectionUtils.isEmpty(otherFields)
-                || !fields.equals(otherFields) || MapUtils.isEmpty(properties)
+                || (fields != null && !fields.equals(otherFields))
+                || MapUtils.isEmpty(properties)
                 && !MapUtils.isEmpty(otherProperties)
                 || !MapUtils.isEmpty(properties)
                 && MapUtils.isEmpty(otherProperties)
-                || !properties.equals(otherProperties)) {
+                || (properties != null && !properties.equals(otherProperties))) {
             return false;
         }
 
