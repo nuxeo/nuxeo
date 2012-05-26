@@ -107,6 +107,18 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Checks if the diff action is available for the
+     * {@link DocumentsListsManager#CURRENT_DOCUMENT_SECTION_SELECTION} working
+     * list.
+     *
+     * @return true if can diff the current section selection
+     */
+    public boolean getCanDiffCurrentSectionSelection() {
+
+        return getCanDiffWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+    }
+
+    /**
+     * Checks if the diff action is available for the
      * {@link VersionDocumentsListsConstants#CURRENT_VERSION_SELECTION} working
      * list.
      *
@@ -166,6 +178,18 @@ public class DiffActionsBean implements Serializable {
 
         diffSelectionType = DiffSelectionType.trash.name();
         return prepareWorkingListDiff(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+    }
+
+    /**
+     * Prepares a diff of the current section selection.
+     *
+     * @return the view id
+     * @throws ClientException the client exception
+     */
+    public String prepareCurrentSectionSelectionDiff() throws ClientException {
+
+        diffSelectionType = DiffSelectionType.content.name();
+        return prepareWorkingListDiff(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
     }
 
     /**
