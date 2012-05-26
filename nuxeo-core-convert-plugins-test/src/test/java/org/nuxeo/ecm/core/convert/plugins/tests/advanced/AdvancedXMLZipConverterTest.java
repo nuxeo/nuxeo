@@ -36,6 +36,7 @@ public class AdvancedXMLZipConverterTest extends SimpleConverterTest {
         try {
             Blob blob = new FileBlob(
                     FileUtils.getResourceFileFromContext("test-docs/advanced/XMLZip_paragraphs.txt"));
+            blob.setEncoding("UTF-8");
             String expectedContent = blob.getString();
 
             assertEquals(expectedContent, textContent);
