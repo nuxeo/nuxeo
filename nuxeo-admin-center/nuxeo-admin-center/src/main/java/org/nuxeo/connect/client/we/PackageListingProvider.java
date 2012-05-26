@@ -101,6 +101,7 @@ public class PackageListingProvider extends DefaultObject {
     public Object getUpdates(@QueryParam("type") String type,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
+        String targetPlatform = PlatformVersionHelper.getPlatformFilter();
 
         if (type==null) {
             type = SharedPackageListingsSettings.instance().get("updates").getPackageTypeFilter();
@@ -111,9 +112,9 @@ public class PackageListingProvider extends DefaultObject {
 
         List<DownloadablePackage> pkgs;
         if (type == null || "".equals(type.trim())) {
-            pkgs = pm.listUpdatePackages();
+            pkgs = pm.listUpdatePackages(null, targetPlatform);
         } else {
-            pkgs = pm.listUpdatePackages(PackageType.getByValue(type));
+            pkgs = pm.listUpdatePackages(PackageType.getByValue(type), targetPlatform);
         }
 
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);

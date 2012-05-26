@@ -150,8 +150,9 @@ public class ConnectUpdateStatusInfo {
             return 0;
         }
         PackageManager pm = Framework.getLocalService(PackageManager.class);
+        String targetPlatform = PlatformVersionHelper.getPlatformFilter();
 
-        List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX);
+        List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX, targetPlatform);
 
         List<DownloadablePackage> localHotFixes = pm.listLocalPackages(PackageType.HOT_FIX);
 
