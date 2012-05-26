@@ -89,7 +89,8 @@ public class TestDiffDisplayContrib {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(2, diffDisplays.size());
+        assertEquals(3, diffDisplays.size());
+        assertTrue(diffDisplays.containsKey("Folder"));
         assertTrue(diffDisplays.containsKey("File"));
         assertTrue(diffDisplays.containsKey("Note"));
 
@@ -97,14 +98,13 @@ public class TestDiffDisplayContrib {
         List<String> diffDisplay = diffDisplayService.getDiffDisplay("Test");
         assertNull(diffDisplay);
 
-        // Check File diffDisplay contrib
-        diffDisplay = diffDisplayService.getDiffDisplay("File");
+        // Check Folder diffDisplay contrib
+        diffDisplay = diffDisplayService.getDiffDisplay("Folder");
         assertNotNull(diffDisplay);
 
         List<String> expectedDiffDisplay = new ArrayList<String>();
         expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
-        expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
         // Check that order is taken into account
@@ -112,6 +112,16 @@ public class TestDiffDisplayContrib {
         expectedDiffDisplay.remove(0);
         expectedDiffDisplay.add(diffBlockRef);
         assertFalse(expectedDiffDisplay.equals(diffDisplay));
+
+        // Check File diffDisplay contrib
+        diffDisplay = diffDisplayService.getDiffDisplay("File");
+        assertNotNull(diffDisplay);
+
+        expectedDiffDisplay = new ArrayList<String>();
+        expectedDiffDisplay.add("heading");
+        expectedDiffDisplay.add("dublincore");
+        expectedDiffDisplay.add("files");
+        assertEquals(expectedDiffDisplay, diffDisplay);
 
         // Check Note diffDisplay contrib
         diffDisplay = diffDisplayService.getDiffDisplay("Note");

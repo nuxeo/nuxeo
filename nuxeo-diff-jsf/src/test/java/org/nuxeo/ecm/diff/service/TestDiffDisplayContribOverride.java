@@ -95,16 +95,26 @@ public class TestDiffDisplayContribOverride {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(3, diffDisplays.size());
+        assertEquals(4, diffDisplays.size());
+        assertTrue(diffDisplays.containsKey("Folder"));
         assertTrue(diffDisplays.containsKey("File"));
         assertTrue(diffDisplays.containsKey("Note"));
         assertTrue(diffDisplays.containsKey("SampleType"));
 
-        // Check overridden File diffDisplay contrib
-        List<String> diffDisplay = diffDisplayService.getDiffDisplay("File");
+        // Check non overridden Folder diffDisplay contrib
+        List<String> diffDisplay = diffDisplayService.getDiffDisplay("Folder");
         assertNotNull(diffDisplay);
 
         List<String> expectedDiffDisplay = new ArrayList<String>();
+        expectedDiffDisplay.add("heading");
+        expectedDiffDisplay.add("dublincore");
+        assertEquals(expectedDiffDisplay, diffDisplay);
+
+        // Check overridden File diffDisplay contrib
+        diffDisplay = diffDisplayService.getDiffDisplay("File");
+        assertNotNull(diffDisplay);
+
+        expectedDiffDisplay = new ArrayList<String>();
         expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("files");
         expectedDiffDisplay.add("testNoFields");
