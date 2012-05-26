@@ -59,6 +59,7 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
+import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
@@ -213,7 +214,9 @@ public class ConnectBroker {
         List<LocalPackage> localPackages = getPkgList();
         List<LocalPackage> installedPackages = new ArrayList<LocalPackage>();
         for (LocalPackage pkg : localPackages) {
-            if (pkg.getState() != PackageState.INSTALLED) {
+            if ((pkg.getState() != PackageState.INSTALLING)
+                    && (pkg.getState() != PackageState.INSTALLED)
+                    && (pkg.getState() != PackageState.STARTED)) {
                 continue;
             }
             installedPackages.add(pkg);
@@ -376,19 +379,27 @@ public class ConnectBroker {
         }
     }
 
-    public List<LocalPackage> pkgList() {
+    public void pkgList() {
+        log.info("Local packages:");
+        pkgList(getPkgList());
+    }
+
+    public void pkgListAll() {
+        log.info("All packages:");
+        pkgList(NuxeoConnectClient.getPackageManager().listAllPackages());
+    }
+
+    public void pkgList(List<? extends Package> packagesList) {
         CommandInfo cmdInfo = new CommandInfo();
         cmdInfo.name = CommandInfo.CMD_LIST;
         try {
-            List<LocalPackage> localPackages = getPkgList();
-            if (localPackages.isEmpty()) {
-                log.info("No local package.");
+            if (packagesList.isEmpty()) {
+                log.info("None");
             } else {
-                log.info("Local packages:");
-                for (LocalPackage localPackage : localPackages) {
-                    cmdInfo.packages.add(new PackageInfo(localPackage));
+                for (Package pkg : packagesList) {
+                    cmdInfo.packages.add(new PackageInfo(pkg));
                     String packageDescription;
-                    switch (localPackage.getState()) {
+                    switch (pkg.getState()) {
                     case PackageState.DOWNLOADING:
                         packageDescription = "downloading...";
                         break;
@@ -404,23 +415,24 @@ public class ConnectBroker {
                     case PackageState.STARTED:
                         packageDescription = "started";
                         break;
+                    case PackageState.REMOTE:
+                        packageDescription = "remote";
+                        break;
                     default:
                         packageDescription = "unknown";
                         break;
                     }
-                    packageDescription += "\t" + localPackage.getName()
-                            + " (id: " + localPackage.getId() + ")";
+                    packageDescription += "\t" + pkg.getName() + " (id: "
+                            + pkg.getId() + ")";
                     log.info(packageDescription);
                 }
             }
             cmdInfo.exitCode = 0;
             cset.commands.add(cmdInfo);
-            return localPackages;
         } catch (Exception e) {
             log.error(e);
             cmdInfo.exitCode = 1;
             cset.commands.add(cmdInfo);
-            return null;
         }
     }
 
@@ -461,11 +473,11 @@ public class ConnectBroker {
     }
 
     public boolean pkgPurge() throws PackageException {
-        List<String> localIds = new ArrayList<String>();
+        List<String> localNames = new ArrayList<String>();
         for (LocalPackage pkg : service.getPackages()) {
-            localIds.add(pkg.getId());
+            localNames.add(pkg.getName());
         }
-        return pkgRequest(null, null, null, localIds);
+        return pkgRequest(null, null, null, localNames);
     }
 
     public LocalPackage pkgUninstall(String pkgId) {
@@ -921,8 +933,8 @@ public class ConnectBroker {
 
             DependencyResolution resolution = getPackageManager().resolveDependencies(
                     solverInstall, solverRemove, solverUpgrade, requestPlatform);
-            log.info(resolution);
             if (resolution.isFailed()) {
+                log.error("Resolution failed");
                 return false;
             }
             // Download remote packages
@@ -930,29 +942,74 @@ public class ConnectBroker {
                 log.error("Aborting packages change request");
                 return false;
             }
-            // Uninstall packages
+            // Uninstall "packages to uninstall"
             List<String> packageIds = resolution.getRemovePackageIds();
+            log.debug("Uninstalling for good: " + packageIds);
             for (String pkgId : packageIds) {
                 if (pkgUninstall(pkgId) == null) {
+                    log.error("Unable to uninstall " + pkgId);
+                    return false;
+                }
+            }
+            // Uninstall "pacakges to upgrade"
+            Map<String, Version> packagesToUpgrade = resolution.getLocalPackagesToUpgrade();
+            log.debug("Uninstalling for upgrade: " + packagesToUpgrade.keySet());
+            for (String pkg : packagesToUpgrade.keySet()) {
+                if (pkgUninstall(getInstalledPackageIdFromName(pkg)) == null) {
+                    log.error("Unable to uninstall "
+                            + getInstalledPackageIdFromName(pkg));
                     return false;
                 }
             }
             // Remove "pkgsToRemove" packages from local cache
             if (pkgsToRemove != null) {
+                log.debug("Removing: " + pkgsToRemove);
                 for (String pkg : pkgsToRemove) {
                     if (pkgRemove(pkg) == null) {
+                        log.warn("Unable to remove " + pkg);
                         // Don't error out on failed (cache) removal
                     }
                 }
             }
-            // Install packages
+            // Install new version of "pacakges to upgrade"
+            List<String> upgradeIds = resolution.getUpgradePackageIds();
+            log.debug("Installing upgrade: " + upgradeIds);
+            for (String pkgId : upgradeIds) {
+                if (pkgInstall(pkgId) == null) {
+                    log.error("Unable to install " + pkgId);
+                    return false;
+                }
+            }
+            // Install new packages
             packageIds = resolution.getInstallPackageIds();
+            log.debug("Installing new: " + packageIds);
             for (String pkgId : packageIds) {
                 if (pkgInstall(pkgId) == null) {
+                    log.error("Unable to install " + pkgId);
                     return false;
                 }
             }
         }
         return true;
     }
+
+    protected boolean pkgUpgradeByType(PackageType type) {
+        List<DownloadablePackage> upgrades = NuxeoConnectClient.getPackageManager().listUpdatePackages(
+                type, targetPlatform);
+        List<String> upgradeIds = new ArrayList<String>();
+        for (DownloadablePackage upgrade : upgrades) {
+            upgradeIds.add(upgrade.getId());
+        }
+        return pkgRequest(null, upgradeIds, null, null);
+
+    }
+
+    public boolean pkgHotfix() {
+        return pkgUpgradeByType(PackageType.HOT_FIX);
+    }
+
+    public boolean pkgUpgrade() {
+        return pkgUpgradeByType(PackageType.ADDON);
+    }
+
 }

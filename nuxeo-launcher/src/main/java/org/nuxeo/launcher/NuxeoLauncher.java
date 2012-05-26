@@ -638,6 +638,8 @@ public abstract class NuxeoLauncher {
                 || "mp-install".equalsIgnoreCase(launcher.command)
                 || "mp-uninstall".equalsIgnoreCase(launcher.command)
                 || "mp-remove".equalsIgnoreCase(launcher.command)
+                || "mp-hotfix".equalsIgnoreCase(launcher.command)
+                || "mp-upgrade".equalsIgnoreCase(launcher.command)
                 || "mp-reset".equalsIgnoreCase(launcher.command)) {
             launcher.checkNoRunningServer();
         }
@@ -699,6 +701,8 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.pack();
         } else if ("mp-list".equalsIgnoreCase(launcher.command)) {
             launcher.pkgList();
+        } else if ("mp-listall".equalsIgnoreCase(launcher.command)) {
+            launcher.pkgListAll();
         } else if ("mp-init".equalsIgnoreCase(launcher.command)) {
             launcher.pkgInit();
         } else if ("mp-purge".equalsIgnoreCase(launcher.command)) {
@@ -732,6 +736,10 @@ public abstract class NuxeoLauncher {
                 commandSucceeded = launcher.pkgRequest(null, null, null,
                         Arrays.asList(params));
             }
+        } else if ("mp-hotfix".equalsIgnoreCase(launcher.command)) {
+            launcher.pkgHotfix();
+        } else if ("mp-upgrade".equalsIgnoreCase(launcher.command)) {
+            launcher.pkgUpgrade();
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgReset();
         } else if ("mp-update".equalsIgnoreCase(launcher.command)) {
@@ -1519,7 +1527,8 @@ public abstract class NuxeoLauncher {
         log.error("\trestartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
         log.error("\tpack <target>\t\tBuild a static archive. Same as the \"pack\" Shell script.");
         log.error("\tshowconf\t\tDisplay the instance configuration.");
-        log.error("\tmp-list\t\t\tList marketplace packages.");
+        log.error("\tmp-list\t\t\tList local marketplace packages.");
+        log.error("\tmp-listall\t\tList all marketplace packages.");
         log.error("\tmp-init\t\t\tPre-cache marketplace packages from the distribution.");
         log.error("\tmp-update\t\tUpdate cache of marketplace packages list.");
         log.error("\tmp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
@@ -1530,6 +1539,8 @@ public abstract class NuxeoLauncher {
         log.error("\tmp-remove\t\tRemove marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
         log.error("\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
         log.error("\tmp-purge\t\t\tUninstall and remove all packages from the local cache.");
+        log.error("\tmp-hotfix\t\tInstall the hotfixes available for the instance.");
+        log.error("\tmp-upgrade\t\tUpgrade the marketplace packages (addons) available for the instance.");
     }
 
     /**
@@ -1598,10 +1609,30 @@ public abstract class NuxeoLauncher {
         return connectBroker;
     }
 
+    /**
+     * List all local packages.
+     * 
+     * @throws IOException
+     * @throws PackageException
+     */
     protected void pkgList() throws IOException, PackageException {
         ConnectBroker pkgman = getConnectBroker();
         pkgman.listPending(configurationGenerator.getInstallFile());
         pkgman.pkgList();
+        cset = pkgman.getCommandSet();
+    }
+
+    /**
+     * List all packages including remote ones.
+     * 
+     * @since 5.6
+     * @throws IOException
+     * @throws PackageException
+     */
+    protected void pkgListAll() throws IOException, PackageException {
+        ConnectBroker pkgman = getConnectBroker();
+        pkgman.listPending(configurationGenerator.getInstallFile());
+        pkgman.pkgListAll();
         cset = pkgman.getCommandSet();
     }
 
@@ -1903,13 +1934,13 @@ public abstract class NuxeoLauncher {
      * 
      * @throws PackageException
      * @throws IOException
-     * 
      * @since 5.6
      * 
      */
     protected void pkgInit() throws IOException, PackageException {
         ConnectBroker pkgman = getConnectBroker();
         pkgman.addDistributionPackages();
+        cset = pkgman.getCommandSet();
     }
 
     /**
@@ -1917,12 +1948,39 @@ public abstract class NuxeoLauncher {
      * 
      * @throws PackageException
      * @throws IOException
-     * 
      * @since 5.6
      * 
      */
-    protected boolean pkgPurge() throws PackageException, IOException {
+    protected void pkgPurge() throws PackageException, IOException {
         ConnectBroker pkgman = getConnectBroker();
-        return pkgman.pkgPurge();
+        pkgman.pkgPurge();
+        cset = pkgman.getCommandSet();
     }
+
+    /**
+     * Install the hotfixes available for the instance
+     * 
+     * @throws PackageException
+     * @throws IOException
+     * @since 5.6
+     */
+    protected void pkgHotfix() throws IOException, PackageException {
+        ConnectBroker pkgman = getConnectBroker();
+        pkgman.pkgHotfix();
+        cset = pkgman.getCommandSet();
+    }
+
+    /**
+     * Upgrade the marketplace packages (addons) available for the instance
+     * 
+     * @throws PackageException
+     * @throws IOException
+     * @since 5.6
+     */
+    protected void pkgUpgrade() throws IOException, PackageException {
+        ConnectBroker pkgman = getConnectBroker();
+        pkgman.pkgUpgrade();
+        cset = pkgman.getCommandSet();
+    }
+
 }
