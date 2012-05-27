@@ -131,6 +131,20 @@ public class ConnectBroker {
         return cset;
     }
 
+    protected boolean isInstalledPackageName(String pkgName) {
+        List<LocalPackage> localPackages = getPkgList();
+        boolean foundName = false;
+        for (LocalPackage pkg : localPackages) {
+            if (pkg.getName().equals(pkgName)
+                    && ((pkg.getState() == PackageState.INSTALLING)
+                            || (pkg.getState() == PackageState.INSTALLED) || (pkg.getState() == PackageState.STARTED))) {
+                foundName = true;
+                break;
+            }
+        }
+        return foundName;
+    }
+
     protected boolean isLocalPackageId(String pkgId) {
         List<LocalPackage> localPackages = getPkgList();
         boolean foundId = false;
@@ -898,12 +912,29 @@ public class ConnectBroker {
                     namesOrIdsToInstall.add(pkgToInstall);
                 }
             }
-            // For names, check whether they are new installs or upgrades
+            // Check whether we have new installs or upgrades
             for (String pkgToInstall : namesOrIdsToInstall) {
-                if (getInstalledPackageIdFromName(pkgToInstall) != null) {
-                    solverUpgrade.add(pkgToInstall);
+                Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
+                DownloadablePackage pkg = allPackagesByID.get(pkgToInstall);
+                if (pkg != null) {
+                    // This is a known ID
+                    if (isInstalledPackageName(pkg.getName())) {
+                        // The package is installed in another version
+                        solverUpgrade.add(pkgToInstall);
+                    } else {
+                        // The package isn't installed yet
+                        solverInstall.add(pkgToInstall);
+                    }
                 } else {
-                    solverInstall.add(pkgToInstall);
+                    // This is a name (or a non-existing ID)
+                    String id = getInstalledPackageIdFromName(pkgToInstall);
+                    if (id != null) {
+                        // The package is installed in another version
+                        solverUpgrade.add(id);
+                    } else {
+                        // The package isn't installed yet
+                        solverInstall.add(pkgToInstall);
+                    }
                 }
             }
         }
@@ -947,13 +978,14 @@ public class ConnectBroker {
                 log.error("Resolution failed");
                 return false;
             }
+            log.info(resolution);
             // Download remote packages
             if (!downloadPackages(resolution.getDownloadPackageIds())) {
                 log.error("Aborting packages change request");
                 return false;
             }
             // Uninstall "packages to uninstall"
-            List<String> packageIds = resolution.getRemovePackageIds();
+            List<String> packageIds = resolution.getOrderedPackageIdsToRemove();
             log.debug("Uninstalling for good: " + packageIds);
             for (String pkgId : packageIds) {
                 if (pkgUninstall(pkgId) == null) {
@@ -961,7 +993,7 @@ public class ConnectBroker {
                     return false;
                 }
             }
-            // Uninstall "pacakges to upgrade"
+            // Uninstall old versions of "pacakges to upgrade"
             Map<String, Version> packagesToUpgrade = resolution.getLocalPackagesToUpgrade();
             log.debug("Uninstalling for upgrade: " + packagesToUpgrade.keySet());
             for (String pkg : packagesToUpgrade.keySet()) {
@@ -993,17 +1025,8 @@ public class ConnectBroker {
                     }
                 }
             }
-            // Install new version of "pacakges to upgrade"
-            List<String> upgradeIds = resolution.getUpgradePackageIds();
-            log.debug("Installing upgrade: " + upgradeIds);
-            for (String pkgId : upgradeIds) {
-                if (pkgInstall(pkgId) == null) {
-                    log.error("Unable to install " + pkgId);
-                    return false;
-                }
-            }
-            // Install new packages
-            packageIds = resolution.getInstallPackageIds();
+            // Install new or upgraded packages
+            packageIds = resolution.getOrderedPackageIdsToInstall();
             log.debug("Installing new: " + packageIds);
             for (String pkgId : packageIds) {
                 if (pkgInstall(pkgId) == null) {
