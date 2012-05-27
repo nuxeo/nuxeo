@@ -210,6 +210,16 @@ public class ConnectBroker {
         return getBestIdForNameInList(pkgName, getPkgList());
     }
 
+    protected List<String> getAllLocalPackageIdsFromName(String pkgName) {
+        List<String> foundIds = new ArrayList<String>();
+        for (Package pkg : getPkgList()) {
+            if (pkg.getName().equals(pkgName)) {
+                foundIds.add(pkg.getId());
+            }
+        }
+        return foundIds;
+    }
+
     protected String getInstalledPackageIdFromName(String pkgName) {
         List<LocalPackage> localPackages = getPkgList();
         List<LocalPackage> installedPackages = new ArrayList<LocalPackage>();
@@ -964,10 +974,22 @@ public class ConnectBroker {
             // Remove "pkgsToRemove" packages from local cache
             if (pkgsToRemove != null) {
                 log.debug("Removing: " + pkgsToRemove);
-                for (String pkg : pkgsToRemove) {
-                    if (pkgRemove(pkg) == null) {
-                        log.warn("Unable to remove " + pkg);
-                        // Don't error out on failed (cache) removal
+                for (String pkgNameOrId : pkgsToRemove) {
+                    if (isLocalPackageId(pkgNameOrId)) {
+                        if (pkgRemove(pkgNameOrId) == null) {
+                            log.warn("Unable to remove " + pkgNameOrId);
+                            // Don't error out on failed (cache) removal
+                        }
+                    } else {
+                        // Remove all matching packages if the request is made
+                        // on a name
+                        List<String> allIds = getAllLocalPackageIdsFromName(pkgNameOrId);
+                        for (String pkgId : allIds) {
+                            if (pkgRemove(pkgId) == null) {
+                                log.warn("Unable to remove " + pkgId);
+                                // Don't error out on failed (cache) removal
+                            }
+                        }
                     }
                 }
             }
