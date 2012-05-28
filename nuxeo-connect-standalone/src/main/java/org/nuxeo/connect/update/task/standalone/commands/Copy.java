@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileMatcher;
 import org.nuxeo.common.utils.FileRef;
 import org.nuxeo.common.utils.FileUtils;
@@ -53,7 +54,7 @@ import org.w3c.dom.Element;
  * inverse of Copy command is another copy command with the md5 to the one of
  * the copied file and the overwrite flag to true. The file to copy will be the
  * backup of the overwritten file.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Copy extends AbstractCommand {
@@ -61,6 +62,10 @@ public class Copy extends AbstractCommand {
     protected static final Log log = LogFactory.getLog(Copy.class);
 
     public static final String ID = "copy";
+
+    protected static final String LAUNCHER_JAR = "nuxeo-launcher.jar";
+
+    protected static final String LAUNCHER_CHANGED_PROPERTY = "launcher.changed";
 
     /**
      * The source file. It can be a file or a directory.
@@ -254,6 +259,12 @@ public class Copy extends AbstractCommand {
                     FileUtils.copy(fileToCopy, dst);
                 }
             }
+            // check whether the copied or restored file was the launcher
+            if (dst.getName().equals(LAUNCHER_JAR)
+                    || fileToCopy.getName().equals(LAUNCHER_JAR)) {
+                Environment env = Environment.getDefault();
+                env.setProperty(LAUNCHER_CHANGED_PROPERTY, "true");
+            }
             // get the md5 of the copied file.
             dstmd5 = IOUtils.createMd5(dst);
         } catch (Exception e) {
@@ -271,7 +282,7 @@ public class Copy extends AbstractCommand {
 
     /**
      * Override in subclass to parameterize content.
-     *
+     * 
      * @since 5.5
      * @param prefs
      * @return Content to put in destination file. See {@link #append} parameter
