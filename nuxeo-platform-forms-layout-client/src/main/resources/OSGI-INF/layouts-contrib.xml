@@ -57,6 +57,30 @@
       </fields>
     </widget>
 
+    <widget name="subStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub style class</label>
+      </labels>
+      <fields>
+        <field>subStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="subItemStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub item style class</label>
+      </labels>
+      <fields>
+        <field>subItemStyleClass</field>
+      </fields>
+    </widget>
+
     <widget name="title" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -728,7 +752,32 @@
       <helpLabels>
         <label mode="any">
           The display attribute controls the rendering of
-          subwidgets, either in a table, either inline. Available since 5.4.2.
+          subwidgets. Available since 5.4.2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>display</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Table (default)" itemValue="table" />
+        <!-- block-like renderings available since 5.6 -->
+        <option itemLabel="Block (label on top)" itemValue="block_top" />
+        <option itemLabel="Block (label on the left)" itemValue="block_left" />
+        <option itemLabel="In line" itemValue="inline" />
+      </selectOptions>
+    </widget>
+
+    <widget name="list_subwidgets_display" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display attribute controls the rendering of
+          subwidgets. Available since 5.4.2.
         </label>
       </helpLabels>
       <fields>
@@ -1901,10 +1950,19 @@
             <layout name="list_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">subwidgets_display</widget>
+                  <widget category="widgetTypeConf">list_subwidgets_display</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">subwidgets_hideSubLabels</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">subStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">subItemStyleClass</widget>
                 </row>
               </rows>
             </layout>
@@ -1975,6 +2033,12 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">subwidgets_hideSubLabels</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">subStyleClass</widget>
                 </row>
               </rows>
             </layout>
@@ -2080,8 +2144,10 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    If set to true, and property "foldable" is also set to true,
-                    the box will be folded by default. Defaults to false.
+                    If set to true, and property "foldable" is
+                    also set to true,
+                    the box will be folded by default. Defaults
+                    to false.
                   </label>
                 </helpLabels>
                 <fields>

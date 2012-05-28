@@ -2,6 +2,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   id="#{layout.id}"
@@ -18,27 +19,9 @@
             <nxu:set var="fieldColspan"
               value="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1) + nxu:test(widget.handlingLabels, 1, 0)}">
               <c:if test="#{not widget.handlingLabels}">
-                <nxu:set var="widgetLabel"
-                  value="#{nxu:test(widget.translated, messages[widget.label], widget.label)}">
-                <nxu:set var="widgetHelpLabel"
-                  value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}">
-                  <td class="labelColumn">
-                    <c:if test="#{empty widget.helpLabel}">
-                      <h:outputText value="#{widgetLabel}"
-                        styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                    </c:if>
-                    <c:if test="#{!empty widget.helpLabel}">
-                      <div class="widgetHelpLabel">
-                        <h:outputText value="#{widgetLabel}"
-                          styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                      </div>
-                      <div class="tooltip">
-                        #{widgetHelpLabel}
-                      </div>
-                    </c:if>
-                  </td>
-                </nxu:set>
-                </nxu:set>
+                <td class="labelColumn">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                </td>
               </c:if>
               <td class="fieldColumn" colspan="#{fieldColspan}">
                 <nxl:widget widget="#{widget}" value="#{value}" />

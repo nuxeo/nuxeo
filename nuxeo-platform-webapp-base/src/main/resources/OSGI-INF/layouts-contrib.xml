@@ -1553,9 +1553,8 @@
                     deciding whether the toggle button should be displayed or
                     not. Defaults to an EL expression checking permission
                     'Write' on the document. Examples: false,
-                    #{nxd:hasPermission(value,
-                    'Write') and
-                    currentUser.isMemberOf('togglers_groups'))}
+                    #{nxd:hasPermission(value, 'Write') and
+                    currentUser.isMemberOf('togglers_groups')}
                   </label>
                 </helpLabels>
                 <fields>
