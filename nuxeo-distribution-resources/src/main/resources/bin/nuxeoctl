@@ -145,6 +145,11 @@ LOG_DIR=$(grep "^nuxeo.log.dir=" "$NUXEO_CONF" | cut -d= -f2-)
 # Defaults
 : ${LOG_DIR:="$NUXEO_HOME"/log}
 
+## nuxeo.tmp.dir
+TMP_DIR=$(grep "^nuxeo.tmp.dir=" "$NUXEO_CONF" | cut -d= -f2-)
+# Defaults
+: ${TMP_DIR:="$NUXEO_HOME"/tmp}
+
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
 if [ "$cygwin" = "true" ]; then
@@ -152,6 +157,7 @@ if [ "$cygwin" = "true" ]; then
   NUXEO_HOME=`cygpath -am "$NUXEO_HOME"`
   NUXEO_CONF=`cygpath -am "$NUXEO_CONF"`
   LOG_DIR=`cygpath -am "$LOG_DIR"`
+  TMP_DIR=`cygpath -am "$TMP_DIR"`
 fi
 
 
@@ -164,8 +170,27 @@ fi
 [ -d "$LOG_DIR" ] || mkdir -p "$LOG_DIR"
 echo "[`date`] Command: $0 $@" >> "$LOG_DIR"/nuxeoctl.log
 
+[ -d "$TMP_DIR" ] || mkdir -p "$TMP_DIR"
+
 #LAUNCHER_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=y"
 
-[[ "x$@" =~ " -d" || "x$@" =~ " --debug" ]] && echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER $@
-echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $NUXEO_LAUNCHER "$@" >> "$LOG_DIR"/nuxeoctl.log
-exec "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$NUXEO_LAUNCHER" "$@"
+while true; do
+  while true; do
+    TMPLAUNCHER="$TMP_DIR/nuxeo-launcher-$RANDOM.jar"
+    if [ ! -f "$TMPLAUNCHER" ]; then
+      break
+    fi
+  done
+  cp "$NUXEO_LAUNCHER" "$TMPLAUNCHER"
+  [[ "x$@" =~ " -d" || "x$@" =~ " --debug" ]] && echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER $@
+  echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER "$@" >> "$LOG_DIR"/nuxeoctl.log
+  "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
+  exitcode=$?
+  rm -f "$TMPLAUNCHER"
+  if [ "$exitcode" != "128" ]; then
+    break
+  fi
+done
+
+exit $exitcode
+

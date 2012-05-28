@@ -86,6 +86,10 @@ public class ConnectBroker {
 
     public static final String PACKAGES_XML = "packages.xml";
 
+    protected static final String LAUNCHER_CHANGED_PROPERTY = "launcher.changed";
+
+    protected static final int LAUNCHER_CHANGED_EXIT_CODE = 128;
+
     private Environment env;
 
     private StandaloneUpdateService service;
@@ -505,6 +509,9 @@ public class ConnectBroker {
     }
 
     public LocalPackage pkgUninstall(String pkgId) {
+        if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
+            System.exit(LAUNCHER_CHANGED_EXIT_CODE);
+        }
         CommandInfo cmdInfo = new CommandInfo();
         cmdInfo.name = CommandInfo.CMD_UNINSTALL;
         cmdInfo.param = pkgId;
@@ -641,6 +648,9 @@ public class ConnectBroker {
     }
 
     public LocalPackage pkgInstall(String pkgId) {
+        if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
+            System.exit(LAUNCHER_CHANGED_EXIT_CODE);
+        }
         CommandInfo cmdInfo = new CommandInfo();
         cmdInfo.name = CommandInfo.CMD_INSTALL;
         cmdInfo.param = pkgId;

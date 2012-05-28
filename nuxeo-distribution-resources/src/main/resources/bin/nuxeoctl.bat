@@ -77,6 +77,7 @@ FOR /F "eol=# tokens=1,2 delims==" %%A in ("%NUXEO_CONF%") do (
     if "%%A" == "JAVA_HOME" set JAVA_HOME=%%B
     if "%%A" == "JAVA_OPTS" set JAVA_OPTS=%%B
     if "%%A" == "nuxeo.log.dir" set NUXEO_LOG_DIR=%%B
+	if "%%A" == "nuxeo.tmp.dir" set NUXEO_TMP_DIR=%%B
 )
 
 
@@ -92,6 +93,20 @@ goto LOG_DIR_OK
 set NUXEO_LOG_DIR=%APPDATA%\Nuxeo\log
 if not exist "%NUXEO_LOG_DIR%" mkdir "%NUXEO_LOG_DIR%"
 :LOG_DIR_OK
+
+
+REM ***** Check tmp directory *****
+if "%NUXEO_TMP_DIR%" == "" set NUXEO_TMP_DIR=%TMP%
+if not exist "%NUXEO_TMP_DIR%" (
+    mkdir "%NUXEO_TMP_DIR%" || goto SET_DEFAULT_TMP_DIR
+)
+echo. >> "%NUXEO_TMP_DIR%\test_tmp_writable.txt" || goto SET_DEFAULT_TMP_DIR
+goto TMP_DIR_OK
+
+:SET_DEFAULT_TMP_DIR
+set NUXEO_TMP_DIR=%APPDATA%\Nuxeo\tmp
+if not exist "%NUXEO_TMP_DIR%" mkdir "%NUXEO_TMP_DIR%"
+:TMP_DIR_OK
 
 
 REM ***** Check for JAVA_HOME environment variable *****
@@ -191,8 +206,18 @@ set LOGTIME=%LOGTIME::=%
 set LOGTIME=%LOGTIME:/=%
 set LOGTIME=%LOGTIME:.=%
 set LOGTIME=%LOGTIME:,=%
-echo [%DATE%] Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
+
+:RESTARTLAUNCHER
+:GETTMPLAUNCHER
+set TMPLAUNCHER=%NUXEO_TMP_DIR%\nuxeo-launcher-%RANDOM%.jar
+if exist "%TMPLAUNCHER%" GOTO GETTMPLAUNCHER
+COPY /V "%NUXEO_LAUNCHER%" "%TMPLAUNCHER%"
+echo [%DATE%] Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 echo on
-"%JAVA%" %LAUNCHER_DEBUG% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%NUXEO_LAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
+"%JAVA%" %LAUNCHER_DEBUG% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %GUI_OPTION% %1 %2 %3 %4 %5 %6 %7 %8 %9
+@set exitcode=%ERRORLEVEL%
+@echo off
+del /F /Q "%TMPLAUNCHER%"
+if "%exitcode%" == "128" GOTO RESTARTLAUNCHER
 
 :END
