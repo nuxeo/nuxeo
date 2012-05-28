@@ -17,8 +17,7 @@
         </defaultProperties>
       </preview>
       <layouts>
-        <layout name="textWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-text-widget.xml" />
+        <layout name="textWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-text-widget.xml" />
         <layout name="textWidgetListingLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-text-listing-widget.xml" />
       </layouts>
@@ -51,8 +50,7 @@
         </fields>
       </preview>
       <layouts>
-        <layout name="intWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-int-widget.xml" />
+        <layout name="intWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-int-widget.xml" />
         <layout name="intWidgetListingLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-int-listing-widget.xml" />
       </layouts>
@@ -102,8 +100,7 @@
         </fields>
       </preview>
       <layouts>
-        <layout name="fileWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-file-widget.xml" />
+        <layout name="fileWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-widget.xml" />
         <layout name="fileWidgetListingLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-file-listing-widget.xml" />
       </layouts>
@@ -185,34 +182,43 @@
       </layouts>
     </widgetType>
 
+    <widgetType name="complex">
+      <label>Complex</label>
+      <viewId>complexWidget</viewId>
+      <category>standard</category>
+      <layouts>
+        <layout name="complexWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-complex-widget.xml" />
+      </layouts>
+      <preview enabled="true">
+        <fields>
+          <field>lds:complexField</field>
+        </fields>
+      </preview>
+    </widgetType>
+
     <widgetType name="list">
       <label>List</label>
       <viewId>listWidget</viewId>
       <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:complexList</field>
+        </fields>
+      </preview>
       <layouts>
         <layout name="listArrayWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-list-array-widget.xml" />
-        <layout name="listWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
+        <layout name="listWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
         <layout name="complexListWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-complex-list-widget.xml" />
         <!-- disabled: need to handle file size restriction -->
-        <!-- 
+        <!--
           <layout name="fileListWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml" />
         -->
         <layout name="listOfListsWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-listOfLists-widget.xml" />
-      </layouts>
-    </widgetType>
-
-    <widgetType name="complex">
-      <label>Complex</label>
-      <viewId>complexWidget</viewId>
-      <category>custom</category>
-      <layouts>
-        <layout name="complexWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-complex-widget.xml" />
       </layouts>
     </widgetType>
 
@@ -227,6 +233,21 @@
           src="sources/OSGI-INF/demo/layout-demo-template-widget.xml" />
         -->
       </layouts>
+    </widgetType>
+
+    <widgetType name="container">
+      <label>Container</label>
+      <viewId>containerWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="containerWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-container-widget.xml" />
+      </layouts>
+      <preview enabled="true">
+        <fields>
+          <field></field>
+        </fields>
+      </preview>
     </widgetType>
 
     <widgetType name="listing_author">

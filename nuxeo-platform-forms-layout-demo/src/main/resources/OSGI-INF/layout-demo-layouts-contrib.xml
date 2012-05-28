@@ -18,6 +18,9 @@
         <row>
           <widget>translated</widget>
         </row>
+        <row>
+          <widget>handlingLabels</widget>
+        </row>
       </rows>
       <widget name="label" type="text">
         <labels>
@@ -49,6 +52,20 @@
         <translated>true</translated>
         <fields>
           <field>translated</field>
+        </fields>
+      </widget>
+      <widget name="handlingLabels" type="checkbox">
+        <labels>
+          <label mode="any">label.layoutDemo.widgetPreview.handlingLabels</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">
+            label.layoutDemo.widgetPreview.handlingLabels.help
+          </label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>handlingLabels</field>
         </fields>
       </widget>
     </layout>

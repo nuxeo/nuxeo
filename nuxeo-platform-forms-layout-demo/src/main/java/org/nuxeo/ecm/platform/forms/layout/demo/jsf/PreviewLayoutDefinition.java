@@ -29,6 +29,7 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 
 /**
@@ -51,11 +52,15 @@ public class PreviewLayoutDefinition implements Serializable {
 
     protected Boolean translated;
 
+    protected Boolean handlingLabels;
+
     protected Map<String, Serializable> defaultProperties;
 
     protected Map<String, Serializable> properties;
 
     protected List<Map<String, Serializable>> customProperties;
+
+    protected List<WidgetDefinition> subWidgets;
 
     public PreviewLayoutDefinition(String widgetType, List<String> fields,
             Map<String, Serializable> defaultProperties) {
@@ -106,6 +111,22 @@ public class PreviewLayoutDefinition implements Serializable {
 
     public void setTranslated(Boolean translated) {
         this.translated = translated;
+    }
+
+    public Boolean getHandlingLabels() {
+        return handlingLabels;
+    }
+
+    public void setHandlingLabels(Boolean handlingLabels) {
+        this.handlingLabels = handlingLabels;
+    }
+
+    public List<WidgetDefinition> getSubWidgets() {
+        return subWidgets;
+    }
+
+    public void setSubWidgets(List<WidgetDefinition> subWidgets) {
+        this.subWidgets = subWidgets;
     }
 
     public Map<String, Serializable> getProperties() {

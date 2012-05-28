@@ -73,7 +73,9 @@ public class LayoutPreviewActions {
                 previewLayoutDef.getHelpLabel(),
                 Boolean.TRUE.equals(previewLayoutDef.getTranslated()), null,
                 previewLayoutDef.getFieldDefinitions(),
-                previewLayoutDef.getWidgetProperties(), null);
+                previewLayoutDef.getWidgetProperties(),
+                previewLayoutDef.getSubWidgets());
+        widgetDef.setHandlingLabels(Boolean.TRUE.equals(previewLayoutDef.getHandlingLabels()));
         return new LayoutDefinitionImpl("preview_layout", null, widgetDef);
     }
 

@@ -99,6 +99,11 @@
       <redirect />
     </navigation-case>
     <navigation-case>
+      <from-outcome>containerWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/containerWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
       <from-outcome>listing_authorWidget</from-outcome>
       <to-view-id>
         /layoutDemo/demoWidgets/listing_authorWidget.xhtml

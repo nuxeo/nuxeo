@@ -25,19 +25,23 @@
         <properties widgetMode="edit">
           <property name="diff">true</property>
         </properties>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
         <subWidgets>
           <widget name="listOfListsItem" type="complex">
             <labels>
               <label mode="any">List of lists item</label>
             </labels>
-            <!-- since 5.6, using a widget of type 'complex' is enough -->
-            <!--
-              <properties mode="any">
-              <property name="template">
-              /widgets/complex_list_item_widget_template.xhtml
-              </property>
-              </properties>
-            -->
+            <properties mode="any">
+              <property name="display">block_left</property>
+              <!-- since 5.6, using a widget of type 'complex' is enough -->
+              <!--
+                <property name="template">
+                /widgets/complex_list_item_widget_template.xhtml
+                </property>
+              -->
+            </properties>
             <!-- subwidgets for complex -->
             <subWidgets>
               <widget name="stringItem" type="text">
@@ -71,9 +75,13 @@
                   <label mode="any">String list item</label>
                 </labels>
                 <properties mode="any">
+                  <!-- FIXME: replace by standard list widget -->
                   <property name="template">
                     /widgets/list_subwidget_template.xhtml
                   </property>
+                </properties>
+                <properties widgetMode="any">
+                  <property name="hideSubLabels">true</property>
                 </properties>
                 <subWidgets>
                   <widget name="stringListSubItem" type="text">

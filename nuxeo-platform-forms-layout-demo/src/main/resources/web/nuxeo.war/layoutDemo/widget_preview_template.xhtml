@@ -33,7 +33,7 @@
       <td></td>
     </tr>
     <tr>
-      <td width="50%" valign="top">
+      <td width="40%" valign="top">
         <a4j:region id="layoutDemoPreviewRegion">
           <a4j:form id="layoutDemoPreviewForm"
             ajaxSubmit="true">
@@ -64,12 +64,12 @@
           </a4j:form>
         </a4j:region>
       </td>
-      <td width="50%" valign="top">
+      <td width="60%" valign="top">
         <a4j:outputPanel id="layoutDemoPreviewFrame">
           <c:if test="true">
             <c:set var="frameURL"
               value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(widgetPreviewLayoutDef, widgetPreviewMode, '/layouts/layout_default_template.xhtml')}" />
-            <iframe style="visibility:hidden;width:100%;"
+            <iframe style="visibility:hidden;width:100%;height:400px;"
               onload="javascript:this.style.visibility='visible';"
               src="#{frameURL}"></iframe>
           </c:if>

@@ -20,6 +20,9 @@ import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -27,6 +30,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
@@ -159,10 +166,51 @@ public class LayoutDemoActions implements Serializable {
         PreviewLayoutDefinition def = new PreviewLayoutDefinition(
                 widgetType.getName(), widgetType.getFields(),
                 widgetType.getDefaultProperties());
+
+        String type = widgetType.getName();
+        WidgetTypeDefinition wtDef = webLayoutManager.getWidgetTypeDefinition(type);
+        if (def != null) {
+            WidgetTypeConfiguration wtConf = wtDef.getConfiguration();
+            if (wtConf.isAcceptingSubWidgets()) {
+                // add some subwidgets for preview needs, hardcoded right now
+                if ("list".equals(type)) {
+                    LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("complexListWidgetLayout");
+                    def.setSubWidgets(retrieveSubWidgets(ldef));
+                } else if ("complex".equals(type)) {
+                    LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("complexWidgetLayout");
+                    def.setSubWidgets(retrieveSubWidgets(ldef));
+                } else if ("container".equals(type)) {
+                    LayoutDefinition ldef = webLayoutManager.getLayoutDefinition("containerWidgetLayout");
+                    def.setSubWidgets(retrieveSubWidgets(ldef));
+                    def.setHandlingLabels(Boolean.TRUE);
+                }
+            }
+        }
+
         // set a custom label and help label
         def.setLabel("My widget label");
         def.setHelpLabel("My widget help label");
         return def;
+    }
+
+    protected List<WidgetDefinition> retrieveSubWidgets(
+            LayoutDefinition layoutDef) {
+        List<WidgetDefinition> res = new ArrayList<WidgetDefinition>();
+        LayoutRowDefinition[] rows = layoutDef.getRows();
+        if (rows != null && rows.length > 0) {
+            WidgetReference[] refs = rows[0].getWidgetReferences();
+            if (refs != null && refs.length > 0) {
+                String wName = refs[0].getName();
+                WidgetDefinition wDef = layoutDef.getWidgetDefinition(wName);
+                if (wDef != null) {
+                    WidgetDefinition[] subs = wDef.getSubWidgetDefinitions();
+                    if (subs != null) {
+                        res.addAll(Arrays.asList(subs));
+                    }
+                }
+            }
+        }
+        return res;
     }
 
     @Factory(value = "viewPreviewLayoutDef", scope = EVENT)

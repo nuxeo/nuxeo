@@ -22,7 +22,9 @@ import static org.jboss.seam.ScopeType.SESSION;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -179,7 +181,29 @@ public class LayoutDemoContext implements Serializable {
                     "text/plain", "UTF-8");
             blob.setFilename("hello.txt");
             doc.setPropertyValue("lds:fileField", blob);
-            // TODO: list?
+
+            // complex props
+            ArrayList<Map<String, Serializable>> cl = new ArrayList<Map<String, Serializable>>();
+            HashMap<String, Serializable> clItem = new HashMap<String, Serializable>();
+            clItem.put("stringComplexItem", "Some sample text");
+            clItem.put("dateComplexItem", Calendar.getInstance());
+            clItem.put("intComplexItem", new Integer(33));
+            clItem.put("booleanComplexItem", Boolean.FALSE);
+            clItem.put("stringComplexItem2", "Hello, ");
+            clItem.put("stringComplexItem3", "is it me you're looking for?");
+
+            HashMap<String, Serializable> clItem2 = new HashMap<String, Serializable>();
+            clItem2.put("stringComplexItem", "Some other sample text");
+            clItem2.put("dateComplexItem", Calendar.getInstance());
+            clItem2.put("intComplexItem", new Integer(-2));
+            clItem2.put("booleanComplexItem", Boolean.TRUE);
+
+            cl.add(clItem);
+            cl.add(clItem2);
+
+            doc.setPropertyValue("lds:complexList", cl);
+            doc.setPropertyValue("lds:complexField", clItem);
+
         } else {
             doc.setPropertyValue("lds:textField", "Some other sample text");
             doc.setPropertyValue("lds:textareaField",

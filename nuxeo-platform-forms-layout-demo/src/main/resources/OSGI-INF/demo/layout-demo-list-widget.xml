@@ -25,6 +25,9 @@
         <properties widgetMode="edit">
           <property name="required">true</property>
         </properties>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
         <subWidgets>
           <widget name="listItem" type="text">
             <fields>
