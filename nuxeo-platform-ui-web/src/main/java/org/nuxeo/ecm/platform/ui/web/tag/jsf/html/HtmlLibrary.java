@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.jsf.html;
 
+import org.nuxeo.ecm.platform.ui.web.renderer.NXCheckboxRenderer;
+import org.nuxeo.ecm.platform.ui.web.renderer.NXImageRenderer;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.MetaActionSourceTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.MetaValueHolderTagHandler;
@@ -56,7 +58,7 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
                 "javax.faces.Form");
 
         this.addHtmlComponent("graphicImage", "javax.faces.HtmlGraphicImage",
-                "javax.faces.Image");
+                NXImageRenderer.RENDERER_TYPE);
 
         this.addHtmlComponent("inputHidden", "javax.faces.HtmlInputHidden",
                 "javax.faces.Hidden");
@@ -100,7 +102,7 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
 
         this.addHtmlComponent("selectBooleanCheckbox",
                 "javax.faces.HtmlSelectBooleanCheckbox",
-                "javax.faces.NXCheckbox");
+                NXCheckboxRenderer.RENDERER_TYPE);
 
         this.addHtmlComponent("selectManyCheckbox",
                 "javax.faces.HtmlSelectManyCheckbox", "javax.faces.Checkbox");

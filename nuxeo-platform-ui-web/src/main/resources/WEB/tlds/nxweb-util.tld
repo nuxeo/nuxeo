@@ -1369,7 +1369,11 @@
   <tag>
     <name>graphicImage</name>
     <tag-class>None</tag-class>
-    <description>Standard tomahawk tag</description>
+    <description>
+      Customized graphicImage tag from 5.6, using renderer that does not
+      display the tag at all when src is empty, and does not write empty
+      attributes for width and height when empty as it's a problem for IE.
+    </description>
   </tag>
   <tag>
     <name>inputFileUpload</name>

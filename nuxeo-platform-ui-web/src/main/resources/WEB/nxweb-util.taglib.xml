@@ -468,6 +468,7 @@
     <tag-name>graphicImage</tag-name>
     <component>
       <component-type>org.apache.myfaces.HtmlGraphicImage</component-type>
+      <renderer-type>javax.faces.NXImage</renderer-type>
     </component>
   </tag>
   <tag>
