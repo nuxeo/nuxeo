@@ -156,7 +156,7 @@
           enabled="true" label="action.view.rights" icon="/icons/file.gif" type="fancybox">
           <category>VIEW_ACTION_LIST</category>
           <filter-id>rights</filter-id>
-          <properties name="fancybox">
+          <properties>
             <property name="url">/incl/fancybox.xhtml</property>
           </properties>
         </action>

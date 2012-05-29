@@ -21,13 +21,12 @@ package org.nuxeo.ecm.platform.actions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -79,8 +78,8 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     /**
      * @since 5.6
      */
-    @XNodeMap(value = "properties", key = "@name", type = HashMap.class, componentType = ActionPropertiesDescriptor.class)
-    protected Map<String, ActionPropertiesDescriptor> properties = new HashMap<String, ActionPropertiesDescriptor>();
+    @XNode("properties")
+    protected ActionPropertiesDescriptor properties;
 
     private boolean available = true;
 
@@ -299,15 +298,11 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     /**
      * @since 5.6
      */
-    public Map<String, ActionPropertiesDescriptor> getProperties() {
-        return properties;
-    }
-
-    /**
-     * @since 5.6
-     */
-    public void setProperties(Map<String, ActionPropertiesDescriptor> properties) {
-        this.properties = properties;
+    public Map<String, Serializable> getProperties() {
+        if (properties != null) {
+            return properties.getProperties();
+        }
+        return Collections.emptyMap();
     }
 
 }

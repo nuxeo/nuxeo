@@ -42,11 +42,17 @@ public class ActionPropertiesDescriptor implements Serializable {
     @XNodeMap(value = "propertyList", key = "@name", type = HashMap.class, componentType = ActionPropertyListDescriptor.class)
     Map<String, ActionPropertyListDescriptor> listProperties = new HashMap<String, ActionPropertyListDescriptor>();
 
-    public Map<String, Serializable> getProperties() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+    @XNodeMap(value = "propertyMap", key = "@name", type = HashMap.class, componentType = ActionPropertiesDescriptor.class)
+    Map<String, ActionPropertiesDescriptor> mapProperties = new HashMap<String, ActionPropertiesDescriptor>();
+
+    public HashMap<String, Serializable> getProperties() {
+        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
         map.putAll(properties);
         for (Map.Entry<String, ActionPropertyListDescriptor> prop : listProperties.entrySet()) {
             map.put(prop.getKey(), prop.getValue().getValues());
+        }
+        for (Map.Entry<String, ActionPropertiesDescriptor> prop : mapProperties.entrySet()) {
+            map.put(prop.getKey(), prop.getValue().getProperties());
         }
         return map;
     }

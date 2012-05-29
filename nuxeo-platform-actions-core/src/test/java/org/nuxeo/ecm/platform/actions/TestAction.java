@@ -19,16 +19,23 @@
 
 package org.nuxeo.ecm.platform.actions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -49,7 +56,7 @@ public class TestAction extends NXRuntimeTestCase {
     @Test
     public void testActionExtensionPoint() {
         Collection<Action> actions = as.getActionRegistry().getActions();
-        assertEquals(6, actions.size());
+        assertEquals(7, actions.size());
 
         Action newDocument = as.getAction("newDocument");
         assertEquals("newDocument", newDocument.getId());
@@ -377,6 +384,30 @@ public class TestAction extends NXRuntimeTestCase {
         assertTrue(action2.getAvailable());
         // check first action has not changed
         assertFalse(action1.getAvailable());
+    }
+
+    @Test
+    public void testActionProperties() {
+        Action action = as.getAction("actionTestProperties");
+        assertTrue(action.getAvailable());
+        Map<String, Serializable> properties = action.getProperties();
+        // Test single property
+        assertEquals(properties.get("property"), "property");
+        // Test property list
+        String[] actionList = (String[]) action.getProperties().get("list");
+        assertEquals(actionList[0], "listItemA");
+        assertEquals(actionList[1], "listItemB");
+        // Test property map
+        Map<String, Serializable> mapProperties = (Map<String, Serializable>) action.getProperties().get(
+                "map");
+        assertEquals(mapProperties.get("mapProperty"), "mapProperty");
+        String[] mapActionList = (String[]) mapProperties.get("mapList");
+        assertEquals(mapActionList[0], "mapListItemA");
+        assertEquals(mapActionList[1], "mapListItemB");
+        assertEquals(mapProperties.get("mapProperty"), "mapProperty");
+        // Test sub property map
+        Map<String, Serializable> subMapProperties = (Map<String, Serializable>) mapProperties.get("subMap");
+        assertEquals(subMapProperties.get("subMapProperty"), "subMapProperty");
     }
 
 }

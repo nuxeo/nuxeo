@@ -49,11 +49,37 @@
       <filter-id>filter_defined_globally</filter-id>
     </action>
 
+    <action id="actionTestProperties">
+      <properties>
+        <property name="property">
+          property
+        </property>
+        <propertyList name="list">
+          <value>listItemA</value>
+          <value>listItemB</value>
+        </propertyList>
+        <propertyMap name="map">
+          <property name="mapProperty">
+            mapProperty
+          </property>
+          <propertyList name="mapList">
+            <value>mapListItemA</value>
+            <value>mapListItemB</value>
+          </propertyList>
+          <propertyMap name="subMap">
+            <property name="subMapProperty">
+              subMapProperty
+            </property>
+          </propertyMap>
+        </propertyMap>
+      </properties>
+    </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
-    <custom-filter id="MyCustomFilter" class="org.nuxeo.ecm.platform.actions.DummyFilter">
+    <custom-filter id="MyCustomFilter"
+      class="org.nuxeo.ecm.platform.actions.DummyFilter">
       <rule grant="true" />
     </custom-filter>
 
