@@ -169,5 +169,7 @@ public class ActionContributionHandler extends
             filters.addAll(Arrays.asList(newFilters));
         }
         dest.setFilters(filters.toArray(new ActionFilter[] {}));
+
+        // TODO: merge properties
     }
 }

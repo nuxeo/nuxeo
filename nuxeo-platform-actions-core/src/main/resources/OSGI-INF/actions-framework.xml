@@ -138,26 +138,37 @@
 
       - type: the UI type action (available since 5.6)
 
-      UI Type properties WIP :
+      UI Type properties, defined within a "properties" tag:
+      - property: the property value
+      - name: the property name
 
-      - name:
+      Properties also accept list or map-like values.
 
-      - property:
+      Before 5.6, it is important to understand that an action does *not*
+      define the way it will be rendered: this is left to pages, templates
+      and other components displaying it. Most of the time, actions will be
+      rendered as command link or command buttons.
 
-      It is important to understand that an action does *not* define the way it
-      will be rendered: this is left to pages, templates and other components
-      displaying it. Most of the time, actions will be rendered as command links
-      or command buttons.
+      Since 5.6, the template /incl/generic_action_template.xhtml handles
+      rendering of an action depending on its type.
 
       Examples:
 
       <code>
         <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml"
-          enabled="true" label="action.view.rights" icon="/icons/file.gif" type="fancybox">
+          enabled="true" label="action.view.rights" icon="/icons/file.gif"
+          type="fancybox">
           <category>VIEW_ACTION_LIST</category>
           <filter-id>rights</filter-id>
           <properties>
             <property name="url">/incl/fancybox.xhtml</property>
+            <propertyList name="myListProp">
+              <value>item1</value>
+              <value>item2</value>
+            </propertyList>
+            <propertyMap name="myMapProp">
+              <property name="mySubProp">mySubPropValue</property>
+            </propertyMap>
           </properties>
         </action>
 

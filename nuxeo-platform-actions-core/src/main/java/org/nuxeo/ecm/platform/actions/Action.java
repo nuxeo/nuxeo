@@ -81,6 +81,8 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     @XNode("properties")
     protected ActionPropertiesDescriptor properties;
 
+    // TODO: add merging logics on properties
+
     private boolean available = true;
 
     /**

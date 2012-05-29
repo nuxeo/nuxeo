@@ -386,28 +386,28 @@ public class TestAction extends NXRuntimeTestCase {
         assertFalse(action1.getAvailable());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testActionProperties() {
         Action action = as.getAction("actionTestProperties");
         assertTrue(action.getAvailable());
         Map<String, Serializable> properties = action.getProperties();
         // Test single property
-        assertEquals(properties.get("property"), "property");
+        assertEquals("property", properties.get("property"));
         // Test property list
         String[] actionList = (String[]) action.getProperties().get("list");
-        assertEquals(actionList[0], "listItemA");
-        assertEquals(actionList[1], "listItemB");
+        assertEquals("listItemA", actionList[0]);
+        assertEquals("listItemB", actionList[1]);
         // Test property map
         Map<String, Serializable> mapProperties = (Map<String, Serializable>) action.getProperties().get(
                 "map");
-        assertEquals(mapProperties.get("mapProperty"), "mapProperty");
+        assertEquals("mapProperty", mapProperties.get("mapProperty"));
         String[] mapActionList = (String[]) mapProperties.get("mapList");
-        assertEquals(mapActionList[0], "mapListItemA");
-        assertEquals(mapActionList[1], "mapListItemB");
-        assertEquals(mapProperties.get("mapProperty"), "mapProperty");
+        assertEquals("mapListItemA", mapActionList[0]);
+        assertEquals("mapListItemB", mapActionList[1]);
         // Test sub property map
         Map<String, Serializable> subMapProperties = (Map<String, Serializable>) mapProperties.get("subMap");
-        assertEquals(subMapProperties.get("subMapProperty"), "subMapProperty");
+        assertEquals("subMapProperty", subMapProperties.get("subMapProperty"));
     }
 
 }
