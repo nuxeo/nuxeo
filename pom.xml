@@ -2154,6 +2154,12 @@
       </modules>
     </profile>
     <profile>
+      <id>distrib</id>
+      <modules>
+        <module>nuxeo-distribution</module>
+      </modules>
+    </profile>
+    <profile>
       <id>release</id>
       <activation>
         <activeByDefault>false</activeByDefault>
