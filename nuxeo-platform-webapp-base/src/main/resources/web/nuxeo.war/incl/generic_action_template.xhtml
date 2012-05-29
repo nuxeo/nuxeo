@@ -14,11 +14,13 @@ Parameters:
 - action: the action instance (mandatory)
 - fancybox 'include' property contains resource
 - fancybox 'iframe' property contains method to resolve
+- actionType (optional): type to use if not set on action or needs to be
+  used by default if not set on action
 </c:if>
 
   <c:choose>
 
-    <c:when test="#{action.type == 'button'}">
+    <c:when test="#{action.type == 'button' or (empty action.type and actionType == 'button')}">
       <nxh:commandButton action="#{action.getLink()}"
         id="#{idPrefix}#{action.id}"
         onclick="#{action.confirm}"
@@ -28,7 +30,7 @@ Parameters:
       </nxh:commandButton>
     </c:when>
 
-    <c:when test="#{action.type == 'link'}">
+    <c:when test="#{action.type == 'link' or (empty action.type and actionType == 'link')}">
       <nxh:commandLink action="#{action.getLink()}"
         id="#{idPrefix}#{action.id}"
         onclick="#{action.confirm}"
@@ -38,7 +40,7 @@ Parameters:
       </nxh:commandLink>
     </c:when>
 
-    <c:when test="#{action.type == 'link_icon_text'}">
+    <c:when test="#{action.type == 'link_icon_text' or (empty action.type and actionType == 'link_icon_text')}">
       <nxh:commandLink action="#{action.link}"
         id="#{idPrefix}#{action.id}"
         onclick="#{action.confirm}"
@@ -48,12 +50,13 @@ Parameters:
           title="#{messages[action.label]}"
           alt="#{messages[action.label]}"
           styleClass="smallIcon" />
-        <h:outputText value=" #{messages[action.label]}" />
+        <h:outputText value=" #{messages[action.label]}"
+          styleClass="#{action.properties.labelStyleClass}" />
         <ui:insert name="inside_action" />
       </nxh:commandLink>
     </c:when>
 
-    <c:when test="#{action.type == 'bare_link'}">
+    <c:when test="#{action.type == 'bare_link' or (empty action.type and actionType == 'bare_link')}">
       <h:outputLink value="#{action.getLink()}"
         target="#{action.properties.target}"
         onclick="#{action.confirm}"
@@ -63,12 +66,13 @@ Parameters:
           title="#{messages[action.label]}"
           alt="#{messages[action.label]}"
           styleClass="smallIcon" />
-        <h:outputText value="#{messages[action.label]}" />
+        <h:outputText value="#{messages[action.label]}"
+          styleClass="#{action.properties.labelStyleClass}" />
         <ui:insert name="inside_action" />
       </h:outputLink>
     </c:when>
 
-    <c:when test="#{action.type == 'link_icon'}">
+    <c:when test="#{action.type == 'link_icon' or (empty action.type and actionType == 'link_icon')}">
       <nxh:commandLink action="#{action.getLink()}"
         id="#{idPrefix}#{action.id}"
         onclick="#{action.confirm}"
@@ -82,7 +86,7 @@ Parameters:
       </nxh:commandLink>
     </c:when>
 
-    <c:when test="#{action.getType() == 'fancybox'}">
+    <c:when test="#{action.getType() == 'fancybox' or (empty action.type and actionType == 'fancybox')}">
       <nxu:set var="include"
         value="#{action.properties.include}">
         <nxu:set var="iframe"
@@ -138,7 +142,8 @@ Parameters:
           title="#{messages[action.label]}"
           alt="#{messages[action.label]}"
           styleClass="smallIcon" />
-        <h:outputText value=" #{messages[action.label]}" />
+        <h:outputText value=" #{messages[action.label]}"
+          styleClass="#{action.properties.labelStyleClass}" />
         <ui:insert name="inside_action" />
       </nxh:commandLink>
     </c:otherwise>
