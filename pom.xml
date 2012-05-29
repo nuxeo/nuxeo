@@ -28,8 +28,8 @@
     <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
     <module>nuxeo-platform-classification</module>
     <module>nuxeo-platform-error-web</module>
-    <module>nuxeo-platform-exalead-connector</module>
 <!--
+    <module>nuxeo-platform-exalead-connector</module>
     <module>nuxeo-platform-flex</module>
  -->
     <module>nuxeo-platform-importer</module>
