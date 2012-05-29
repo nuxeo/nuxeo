@@ -564,9 +564,9 @@
       </properties>
     </action>
 
-    <action id="footer_forum"
-      link="http://forum.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
-      label="label.footer.forums" order="40" type="bare_link">
+    <action id="footer_answers"
+      link="http://answers.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      label="label.footer.answers" order="40" type="bare_link">
       <category>FOOTER</category>
       <properties>
         <property name="target">_blank</property>
