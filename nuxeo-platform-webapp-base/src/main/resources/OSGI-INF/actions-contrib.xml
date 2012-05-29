@@ -47,7 +47,7 @@
     <action id="permalinkAction" order="20" label="label.permalink"
       type="fancybox" icon="/icons/contextual_menu/share.png">
       <category>DOCUMENT_UPPER_ACTION</category>
-      <properties name="fancybox">
+      <properties>
         <property name="include">/incl/permalink_box.xhtml</property>
         <property name="onclick">
           jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
@@ -87,7 +87,7 @@
       <filter-id>view_preview</filter-id>
       <filter-id>not_folder</filter-id>
       <filter-id>not_anonymous</filter-id>
-      <properties name="fancybox">
+      <properties>
         <property name="iframe">
           #{previewActions.getCurrentDocumentPreviewPopupURL()}
         </property>

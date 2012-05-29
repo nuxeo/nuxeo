@@ -84,16 +84,16 @@ Parameters:
 
     <c:when test="#{action.getType() == 'fancybox'}">
       <nxu:set var="include"
-        value="#{action.properties.fancybox.properties.include}">
+        value="#{action.properties.include}">
         <nxu:set var="iframe"
-          value="#{action.properties.fancybox.properties.iframe}"
+          value="#{action.properties.iframe}"
           resolveTwice="true">
           <c:choose>
             <c:when test="#{iframe eq null}">
               <a4j:commandLink id="#{idPrefix}#{action.id}_link"
                 ajaxSingle="true"
                 ignoreDupResponses="true" requestDelay="100"
-                onclick="showFancyBox('##{action.id}_box');#{action.properties.fancybox.properties.onclick}"
+                onclick="showFancyBox('##{action.id}_box');#{action.properties.onclick}"
                 styleClass="button">
                 <h:graphicImage value="#{action.icon}"
                   rendered="#{not empty action.icon}"
