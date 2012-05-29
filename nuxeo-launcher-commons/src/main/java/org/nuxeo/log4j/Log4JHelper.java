@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
@@ -118,11 +119,11 @@ public class Log4JHelper {
      * @param category Log4J category for which to switch debug log level
      * @param debug set debug log level to true or false
      * @param includeChildren Also set/unset debug mode on children categories
-     * @param appenderName An appender name on which to set a detailed pattern
+     * @param appenderNames Appender names on which to set a detailed pattern
      *            layout. Ignored if null.
      */
     public static void setDebug(String category, boolean debug,
-            boolean includeChildren, String appenderName) {
+            boolean includeChildren, String[] appenderNames) {
         for (@SuppressWarnings("unchecked")
         Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
             Logger logger = loggers.nextElement();
@@ -137,17 +138,29 @@ public class Log4JHelper {
                 }
             }
         }
-        if (appenderName == null) {
+        if (ArrayUtils.isEmpty(appenderNames)) {
             return;
         }
-        Appender consoleAppender = Logger.getRootLogger().getAppender(
-                appenderName);
-        if (consoleAppender != null) {
-            String patternLayout = debug ? FULL_PATTERN_LAYOUT
-                    : LIGHT_PATTERN_LAYOUT;
-            consoleAppender.setLayout(new PatternLayout(patternLayout));
-            log.info(String.format("Set pattern layout of %s to %s",
-                    appenderName, patternLayout));
+        for (String appenderName : appenderNames) {
+            Appender consoleAppender = Logger.getRootLogger().getAppender(
+                    appenderName);
+            if (consoleAppender != null) {
+                Filter filter = consoleAppender.getFilter();
+                while (filter != null && !(filter instanceof LevelRangeFilter)) {
+                    filter = filter.getNext();
+                }
+                if (filter != null) {
+                    LevelRangeFilter levelRangeFilter = (LevelRangeFilter) filter;
+                    levelRangeFilter.setLevelMin(Level.DEBUG);
+                    log.debug("Log level filter set to DEBUG for appender "
+                            + appenderName);
+                }
+                String patternLayout = debug ? FULL_PATTERN_LAYOUT
+                        : LIGHT_PATTERN_LAYOUT;
+                consoleAppender.setLayout(new PatternLayout(patternLayout));
+                log.info(String.format("Set pattern layout of %s to %s",
+                        appenderName, patternLayout));
+            }
         }
     }
 
@@ -162,7 +175,7 @@ public class Log4JHelper {
      * @see #setDebug(String, boolean, boolean, String)
      */
     public static void setDebug(String category, boolean debug) {
-        setDebug(category, debug, false, CONSOLE_APPENDER_NAME);
+        setDebug(category, debug, false, new String[] { CONSOLE_APPENDER_NAME });
     }
 
     /**
