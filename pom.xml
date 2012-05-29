@@ -2050,7 +2050,7 @@
       <dependency>
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-impl</artifactId>
-        <version>3.3.1.GA-NX5</version>
+        <version>3.3.1.GA-NX6</version>
       </dependency>
       <dependency>
         <groupId>org.richfaces.ui</groupId>
