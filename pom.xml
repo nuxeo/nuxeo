@@ -22,40 +22,25 @@
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-audit-web-access</module>
-<!--
     <module>nuxeo-platform-categorization</module>
-    <module>nuxeo-platform-categorization/nuxeo-platform-categorization-language</module>
-    <module>nuxeo-platform-categorization/nuxeo-platform-categorization-coverage</module>
-    <module>nuxeo-platform-categorization/nuxeo-platform-categorization-subjects</module>
- -->
     <module>nuxeo-platform-classification</module>
     <module>nuxeo-platform-error-web</module>
-<!--
-    <module>nuxeo-platform-exalead-connector</module>
+    <module>nuxeo-exalead-connector</module>
     <module>nuxeo-platform-flex</module>
- -->
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-indexing-gateway</module>
     <module>nuxeo-platform-login</module>
-<!--
     <module>nuxeo-platform-mail-dispatcher</module>
- -->
     <module>nuxeo-platform-replication</module>
-<!--
     <module>nuxeo-platform-seam-pdf</module>
- -->
     <module>nuxeo-platform-splitpane</module>
     <module>nuxeo-platform-sync</module>
-<!--
     <module>nuxeo-platform-userdata</module>
     <module>nuxeo-platform-userdata-core-contrib</module>
- -->
     <module>nuxeo-platform-video</module>
-<!--
     <module>nuxeo-platform-webdav-server</module>
     <module>nuxeo-platform-xmlrpc-connector</module>
     <module>nuxeo-samples</module>
- -->
     <module>nuxeo-sample-project</module>
  </modules>
 
