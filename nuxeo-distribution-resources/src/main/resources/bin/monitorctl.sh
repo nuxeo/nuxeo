@@ -176,12 +176,14 @@ ATOP_COUNT=1440
 
 ###
 # jmxstat
+JMXHOST=localhost:1089
 JMXSTAT=`which jmxstat`
 JMXSTAT_LOG="$LOG_DIR"/jmxstat.log
 JMXSTAT_PID="$PID_DIR"/jmxstat.pid
 JMXSTAT_INTERVAL=$SAR_INTERVAL
 JMXSTAT_COUNT=$SAR_COUNT
-JMXSTAT_OPTS="localhost:1089 --contention Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"[numActive,numIdle]"
+JMXSTAT_OPTS="$JMXHOST --contention Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"[numActive,numIdle]"
+JMXSTAT_VCS="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.size,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!sampleAsMap]"
 [ -z $JMXSTAT ] && echo "You can install jmxstat from https://github.com/bdelbosc/jmxstat"
 
 JMX_LISTENING=`netstat -ltn | grep 1089`
@@ -284,6 +286,10 @@ log_misc() {
             echo "## twiddle.sh get 'jboss.system:type=ServerInfo'" >> $file
             $HERE/twiddle.sh get "jboss.system:type=ServerInfo" >> $file
         fi
+	if [ ! -z $JMXSTAT ]; then
+            echo "## VCS row cache stats: access, hits, size, cache_get, db_gets" >> $file
+            $JMXSTAT $JMXHOST $JMXSTAT_VCS 1 1 >> $file
+	fi
     fi
 }
 
@@ -324,7 +330,7 @@ log_pgstat_collect() {
     file=$1
     PGPASSWORD=$DBPWD psql $DBNAME -U $DBUSER -h $DBHOST -p $DBPORT <<EOF &> /dev/null
     \o $file
-SELECT count(1) AS uniq_queries, round(sum(total_time)*1000)/1000 AS sum_total_time, sum(calls) AS sum_calls FROM pg_stat_statements;
+SELECT count(1) AS uniq_queries, round(sum(total_time)*1000)/1000 AS sum_total_time, sum(calls) AS sum_calls, round(sum(total_time)/sum(calls)*1000)/1000 AS avg FROM pg_stat_statements;
 SELECT round(total_time*1000)/1000 AS total_time, calls, round(total_time/calls*1000)/1000 AS avg, query FROM pg_stat_statements ORDER BY total_time DESC LIMIT 50;
 SELECT round(total_time*1000)/1000 AS total_time, calls, round(total_time/calls*1000)/1000 AS avg, query FROM pg_stat_statements ORDER BY calls DESC LIMIT 50;
 \o
@@ -495,7 +501,7 @@ stop() {
         LC_ALL=C sar -Ap -f $SAR_DATA > $SAR_LOG
         [ $? ] && rm -f $SAR_DATA
         log_misc $LOG_DIR/misc-end.txt
-	log_pgstat_collect $LOG_DIR/pgstat-statements.txt
+        log_pgstat_collect $LOG_DIR/pgstat-statements.txt
         log_pgstat $LOG_DIR/pgstat-end.txt
 
         if [ -e $HERE/twiddle.sh ]; then
@@ -618,7 +624,7 @@ case "$1" in
         $JAVA_HOME/bin/jmap -histo $NXPID
         ;;
     invoke-fgc)
-	invoke_fgc
+        invoke_fgc
         ;;
     disable-cm|disable-contention-monitoring)
         [ -z $JMXSH ] && die "You need to enable JMX and install JMXSH"
