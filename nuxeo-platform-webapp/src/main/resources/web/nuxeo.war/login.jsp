@@ -237,7 +237,7 @@ body {
             <li>
               <a onclick="window.open(this.href); return false;"
                 href="http://answers.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
-                <fmt:message bundle="${messages}" key="label.login.forums" />
+                <fmt:message bundle="${messages}" key="label.footer.answers" />
               </a>
             </li>
             <li>
