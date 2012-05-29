@@ -42,6 +42,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -424,6 +425,7 @@ public class ConnectBroker {
             if (packagesList.isEmpty()) {
                 log.info("None");
             } else {
+                // TODO JC: Collections.sort(packagesList);
                 for (Package pkg : packagesList) {
                     cmdInfo.packages.add(new PackageInfo(pkg));
                     String packageDescription;
@@ -897,6 +899,7 @@ public class ConnectBroker {
         return downloadOk;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
@@ -948,11 +951,11 @@ public class ConnectBroker {
                 }
             }
         }
-        // Add packages to remove to uninstall list
         if (pkgsToUninstall != null) {
             solverRemove.addAll(pkgsToUninstall);
         }
         if (pkgsToRemove != null) {
+            // Add packages to remove to uninstall list
             solverRemove.addAll(pkgsToRemove);
         }
         if ((solverInstall.size() != 0) || (solverRemove.size() != 0)
@@ -984,64 +987,95 @@ public class ConnectBroker {
 
             DependencyResolution resolution = getPackageManager().resolveDependencies(
                     solverInstall, solverRemove, solverUpgrade, requestPlatform);
+            log.info(resolution);
             if (resolution.isFailed()) {
-                log.error("Resolution failed");
                 return false;
             }
-            log.info(resolution);
+            List<String> packageIdsToRemove = resolution.getOrderedPackageIdsToRemove();
+            Map<String, Version> packagesToUpgrade = resolution.getLocalPackagesToUpgrade();
+            List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
+            List<String> packageIdsToInstall = resolution.getOrderedPackageIdsToInstall();
+            List<String> packagesIdsUninstalledBecauseOfUpgrade = new ArrayList<String>();
+
             // Download remote packages
             if (!downloadPackages(resolution.getDownloadPackageIds())) {
                 log.error("Aborting packages change request");
                 return false;
             }
-            // Uninstall "packages to uninstall"
-            List<String> packageIds = resolution.getOrderedPackageIdsToRemove();
-            log.debug("Uninstalling for good: " + packageIds);
-            for (String pkgId : packageIds) {
+
+            // Uninstall
+            if (!packagesToUpgrade.isEmpty()) {
+                // Add packages to upgrade to uninstall list
+                List<String> uninstallList = new ArrayList<String>();
+                List<String> uninstallIdsList = new ArrayList<String>();
+                uninstallList.addAll(packageIdsToRemove);
+                uninstallIdsList.addAll(packageIdsToRemove);
+                for (String pkg : packagesToUpgrade.keySet()) {
+                    uninstallList.add(pkg);
+                    uninstallIdsList.add(getInstalledPackageIdFromName(pkg));
+                }
+                DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
+                        null, uninstallList, null, requestPlatform);
+                log.info("Sub-resolution (uninstall) " + uninstallResolution);
+                if (uninstallResolution.isFailed()) {
+                    // log.info(uninstallResolution);
+                    return false;
+                }
+                packageIdsToRemove = uninstallResolution.getOrderedPackageIdsToRemove();
+                packagesIdsUninstalledBecauseOfUpgrade = ListUtils.subtract(
+                        packageIdsToRemove, uninstallIdsList);
+            }
+            log.debug("Uninstalling: " + packageIdsToRemove);
+            for (String pkgId : packageIdsToRemove) {
                 if (pkgUninstall(pkgId) == null) {
                     log.error("Unable to uninstall " + pkgId);
                     return false;
                 }
             }
-            // Uninstall old versions of "pacakges to upgrade"
-            Map<String, Version> packagesToUpgrade = resolution.getLocalPackagesToUpgrade();
-            log.debug("Uninstalling for upgrade: " + packagesToUpgrade.keySet());
-            for (String pkg : packagesToUpgrade.keySet()) {
-                if (pkgUninstall(getInstalledPackageIdFromName(pkg)) == null) {
-                    log.error("Unable to uninstall "
-                            + getInstalledPackageIdFromName(pkg));
+
+            // Install
+            if (!packagesToUpgrade.isEmpty()) {
+                // Add to install list the packages to upgrade + the packages
+                // uninstalled because of upgrade
+                List<String> installList = new ArrayList<String>();
+                installList.addAll(solverInstall);
+                installList.addAll(packageIdsToUpgrade);
+                installList.addAll(packagesIdsUninstalledBecauseOfUpgrade);
+                DependencyResolution installResolution = getPackageManager().resolveDependencies(
+                        installList, null, null, requestPlatform);
+                log.info("Sub-resolution (install) " + installResolution);
+                if (installResolution.isFailed()) {
+                    // log.info(installResolution);
                     return false;
                 }
+                packageIdsToInstall = installResolution.getOrderedPackageIdsToInstall();
             }
-            // Remove "pkgsToRemove" packages from local cache
-            if (pkgsToRemove != null) {
-                log.debug("Removing: " + pkgsToRemove);
-                for (String pkgNameOrId : pkgsToRemove) {
-                    if (isLocalPackageId(pkgNameOrId)) {
-                        if (pkgRemove(pkgNameOrId) == null) {
-                            log.warn("Unable to remove " + pkgNameOrId);
-                            // Don't error out on failed (cache) removal
-                        }
-                    } else {
-                        // Remove all matching packages if the request is made
-                        // on a name
-                        List<String> allIds = getAllLocalPackageIdsFromName(pkgNameOrId);
-                        for (String pkgId : allIds) {
-                            if (pkgRemove(pkgId) == null) {
-                                log.warn("Unable to remove " + pkgId);
-                                // Don't error out on failed (cache) removal
-                            }
-                        }
-                    }
-                }
-            }
-            // Install new or upgraded packages
-            packageIds = resolution.getOrderedPackageIdsToInstall();
-            log.debug("Installing new: " + packageIds);
-            for (String pkgId : packageIds) {
+            log.debug("Installing: " + packageIdsToInstall);
+            for (String pkgId : packageIdsToInstall) {
                 if (pkgInstall(pkgId) == null) {
                     log.error("Unable to install " + pkgId);
                     return false;
+                }
+            }
+
+            // Remove
+            if (pkgsToRemove != null) {
+                log.debug("Removing: " + pkgsToRemove);
+                for (String pkgNameOrId : pkgsToRemove) {
+                    List<String> allIds;
+                    if (isLocalPackageId(pkgNameOrId)) {
+                        allIds = new ArrayList<String>();
+                        allIds.add(pkgNameOrId);
+                    } else {
+                        // Request made on a name: remove all matching packages
+                        allIds = getAllLocalPackageIdsFromName(pkgNameOrId);
+                    }
+                    for (String pkgId : allIds) {
+                        if (pkgRemove(pkgId) == null) {
+                            log.warn("Unable to remove " + pkgId);
+                            // Don't error out on failed (cache) removal
+                        }
+                    }
                 }
             }
         }
