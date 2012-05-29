@@ -7,16 +7,16 @@
 
     <documentation>
       GET
-      /nuxeo/restAPI/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{conversionType}
+      /nuxeo/restAPI/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{subPath}?conversionType=(conversionType)
     </documentation>
 
     <restletPlugin name="contentDiff"
-      class="org.nuxeo.ecm.diff.content.restlet.ContentDiffRestlet" enabled="true"
-      useSeam="true">
+      class="org.nuxeo.ecm.diff.content.restlet.ContentDiffRestlet"
+      enabled="true" useSeam="true">
       <urlPatterns>
         <urlPattern>/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/
         </urlPattern>
-        <urlPattern>/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{conversionType}
+        <urlPattern>/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{subPath}
         </urlPattern>
       </urlPatterns>
     </restletPlugin>

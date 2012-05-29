@@ -95,17 +95,23 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         String xpath = (String) req.getAttributes().get("fieldXPath");
         xpath = xpath.replace("--", "/");
 
-        // Default conversion type is any2html
-        ContentDiffConversionType conversionType = ContentDiffConversionType.html;
-        // Check conversion type param
-        String conversionTypeParam = (String) req.getAttributes().get(
-                "conversionType");
-        if (!StringUtils.isEmpty(conversionTypeParam)) {
-            conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
+        // Get subPath for other content diff blobs, such as images
+        List<String> segments = req.getResourceRef().getSegments();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 7; i < segments.size(); i++) {
+            sb.append(segments.get(i));
+            sb.append("/");
         }
+        String subPath = sb.substring(0, sb.length() - 1);
+
+        // Check conversion type param, default is html.
+        String conversionTypeParam = getQueryParamValue(req, "conversionType",
+                ContentDiffConversionType.html.name());
+        ContentDiffConversionType conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
 
         try {
             xpath = URLDecoder.decode(xpath, "UTF-8");
+            subPath = URLDecoder.decode(subPath, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error(e);
         }
@@ -142,7 +148,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             contentDiffBlobs = initCachedContentDiffBlobs(res, xpath,
                     conversionType, blobPostProcessing);
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
             handleError(res, "Unable to get content diff.");
             return;
         }
@@ -155,10 +161,21 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         response.setHeader("Pragma", "no-cache");
 
         try {
-            handleContentDiff(res, contentDiffBlobs.get(0), "text/html");
-            return;
-        } catch (IOException e) {
-            handleError(res, e);
+            if (StringUtils.isEmpty(subPath)) {
+                handleContentDiff(res, contentDiffBlobs.get(0), "text/html");
+                return;
+            } else {
+                for (Blob blob : contentDiffBlobs) {
+                    if (subPath.equals(blob.getFilename())) {
+                        handleContentDiff(res, blob, blob.getMimeType());
+                        return;
+                    }
+
+                }
+            }
+        } catch (IOException ioe) {
+            log.error(ioe.getMessage(), ioe);
+            handleError(res, ioe);
         }
     }
 

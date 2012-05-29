@@ -90,8 +90,8 @@ public class ConverterBasedContentDiffAdapter extends
                 throw new ContentDiffException(
                         "Can not make a content diff of documents without a blob");
             }
-        } catch (ClientException e) {
-            throw new ContentDiffException("Error while getting blobs", e);
+        } catch (ClientException ce) {
+            throw new ContentDiffException("Error while getting blobs", ce);
         }
 
         List<Blob> blobResults = new ArrayList<Blob>();
@@ -118,23 +118,38 @@ public class ConverterBasedContentDiffAdapter extends
 
         // Docs have a different mime type or no content differ found for the
         // common mime type.
-        // Fall back on a Html conversion + HtmlContentDiffer.
-        String converterName = conversionType.getValue();
-        Blob adaptedDocConvertedBlob = getConvertedBlob(adaptedDocBlobHolder,
-                converterName);
-        Blob otherDocConvertedBlob = getConvertedBlob(otherDocBlobHolder,
-                converterName);
+        // Fall back on a conversion (conversionType) + HtmlContentDiffer.
+        try {
+            String converterName = conversionType.getValue();
+            BlobHolder adaptedDocConvertedBlobHolder = getConvertedBlobHolder(
+                    adaptedDocBlobHolder, converterName);
+            BlobHolder otherDocConvertedBlobHolder = getConvertedBlobHolder(
+                    otherDocBlobHolder, converterName);
+            Blob adaptedDocConvertedBlob = adaptedDocConvertedBlobHolder.getBlob();
+            Blob otherDocConvertedBlob = otherDocConvertedBlobHolder.getBlob();
 
-        // In the case of text conversion, we need to transform the blob strings
-        // to replace all occurrences of "\n" with "<br />", since they will
-        // then be displayed by the HtmlContentDiffer.
-        if (ContentDiffConversionType.text.equals(conversionType)) {
-            adaptedDocConvertedBlob = getHtmlStringBlob(adaptedDocConvertedBlob);
-            otherDocConvertedBlob = getHtmlStringBlob(otherDocConvertedBlob);
+            // In the case of text conversion, we need to transform the blob
+            // strings to replace all occurrences of "\n" with "<br />", since
+            // they will then be displayed by the HtmlContentDiffer.
+            if (ContentDiffConversionType.text.equals(conversionType)) {
+                adaptedDocConvertedBlob = getHtmlStringBlob(adaptedDocConvertedBlob);
+                otherDocConvertedBlob = getHtmlStringBlob(otherDocConvertedBlob);
+            }
+
+            // Add html content diff blob
+            MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
+            blobResults.addAll(contentDiffer.getContentDiff(
+                    adaptedDocConvertedBlob, otherDocConvertedBlob, adaptedDoc,
+                    otherDoc));
+
+            // Add secondary blobs (mostly images)
+            addSecondaryBlobs(blobResults, adaptedDocConvertedBlobHolder,
+                    adaptedDocConvertedBlob.getFilename());
+            addSecondaryBlobs(blobResults, otherDocConvertedBlobHolder,
+                    otherDocConvertedBlob.getFilename());
+        } catch (ClientException ce) {
+            throw new ContentDiffException("Error while converting blobs", ce);
         }
-        MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
-        blobResults = contentDiffer.getContentDiff(adaptedDocConvertedBlob,
-                otherDocConvertedBlob, adaptedDoc, otherDoc);
         return blobResults;
     }
 
@@ -205,8 +220,8 @@ public class ConverterBasedContentDiffAdapter extends
         return defaultFieldXPath;
     }
 
-    protected Blob getConvertedBlob(BlobHolder blobHolder, String converterName)
-            throws ContentDiffException {
+    protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder,
+            String converterName) throws ClientException {
 
         if (converterName == null) {
             log.debug(String.format(
@@ -220,13 +235,13 @@ public class ConverterBasedContentDiffAdapter extends
             convertedBlobHolder = getConversionService().convert(converterName,
                     blobHolder, null);
             setMimeType(convertedBlobHolder);
-            return convertedBlobHolder.getBlob();
+            return convertedBlobHolder;
         } catch (ConverterNotAvailable e) {
-            throw new ContentDiffException(e.getMessage(), e);
+            throw new ClientException(e.getMessage(), e);
         } catch (ConversionException e) {
-            throw new ContentDiffException("Error during conversion", e);
+            throw new ClientException("Error during conversion", e);
         } catch (Exception e) {
-            throw new ContentDiffException("Unexpected Error", e);
+            throw new ClientException("Unexpected Error", e);
         }
     }
 
@@ -240,6 +255,18 @@ public class ConverterBasedContentDiffAdapter extends
             throw new ContentDiffException(String.format(
                     "Could not get string from blob %s", blob.getFilename()),
                     ioe);
+        }
+    }
+
+    protected void addSecondaryBlobs(List<Blob> blobResults,
+            BlobHolder blobHolder, String mainBlobFilename)
+            throws ClientException {
+
+        for (Blob blob : blobHolder.getBlobs()) {
+            String blobFilename = blob.getFilename();
+            if (blobFilename != null && !blobFilename.equals(mainBlobFilename)) {
+                blobResults.add(blob);
+            }
         }
     }
 

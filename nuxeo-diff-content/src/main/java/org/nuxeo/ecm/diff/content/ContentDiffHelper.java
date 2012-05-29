@@ -150,8 +150,10 @@ public final class ContentDiffHelper {
         sb.append(propertyXPath);
         sb.append("/");
         if (conversionType != null) {
+            sb.append("?");
+            sb.append(CONVERSION_TYPE_URL_PARAM_NAME);
+            sb.append("=");
             sb.append(conversionType.name());
-            sb.append("/");
         }
 
         return sb.toString();
