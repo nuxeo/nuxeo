@@ -67,7 +67,7 @@
                   <property name="styleClass">dataInputText</property>
                 </properties>
               </widget>
-              <widget name="stringListItem" type="template">
+              <widget name="stringListItem" type="list">
                 <fields>
                   <field>stringListItem</field>
                 </fields>
@@ -75,9 +75,16 @@
                   <label mode="any">String list item</label>
                 </labels>
                 <properties mode="any">
-                  <!-- FIXME: replace by standard list widget -->
-                  <property name="template">
+                  <!-- Since 5.6, use the standard "list" widget type, but
+                    add the sub property name as template to allow resolving the
+                    new item to add -->
+                  <!--
+                    <property name="template">
                     /widgets/list_subwidget_template.xhtml
+                    </property>
+                  -->
+                  <property name="listTemplateItem">
+                    #{nxd:propertyDefaultValue('lds:listOfLists/stringListItem')}
                   </property>
                 </properties>
                 <properties widgetMode="any">
