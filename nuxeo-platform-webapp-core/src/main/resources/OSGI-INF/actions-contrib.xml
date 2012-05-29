@@ -5,12 +5,13 @@
 
     <!-- server actions -->
 
-    <action id="documents" link="view_documents"
-      label="label.main.tab.documents" order="40">
+    <action id="documents" link="view_documents" label="label.main.tab.documents"
+      order="40">
       <category>MAIN_TABS</category>
     </action>
 
-    <action id="non_anonymous_logout" link="logout" label="command.logout" order="100">
+    <action id="non_anonymous_logout" link="logout" label="command.logout"
+      order="100">
       <category>USER_MENU_ACTIONS</category>
       <filter-id>not_anonymous</filter-id>
     </action>
@@ -20,8 +21,8 @@
       <filter-id>anonymous</filter-id>
     </action>
 
-    <action id="advanced_search" link="search_form"
-      label="command.advancedSearch" order="10">
+    <action id="advanced_search" link="search_form" label="command.advancedSearch"
+      order="10">
       <category>SEARCH_ACTIONS</category>
     </action>
 
@@ -38,8 +39,7 @@
 
     <!-- domain and roots actions -->
 
-    <action id="newWorkspace"
-      link="#{documentActions.createDocument('Workspace')}"
+    <action id="newWorkspace" link="#{documentActions.createDocument('Workspace')}"
       label="command.create.workspace" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
       <filter id="newWorkspace">
@@ -51,8 +51,7 @@
     </action>
 
     <action id="newWorkspaceWithWizard" link="create_workspace_wizard"
-      enabled="false" label="command.create.workspace.wizard"
-      icon="/icons/action_add.gif">
+      enabled="false" label="command.create.workspace.wizard" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
       <filter id="newWorkspaceWizard">
         <rule grant="true">
@@ -76,14 +75,13 @@
     <!-- generic actions -->
 
     <action id="newDocument"
-      link="javascript:Richfaces.showModalPanel('selectDocTypePanel');"
-      label="action.new.document" icon="/icons/action_add.gif">
+      link="javascript:Richfaces.showModalPanel('selectDocTypePanel');" label="action.new.document"
+      icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>create</filter-id>
     </action>
 
-    <action id="newFile"
-      link="javascript:Richfaces.showModalPanel('importFile');"
+    <action id="newFile" link="javascript:Richfaces.showModalPanel('importFile');"
       label="action.new.file" icon="/icons/action_add_file.gif">
       <category>SUBVIEW_UPPER_LIST_HREF</category>
       <filter-id>importFile</filter-id>
@@ -93,8 +91,8 @@
       tabs are handled by a specific template so links should be paths to
       template to include in the tab content
     -->
-    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml" order="240"
-      label="action.view.manage" icon="/icons/file.gif">
+    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml"
+      order="240" label="action.view.manage" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
       <filter id="TAB_MANAGE_has_subtabs">
@@ -112,8 +110,8 @@
       <filter-id>view</filter-id>
     </action>
 
-    <action id="TAB_CONTENT" link="/incl/tabs/document_content.xhtml" order="10"
-      label="action.view.content" icon="/icons/file.gif">
+    <action id="TAB_CONTENT" link="/incl/tabs/document_content.xhtml"
+      order="10" label="action.view.content" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>outSection</filter-id>
@@ -126,9 +124,8 @@
       <filter-id>inSection</filter-id>
     </action>
 
-    <action id="TAB_TRASH_CONTENT"
-      link="/incl/tabs/document_trash_content.xhtml" order="200"
-      label="action.view.trash.content" icon="/icons/file.gif">
+    <action id="TAB_TRASH_CONTENT" link="/incl/tabs/document_trash_content.xhtml"
+      order="200" label="action.view.trash.content" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter id="viewTrash">
         <rule grant="true">
@@ -139,8 +136,7 @@
       </filter>
     </action>
 
-    <action id="print"
-      link="#{restHelper.doPrint(themeActions.defaultTheme)}"
+    <action id="print" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
       order="100" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION_BLANK_TARGET</category>
     </action>
@@ -168,15 +164,15 @@
       <filter-id>denyFilesTab</filter-id>
     </action>
 
-    <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml" order="50"
-      label="action.view.rights" icon="/icons/file.gif">
+    <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml"
+      order="50" label="action.view.rights" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>rights</filter-id>
     </action>
 
     <!-- Manage the sub tabs -->
 
-    <!--  Actions on WorkLists  -->
+    <!-- Actions on WorkLists -->
 
     <action id="WORKLIST_PASTE" link="#{clipboardActions.pasteWorkingList}"
       label="command.clipboard.pasteAll" icon="/icons/action_paste_all.gif">
@@ -192,8 +188,7 @@
       <filter-id>canMoveWorkingList</filter-id>
     </action>
 
-    <action id="WORKLIST_EXPORT"
-      link="#{clipboardActions.exportWorklistAsZip()}"
+    <action id="WORKLIST_EXPORT" link="#{clipboardActions.exportWorklistAsZip()}"
       label="command.clipboard.zipExport" icon="/icons/action_export_zip.gif">
       <category>DEFAULT_LIST</category>
       <filter id="currentWorkListIsNotEmpty2">
@@ -204,8 +199,7 @@
     </action>
 
     <action id="WORKLIST_CLEAN" link="#{clipboardActions.clearWorkingList()}"
-      label="command.clipboard.delAll"
-      icon="/icons/action_clipboard_deleteall.gif">
+      label="command.clipboard.delAll" icon="/icons/action_clipboard_deleteall.gif">
       <category>DEFAULT_LIST</category>
       <category>CLIPBOARD_LIST</category>
       <filter id="currentWorkListIsNotEmpty3">
@@ -215,7 +209,7 @@
       </filter>
     </action>
 
-    <!--  Actions for the document selection  -->
+    <!-- Actions for the document selection -->
 
     <action id="CLIPBOARD_PASTE" link="#{clipboardActions.pasteClipboard}"
       label="command.clipboard.paste" icon="" order="20">
@@ -238,9 +232,8 @@
       </filter>
     </action>
 
-    <action id="CURRENT_SELECTION_UNDELETE"
-      link="#{deleteActions.undeleteSelection}" label="command.undeleteDocs"
-      icon="" help="comand.undeleteDocs.help"
+    <action id="CURRENT_SELECTION_UNDELETE" link="#{deleteActions.undeleteSelection}"
+      label="command.undeleteDocs" icon="" help="comand.undeleteDocs.help"
       confirm="if( !confirmUndeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_TRASH_LIST</category>
       <filter id="canPurge">
@@ -261,15 +254,13 @@
       </filter>
     </action>
 
-    <action id="CURRENT_SELECTION_COPY"
-      link="#{clipboardActions.putSelectionInClipboard}"
+    <action id="CURRENT_SELECTION_COPY" link="#{clipboardActions.putSelectionInClipboard}"
       label="command.clipboard.copy" icon="" order="10">
       <category>CURRENT_SELECTION_LIST</category>
       <filter-id>canCopyFromCurrentSelection</filter-id>
     </action>
 
-    <action id="CURRENT_SELECTION_ADDTOLIST"
-      link="#{clipboardActions.putSelectionInDefaultWorkList}"
+    <action id="CURRENT_SELECTION_ADDTOLIST" link="#{clipboardActions.putSelectionInDefaultWorkList}"
       label="help.command.clipboard.addworklist" icon="" order="30">
       <category>CURRENT_SELECTION_LIST</category>
       <filter-id>canCopyFromCurrentSelection</filter-id>
@@ -304,9 +295,8 @@
       <filter-id>canMoveToBottom</filter-id>
     </action>
 
-    <action id="MOVE_TOP_IN_SECTION"
-      link="#{orderableDocumentActions.moveToTop}" enabled="true"
-      label="command.order.movetotop" icon="">
+    <action id="MOVE_TOP_IN_SECTION" link="#{orderableDocumentActions.moveToTop}"
+      enabled="true" label="command.order.movetotop" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter-id>canMoveToTop</filter-id>
     </action>
@@ -317,23 +307,20 @@
       <filter-id>canMoveUp</filter-id>
     </action>
 
-    <action id="MOVE_DOWN_IN_SECTION"
-      link="#{orderableDocumentActions.moveDown}" enabled="true"
-      label="command.order.movedown" icon="">
+    <action id="MOVE_DOWN_IN_SECTION" link="#{orderableDocumentActions.moveDown}"
+      enabled="true" label="command.order.movedown" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter-id>canMoveDown</filter-id>
     </action>
 
-    <action id="MOVE_BOTTOM_IN_SECTION"
-      link="#{orderableDocumentActions.moveToBottom}" enabled="true"
-      label="command.order.movetobottom" icon="">
+    <action id="MOVE_BOTTOM_IN_SECTION" link="#{orderableDocumentActions.moveToBottom}"
+      enabled="true" label="command.order.movetobottom" icon="">
       <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter-id>canMoveToBottom</filter-id>
     </action>
 
-    <action id="CURRENT_SELECTION_SECTIONS_TRASH"
-      link="#{deleteActions.deleteSelectionSections}" label="command.trashDocs"
-      icon="" help="comand.trashDocs.help"
+    <action id="CURRENT_SELECTION_SECTIONS_TRASH" link="#{deleteActions.deleteSelectionSections}"
+      label="command.trashDocs" icon="" help="comand.trashDocs.help"
       confirm="if( !confirmDeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter id="canDeleteSection">
@@ -355,13 +342,13 @@
       <filter-id>mutable_document</filter-id>
     </action>
 
-    <action id="POPUP_COPY" link="javascript:doCopy"
-      label="command.clipboard.copy" icon="/icons/action_clipboard_copy.gif">
+    <action id="POPUP_COPY" link="javascript:doCopy" label="command.clipboard.copy"
+      icon="/icons/action_clipboard_copy.gif">
       <category>POPUP</category>
     </action>
 
-    <action id="POPUP_PASTE" link="javascript:doPaste"
-      label="command.clipboard.paste" icon="/icons/action_paste_all.gif">
+    <action id="POPUP_PASTE" link="javascript:doPaste" label="command.clipboard.paste"
+      icon="/icons/action_paste_all.gif">
       <category>POPUP</category>
       <filter id="canPastePopup">
         <rule grant="true">
@@ -372,8 +359,8 @@
       </filter>
     </action>
 
-    <action id="POPUP_MOVE" link="javascript:doMove"
-      label="command.clipboard.moveAll" icon="/icons/action_move_all.gif">
+    <action id="POPUP_MOVE" link="javascript:doMove" label="command.clipboard.moveAll"
+      icon="/icons/action_move_all.gif">
       <category>POPUP</category>
       <filter id="canPastePopup">
         <rule grant="true">
@@ -472,7 +459,7 @@
       <filter-id>not_folder</filter-id>
     </action>
 
-    <!--  Actions for the document lock/unlock -->
+    <!-- Actions for the document lock/unlock -->
 
     <action id="DOCUMENT_LOCK" link="#{lockActions.lockCurrentDocument}"
       label="command.lock" icon="">
@@ -511,15 +498,13 @@
 
     <action id="le_create_mspowerpoint"
       link="#{nxd:liveCreateUrl('application/vnd.ms-powerpoint', 'File', 'file', 'content', 'filename')}"
-      order="60" label="action.liveedit.create.mspowerpoint"
-      icon="/icons/ppt.png">
+      order="60" label="action.liveedit.create.mspowerpoint" icon="/icons/ppt.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
 
     <!-- Local Configuration -->
-    <action id="TAB_LOCAL_CONFIGURATION"
-      link="/incl/tabs/local_configuration.xhtml" order="70"
-      label="action.view.local.configuration" icon="/icons/file.gif">
+    <action id="TAB_LOCAL_CONFIGURATION" link="/incl/tabs/local_configuration.xhtml"
+      order="70" label="action.view.local.configuration" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>has_local_configuration_available</filter-id>
     </action>
@@ -532,9 +517,8 @@
       <filter-id>is_not_creating_workspace</filter-id>
     </action>
 
-    <action id="CREATE_WORKSPACE"
-      link="#{documentTemplatesActions.createDocumentFromTemplate}" order="0"
-      label="command.create">
+    <action id="CREATE_WORKSPACE" link="#{documentTemplatesActions.createDocumentFromTemplate}"
+      order="0" label="command.create">
       <category>CREATE_DOCUMENT_FORM</category>
       <filter-id>is_creating_workspace</filter-id>
     </action>
@@ -544,9 +528,8 @@
       <category>CREATE_DOCUMENT_FORM</category>
     </action>
 
-    <action id="EDIT_CURRENT_DOCUMENT"
-      link="#{documentActions.updateCurrentDocument}" order="0"
-      label="command.save">
+    <action id="EDIT_CURRENT_DOCUMENT" link="#{documentActions.updateCurrentDocument}"
+      order="0" label="command.save">
       <category>EDIT_DOCUMENT_FORM</category>
     </action>
 
@@ -573,7 +556,8 @@
         <type>Folder</type>
         <type>OrderedFolder</type>
         <condition>
-          #{typeManager.getAllowedSubTypes(document.getType(), document).size()
+          #{typeManager.getAllowedSubTypes(document.getType(),
+          document).size()
           > 0}
         </condition>
       </rule>
@@ -586,7 +570,8 @@
         <type>Workspace</type>
         <type>Folder</type>
         <condition>
-          #{typeManager.getAllowedSubTypes(document.getType(), document).size()
+          #{typeManager.getAllowedSubTypes(document.getType(),
+          document).size()
           > 0}
         </condition>
       </rule>
