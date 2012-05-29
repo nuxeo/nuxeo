@@ -837,6 +837,67 @@
       </fields>
     </widget>
 
+    <widget name="list_hideDeleteButton" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide delete button</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to remove the
+          'delete' button for each list item. Available since 5.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideDeleteButton</field>
+      </fields>
+    </widget>
+
+    <widget name="list_hideAddButton" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide add button</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to remove the
+          'add' button to add an item to the list. Available since 5.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideAddButton</field>
+      </fields>
+    </widget>
+
+    <widget name="list_listTemplateItem" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">List template item</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute enables to control the template for
+          each item that needs to be added to the list. In most common cases,
+          this value is deduced from the field definition, using the expression:
+          #{nxd:propertyDefaultValue(widget.fieldDefinitions[0].propertyName)}.
+          This needs to be adapted for subwidgets (when handling lists of lists
+          for instance) or when using this widget on another object that a
+          DocumentModel property. For instance, for a subwidget, you can use:
+          #{nxd:propertyDefaultValue('mySchema:listOfLists/stringListItem')}.
+          Available since 5.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>listTemplateItem</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -1978,6 +2039,15 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">list_orderable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_hideDeleteButton</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_hideAddButton</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">list_listTemplateItem</widget>
                 </row>
               </rows>
             </layout>

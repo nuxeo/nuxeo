@@ -186,8 +186,26 @@
       <name>translated</name>
       <required>false</required>
       <description>
-        The boolean value stating it the widget labels have to be translated.
+        The boolean value stating if the widget labels have to be translated.
         Available since 5.4.2.
+      </description>
+    </attribute>
+    <attribute>
+      <name>ignoreTemplateProperty</name>
+      <required>false</required>
+      <description>
+        Boolean value stating if "template" property should be removed from the
+        widget properties. Convenient attribute to avoid stack overflow errors
+        when using another widget type in a widget template, for compatibility
+        code for instance. Available since 5.6.
+      </description>
+    </attribute>
+    <attribute>
+      <name>subWidgets</name>
+      <required>false</required>
+      <description>
+        The array of widgets instances (Widget[]) to add to the created widget.
+        Available since 5.6.
       </description>
     </attribute>
     <example>

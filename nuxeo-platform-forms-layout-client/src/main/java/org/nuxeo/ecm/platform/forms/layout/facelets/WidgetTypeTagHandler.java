@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -83,10 +84,24 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     protected final TagAttribute properties;
 
+    /**
+     * Convenient attribute to remove the "template" property from widget
+     * properties (and avoid stack overflow errors when using another widget
+     * type in a widget template, for compatibility code for instance).
+     *
+     * @since 5.6
+     */
+    protected final TagAttribute ignoreTemplateProperty;
+
+    /**
+     * @since 5.6
+     */
+    protected final TagAttribute subWidgets;
+
     protected final TagAttribute[] vars;
 
     protected final String[] reservedVarsArray = { "id", "mode", "type",
-            "properties" };
+            "properties", "ignoreTemplateProperty", "subWidgets" };
 
     public WidgetTypeTagHandler(TagConfig config) {
         super(config);
@@ -100,6 +115,8 @@ public class WidgetTypeTagHandler extends TagHandler {
         helpLabel = getAttribute("helpLabel");
         translated = getAttribute("translated");
         properties = getAttribute("properties");
+        ignoreTemplateProperty = getAttribute("ignoreTemplateProperty");
+        subWidgets = getAttribute("subWidgets");
         vars = tag.getAttributes().getAll();
     }
 
@@ -132,6 +149,15 @@ public class WidgetTypeTagHandler extends TagHandler {
                 widgetProps.put(localName, var.getValue());
             }
         }
+
+        boolean ignoreTemplatePropValue = false;
+        if (ignoreTemplateProperty != null) {
+            ignoreTemplatePropValue = ignoreTemplateProperty.getBoolean(ctx);
+        }
+        if (ignoreTemplatePropValue) {
+            widgetProps.remove(TemplateWidgetTypeHandler.TEMPLATE_PROPERTY_NAME);
+        }
+
         String typeValue = name.getValue(ctx);
         String modeValue = mode.getValue(ctx);
         String valueName = null;
@@ -178,9 +204,15 @@ public class WidgetTypeTagHandler extends TagHandler {
             translatedValue = Boolean.valueOf(translated.getBoolean(ctx));
         }
 
+        Widget[] subWidgetsValue = null;
+        if (subWidgets != null) {
+            subWidgetsValue = (Widget[]) subWidgets.getObject(ctx,
+                    Widget[].class);
+        }
+
         Widget widget = layoutService.createWidget(ctx, typeValue, modeValue,
                 valueName, fieldsValue, labelValue, helpLabelValue,
-                translatedValue, widgetProps, null);
+                translatedValue, widgetProps, subWidgetsValue);
 
         // expose widget variable
         VariableMapper orig = ctx.getVariableMapper();

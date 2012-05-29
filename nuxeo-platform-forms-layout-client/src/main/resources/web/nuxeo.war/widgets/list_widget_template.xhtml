@@ -50,7 +50,7 @@
 
       <nxu:inputList value="#{fieldOrValue}"
         id="#{widget.id}_input" model="model"
-        template="#{nxd:propertyDefaultValue(propValueForTemplate)}"
+        template="#{nxu:test(empty widgetProperty_listTemplateItem, nxd:propertyDefaultValue(propValueForTemplate), widgetProperty_listTemplateItem)}"
         required="#{widget.required}" diff="#{widgetProperty_diff}"
         rendered="#{isEditMode or not empty fieldOrValue}">
 
@@ -59,15 +59,18 @@
 
           <c:if test="#{isEditMode}">
             <h:panelGroup>
-              <a4j:commandLink immediate="true"
-                actionListener="#{editableListBean.performAction}"
-                id="#{widget.id}_delete" reRender="#{widget.id}_input"
-                bypassUpdates="true">
-                <h:graphicImage value="/icons/action_delete.gif" />
-                <f:param name="for" value="#{widget.id}_input" />
-                <f:param name="index" value="#{model.rowIndex}" />
-                <f:param name="type" value="remove" />
-              </a4j:commandLink>
+
+              <c:if test="#{not widgetProperty_hideDeleteButton}">
+                <a4j:commandLink immediate="true"
+                  actionListener="#{editableListBean.performAction}"
+                  id="#{widget.id}_delete" reRender="#{widget.id}_input"
+                  bypassUpdates="true">
+                  <h:graphicImage value="/icons/action_delete.gif" />
+                  <f:param name="for" value="#{widget.id}_input" />
+                  <f:param name="index" value="#{model.rowIndex}" />
+                  <f:param name="type" value="remove" />
+                </a4j:commandLink>
+              </c:if>
 
               <c:if test="#{widgetProperty_orderable}">
                 <a4j:commandLink immediate="true"
@@ -147,7 +150,7 @@
         id="#{widget.id}_message" />
     </a4j:outputPanel>
 
-    <c:if test="#{isEditMode}">
+    <c:if test="#{isEditMode and not widgetProperty_hideAddButton}">
       <a4j:commandLink immediate="true"
         actionListener="#{editableListBean.performAction}" id="#{widget.id}_add">
         <f:param name="for" value="#{widget.id}_input" />

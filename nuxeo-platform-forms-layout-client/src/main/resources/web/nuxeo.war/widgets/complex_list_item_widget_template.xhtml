@@ -1,14 +1,15 @@
-<f:subview id="#{widget.id}"
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="#{widget.id}">
 
   <c:if test="false">
-    Deprecated since 5.6, to remove
+    Deprecated since 5.6, here for compat. Use the "complex" widget instead.
   </c:if>
 
-  <em>The template 'complex_list_item_widget_template.xhtml' is deprecated, use
-  'complex_widget_template.xhtml' instead or just a widget with type 'complex'</em>
+  <nxl:widgetType name="complex" mode="#{widget.mode}" value="#{fieldOrValue}"
+    properties="#{widget.properties}"
+    ignoreTemplateProperty="true"
+    subWidgets="#{widget.subWidgets}" />
 
 </f:subview>
