@@ -535,6 +535,77 @@
 
     <!-- end of actions on document create and edit pages -->
 
+    <!-- footer links -->
+
+    <action id="footer_contact_us"
+      link="http://www.nuxeo.com/en/about/contact?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      label="label.footer.contactUs" order="10" type="bare_link">
+      <category>FOOTER</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <action id="footer_blogs"
+      link="http://blogs.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      label="label.footer.blogs" order="20" type="bare_link">
+      <category>FOOTER</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <action id="footer_community"
+      link="http://community.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      label="label.footer.community" order="30" type="bare_link">
+      <category>FOOTER</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <action id="footer_forum"
+      link="http://forum.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      label="label.footer.forums" order="40" type="bare_link">
+      <category>FOOTER</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <action id="footer_documentation"
+      link="http://doc.nuxeo.com/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      label="label.footer.documentation" order="50" type="bare_link">
+      <category>FOOTER</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <action id="footer_twitter"
+      link="http://twitter.com/nuxeo/?utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      label="Twitter" order="60" type="bare_link">
+      <category>FOOTER</category>
+      <properties>
+        <property name="styleClass">twitt</property>
+        <property name="labelStyleClass">footerLabel</property>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <action id="footer_linkedin"
+      link="http://www.linkedin.com/groupRegistration?gid=43314&amp;utm_source=dm&amp;utm_medium=pages-footer&amp;utm_campaign=products"
+      label="LinkedIn" order="70" type="bare_link">
+      <category>FOOTER</category>
+      <properties>
+        <property name="styleClass">linkedin</property>
+        <property name="labelStyleClass">footerLabel</property>
+        <property name="target">_blank</property>
+      </properties>
+    </action>
+
+    <!-- end of footer links -->
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

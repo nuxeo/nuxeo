@@ -21,6 +21,7 @@ a.twitt{ background: transparent url("${basePath}/icons/icones-metanav.png") no-
 a.linkedin {background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top }
 a.twitt:hover { background-position: left bottom }
 a.linkedin:hover { background-position: -16px bottom }
+a.twitt .footerLabel, a.linkedin .footerLabel { display: none }
 
  /* =Connect Banner */
 .bannerBottom { font-size: 11px; text-align: left; padding: .3em 1.4em .1em }
