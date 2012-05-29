@@ -24,9 +24,16 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.javasimon.Counter;
+import org.javasimon.SimonManager;
+import org.javasimon.Split;
+import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A {@link RowMapper} that has an internal cache.
@@ -35,6 +42,8 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
  * the underlying {@link RowMapper}.
  */
 public class CachingRowMapper implements RowMapper {
+
+    private static final Log log = LogFactory.getLog(CachingRowMapper.class);
 
     private static final String ABSENT = "__ABSENT__\0\0\0";
 
@@ -96,6 +105,33 @@ public class CachingRowMapper implements RowMapper {
 
     protected boolean forRemoteClient;
 
+    /**
+     * Cache statistics
+     */
+    // JavaSimpon Counter Names
+    private static final String CN_ACCESS = "org.nuxeo.ecm.core.storage.sql.cache.access";
+
+    private static final String CN_HITS = "org.nuxeo.ecm.core.storage.sql.cache.hits";
+
+    private static final String CN_SIZE = "org.nuxeo.ecm.core.storage.sql.cache.size";
+
+    // Stop watch for cache access
+    private static final String SW_CACHE = "org.nuxeo.ecm.core.storage.sql.cache.get";
+
+    // Stop watch for SOR access (System Of Record i.e the db access)
+    private static final String SW_SOR = "org.nuxeo.ecm.core.storage.sql.sor.gets";
+
+    // Property to enable stop watch
+    private static final String CACHE_STATS_PROP = "org.nuxeo.vcs.cache.statistics";
+
+    private long accessCount;
+
+    private long hitsCount;
+
+    private long cacheSize;
+
+    private boolean cacheStatistics;
+
     @SuppressWarnings("unchecked")
     public CachingRowMapper(Model model, RowMapper rowMapper,
             InvalidationsPropagator cachePropagator,
@@ -112,11 +148,14 @@ public class CachingRowMapper implements RowMapper {
         this.eventPropagator = eventPropagator;
         eventPropagator.addQueue(repositoryEventQueue);
         forRemoteClient = false;
+        String prop = Framework.getProperty(CACHE_STATS_PROP, "false");
+        cacheStatistics = Boolean.parseBoolean(prop);
     }
 
     public void close() throws StorageException {
         cachePropagator.removeQueue(cacheQueue);
         eventPropagator.removeQueue(eventQueue); // TODO can be overriden
+        logCacheStat();
     }
 
     /*
@@ -167,11 +206,59 @@ public class CachingRowMapper implements RowMapper {
     }
 
     protected Row cacheGet(RowId rowId) {
+        Split split = null;
+        if (cacheStatistics) {
+            Stopwatch stopWatch = SimonManager.getStopwatch(SW_CACHE);
+            split = stopWatch.start();
+        }
+
         Row row = cache.get(rowId);
         if (row != null && !isAbsent(row)) {
             row = row.clone();
         }
+
+        if (split != null) {
+            split.stop();
+        }
+        updateCacheStat(row);
         return row;
+    }
+
+    private void updateCacheStat(Row row) {
+        if (row != null) {
+            hitsCount++;
+        }
+        if (accessCount++ % 200 == 0) {
+            Counter accessCounter = SimonManager.getCounter(CN_ACCESS);
+            accessCounter.increase(accessCount);
+            accessCount = 0;
+            Counter hitsCounter = SimonManager.getCounter(CN_HITS);
+            hitsCounter.increase(hitsCount);
+            hitsCount = 0;
+            Counter sizeCounter = SimonManager.getCounter(CN_SIZE);
+            long delta = cache.size() - cacheSize;
+            if (delta > 0) {
+                sizeCounter.increase(delta);
+            } else if (delta < 0) {
+                sizeCounter.decrease(-1 * delta);
+            }
+            cacheSize = cache.size();
+        }
+    }
+
+    private void logCacheStat() {
+        if (cacheStatistics) {
+            Stopwatch stopWatch = SimonManager.getStopwatch(SW_CACHE);
+            log.info(stopWatch);
+            stopWatch = SimonManager.getStopwatch(SW_SOR);
+            log.info(stopWatch);
+        }
+        Counter counter = SimonManager.getCounter(CN_ACCESS);
+        log.info(counter);
+        counter = SimonManager.getCounter(CN_HITS);
+        log.info(counter);
+        counter = SimonManager.getCounter(CN_SIZE);
+        log.info(counter);
     }
 
     protected void cacheRemove(RowId rowId) {
@@ -315,6 +402,11 @@ public class CachingRowMapper implements RowMapper {
             }
         }
         if (!todo.isEmpty()) {
+            Split split = null;
+            if (cacheStatistics) {
+                Stopwatch stopWatch = SimonManager.getStopwatch(SW_SOR);
+                split = stopWatch.start();
+            }
             // ask missing ones to underlying row mapper
             List<? extends RowId> fetched = rowMapper.read(todo, cacheOnly);
             // add them to the cache
@@ -323,6 +415,9 @@ public class CachingRowMapper implements RowMapper {
             }
             // merge results
             res.addAll(fetched);
+            if (split != null) {
+                split.stop();
+            }
         }
         return res;
     }

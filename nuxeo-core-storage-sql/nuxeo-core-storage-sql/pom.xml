@@ -124,6 +124,12 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- cache stat -->
+    <dependency>
+      <groupId>org.javasimon</groupId>
+      <artifactId>javasimon-core</artifactId>
+    </dependency>
+
     <!--fix test classpath in eclipse -->
     <dependency>
       <groupId>jotm</groupId>
