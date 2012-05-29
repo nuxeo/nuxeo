@@ -183,6 +183,7 @@ JMXSTAT_PID="$PID_DIR"/jmxstat.pid
 JMXSTAT_INTERVAL=$SAR_INTERVAL
 JMXSTAT_COUNT=$SAR_COUNT
 JMXSTAT_OPTS="$JMXHOST --contention Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"[numActive,numIdle]"
+JMXSTAT_VCS_RESET="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!reset]"
 JMXSTAT_VCS="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.size,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!sampleAsMap]"
 [ -z $JMXSTAT ] && echo "You can install jmxstat from https://github.com/bdelbosc/jmxstat"
 
@@ -288,7 +289,23 @@ log_misc() {
         fi
 	if [ ! -z $JMXSTAT ]; then
             echo "## VCS row cache stats: access, hits, size, cache_get, db_gets" >> $file
-            $JMXSTAT $JMXHOST $JMXSTAT_VCS 1 1 >> $file
+            out=`$JMXSTAT $JMXHOST $JMXSTAT_VCS 1 1`
+	    echo $out >> $file
+	    echo "## VCS cache STATS" >> $file
+	    s_access=`echo $out |  cut -d{ -f2 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+	    s_hits=`echo $out |  cut -d{ -f3 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+	    s_size=`echo $out |  cut -d{ -f4 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+	    s_get=`echo $out |cut -d{ -f5 | sed 's/^.*total=\([^,]*\),.*$/\1/g'`
+	    s_db=`echo $out |cut -d{ -f6 | sed 's/^.*total=\([^,]*\),.*$/\1/g'`
+	    echo -e "Access: $s_access\nHits: $s_hits\nSize: $s_size" >> $file
+	    s_miss=`echo "$s_access - $s_hits" | bc`
+	    s_ratio=`echo "scale=3;$s_hits/$s_access" | bc`
+	    s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc`
+	    s_getdb=`echo "scale=3;$s_db / $s_miss" | bc`
+	    s_getcache=`echo "scale=3;$s_get / $s_access" | bc`
+            s_speedup=`echo "scale=2;$s_getdb/$s_getcache" | bc`
+            s_sys_speedup=`echo "scale=2; 1 / ((1 - $s_ratio) + $s_ratio/$s_speedup)" | bc`
+	    echo -e "HitRatio: $s_ratio_pc%\nSpeedup: $s_speedup\nSystemSpeedup: $s_sys_speedup" >> $file
 	fi
     fi
 }
@@ -460,7 +477,12 @@ start() {
     # misc
     rm -f $LOG_DIR/misc-*.txt
     log_misc $LOG_DIR/misc-start.txt
-    
+
+    # Reset VCS stats
+    if [ ! -z $JMXSTAT ]; then
+	$JMXSTAT $JMXHOST $JMXSTAT_VCS_RESET 1 1 >/dev/null 2>&1 &
+    fi
+
     # get a copy of nuxeo.conf
     grep -Ev '^$|^#' $NUXEO_CONF | sed "s/\(password\=\).*$/\1******/g" > $LOG_DIR/nuxeo-conf.txt
 
