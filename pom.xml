@@ -2148,6 +2148,12 @@
 
   <profiles>
     <profile>
+      <id>addons</id>
+      <modules>
+        <module>addons</module>
+      </modules>
+    </profile>
+    <profile>
       <id>release</id>
       <activation>
         <activeByDefault>false</activeByDefault>
