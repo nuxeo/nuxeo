@@ -275,9 +275,6 @@
           <widget>dbtemplate</widget>
         </row>
         <row>
-          <properties mode="any">
-            <property name="hideWidgetLabel">true</property>
-          </properties>
           <widget>database_ajax_decorator</widget>
         </row>
       </rows>
@@ -290,8 +287,6 @@
           <field>['nuxeo.url']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -304,8 +299,6 @@
           <field>['org.nuxeo.ecm.product.name']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -318,8 +311,6 @@
           <field>['org.nuxeo.ecm.product.version']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -332,8 +323,6 @@
           <field>['nuxeo.bind.address']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -346,8 +335,6 @@
           <field>['nuxeo.conf']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -360,8 +347,6 @@
           <field>['nuxeo.data.dir']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -374,8 +359,6 @@
           <field>['nuxeo.log.dir']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -396,22 +379,22 @@
         </properties>
       </widget>
       <widget name="database_ajax_decorator" type="template">
+        <handlingLabels>true</handlingLabels>
         <properties mode="any">
           <property name="template">
             /incl/sysinfo/widgets/database_ajax_panel.xhtml
           </property>
           <property name="ajaxPanelId">database_ajaxPanel</property>
-          <!-- use a 'rendered' property instead of playing with the subwidget mode
-            otherwise proxy selection misbehaves after first non-default database selection -->
+          <!-- use a 'rendered' property instead of playing with the
+            subwidget mode otherwise proxy selection misbehaves after
+            first non-default database
+            selection -->
           <property name="rendered">
             #{value['nuxeo.dbtemplate']!='default'}
           </property>
         </properties>
         <subWidgets>
           <widget name="database" type="layout">
-            <fields>
-              <field></field>
-            </fields>
             <properties mode="any">
               <property name="name">admin_setup_database</property>
             </properties>
@@ -465,16 +448,11 @@
         <labels>
           <label mode="any">label.setup.nuxeo.db.name</label>
         </labels>
-        <!-- <helpLabels> -->
-        <!-- <label mode="any">label.setup.nuxeo.db.name.help</label> -->
-        <!-- </helpLabels> -->
         <translated>true</translated>
         <fields>
           <field>['nuxeo.db.name']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -487,8 +465,6 @@
           <field>['nuxeo.db.user']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -500,11 +476,6 @@
         <fields>
           <field>['nuxeo.db.password']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
       <widget name="dbHost" type="text">
         <labels>
@@ -515,8 +486,6 @@
           <field>['nuxeo.db.host']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
         </properties>
       </widget>
@@ -531,8 +500,6 @@
         <properties mode="edit">
           <property name="size">5</property>
           <property name="maxlength">5</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
       </widget>
       <widget name="dbMinPoolSize" type="int">
@@ -545,8 +512,6 @@
         </fields>
         <properties mode="edit">
           <property name="size">4</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
       </widget>
       <widget name="dbMaxPoolSize" type="int">
@@ -559,8 +524,6 @@
         </fields>
         <properties mode="edit">
           <property name="size">4</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
       </widget>
       <widget name="vcsMinPoolSize" type="int">
@@ -573,8 +536,6 @@
         </fields>
         <properties mode="edit">
           <property name="size">4</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
       </widget>
       <widget name="vcsMaxPoolSize" type="int">
@@ -587,8 +548,6 @@
         </fields>
         <properties mode="edit">
           <property name="size">4</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
       </widget>
       <widget name="checkDatabaseParameters" type="template">
@@ -646,11 +605,6 @@
         </properties>
       </widget>
       <widget name="proxy.host" type="text">
-        <widgetModes>
-          <mode value="any">
-            #{setupWizardAction.proxyType=='none'?'hidden':mode}
-          </mode>
-        </widgetModes>
         <labels>
           <label mode="any">label.setup.nuxeo.http.proxy.host</label>
         </labels>
@@ -658,18 +612,20 @@
         <fields>
           <field>['nuxeo.http.proxy.host']</field>
         </fields>
-        <properties mode="edit">
+        <properties widgetMode="edit">
           <property name="size">30</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <!-- use a 'rendered' property instead of playing with the
+            subwidget mode otherwise smtp auth misbehaves after
+            first non-default proxy type selection -->
+          <property name="rendered">
+            #{setupWizardAction.proxyType != 'none'}
+          </property>
         </properties>
       </widget>
       <widget name="proxy.port" type="int">
-        <widgetModes>
-          <mode value="any">
-            #{setupWizardAction.proxyType=='none'?'hidden':mode}
-          </mode>
-        </widgetModes>
         <labels>
           <label mode="any">label.setup.nuxeo.http.proxy.port</label>
         </labels>
@@ -680,16 +636,15 @@
         <properties mode="edit">
           <property name="size">5</property>
           <property name="maxlength">5</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{setupWizardAction.proxyType != 'none'}
+          </property>
         </properties>
       </widget>
       <widget name="proxy.login" type="text">
-        <widgetModes>
-          <mode value="any">
-            #{setupWizardAction.proxyType!='authenticated'?'hidden':mode}
-          </mode>
-        </widgetModes>
         <labels>
           <label mode="any">label.setup.nuxeo.http.proxy.login</label>
         </labels>
@@ -699,16 +654,16 @@
         </fields>
         <properties mode="edit">
           <property name="size">20</property>
-          <property name="styleClass">dataInputText</property>
           <property name="required">true</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{setupWizardAction.proxyType ==
+            'authenticated'}
+          </property>
         </properties>
       </widget>
       <widget name="proxy.password" type="secret">
-        <widgetModes>
-          <mode value="any">
-            #{setupWizardAction.proxyType!='authenticated'?'hidden':mode}
-          </mode>
-        </widgetModes>
         <labels>
           <label mode="any">label.setup.nuxeo.http.proxy.password</label>
         </labels>
@@ -718,8 +673,12 @@
         </fields>
         <properties mode="edit">
           <property name="size">20</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{setupWizardAction.proxyType ==
+            'authenticated'}
+          </property>
         </properties>
       </widget>
     </layout>
@@ -731,6 +690,7 @@
       </templates>
       <properties mode="any">
         <property name="label">label.setup.table.title.email</property>
+        <property name="ajaxPanelId">admin_setup_mail_ajaxPanel</property>
       </properties>
       <rows>
         <row>
@@ -772,12 +732,6 @@
         <row>
           <widget>mail.transport.auth</widget>
         </row>
-        <!-- <row> -->
-        <!-- <properties mode="any"> -->
-        <!-- <property name="hideWidgetLabel">true</property> -->
-        <!-- </properties> -->
-        <!-- <widget>mail_Transport_auth_decorator</widget> -->
-        <!-- </row> -->
         <row>
           <widget>mail.transport.user</widget>
         </row>
@@ -803,11 +757,6 @@
         <fields>
           <field>['nuxeo.notification.eMailSubjectPrefix']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
       <widget name="mailservice.user" type="text">
         <labels>
@@ -817,11 +766,6 @@
         <fields>
           <field>['mailservice.user']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
       <widget name="mailservice.password" type="secret">
         <labels>
@@ -833,8 +777,6 @@
         </fields>
         <properties mode="edit">
           <property name="size">20</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
       </widget>
       <widget name="mail.store.protocol" type="text">
@@ -845,11 +787,6 @@
         <fields>
           <field>['mail.store.protocol']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
       <widget name="mail.transport.protocol" type="text">
         <labels>
@@ -859,11 +796,6 @@
         <fields>
           <field>['mail.transport.protocol']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
       <widget name="mail.store.host" type="text">
         <labels>
@@ -873,13 +805,8 @@
         <fields>
           <field>['mail.store.host']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
-       <widget name="mail.store.port" type="int">
+      <widget name="mail.store.port" type="int">
         <labels>
           <label mode="any">label.setup.mail.store.port</label>
         </labels>
@@ -894,7 +821,7 @@
           <property name="required">false</property>
         </properties>
       </widget>
-     <widget name="mail.store.user" type="text">
+      <widget name="mail.store.user" type="text">
         <labels>
           <label mode="any">label.setup.mail.store.user</label>
         </labels>
@@ -922,7 +849,6 @@
           <property name="required">false</property>
         </properties>
       </widget>
- 
       <widget name="mail.debug" type="checkbox">
         <labels>
           <label mode="any">label.setup.mail.debug</label>
@@ -931,10 +857,6 @@
         <fields>
           <field>['mail.debug']</field>
         </fields>
-        <properties mode="edit">
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
       <widget name="mail.transport.host" type="text">
         <labels>
@@ -945,9 +867,6 @@
           <field>['mail.transport.host']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
       </widget>
       <widget name="mail.transport.port" type="int">
@@ -961,11 +880,9 @@
         <properties mode="edit">
           <property name="size">5</property>
           <property name="maxlength">5</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
         </properties>
       </widget>
-      <widget name="mail.transport.auth" type="checkbox">
+      <widget name="mail.transport.auth" type="template">
         <labels>
           <label mode="any">label.setup.mail.transport.auth</label>
         </labels>
@@ -973,65 +890,13 @@
         <fields>
           <field>['mail.transport.auth']</field>
         </fields>
-        <properties mode="edit">
-          <property name="styleClass">dataInputText</property>
-        </properties>
-        <!-- Missing reRender property on checkbox widget -->
-        <!-- <properties mode="any"> -->
-        <!-- <property name="reRender">admin_setup_mail_ajaxPanel</property> -->
-        <!-- <property name="ajaxSingle">true</property> -->
-        <!-- </properties> -->
-      </widget>
-      <!-- not used -->
-      <widget name="mail_transport_auth_decorator" type="template">
         <properties mode="any">
           <property name="template">
-            /incl/sysinfo/widgets/mail_Transport_auth_ajax_panel.xhtml
+            /incl/sysinfo/widgets/ajax_checkbox_widget_template.xhtml
           </property>
-          <property name="ajaxPanelId">admin_setup_mail_ajaxPanel</property>
-          <property name="rendered">#{true}</property>
-          <!-- <property name="rendered">#{value['mail.transport.auth']==true}</property> -->
+          <property name="reRender">admin_setup_mail_ajaxPanel</property>
+          <property name="ajaxSingle">true</property>
         </properties>
-        <subWidgets>
-          <widget name="mail.transport.user" type="text">
-            <!-- <widgetModes> -->
-            <!-- <mode value="any"> -->
-            <!-- #{value['mail.transport.auth']!=true?'hidden':mode} -->
-            <!-- </mode> -->
-            <!-- </widgetModes> -->
-            <labels>
-              <label mode="any">label.setup.mail.transport.user</label>
-            </labels>
-            <translated>true</translated>
-            <fields>
-              <field>['mail.transport.user']</field>
-            </fields>
-            <properties mode="edit">
-              <property name="size">50</property>
-              <property name="styleClass">dataInputText</property>
-              <property name="required">false</property>
-            </properties>
-          </widget>
-          <widget name="mail.transport.password" type="secret">
-            <!-- <widgetModes> -->
-            <!-- <mode value="any"> -->
-            <!-- #{value['mail.transport.auth']!=true?'hidden':mode} -->
-            <!-- </mode> -->
-            <!-- </widgetModes> -->
-            <labels>
-              <label mode="any">label.setup.mail.transport.password</label>
-            </labels>
-            <translated>true</translated>
-            <fields>
-              <field>['mail.transport.password']</field>
-            </fields>
-            <properties mode="edit">
-              <property name="size">20</property>
-              <property name="styleClass">dataInputText</property>
-              <property name="required">false</property>
-            </properties>
-          </widget>
-        </subWidgets>
       </widget>
       <widget name="mail.transport.user" type="text">
         <labels>
@@ -1041,10 +906,10 @@
         <fields>
           <field>['mail.transport.user']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{value['mail.transport.auth'] == true}
+          </property>
         </properties>
       </widget>
       <widget name="mail.transport.password" type="secret">
@@ -1057,8 +922,11 @@
         </fields>
         <properties mode="edit">
           <property name="size">20</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
+        </properties>
+        <properties widgetMode="any">
+          <property name="rendered">
+            #{value['mail.transport.auth'] == true}
+          </property>
         </properties>
       </widget>
       <widget name="mail.from" type="text">
@@ -1069,11 +937,6 @@
         <fields>
           <field>['mail.from']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
       <widget name="mail.transport.usetls" type="checkbox">
         <labels>
@@ -1083,10 +946,6 @@
         <fields>
           <field>['mail.transport.usetls']</field>
         </fields>
-        <properties mode="edit">
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
       <widget name="mail.user" type="text">
         <labels>
@@ -1096,11 +955,6 @@
         <fields>
           <field>['mail.user']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">50</property>
-          <property name="styleClass">dataInputText</property>
-          <property name="required">false</property>
-        </properties>
       </widget>
     </layout>
 
