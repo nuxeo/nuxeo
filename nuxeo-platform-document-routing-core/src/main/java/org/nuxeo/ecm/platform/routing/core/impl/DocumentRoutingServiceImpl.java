@@ -70,6 +70,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     public static final String PERSISTER_XP = "persister";
 
+    // FIXME: use ContributionFragmentRegistry instances instead to handle hot
+    // reload
+
     protected Map<String, String> typeToChain = new HashMap<String, String>();
 
     protected Map<String, String> undoChainIdFromRunning = new HashMap<String, String>();
@@ -147,7 +150,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
     }
 
-    public static class ResumeRouteInstanceRunner extends UnrestrictedSessionRunner {
+    public static class ResumeRouteInstanceRunner extends
+            UnrestrictedSessionRunner {
 
         protected DocumentRef routeRef;
 
