@@ -74,6 +74,12 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
+    public static final String DEFAULT_MAX_RESULTS = "1000";
+
+    public static final String MAX_RESULTS_PROPERTY = "org.nuxeo.ecm.core.max.results";
+
+    public static final String LIMIT_RESULTS_PROPETY = "org.nuxeo.ecm.core.limit.results";
+
     private static final Log log = LogFactory.getLog(JDBCMapper.class);
 
     public static Map<String, Serializable> testProps = new HashMap<String, Serializable>();
@@ -94,6 +100,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     private final QueryMakerService queryMakerService;
 
     private final PathResolver pathResolver;
+
+    private boolean limitedResults;
+
+    private long maxResults;
 
     /**
      * Creates a new Mapper.
@@ -126,6 +136,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 "upgradeLastContributor", TEST_UPGRADE_LAST_CONTRIBUTOR);
         tableUpgrader.add(model.LOCK_TABLE_NAME, model.LOCK_OWNER_KEY,
                 "upgradeLocks", TEST_UPGRADE_LOCKS);
+
+        limitedResults = Boolean.parseBoolean(Framework.getProperty(LIMIT_RESULTS_PROPETY));
+        maxResults = Long.parseLong(Framework.getProperty(MAX_RESULTS_PROPERTY, DEFAULT_MAX_RESULTS));
     }
 
     @Override
@@ -697,6 +710,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             sql += " " + sqlInfo.dialect.getPagingClause(limit, offset);
             limit = 0;
             offset = 0;
+        } else if (countTotal && sqlInfo.dialect.supportsPaging() && limitedResults) {
+            long specialLimit = maxResults;
+            if (offset >= maxResults) {
+                specialLimit += offset;
+            }
+            sql += " " + sqlInfo.dialect.getPagingClause(specialLimit, 0);
         }
 
         PreparedStatement ps = null;
