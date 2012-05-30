@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.routing.api;
 
 import java.util.List;
 import java.util.Map;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,7 +29,8 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedEx
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 
 /**
- * The DocumentRoutingService allows manipulation of {@link DocumentRoute DocumentRoutes}.
+ * The DocumentRoutingService allows manipulation of {@link DocumentRoute
+ * DocumentRoutes}.
  */
 public interface DocumentRoutingService {
 
@@ -314,5 +314,19 @@ public interface DocumentRoutingService {
      * @return {@code true} if the document can be routed
      */
     boolean isRoutable(DocumentModel doc);
+
+    /**
+     * Imports route models in the root folder defined by the current persister
+     * from a contributed zip resource. Uses the IO core service, through @{link
+     * FileManager}
+     *
+     * @param overwrite
+     * @param session
+     * @throws ClientException
+     *
+     * @since 5.6
+     */
+    void importDefaultRouteModels(boolean overwrite, CoreSession session)
+            throws ClientException;
 
 }

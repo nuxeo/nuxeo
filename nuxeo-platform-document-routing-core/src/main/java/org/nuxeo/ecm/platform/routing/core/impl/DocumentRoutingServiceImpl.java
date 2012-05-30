@@ -17,12 +17,17 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -32,8 +37,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
@@ -46,8 +53,10 @@ import org.nuxeo.ecm.platform.routing.api.RouteTable;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
+import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -56,6 +65,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
+
+    private static final Log log = LogFactory.getLog(DocumentRoutingServiceImpl.class);
 
     private static final String AVAILABLE_ROUTES_QUERY = String.format(
             "Select * from %s",
@@ -70,8 +81,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     public static final String PERSISTER_XP = "persister";
 
+
     // FIXME: use ContributionFragmentRegistry instances instead to handle hot
     // reload
+
+    public static final String ROUTE_MODELS_IMPORTER_XP = "routeModelImporter";
 
     protected Map<String, String> typeToChain = new HashMap<String, String>();
 
@@ -80,6 +94,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     protected Map<String, String> undoChainIdFromDone = new HashMap<String, String>();
 
     protected DocumentRoutingPersister persister;
+
+    protected URL modelsToImportPath;
 
     protected DocumentRoutingEngineService getEngineService() {
         try {
@@ -103,6 +119,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         } else if (PERSISTER_XP.equals(extensionPoint)) {
             PersisterDescriptor des = (PersisterDescriptor) contribution;
             persister = des.getKlass().newInstance();
+        } else if (ROUTE_MODELS_IMPORTER_XP.equals(extensionPoint)) {
+            RouteModelsImporterDescriptor des = (RouteModelsImporterDescriptor) contribution;
+            if (des.getPath() != null) {
+                modelsToImportPath = contribution.getClass().getResource(
+                        des.getPath());
+            }
         }
     }
 
@@ -522,6 +544,50 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         String type = doc.getType();
         // TODO make configurable
         return type.equals("File") || type.equals("Note");
+    }
+
+    @Override
+    public void importDefaultRouteModels(boolean overwrite, CoreSession session)
+            throws ClientException {
+        if (modelsToImportPath == null) {
+           log.warn("No resource containing route templates found");
+            return;
+        }
+        StreamingBlob fb;
+        try {
+            fb = StreamingBlob.createFromStream(modelsToImportPath.openStream());
+        } catch (IOException e) {
+            throw new ClientRuntimeException(e);
+        }
+        try {
+            getFileManager().createDocumentFromBlob(
+                    session,
+                    fb,
+                    persister.getParentFolderForDocumentRouteModels(session).getPathAsString(),
+                    true, modelsToImportPath.getFile());
+        } catch (Exception e) {
+            throw new ClientException(e);
+        } finally {
+            try {
+                FileUtils.close(fb.getStream());
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+        }
+    }
+
+    protected FileManager getFileManager() {
+        try {
+            return Framework.getService(FileManager.class);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        RouteModelsInitializator routeInializator = new RouteModelsInitializator();
+        routeInializator.install();
     }
 
 }

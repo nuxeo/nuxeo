@@ -1,0 +1,10 @@
+<component
+	name="org.nuxeo.ecm.platform.routing.models.template.resource.contrib"
+	version="1.0">
+
+	<extension target="org.nuxeo.ecm.platform.routing.service"
+		point="routeModelImporter">
+		<template-resource path="/myRoute.zip" />
+	</extension>
+
+</component>

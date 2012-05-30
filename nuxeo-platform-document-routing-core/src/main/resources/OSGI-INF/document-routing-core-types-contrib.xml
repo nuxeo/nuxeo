@@ -29,8 +29,13 @@
       <schema name="conditional_step_folder" />
     </facet>
 
-
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
+      <subtypes>
+        <type>Folder</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="DocumentRouteModelsRoot" extends="Folder">
       <subtypes>
         <type>Folder</type>
       </subtypes>

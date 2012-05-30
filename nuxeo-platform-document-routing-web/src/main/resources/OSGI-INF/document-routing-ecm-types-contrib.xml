@@ -26,6 +26,16 @@
       </subtypes>
     </type>
 
+    <type id="DocumentRouteModelsRoot">
+      <default-view>view_documents</default-view>
+      <label>DocumentRouteModelsRoot</label>
+      <icon>/icons/folder.gif</icon>
+      <subtypes>
+        <type>Folder</type>
+      </subtypes>
+    </type>
+
+
     <type id="DocumentRoute" coreType="DocumentRoute">
       <label>DocumentRoute</label>
       <icon>/icons/route.png</icon>

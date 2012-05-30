@@ -30,7 +30,11 @@ public interface DocumentRoutingConstants {
     // document constant
     String DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE = "DocumentRouteInstancesRoot";
 
+    String DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE = "DocumentRouteModelsRoot";
+
     String DOCUMENT_ROUTE_INSTANCES_ROOT_ID = "document-route-instances-root";
+
+    String DOCUMENT_ROUTE_MODELS_ROOT_ID = "document-route-models-root";
 
     String DOCUMENT_ROUTE_DOCUMENT_TYPE = "DocumentRoute";
 

@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
@@ -812,6 +812,26 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         acp.setRules("test", new UserEntry[] { userEntry });
         doc.setACP(acp, true);
         session.save();
+    }
+
+    @Test
+    public void testImportRouteModel() throws Exception {
+        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle(TEST_BUNDLE);
+        service.importDefaultRouteModels(true, session);
+        DocumentModel modelsRoot = session.getDocument(new PathRef(
+                "/default-domain/document-route-models-root/"));
+        assertNotNull(modelsRoot);
+        DocumentModel route =session.getDocument(new PathRef("/default-domain/document-route-models-root/route"));
+        assertNotNull(route);
+        assertEquals("DocumentRoute", route.getType());
+        DocumentModel step1 =session.getDocument(new PathRef("/default-domain/document-route-models-root/route/step1"));
+        assertNotNull(step1);
+        assertEquals("DocumentRouteStep", step1.getType());
+        DocumentModel step2 =session.getDocument(new PathRef("/default-domain/document-route-models-root/route/step2"));
+        assertNotNull(step2);
+        assertEquals("DocumentRouteStep", step2.getType());
     }
 
     protected void waitForAsyncExec() {

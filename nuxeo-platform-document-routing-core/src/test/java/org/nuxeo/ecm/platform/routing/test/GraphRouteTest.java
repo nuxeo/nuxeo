@@ -64,7 +64,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.userworkspace.core", //
         "org.nuxeo.ecm.platform.userworkspace.types", //
-        "org.nuxeo.ecm.platform.routing.core", //
+        "org.nuxeo.ecm.platform.routing.core" //
 })
 @LocalDeploy({
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml",
