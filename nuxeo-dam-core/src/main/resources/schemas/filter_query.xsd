@@ -20,7 +20,7 @@
   <xs:element name="created_min" type="xs:date" />
   <xs:element name="created_max" type="xs:date" />
 
-  <xs:element name="sortColumn" type="xs:string" default="dc:title" />
-  <xs:element name="sortAscending" type="xs:boolean" default="true" />
+  <xs:element name="sortColumn" type="xs:string" />
+  <xs:element name="sortAscending" type="xs:boolean" />
 
 </xs:schema>

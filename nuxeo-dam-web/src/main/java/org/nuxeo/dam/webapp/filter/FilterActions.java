@@ -250,7 +250,9 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
             throw new SortNotSupportedException();
         }
 
-        if (sortInfo == null) {
+        if (sortInfo == null
+                && "true".equals(Framework.getProperty(
+                        "org.nuxeo.dam.add.default.sort", "true"))) {
             sortInfo = new SortInfo(Constants.DUBLINCORE_TITLE_PROPERTY, true);
         }
 
