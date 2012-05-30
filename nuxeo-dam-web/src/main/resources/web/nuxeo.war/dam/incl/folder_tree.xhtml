@@ -32,6 +32,8 @@
       </div>
       <h:panelGroup id="treeNav">
         <rich:tree
+          ajaxSingle="true" eventsQueue="filterFormQueue"
+          limitToList="true" reRender="treeNav"
           adviseNodeOpened="#{foldersTree.adviseNodeOpened}"
           changeExpandListener="#{foldersTree.changeExpandListener}"
           icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
@@ -45,6 +47,7 @@
             nodes="#{node.children}"
             var="node">
             <rich:treeNode
+              ajaxSingle="true" eventsQueue="filterFormQueue"
               highlightedClass="treeNodeHighlightedClass"
               selectedClass="treeNodeSelectedClass">
               <div class="#{nxu:test(filterActions.isFolderToHighlight(node),'selected_folder','')}">
