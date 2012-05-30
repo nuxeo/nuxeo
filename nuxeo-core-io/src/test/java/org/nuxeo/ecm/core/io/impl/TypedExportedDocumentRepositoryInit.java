@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 /**
  * Inits the repository for a typed exported document test case.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class TypedExportedDocumentRepositoryInit extends DefaultRepositoryInit {
@@ -41,7 +41,7 @@ public class TypedExportedDocumentRepositoryInit extends DefaultRepositoryInit {
 
     /**
      * Creates the test doc.
-     * 
+     *
      * @param session the session
      * @return the document model
      * @throws ClientException the client exception
@@ -61,7 +61,7 @@ public class TypedExportedDocumentRepositoryInit extends DefaultRepositoryInit {
         doc.setProperty("dublincore", "modified", "2011-12-29T11:24:25Z");
         doc.setProperty("dublincore", "lastContributor", "Administrator");
         doc.setProperty("dublincore", "contributors", new String[] {
-                "Administrator", "joe" });
+                "Administrator", "Joe" });
         doc.setProperty("dublincore", "subjects", new String[] { "Art",
                 "Architecture" });
 
