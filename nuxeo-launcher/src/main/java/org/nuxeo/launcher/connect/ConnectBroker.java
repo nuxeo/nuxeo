@@ -45,6 +45,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -106,7 +107,11 @@ public class ConnectBroker {
 
     private String relax = OPTION_RELAX_DEFAULT;
 
-    public static final String OPTION_RELAX_DEFAULT = "true";
+    public static final String OPTION_RELAX_DEFAULT = "ask";
+
+    private String accept = OPTION_ACCEPT_DEFAULT;
+
+    public static final String OPTION_ACCEPT_DEFAULT = "ask";
 
     public ConnectBroker(Environment env) throws IOException, PackageException {
         this.env = env;
@@ -517,6 +522,31 @@ public class ConnectBroker {
         return pkgRequest(null, null, null, localNames);
     }
 
+    /**
+     * Uninstall a list of packages. If the list contains a package name
+     * (versus an ID), only the considered as best matching package is
+     * uninstalled.
+     *
+     * @param packageIdsToRemove The list can contain package IDs and names
+     * @see #pkgUninstall(String)
+     */
+    public boolean pkgUninstall(List<String> packageIdsToRemove) {
+        log.debug("Uninstalling: " + packageIdsToRemove);
+        for (String pkgId : packageIdsToRemove) {
+            if (pkgUninstall(pkgId) == null) {
+                log.error("Unable to uninstall " + pkgId);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Uninstall a local package. The package is not removed from cache.
+     *
+     * @param pkgId Package ID or Name
+     * @return The uninstalled LocalPackage or null if failed
+     */
     public LocalPackage pkgUninstall(String pkgId) {
         if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
             System.exit(LAUNCHER_CHANGED_EXIT_CODE);
@@ -559,6 +589,42 @@ public class ConnectBroker {
         }
     }
 
+    /**
+     * Remove a list of packages from cache. If the list contains a package name
+     * (versus an ID), all matching packages are removed.
+     *
+     * @param pkgsToRemove The list can contain package IDs and names
+     * @see #pkgRemove(String)
+     */
+    public void pkgRemove(List<String> pkgsToRemove) {
+        if (pkgsToRemove != null) {
+            log.debug("Removing: " + pkgsToRemove);
+            for (String pkgNameOrId : pkgsToRemove) {
+                List<String> allIds;
+                if (isLocalPackageId(pkgNameOrId)) {
+                    allIds = new ArrayList<String>();
+                    allIds.add(pkgNameOrId);
+                } else {
+                    // Request made on a name: remove all matching packages
+                    allIds = getAllLocalPackageIdsFromName(pkgNameOrId);
+                }
+                for (String pkgId : allIds) {
+                    if (pkgRemove(pkgId) == null) {
+                        log.warn("Unable to remove " + pkgId);
+                        // Don't error out on failed (cache) removal
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove a package from cache. If it was installed, the package is
+     * uninstalled then removed.
+     *
+     * @param pkgId Package ID or Name
+     * @return The removed LocalPackage or null if failed
+     */
     public LocalPackage pkgRemove(String pkgId) {
         CommandInfo cmdInfo = new CommandInfo();
         cmdInfo.name = CommandInfo.CMD_REMOVE;
@@ -602,6 +668,26 @@ public class ConnectBroker {
         }
     }
 
+    /**
+     * Add a list of package files into the cache
+     *
+     * @param pkgsToAdd
+     * @see #pkgAdd(String)
+     */
+    public void pkgAdd(List<String> pkgsToAdd) {
+        if (pkgsToAdd != null) {
+            for (String pkgToAdd : pkgsToAdd) {
+                pkgAdd(pkgToAdd);
+            }
+        }
+    }
+
+    /**
+     * Add a package file into the cache
+     *
+     * @param packageFileName
+     * @return The added LocalPackage or null if failed
+     */
     public LocalPackage pkgAdd(String packageFileName) {
         CommandInfo cmdInfo = new CommandInfo();
         cmdInfo.name = CommandInfo.CMD_ADD;
@@ -656,6 +742,31 @@ public class ConnectBroker {
         }
     }
 
+    /**
+     * Install a list of local packages. If the list contains a package name
+     * (versus an ID), only the considered as best matching package is
+     * installed.
+     *
+     * @param packageIdsToInstall The list can contain package IDs and names
+     * @see #pkgInstall(String)
+     */
+    public boolean pkgInstall(List<String> packageIdsToInstall) {
+        log.debug("Installing: " + packageIdsToInstall);
+        for (String pkgId : packageIdsToInstall) {
+            if (pkgInstall(pkgId) == null) {
+                log.error("Unable to install " + pkgId);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Install a local package.
+     *
+     * @param pkgId Package ID or Name
+     * @return The installed LocalPackage or null if failed
+     */
     public LocalPackage pkgInstall(String pkgId) {
         if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
             System.exit(LAUNCHER_CHANGED_EXIT_CODE);
@@ -825,8 +936,11 @@ public class ConnectBroker {
             }
             if (doExecute) {
                 if (useResolver) {
+                    String oldAccept = accept;
+                    accept = "true";
                     boolean success = pkgRequest(pkgsToAdd, pkgsToInstall,
                             pkgsToUninstall, pkgsToRemove);
+                    accept = oldAccept;
                     if (!success) {
                         errorValue = 2;
                     }
@@ -911,11 +1025,7 @@ public class ConnectBroker {
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
         // Add local files
-        if (pkgsToAdd != null) {
-            for (String pkgToAdd : pkgsToAdd) {
-                pkgAdd(pkgToAdd);
-            }
-        }
+        pkgAdd(pkgsToAdd);
         // Build solver request
         List<String> solverInstall = new ArrayList<String>();
         List<String> solverRemove = new ArrayList<String>();
@@ -982,27 +1092,17 @@ public class ConnectBroker {
                             allPackagesByID, allPackagesByName)) {
                         requestPlatform = null;
                         if ("ask".equalsIgnoreCase(relax)) {
-                            Console console = System.console();
-                            String answer = console.readLine(
+                            relax = readConsole(
                                     "Package %s is not available on platform version %s.\n"
-                                            + "Do you want to relax the constraint (yes/no)? ",
-                                    requestPackage, targetPlatform);
-                            if (answer == null) {
-                                answer = "no";
-                            }
-                            answer = answer.trim().toLowerCase();
-                            if ("yes".equals(answer) || "y".equals(answer)) {
-                                relax = "true";
-                            } else {
-                                relax = "false";
-                            }
+                                            + "Do you want to relax the constraint (yes/no)? [no] ",
+                                    "no", requestPackage, targetPlatform);
                         }
 
-                        if ("true".equalsIgnoreCase(relax)) {
+                        if (Boolean.parseBoolean(relax)) {
                             log.warn(String.format(
                                     "Relax restriction to target platform %s because of package %s",
                                     targetPlatform, requestPackage));
-                        } else if ("false".equalsIgnoreCase(relax)) {
+                        } else {
                             throw new PackageException(
                                     String.format(
                                             "Package %s is not available on platform version %s (relax is not allowed)",
@@ -1022,6 +1122,19 @@ public class ConnectBroker {
             if (resolution.isFailed()) {
                 return false;
             }
+            if (resolution.isEmpty()) {
+                pkgRemove(pkgsToRemove);
+                return true;
+            }
+            if ("ask".equalsIgnoreCase(accept)) {
+                accept = readConsole(
+                        "Do you want to continue (yes/no)? [yes] ", "yes");
+            }
+            if (!Boolean.parseBoolean(accept)) {
+                log.warn("Exit");
+                return false;
+            }
+
             List<String> packageIdsToRemove = resolution.getOrderedPackageIdsToRemove();
             Map<String, Version> packagesToUpgrade = resolution.getLocalPackagesToUpgrade();
             List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
@@ -1047,21 +1160,16 @@ public class ConnectBroker {
                 }
                 DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
                         null, uninstallList, null, requestPlatform);
-                log.info("Sub-resolution (uninstall) " + uninstallResolution);
+                log.debug("Sub-resolution (uninstall) " + uninstallResolution);
                 if (uninstallResolution.isFailed()) {
-                    // log.info(uninstallResolution);
                     return false;
                 }
                 packageIdsToRemove = uninstallResolution.getOrderedPackageIdsToRemove();
                 packagesIdsUninstalledBecauseOfUpgrade = ListUtils.subtract(
                         packageIdsToRemove, uninstallIdsList);
             }
-            log.debug("Uninstalling: " + packageIdsToRemove);
-            for (String pkgId : packageIdsToRemove) {
-                if (pkgUninstall(pkgId) == null) {
-                    log.error("Unable to uninstall " + pkgId);
-                    return false;
-                }
+            if (!pkgUninstall(packageIdsToRemove)) {
+                return false;
             }
 
             // Install
@@ -1074,43 +1182,34 @@ public class ConnectBroker {
                 installList.addAll(packagesIdsUninstalledBecauseOfUpgrade);
                 DependencyResolution installResolution = getPackageManager().resolveDependencies(
                         installList, null, null, requestPlatform);
-                log.info("Sub-resolution (install) " + installResolution);
+                log.debug("Sub-resolution (install) " + installResolution);
                 if (installResolution.isFailed()) {
-                    // log.info(installResolution);
                     return false;
                 }
                 packageIdsToInstall = installResolution.getOrderedPackageIdsToInstall();
             }
-            log.debug("Installing: " + packageIdsToInstall);
-            for (String pkgId : packageIdsToInstall) {
-                if (pkgInstall(pkgId) == null) {
-                    log.error("Unable to install " + pkgId);
-                    return false;
-                }
+            if (!pkgInstall(packageIdsToInstall)) {
+                return false;
             }
 
-            // Remove
-            if (pkgsToRemove != null) {
-                log.debug("Removing: " + pkgsToRemove);
-                for (String pkgNameOrId : pkgsToRemove) {
-                    List<String> allIds;
-                    if (isLocalPackageId(pkgNameOrId)) {
-                        allIds = new ArrayList<String>();
-                        allIds.add(pkgNameOrId);
-                    } else {
-                        // Request made on a name: remove all matching packages
-                        allIds = getAllLocalPackageIdsFromName(pkgNameOrId);
-                    }
-                    for (String pkgId : allIds) {
-                        if (pkgRemove(pkgId) == null) {
-                            log.warn("Unable to remove " + pkgId);
-                            // Don't error out on failed (cache) removal
-                        }
-                    }
-                }
-            }
+            pkgRemove(pkgsToRemove);
         }
         return true;
+    }
+
+    protected String readConsole(String message, String defaultValue,
+            Object... objects) {
+        Console console = System.console();
+        String answer = console.readLine(message, objects);
+        if (StringUtils.isEmpty(answer)) {
+            answer = defaultValue;
+        }
+        answer = answer.trim().toLowerCase();
+        if ("yes".equals(answer) || "y".equals(answer)) {
+            return "true";
+        } else {
+            return "false";
+        }
     }
 
     protected boolean pkgUpgradeByType(PackageType type) {
@@ -1133,10 +1232,28 @@ public class ConnectBroker {
     }
 
     /**
-     * @param relaxValue true, false or ask
+     * Must be called after {@link #setAccept(String)} which overwrites its
+     * value.
+     *
+     * @param relaxValue true, false or ask; ignored if null
      */
     public void setRelax(String relaxValue) {
-        relax = relaxValue;
+        if (relaxValue != null) {
+            relax = relaxValue;
+        }
+    }
+
+    /**
+     * @param acceptValue true, false or ask; if true or ask, then calls
+     *            {@link #setRelax(String)} with the same value; ignored if null
+     */
+    public void setAccept(String acceptValue) {
+        if (acceptValue != null) {
+            accept = acceptValue;
+            if (!"false".equalsIgnoreCase(acceptValue)) {
+                setRelax(acceptValue);
+            }
+        }
     }
 
 }

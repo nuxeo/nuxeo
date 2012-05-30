@@ -152,7 +152,16 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_RELAX = "relax";
 
-    private static final String OPTION_RELAX_DESC = "Allow relax constraint on current platform";
+    private static final String OPTION_RELAX_DESC = "Allow relax constraint on current platform (default: "
+            + ConnectBroker.OPTION_RELAX_DEFAULT + ")";
+
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_ACCEPT = "accept";
+
+    private static final String OPTION_ACCEPT_DESC = "Accept, refuse or ask confirmation for all changes (default: "
+            + ConnectBroker.OPTION_ACCEPT_DEFAULT + ")";
 
     // Fallback to avoid an error when the log dir is not initialized
     static {
@@ -577,6 +586,12 @@ public abstract class NuxeoLauncher {
             OptionBuilder.hasArg();
             OptionBuilder.withArgName("true|false|ask");
             OptionBuilder.withDescription(OPTION_RELAX_DESC);
+            launcherOptions.addOption(OptionBuilder.create());
+            // Accept option
+            OptionBuilder.withLongOpt(OPTION_ACCEPT);
+            OptionBuilder.hasArg();
+            OptionBuilder.withArgName("true|false|ask");
+            OptionBuilder.withDescription(OPTION_ACCEPT_DESC);
             launcherOptions.addOption(OptionBuilder.create());
         }
     }
@@ -1619,9 +1634,12 @@ public abstract class NuxeoLauncher {
             PackageException {
         if (connectBroker == null) {
             connectBroker = new ConnectBroker(configurationGenerator.getEnv());
+            if (cmdLine.hasOption(OPTION_ACCEPT)) {
+                connectBroker.setAccept(cmdLine.getOptionValue(OPTION_ACCEPT,
+                        ConnectBroker.OPTION_ACCEPT_DEFAULT));
+            }
             if (cmdLine.hasOption(OPTION_RELAX)) {
-                connectBroker.setRelax(cmdLine.getOptionValue(OPTION_RELAX,
-                        ConnectBroker.OPTION_RELAX_DEFAULT));
+                connectBroker.setRelax(cmdLine.getOptionValue(OPTION_RELAX));
             }
         }
         return connectBroker;
