@@ -467,6 +467,7 @@ public class ConfigurationGenerator {
                 templates = getUserTemplates();
             }
             includeTemplates(templates);
+            System.out.println();
             extractDatabaseTemplateName();
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
@@ -676,60 +677,61 @@ public class ConfigurationGenerator {
             }
             if (includedTemplates.contains(chosenTemplate)) {
                 log.debug("Already included " + nextToken);
-            } else if (chosenTemplate.exists()) {
-                File chosenTemplateConf = new File(chosenTemplate,
-                        NUXEO_DEFAULT_CONF);
-                if (chosenTemplateConf.exists()) {
-                    Properties subTemplateConf = new Properties();
-                    FileInputStream chosenTemplateConfIS = new FileInputStream(
-                            chosenTemplateConf);
-                    subTemplateConf.load(chosenTemplateConfIS);
-                    chosenTemplateConfIS.close();
-                    String subTemplatesList = subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES);
-                    if (subTemplatesList != null
-                            && subTemplatesList.length() > 0) {
-                        includeTemplates(subTemplatesList);
-                    }
-                    // Load configuration from chosen templates
-                    chosenTemplateConfIS = new FileInputStream(
-                            chosenTemplateConf);
-                    defaultConfig.load(chosenTemplateConfIS);
-                    chosenTemplateConfIS.close();
-                    String templateInfo = "Include template: "
-                            + chosenTemplate.getPath();
-                    // Check for deprecated parameters
-                    @SuppressWarnings("rawtypes")
-                    Enumeration userEnum = defaultConfig.propertyNames();
-                    while (userEnum.hasMoreElements()) {
-                        String key = (String) userEnum.nextElement();
-                        if (parametersMigration.containsKey(key)) {
-                            String value = defaultConfig.getProperty(key);
-                            defaultConfig.setProperty(
-                                    parametersMigration.get(key), value);
-                            // Don't remove the deprecated key yet - more
-                            // warnings but old things should keep working
-                            // defaultConfig.remove(key);
-                            log.warn("Parameter " + key
-                                    + " is deprecated - please use "
-                                    + parametersMigration.get(key) + " instead");
-                        }
-                    }
-                    if (quiet) {
-                        log.debug(templateInfo);
-                    } else {
-                        log.info(templateInfo + "\n");
-                    }
-                } else {
-                    log.debug("No default configuration for template "
-                            + nextToken);
-                }
-                includedTemplates.add(chosenTemplate);
-            } else {
+                continue;
+            }
+            if (!chosenTemplate.exists()) {
                 log.error(String.format(
                         "Template '%s' not found with relative or absolute path (%s). "
                                 + "Check your %s parameter, and %s for included files.",
                         nextToken, chosenTemplate, PARAM_TEMPLATES_NAME,
                         PARAM_INCLUDED_TEMPLATES));
+                continue;
+            }
+            File chosenTemplateConf = new File(chosenTemplate,
+                    NUXEO_DEFAULT_CONF);
+            includedTemplates.add(chosenTemplate);
+            if (!chosenTemplateConf.exists()) {
+                log.warn("Ignore template (no default configuration): "
+                        + nextToken);
+                continue;
+            }
+
+            Properties subTemplateConf = new Properties();
+            FileInputStream chosenTemplateConfIS = new FileInputStream(
+                    chosenTemplateConf);
+            subTemplateConf.load(chosenTemplateConfIS);
+            chosenTemplateConfIS.close();
+            String subTemplatesList = subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES);
+            if (subTemplatesList != null && subTemplatesList.length() > 0) {
+                includeTemplates(subTemplatesList);
+            }
+            // Load configuration from chosen templates
+            chosenTemplateConfIS = new FileInputStream(chosenTemplateConf);
+            defaultConfig.load(chosenTemplateConfIS);
+            chosenTemplateConfIS.close();
+            String templateInfo = "Include template: "
+                    + chosenTemplate.getPath();
+            if (quiet) {
+                log.debug(templateInfo);
+            } else {
+                log.info(templateInfo);
+            }
+            // Check for deprecated parameters
+            @SuppressWarnings("rawtypes")
+            Enumeration userEnum = defaultConfig.propertyNames();
+            while (userEnum.hasMoreElements()) {
+                String key = (String) userEnum.nextElement();
+                if (parametersMigration.containsKey(key)) {
+                    String value = defaultConfig.getProperty(key);
+                    defaultConfig.setProperty(parametersMigration.get(key),
+                            value);
+                    // Don't remove the deprecated key yet - more
+                    // warnings but old things should keep working
+                    // defaultConfig.remove(key);
+                    log.warn("Parameter " + key
+                            + " is deprecated - please use "
+                            + parametersMigration.get(key) + " instead");
+                }
             }
         }
     }
