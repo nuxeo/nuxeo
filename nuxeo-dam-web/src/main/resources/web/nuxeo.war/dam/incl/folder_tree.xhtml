@@ -23,7 +23,8 @@
       <div class="refresh">
           <a4j:commandLink action="#{foldersTree.reset}" reRender="treeNav"
           onclick="jQuery.fancybox.showActivity()"
-          oncomplete="jQuery.fancybox.hideActivity()">
+          oncomplete="jQuery.fancybox.hideActivity()"
+          eventsQueue="filterFormQueue">
             <h:graphicImage value="/icons/refresh.png"
              alt="#{messages['label.refresh']}"
              title="#{messages['label.refresh']}" />
@@ -71,6 +72,7 @@
   </div>
 </c:if>
 
-<rich:panelMenuItem mode="none" label="#{filterActions.folderSelectedItem.label}" onclick="jQuery('#folderTreeAnchor').click()" styleClass="selected"/>
+<rich:panelMenuItem mode="none" eventsQueue="filterFormQueue" label="#{filterActions.folderSelectedItem.label}"
+  onclick="jQuery('#folderTreeAnchor').click()" styleClass="selected"/>
 
 </div>
