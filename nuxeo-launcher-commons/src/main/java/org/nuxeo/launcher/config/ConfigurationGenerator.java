@@ -63,7 +63,7 @@ import freemarker.template.TemplateException;
 /**
  * Builder for server configuration and datasource files from templates and
  * properties.
- * 
+ *
  * @author jcarsique
  */
 public class ConfigurationGenerator {
@@ -84,7 +84,7 @@ public class ConfigurationGenerator {
 
     /**
      * Absolute or relative PATH to the user chosen template
-     * 
+     *
      * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
      */
     @Deprecated
@@ -356,7 +356,7 @@ public class ConfigurationGenerator {
     /**
      * Initialize configurator, check requirements and load current
      * configuration
-     * 
+     *
      * @return returns true if current install is configurable, else returns
      *         false
      */
@@ -395,7 +395,7 @@ public class ConfigurationGenerator {
 
     /**
      * Change templates using given database template
-     * 
+     *
      * @param dbTemplate new database template
      * @since 5.4.2
      */
@@ -485,11 +485,11 @@ public class ConfigurationGenerator {
 
     /**
      * Generate properties which values are based on others
-     * 
+     *
      * @return Map with new parameters to save in {@code nuxeoConf}
-     * 
+     *
      * @throws ConfigurationException
-     * 
+     *
      * @since 5.5
      */
     protected HashMap<String, String> evalDynamicProperties()
@@ -502,11 +502,11 @@ public class ConfigurationGenerator {
 
     /**
      * Generate a server status key if not already set
-     * 
+     *
      * @param newParametersToSave
-     * 
+     *
      * @throws ConfigurationException
-     * 
+     *
      * @see #PARAM_STATUS_KEY
      * @since 5.5
      */
@@ -555,7 +555,7 @@ public class ConfigurationGenerator {
 
     /**
      * Read nuxeo.conf, replace backslashes in paths and write new nuxeo.conf
-     * 
+     *
      * @throws ConfigurationException if any error reading or writing nuxeo.conf
      * @since 5.4.1
      */
@@ -717,7 +717,7 @@ public class ConfigurationGenerator {
                     if (quiet) {
                         log.debug(templateInfo);
                     } else {
-                        log.info(templateInfo);
+                        log.info(templateInfo + "\n");
                     }
                 } else {
                     log.debug("No default configuration for template "
@@ -754,7 +754,7 @@ public class ConfigurationGenerator {
      * Save changed parameters in {@code nuxeo.conf}. This method does not check
      * values in map. Use {@link #saveFilteredConfiguration(Map)} for parameters
      * filtering.
-     * 
+     *
      * @param changedParameters Map of modified parameters
      * @see #saveFilteredConfiguration(Map)
      */
@@ -768,7 +768,7 @@ public class ConfigurationGenerator {
      * Save changed parameters in {@code nuxeo.conf}. This method does not check
      * values in map. Use {@link #saveFilteredConfiguration(Map)} for parameters
      * filtering.
-     * 
+     *
      * @param changedParameters Map of modified parameters
      * @param setGenerationOnceToFalse If generation was on (true or once), then
      *            set it to false or not?
@@ -795,7 +795,7 @@ public class ConfigurationGenerator {
      * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
      * {@link #getChangedParametersMap(Map, Map)} and calculating templates if
      * changedParameters contains a value for {@link #PARAM_TEMPLATE_DBNAME}
-     * 
+     *
      * @param changedParameters Maps of modified parameters
      * @since 5.4.2
      * @see #getChangedParameters(Map)
@@ -814,7 +814,7 @@ public class ConfigurationGenerator {
      * Filters given parameters including them only if (there was no previous
      * value and new value is not empty/null) or (there was a previous value and
      * it differs from the new value)
-     * 
+     *
      * @param changedParameters parameters to be filtered
      * @return filtered map
      * @since 5.4.2
@@ -995,7 +995,7 @@ public class ConfigurationGenerator {
     /**
      * Extract a database template from a list of templates. Return the last one
      * if there are multiples
-     * 
+     *
      * @see #rebuildTemplatesStr(String)
      */
     public String extractDatabaseTemplateName() {
@@ -1027,7 +1027,7 @@ public class ConfigurationGenerator {
 
     /**
      * Delegate logs initialization to serverConfigurator instance
-     * 
+     *
      * @since 5.4.2
      */
     public void initLogs() {
@@ -1062,10 +1062,10 @@ public class ConfigurationGenerator {
      * Create needed directories. Check existence of old paths. If old paths
      * have been found and they cannot be upgraded automatically, then upgrading
      * message is logged and error thrown.
-     * 
+     *
      * @throws ConfigurationException If a deprecated directory has been
      *             detected.
-     * 
+     *
      * @since 5.4.2
      */
     public void verifyInstallation() throws ConfigurationException {
@@ -1104,11 +1104,11 @@ public class ConfigurationGenerator {
 
     /**
      * Check that the process is executed with a supported Java version
-     * 
+     *
      * @throws ConfigurationException
-     * 
+     *
      * @since 5.6
-     * 
+     *
      */
     public void checkJavaVersion() throws ConfigurationException {
         String version = System.getProperty("java.version");
@@ -1128,9 +1128,9 @@ public class ConfigurationGenerator {
      * ports are available on those addresses. Server specific implementations
      * should override this method in order to check for server specific ports.
      * {@link #bindAddress} must be set before.
-     * 
+     *
      * @throws ConfigurationException
-     * 
+     *
      * @since 5.5
      */
     public void checkAddressesAndPorts() throws ConfigurationException {
@@ -1174,7 +1174,7 @@ public class ConfigurationGenerator {
 
     /**
      * Checks if port is available on given address.
-     * 
+     *
      * @param port port to check for availability
      * @throws ConfigurationException Throws an exception if address is
      *             unavailable.
@@ -1239,7 +1239,7 @@ public class ConfigurationGenerator {
 
     /**
      * Check if wizard must and can be ran
-     * 
+     *
      * @return true if configuration wizard is required before starting Nuxeo
      * @since 5.4.2
      */
@@ -1251,7 +1251,7 @@ public class ConfigurationGenerator {
 
     /**
      * Rebuild a templates string for use in nuxeo.conf
-     * 
+     *
      * @param dbTemplate database template to use instead of current one
      * @return new templates string using given dbTemplate
      * @since 5.4.2
@@ -1280,7 +1280,7 @@ public class ConfigurationGenerator {
 
     /**
      * Ensure the server will start only wizard application, not Nuxeo
-     * 
+     *
      * @since 5.4.2
      */
     public void prepareWizardStart() {
@@ -1289,7 +1289,7 @@ public class ConfigurationGenerator {
 
     /**
      * Ensure the wizard won't be started and nuxeo is ready for use
-     * 
+     *
      * @since 5.4.2
      */
     public void cleanupPostWizard() {
@@ -1332,7 +1332,7 @@ public class ConfigurationGenerator {
     /**
      * Add a template to the {@link #PARAM_TEMPLATES_NAME} list if not already
      * present
-     * 
+     *
      * @param template Template to add
      * @throws ConfigurationException
      * @since 5.5
@@ -1352,7 +1352,7 @@ public class ConfigurationGenerator {
 
     /**
      * Remove a template from the {@link #PARAM_TEMPLATES_NAME} list
-     * 
+     *
      * @param template
      * @throws ConfigurationException
      * @since 5.5
@@ -1379,7 +1379,7 @@ public class ConfigurationGenerator {
 
     /**
      * Set a property in nuxeo configuration
-     * 
+     *
      * @param key
      * @param value
      * @throws ConfigurationException
@@ -1398,7 +1398,7 @@ public class ConfigurationGenerator {
 
     /**
      * Check driver availability and database connection
-     * 
+     *
      * @param databaseTemplate Nuxeo database template
      * @param dbName nuxeo.db.name parameter in nuxeo.conf
      * @param dbUser nuxeo.db.user parameter in nuxeo.conf
@@ -1442,7 +1442,7 @@ public class ConfigurationGenerator {
      * Build an {@link URLClassLoader} for the given databaseTemplate looking in
      * the templates directory and in the server lib directory, then looks for a
      * driver
-     * 
+     *
      * @param databaseTemplate
      * @param databaseTemplateDir
      * @param classname Driver class name, defined by {@link #PARAM_DB_DRIVER}
