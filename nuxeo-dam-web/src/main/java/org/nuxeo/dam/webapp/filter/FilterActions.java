@@ -222,6 +222,7 @@ public class FilterActions implements Serializable, ResultsProviderFarm {
             filterDocument.setPropertyValue(PATH_FIELD_XPATH, null);
         } else {
             filterDocument.setPropertyValue(PATH_FIELD_XPATH, folderPath);
+            filterDocument.setPropertyValue(ASSET_LIBRARY_PATH_FIELD_XPATH, null);
         }
         invalidateProvider();
     }
