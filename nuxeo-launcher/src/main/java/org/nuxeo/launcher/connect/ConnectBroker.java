@@ -19,6 +19,7 @@
 
 package org.nuxeo.launcher.connect;
 
+import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -102,6 +103,10 @@ public class ConnectBroker {
     private String targetPlatform;
 
     private String distributionMPDir;
+
+    private String relax = OPTION_RELAX_DEFAULT;
+
+    public static final String OPTION_RELAX_DEFAULT = "true";
 
     public ConnectBroker(Environment env) throws IOException, PackageException {
         this.env = env;
@@ -204,9 +209,10 @@ public class ConnectBroker {
             throws PackageException {
         // Try ID match first
         if (allPackagesByID.containsKey(requestPkgStr)) {
-            return Arrays.asList(
-                    allPackagesByID.get(requestPkgStr).getTargetPlatforms()).contains(
-                    targetPlatform);
+            return allPackagesByID.get(requestPkgStr).getTargetPlatforms().length == 0
+                    || Arrays.asList(
+                            allPackagesByID.get(requestPkgStr).getTargetPlatforms()).contains(
+                            targetPlatform);
         }
         // Fallback on name match
         List<DownloadablePackage> allPackagesForName = allPackagesByName.get(requestPkgStr);
@@ -215,8 +221,9 @@ public class ConnectBroker {
         }
         for (DownloadablePackage pkg : allPackagesForName) {
             if (requestPkgStr.equals(pkg.getName())) {
-                if (Arrays.asList(pkg.getTargetPlatforms()).contains(
-                        targetPlatform)) {
+                if (pkg.getTargetPlatforms().length == 0
+                        || Arrays.asList(pkg.getTargetPlatforms()).contains(
+                                targetPlatform)) {
                     return true;
                 }
             }
@@ -974,9 +981,33 @@ public class ConnectBroker {
                     if (!matchesPlatform(requestPackage, allPackages,
                             allPackagesByID, allPackagesByName)) {
                         requestPlatform = null;
-                        log.warn(String.format(
-                                "Relax restriction to target platform %s because of package %s",
-                                targetPlatform, requestPackage));
+                        if ("ask".equalsIgnoreCase(relax)) {
+                            Console console = System.console();
+                            String answer = console.readLine(
+                                    "Package %s is not available on platform version %s.\n"
+                                            + "Do you want to relax the constraint (yes/no)? ",
+                                    requestPackage, targetPlatform);
+                            if (answer == null) {
+                                answer = "no";
+                            }
+                            answer = answer.trim().toLowerCase();
+                            if ("yes".equals(answer) || "y".equals(answer)) {
+                                relax = "true";
+                            } else {
+                                relax = "false";
+                            }
+                        }
+
+                        if ("true".equalsIgnoreCase(relax)) {
+                            log.warn(String.format(
+                                    "Relax restriction to target platform %s because of package %s",
+                                    targetPlatform, requestPackage));
+                        } else if ("false".equalsIgnoreCase(relax)) {
+                            throw new PackageException(
+                                    String.format(
+                                            "Package %s is not available on platform version %s (relax is not allowed)",
+                                            requestPackage, targetPlatform));
+                        }
                         break;
                     }
                 }
@@ -1099,6 +1130,13 @@ public class ConnectBroker {
 
     public boolean pkgUpgrade() {
         return pkgUpgradeByType(PackageType.ADDON);
+    }
+
+    /**
+     * @param relaxValue true, false or ask
+     */
+    public void setRelax(String relaxValue) {
+        relax = relaxValue;
     }
 
 }

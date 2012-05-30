@@ -147,6 +147,13 @@ public abstract class NuxeoLauncher {
 
     private static final String OPTION_HELP_DESC = "Show detailed help";
 
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_RELAX = "relax";
+
+    private static final String OPTION_RELAX_DESC = "Allow relax constraint on current platform";
+
     // Fallback to avoid an error when the log dir is not initialized
     static {
         if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
@@ -564,6 +571,12 @@ public abstract class NuxeoLauncher {
             // Package management option
             OptionBuilder.withLongOpt(OPTION_NODEPS);
             OptionBuilder.withDescription(OPTION_NODEPS_DESC);
+            launcherOptions.addOption(OptionBuilder.create());
+            // Relax on target platform option
+            OptionBuilder.withLongOpt(OPTION_RELAX);
+            OptionBuilder.hasArg();
+            OptionBuilder.withArgName("true|false|ask");
+            OptionBuilder.withDescription(OPTION_RELAX_DESC);
             launcherOptions.addOption(OptionBuilder.create());
         }
     }
@@ -1539,7 +1552,7 @@ public abstract class NuxeoLauncher {
         log.error("\tmp-uninstall\t\tUninstall marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
         log.error("\tmp-remove\t\tRemove marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
         log.error("\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
-        log.error("\tmp-purge\t\t\tUninstall and remove all packages from the local cache.");
+        log.error("\tmp-purge\t\tUninstall and remove all packages from the local cache.");
         log.error("\tmp-hotfix\t\tInstall the hotfixes available for the instance.");
         log.error("\tmp-upgrade\t\tUpgrade the marketplace packages (addons) available for the instance.");
     }
@@ -1606,6 +1619,10 @@ public abstract class NuxeoLauncher {
             PackageException {
         if (connectBroker == null) {
             connectBroker = new ConnectBroker(configurationGenerator.getEnv());
+            if (cmdLine.hasOption(OPTION_RELAX)) {
+                connectBroker.setRelax(cmdLine.getOptionValue(OPTION_RELAX,
+                        ConnectBroker.OPTION_RELAX_DEFAULT));
+            }
         }
         return connectBroker;
     }
