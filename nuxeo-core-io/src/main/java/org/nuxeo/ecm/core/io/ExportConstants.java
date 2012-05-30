@@ -16,7 +16,7 @@ package org.nuxeo.ecm.core.io;
 
 /**
  * Constants that provide the types for which the reader are for.
- * 
+ *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
  */
 public final class ExportConstants {
@@ -72,6 +72,8 @@ public final class ExportConstants {
     public static final String BLOB_ENCODING = "encoding";
 
     public static final String BLOB_FILENAME = "filename";
+
+    public static final String BLOB_DIGEST = "digest";
 
     // Constant utility class.
     private ExportConstants() {

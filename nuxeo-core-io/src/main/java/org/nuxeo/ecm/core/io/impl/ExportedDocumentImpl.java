@@ -58,7 +58,7 @@ import org.nuxeo.runtime.api.Framework;
  * A representation for an exported document.
  * <p>
  * It contains all the information needed to restore document data and state.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @SuppressWarnings("unchecked")
@@ -336,6 +336,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
             data.setText(blobPath);
             blobs.put(blobPath, blob);
         }
+        element.addElement(ExportConstants.BLOB_DIGEST).addText(
+                blob.getDigest() != null ? blob.getDigest() : "");
     }
 
     protected final void readComplex(Element element, ComplexType ctype,

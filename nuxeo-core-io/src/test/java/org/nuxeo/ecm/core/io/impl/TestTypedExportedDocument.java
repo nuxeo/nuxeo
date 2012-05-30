@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.io.impl;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Iterator;
 
 import javax.xml.XMLConstants;
@@ -29,9 +31,6 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 import org.dom4j.io.DocumentSource;
 import org.junit.Test;
@@ -53,7 +52,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests TypedExportedDocument.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 @RunWith(FeaturesRunner.class)
@@ -70,7 +69,7 @@ public class TestTypedExportedDocument {
 
     /**
      * Test typed exported document.
-     * 
+     *
      * @throws Exception the exception
      */
     @Test
@@ -139,11 +138,35 @@ public class TestTypedExportedDocument {
                 document, XPathConstants.NODE);
         assertNotNull(fieldNode);
 
+        fieldNode = (Node) xpath.evaluate(
+                "//file:content[@type='content']/encoding", document,
+                XPathConstants.NODE);
+        assertNotNull(fieldNode);
+
+        fieldNode = (Node) xpath.evaluate(
+                "//file:content[@type='content']/mime-type", document,
+                XPathConstants.NODE);
+        assertNotNull(fieldNode);
+
+        fieldNode = (Node) xpath.evaluate(
+                "//file:content[@type='content']/filename", document,
+                XPathConstants.NODE);
+        assertNotNull(fieldNode);
+
+        fieldNode = (Node) xpath.evaluate(
+                "//file:content[@type='content']/data", document,
+                XPathConstants.NODE);
+        assertNotNull(fieldNode);
+
+        fieldNode = (Node) xpath.evaluate(
+                "//file:content[@type='content']/digest", document,
+                XPathConstants.NODE);
+        assertNotNull(fieldNode);
     }
 
     /**
      * Transforms a dom4j document to a w3c Document.
-     * 
+     *
      * @param dom4jdoc the org.dom4j.Document document
      * @return the org.w3c.dom.Document document
      * @throws TransformerException the transformer exception
