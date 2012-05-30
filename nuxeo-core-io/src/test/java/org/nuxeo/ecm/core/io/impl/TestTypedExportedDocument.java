@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.io.impl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Iterator;
