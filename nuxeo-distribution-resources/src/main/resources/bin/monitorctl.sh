@@ -183,8 +183,10 @@ JMXSTAT_PID="$PID_DIR"/jmxstat.pid
 JMXSTAT_INTERVAL=$SAR_INTERVAL
 JMXSTAT_COUNT=$SAR_COUNT
 JMXSTAT_OPTS="$JMXHOST --contention Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"[numActive,numIdle]"
-JMXSTAT_VCS_RESET="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!reset]"
-JMXSTAT_VCS="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.size,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!sampleAsMap]"
+JMXSTAT_VCS_RESET="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!reset]"
+# org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!reset]"
+JMXSTAT_VCS="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.size,type=Counter,management=metric[!sampleAsMap]"
+# org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!sampleAsMap]"
 [ -z $JMXSTAT ] && echo "You can install jmxstat from https://github.com/bdelbosc/jmxstat"
 
 JMX_LISTENING=`netstat -ltn | grep 1089`
