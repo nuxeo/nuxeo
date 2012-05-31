@@ -17,6 +17,7 @@
   <artifactId>nuxeo-chemistry</artifactId>
   <name>Nuxeo Chemistry</name>
   <description>Nuxeo Core: Chemistry</description>
+  <version>1.6.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -91,7 +92,15 @@
         <version>1.2.13</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-query-test</artifactId>
+        <version>${nuxeo.core.version}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
+
+
   </dependencyManagement>
 
   <repositories>
