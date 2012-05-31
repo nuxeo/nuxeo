@@ -1,8 +1,6 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
+<c:if test="true"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:c="http://java.sun.com/jstl/core">
 
 <nxu:set var="category"
@@ -12,55 +10,12 @@
   value="#{webActions.getActionsList(category)}"
   cache="true">
 
-  <c:if test="#{not empty actions}">
-
-    <c:choose>
-      <c:when test="#{widget.translated}">
-        <c:if test="#{!empty widget.label}">
-          <h3 class="summaryTitle">
-            <c:if test="#{!empty widget.helpLabel}">
-              <h:graphicImage value="/icons/lightbulb.png"
-                styleClass="layoutHelpLabel"
-                title="#{messages[widget.helpLabel]}" />
-            </c:if>
-            <h:outputText value=" #{messages[widget.label]}" />
-          </h3>
-        </c:if>
-      </c:when>
-      <c:otherwise>
-        <c:if test="#{!empty widget.label}">
-          <h3 class="summaryTitle">
-            <c:if test="#{!empty widget.helpLabel}">
-              <h:graphicImage value="/icons/lightbulb.png"
-                styleClass="layoutHelpLabel"
-                title="#{widget.helpLabel}" />
-            </c:if>
-            <h:outputText value=" #{widget.label}" />
-          </h3>
-        </c:if>
-      </c:otherwise>
-    </c:choose>
-
-    <div class="actions_block">
-      <c:forEach var="action" items="#{actions}">
-        <div>
-          <ui:decorate template="/incl/action_template.xhtml">
-            <ui:param name="display" value="#{widgetProperty_display}" />
-            <ui:param name="idPrefix" value="#{widget.id}_" />
-          </ui:decorate>
-        </div>
-      </c:forEach>
-    </div>
-
-  </c:if>
+  <nxl:widgetType name="actions" mode="#{widget.mode}"
+    label="#{widget.label}"
+    value="#{actions}" properties="#{widget.properties}"
+    ignoreTemplateProperty="true" subWidgets="#{widget.subWidgets}" />
 
 </nxu:set>
 </nxu:set>
 
-<script>
-  jQuery(document).ready(function() {
-    jQuery("img.layoutHelpLabel[title]").tooltip({relative: true, position: 'bottom center'});
-  });
-</script>
-
-</div>
+</c:if>

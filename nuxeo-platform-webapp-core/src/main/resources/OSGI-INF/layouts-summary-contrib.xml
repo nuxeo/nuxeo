@@ -72,7 +72,25 @@
                   <widget>category</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                  <widget>actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget>overallDisplay</widget>
+                </row>
+                <row>
+                  <widget>maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget>headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>subStyleClass</widget>
+                </row>
+                <row>
+                  <widget>moreMenuLabel</widget>
                 </row>
               </rows>
               <widget name="category" type="text">
@@ -87,6 +105,132 @@
                 </helpLabels>
                 <fields>
                   <field>category</field>
+                </fields>
+              </widget>
+              <widget name="headerStyleClass" type="text">
+                <labels>
+                  <label mode="any">Header style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the header, displaying this
+                    widget label. Available since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>headerStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="actionsDisplay" type="selectOneListbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Display</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to 'buttons', actions will be displayed as
+                    command
+                    buttons. If set to 'links', actions will be displayed as
+                    command links. If set to 'icons', actions will be displayed
+                    as icons.
+                    Else (default behaviour), actions will be
+                    displayed as command links
+                    and display their icons when
+                    defined.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <!-- still named display here -->
+                  <field>display</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Icons and links" itemValue="" />
+                  <option itemLabel="Icons" itemValue="icons" />
+                  <option itemLabel="Buttons" itemValue="buttons" />
+                  <option itemLabel="Links" itemValue="links" />
+                </selectOptions>
+              </widget>
+              <widget name="overallDisplay" type="selectOneListbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Overall display</label>
+                </labels>
+                <fields>
+                  <field>overallDisplay</field>
+                </fields>
+                <selectOptions>
+                  <option itemLabel="Vertical block (default)" itemValue="" />
+                  <option itemLabel="Horizontal block" itemValue="horizontal_block" />
+                  <option itemLabel="Menu" itemValue="menu" />
+                </selectOptions>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for the global container div.
+                    Available since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="subStyleClass" type="text">
+                <labels>
+                  <label mode="any">Sub style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for div containing actions.
+                    Available since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="actionStyleClass" type="text">
+                <labels>
+                  <label mode="any">Action style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Style class for each action link. Available
+                    since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subStyleClass</field>
+                </fields>
+              </widget>
+              <widget name="maxActionsNumber" type="int">
+                <labels>
+                  <label mode="any">Maximum number of actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Integer indicating the maximum number of
+                    actions to display. When this limit is reached, other
+                    actions are displayed in a menu. Available since 5.6.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>maxActionsNumber</field>
+                </fields>
+              </widget>
+              <widget name="moreMenuLabel" type="text">
+                <labels>
+                  <label mode="any">Label for the "more" menu</label>
+                </labels>
+                <fields>
+                  <field>moreMenuLabel</field>
                 </fields>
               </widget>
             </layout>
