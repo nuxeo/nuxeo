@@ -170,6 +170,10 @@ public class ActionContributionHandler extends
         }
         dest.setFilters(filters.toArray(new ActionFilter[] {}));
 
-        // TODO: merge properties
+        // accessKey
+        String newAccessKey = source.getAccessKey();
+        if (newAccessKey != null && !newAccessKey.isEmpty()) {
+            dest.setAccessKey(newAccessKey);
+        }
     }
 }

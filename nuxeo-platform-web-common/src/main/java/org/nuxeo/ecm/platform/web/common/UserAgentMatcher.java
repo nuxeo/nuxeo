@@ -22,10 +22,10 @@ import java.util.regex.Pattern;
 /**
  * Helper class to detect Html5 Dnd compliant browsers based on the User Agent
  * string
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
+ * 
  */
 public class UserAgentMatcher {
 
@@ -74,4 +74,8 @@ public class UserAgentMatcher {
         return UA_MSIE_CF.matcher(UA).matches();
     }
 
+    public static boolean isHistoryPushStateSupported(String UA) {
+        return isFirefox4OrMore(UA) || isSafari5(UA) || isChrome(UA)
+                || isMSIEWithChromeFrame(UA);
+    }
 }

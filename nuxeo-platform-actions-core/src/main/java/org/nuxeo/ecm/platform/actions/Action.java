@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Descriptor for action.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("action")
@@ -68,6 +68,9 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     @XNode("@immediate")
     protected boolean immediate = false;
+
+    @XNode("@accessKey")
+    private String accessKey;
 
     /**
      * @since 5.6
@@ -164,7 +167,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     /**
      * Returns the action order.
-     *
+     * 
      * @return the action order as an integer value
      */
     public int getOrder() {
@@ -173,7 +176,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     /**
      * Sets the order of the action.
-     *
+     * 
      * @param order order of the action
      */
     public void setOrder(int order) {
@@ -305,6 +308,20 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
             return properties.getProperties();
         }
         return Collections.emptyMap();
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public String getAccessKey() {
+        return accessKey;
     }
 
 }
