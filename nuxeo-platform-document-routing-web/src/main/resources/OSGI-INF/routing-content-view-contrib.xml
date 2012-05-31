@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.contentView.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="route_pending_task">
+      <showTitle>false</showTitle>
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="TaskDoc">
+          <!-- TODO -->
+          <!-- 
+          <fixedPart>
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="" name="ecm_fulltext" />
+          </predicate>
+          <predicate parameter="dc:created" operator="BETWEEN">
+            <field schema="" name="dc_created_min" />
+            <field schema="" name="dc_created_max" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="" name="dc_modified_min" />
+            <field schema="" name="dc_modified_max" />
+          </predicate>
+          <predicate parameter="dc:creator" operator="IN">
+            <field schema="" name="dc_creator" />
+          </predicate>
+          <predicate parameter="dc:nature" operator="IN">
+            <field schema="" name="dc_nature" />
+          </predicate>
+           -->
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="" filterDisplayType="" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
+      </cacheKey>
+
+      <resultLayouts>
+        <layout name="" title="" translateTitle="" iconPath=""
+          showCSVExport="true" showPDFExport="false" />
+      </resultLayouts>
+
+    </contentView>
+
+    <contentView name="route_past_steps">
+      <showTitle>false</showTitle>
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="TaskDoc">
+          <!-- TODO -->
+          <!-- 
+          <fixedPart>
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="" name="ecm_fulltext" />
+          </predicate>
+          <predicate parameter="dc:created" operator="BETWEEN">
+            <field schema="" name="dc_created_min" />
+            <field schema="" name="dc_created_max" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="" name="dc_modified_min" />
+            <field schema="" name="dc_modified_max" />
+          </predicate>
+          <predicate parameter="dc:creator" operator="IN">
+            <field schema="" name="dc_creator" />
+          </predicate>
+          <predicate parameter="dc:nature" operator="IN">
+            <field schema="" name="dc_nature" />
+          </predicate>
+           -->
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="" filterDisplayType="" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
+      </cacheKey>
+
+      <resultLayouts>
+        <layout name="" title="" translateTitle="" iconPath=""
+          showCSVExport="true" showPDFExport="false" />
+      </resultLayouts>
+
+    </contentView>
+  </extension>
+</component>

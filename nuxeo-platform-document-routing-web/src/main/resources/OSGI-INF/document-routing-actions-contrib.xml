@@ -154,6 +154,29 @@
       <filter-id>isNotDraftRouteModel</filter-id>
     </action>
 
+    <!-- 'Workflow' tab when a document route is running -->
+    <action id="TAB_ROUTE_WORKFLOW" enabled="true"
+      link="/incl/tabs/route_workflow.xhtml" label="action.view.review"
+      icon="/icons/file.gif" order="60">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoutable</filter-id>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+      <filter id="TAB_ROUTE_WORKFLOW_has_subtabs">
+        <rule grant="false">
+          <condition>
+            #{webActions.getActionsList('TAB_ROUTE_WORKFLOW_sub_tab').isEmpty()}
+          </condition>
+        </rule>
+      </filter>
+    </action>
+
+    <!-- 'Workflow' sub tab: current route -->
+    <action id="TAB_CURRENT_ROUTE" enabled="true"
+      link="/incl/tabs/current_route.xhtml" order="10"
+      label="label.document.routing.current.route" icon="/icons/file.gif">
+      <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
