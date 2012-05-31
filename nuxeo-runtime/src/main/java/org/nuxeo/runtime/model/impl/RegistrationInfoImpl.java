@@ -260,7 +260,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         activate();
     }
 
-    @Override
     public int getApplicationStartedOrder() {
         if (component == null) {
             return 0;
@@ -272,7 +271,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return ((Component) ci).getApplicationStartedOrder();
     }
 
-    @Override
     public void notifyApplicationStarted() throws Exception {
         if (component != null) {
             Object ci = component.getInstance();

@@ -391,7 +391,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected static class RIApplicationStartedComparator implements
             Comparator<RegistrationInfo> {
-        @Override
         public int compare(RegistrationInfo r1, RegistrationInfo r2) {
             int cmp = r1.getApplicationStartedOrder()
                     - r2.getApplicationStartedOrder();
