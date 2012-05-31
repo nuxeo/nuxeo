@@ -98,7 +98,7 @@
       </fields>
       <properties mode="any">
         <property name="template">
-          /document_routing_widgets/documentroute_related_route_suggestion_widget_template.xhtml
+          /document_routing_widgets/routing_combobox_widget_template.xhtml
         </property>
       </properties>
       <properties widgetMode="edit">
