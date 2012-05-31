@@ -193,11 +193,11 @@ public class WidgetTypeTagHandler extends TagHandler {
         }
         String labelValue = null;
         if (label != null) {
-            labelValue = label.getValue();
+            labelValue = label.getValue(ctx);
         }
         String helpLabelValue = null;
         if (helpLabel != null) {
-            helpLabelValue = helpLabel.getValue();
+            helpLabelValue = helpLabel.getValue(ctx);
         }
         Boolean translatedValue = Boolean.FALSE;
         if (translated != null) {
