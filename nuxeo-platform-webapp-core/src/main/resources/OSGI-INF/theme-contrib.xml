@@ -62,6 +62,7 @@
       <resource>sarissa-ie-workaround.js</resource>
       <resource>static-styles.css</resource>
       <resource>hideableAdminMessage.js</resource>
+      <resource>accessKey.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -178,6 +179,11 @@
     <resource name="mustache.js">
       <path>scripts/mustache/mustache.js</path>
     </resource>
+    <!--  Simple Access Key helper -->
+    <resource name="accessKey.js">
+      <path>scripts/accessKey.js</path>
+    </resource>
+
   </extension>
 
   <!-- Register mapping between theme pages and resources -->
