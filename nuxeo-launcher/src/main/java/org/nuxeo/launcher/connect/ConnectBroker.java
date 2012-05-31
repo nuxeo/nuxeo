@@ -937,10 +937,13 @@ public class ConnectBroker {
             if (doExecute) {
                 if (useResolver) {
                     String oldAccept = accept;
+                    String oldRelax = relax;
                     accept = "true";
+                    relax = "true";
                     boolean success = pkgRequest(pkgsToAdd, pkgsToInstall,
                             pkgsToUninstall, pkgsToRemove);
                     accept = oldAccept;
+                    relax = oldRelax;
                     if (!success) {
                         errorValue = 2;
                     }
