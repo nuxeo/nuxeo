@@ -1543,7 +1543,7 @@ public abstract class NuxeoLauncher {
         log.error("\tjvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.");
         log.error("\n\nCommands list:");
         log.error("\thelp\t\t\tPrint this message.");
-        log.error("\tgui\t\t\tStart the graphical interface.");
+        log.error("\tgui\t\t\tStart the user graphical interface.");
         log.error("\tstart\t\t\tStart Nuxeo server in background, waiting for effective start. "
                 + "Useful for batch executions requiring the server being immediately available after the script returned.");
         log.error("\tstop\t\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
@@ -1554,22 +1554,24 @@ public abstract class NuxeoLauncher {
         log.error("\tstatus\t\t\tPrint server status (running or not).");
         log.error("\tstartbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
         log.error("\trestartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
-        log.error("\tpack <target>\t\tBuild a static archive. Same as the \"pack\" Shell script.");
+        log.error("\tpack <target>\t\tBuild a static archive (the \"pack\" Shell script is deprecated).");
         log.error("\tshowconf\t\tDisplay the instance configuration.");
-        log.error("\tmp-list\t\t\tList local marketplace packages.");
-        log.error("\tmp-listall\t\tList all marketplace packages.");
-        log.error("\tmp-init\t\t\tPre-cache marketplace packages from the distribution.");
+        log.error("\tmp-list\t\t\tList local Marketplace packages.");
+        log.error("\tmp-listall\t\tList all Marketplace packages (requires a registered instance).");
+        log.error("\tmp-init\t\t\tPre-cache Marketplace packages locally available in the distribution.");
         log.error("\tmp-update\t\tUpdate cache of marketplace packages list.");
-        log.error("\tmp-add\t\t\tAdd marketplace package(s) to local cache. You must provide the package file(s) as parameter.");
-        log.error("\tmp-install\t\tRun marketplace package installation. "
-                + "It is automatically called at startup if installAfterRestart.log exists. "
-                + "Else you must provide the package file(s) or ID(s) as parameter.");
-        log.error("\tmp-uninstall\t\tUninstall marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
-        log.error("\tmp-remove\t\tRemove marketplace package(s). You must provide the package ID(s) as parameter (see \"mp-list\" command).");
+        log.error("\tmp-add\t\t\tAdd Marketplace package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.");
+        log.error("\tmp-install\t\tRun Marketplace package installation. "
+                + "It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. "
+                + "Else you must provide the package file(s), name(s) or ID(s) as parameter.");
+        log.error("\tmp-uninstall\t\tUninstall Marketplace package(s). "
+                + "You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).");
+        log.error("\tmp-remove\t\tRemove Marketplace package(s). "
+                + "You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).");
         log.error("\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
         log.error("\tmp-purge\t\tUninstall and remove all packages from the local cache.");
-        log.error("\tmp-hotfix\t\tInstall the hotfixes available for the instance.");
-        log.error("\tmp-upgrade\t\tUpgrade the marketplace packages (addons) available for the instance.");
+        log.error("\tmp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).");
+        log.error("\tmp-upgrade\t\tGet all the available upgrades for the Marketplace packages currently installed (requires a registered instance).");
     }
 
     /**
