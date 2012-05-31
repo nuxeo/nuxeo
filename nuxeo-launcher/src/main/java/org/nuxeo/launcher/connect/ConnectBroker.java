@@ -1200,11 +1200,23 @@ public class ConnectBroker {
         return true;
     }
 
+    /**
+     * Prompt user for yes/no answer
+     *
+     * @param message The message to display
+     * @param defaultValue The default answer if there's no console or if
+     *            "Enter" key is pressed.
+     * @param objects Parameters to use in the message (like in
+     *            {@link String#format(String, Object...)})
+     * @return "true" if answer is "yes" or "y", else "false".
+     */
     protected String readConsole(String message, String defaultValue,
             Object... objects) {
+        String answer;
         Console console = System.console();
-        String answer = console.readLine(message, objects);
-        if (StringUtils.isEmpty(answer)) {
+        if (console == null
+                || StringUtils.isEmpty(answer = console.readLine(message,
+                        objects))) {
             answer = defaultValue;
         }
         answer = answer.trim().toLowerCase();
