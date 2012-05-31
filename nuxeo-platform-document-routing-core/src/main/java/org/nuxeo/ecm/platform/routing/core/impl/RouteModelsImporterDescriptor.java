@@ -25,11 +25,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("template-resource")
 public class RouteModelsImporterDescriptor {
 
+    @XNode("@id")
+    protected String id;
+
     @XNode("@path")
     protected String path;
 
     public String getPath() {
         return path;
+    }
+
+    public String getId() {
+        return id;
     }
 
 }

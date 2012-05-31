@@ -48,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
@@ -251,7 +251,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 managersSession);
         assertNotNull(newModel);
         assertEquals("(COPY) route1",
-                (String) newModel.getDocument().getPropertyValue("dc:title"));
+                newModel.getDocument().getPropertyValue("dc:title"));
         closeSession(managersSession);
     }
 
@@ -819,7 +819,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle(TEST_BUNDLE);
-        service.importDefaultRouteModels(true, session);
+        assertEquals(1, service.getRouteModelTemplateResouces().size());
+        service.importRouteModel(service.getRouteModelTemplateResouces().get(0), true, session);
         DocumentModel modelsRoot = session.getDocument(new PathRef(
                 "/default-domain/document-route-models-root/"));
         assertNotNull(modelsRoot);

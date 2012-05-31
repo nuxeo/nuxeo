@@ -81,7 +81,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     public static final String PERSISTER_XP = "persister";
 
-
     // FIXME: use ContributionFragmentRegistry instances instead to handle hot
     // reload
 
@@ -95,7 +94,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     protected DocumentRoutingPersister persister;
 
-    protected URL modelsToImportPath;
+    protected Map<String, URL> routeModelTemplateResouces = new HashMap<String, URL>();
 
     protected DocumentRoutingEngineService getEngineService() {
         try {
@@ -121,9 +120,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             persister = des.getKlass().newInstance();
         } else if (ROUTE_MODELS_IMPORTER_XP.equals(extensionPoint)) {
             RouteModelsImporterDescriptor des = (RouteModelsImporterDescriptor) contribution;
-            if (des.getPath() != null) {
-                modelsToImportPath = contribution.getClass().getResource(
-                        des.getPath());
+            if (des.getPath() != null && des.getId() != null) {
+                routeModelTemplateResouces.put(des.getId(),
+                        contribution.getClass().getResource(des.getPath()));
             }
         }
     }
@@ -547,24 +546,25 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void importDefaultRouteModels(boolean overwrite, CoreSession session)
-            throws ClientException {
-        if (modelsToImportPath == null) {
-           log.warn("No resource containing route templates found");
-            return;
+    public DocumentRoute importRouteModel(URL modelToImport, boolean overwrite,
+            CoreSession session) throws ClientException {
+        if (modelToImport == null) {
+            throw new ClientException(
+                    ("No resource containing route templates found"));
         }
         StreamingBlob fb;
         try {
-            fb = StreamingBlob.createFromStream(modelsToImportPath.openStream());
+            fb = StreamingBlob.createFromStream(modelToImport.openStream());
         } catch (IOException e) {
             throw new ClientRuntimeException(e);
         }
         try {
-            getFileManager().createDocumentFromBlob(
+            DocumentModel doc = getFileManager().createDocumentFromBlob(
                     session,
                     fb,
                     persister.getParentFolderForDocumentRouteModels(session).getPathAsString(),
-                    true, modelsToImportPath.getFile());
+                    true, modelToImport.getFile());
+            return doc.getAdapter(DocumentRoute.class);
         } catch (Exception e) {
             throw new ClientException(e);
         } finally {
@@ -588,6 +588,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     public void activate(ComponentContext context) throws Exception {
         RouteModelsInitializator routeInializator = new RouteModelsInitializator();
         routeInializator.install();
+    }
+
+    @Override
+    public List<URL> getRouteModelTemplateResouces() throws ClientException {
+        List<URL> urls = new ArrayList<URL>();
+        for (URL url : routeModelTemplateResouces.values()) {
+            urls.add(url);
+        }
+        return urls;
     }
 
 }

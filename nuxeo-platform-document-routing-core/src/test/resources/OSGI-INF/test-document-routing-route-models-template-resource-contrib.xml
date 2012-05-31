@@ -4,7 +4,7 @@
 
 	<extension target="org.nuxeo.ecm.platform.routing.service"
 		point="routeModelImporter">
-		<template-resource path="/myRoute.zip" />
+		<template-resource id="resource1" path="/myRoute.zip" />
 	</extension>
 
 </component>

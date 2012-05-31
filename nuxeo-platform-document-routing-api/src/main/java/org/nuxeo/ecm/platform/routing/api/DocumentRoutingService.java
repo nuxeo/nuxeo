@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.platform.routing.api;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -316,17 +317,27 @@ public interface DocumentRoutingService {
     boolean isRoutable(DocumentModel doc);
 
     /**
-     * Imports route models in the root folder defined by the current persister
-     * from a contributed zip resource. Uses the IO core service, through @{link
-     * FileManager}
+     * Creates a route model in the root models folder defined by the current
+     * persister. The templateResource is a zip tree xml export of a route
+     * document and it is imported using the core-io importer.
      *
+     * @param templateResource
      * @param overwrite
      * @param session
      * @throws ClientException
      *
      * @since 5.6
      */
-    void importDefaultRouteModels(boolean overwrite, CoreSession session)
-            throws ClientException;
+    DocumentRoute importRouteModel(URL templateResource, boolean overwrite,
+            CoreSession session) throws ClientException;
+
+    /**
+     * Returns all the route models resource templates. Use the
+     * <code>routeModelImporter</code> extension point to contribute new
+     * resources.
+     *
+     * @since 5.6
+     */
+    List<URL> getRouteModelTemplateResouces() throws ClientException;
 
 }
