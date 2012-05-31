@@ -41,6 +41,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
@@ -74,11 +77,16 @@ public class LayoutDemoContext implements Serializable {
     @In(create = true)
     protected WebLayoutManager webLayoutManager;
 
+    @In(create = true)
+    protected transient ActionManager actionManager;
+
     protected DocumentModel bareDemoDocument;
 
     protected DocumentModel previewDocument;
 
     protected PageSelections<DocumentModel> demoDocuments;
+
+    protected List<Action> layoutDemoCustomActions;
 
     @Create
     public void openCoreSession() throws Exception {
@@ -273,6 +281,25 @@ public class LayoutDemoContext implements Serializable {
             doc.setLock();
         }
         return doc;
+    }
+
+    @Factory(value = "layoutDemoCustomActions", scope = EVENT)
+    public List<Action> getLayoutDemoCustomActions() throws ClientException,
+            Exception {
+        if (layoutDemoCustomActions == null) {
+            try {
+                layoutDemoCustomActions = new ArrayList<Action>();
+                ActionContext ctx = new ActionContext();
+                List<Action> actions = actionManager.getActions(
+                        "LAYOUT_DEMO_ACTIONS", ctx);
+                if (actions != null) {
+                    layoutDemoCustomActions.addAll(actions);
+                }
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+        }
+        return layoutDemoCustomActions;
     }
 
 }

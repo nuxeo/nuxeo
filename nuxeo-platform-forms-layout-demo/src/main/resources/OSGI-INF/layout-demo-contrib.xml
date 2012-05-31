@@ -250,6 +250,22 @@
       </preview>
     </widgetType>
 
+    <widgetType name="actions">
+      <label>Actions</label>
+      <viewId>actionsWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="actionsWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-actions-widget.xml" />
+      </layouts>
+      <preview enabled="true">
+        <fields>
+          <field>#{layoutDemoCustomActions}</field>
+        </fields>
+      </preview>
+    </widgetType>
+
+
     <widgetType name="listing_author">
       <label>Author</label>
       <viewId>listing_authorWidget</viewId>

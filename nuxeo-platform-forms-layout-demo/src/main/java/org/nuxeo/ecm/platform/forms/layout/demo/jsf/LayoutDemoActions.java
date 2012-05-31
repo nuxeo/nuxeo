@@ -185,6 +185,9 @@ public class LayoutDemoActions implements Serializable {
                     def.setHandlingLabels(Boolean.TRUE);
                 }
             }
+            if ("actions".equals(type)) {
+                def.setHandlingLabels(Boolean.TRUE);
+            }
         }
 
         // set a custom label and help label
