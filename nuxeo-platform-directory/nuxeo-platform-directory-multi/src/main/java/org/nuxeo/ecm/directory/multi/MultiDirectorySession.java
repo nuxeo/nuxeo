@@ -642,6 +642,10 @@ public class MultiDirectorySession extends BaseSession {
                 || (dirEntry != null && isReadOnlyEntry(dirEntry))) {
             return;
         }
+        if (dirEntry == null && !canCreateIfOptional) {
+            // entry to update doesn't belong to this directory
+            return;
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(dirInfo.idField, id);
         for (Entry<String, String> e : dirInfo.fromSource.entrySet()) {

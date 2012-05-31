@@ -193,7 +193,12 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         map.put("i", id);
         DocumentModel entry = BaseSession.createEntryModel(null,
                 SCHEMA_NAME, id, map);
-        dir.updateEntry(entry); // silently ignore unknown entries
+        try {
+            dir.updateEntry(entry);
+        } catch (DirectoryException de) {
+            assertEquals("UpdateEntry failed: entry 'no-such-entry' not found",
+                    de.getMessage());
+        }
     }
 
     @Test
