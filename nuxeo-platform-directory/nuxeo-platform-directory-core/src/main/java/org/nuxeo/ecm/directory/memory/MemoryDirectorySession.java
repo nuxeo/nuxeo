@@ -137,8 +137,7 @@ public class MemoryDirectorySession extends BaseSession {
 
         Map<String, Object> map = data.get(id);
         if (map == null) {
-            // silently ignore attempts to update nonexisting entries
-            return;
+            throw new DirectoryException("UpdateEntry failed: entry '" + id + "' not found");
         }
 
         for (String fieldName : directory.schemaSet) {

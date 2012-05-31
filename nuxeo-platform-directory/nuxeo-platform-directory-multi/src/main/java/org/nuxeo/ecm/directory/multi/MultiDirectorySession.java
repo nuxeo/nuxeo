@@ -624,6 +624,11 @@ public class MultiDirectorySession extends BaseSession {
         if (dirInfo.getSession().isReadOnly()) {
             return;
         }
+        DocumentModel dirEntry = dirInfo.getSession().getEntry(id);
+        if (dirEntry == null && !canCreateIfOptional) {
+            // entry to update doesn't belong to this directory
+            return;
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(dirInfo.idField, id);
         for (Entry<String, String> e : dirInfo.fromSource.entrySet()) {
@@ -631,7 +636,7 @@ public class MultiDirectorySession extends BaseSession {
         }
         if (map.size() > 1) {
             if (canCreateIfOptional && dirInfo.isOptional
-                    && dirInfo.getSession().getEntry(id) == null) {
+                    && dirEntry == null) {
                 // if entry does not exist, create it
                 dirInfo.getSession().createEntry(map);
             } else {
