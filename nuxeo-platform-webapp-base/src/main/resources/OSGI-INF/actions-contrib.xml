@@ -30,22 +30,22 @@
     </action>
 
     <!-- Contextual tools buttons contrib NXP-9039 -->
-    <action id="documentLock" link="#{lockActions.lockCurrentDocument}" order="10"
-      label="command.lock" type="link_icon" icon="/icons/contextual_menu/unlocked.png">
+    <action id="documentLock" link="#{lockActions.lockCurrentDocument}"
+      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
     </action>
 
-    <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}" order="10"
-      label="command.unlock" type="link_icon" icon="/icons/contextual_menu/locked.png">
+    <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}"
+      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
     </action>
 
-    <action id="permalinkAction" order="20" label="label.permalink"
-      type="fancybox" icon="/icons/contextual_menu/share.png">
+    <action id="permalinkAction" order="20" label="label.permalink" type="fancybox"
+      icon="/icons/contextual_menu/share.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties>
         <property name="include">/incl/permalink_box.xhtml</property>
@@ -55,26 +55,23 @@
       </properties>
     </action>
 
-    <action id="downloadAction"
-      link="#{operationActionBean.doOperation('downloadFilesZip')}"
-      order="30" label="label.document.download" type="link_icon"
+    <action id="downloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
+      order="30" label="label.document.download" type="link"
       icon="/icons/contextual_menu/download.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>documentHasBlobs</filter-id>
     </action>
 
-    <action id="subscribesAllDocNotifications"
-      link="#{subscriptionAction.updateAllSubscriptions}"
-      order="40" label="label.subscriptions.follow" type="link_icon"
+    <action id="subscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.follow" type="link"
       icon="/icons/contextual_menu/subscribe.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasNoSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
     </action>
 
-    <action id="unsubscribesAllDocNotifications"
-      link="#{subscriptionAction.updateAllSubscriptions}"
-      order="40" label="label.subscriptions.unfollow" type="link_icon"
+    <action id="unsubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.unfollow" type="link"
       icon="/icons/contextual_menu/unsubscribe.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasSubscriptions</filter-id>
@@ -96,15 +93,14 @@
 
     <action id="addCurrentDocumentToWorklist"
       link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
-      order="60" label="help.command.clipboard.addworklist" type="link_icon"
+      order="60" label="help.command.clipboard.addworklist" type="link"
       icon="/icons/action_add.gif" immediate="true">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="print"
-      link="#{restHelper.doPrint(themeActions.defaultTheme)}"
+    <action id="print" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
       order="70" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION</category>
     </action>
@@ -164,24 +160,18 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="typeCompatibility">
 
-   <!-- UI action type compatibility  -->
-    <typeCompatibility type="link_icon">
+    <!-- UI action type compatibility -->
+    <typeCompatibility type="link">
       <category>DOCUMENT_UPPER_ACTION</category>
       <category>DOCUMENT_HEADER_ACTIONS_LIST</category>
-    </typeCompatibility>
-    <typeCompatibility type="link_icon_text">
       <category>DEFAULT_LIST</category>
       <category>CLIPBOARD_LIST</category>
-    </typeCompatibility>
-    <typeCompatibility type="button">
       <category>CURRENT_SELECTION_COPY</category>
       <category>CLIPBOARD_PASTE</category>
       <category>CURRENT_SELECTION_ADDTOLIST</category>
       <category>CURRENT_SELECTION_TRASH</category>
       <category>CREATE_DOCUMENT_FORM</category>
       <category>EDIT_DOCUMENT_FORM</category>
-    </typeCompatibility>
-    <typeCompatibility type="link">
       <category>USER_SERVICES</category>
       <category>USER_MENU_ACTIONS</category>
     </typeCompatibility>

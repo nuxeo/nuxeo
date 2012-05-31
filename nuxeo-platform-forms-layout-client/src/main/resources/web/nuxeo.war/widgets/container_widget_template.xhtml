@@ -65,9 +65,11 @@
           </h3>
         </c:when>
         <c:otherwise>
-          <h3 class="summaryTitle #{widgetProperty_headerStyleClass}">
-            <ui:include src="/widgets/incl/widget_label_template.xhtml" />
-          </h3>
+          <c:if test="#{not empty widget.label}">
+            <h3 class="summaryTitle #{widgetProperty_headerStyleClass}">
+              <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+            </h3>
+          </c:if>
         </c:otherwise>
       </c:choose>
     </c:if>

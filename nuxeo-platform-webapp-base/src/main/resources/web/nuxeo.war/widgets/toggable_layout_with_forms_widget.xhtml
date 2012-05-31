@@ -78,7 +78,8 @@
                 id="#{widget.id}_toggleAction"
                 immediate="true"
                 reRender="#{widget.id}_regionPanel"
-                value="#{initialActionLabel}">
+                value="#{initialActionLabel}"
+                styleClass="button #{widgetProperty_actionStyleClass} #{widgetProperty_toggleActionStyleClass}">
                 <f:setPropertyActionListener
                   value="#{toggledMode}"
                   target="#{selectionActions.selectedValue}" />
@@ -133,7 +134,7 @@
                     value="#{webActions.getActionsList(actionsCategory)}"
                     cache="true">
                     <c:forEach var="action" items="#{actions}">
-                      <ui:decorate template="/incl/action_template.xhtml">
+                      <ui:decorate template="/incl/action/action_template.xhtml">
                         <ui:param name="idPrefix" value="#{widget.id}_" />
                         <ui:param name="useAjaxForm" value="true" />
                         <ui:define name="after_action_trigger">
@@ -155,7 +156,7 @@
                     value="#{webActions.getActionsList(widgetProperty_additionalActionsCategory)}"
                     cache="true">
                     <c:forEach var="action" items="#{actions}">
-                      <ui:decorate template="/incl/action_template.xhtml">
+                      <ui:decorate template="/incl/action/action_template.xhtml">
                         <ui:param name="idPrefix" value="#{widget.id}_" />
                         <ui:param name="useAjaxForm" value="true" />
                         <ui:define name="after_action_trigger">
@@ -180,7 +181,7 @@
                       immediate="true"
                       reRender="#{widget.id}_regionPanel"
                       value="#{cancelActionLabel}"
-                      styleClass="button">
+                      styleClass="button #{widgetProperty_actionStyleClass}">
                       <f:setPropertyActionListener
                         value="#{widget.id}_modeValueHolder"
                         target="#{selectionActions.selectedValueHolder}" />
@@ -196,7 +197,8 @@
                       id="#{widget.id}_cancelToggleAction"
                       immediate="true"
                       reRender="#{widget.id}_regionPanel"
-                      value="#{cancelActionLabel}">
+                      value="#{cancelActionLabel}"
+                      styleClass="#{widgetProperty_actionStyleClass}">
                       <f:param name="valueHolderId"
                         value="#{widget.id}_modeValueHolder" />
                       <f:setPropertyActionListener
@@ -249,7 +251,7 @@
                     value="#{webActions.getActionsList(actionsCategory)}"
                     cache="true">
                     <c:forEach var="action" items="#{actions}">
-                      <ui:decorate template="/incl/action_template.xhtml">
+                      <ui:decorate template="/incl/action/action_template.xhtml">
                         <ui:param name="idPrefix" value="#{widget.id}_" />
                       </ui:decorate>
                     </c:forEach>
@@ -260,7 +262,7 @@
                     value="#{webActions.getActionsList(widgetProperty_additionalActionsCategory)}"
                     cache="true">
                     <c:forEach var="action" items="#{actions}">
-                      <ui:decorate template="/incl/action_template.xhtml">
+                      <ui:decorate template="/incl/action/action_template.xhtml">
                         <ui:param name="idPrefix" value="#{widget.id}_" />
                       </ui:decorate>
                     </c:forEach>
@@ -274,7 +276,7 @@
                       immediate="true"
                       reRender="#{widget.id}_regionPanel"
                       value="#{cancelActionLabel}"
-                      styleClass="button">
+                      styleClass="button #{widgetProperty_actionStyleClass}">
                       <f:setPropertyActionListener
                         value="#{initialMode}"
                         target="#{selectionActions.selectedValue}" />
@@ -289,7 +291,8 @@
                       id="#{widget.id}_cancelToggleAction"
                       immediate="true"
                       reRender="#{widget.id}_regionPanel"
-                      value="#{cancelActionLabel}">
+                      value="#{cancelActionLabel}"
+                      styleClass="#{widgetProperty_actionStyleClass}">
                       <f:setPropertyActionListener
                         value="#{initialMode}"
                         target="#{selectionActions.selectedValue}" />
