@@ -26,9 +26,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -45,12 +50,13 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Component that handles actions retrieval as well as current tab(s)
- * selection.
- *
+ * Component that handles actions retrieval as well as current tab(s) selection.
+ * 
  * @author Eugen Ionica
  * @author Anahide Tchertchian
  * @author Florent Guillaume
@@ -62,6 +68,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 public class WebActionsBean implements WebActions, Serializable {
 
     private static final long serialVersionUID = 1959221536502251848L;
+
+    protected static final String AJAX_TAB_PROPERTY = "org.nuxeo.ui.ajax.tab";
 
     private static final Log log = LogFactory.getLog(WebActionsBean.class);
 
@@ -414,6 +422,20 @@ public class WebActionsBean implements WebActions, Serializable {
     @Deprecated
     public void setCurrentTabAction(String currentTabActionId) {
         setCurrentTabId(currentTabActionId);
+    }
+
+    @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
+    public boolean useAjaxTab() {
+        String bUseAjaxTab = Framework.getProperty(AJAX_TAB_PROPERTY, null);
+        if (bUseAjaxTab != null) {
+            return Boolean.parseBoolean(bUseAjaxTab);
+        }
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext econtext = context.getExternalContext();
+        HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
+        String ua = request.getHeader("User-Agent");
+        return UserAgentMatcher.isHistoryPushStateSupported(ua);
     }
 
 }
