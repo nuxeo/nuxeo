@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.model.impl;
 
@@ -20,23 +20,22 @@ import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
 
 /**
- * Implementation of PropertyDiff for a simple property.
- * 
+ * Implementation of {@code PropertyDiff} for a simple property.
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 public class SimplePropertyDiff extends PropertyDiff {
 
     private static final long serialVersionUID = -1100714461537900354L;
 
-    private DifferenceType differenceType = DifferenceType.different;
+    protected String leftValue;
 
-    private String leftValue;
-
-    private String rightValue;
+    protected String rightValue;
 
     /**
-     * Instantiates a new simple property diff.
-     * 
+     * Instantiates a new simple property diff with a property type.
+     *
      * @param propertyType the property type
      */
     public SimplePropertyDiff(String propertyType) {
@@ -44,9 +43,24 @@ public class SimplePropertyDiff extends PropertyDiff {
     }
 
     /**
-     * Instantiates a new simple property diff with property type, difference
-     * type type, left value and right value.
-     * 
+     * Instantiates a new simple property diff with a property type, the
+     * {@link DifferenceType#different} difference type, a left value and right
+     * value.
+     *
+     * @param propertyType the property type
+     * @param leftValue the left value
+     * @param rightValue the right value
+     */
+    public SimplePropertyDiff(String propertyType, String leftValue,
+            String rightValue) {
+
+        this(propertyType, DifferenceType.different, leftValue, rightValue);
+    }
+
+    /**
+     * Instantiates a new simple property diff with a property type, difference
+     * type, left value and right value.
+     *
      * @param propertyType the property type
      * @param differenceType the difference type
      * @param leftValue the left value
@@ -59,19 +73,6 @@ public class SimplePropertyDiff extends PropertyDiff {
         this.differenceType = differenceType;
         this.leftValue = leftValue;
         this.rightValue = rightValue;
-    }
-
-    /**
-     * Instantiates a new simple property diff.
-     * 
-     * @param propertyType the property type
-     * @param leftValue the left value
-     * @param rightValue the right value
-     */
-    public SimplePropertyDiff(String propertyType, String leftValue,
-            String rightValue) {
-
-        this(propertyType, DifferenceType.different, leftValue, rightValue);
     }
 
     @Override
@@ -89,17 +90,15 @@ public class SimplePropertyDiff extends PropertyDiff {
 
         String otherLeftValue = ((SimplePropertyDiff) other).getLeftValue();
         String otherRightValue = ((SimplePropertyDiff) other).getRightValue();
-        DifferenceType otherDifferenceType = ((SimplePropertyDiff) other).getDifferenceType();
 
-        return differenceType.equals(otherDifferenceType)
-                && ((leftValue == null && otherLeftValue == null
-                        && rightValue == null && otherRightValue == null)
-                        || (leftValue == null && otherLeftValue == null
-                                && rightValue != null && rightValue.equals(otherRightValue))
-                        || (rightValue == null && otherRightValue == null
-                                && leftValue != null && leftValue.equals(otherLeftValue)) || (leftValue != null
-                        && rightValue != null
-                        && leftValue.equals(otherLeftValue) && rightValue.equals(otherRightValue)));
+        return (leftValue == null && otherLeftValue == null
+                && rightValue == null && otherRightValue == null)
+                || (leftValue == null && otherLeftValue == null
+                        && rightValue != null && rightValue.equals(otherRightValue))
+                || (rightValue == null && otherRightValue == null
+                        && leftValue != null && leftValue.equals(otherLeftValue))
+                || (leftValue != null && rightValue != null
+                        && leftValue.equals(otherLeftValue) && rightValue.equals(otherRightValue));
     }
 
     @Override
@@ -110,21 +109,9 @@ public class SimplePropertyDiff extends PropertyDiff {
         sb.append(leftValue);
         sb.append(" --> ");
         sb.append(rightValue);
-        sb.append(" (");
-        sb.append(propertyType);
-        sb.append(", ");
-        sb.append(differenceType.name());
-        sb.append(")");
+        sb.append(super.toString());
 
         return sb.toString();
-    }
-
-    public DifferenceType getDifferenceType() {
-        return differenceType;
-    }
-
-    public void setDifferenceType(DifferenceType differenceType) {
-        this.differenceType = differenceType;
     }
 
     public String getLeftValue() {

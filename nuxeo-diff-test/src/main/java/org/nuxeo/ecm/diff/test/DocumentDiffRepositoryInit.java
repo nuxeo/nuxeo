@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,8 +10,9 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
+ *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *     Antoine Taillefer
  */
 
 package org.nuxeo.ecm.diff.test;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -87,21 +89,43 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         // file
         // -----------------------
         doc.setPropertyValue("file:filename", "Joe.txt");
-        doc.setPropertyValue("file:content", new StringBlob("Joe is rich."));
+        Blob blob = new StringBlob("Joe is rich.");
+        blob.setFilename("Joe.txt");
+        doc.setPropertyValue("file:content", (Serializable) blob);
 
         // -----------------------
         // files
         // -----------------------
         List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+
         Map<String, Serializable> file = new HashMap<String, Serializable>();
         file.put("filename", "first_attachement.txt");
+        blob = new StringBlob("Content of the first blob");
+        blob.setFilename("first_attachement.txt");
+        file.put("file", (Serializable) blob);
         files.add(file);
+
         file = new HashMap<String, Serializable>();
         file.put("filename", "second_attachement.txt");
+        blob = new StringBlob("Content of the second blob");
+        blob.setFilename("second_attachement.txt");
+        file.put("file", (Serializable) blob);
         files.add(file);
+
         file = new HashMap<String, Serializable>();
         file.put("filename", "third_attachement.txt");
+        blob = new StringBlob("Content of the third blob");
+        blob.setFilename("third_attachement.txt");
+        file.put("file", (Serializable) blob);
         files.add(file);
+
+        file = new HashMap<String, Serializable>();
+        file.put("filename", "fourth_attachement.txt");
+        blob = new StringBlob("Content of the fourth blob");
+        blob.setFilename("fourth_attachement.txt");
+        file.put("file", (Serializable) blob);
+        files.add(file);
+
         doc.setPropertyValue("files:files", (Serializable) files);
 
         // -----------------------
@@ -198,19 +222,36 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         // file
         // -----------------------
         doc.setPropertyValue("file:filename", "Jack.txt");
-        doc.setPropertyValue("file:content", new StringBlob(
-                "Joe is rich, Jack is not."));
+        Blob blob = new StringBlob("Joe is rich, Jack is not.");
+        blob.setFilename("Jack.txt");
+        doc.setPropertyValue("file:content", (Serializable) blob);
 
         // -----------------------
         // files
         // -----------------------
         List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+
         Map<String, Serializable> file = new HashMap<String, Serializable>();
         file.put("filename", "first_attachement.txt");
+        blob = new StringBlob("Content of the first blob");
+        blob.setFilename("first_attachement.txt");
+        file.put("file", (Serializable) blob);
         files.add(file);
+
         file = new HashMap<String, Serializable>();
         file.put("filename", "the_file_name_is_different.txt");
+        blob = new StringBlob("Content of the second blob");
+        blob.setFilename("the_file_name_is_different.txt");
+        file.put("file", (Serializable) blob);
         files.add(file);
+
+        file = new HashMap<String, Serializable>();
+        file.put("filename", "third_attachement.txt");
+        blob = new StringBlob("Different content of the third blob");
+        blob.setFilename("third_attachement.txt");
+        file.put("file", (Serializable) blob);
+        files.add(file);
+
         doc.setPropertyValue("files:files", (Serializable) files);
 
         // -----------------------

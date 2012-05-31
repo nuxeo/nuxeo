@@ -36,15 +36,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 /**
- * Tests and illustrates XMLUnit basic features.
- * 
+ * Tests and illustrates {@link XMLUnit} basic features.
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test for equality.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testForEquality() throws Exception {
@@ -56,7 +57,7 @@ public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test xml identical.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testXMLIdentical() throws Exception {
@@ -69,7 +70,7 @@ public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test all differences.
-     * 
+     *
      * @throws Exception the exception
      */
     @SuppressWarnings("unchecked")
@@ -89,7 +90,7 @@ public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test compare to skeleton xml.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testCompareToSkeletonXML() throws Exception {
@@ -108,7 +109,7 @@ public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test repeated child elements.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testRepeatedChildElements() throws Exception {
@@ -130,7 +131,7 @@ public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test x paths.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testXPaths() throws Exception {
@@ -148,7 +149,7 @@ public class TestXMLUnit extends XMLTestCase {
     // we
     /**
      * Test x path values.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testXPathValues() throws Exception {
@@ -167,7 +168,7 @@ public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test counting node tester.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testCountingNodeTester() throws Exception {
@@ -179,7 +180,7 @@ public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test custom node tester.
-     * 
+     *
      * @throws Exception the exception
      */
     public void testCustomNodeTester() throws Exception {
@@ -223,7 +224,7 @@ public class TestXMLUnit extends XMLTestCase {
 
     /**
      * Test unmatched nodes comparison.
-     * 
+     *
      * @throws Exception the exception
      */
     @SuppressWarnings("unchecked")

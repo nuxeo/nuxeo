@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.model.impl;
 
@@ -20,20 +20,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.diff.model.PropertyDiff;
+import org.nuxeo.ecm.diff.model.PropertyType;
 
 /**
- * Implementation of PropertyDiff for a complex property.
- * 
+ * Implementation of {@link PropertyDiff} for a complex property.
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 public class ComplexPropertyDiff extends PropertyDiff {
 
     private static final long serialVersionUID = -1100714461537900354L;
 
-    private Map<String, PropertyDiff> diffMap;
+    protected Map<String, PropertyDiff> diffMap;
 
     /**
-     * Instantiates a new complex property diff.
+     * Instantiates a new complex property diff with the
+     * {@link PropertyType#COMPLEX} property type.
+     */
+    public ComplexPropertyDiff() {
+
+        this.propertyType = PropertyType.COMPLEX;
+        diffMap = new HashMap<String, PropertyDiff>();
+    }
+
+    /**
+     * Instantiates a new complex property diff with a property type.
      */
     public ComplexPropertyDiff(String propertyType) {
 
@@ -43,7 +55,7 @@ public class ComplexPropertyDiff extends PropertyDiff {
 
     /**
      * Gets the diff.
-     * 
+     *
      * @param item the item
      * @return the diff
      */
@@ -53,7 +65,7 @@ public class ComplexPropertyDiff extends PropertyDiff {
 
     /**
      * Put diff.
-     * 
+     *
      * @param item the item
      * @param diff the diff
      * @return the property diff
@@ -63,8 +75,8 @@ public class ComplexPropertyDiff extends PropertyDiff {
     }
 
     /**
-     * Put all diff.
-     * 
+     * Put all diffs.
+     *
      * @param otherDiff the other diff
      */
     public void putAllDiff(ComplexPropertyDiff otherDiff) {
@@ -95,7 +107,6 @@ public class ComplexPropertyDiff extends PropertyDiff {
 
     @Override
     public String toString() {
-
-        return diffMap.toString();
+        return diffMap.toString() + super.toString();
     }
 }

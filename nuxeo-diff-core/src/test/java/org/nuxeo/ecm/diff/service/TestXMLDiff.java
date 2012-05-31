@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -33,11 +33,14 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.DiffTestCase;
+import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
 import org.nuxeo.ecm.diff.model.PropertyType;
 import org.nuxeo.ecm.diff.model.SchemaDiff;
 import org.nuxeo.ecm.diff.model.impl.ComplexPropertyDiff;
+import org.nuxeo.ecm.diff.model.impl.ContentProperty;
+import org.nuxeo.ecm.diff.model.impl.ContentPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -51,6 +54,7 @@ import com.google.inject.Inject;
  * document XML exports.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -82,7 +86,7 @@ public class TestXMLDiff extends DiffTestCase {
                 + "<schema name=\"dublincore\"><title>jack</title></schema>"
                 + "<schema name=\"note\"><note/></schema>"
                 + "<schema name=\"uid\"><minor_version>0</minor_version></schema>"
-                + "<schema name=\"file\"><content/><filename>test_file.doc</filename></schema>"
+                + "<schema name=\"file\"><content type=\"content\"/><filename type=\"string\">test_file.doc</filename></schema>"
                 + "</document>";
 
         // Configure XMLUnit
@@ -225,8 +229,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "Antoine", "John"));
         expectedComplexPropDiff.putDiff("age", new SimplePropertyDiff(
@@ -250,17 +253,15 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "John", "Bob"));
-        ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff();
         expectedComplexPropDiff2.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "Jimmy", null));
         expectedComplexPropDiff2.putDiff("lastname", new SimplePropertyDiff(
                 PropertyType.STRING, "Doe", null));
-        ComplexPropertyDiff expectedComplexPropDiff3 = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexPropDiff3 = new ComplexPropertyDiff();
         expectedComplexPropDiff3.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, "Jack", null));
         expectedComplexPropDiff3.putDiff("lastname", new SimplePropertyDiff(
@@ -281,7 +282,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         ListPropertyDiff expectedListPropDiff = new ListPropertyDiff(
                 PropertyType.SCALAR_LIST);
         expectedListPropDiff.putDiff(0, new SimplePropertyDiff(
@@ -294,27 +295,48 @@ public class TestXMLDiff extends DiffTestCase {
         // Complex list with a nested complex item
         leftXML = "<dc:files type=\"complexList\">"
                 + "<item type=\"complex\"><filename type=\"string\">toto.txt</filename>"
-                + "<file type=\"content\"><name type=\"string\">toto.txt</name><data type=\"binary\">ba85946f.blob</data></file>"
+                + "<file type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>toto.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></file>"
                 + "</item></dc:files>";
         rightXML = "<dc:files type=\"complexList\">"
                 + "<item type=\"complex\"><filename type=\"string\">otherFile.pdf</filename>"
-                + "<file type=\"content\"><name type=\"string\">otherFile.pdf</name><data type=\"binary\">fg10980f.blob</data></file>"
+                + "<file type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>otherFile.pdf</filename><digest>e5340f8f697a4a916b3ca485a042a7dd</digest></file>"
                 + "</item></dc:files>";
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "files");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("filename", new SimplePropertyDiff(
                 PropertyType.STRING, "toto.txt", "otherFile.pdf"));
-        ComplexPropertyDiff filePropDiff = new ComplexPropertyDiff(
-                PropertyType.CONTENT);
-        filePropDiff.putDiff("name", new SimplePropertyDiff(
-                PropertyType.STRING, "toto.txt", "otherFile.pdf"));
-        filePropDiff.putDiff("data", new SimplePropertyDiff(
-                PropertyType.BINARY, "ba85946f.blob", "fg10980f.blob"));
+        ContentPropertyDiff filePropDiff = new ContentPropertyDiff(
+                DifferenceType.different, new ContentProperty(null, null,
+                        "toto.txt", "5dafdabf966043c8c8cef20011e939a2"),
+                new ContentProperty(null, null, "otherFile.pdf",
+                        "e5340f8f697a4a916b3ca485a042a7dd"));
         expectedComplexPropDiff.putDiff("file", filePropDiff);
         expectedFieldDiff.putDiff(0, expectedComplexPropDiff);
+
+        checkListFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Content list
+        leftXML = "<dc:contentList type=\"contentList\">"
+                + "<contentListItem type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>Joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></contentListItem>"
+                + "</dc:contentList>";
+        rightXML = "<dc:contentList type=\"contentList\">"
+                + "<contentListItem type=\"content\"><encoding>ISO-8859-1</encoding><mime-type>text/html</mime-type><filename>Jack.txt</filename><digest>e5340f8f697a4a916b3ca485a042a7dd</digest></contentListItem>"
+                + "</dc:contentList>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "contentList");
+
+        expectedFieldDiff = new ListPropertyDiff(PropertyType.CONTENT_LIST);
+        ContentPropertyDiff expectedContentPropDiff = new ContentPropertyDiff(
+                DifferenceType.different);
+        expectedContentPropDiff.setLeftContent(new ContentProperty("UTF-8",
+                "text/plain", "Joe.txt", "5dafdabf966043c8c8cef20011e939a2"));
+        expectedContentPropDiff.setRightContent(new ContentProperty(
+                "ISO-8859-1", "text/html", "Jack.txt",
+                "e5340f8f697a4a916b3ca485a042a7dd"));
+        expectedFieldDiff.putDiff(0, expectedContentPropDiff);
 
         checkListFieldDiff(propertyDiff, expectedFieldDiff);
     }
@@ -334,8 +356,7 @@ public class TestXMLDiff extends DiffTestCase {
         PropertyDiff propertyDiff = getPropertyDiff(leftXML, rightXML, 1,
                 "complex");
 
-        ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff();
         expectedFieldDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
@@ -351,7 +372,7 @@ public class TestXMLDiff extends DiffTestCase {
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complex");
 
-        expectedFieldDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedFieldDiff = new ComplexPropertyDiff();
         ListPropertyDiff expectedListPropDiff = new ListPropertyDiff(
                 PropertyType.SCALAR_LIST);
         expectedListPropDiff.putDiff(0, new SimplePropertyDiff(
@@ -374,9 +395,8 @@ public class TestXMLDiff extends DiffTestCase {
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complex");
 
-        expectedFieldDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
-        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        expectedFieldDiff = new ComplexPropertyDiff();
+        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -386,6 +406,110 @@ public class TestXMLDiff extends DiffTestCase {
                 PropertyType.BOOLEAN, "true", "false"));
 
         checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Complex type with a nested content item
+        leftXML = "<dc:complex type=\"complex\">"
+                + "<contentItem type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>Joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></contentItem>"
+                + "<stringItem type=\"string\">joe</stringItem>"
+                + "</dc:complex>";
+        rightXML = "<dc:complex type=\"complex\">"
+                + "<contentItem type=\"content\"><encoding>ISO-8859-1</encoding><mime-type>text/html</mime-type><filename>Jack.txt</filename><digest>e5340f8f697a4a916b3ca485a042a7dd</digest></contentItem>"
+                + "<stringItem type=\"string\">jack</stringItem>"
+                + "</dc:complex>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complex");
+
+        expectedFieldDiff = new ComplexPropertyDiff();
+        expectedFieldDiff.putDiff("stringItem", new SimplePropertyDiff(
+                PropertyType.STRING, "joe", "jack"));
+        ContentPropertyDiff expectedContentPropDiff = new ContentPropertyDiff(
+                DifferenceType.different);
+        expectedContentPropDiff.setLeftContent(new ContentProperty("UTF-8",
+                "text/plain", "Joe.txt", "5dafdabf966043c8c8cef20011e939a2"));
+        expectedContentPropDiff.setRightContent(new ContentProperty(
+                "ISO-8859-1", "text/html", "Jack.txt",
+                "e5340f8f697a4a916b3ca485a042a7dd"));
+        expectedFieldDiff.putDiff("contentItem", expectedContentPropDiff);
+
+        checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
+    }
+
+    /**
+     * Tests a TEXT_VALUE diff in a content property.
+     *
+     * @throws ClientException the client exception
+     */
+    @Test
+    public void testTextValueContentPropertyDiff() throws ClientException {
+
+        // Different filename but same digest
+        String leftXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
+        String rightXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_jack.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
+
+        PropertyDiff propertyDiff = getPropertyDiff(leftXML, rightXML, 1,
+                "content");
+
+        ContentPropertyDiff expectedFieldDiff = new ContentPropertyDiff(
+                DifferenceType.differentFilename);
+        expectedFieldDiff.setLeftContent(new ContentProperty(null, null,
+                "test_joe.txt", null));
+        expectedFieldDiff.setRightContent(new ContentProperty(null, null,
+                "test_jack.txt", null));
+        checkContentFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Different digest but same filename
+        leftXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
+        rightXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_joe.txt</filename><digest>e5340f8f697a4a916b3ca485a042a7dd</digest></dc:content>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "content");
+
+        expectedFieldDiff = new ContentPropertyDiff(
+                DifferenceType.differentDigest);
+        expectedFieldDiff.setLeftContent(new ContentProperty(null, null, null,
+                "5dafdabf966043c8c8cef20011e939a2"));
+        expectedFieldDiff.setRightContent(new ContentProperty(null, null, null,
+                "e5340f8f697a4a916b3ca485a042a7dd"));
+        checkContentFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Different digest and filename
+        leftXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
+        rightXML = "<dc:content type=\"content\"><encoding>ISO-8859-1</encoding><mime-type>text/html</mime-type><filename>test_jack.txt</filename><digest>e5340f8f697a4a916b3ca485a042a7dd</digest></dc:content>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "content");
+
+        expectedFieldDiff = new ContentPropertyDiff(DifferenceType.different);
+        expectedFieldDiff.setLeftContent(new ContentProperty("UTF-8",
+                "text/plain", "test_joe.txt",
+                "5dafdabf966043c8c8cef20011e939a2"));
+        expectedFieldDiff.setRightContent(new ContentProperty("ISO-8859-1",
+                "text/html", "test_jack.txt",
+                "e5340f8f697a4a916b3ca485a042a7dd"));
+        checkContentFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Same digest and filename but different encoding or mime type
+        leftXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
+        rightXML = "<dc:content type=\"content\"><encoding>ISO-8859-1</encoding><mime-type>text/html</mime-type><filename>test_joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "content");
+
+        expectedFieldDiff = new ContentPropertyDiff(DifferenceType.different);
+        expectedFieldDiff.setLeftContent(new ContentProperty("UTF-8",
+                "text/plain", null, null));
+        expectedFieldDiff.setRightContent(new ContentProperty("ISO-8859-1",
+                "text/html", null, null));
+        checkContentFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Strict equality
+        leftXML = "<dc:content type=\"content\">"
+                + "<encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest><data>94aa8925.blob</data>"
+                + "</dc:content>";
+        rightXML = "<dc:content type=\"content\">"
+                + "<encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest><data>8ce007a5.blob</data>"
+                + "</dc:content>";
+
+        DocumentDiff docDiff = docDiffService.diff(wrapXMLIntoSchema(leftXML),
+                wrapXMLIntoSchema(rightXML));
+        checkNullSchemaDiff(docDiff, "dublincore");
     }
 
     // No need to test a CHILD_NODE_NOT_FOUND diff in a simple property.
@@ -424,14 +548,12 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, null, "John"));
         expectedComplexPropDiff.putDiff("lastname", new SimplePropertyDiff(
                 PropertyType.STRING, null, "Doe"));
-        ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexPropDiff2 = new ComplexPropertyDiff();
         expectedComplexPropDiff2.putDiff("firstname", new SimplePropertyDiff(
                 PropertyType.STRING, null, "Jack"));
         expectedComplexPropDiff2.putDiff("lastname", new SimplePropertyDiff(
@@ -458,10 +580,10 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "listOfList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "bob", "joe"));
-        expectedComplexPropDiff2 = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff2 = new ComplexPropertyDiff();
         expectedComplexPropDiff2.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, null, "jack"));
         ListPropertyDiff expectedNestedListPropDiff = new ListPropertyDiff(
@@ -492,6 +614,28 @@ public class TestXMLDiff extends DiffTestCase {
         try {
             getPropertyDiff(leftXML, rightXML, 1, "complexType");
             fail("A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
+        } catch (ClientException ce) {
+            LOGGER.debug("Exception thrown as expected: " + ce.getMessage());
+        }
+
+    }
+
+    /**
+     * Tests CHILD_NODE_NOT_FOUND diff in a content type property.
+     *
+     * @throws ClientException the client exception
+     */
+    @Test
+    public void testChildNodeNotFoundContentPropertyDiff()
+            throws ClientException {
+
+        // Complex type => should never happen
+        String leftXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>Joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
+        String rightXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type></dc:content>";
+
+        try {
+            getPropertyDiff(leftXML, rightXML, 1, "content");
+            fail("A CHILD_NODE_NOT_FOUND difference should never be found within a content type.");
         } catch (ClientException ce) {
             LOGGER.debug("Exception thrown as expected: " + ce.getMessage());
         }
@@ -582,8 +726,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", null));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -600,7 +743,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, null, "joe"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -619,7 +762,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -638,7 +781,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -656,7 +799,7 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", null));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
@@ -674,11 +817,33 @@ public class TestXMLDiff extends DiffTestCase {
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexList");
 
         expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
-        expectedComplexPropDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
         expectedComplexPropDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, null, "joe"));
         expectedComplexPropDiff.putDiff("integerItem", new SimplePropertyDiff(
                 PropertyType.INTEGER, null, ""));
+        expectedFieldDiff.putDiff(0, expectedComplexPropDiff);
+        checkListFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Complex list with a content complex item (empty list on the right
+        // side)
+        leftXML = "<dc:files type=\"complexList\"><item type=\"complex\">"
+                + "<filename type=\"string\">Joe.txt</filename>"
+                + "<file type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>Joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></file>"
+                + "</item></dc:files>";
+        rightXML = "<dc:files type=\"complexList\"/>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "files");
+
+        expectedFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
+        expectedComplexPropDiff = new ComplexPropertyDiff();
+        expectedComplexPropDiff.putDiff("filename", new SimplePropertyDiff(
+                PropertyType.STRING, "Joe.txt", null));
+        expectedComplexPropDiff.putDiff("file", new ContentPropertyDiff(
+                DifferenceType.different, new ContentProperty("UTF-8",
+                        "text/plain", "Joe.txt",
+                        "5dafdabf966043c8c8cef20011e939a2"),
+                new ContentProperty()));
         expectedFieldDiff.putDiff(0, expectedComplexPropDiff);
         checkListFieldDiff(propertyDiff, expectedFieldDiff);
     }
@@ -698,8 +863,7 @@ public class TestXMLDiff extends DiffTestCase {
         PropertyDiff propertyDiff = getPropertyDiff(leftXML, rightXML, 1,
                 "complexType");
 
-        ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedFieldDiff = new ComplexPropertyDiff();
         expectedFieldDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", null));
         expectedFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
@@ -712,7 +876,7 @@ public class TestXMLDiff extends DiffTestCase {
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexType");
 
-        expectedFieldDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedFieldDiff = new ComplexPropertyDiff();
         expectedFieldDiff.putDiff("booleanItem", new SimplePropertyDiff(
                 PropertyType.BOOLEAN, "true", null));
         checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
@@ -727,7 +891,7 @@ public class TestXMLDiff extends DiffTestCase {
 
         propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexType");
 
-        expectedFieldDiff = new ComplexPropertyDiff(PropertyType.COMPLEX);
+        expectedFieldDiff = new ComplexPropertyDiff();
         ListPropertyDiff expectedListPropertyDiff = new ListPropertyDiff(
                 PropertyType.SCALAR_LIST);
         expectedListPropertyDiff.putDiff(0, new SimplePropertyDiff(
@@ -738,6 +902,66 @@ public class TestXMLDiff extends DiffTestCase {
         expectedFieldDiff.putDiff("stringItem", new SimplePropertyDiff(
                 PropertyType.STRING, "joe", "jack"));
         checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Complex type with a nested content item
+        leftXML = "<dc:complexType type=\"complex\">"
+                + "<stringItem type=\"string\">joe</stringItem>"
+                + "<contentItem type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>Joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></contentItem>"
+                + "</dc:complexType>";
+        rightXML = "<dc:complexType type=\"complex\">"
+                + "<stringItem type=\"string\">jack</stringItem>"
+                + "<contentItem type=\"content\"/>" + "</dc:complexType>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "complexType");
+
+        expectedFieldDiff = new ComplexPropertyDiff();
+        expectedFieldDiff.putDiff("stringItem", new SimplePropertyDiff(
+                PropertyType.STRING, "joe", "jack"));
+        ContentPropertyDiff expectedContentPropertyDiff = new ContentPropertyDiff(
+                DifferenceType.different, new ContentProperty("UTF-8",
+                        "text/plain", "Joe.txt",
+                        "5dafdabf966043c8c8cef20011e939a2"),
+                new ContentProperty());
+        expectedFieldDiff.putDiff("contentItem", expectedContentPropertyDiff);
+        checkComplexFieldDiff(propertyDiff, expectedFieldDiff);
+    }
+
+    @Test
+    public void testHasChildNodesContentPropertyDiff() throws ClientException {
+
+        // Empty content property
+        String leftXML = "<dc:file type=\"content\">"
+                + "<encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>Joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest>"
+                + "</dc:file>";
+        String rightXML = "<dc:file type=\"content\"/>";
+
+        PropertyDiff propertyDiff = getPropertyDiff(leftXML, rightXML, 1,
+                "file");
+
+        ContentPropertyDiff expectedFieldDiff = new ContentPropertyDiff(
+                DifferenceType.different);
+        expectedFieldDiff.setLeftContent(new ContentProperty("UTF-8",
+                "text/plain", "Joe.txt", "5dafdabf966043c8c8cef20011e939a2"));
+        expectedFieldDiff.setRightContent(new ContentProperty());
+        checkContentFieldDiff(propertyDiff, expectedFieldDiff);
+
+        // Empty content sub property
+        leftXML = "<dc:file type=\"content\">"
+                + "<encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>Joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest>"
+                + "</dc:file>";
+        rightXML = "<dc:file type=\"content\">"
+                + "<encoding/><mime-type>text/html</mime-type><filename>Joe.txt</filename><digest/>"
+                + "</dc:file>";
+
+        propertyDiff = getPropertyDiff(leftXML, rightXML, 1, "file");
+
+        expectedFieldDiff = new ContentPropertyDiff(
+                DifferenceType.differentDigest);
+        expectedFieldDiff.setLeftContent(new ContentProperty("UTF-8",
+                "text/plain", null, "5dafdabf966043c8c8cef20011e939a2"));
+        expectedFieldDiff.setRightContent(new ContentProperty(null,
+                "text/html", null, null));
+        checkContentFieldDiff(propertyDiff, expectedFieldDiff);
     }
 
     /**

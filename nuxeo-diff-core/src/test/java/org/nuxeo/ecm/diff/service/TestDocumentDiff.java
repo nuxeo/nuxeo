@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -23,21 +23,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.DocumentXMLExporter;
+import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.BinaryManager;
+import org.nuxeo.ecm.core.storage.sql.DefaultBinaryManager;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DiffTestCase;
+import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.PropertyType;
 import org.nuxeo.ecm.diff.model.SchemaDiff;
 import org.nuxeo.ecm.diff.model.impl.ComplexPropertyDiff;
+import org.nuxeo.ecm.diff.model.impl.ContentProperty;
+import org.nuxeo.ecm.diff.model.impl.ContentPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 import org.nuxeo.ecm.diff.test.DocumentDiffRepositoryInit;
@@ -54,6 +63,7 @@ import com.google.inject.Inject;
  * 2 documents for this purpose.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -70,6 +80,19 @@ public class TestDocumentDiff extends DiffTestCase {
 
     @Inject
     protected DocumentXMLExporter docXMLExporter;
+
+    protected BinaryManager binaryManager;
+
+    @Before
+    public void setUp() throws ClientException {
+        binaryManager = new DefaultBinaryManager();
+        try {
+            binaryManager.initialize(new RepositoryDescriptor());
+        } catch (IOException ioe) {
+            throw new ClientException(
+                    "Error while initializing binary manager", ioe);
+        }
+    }
 
     /**
      * Tests doc diff.
@@ -141,7 +164,16 @@ public class TestDocumentDiff extends DiffTestCase {
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("filename"),
                 PropertyType.STRING, "Joe.txt", "Jack.txt");
         // content => different
-        checkContentFieldDiff(schemaDiff.getFieldDiff("content"));
+        ContentPropertyDiff expectedContentFieldDiff = new ContentPropertyDiff(
+                DifferenceType.different);
+        Blob leftBlob = (Blob) leftDoc.getPropertyValue("file:content");
+        Blob rightBlob = (Blob) rightDoc.getPropertyValue("file:content");
+        expectedContentFieldDiff.setLeftContent(new ContentProperty(null, null,
+                "Joe.txt", getDigest(leftBlob)));
+        expectedContentFieldDiff.setRightContent(new ContentProperty(null,
+                null, "Jack.txt", getDigest(rightBlob)));
+        checkContentFieldDiff(schemaDiff.getFieldDiff("content"),
+                expectedContentFieldDiff);
 
         // ---------------------------
         // Check files schema
@@ -150,27 +182,43 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // files =>
         // item1: same
-        // item2: different
-        // item3: remove
+        // item2: different filename
+        // item3: different content
+        // item4: remove
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item1ExpectedComplexFieldDiff.putDiff("filename",
                 new SimplePropertyDiff(PropertyType.STRING,
                         "second_attachement.txt",
                         "the_file_name_is_different.txt"));
+        item1ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(
+                DifferenceType.differentFilename, new ContentProperty(null,
+                        null, "second_attachement.txt", null),
+                new ContentProperty(null, null,
+                        "the_file_name_is_different.txt", null)));
 
-        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
-        item2ExpectedComplexFieldDiff.putDiff("filename",
+        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        leftBlob = (Blob) leftDoc.getPropertyValue("files:files/2/file");
+        rightBlob = (Blob) rightDoc.getPropertyValue("files:files/2/file");
+        item2ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(
+                DifferenceType.differentDigest, new ContentProperty(null, null,
+                        null, getDigest(leftBlob)), new ContentProperty(null,
+                        null, null, getDigest(rightBlob))));
+
+        ComplexPropertyDiff item3ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item3ExpectedComplexFieldDiff.putDiff("filename",
                 new SimplePropertyDiff(PropertyType.STRING,
-                        "third_attachement.txt", null));
-        item2ExpectedComplexFieldDiff.putDiff("file", new ComplexPropertyDiff(
-                PropertyType.CONTENT));
+                        "fourth_attachement.txt", null));
+        leftBlob = (Blob) leftDoc.getPropertyValue("files:files/3/file");
+        item3ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(
+                DifferenceType.different, new ContentProperty("UTF-8",
+                        "text/plain", "fourth_attachement.txt",
+                        getDigest(leftBlob)), new ContentProperty()));
 
         expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
         expectedListFieldDiff.putDiff(2, item2ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(3, item3ExpectedComplexFieldDiff);
 
         checkListFieldDiff(schemaDiff.getFieldDiff("files"),
                 expectedListFieldDiff);
@@ -219,8 +267,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // complex => same / different (update) / different (remove) / different
         // (add)
-        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
         expectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN,
@@ -239,8 +286,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // item2: add
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN,
@@ -252,8 +298,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.DATE, null,
                         "2011-12-30T23:00:00.00Z"));
 
-        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, null,
                         "second element of a complex list"));
@@ -283,8 +328,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // item3: add
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item1ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, "second item",
                         "second item is different"));
@@ -301,8 +345,7 @@ public class TestDocumentDiff extends DiffTestCase {
         item1ExpectedComplexFieldDiff.putDiff("stringListItem",
                 expectedNestedListDiff);
 
-        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, null, "third item"));
         item2ExpectedComplexFieldDiff.putDiff("stringListItem",
@@ -386,7 +429,16 @@ public class TestDocumentDiff extends DiffTestCase {
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("filename"),
                 PropertyType.STRING, "Jack.txt", "Joe.txt");
         // content => different
-        checkContentFieldDiff(schemaDiff.getFieldDiff("content"));
+        ContentPropertyDiff expectedContentFieldDiff = new ContentPropertyDiff(
+                DifferenceType.different);
+        Blob leftBlob = (Blob) leftDoc.getPropertyValue("file:content");
+        Blob rightBlob = (Blob) rightDoc.getPropertyValue("file:content");
+        expectedContentFieldDiff.setLeftContent(new ContentProperty(null, null,
+                "Jack.txt", getDigest(leftBlob)));
+        expectedContentFieldDiff.setRightContent(new ContentProperty(null,
+                null, "Joe.txt", getDigest(rightBlob)));
+        checkContentFieldDiff(schemaDiff.getFieldDiff("content"),
+                expectedContentFieldDiff);
 
         // ---------------------------
         // Check files schema
@@ -395,27 +447,44 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // files =>
         // item1: same
-        // item2: different
-        // item3: add
+        // item2: different filename
+        // item3: different content
+        // item4: add
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item1ExpectedComplexFieldDiff.putDiff("filename",
                 new SimplePropertyDiff(PropertyType.STRING,
                         "the_file_name_is_different.txt",
                         "second_attachement.txt"));
+        item1ExpectedComplexFieldDiff.putDiff("file",
+                new ContentPropertyDiff(DifferenceType.differentFilename,
+                        new ContentProperty(null, null,
+                                "the_file_name_is_different.txt", null),
+                        new ContentProperty(null, null,
+                                "second_attachement.txt", null)));
 
-        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
-        item2ExpectedComplexFieldDiff.putDiff("filename",
+        ComplexPropertyDiff item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        leftBlob = (Blob) leftDoc.getPropertyValue("files:files/2/file");
+        rightBlob = (Blob) rightDoc.getPropertyValue("files:files/2/file");
+        item2ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(
+                DifferenceType.differentDigest, new ContentProperty(null, null,
+                        null, getDigest(leftBlob)), new ContentProperty(null,
+                        null, null, getDigest(rightBlob))));
+
+        ComplexPropertyDiff item3ExpectedComplexFieldDiff = new ComplexPropertyDiff();
+        item3ExpectedComplexFieldDiff.putDiff("filename",
                 new SimplePropertyDiff(PropertyType.STRING, null,
-                        "third_attachement.txt"));
-        item2ExpectedComplexFieldDiff.putDiff("file", new ComplexPropertyDiff(
-                PropertyType.CONTENT));
+                        "fourth_attachement.txt"));
+        rightBlob = (Blob) rightDoc.getPropertyValue("files:files/3/file");
+        item3ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(
+                DifferenceType.different, new ContentProperty(),
+                new ContentProperty("UTF-8", "text/plain",
+                        "fourth_attachement.txt", getDigest(rightBlob))));
 
         expectedListFieldDiff.putDiff(1, item1ExpectedComplexFieldDiff);
         expectedListFieldDiff.putDiff(2, item2ExpectedComplexFieldDiff);
+        expectedListFieldDiff.putDiff(3, item3ExpectedComplexFieldDiff);
 
         checkListFieldDiff(schemaDiff.getFieldDiff("files"),
                 expectedListFieldDiff);
@@ -464,8 +533,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
         // complex => same / different (update) / different (add) / different
         // (remove)
-        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        ComplexPropertyDiff expectedComplexFieldDiff = new ComplexPropertyDiff();
         expectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN,
@@ -484,8 +552,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // item2: remove
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item1ExpectedComplexFieldDiff.putDiff(
                 "booleanItem",
                 new SimplePropertyDiff(PropertyType.BOOLEAN,
@@ -497,8 +564,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.DATE,
                         "2011-12-30T23:00:00.00Z", null));
 
-        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING,
                         "second element of a complex list", null));
@@ -528,8 +594,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // item3: add
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
-        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item1ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING,
                         "second item is different", "second item"));
@@ -546,8 +611,7 @@ public class TestDocumentDiff extends DiffTestCase {
         item1ExpectedComplexFieldDiff.putDiff("stringListItem",
                 expectedNestedListDiff);
 
-        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff(
-                PropertyType.COMPLEX);
+        item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item2ExpectedComplexFieldDiff.putDiff("stringItem",
                 new SimplePropertyDiff(PropertyType.STRING, "third item", null));
         item2ExpectedComplexFieldDiff.putDiff("stringListItem",
@@ -592,6 +656,20 @@ public class TestDocumentDiff extends DiffTestCase {
                 }
             }
         }
+    }
+
+    protected final String getDigest(Blob blob) throws ClientException {
+        try {
+            Binary binary = binaryManager.getBinary(blob.getStream());
+            if (binary != null) {
+                return binary.getDigest();
+            }
+        } catch (IOException ioe) {
+            throw new ClientException(String.format(
+                    "Error while retrieving binary for blob '%s'.",
+                    blob.toString()), ioe);
+        }
+        return null;
     }
 
 }

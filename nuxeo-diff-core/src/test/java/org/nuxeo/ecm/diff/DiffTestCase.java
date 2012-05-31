@@ -12,20 +12,23 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
-import org.nuxeo.ecm.diff.model.PropertyType;
 import org.nuxeo.ecm.diff.model.SchemaDiff;
 import org.nuxeo.ecm.diff.model.impl.ComplexPropertyDiff;
+import org.nuxeo.ecm.diff.model.impl.ContentPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.ListPropertyDiff;
 import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
 
@@ -33,6 +36,7 @@ import org.nuxeo.ecm.diff.model.impl.SimplePropertyDiff;
  * Super class for diff test cases.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 public class DiffTestCase {
 
@@ -82,6 +86,23 @@ public class DiffTestCase {
     }
 
     /**
+     * Check simple field diff.
+     *
+     * @param fieldDiff the field diff
+     * @param expectedPropertyType the expected property type
+     * @param expectedLeftValue the expected left value
+     * @param expectedRightValue the expected right value
+     * @return the simple property diff
+     */
+    protected final SimplePropertyDiff checkSimpleFieldDiff(
+            PropertyDiff fieldDiff, String expectedPropertyType,
+            String expectedLeftValue, String expectedRightValue) {
+
+        return checkSimpleFieldDiff(fieldDiff, expectedPropertyType,
+                DifferenceType.different, expectedLeftValue, expectedRightValue);
+    }
+
+    /**
      * Checks a simple field diff.
      *
      * @param fieldDiff the field diff
@@ -114,50 +135,30 @@ public class DiffTestCase {
     }
 
     /**
-     * Check simple field diff.
+     * Checks a content field diff.
      *
      * @param fieldDiff the field diff
-     * @param expectedPropertyType the expected property type
-     * @param expectedLeftValue the expected left value
-     * @param expectedRightValue the expected right value
-     * @return the simple property diff
+     * @param expectedContentFieldDiff the expected content field diff
+     * @return the property diff
      */
-    protected final SimplePropertyDiff checkSimpleFieldDiff(
-            PropertyDiff fieldDiff, String expectedPropertyType,
-            String expectedLeftValue, String expectedRightValue) {
-
-        return checkSimpleFieldDiff(fieldDiff, expectedPropertyType,
-                DifferenceType.different, expectedLeftValue, expectedRightValue);
-    }
-
-    // TODO: should use BlobPropertyDiff?
-    protected final SimplePropertyDiff checkContentFieldDiff(
-            PropertyDiff fieldDiff) {
+    protected final ContentPropertyDiff checkContentFieldDiff(
+            PropertyDiff fieldDiff, ContentPropertyDiff expectedContentFieldDiff) {
 
         assertNotNull("Field diff should not be null", fieldDiff);
-        assertEquals("Wrong property type", PropertyType.CONTENT,
-                fieldDiff.getPropertyType());
-
         assertTrue("Wrong PropertyDiff implementation",
-                fieldDiff instanceof ComplexPropertyDiff);
-        ComplexPropertyDiff complexFieldDiff = (ComplexPropertyDiff) fieldDiff;
+                fieldDiff instanceof ContentPropertyDiff);
 
-        PropertyDiff dataDiff = complexFieldDiff.getDiff("data");
-        assertTrue("Wrong PropertyDiff implementation",
-                dataDiff instanceof SimplePropertyDiff);
+        ContentPropertyDiff contentFieldDiff = (ContentPropertyDiff) fieldDiff;
+        assertEquals("Wrong list diff", expectedContentFieldDiff,
+                contentFieldDiff);
 
-        SimplePropertyDiff simpleDataDiff = (SimplePropertyDiff) dataDiff;
-        assertTrue(!simpleDataDiff.getLeftValue().equals(
-                simpleDataDiff.getRightValue()));
-
-        return simpleDataDiff;
-
+        return contentFieldDiff;
     }
 
     /**
      * Checks a list field diff.
      *
-     * @param field the field
+     * @param fieldDiff the field diff
      * @param expectedListFieldDiff the expected list field diff
      * @return the property diff
      */
@@ -172,13 +173,12 @@ public class DiffTestCase {
         assertEquals("Wrong list diff", expectedListFieldDiff, listFieldDiff);
 
         return listFieldDiff;
-
     }
 
     /**
      * Checks a complex field diff.
      *
-     * @param field the field
+     * @param fieldDiff the field diff
      * @param expectedComplexFieldDiff the expected complex field diff
      * @return the property diff
      */
@@ -194,7 +194,6 @@ public class DiffTestCase {
                 complexFieldDiff);
 
         return complexFieldDiff;
-
     }
 
 }

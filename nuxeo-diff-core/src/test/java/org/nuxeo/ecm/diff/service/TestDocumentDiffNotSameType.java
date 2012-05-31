@@ -47,6 +47,7 @@ import com.google.inject.Inject;
  * repository with 2 documents for this purpose.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)

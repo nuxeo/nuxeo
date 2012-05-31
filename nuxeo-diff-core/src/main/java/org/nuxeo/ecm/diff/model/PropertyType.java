@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.model;
 
@@ -38,9 +38,6 @@ public final class PropertyType {
 
     public static final String DOUBLE = "double";
 
-    // TODO: remove?
-    public static final String BINARY = "binary";
-
     public static final String CONTENT = "content";
 
     public static final String SCALAR_LIST = "scalarList";
@@ -65,7 +62,8 @@ public final class PropertyType {
      */
     public static boolean isSimpleType(String propertyType) {
 
-        return !isListType(propertyType) && !isComplexType(propertyType);
+        return !isListType(propertyType) && !isComplexType(propertyType)
+                && !isContentType(propertyType);
     }
 
     /**
@@ -122,7 +120,7 @@ public final class PropertyType {
      */
     public static boolean isComplexType(String propertyType) {
 
-        return COMPLEX.equals(propertyType) || CONTENT.equals(propertyType);
+        return COMPLEX.equals(propertyType);
     }
 
     /**

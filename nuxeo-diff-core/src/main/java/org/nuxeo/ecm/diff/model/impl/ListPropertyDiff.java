@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.model.impl;
 
@@ -24,18 +24,19 @@ import java.util.Map;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
 
 /**
- * Implementation of PropertyDiff for a list property.
+ * Implementation of {@link PropertyDiff} for a list property.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 public class ListPropertyDiff extends PropertyDiff {
 
     private static final long serialVersionUID = -1100714461537900354L;
 
-    private Map<Integer, PropertyDiff> diffMap;
+    protected Map<Integer, PropertyDiff> diffMap;
 
     /**
-     * Instantiates a new list property diff.
+     * Instantiates a new list property diff with a property type.
      */
     public ListPropertyDiff(String propertyType) {
 
@@ -65,7 +66,7 @@ public class ListPropertyDiff extends PropertyDiff {
     }
 
     /**
-     * Put all diff.
+     * Put all diffs.
      *
      * @param otherDiff the other diff
      */
@@ -115,7 +116,6 @@ public class ListPropertyDiff extends PropertyDiff {
 
     @Override
     public String toString() {
-
-        return diffMap.toString();
+        return diffMap.toString() + super.toString();
     }
 }

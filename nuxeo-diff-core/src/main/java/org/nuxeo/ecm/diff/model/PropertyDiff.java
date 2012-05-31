@@ -12,22 +12,25 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.model;
 
 import java.io.Serializable;
 
 /**
- * Representation of a property (field) diff. TODO: implement BlobPropertyDiff?
+ * Representation of a property (field) diff.
  *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @since 5.6
  */
 public class PropertyDiff implements Serializable {
 
     private static final long serialVersionUID = -8458912212588012911L;
 
     protected String propertyType;
+
+    protected DifferenceType differenceType = DifferenceType.different;
 
     /**
      * Checks if is simple type.
@@ -66,6 +69,15 @@ public class PropertyDiff implements Serializable {
     }
 
     /**
+     * Checks if is content list type.
+     *
+     * @return true, if is content list type
+     */
+    public boolean isContentListType(String propertyType) {
+        return PropertyType.isContentListType(propertyType);
+    }
+
+    /**
      * Checks if is complex type.
      *
      * @return true, if is complex type
@@ -91,6 +103,14 @@ public class PropertyDiff implements Serializable {
         this.propertyType = propertyType;
     }
 
+    public DifferenceType getDifferenceType() {
+        return differenceType;
+    }
+
+    public void setDifferenceType(DifferenceType differenceType) {
+        this.differenceType = differenceType;
+    }
+
     @Override
     public boolean equals(Object other) {
 
@@ -101,7 +121,21 @@ public class PropertyDiff implements Serializable {
             return false;
         }
         String otherPropertyType = ((PropertyDiff) other).getPropertyType();
-        return (propertyType == null && otherPropertyType == null)
-                || (propertyType != null && otherPropertyType != null && propertyType.equals(otherPropertyType));
+        DifferenceType otherDifferenceType = ((PropertyDiff) other).getDifferenceType();
+        return differenceType.equals(otherDifferenceType)
+                && ((propertyType == null && otherPropertyType == null) || (propertyType != null
+                        && otherPropertyType != null && propertyType.equals(otherPropertyType)));
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(" (");
+        sb.append(propertyType);
+        sb.append(", ");
+        sb.append(differenceType.name());
+        sb.append(")");
+        return sb.toString();
     }
 }
