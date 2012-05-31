@@ -214,7 +214,14 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
         String type = notification.getType().intern();
         // test for the the server started notification to send the event to the osgi framework
         if (type == Server.START_NOTIFICATION_TYPE) {
-            osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, osgi.getSystemBundle(), null));
+            final Thread t = Thread.currentThread();
+            ClassLoader cl = t.getContextClassLoader();
+            t.setContextClassLoader(osgi.getClass().getClassLoader());
+            try {
+                osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, osgi.getSystemBundle(), null));
+            } finally {
+                t.setContextClassLoader(cl);;
+            }
             return;
         }
 

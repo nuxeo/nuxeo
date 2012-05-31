@@ -429,18 +429,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
-            try {
-                persistence.loadPersistedComponents();
-            } catch (Exception e) {
-                log.error("Failed to load persisted components", e);
-            }
-            // deploy a fake component that is marking the end of startup
-            // XML components that needs to be deployed at the end need to put a
-            // requirement
-            // on this marker component
-            deployFrameworkStartedComponent();
-            // print the startup message
-            printStatusMessage();
+            fireApplicationStarted();
         }
     }
 
