@@ -104,25 +104,23 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
 
     /** Do not call this directly, go through checkDirty. */
     protected void recompute() {
-        Map<String,Schema> prefix2schema = new HashMap<String, Schema>();
-        Map<String,Field> name2field = new HashMap<String, Field>();
-        List<Field> fields = new ArrayList<Field>();
+        fields.clear();
+        prefix2schemas = new HashMap<String, Schema>();
+        fieldsByName = new HashMap<String, Field>();
         for (TypeRef<Schema> ref : schemas.values()) {
             Schema schema = ref.get();
             if (schema == null) {
                 continue;
             }
-            prefix2schema.put(schema.getNamespace().prefix, schema);
+            prefix2schemas.put(schema.getNamespace().prefix, schema);
             for (Field field : schema.getFields()) {
                 QName name = field.getName();
-                name2field.put(name.getLocalName(), field);
-                name2field.put(name.getPrefixedName(), field);
-                fields.add(field);
+                fields.put(name, field);
+                fieldsByName.put(name.getLocalName(), field);
+                fieldsByName.put(name.getPrefixedName(), field);
             }
         }
-        prefix2schemas = prefix2schema;
-        fieldsByName = name2field;
-        fieldsCollection = Collections.unmodifiableCollection(fields);
+        fieldsCollection = Collections.unmodifiableCollection(fields.values());
     }
 
     @Override
@@ -175,9 +173,15 @@ public class CompositeTypeImpl extends ComplexTypeImpl implements CompositeType 
     }
 
     @Override
+    public final boolean hasField(String name) {
+        checkDirty();
+        return fieldsByName.containsKey(name);
+    }
+
+    @Override
     public final boolean hasField(QName name) {
         checkDirty();
-        return fieldsByName.containsKey(name.getPrefixedName());
+        return fields.containsKey(name);
     }
 
     @Override
