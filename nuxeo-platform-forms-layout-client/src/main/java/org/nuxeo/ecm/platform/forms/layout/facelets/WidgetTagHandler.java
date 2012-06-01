@@ -27,11 +27,13 @@ import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.el.ValueExpressionLiteral;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
@@ -40,6 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
@@ -91,7 +94,8 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "widget", "value" };
+    protected final String[] reservedVarsArray = { "id", "widget", "name",
+            "category", "definition", "mode", "layoutName", "value" };
 
     public WidgetTagHandler(TagConfig config) {
         super(config);
@@ -141,6 +145,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
 
         // build handler
+        boolean widgetInstanceBuilt = false;
         Widget widgetInstance = null;
         if (widget != null) {
             widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
@@ -174,12 +179,14 @@ public class WidgetTagHandler extends MetaTagHandler {
                 }
                 widgetInstance = layoutService.getWidget(ctx, nameValue,
                         catValue, modeValue, valueName, layoutNameValue);
+                widgetInstanceBuilt = true;
             } else if (definition != null) {
                 WidgetDefinition widgetDef = (WidgetDefinition) definition.getObject(
                         ctx, WidgetDefinition.class);
                 if (widgetDef != null) {
                     widgetInstance = layoutService.getWidget(ctx, widgetDef,
                             modeValue, valueName, layoutNameValue);
+                    widgetInstanceBuilt = true;
                 }
             }
 
@@ -193,8 +200,26 @@ public class WidgetTagHandler extends MetaTagHandler {
                     widgetInstance.setProperty(localName, var.getValue());
                 }
             }
-            applyWidgetHandler(ctx, parent, config, widgetInstance, value,
-                    true, nextHandler);
+
+            VariableMapper orig = ctx.getVariableMapper();
+            if (widgetInstanceBuilt) {
+                // expose widget variable to the context as layout row has not
+                // done it already => this could be an issue for widget
+                // templates referring to it.
+                VariableMapper vm = new VariableMapperWrapper(orig);
+                ctx.setVariableMapper(vm);
+                ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
+                        widgetInstance, Widget.class);
+                vm.setVariable(RenderVariables.widgetVariables.widget.name(),
+                        widgetVe);
+            }
+
+            try {
+                applyWidgetHandler(ctx, parent, config, widgetInstance, value,
+                        true, nextHandler);
+            } finally {
+                ctx.setVariableMapper(orig);
+            }
         }
     }
 
@@ -239,8 +264,13 @@ public class WidgetTagHandler extends MetaTagHandler {
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
 
-            ValueExpression valueExpr = value.getValueExpression(ctx,
-                    Object.class);
+            ValueExpression valueExpr;
+            if (value == null) {
+                valueExpr = new ValueExpressionLiteral(null, Object.class);
+            } else {
+                valueExpr = value.getValueExpression(ctx, Object.class);
+            }
+
             variables.put(RenderVariables.globalVariables.value.name(),
                     valueExpr);
             variables.put(String.format("%s_%s",

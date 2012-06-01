@@ -539,7 +539,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                         WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
             }
         }
-        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl("widget", type,
+        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(type, type,
                 label, helpLabel, Boolean.TRUE.equals(translated), null,
                 fieldDefinitions, properties, null);
         Widget widget = new WidgetImpl("layout", wDef.getName(), mode,

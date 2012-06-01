@@ -10,17 +10,19 @@
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field_0}</c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
-  <c:set var="cssClass"
-    value="#{nxu:test(!empty widget.properties.cssClass, widget.properties.cssClass, '')}" />
-  <div class="#{cssClass}">
+  <div class="#{widgetProperty_cssClass}">
     <c:choose>
       <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
-        <c:if test="#{!empty widgetProperty_translatedHtml}">
-          <h:outputText value="#{widgetProperty_translatedHtml}" escape="false" />
-        </c:if>
-        <c:if test="#{empty widgetProperty_translatedHtml}">
-          <h:outputText value="#{field_0}" escape="false" />
-        </c:if>
+        <nxu:set var="translatedHtml"
+          value="#{widgetProperty_translatedHtml}"
+          cache="true">
+          <c:if test="#{!empty translatedHtml}">
+            <h:outputText value="#{translatedHtml}" escape="false" />
+          </c:if>
+          <c:if test="#{empty translatedHtml}">
+            <h:outputText value="#{field_0}" escape="false" />
+          </c:if>
+        </nxu:set>
       </c:when>
       <c:when test="#{field_1 == 'text/x-web-markdown'}">
         <h:outputText value="#{richTextEditorActions.convertToHtml(field_0, field_1)}" escape="false" />
@@ -37,15 +39,15 @@
 <c:if test="#{widget.mode == 'edit'}">
 
   <c:set var="width"
-    value="#{nxu:test(!empty widget.properties.width, widget.properties.width, '640')}" />
+    value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '640')}" />
   <c:set var="height"
-    value="#{nxu:test(!empty widget.properties.height, widget.properties.height, '400')}" />
+    value="#{nxu:test(!empty widgetProperty_height, widgetProperty_height, '400')}" />
   <c:set var="cols"
-    value="#{nxu:test(!empty widget.properties.cols, widget.properties.cols, '100')}" />
+    value="#{nxu:test(!empty widgetProperty_cols, widgetProperty_cols, '100')}" />
   <c:set var="rows"
-    value="#{nxu:test(!empty widget.properties.rows, widget.properties.rows, '25')}" />
+    value="#{nxu:test(!empty widgetProperty_rows, widgetProperty_rows, '25')}" />
   <c:set var="editorSelector"
-    value="#{nxu:test(!empty widget.properties.editorSelector, widget.properties.editorSelector, 'mceEditor')}" />
+    value="#{nxu:test(!empty widgetProperty_editorSelector, widgetProperty_editorSelector, 'mceEditor')}" />
 
   <c:choose>
     <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
