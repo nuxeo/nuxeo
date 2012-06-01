@@ -5,13 +5,16 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 <c:if test="false">
 Template displaying an action depending of its type (@since 5.6).
 
 Parameters:
 - action: the action instance (mandatory)
+- actionWidgetBinding: binding actions displaying widgets should be bound to
+  (mandatory if widgets need it)
 - idPrefix: a String prefix to put before the action id (optional but
   recommanded)
 - actionType (optional): type to use if not set on action or needs to be
@@ -47,17 +50,20 @@ TODO:
       <ui:include src="bare_link_action_template.xhtml" />
     </c:when>
 
-    <c:when test="#{action.getType() == 'fancybox' or (empty action.type and actionType == 'fancybox')}">
+    <c:when test="#{action.type == 'fancybox' or (empty action.type and actionType == 'fancybox')}">
       <ui:include src="fancybox_action_template.xhtml" />
     </c:when>
 
-    <c:if test="false">
-      Add a placeholder for custom behaviours
-    </c:if>
-    <ui:include src="custom_action_template.xhtml" />
+    <c:when test="#{action.type == 'widget' or (empty action.type and actionType == 'widget')}">
+      <nxl:widget
+        name="#{action.properties.widgetName}"
+        mode="#{empty action.properties.widgetMode ? 'view': action.properties.widgetMode}"
+        layoutName="#{idPrefix}#{action.id}"
+        value="#{actionWidgetBinding}" />
+    </c:when>
 
     <c:if test="false">
-      Use a command link if type is unknown
+      Use a link if type is unknown
     </c:if>
     <c:otherwise>
       <ui:include src="link_action_template.xhtml" />
