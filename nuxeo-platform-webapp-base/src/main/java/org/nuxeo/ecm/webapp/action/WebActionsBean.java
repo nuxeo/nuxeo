@@ -55,8 +55,9 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Component that handles actions retrieval as well as current tab(s) selection.
- * 
+ * Component that handles actions retrieval as well as current tab(s)
+ * selection.
+ *
  * @author Eugen Ionica
  * @author Anahide Tchertchian
  * @author Florent Guillaume
@@ -373,6 +374,18 @@ public class WebActionsBean implements WebActions, Serializable {
         // set current tab
         setCurrentTabId(currentTabActionId);
         return viewId;
+    }
+
+    @Override
+    public Action getAction(String actionId, ActionContext context,
+            boolean hideUnavailableAction) {
+        return actionManager.getAction(actionId, createActionContext(),
+                hideUnavailableAction);
+    }
+
+    @Override
+    public boolean checkFilter(String filterId) {
+        return actionManager.checkFilter(filterId, createActionContext());
     }
 
     // deprecated API

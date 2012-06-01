@@ -50,7 +50,7 @@ public class ActionContextProvider implements Serializable {
     private transient CoreSession documentManager;
 
     // XXX AT: sometimes EVENT scope is not enough when changing the current
-    // document several times in the same request. Wee
+    // document several times in the same request. See
     // WebActionsBean#setCurrentTabAndNavigate hack for instance.
     @Factory(value = "currentActionContext", scope = EVENT)
     public ActionContext createActionContext() {

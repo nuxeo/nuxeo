@@ -24,6 +24,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 
 /**
  * Component that handles actions retrieval as well as current tab(s)
@@ -289,6 +290,19 @@ public interface WebActions {
      */
     String setCurrentTabAndNavigate(DocumentModel document,
             String currentTabActionId);
+
+    /**
+     * @since 5.6
+     * @see ActionManager#checkFilter(String, ActionContext)
+     */
+    boolean checkFilter(String filterId);
+
+    /**
+     * @since 5.6
+     * @see ActionManager#getAction(String, ActionContext, boolean)c
+     */
+    Action getAction(String actionId, ActionContext context,
+            boolean hideUnavailableAction);
 
     @Deprecated
     List<Action> getSubViewActionsList();

@@ -86,4 +86,15 @@ public class MockActionManager implements ActionManager {
         throw new NotImplementedException();
     }
 
+    @Override
+    public Action getAction(String actionId, ActionContext context,
+            boolean hideUnavailableActions) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean checkFilter(String filterId, ActionContext context) {
+        throw new NotImplementedException();
+    }
+
 }
