@@ -52,10 +52,12 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -103,49 +105,57 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_NODEPS = "nodeps";
 
-    private static final String OPTION_NODEPS_DESC = "Ignore package dependencies and constraints";
+    private static final String OPTION_NODEPS_DESC = "Ignore package dependencies and constraints.";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_GUI = "gui";
 
-    private static final String OPTION_GUI_DESC = "Use graphical interface";
+    private static final String OPTION_GUI_DESC = "Use graphical user interface (default depends on OS).";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_JSON = "json";
 
-    private static final String OPTION_JSON_DESC = "Output JSON for mp-commands";
+    private static final String OPTION_JSON_DESC = "Output JSON for mp-commands.";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_XML = "xml";
 
-    private static final String OPTION_XML_DESC = "Output XML for mp-commands";
+    private static final String OPTION_XML_DESC = "Output XML for mp-commands.";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_DEBUG = "debug";
 
-    private static final String OPTION_DEBUG_DESC = "Activate debug messages";
+    private static final String OPTION_DEBUG_DESC = "Activate debug messages. "
+            + "See 'category' option.";
+
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_DEBUG_CATEGORY = "dc";
+
+    private static final String OPTION_DEBUG_CATEGORY_DESC = "Comma separated root categories for 'debug' option (default: \"org.nuxeo.launcher\").";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_QUIET = "quiet";
 
-    private static final String OPTION_QUIET_DESC = "Suppress information messages";
+    private static final String OPTION_QUIET_DESC = "Suppress information messages.";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_HELP = "help";
 
-    private static final String OPTION_HELP_DESC = "Show detailed help";
+    private static final String OPTION_HELP_DESC = "Show detailed help.";
 
     /**
      * @since 5.6
@@ -153,7 +163,7 @@ public abstract class NuxeoLauncher {
     protected static final String OPTION_RELAX = "relax";
 
     private static final String OPTION_RELAX_DESC = "Allow relax constraint on current platform (default: "
-            + ConnectBroker.OPTION_RELAX_DEFAULT + ")";
+            + ConnectBroker.OPTION_RELAX_DEFAULT + ").";
 
     /**
      * @since 5.6
@@ -161,7 +171,7 @@ public abstract class NuxeoLauncher {
     protected static final String OPTION_ACCEPT = "accept";
 
     private static final String OPTION_ACCEPT_DESC = "Accept, refuse or ask confirmation for all changes (default: "
-            + ConnectBroker.OPTION_ACCEPT_DEFAULT + ")";
+            + ConnectBroker.OPTION_ACCEPT_DEFAULT + ").";
 
     // Fallback to avoid an error when the log dir is not initialized
     static {
@@ -563,14 +573,20 @@ public abstract class NuxeoLauncher {
             OptionBuilder.withLongOpt(OPTION_DEBUG);
             OptionBuilder.withDescription(OPTION_DEBUG_DESC);
             launcherOptions.addOption(OptionBuilder.create("d"));
+            // Debug category option
+            OptionBuilder.withDescription(OPTION_DEBUG_CATEGORY_DESC);
+            OptionBuilder.hasArg();
+            launcherOptions.addOption(OptionBuilder.create(OPTION_DEBUG_CATEGORY));
+            OptionGroup outputOptions = new OptionGroup();
             // XML option
             OptionBuilder.withLongOpt(OPTION_XML);
             OptionBuilder.withDescription(OPTION_XML_DESC);
-            launcherOptions.addOption(OptionBuilder.create());
+            outputOptions.addOption(OptionBuilder.create());
             // JSON option
             OptionBuilder.withLongOpt(OPTION_JSON);
             OptionBuilder.withDescription(OPTION_JSON_DESC);
-            launcherOptions.addOption(OptionBuilder.create());
+            outputOptions.addOption(OptionBuilder.create());
+            launcherOptions.addOptionGroup(outputOptions);
             // GUI option
             OptionBuilder.withLongOpt(OPTION_GUI);
             OptionBuilder.hasArg();
@@ -1415,8 +1431,10 @@ public abstract class NuxeoLauncher {
                 || cmdLine.hasOption(OPTION_JSON)) {
             setQuiet();
         }
-        if (cmdLine.hasOption(OPTION_DEBUG)) {
-            setDebug();
+        if (cmdLine.hasOption(OPTION_DEBUG)
+                || cmdLine.hasOption(OPTION_DEBUG_CATEGORY)) {
+            setDebug(cmdLine.getOptionValue(OPTION_DEBUG_CATEGORY,
+                    "org.nuxeo.launcher"));
         }
         NuxeoLauncher launcher;
         ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
@@ -1477,7 +1495,10 @@ public abstract class NuxeoLauncher {
             // Command parameters
             if (args.length > 1) {
                 params = Arrays.copyOfRange(args, 1, args.length);
-                log.debug("Command parameters: " + params);
+                if (log.isDebugEnabled()) {
+                    log.debug("Command parameters: "
+                            + ArrayUtils.toString(params));
+                }
             } else {
                 params = new String[0];
             }
@@ -1496,13 +1517,30 @@ public abstract class NuxeoLauncher {
     }
 
     /**
+     * @param categories Root categories to switch DEBUG on.
+     * @since 5.6
+     */
+    protected static void setDebug(String categories) {
+        setDebug(categories, true);
+    }
+
+    /**
+     * @param categories Root categories to switch DEBUG on or off
+     * @param activateDebug Set DEBUG on or off.
+     * @since 5.6
+     */
+    protected static void setDebug(String categories, boolean activateDebug) {
+        debug = activateDebug;
+        Log4JHelper.setDebug(categories, activateDebug, true, new String[] {
+                Log4JHelper.CONSOLE_APPENDER_NAME, "FILE" });
+    }
+
+    /**
      * @param activateDebug if true, will activate the DEBUG logs
      * @since 5.5
      */
-    protected static void setDebug() {
-        debug = true;
-        Log4JHelper.setDebug("org.nuxeo.launcher", true, true, new String[] {
-                Log4JHelper.CONSOLE_APPENDER_NAME, "FILE" });
+    protected static void setDebug(boolean activateDebug) {
+        setDebug("org.nuxeo", activateDebug);
     }
 
     protected void setXMLOutput() {
