@@ -23,7 +23,6 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
-import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 
@@ -99,7 +98,6 @@ public class ITContextualActionsTest extends AbstractTest {
         actions.clickOnButton(actions.moreButton);
         actions.clickOnButton(actions.exportButton);
 
-        // Log out
-        navToUrl("http://localhost:8080/nuxeo/logout");
+        logout();
     }
 }

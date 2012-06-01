@@ -36,7 +36,7 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@title=\"Add to worklist\"]")
     public WebElement addToWorklistButton;
 
-    @FindBy(name = "documentActionsUpperButtons:permalinkAction_link")
+    @FindBy(xpath = "//img[@title=\"Permanent link to this document\"]")
     public WebElement permaButton;
 
     @FindBy(id = "fancybox-overlay")
