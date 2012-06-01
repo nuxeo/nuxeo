@@ -17,6 +17,7 @@
         document.getElementById(window.element.id).component.callSuggestion(true);
     }
   </script>
+  <h:outputText value="#{messages['label.start.workflow']}"/>
   <c:set var="minChars"
     value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '1')}" />
   <c:set var="frequency"
