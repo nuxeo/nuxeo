@@ -19,10 +19,14 @@
 
 package org.nuxeo.ecm.platform.actions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -40,16 +44,21 @@ public class TestActionFilter extends NXRuntimeTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
         deployContrib("org.nuxeo.ecm.actions.tests", "test-filters-contrib.xml");
-        deployContrib("org.nuxeo.ecm.actions.tests", "test-filters-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.actions.tests",
+                "test-filters-override-contrib.xml");
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 
-    private static boolean filterAccept(DocumentModel doc, ActionFilter filter) {
-        // XXX AT: action is not used anyway
-        Action action = new Action();
+    protected ActionContext getActionContext(DocumentModel doc) {
         ActionContext context = new ActionContext();
         context.setCurrentDocument(doc);
-        return filter.accept(action, context);
+        return context;
+    }
+
+    protected boolean filterAccept(DocumentModel doc, ActionFilter filter) {
+        // XXX AT: action is not used anyway
+        Action action = new Action();
+        return filter.accept(action, getActionContext(doc));
     }
 
     private ActionFilter getFilter(String name) {
@@ -145,7 +154,8 @@ public class TestActionFilter extends NXRuntimeTestCase {
     }
 
     // non regression test for NXP-408 : the action is considered valid if no
-    // denying rule is found and at least one granting rule is found. Check that
+    // denying rule is found and at least one granting rule is found. Check
+    // that
     // when no denying rule is found and no granting rule is found, filter is
     // not valid.
     @Test
@@ -202,6 +212,44 @@ public class TestActionFilter extends NXRuntimeTestCase {
         assertEquals(1, dFilter.getRules().length);
         FilterRule rule = dFilter.getRules()[0];
         assertEquals("administrators", rule.groups[0]);
+    }
+
+    public void testCheckFilter() {
+        // test workspace or section
+        DocumentModel doc = new MockDocumentModel("Workspace", new String[0]);
+        assertTrue(as.checkFilter("WorkspaceOrSection", getActionContext(doc)));
+        doc = new MockDocumentModel("Section", new String[0]);
+        assertTrue(as.checkFilter("WorkspaceOrSection", getActionContext(doc)));
+        doc = new MockDocumentModel("File", new String[0]);
+        assertFalse(as.checkFilter("WorkspaceOrSection", getActionContext(doc)));
+
+        // test bad expression
+        doc = new MockDocumentModel("Workspace", new String[0]);
+        assertFalse(as.checkFilter("badExpression", getActionContext(doc)));
+    }
+
+    @Test
+    public void testGetAction() throws Exception {
+        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-contrib.xml");
+
+        DocumentModel doc = new MockDocumentModel("Workspace", new String[0]);
+        Action action = as.getAction("singleActionRetrievedWithFilter",
+                getActionContext(doc), true);
+        assertNotNull(action);
+        assertTrue(action.getAvailable());
+        action = as.getAction("singleActionRetrievedWithFilter",
+                getActionContext(doc), false);
+        assertNotNull(action);
+        assertTrue(action.getAvailable());
+
+        doc = new MockDocumentModel("File", new String[0]);
+        action = as.getAction("singleActionRetrievedWithFilter",
+                getActionContext(doc), true);
+        assertNull(action);
+        action = as.getAction("singleActionRetrievedWithFilter",
+                getActionContext(doc), false);
+        assertNotNull(action);
+        assertFalse(action.getAvailable());
     }
 
 }

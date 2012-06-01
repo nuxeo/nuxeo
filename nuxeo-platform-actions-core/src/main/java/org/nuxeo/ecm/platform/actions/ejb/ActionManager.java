@@ -38,7 +38,7 @@ public interface ActionManager extends Serializable {
     /**
      * Gets actions for a category (filters are evaluated).
      * <p>
-     * Only actions available in the give context are returned
+     * Only actions available in the given context are returned
      */
     List<Action> getActions(String category, ActionContext context);
 
@@ -46,14 +46,36 @@ public interface ActionManager extends Serializable {
      * Gets actions for a category (filters are evaluated).
      * <p>
      * If hideUnavailableActions, all actions of the category are returned but
-     * actions are flagged with a enable flag depending on filters evaluation.
+     * actions are flagged with an available flag depending on filters
+     * evaluation.
      */
     List<Action> getActions(String category, ActionContext context,
             boolean hideUnavailableActions);
 
     Action getAction(String actionId);
 
+    /**
+     * Returns action with given id, evaluating its filters in given context,
+     * and returning null if filters evaluation denies access or if action is
+     * not found.
+     * <p>
+     * If hideUnavailableActions is false, the action is always returned but it
+     * is flagged with an available flag depending on filters evaluation.
+     *
+     * @since 5.6
+     */
+    Action getAction(String actionId, ActionContext context,
+            boolean hideUnavailableActions);
+
     ActionFilter[] getFilters(String actionId);
+
+    /**
+     * Returns false if given filter evaluation is supposed to deny access when
+     * checking for this filter.
+     *
+     * @since 5.6
+     */
+    boolean checkFilter(String filterId, ActionContext context);
 
     /**
      * Gets all actions in a category (filters are NOT evaluated).

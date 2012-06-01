@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -87,18 +86,28 @@ public class ActionService extends DefaultComponent implements ActionManager {
         Iterator<Action> it = actions.iterator();
         while (it.hasNext()) {
             Action action = it.next();
-            for (String filterId : action.getFilterIds()) {
-                ActionFilter filter = filterReg.getFilter(filterId);
-                if (filter == null) {
-                    continue;
-                }
-                if (!filter.accept(action, context)) {
-                    it.remove();
-                    // handle next action
-                    break;
-                }
+            if (!checkFilters(context, action, filterReg)) {
+                it.remove();
             }
         }
+    }
+
+    private boolean checkFilters(ActionContext context, Action action,
+            ActionFilterRegistry filterReg) {
+        if (action == null) {
+            return false;
+        }
+        for (String filterId : action.getFilterIds()) {
+            ActionFilter filter = filterReg.getFilter(filterId);
+            if (filter == null) {
+                continue;
+            }
+            if (!filter.accept(action, context)) {
+                // denying filter found => ignore following filters
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -128,6 +137,25 @@ public class ActionService extends DefaultComponent implements ActionManager {
             }
             return allActions;
         }
+    }
+
+    @Override
+    public Action getAction(String actionId, ActionContext context,
+            boolean hideUnavailableAction) {
+        Action action = getActionRegistry().getAction(actionId);
+        if (action != null) {
+            ActionFilterRegistry filterReg = getFilterRegistry();
+            if (hideUnavailableAction) {
+                if (!checkFilters(context, action, filterReg)) {
+                    return null;
+                }
+            } else {
+                if (!checkFilters(context, action, filterReg)) {
+                    action.setAvailable(false);
+                }
+            }
+        }
+        return action;
     }
 
     @Override
@@ -177,6 +205,16 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return filters;
         }
         return null;
+    }
+
+    @Override
+    public boolean checkFilter(String filterId, ActionContext context) {
+        ActionFilterRegistry filterReg = getFilterRegistry();
+        ActionFilter filter = filterReg.getFilter(filterId);
+        if (filter == null) {
+            return false;
+        }
+        return filter.accept(null, context);
     }
 
     @Override

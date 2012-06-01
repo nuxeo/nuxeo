@@ -85,16 +85,6 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         this.rules = rules;
     }
 
-    /**
-     * Checks whether this action is valid in the given context.
-     * <p>
-     * The action is considered valid if no denying rule is found and at least
-     * one granting rule is found. If no rule is found at all, it is valid.
-     * <p>
-     * In other words: OR between granting rules, AND between denying rules,
-     * denial is favored (also if exceptions occur), AND inside of rules, OR
-     * inside or rule items (type, facet,...).
-     */
     // FIXME: the parameter 'action' is not used!
     public boolean accept(Action action, ActionContext context) {
         // no context: reject

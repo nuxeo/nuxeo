@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.actions;
 import java.io.Serializable;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface ActionFilter extends Serializable {
 
@@ -30,6 +30,23 @@ public interface ActionFilter extends Serializable {
 
     void setId(String id);
 
+    /**
+     * Checks whether this action is valid in the given context.
+     * <p>
+     * The action is considered valid if no denying rule is found and at least
+     * one granting rule is found. If no rule is found at all, it is valid.
+     * <p>
+     * In other words: OR between granting rules, AND between denying rules,
+     * denial is favored (also if exceptions occur), AND inside of rules, OR
+     * inside or rule items (type, facet,...).
+     *
+     * @param action the optional action to check against, should be able to be
+     *            null if filters evaluation only depends on given context.
+     * @param context mandatory context holding variables to check against.
+     * @returns true if filters configuration for given action and context.
+     *          Returns false if an error occurs during one of the conditions
+     *          evaluation.
+     */
     boolean accept(Action action, ActionContext context);
 
 }

@@ -74,12 +74,16 @@
         </propertyMap>
       </properties>
     </action>
+
+    <action id="singleActionRetrievedWithFilter">
+      <filter-id>WorkspaceOrSection</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
-    <custom-filter id="MyCustomFilter"
-      class="org.nuxeo.ecm.platform.actions.DummyFilter">
+    <custom-filter id="MyCustomFilter" class="org.nuxeo.ecm.platform.actions.DummyFilter">
       <rule grant="true" />
     </custom-filter>
 
