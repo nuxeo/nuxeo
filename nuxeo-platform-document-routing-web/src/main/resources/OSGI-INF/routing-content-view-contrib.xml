@@ -67,5 +67,32 @@
           showPDFExport="false" />
       </resultLayouts>
     </contentView>
+
+    <contentView name="previous_routes">
+      <showTitle>false</showTitle>
+      <!-- TODO -->
+      <!--
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{currentDocument.id}</parameter>
+         <whereClause docType=""> <fixedPart> </fixedPart> </whereClause> 
+          <pageSize>20</pageSize> 
+      </coreQueryPageProvider>
+      -->
+      <showFilterForm>false</showFilterForm>
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
+      </cacheKey>
+      <resultLayouts>
+        <layout name="" title="" translateTitle="" iconPath=""
+          showCSVExport="false" showPDFExport="false" />
+      </resultLayouts>
+    </contentView>
   </extension>
 </component>
