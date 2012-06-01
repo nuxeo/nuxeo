@@ -139,11 +139,11 @@
       </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
-        <!--<layout>file</layout>-->
+        <!--<layout>file</layout> -->
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <!--<layout>file</layout>-->
+        <!--<layout>file</layout> -->
         <layout>dublincore</layout>
       </layouts>
       <contentViews category="content">
@@ -305,9 +305,12 @@
         <layout>heading</layout>
         <layout>note</layout>
       </layouts>
-      <layouts mode="summary">
+      <!-- no more needed since 5.6: use the default summary grid layout -->
+      <!--
+        <layouts mode="summary">
         <layout>note_summary_layout</layout>
-      </layouts>
+        </layouts>
+      -->
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>note</layout>

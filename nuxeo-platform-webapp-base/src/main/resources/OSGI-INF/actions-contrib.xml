@@ -155,6 +155,18 @@
       </rule>
     </filter>
 
+    <filter id="hasNote">
+      <rule grant="true">
+        <schema>note</schema>
+      </rule>
+    </filter>
+
+    <filter id="notHasNote">
+      <rule grant="false">
+        <schema>note</schema>
+      </rule>
+    </filter>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

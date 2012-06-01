@@ -110,8 +110,8 @@ public interface DocumentActions extends SelectDataModelListener {
     String downloadFromList() throws ClientException;
 
     /**
-     * @return ecm type for current document, <code>null</code> if current
-     *         doc is null.
+     * @return ecm type for current document, <code>null</code> if current doc
+     *         is null.
      */
     Type getCurrentType();
 
@@ -219,6 +219,11 @@ public interface DocumentActions extends SelectDataModelListener {
      */
     boolean getCanUnpublish();
 
+    /**
+     * @deprecated since 5.6: nxl:documentLayout tag now offers the same
+     *             features
+     */
+    @Deprecated
     String getCurrentDocumentSummaryLayout();
 
     void followTransition(DocumentModel changedDocument) throws ClientException;
