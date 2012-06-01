@@ -179,7 +179,7 @@ public abstract class AbstractTest {
 
     /**
      * Introspects the classpath and returns the list of files in it.
-     * 
+     *
      * @return
      * @throws Exception
      */
@@ -240,8 +240,39 @@ public abstract class AbstractTest {
         return files;
     }
 
+    private static final String M2_REPO = "repository/";
+
     protected static void addFireBug(FirefoxProfile profile) throws Exception {
-        profile.addExtension(AbstractTest.class, "/firebug.xpi");
+        // this is preventing from running tests in eclipse
+        // profile.addExtension(AbstractTest.class, "/firebug.xpi");
+
+        File xpi = null;
+        List<String> clf = getClassLoaderFiles();
+        for (String f : clf) {
+            if (f.endsWith("/" + FIREBUG_XPI)) {
+                xpi = new File(f);
+            }
+        }
+        if (xpi == null) {
+
+            String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll(
+                    "/$", "");
+            // try to guess the location in the M2 repo
+            for (String f : clf) {
+                if (f.contains(customM2Repo)) {
+                    String m2 = f.substring(0, f.indexOf(customM2Repo)
+                            + customM2Repo.length());
+                    xpi = new File(m2 + "/" + FIREBUG_M2 + "/" + FIREBUG_XPI);
+                    break;
+                }
+            }
+        }
+        if (xpi == null || !xpi.exists()) {
+            throw new RuntimeException(FIREBUG_XPI
+                    + " not found in classloader or local M2 repository");
+        }
+        profile.addExtension(xpi);
+
         // avoid "first run" page
         profile.setPreference("extensions.firebug.currentVersion",
                 FIREBUG_VERSION);
@@ -365,7 +396,7 @@ public abstract class AbstractTest {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
@@ -379,7 +410,7 @@ public abstract class AbstractTest {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @param parentElement find from the element
@@ -418,7 +449,7 @@ public abstract class AbstractTest {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
@@ -437,7 +468,7 @@ public abstract class AbstractTest {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @param parentElement find from the element
@@ -452,7 +483,7 @@ public abstract class AbstractTest {
 
     /**
      * Waits until an element is enabled, with a timeout.
-     * 
+     *
      * @param element the element
      * @param timeout the timeout in milliseconds
      */
@@ -476,7 +507,7 @@ public abstract class AbstractTest {
 
     /**
      * Waits until an element is enabled, with a timeout.
-     * 
+     *
      * @param element the element
      */
     public static void waitUntilEnabled(WebElement element)
@@ -486,9 +517,9 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}.
-     * 
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}.
+     *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in
@@ -531,7 +562,7 @@ public abstract class AbstractTest {
      * Finds the first {@link WebElement} using the given method, with the
      * default timeout. Then waits until the element is enabled, with the
      * default timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @return the first matching element on the current page, if found
      * @throws NotFoundException if the element is not found or not enabled
@@ -544,9 +575,9 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
-     * 
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in
@@ -596,7 +627,7 @@ public abstract class AbstractTest {
      * Finds the first {@link WebElement} using the given method, with the
      * default timeout. Then waits until the element is enabled, with the
      * default timeout. Then clicks on the element.
-     * 
+     *
      * @param by the locating mechanism
      * @throws NotFoundException if the element is not found or not enabled
      */
@@ -629,7 +660,7 @@ public abstract class AbstractTest {
 
     /**
      * Navigate to a specified url
-     * 
+     *
      * @param urlString url
      * @throws MalformedURLException
      */
@@ -640,7 +671,7 @@ public abstract class AbstractTest {
 
     /**
      * Login as Administrator
-     * 
+     *
      * @return the Document base page (by default returned by nuxeo dm)
      * @throws UserNotConnectedException
      */
@@ -658,7 +689,7 @@ public abstract class AbstractTest {
 
     /**
      * Login using an invalid credential.
-     * 
+     *
      * @param username
      * @param password
      */
@@ -670,7 +701,7 @@ public abstract class AbstractTest {
 
     /**
      * Init the repository with a test Workspace form the {@code currentPage}.
-     * 
+     *
      * @param currentPage the current page
      * @return the created Workspace page
      * @throws Exception if initializing repository fails
@@ -685,7 +716,7 @@ public abstract class AbstractTest {
     /**
      * Cleans the repository (delete the test Workspace) from the
      * {@code currentPage}.
-     * 
+     *
      * @param currentPage the current page
      * @throws Exception if cleaning repository fails
      */
@@ -697,7 +728,7 @@ public abstract class AbstractTest {
 
     /**
      * Creates a Workspace form the {@code currentPage}.
-     * 
+     *
      * @param currentPage the current page
      * @param workspaceTitle the workspace title
      * @param workspaceDescription the workspace description
@@ -722,7 +753,7 @@ public abstract class AbstractTest {
     /**
      * Deletes the Workspace with title {@code workspaceTitle} from the
      * {@code currentPage}.
-     * 
+     *
      * @param currentPage the current page
      * @param workspaceTitle the workspace title
      */
@@ -739,7 +770,7 @@ public abstract class AbstractTest {
 
     /**
      * Creates a File form the {@code currentPage}.
-     * 
+     *
      * @param currentPage the current page
      * @param fileTitle the file title
      * @param fileDescription the file description
@@ -775,7 +806,7 @@ public abstract class AbstractTest {
 
     /**
      * Creates a temporary file and returns its absolute path.
-     * 
+     *
      * @param tmpFilePrefix the file prefix
      * @param fileSuffix the file suffix
      * @param fileContent the file content
