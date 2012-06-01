@@ -5,40 +5,21 @@
     point="contentViews">
 
     <contentView name="route_pending_task">
-      <showTitle>false</showTitle>
+      <title>label.document.routing.pending.tasks</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
+        <parameter>#{currentDocument.id}</parameter>
         <whereClause docType="TaskDoc">
-          <!-- TODO -->
-          <!-- 
           <fixedPart>
+            nt:targetDocumentId = ? AND
+            ecm:currentLifeCycleState = 'opened'
           </fixedPart>
-          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-            <field schema="" name="ecm_fulltext" />
-          </predicate>
-          <predicate parameter="dc:created" operator="BETWEEN">
-            <field schema="" name="dc_created_min" />
-            <field schema="" name="dc_created_max" />
-          </predicate>
-          <predicate parameter="dc:modified" operator="BETWEEN">
-            <field schema="" name="dc_modified_min" />
-            <field schema="" name="dc_modified_max" />
-          </predicate>
-          <predicate parameter="dc:creator" operator="IN">
-            <field schema="" name="dc_creator" />
-          </predicate>
-          <predicate parameter="dc:nature" operator="IN">
-            <field schema="" name="dc_nature" />
-          </predicate>
-           -->
         </whereClause>
-        <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
-
-      <searchLayout name="" filterDisplayType="" />
-      <showFilterForm>true</showFilterForm>
-
+      <showFilterForm>false</showFilterForm>
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
@@ -48,49 +29,29 @@
       <cacheSize>10</cacheSize>
       <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
       </cacheKey>
-
       <resultLayouts>
-        <layout name="" title="" translateTitle="" iconPath=""
-          showCSVExport="true" showPDFExport="false" />
+        <layout name="route_content_view_layout" title=""
+          translateTitle="" iconPath="" showCSVExport="false"
+          showPDFExport="false" />
       </resultLayouts>
-
     </contentView>
 
     <contentView name="route_past_steps">
-      <showTitle>false</showTitle>
+      <title>label.document.routing.past.steps</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>true</showTitle>
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
+        <parameter>#{currentDocument.id}</parameter>
         <whereClause docType="TaskDoc">
-          <!-- TODO -->
-          <!-- 
           <fixedPart>
+            nt:targetDocumentId = ? AND
+            ecm:currentLifeCycleState = 'ended'
           </fixedPart>
-          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-            <field schema="" name="ecm_fulltext" />
-          </predicate>
-          <predicate parameter="dc:created" operator="BETWEEN">
-            <field schema="" name="dc_created_min" />
-            <field schema="" name="dc_created_max" />
-          </predicate>
-          <predicate parameter="dc:modified" operator="BETWEEN">
-            <field schema="" name="dc_modified_min" />
-            <field schema="" name="dc_modified_max" />
-          </predicate>
-          <predicate parameter="dc:creator" operator="IN">
-            <field schema="" name="dc_creator" />
-          </predicate>
-          <predicate parameter="dc:nature" operator="IN">
-            <field schema="" name="dc_nature" />
-          </predicate>
-           -->
         </whereClause>
-        <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
-
-      <searchLayout name="" filterDisplayType="" />
-      <showFilterForm>true</showFilterForm>
-
+      <showFilterForm>false</showFilterForm>
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
@@ -100,12 +61,11 @@
       <cacheSize>10</cacheSize>
       <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
       </cacheKey>
-
       <resultLayouts>
-        <layout name="" title="" translateTitle="" iconPath=""
-          showCSVExport="true" showPDFExport="false" />
+        <layout name="route_content_view_layout" title=""
+          translateTitle="" iconPath="" showCSVExport="false"
+          showPDFExport="false" />
       </resultLayouts>
-
     </contentView>
   </extension>
 </component>
