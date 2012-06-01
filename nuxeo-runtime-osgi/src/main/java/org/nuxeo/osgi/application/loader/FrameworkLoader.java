@@ -193,11 +193,8 @@ public class FrameworkLoader {
             }
             try {
                 install(f);
-            } catch (BundleException e) {
-                log.info(e.getMessage());
-            } catch (Throwable t) { // silently ignore
-                log.warn("Failed to install bundle: " + f, t);
-                // do nothing
+            } catch (Throwable t) {
+                log.error("Failed to install bundle: " + f, t);
             }
         }
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
