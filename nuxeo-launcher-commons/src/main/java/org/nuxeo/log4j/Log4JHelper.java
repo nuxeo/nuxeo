@@ -116,28 +116,49 @@ public class Log4JHelper {
      * Also change the pattern layout of the given appenderName.
      *
      * @since 5.6
-     * @param category Log4J category for which to switch debug log level
+     * @param categories Log4J categories for which to switch debug log level
+     *            (comma separated values)
      * @param debug set debug log level to true or false
      * @param includeChildren Also set/unset debug mode on children categories
      * @param appenderNames Appender names on which to set a detailed pattern
      *            layout. Ignored if null.
      */
-    public static void setDebug(String category, boolean debug,
+    public static void setDebug(String categories, boolean debug,
             boolean includeChildren, String[] appenderNames) {
-        for (@SuppressWarnings("unchecked")
-        Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
-            Logger logger = loggers.nextElement();
-            if (logger.getName().equals(category) || includeChildren
-                    && logger.getName().startsWith(category)) {
-                if (debug) {
-                    logger.setLevel(Level.DEBUG);
-                    log.info("Log level set to DEBUG for: " + logger.getName());
-                } else {
-                    logger.setLevel(Level.INFO);
-                    log.info("Log level reset to INFO for: " + logger.getName());
+        Level newLevel;
+        if (debug) {
+            newLevel = Level.DEBUG;
+        } else {
+            newLevel = Level.INFO;
+        }
+
+        // Manage categories
+        String[] categoriesArray = categories.split(",");
+        for (String category : categoriesArray) { // Create non existing loggers
+            Logger logger = Logger.getLogger(category);
+            logger.setLevel(newLevel);
+            log.info("Log level set to " + newLevel + " for: "
+                    + logger.getName());
+        }
+        if (includeChildren) { // Also change children categories' level
+            for (@SuppressWarnings("unchecked")
+            Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
+                Logger logger = loggers.nextElement();
+                if (logger.getLevel() == newLevel) {
+                    continue;
+                }
+                for (String category : categoriesArray) {
+                    if (logger.getName().startsWith(category)) {
+                        logger.setLevel(newLevel);
+                        log.info("Log level set to " + newLevel + " for: "
+                                + logger.getName());
+                        break;
+                    }
                 }
             }
         }
+
+        // Manage appenders
         if (ArrayUtils.isEmpty(appenderNames)) {
             return;
         }
