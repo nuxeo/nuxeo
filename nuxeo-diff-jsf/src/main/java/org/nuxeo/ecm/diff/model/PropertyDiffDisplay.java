@@ -34,5 +34,7 @@ public interface PropertyDiffDisplay extends Serializable {
 
     Serializable getValue();
 
+    DifferenceType getDifferenceType();
+
     String getStyleClass();
 }

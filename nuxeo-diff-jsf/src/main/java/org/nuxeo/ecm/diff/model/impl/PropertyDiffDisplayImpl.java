@@ -18,6 +18,7 @@ package org.nuxeo.ecm.diff.model.impl;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.PropertyDiffDisplay;
 
 /**
@@ -32,14 +33,27 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
 
     protected Serializable value;
 
+    protected DifferenceType differenceType;
+
     protected String styleClass = DEFAULT_STYLE_CLASS;
 
     public PropertyDiffDisplayImpl(Serializable value) {
-        this.value = value;
+        this(value, DifferenceType.different);
+    }
+
+    public PropertyDiffDisplayImpl(Serializable value,
+            DifferenceType differenceType) {
+        this(value, differenceType, null);
     }
 
     public PropertyDiffDisplayImpl(Serializable value, String styleClass) {
+        this(value, DifferenceType.different, styleClass);
+    }
+
+    public PropertyDiffDisplayImpl(Serializable value,
+            DifferenceType differenceType, String styleClass) {
         this.value = value;
+        this.differenceType = differenceType;
         this.styleClass = styleClass;
     }
 
@@ -49,6 +63,14 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
 
     public void setValue(Serializable value) {
         this.value = value;
+    }
+
+    public DifferenceType getDifferenceType() {
+        return differenceType;
+    }
+
+    public void setDifferenceType(DifferenceType differenceType) {
+        this.differenceType = differenceType;
     }
 
     public String getStyleClass() {
@@ -70,25 +92,30 @@ public class PropertyDiffDisplayImpl implements PropertyDiffDisplay {
         }
         Serializable otherValue = ((PropertyDiffDisplay) other).getValue();
         Serializable otherStyleClass = ((PropertyDiffDisplay) other).getStyleClass();
+        DifferenceType otherDifferenceType = ((PropertyDiffDisplay) other).getDifferenceType();
         if (value == null && otherValue == null && styleClass == null
-                && otherStyleClass == null) {
+                && otherStyleClass == null
+                && differenceType.equals(otherDifferenceType)) {
             return true;
         }
-        return value == null && otherValue == null && styleClass != null
-                && styleClass.equals(otherStyleClass) || styleClass == null
-                && otherStyleClass == null && value != null
-                && value.equals(otherValue) || value != null
-                && value.equals(otherValue) && styleClass != null
-                && styleClass.equals(otherStyleClass);
+        return differenceType.equals(otherDifferenceType)
+                && (value == null && otherValue == null && styleClass != null
+                        && styleClass.equals(otherStyleClass)
+                        || styleClass == null && otherStyleClass == null
+                        && value != null && value.equals(otherValue) || value != null
+                        && value.equals(otherValue)
+                        && styleClass != null
+                        && styleClass.equals(otherStyleClass));
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(value);
-        sb.append(" (");
+        sb.append(" / ");
+        sb.append(differenceType.name());
+        sb.append(" / ");
         sb.append(styleClass);
-        sb.append(")");
         return sb.toString();
     }
 }

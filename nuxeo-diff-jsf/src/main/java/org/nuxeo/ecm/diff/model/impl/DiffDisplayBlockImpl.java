@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.diff.model.impl;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
@@ -39,14 +38,14 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
 
     protected Map<String, Map<String, PropertyDiffDisplay>> rightValue;
 
-    protected Map<String, Map<String, Serializable>> contentDiffValue;
+    protected Map<String, Map<String, PropertyDiffDisplay>> contentDiffValue;
 
     protected LayoutDefinition layoutDefinition;
 
     public DiffDisplayBlockImpl(String label,
             Map<String, Map<String, PropertyDiffDisplay>> leftValue,
             Map<String, Map<String, PropertyDiffDisplay>> rightValue,
-            Map<String, Map<String, Serializable>> contentDiffValue,
+            Map<String, Map<String, PropertyDiffDisplay>> contentDiffValue,
             LayoutDefinition layoutDefinition) {
         this.label = label;
         this.leftValue = leftValue;
@@ -67,7 +66,8 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
         return leftValue;
     }
 
-    public void setLeftValue(Map<String, Map<String, PropertyDiffDisplay>> leftValue) {
+    public void setLeftValue(
+            Map<String, Map<String, PropertyDiffDisplay>> leftValue) {
         this.leftValue = leftValue;
     }
 
@@ -75,16 +75,17 @@ public class DiffDisplayBlockImpl implements DiffDisplayBlock {
         return rightValue;
     }
 
-    public void setRightValue(Map<String, Map<String, PropertyDiffDisplay>> rightValue) {
+    public void setRightValue(
+            Map<String, Map<String, PropertyDiffDisplay>> rightValue) {
         this.rightValue = rightValue;
     }
 
-    public Map<String, Map<String, Serializable>> getContentDiffValue() {
+    public Map<String, Map<String, PropertyDiffDisplay>> getContentDiffValue() {
         return contentDiffValue;
     }
 
     public void setContentDiffValue(
-            Map<String, Map<String, Serializable>> contentDiffValue) {
+            Map<String, Map<String, PropertyDiffDisplay>> contentDiffValue) {
         this.contentDiffValue = contentDiffValue;
     }
 

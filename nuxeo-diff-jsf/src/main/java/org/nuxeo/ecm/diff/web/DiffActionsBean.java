@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
+import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.service.DiffDisplayService;
 import org.nuxeo.ecm.diff.service.DocumentDiffService;
@@ -58,9 +59,11 @@ public class DiffActionsBean implements Serializable {
 
     private static final long serialVersionUID = -5507491210664361778L;
 
+    private static final Log log = LogFactory.getLog(DiffActionsBean.class);
+
     private static final String DOC_DIFF_VIEW = "view_doc_diff";
 
-    private static final Log log = LogFactory.getLog(DiffActionsBean.class);
+    private static final String CONTENT_DIFF_DIFFERENCE_TYPE_MSG_KEY_PREFIX = "diff.content.differenceType.message.";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -388,6 +391,22 @@ public class DiffActionsBean implements Serializable {
             String conversionTypeParam) {
         return getContentDiffURL(propertyXPath, conversionTypeParam)
                 + "?blobPostProcessing=true";
+    }
+
+    /**
+     * Checks if is different filename.
+     */
+    public boolean isDifferentFilename(DifferenceType differenceType) {
+        return DifferenceType.differentFilename.equals(differenceType);
+    }
+
+    /**
+     * Gets the content diff difference type message key.
+     */
+    public String getContentDiffDifferenceTypeMsgKey(
+            DifferenceType differenceType) {
+        return CONTENT_DIFF_DIFFERENCE_TYPE_MSG_KEY_PREFIX
+                + differenceType.name();
     }
 
     /**
