@@ -697,11 +697,6 @@
       <translated>false</translated>
       <properties widgetMode="any">
         <property name="hideSubLabels">true</property>
-        <property name="nxw_addForm_0">true</property>
-        <property name="nxw_addForm_1">true</property>
-        <property name="nxw_addForm_2">true</property>
-        <property name="nxw_addForm_3">true</property>
-        <property name="nxw_addForm_4">true</property>
       </properties>
       <subWidgetRefs>
         <widget>summary_actions_top_left</widget>
@@ -720,14 +715,6 @@
       <translated>false</translated>
       <properties widgetMode="any">
         <property name="hideSubLabels">true</property>
-        <property name="nxw_addForm_0">true</property>
-        <property name="nxw_addForm_1">true</property>
-        <property name="nxw_addForm_2">true</property>
-        <property name="nxw_addForm_3">true</property>
-        <property name="nxw_addForm_4">true</property>
-        <property name="nxw_addForm_5">true</property>
-        <property name="nxw_addForm_6">true</property>
-        <property name="nxw_addForm_7">true</property>
       </properties>
       <subWidgetRefs>
         <widget>summary_actions_top_right</widget>
