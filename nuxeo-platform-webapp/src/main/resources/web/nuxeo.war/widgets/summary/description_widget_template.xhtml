@@ -10,19 +10,25 @@
       value="#{currentDocument.dc.description}"
       styleClass="documentDescription quote" />
   </c:if>
-  <span class="createdBy">
-    <h:outputText value="#{messages['label.summary.createdBy'] }" />
-    <a href="#{baseURL}user/#{currentDocument.dc.creator}">
-      #{nxu:userFullName(currentDocument.dc.creator)}
-    </a>
-  </span>
-  <span class="creationDate nowrap">
-    <h:outputText value="#{currentDocument.dc.created}" />
-  </span>
-  <span class="versionNumber">
-    <h:outputFormat value="#{messages['label.version.number']}">
-      <f:param value="#{currentDocumentVersionInfo.versionLabel}" />
-    </h:outputFormat>
-  </span>
+  <c:if test="#{!empty currentDocument.dc.creator}">
+    <span class="createdBy">
+      <h:outputText value="#{messages['label.summary.createdBy'] }" />
+      <a href="#{baseURL}user/#{currentDocument.dc.creator}">
+        #{nxu:userFullName(currentDocument.dc.creator)}
+      </a>
+    </span>
+  </c:if>
+  <c:if test="#{!empty currentDocument.dc.created}">
+    <span class="creationDate nowrap">
+      <h:outputText value="#{currentDocument.dc.created}" />
+    </span>
+  </c:if>
+  <c:if test="#{currentDocumentVersionInfo.available}">
+    <span class="versionNumber">
+      <h:outputFormat value="#{messages['label.version.number']}">
+        <f:param value="#{currentDocumentVersionInfo.versionLabel}" />
+      </h:outputFormat>
+    </span>
+  </c:if>
 
 </div>
