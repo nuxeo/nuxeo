@@ -56,7 +56,7 @@ public class TestAction extends NXRuntimeTestCase {
     @Test
     public void testActionExtensionPoint() {
         Collection<Action> actions = as.getActionRegistry().getActions();
-        assertEquals(7, actions.size());
+        assertEquals(8, actions.size());
 
         Action newDocument = as.getAction("newDocument");
         assertEquals("newDocument", newDocument.getId());
