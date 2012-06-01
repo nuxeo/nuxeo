@@ -7,8 +7,9 @@
     <a4j:region id="documentViewRegion">
       <a4j:outputPanel id="documentViewPanel">
 
-        <nxl:layout value="#{currentDocument}" mode="view"
-          name="#{currentDocumentSummaryLayout}"/>
+        <nxl:documentLayout documentMode="summary" mode="view"
+          value="#{currentDocument}" defaultLayout="grid_summary_layout"
+          includeAnyMode="false" />
 
       </a4j:outputPanel>
     </a4j:region>

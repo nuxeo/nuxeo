@@ -335,7 +335,8 @@
     <widget name="header_description" type="textarea">
       <widgetModes>
         <mode value="any">
-          #{currentDocument.folder==false or empty currentDocument.dublincore.description ?'hidden':mode}
+          #{currentDocument.folder==false or empty
+          currentDocument.dublincore.description ?'hidden':mode}
         </mode>
       </widgetModes>
       <fields>
@@ -345,7 +346,8 @@
         <label mode="any"></label>
       </labels>
       <properties mode="any">
-        <property name="styleClass">currentDocumentDescription quote
+        <property name="styleClass">
+          currentDocumentDescription quote
         </property>
       </properties>
     </widget>

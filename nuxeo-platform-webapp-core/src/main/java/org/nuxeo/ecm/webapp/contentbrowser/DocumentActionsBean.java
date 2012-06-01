@@ -97,6 +97,11 @@ public class DocumentActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
 
+    /**
+     * @deprecated since 5.6: default layout can now be defined on the
+     *             nxl:documentLayout tag
+     */
+    @Deprecated
     public static final String DEFAULT_SUMMARY_LAYOUT = "default_summary_layout";
 
     public static final String LIFE_CYCLE_TRANSITION_KEY = "lifeCycleTransition";
@@ -130,6 +135,7 @@ public class DocumentActionsBean extends InputController implements
 
     protected String comment;
 
+    @Deprecated
     @Override
     @Factory(autoCreate = true, value = "currentDocumentSummaryLayout", scope = EVENT)
     public String getCurrentDocumentSummaryLayout() {
@@ -585,8 +591,8 @@ public class DocumentActionsBean extends InputController implements
     public boolean getWriteRight() throws ClientException {
         // TODO: WRITE is a high level compound permission (i.e. more like a
         // user profile), public methods of the Nuxeo framework should only
-        // check atomic / specific permissions such as WRITE_PROPERTIES, REMOVE,
-        // ADD_CHILDREN depending on the action to execute instead
+        // check atomic / specific permissions such as WRITE_PROPERTIES,
+        // REMOVE, ADD_CHILDREN depending on the action to execute instead
         return documentManager.hasPermission(
                 navigationContext.getCurrentDocument().getRef(),
                 SecurityConstants.WRITE);
