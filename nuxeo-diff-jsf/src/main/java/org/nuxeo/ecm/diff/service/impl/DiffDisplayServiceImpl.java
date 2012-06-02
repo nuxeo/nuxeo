@@ -848,8 +848,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 if (index < listProperty.size()) {
                     Serializable listPropertyItem = listProperty.get(index);
                     PropertyDiff listItemPropertyDiff = null;
-                    if (listPropertyDiff != null
-                            && index < listPropertyDiff.size()) {
+                    if (listPropertyDiff != null) {
                         listItemPropertyDiff = listPropertyDiff.getDiff(index);
                     }
                     if (isComplexType(listPropertyItem)) { // Complex
@@ -914,8 +913,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 // Only put value if index is in list range
                 if (index < listProperty.size()) {
                     PropertyDiff listItemPropertyDiff = null;
-                    if (listPropertyDiff != null
-                            && index < listPropertyDiff.size()) {
+                    if (listPropertyDiff != null) {
                         listItemPropertyDiff = listPropertyDiff.getDiff(index);
                     }
                     listFieldDiffDisplay.add(getFinalFieldDiffDisplay(
@@ -1071,10 +1069,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     listItemXPaths.put(DIFF_LIST_WIDGET_INDEX_SUBWIDGET_FIELD,
                             index + 1);
                 }
-                PropertyDiff listItemPropertyDiff = null;
-                if (index < listPropertyDiff.size()) {
-                    listItemPropertyDiff = listPropertyDiff.getDiff(index);
-                }
+                PropertyDiff listItemPropertyDiff = listPropertyDiff.getDiff(index);
                 if (listItemPropertyDiff != null) {
 
                     Serializable leftListPropertyItem = null;
@@ -1146,8 +1141,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 if (index < leftListProperty.size()
                         && index < rightListProperty.size()) {
                     PropertyDiff listItemPropertyDiff = null;
-                    if (listPropertyDiff != null
-                            && index < listPropertyDiff.size()) {
+                    if (listPropertyDiff != null) {
                         listItemPropertyDiff = listPropertyDiff.getDiff(index);
                     }
                     DifferenceType differenceType = DifferenceType.different;
