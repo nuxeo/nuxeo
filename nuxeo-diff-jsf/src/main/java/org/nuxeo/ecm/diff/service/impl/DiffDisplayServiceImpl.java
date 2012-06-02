@@ -30,7 +30,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -114,6 +113,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     protected static final String DIFF_WIDGET_FIELD_DEFINITION_DIFFERENCE_TYPE_SUFFIX = "differenceType";
 
     protected static final String DIFF_WIDGET_FIELD_DEFINITION_STYLE_CLASS_SUFFIX = "styleClass";
+
+    protected static final String DIFF_WIDGET_FIELD_DEFINITION_FILENAME = "filename";
 
     protected static final String DIFF_WIDGET_PROPERTY_DISPLAY_ALL_ITEMS = "displayAllItems";
 
@@ -668,30 +669,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             value.put(schemaName, schemaMap);
         }
         schemaMap.put(fieldName, fieldDiffDisplay);
-        // TODO: better manage content (file) and note
-        putFilenameDiffDisplay(schemaName, fieldName, schemaMap,
-                fieldDiffDisplay.getValue());
+        // TODO: better manage HTML content (note)
         putMimetypeDiffDisplay(schemaName, fieldName, schemaMap, doc);
-    }
-
-    /**
-     * @param schemaName
-     * @param fieldName
-     * @param schemaMap
-     * @param fieldDiffDisplayValue
-     */
-    // TODO: should not be hardcoded
-    // => use schema/field/filename in widget definition
-    protected final void putFilenameDiffDisplay(String schemaName,
-            String fieldName, Map<String, PropertyDiffDisplay> schemaMap,
-            Serializable fieldDiffDisplayValue) {
-
-        if ("file".equals(schemaName) && "content".equals(fieldName)
-                && !schemaMap.containsKey("filename")
-                && fieldDiffDisplayValue instanceof Blob) {
-            schemaMap.put("filename", new PropertyDiffDisplayImpl(
-                    ((Blob) fieldDiffDisplayValue).getFilename()));
-        }
     }
 
     // TODO: should not be hardcoded
@@ -1361,8 +1340,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             // TODO: set props ?
         }
 
-        // TODO: better manage specific case of content type
-        // filename/content (file and files) and note
+        // TODO: Manage specific case of HTML string properties (note)
 
         // Set field definitions if generic or specific and not already set in
         // widget definition
@@ -1392,13 +1370,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 FieldDefinition styleClassFieldDef = new FieldDefinitionImpl(
                         null, getFieldDefinitionStyleClassFieldName(fieldName));
                 if (PropertyType.isContentType(propertyType)) {
-                    fieldName = "filename";
-                    if (field == null) {
-                        fieldName = getPropertyName(
-                                getPropertySchema(propertyName), fieldName);
-                    }
-                    fieldDefinitions[1] = new FieldDefinitionImpl(null,
-                            getFieldDefinitionValueFieldName(fieldName));
+                    fieldDefinitions[1] = new FieldDefinitionImpl(
+                            null,
+                            getFieldDefinitionFilenameFieldName(getFieldDefinitionValueFieldName(fieldName)));
                     fieldDefinitions[2] = styleClassFieldDef;
                 } else {
                     fieldDefinitions[1] = styleClassFieldDef;
@@ -1468,6 +1442,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
         return fieldName + "/"
                 + DIFF_WIDGET_FIELD_DEFINITION_STYLE_CLASS_SUFFIX;
+    }
+
+    protected final String getFieldDefinitionFilenameFieldName(String fieldName) {
+
+        return fieldName + "/" + DIFF_WIDGET_FIELD_DEFINITION_FILENAME;
     }
 
     protected final WidgetDefinition[] getSubWidgetDefinitions(String category,
