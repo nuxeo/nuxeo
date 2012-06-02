@@ -177,8 +177,6 @@
         <label mode="any">label.summary.download.file</label>
       </labels>
       <translated>true</translated>
-      <properties mode="any">
-      </properties>
     </widget>
 
     <widget name="files:files" type="list">
