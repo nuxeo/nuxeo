@@ -116,10 +116,6 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             log.error(e);
         }
 
-        String blobPostProcessingParameter = getQueryParamValue(req,
-                "blobPostProcessing", "false");
-        boolean blobPostProcessing = Boolean.parseBoolean(blobPostProcessingParameter);
-
         if (repo == null || repo.equals("*")) {
             handleError(res, "You must specify a repository.");
             return;
@@ -146,7 +142,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         List<Blob> contentDiffBlobs;
         try {
             contentDiffBlobs = initCachedContentDiffBlobs(res, xpath,
-                    conversionType, blobPostProcessing);
+                    conversionType);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             handleError(res, "Unable to get content diff.");
@@ -180,8 +176,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
     }
 
     private List<Blob> initCachedContentDiffBlobs(Response res, String xpath,
-            ContentDiffConversionType conversionType, boolean blobPostProcessing)
-            throws ClientException {
+            ContentDiffConversionType conversionType) throws ClientException {
 
         ContentDiffAdapter contentDiffAdapter = null;
 

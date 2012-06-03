@@ -27,13 +27,4 @@
     <object class="org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDifferDescriptor"/>
   </extension-point>
 
-  <!--
-  <extension-point name="blobPostProcessor">
-    <documentation>
-      Allows to contribute post processor to preview blobs after they got retrieved.
-    </documentation>
-    <object class="org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessorDescriptor"/>
-  </extension-point>
-  -->
-
 </component>
