@@ -32,6 +32,8 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.diff.content.HtmlGuesser;
+import org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -110,6 +112,15 @@ public class ConverterBasedContentDiffAdapter extends
             MimeTypeContentDiffer mtContentDiffer = getContentDiffAdapterManager().getContentDiffer(
                     adaptedDocMimeType);
             if (mtContentDiffer != null) {
+                // If using the HtmlContentDiffer for non HTML blobs
+                // (text/plain, text/xml), we need to transform the blob strings
+                // to encode XML entities and replace all occurrences of "\n"
+                // with "<br />", since they will then be displayed in HTML.
+                if (mtContentDiffer instanceof HtmlContentDiffer
+                        && !"text/html".equals(adaptedDocMimeType)) {
+                    adaptedDocBlob = getHtmlStringBlob(adaptedDocBlob);
+                    otherDocBlob = getHtmlStringBlob(otherDocBlob);
+                }
                 blobResults = mtContentDiffer.getContentDiff(adaptedDocBlob,
                         otherDocBlob, adaptedDoc, otherDoc);
                 return blobResults;
@@ -128,9 +139,10 @@ public class ConverterBasedContentDiffAdapter extends
             Blob adaptedDocConvertedBlob = adaptedDocConvertedBlobHolder.getBlob();
             Blob otherDocConvertedBlob = otherDocConvertedBlobHolder.getBlob();
 
-            // In the case of text conversion, we need to transform the blob
-            // strings to replace all occurrences of "\n" with "<br />", since
-            // they will then be displayed by the HtmlContentDiffer.
+            // In the case of a text conversion, we need to transform the blob
+            // strings to encode XML entities and replace all occurrences of
+            // "\n" with "<br />", since they will then be displayed in HTML by
+            // the HtmlContentDiffer.
             if (ContentDiffConversionType.text.equals(conversionType)) {
                 adaptedDocConvertedBlob = getHtmlStringBlob(adaptedDocConvertedBlob);
                 otherDocConvertedBlob = getHtmlStringBlob(otherDocConvertedBlob);
@@ -173,11 +185,16 @@ public class ConverterBasedContentDiffAdapter extends
             return new DocumentBlobHolder(doc, xPath);
         }
         if (prop instanceof String) {
-            // TODO: use HTML guesser to find out mime type
-            // (and don't use html for text notes)
+            // Default mime type is text/plain. For a Note, use the
+            // "note:mime_type" property, otherwise if the property value is
+            // HTML use text/html.
             String mimeType = "text/plain";
             if ("note:note".equals(xPath)) {
                 mimeType = (String) doc.getPropertyValue("note:mime_type");
+            } else {
+                if (HtmlGuesser.isHtml((String) prop)) {
+                    mimeType = "text/html";
+                }
             }
             return new DocumentStringBlobHolder(doc, xPath, mimeType);
         }
@@ -250,7 +267,8 @@ public class ConverterBasedContentDiffAdapter extends
         try {
             return new StringBlob(
                     blob.getString().replace("&", "&amp;").replace("<", "&lt;").replace(
-                            ">", "&gt;").replace("\n", "<br />"));
+                            ">", "&gt;").replace("\r\n", "\n").replace("\n",
+                            "<br />"));
         } catch (IOException ioe) {
             throw new ContentDiffException(String.format(
                     "Could not get string from blob %s", blob.getFilename()),

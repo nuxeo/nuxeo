@@ -8,10 +8,6 @@
       Default builtin content diff adapters
     </documentation>
 
-    <!-- <contentDiffAdapter name="noteContentDiffAdapter" enabled="false"> 
-      <typeName>Note</typeName> <class>org.nuxeo.ecm.diff.adapter.factories.NoteContentDiffAdapter</class> 
-      </contentDiffAdapter> -->
-
   </extension>
 
   <extension
@@ -20,8 +16,11 @@
     <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer">
       <pattern>text/html</pattern>
     </contentDiffer>
-    <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.PlainTextContentDiffer">
+    <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer">
       <pattern>text/plain</pattern>
+    </contentDiffer>
+    <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer">
+      <pattern>text/xml</pattern>
     </contentDiffer>
   </extension>
 </component>

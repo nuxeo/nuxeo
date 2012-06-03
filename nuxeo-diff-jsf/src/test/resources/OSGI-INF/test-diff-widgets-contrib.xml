@@ -22,7 +22,7 @@
       </properties>
     </widget>
 
-    <widget name="simpletypes:htmlText" type="richtext_with_mimetype">
+    <widget name="simpletypes:htmlText" type="htmltext">
       <categories>
         <category>diff</category>
       </categories>
@@ -30,12 +30,6 @@
         <label mode="any">label.simpletypes.htmlText</label>
       </labels>
       <translated>true</translated>
-      <properties mode="view">
-        <property name="translatedHtml">
-          #{noteActions.translateImageLinks(field_0)}
-        </property>
-        <property name="cssClass">note_content_block</property>
-      </properties>
     </widget>
 
   </extension>

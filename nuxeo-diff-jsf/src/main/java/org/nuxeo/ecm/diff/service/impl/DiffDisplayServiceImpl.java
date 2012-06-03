@@ -669,13 +669,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             value.put(schemaName, schemaMap);
         }
         schemaMap.put(fieldName, fieldDiffDisplay);
-        // TODO: better manage HTML content (note)
-        putMimetypeDiffDisplay(schemaName, fieldName, schemaMap, doc);
+        // Handle mime type for the note:note property
+        putMimeTypeDiffDisplay(schemaName, fieldName, schemaMap, doc);
     }
 
-    // TODO: should not be hardcoded
-    // => use HTML guesser?
-    protected final void putMimetypeDiffDisplay(String schemaName,
+    protected final void putMimeTypeDiffDisplay(String schemaName,
             String fieldName, Map<String, PropertyDiffDisplay> schemaMap,
             DocumentModel doc) throws ClientException {
 
@@ -1340,8 +1338,6 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             // TODO: set props ?
         }
 
-        // TODO: Manage specific case of HTML string properties (note)
-
         // Set field definitions if generic or specific and not already set in
         // widget definition
         if (isGeneric || !isFieldDefinitions(wDef)) {
@@ -1360,7 +1356,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                         getFieldDefinitionDifferenceTypeFieldName(fieldName));
             } else {
                 int fieldCount = 2;
-                if (PropertyType.isContentType(propertyType)) {
+                if (PropertyType.isContentType(propertyType)
+                        || ("note:note".equals(propertyName))) {
                     fieldCount = 3;
                 }
                 fieldDefinitions = new FieldDefinition[fieldCount];
@@ -1373,6 +1370,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     fieldDefinitions[1] = new FieldDefinitionImpl(
                             null,
                             getFieldDefinitionFilenameFieldName(getFieldDefinitionValueFieldName(fieldName)));
+                    fieldDefinitions[2] = styleClassFieldDef;
+                } else if ("note:note".equals(propertyName)) {
+                    fieldDefinitions[1] = new FieldDefinitionImpl(null,
+                            getFieldDefinitionValueFieldName("note:mime_type"));
                     fieldDefinitions[2] = styleClassFieldDef;
                 } else {
                     fieldDefinitions[1] = styleClassFieldDef;

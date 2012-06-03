@@ -157,10 +157,6 @@
         <label mode="any">label.note.note</label>
       </labels>
       <translated>true</translated>
-      <fields>
-        <field>note:note/value</field>
-        <field>note:mime_type/value</field>
-      </fields>
       <properties mode="any">
         <property name="translatedHtml">
           #{noteActions.translateImageLinks(field_0)}
