@@ -49,6 +49,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployContrib("org.nuxeo.ecm.platform.wss.backend","OSGI-INF/wssbackendmanager-framework.xml");
+        fireFrameworkStarted();
         openSession();
 
         DocumentModel ws1 = session.createDocumentModel(
