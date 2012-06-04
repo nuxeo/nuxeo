@@ -43,8 +43,6 @@ public class TestAdvancedXMLZipConversion extends AdvancedXMLZipConverterTest {
                 "pptx2text", "advanced/paragraphs.pptx");
     }
 
-    // TODO: test xlx2text (.xlsx)
-
     // Test oo2text
     @Test
     public void testOOWriterConverter() throws Exception {
