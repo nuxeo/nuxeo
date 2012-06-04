@@ -21,6 +21,7 @@
   <xs:element name="taskAssignees" type="node:stringList" />
   <xs:element name="taskAssigneesPermission" type="xs:string" />
   <xs:element name="taskLayout" type="xs:string" />
+  <xs:element name="taskNotificationTemplate" type="xs:string" />
   <xs:element name="taskButtons" type="node:buttons" />
 
   <xs:element name="count" type="xs:int" /> <!-- audit -->
