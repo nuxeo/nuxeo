@@ -78,7 +78,8 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         if (J2EEContainerDescriptor.getSelected() == null) {
             return; // not in container
         }
-        // TODO add annotation on core session api for marking non transactional API
+        // TODO add annotation on core session api for marking non
+        // transactional API
         final String name = m.getName();
         if ("getSessionId".equals(name)) {
             return;
@@ -92,11 +93,17 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         if ("close".equals(name)) {
             return;
         }
-       if ("destroy".equals(name)) {
+        if ("destroy".equals(name)) {
             return;
         }
-        log.warn("Session invoked in a container without a transaction active",
-                new Throwable());
+
+        log.warn("Session invoked in a container without a "
+                + "transaction active: turn on debug logs for more "
+                + "information about the faulty call.");
+        if (log.isDebugEnabled()) {
+            log.debug("Session invoked in a container without a transaction",
+                    new Throwable());
+        }
     }
 
     @Override
