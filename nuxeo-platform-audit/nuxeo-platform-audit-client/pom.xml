@@ -67,6 +67,18 @@
       <groupId>metro.webservices</groupId>
       <artifactId>webservices-api</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-annotations</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- test scope -->
     <dependency>
