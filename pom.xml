@@ -700,19 +700,16 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
         <version>3.2.4.SP1_CP01-brew_NXP-5104</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-annotations</artifactId>
         <version>3.2.1.ga</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>3.2.1.ga</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
