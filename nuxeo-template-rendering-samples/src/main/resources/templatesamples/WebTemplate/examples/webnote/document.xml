@@ -71,7 +71,7 @@
       <templateEntry>
         <templateId><![CDATA[6775a93a-2b0a-406d-a1f8-a91c8fe5b786]]></templateId>
         <templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"><nxdt:field name="htmlContent" type="content" readonly="true" source="htmlPreview"></nxdt:field></nxdt:templateParams>]]></templateData>
-        <templateName><![CDATA[]]></templateName>
+        <templateName><![CDATA[WebTemplate4Note]]></templateName>
         <useMainContentAsTemplate><![CDATA[false]]></useMainContentAsTemplate>
       </templateEntry>
     </nxts:bindings>
