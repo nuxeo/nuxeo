@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -126,11 +126,7 @@ public class XDocReportResourceService extends AbstractResourceService
                 if (template != null) {
                     Blob oldBlob = template.getTemplateBlob();
 
-                    // fall back to dumb byte[] constructor because of change
-                    // 93648fa3e82b
-                    // in XDocReport API
-                    // Blob newBlob = new InputStreamBlob(dataIn.getStream());
-                    Blob newBlob = new ByteArrayBlob(dataIn.getContent());
+                    Blob newBlob = new InputStreamBlob(dataIn.getContent());
 
                     // make stream resettable
                     newBlob = newBlob.persist();

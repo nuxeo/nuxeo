@@ -12,10 +12,12 @@ import fr.opensagres.xdocreport.remoting.resources.domain.BinaryData;
 public class BinaryDataWrapper {
 
     public static BinaryData wrap(Blob blob) throws Exception {
-        // fall back to dumb byte[] constructor because of change 93648fa3e82b
-        // in XDocReport API
-        return new BinaryData(blob.getByteArray(), blob.getFilename(),
-                blob.getMimeType());
+
+        BinaryData data = new BinaryData();
+        data.setContent(blob.getStream());
+        data.setFileName(blob.getFilename());
+        data.setMimeType(blob.getMimeType());
+        return data;
     }
 
 }
