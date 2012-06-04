@@ -467,7 +467,6 @@ public class ConfigurationGenerator {
                 templates = getUserTemplates();
             }
             includeTemplates(templates);
-            System.out.println();
             extractDatabaseTemplateName();
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
