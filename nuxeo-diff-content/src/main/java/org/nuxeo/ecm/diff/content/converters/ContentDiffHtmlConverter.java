@@ -60,12 +60,13 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
             ConversionService cs = Framework.getLocalService(ConversionService.class);
             converterName = cs.getConverterName(mimeType, HTML_MIME_TYPE);
             // We don't want to use the "any2html" converter contributed for the
-            // preview since it uses the following conversion chain for non pdf
-            // blobs: any2pdf --> pdf2html.
+            // preview in the case of non pdf blobs since it uses the following
+            // conversion chain : any2pdf --> pdf2html.
             // In this case we want to use the "office2html" converter which
             // gives a better result when applying the HTMLContentDiffer on the
             // converted HTML.
-            if (ANY_2_HTML_CONVERTER_NAME.equals(converterName)) {
+            if (ANY_2_HTML_CONVERTER_NAME.equals(converterName)
+                    && !"application/pdf".equals(mimeType)) {
                 converterName = OFFICE_2_HTML_CONVERTER_NAME;
             }
         }
