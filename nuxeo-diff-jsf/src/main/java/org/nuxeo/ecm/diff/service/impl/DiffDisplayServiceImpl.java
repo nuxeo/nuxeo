@@ -30,7 +30,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
@@ -947,10 +947,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     && rightContent != null
                     && (!StringUtils.isEmpty(leftContent.getFilename()) && !StringUtils.isEmpty(rightContent.getFilename()))
                     || (!StringUtils.isEmpty(leftContent.getDigest()) && !StringUtils.isEmpty(rightContent.getDigest()))) {
-                fieldXPaths = new ContentDiffDisplayImpl(propertyName,
+                fieldXPaths = new ContentDiffDisplayImpl(
+                        propertyName,
                         contentPropertyDiff.getDifferenceType(),
-                        isContentType(leftProperty)
-                                && isContentType(rightProperty));
+                        ContentDiffHelper.isDisplayTextConversion(leftProperty)
+                                && ContentDiffHelper.isDisplayTextConversion(rightProperty));
             }
         }
         // Complex type
@@ -1110,8 +1111,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                                 new ContentDiffDisplayImpl(
                                         listItemXPath,
                                         listItemPropertyDiff.getDifferenceType(),
-                                        isContentType(leftListPropertyItem)
-                                                && isContentType(rightListPropertyItem)));
+                                        ContentDiffHelper.isDisplayTextConversion(leftListPropertyItem)
+                                                && ContentDiffHelper.isDisplayTextConversion(rightListPropertyItem)));
                     }
                 }
                 listFieldXPaths.add(listItemXPaths);
@@ -1137,9 +1138,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     Serializable rightListPropertyItem = rightListProperty.get(index);
                     listItemXPath = new ContentDiffDisplayImpl(
                             getSubPropertyFullName(propertyName,
-                                    String.valueOf(index)), differenceType,
-                            isContentType(leftListPropertyItem)
-                                    && isContentType(rightListPropertyItem));
+                                    String.valueOf(index)),
+                            differenceType,
+                            ContentDiffHelper.isDisplayTextConversion(leftListPropertyItem)
+                                    && ContentDiffHelper.isDisplayTextConversion(rightListPropertyItem));
                 }
                 listFieldXPaths.add(listItemXPath);
             }
@@ -1195,11 +1197,6 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     protected boolean isComplexType(Serializable property) {
 
         return property instanceof Map<?, ?>;
-    }
-
-    protected final boolean isContentType(Serializable property) {
-
-        return property instanceof Blob;
     }
 
     /**

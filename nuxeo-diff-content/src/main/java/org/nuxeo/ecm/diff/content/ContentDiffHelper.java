@@ -17,10 +17,15 @@
 
 package org.nuxeo.ecm.diff.content;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManager;
+import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
@@ -157,5 +162,38 @@ public final class ContentDiffHelper {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Checks if the text conversion content diff is relevant for the specified
+     * property.
+     */
+    public static boolean isDisplayTextConversion(Serializable property) {
+
+        // Must be a content property
+        if (!isContentProperty(property)) {
+            return false;
+        }
+        // Not relevant for the mime types associated to a content differ (see
+        // the mimeTypeContentDiffer extension point)
+        Blob blob = (Blob) property;
+        String mimeType = blob.getMimeType();
+
+        ContentDiffAdapterManager contentDiffAdapterManager = Framework.getLocalService(ContentDiffAdapterManager.class);
+        MimeTypeContentDiffer mimeTypeContentDiffer = contentDiffAdapterManager.getContentDiffer(mimeType);
+
+        if (mimeTypeContentDiffer != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the specified property is a content property, ie.
+     * {@code instanceof Blob}.
+     */
+    public static boolean isContentProperty(Serializable property) {
+        return property instanceof Blob;
     }
 }
