@@ -40,6 +40,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
+        fireFrameworkStarted();
         openSession();
     }
 
