@@ -76,6 +76,7 @@ public class TestCorePublicationWithWorkflow extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.publisher.jbpm.test");
         deployBundle(JbpmUTConstants.CORE_BUNDLE_NAME);
         deployBundle(JbpmUTConstants.TESTING_BUNDLE_NAME);
+        fireFrameworkStarted();
         openSession();
 
         directoryService = Framework.getService(DirectoryService.class);
