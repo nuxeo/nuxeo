@@ -107,15 +107,9 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                                     param.getSource());
                             if (propValue instanceof String) {
                                 String stringContent = (String) propValue;
-                                context.put(param.getName(), stringContent);
-                                MimetypeRegistry mtr = Framework.getLocalService(MimetypeRegistry.class);
-                                InputStream in = new ByteArrayInputStream(
-                                        stringContent.getBytes());
-                                if (mtr != null
-                                        && "text/html".equals(mtr.getMimetypeFromStream(in))) {
-                                    handleHtmlField(param.getName(),
-                                            stringContent);
-                                }
+                                String htmlValue = handleHtmlField(
+                                        param.getName(), stringContent);
+                                context.put(param.getName(), htmlValue);
                             }
                         }
                     }

@@ -188,6 +188,15 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
                                 templateType);
                     }
                 }
+
+                String tmplName = (String) getAdaptedDoc().getPropertyValue(
+                        TEMPLATE_NAME_PROP);
+                if (tmplName == null || tmplName.isEmpty()) {
+                    tmplName = computeTemplateName();
+                    getAdaptedDoc().setPropertyValue(TEMPLATE_NAME_PROP,
+                            tmplName);
+                }
+
                 TemplateProcessor processor = getTemplateProcessor();
                 if (processor != null) {
                     List<TemplateInput> params = processor.getInitialParametersDefinition(blob);
@@ -197,6 +206,10 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
                         TemplateSourceDocument.INIT_DONE_FLAG, true);
             }
         }
+    }
+
+    protected String computeTemplateName() throws ClientException {
+        return getAdaptedDoc().getTitle();
     }
 
     public boolean allowInstanceOverride() {
