@@ -6,7 +6,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 5.6
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.nuxeo.diff;singleton:=true
+Bundle-SymbolicName: org.nuxeo.diff.content;singleton:=true
 Nuxeo-Component: OSGI-INF/content-diff-restAPI-contrib.xml,
  OSGI-INF/content-diff-document-adapter-contrib.xml,
  OSGI-INF/content-diff-adapter-framework.xml,

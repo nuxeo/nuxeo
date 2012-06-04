@@ -66,6 +66,8 @@ import com.google.inject.Inject;
         "org.nuxeo.diff.core",
         "org.nuxeo.diff.test",
         "org.nuxeo.ecm.platform.forms.layout.core:OSGI-INF/layouts-core-framework.xml",
+        "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-framework.xml",
+        "org.nuxeo.diff.content:OSGI-INF/content-diff-adapter-contrib.xml",
         "org.nuxeo.diff.jsf:OSGI-INF/diff-display-service.xml",
         "org.nuxeo.diff.jsf:OSGI-INF/diff-display-contrib.xml",
         "org.nuxeo.diff.jsf.test:OSGI-INF/test-diff-display-contrib.xml",

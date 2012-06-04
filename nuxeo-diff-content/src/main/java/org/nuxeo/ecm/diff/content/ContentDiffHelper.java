@@ -165,6 +165,24 @@ public final class ContentDiffHelper {
     }
 
     /**
+     * Checks if the HTML conversion content diff is relevant for the specified
+     * property.
+     */
+    public static boolean isDisplayHtmlConversion(Serializable property) {
+
+        // Always relevant except for pdf mime type, see
+        // https://jira.nuxeo.com/browse/NXP-9421
+        if (isContentProperty(property)) {
+            Blob blob = (Blob) property;
+            String mimeType = blob.getMimeType();
+            if ("application/pdf".equals(mimeType)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Checks if the text conversion content diff is relevant for the specified
      * property.
      */
@@ -185,7 +203,6 @@ public final class ContentDiffHelper {
         if (mimeTypeContentDiffer != null) {
             return false;
         }
-
         return true;
     }
 

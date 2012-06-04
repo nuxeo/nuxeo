@@ -24,5 +24,7 @@ package org.nuxeo.ecm.diff.model;
  */
 public interface ContentDiffDisplay extends PropertyDiffDisplay {
 
+    boolean isDisplayHtmlConversion();
+
     boolean isDisplayTextConversion();
 }

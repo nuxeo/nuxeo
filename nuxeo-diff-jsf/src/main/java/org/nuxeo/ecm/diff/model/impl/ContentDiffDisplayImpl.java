@@ -32,36 +32,47 @@ public class ContentDiffDisplayImpl extends PropertyDiffDisplayImpl implements
 
     private static final long serialVersionUID = -3187677365094933738L;
 
+    protected boolean displayHtmlConversion;
+
     protected boolean displayTextConversion;
 
     public ContentDiffDisplayImpl(Serializable value) {
-        this(value, false);
+        this(value, false, false);
     }
 
     public ContentDiffDisplayImpl(Serializable value,
-            boolean displayTextConversion) {
+            boolean displayHtmlConversion, boolean displayTextConversion) {
         super(value);
+        this.displayHtmlConversion = displayHtmlConversion;
         this.displayTextConversion = displayTextConversion;
     }
 
     public ContentDiffDisplayImpl(Serializable value,
             DifferenceType differenceType) {
-        this(value, differenceType, false);
+        this(value, differenceType, false, false);
     }
 
     public ContentDiffDisplayImpl(Serializable value,
-            DifferenceType differenceType,
+            DifferenceType differenceType, boolean displayHtmlConversion,
             boolean displayTextConversion) {
         super(value, differenceType);
+        this.displayHtmlConversion = displayHtmlConversion;
         this.displayTextConversion = displayTextConversion;
+    }
+
+    public boolean isDisplayHtmlConversion() {
+        return displayHtmlConversion;
+    }
+
+    public void setDisplayHtmlConversion(boolean displayHtmlConversion) {
+        this.displayHtmlConversion = displayHtmlConversion;
     }
 
     public boolean isDisplayTextConversion() {
         return displayTextConversion;
     }
 
-    public void setDisplayTextConversion(
-            boolean displayTextConversion) {
+    public void setDisplayTextConversion(boolean displayTextConversion) {
         this.displayTextConversion = displayTextConversion;
     }
 
@@ -78,14 +89,18 @@ public class ContentDiffDisplayImpl extends PropertyDiffDisplayImpl implements
             return false;
         }
 
+        boolean otherDisplayHtmlConversion = ((ContentDiffDisplay) other).isDisplayHtmlConversion();
         boolean otherDisplayTextConversion = ((ContentDiffDisplay) other).isDisplayTextConversion();
-        return displayTextConversion == otherDisplayTextConversion;
+        return displayHtmlConversion == otherDisplayHtmlConversion
+                && displayTextConversion == otherDisplayTextConversion;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
+        sb.append(" / ");
+        sb.append(displayHtmlConversion);
         sb.append(" / ");
         sb.append(displayTextConversion);
         return sb.toString();
