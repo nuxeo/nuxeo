@@ -22,11 +22,12 @@
       </property>
     </widgetType>
     <widgetType name="summary_document_route_action">
-     <configuration>
+      <configuration>
         <sinceVersion>1.8</sinceVersion>
         <title>Related route summary</title>
         <description>
-          This widgets allows to view/start a route related to the current Case.
+          This widgets allows to view/start a route related to the
+          current Case.
         </description>
         <categories>
           <category>summary</category>
@@ -49,12 +50,9 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
-    <widget name="summary_current_route_action"
-      type="summary_current_route_action" />
-    <widget name="summary_document_route_action"
-      type="summary_document_route_action" />
-    <widget name="summary_current_route_actions_lock"
-      type="summary_current_route_actions_lock" />
+    <widget name="summary_current_route_action" type="summary_current_route_action" />
+    <widget name="summary_document_route_action" type="summary_document_route_action" />
+    <widget name="summary_current_route_actions_lock" type="summary_current_route_actions_lock" />
 
     <widget name="participatingDocuments" type="template">
       <labels>
@@ -105,19 +103,19 @@
         <property name="cssStyleClass">dataInputText</property>
       </properties>
     </widget>
-    
-     <widget name="conditional_step_value" type="template">
-        <translated>true</translated>
-        <fields>
-          <field>condstepf:posOfChildStepToRunNext</field>
-        </fields>
-         <properties mode="any">
-         <property name="required">true</property>
-         <property name="template">
+
+    <widget name="conditional_step_value" type="template">
+      <translated>true</translated>
+      <fields>
+        <field>condstepf:posOfChildStepToRunNext</field>
+      </fields>
+      <properties mode="any">
+        <property name="required">true</property>
+        <property name="template">
           /document_routing_widgets/conditional_folder_options_widget_template.xhtml
-         </property>
-         </properties>
-      </widget>
+        </property>
+      </properties>
+    </widget>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
