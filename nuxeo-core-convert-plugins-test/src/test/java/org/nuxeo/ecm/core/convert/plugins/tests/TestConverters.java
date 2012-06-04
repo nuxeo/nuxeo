@@ -45,6 +45,15 @@ public class TestConverters extends SimpleConverterTest {
     }
 
     @Test
+    public void testMDConverter() throws Exception {
+        String textContent = doTestTextConverter("text/x-web-markdown",
+                "md2text", "hello.md");
+        assertTrue(textContent.contains("Hello from a markdown file"));
+        assertTrue(textContent.contains("# This is the title"));
+        assertTrue(textContent.contains("This is markdown content..."));
+    }
+
+    @Test
     public void testHTMLConverterWithEncoding() throws Exception {
 
         String srcMimeType = "text/html";

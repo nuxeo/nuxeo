@@ -19,6 +19,11 @@
       <sourceMimeType>text/xhtml</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
+    
+    <converter name="md2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.MD2TextConverter">
+      <sourceMimeType>text/x-web-markdown</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
 
     <converter name="xl2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XL2TextConverter">
       <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
