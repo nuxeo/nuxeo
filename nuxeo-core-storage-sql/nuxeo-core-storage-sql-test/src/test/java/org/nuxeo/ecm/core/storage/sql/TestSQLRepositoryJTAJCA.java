@@ -12,8 +12,10 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,6 +23,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Test;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -192,7 +195,6 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
         /*
          * (non-Javadoc)
-         * 
          * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.
          * LoggingEvent)
          */
@@ -201,7 +203,9 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
             if (!Level.WARN.equals(event.getLevel())) {
                 return;
             }
-            if ("Session invoked in a container without a transaction active".equals(event.getMessage())) {
+            Object msg = event.getMessage();
+            if (msg instanceof String
+                    && (((String) msg).startsWith("Session invoked in a container without a transaction active"))) {
                 seenWarn = true;
             }
         }
