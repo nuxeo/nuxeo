@@ -25,16 +25,6 @@
     <module>nuxeo-platform-login-cleartrust</module>
   </modules>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-webapp-base</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <repositories>
     <repository>
       <id>public</id>
