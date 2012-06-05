@@ -1,6 +1,7 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core" class="menu">
 <div class="siteLogo">
@@ -17,7 +18,7 @@
             height="36" />
         </c:if>
         <c:if test="#{not empty flavorLogo}">
-          <h:graphicImage
+          <nxh:graphicImage
             value="#{flavorLogo.path}"
             alt="#{flavorLogo.title}"
             title="#{flavorLogo.title}"
