@@ -2258,15 +2258,15 @@
 
   <profiles>
     <profile>
-      <id>addons</id>
-      <modules>
-        <module>addons</module>
-      </modules>
-    </profile>
-    <profile>
       <id>distrib</id>
       <modules>
         <module>nuxeo-distribution</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>addons</id>
+      <modules>
+        <module>addons</module>
       </modules>
     </profile>
     <profile>
