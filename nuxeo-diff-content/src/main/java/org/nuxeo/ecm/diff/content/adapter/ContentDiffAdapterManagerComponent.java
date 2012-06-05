@@ -136,17 +136,6 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
         return null;
     }
 
-    public PlainTextContentDiffer getPlainTextContentDiffer()
-            throws ContentDiffException {
-        MimeTypeContentDiffer plainTextContentDiffer = contentDifferFactory.get("text/plain");
-        if (plainTextContentDiffer == null
-                || !(plainTextContentDiffer instanceof PlainTextContentDiffer)) {
-            throw new ContentDiffException(
-                    "No content differ of type PlainTextContentDiffer found for the 'text/plain' mime-type. Please check the 'mimeTypeContentDiffer' contributions.");
-        }
-        return (PlainTextContentDiffer) plainTextContentDiffer;
-    }
-
     public HtmlContentDiffer getHtmlContentDiffer() throws ContentDiffException {
         MimeTypeContentDiffer htmlContentDiffer = contentDifferFactory.get("text/html");
         if (htmlContentDiffer == null
