@@ -38,6 +38,8 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Register directory tree configurations to make them available to the
@@ -59,7 +62,7 @@ public class DirectoryTreeNode {
 
     private static final Log log = LogFactory.getLog(DirectoryTreeNode.class);
 
-    private static final String PARENT_FIELD_ID = "parent";
+    public static final String PARENT_FIELD_ID = "parent";
 
     private static final String LABEL_FIELD_ID = "label";
 
@@ -324,8 +327,10 @@ public class DirectoryTreeNode {
         Session session = getDirectorySession();
         try {
             if (level == 0) {
-                String schema = getDirectorySchema();
-                if (DirectoryTreeDescriptor.XVOCABULARY_SCHEMA.equals(schema)) {
+                String schemaName = getDirectorySchema();
+                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                Schema schema = schemaManager.getSchema(schemaName);
+                if (schema.hasField(PARENT_FIELD_ID)) {
                     // filter on empty parent
                     Map<String, Serializable> filter = new HashMap<String, Serializable>();
                     filter.put(PARENT_FIELD_ID, "");

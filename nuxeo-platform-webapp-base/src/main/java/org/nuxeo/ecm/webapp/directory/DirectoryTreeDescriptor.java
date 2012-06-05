@@ -30,8 +30,18 @@ public class DirectoryTreeDescriptor {
 
     private static final Log log = LogFactory.getLog(DirectoryTreeDescriptor.class);
 
+    /**
+     * @deprecated since 5.6, supports other schemas than 'vocabulary' and
+     *             'xvocabulary'.
+     */
+    @Deprecated
     public static final String VOCABULARY_SCHEMA = "vocabulary";
 
+    /**
+     * @deprecated since 5.6, supports other schemas than 'vocabulary' and
+     *             'xvocabulary'.
+     */
+    @Deprecated
     public static final String XVOCABULARY_SCHEMA = "xvocabulary";
 
     @XNode("@name")
@@ -65,8 +75,7 @@ public class DirectoryTreeDescriptor {
     protected String contentView;
 
     /**
-     * Name of the QueryModel field that will be used updated on node
-     * selection.
+     * Name of the QueryModel field that will be used updated on node selection.
      */
     @XNode("@field")
     protected String fieldName;

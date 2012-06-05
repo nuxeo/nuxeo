@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.webapp.directory;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.webapp.directory.DirectoryTreeNode.PARENT_FIELD_ID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -80,8 +83,8 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     private transient List<DirectoryTreeNode> directoryTrees;
 
     /*
-     * The directoryTrees need a working core session in order to perform
-     * search actions.
+     * The directoryTrees need a working core session in order to perform search
+     * actions.
      */
     public boolean isInitialized() {
         return documentManager != null;
@@ -108,6 +111,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         // schema
         String[] directories = config.getDirectories();
         DirectoryService directoryService = DirectoryHelper.getDirectoryService();
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         try {
             boolean isFirst = true;
             for (String directoryName : directories) {
@@ -116,21 +120,12 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
                     throw new DirectoryException(directoryName
                             + " is not a registered directory");
                 }
-                String dirSchema = directory.getSchema();
-                if (isFirst) {
-                    if (!dirSchema.equals(DirectoryTreeDescriptor.VOCABULARY_SCHEMA)
-                            && !dirSchema.equals(DirectoryTreeDescriptor.XVOCABULARY_SCHEMA)) {
+                if (!isFirst) {
+                    Schema schema = schemaManager.getSchema(directory.getSchema());
+                    if (!schema.hasField(PARENT_FIELD_ID)) {
                         throw new DirectoryException(directoryName
-                                + "does not have the required schema: "
-                                + DirectoryTreeDescriptor.VOCABULARY_SCHEMA
-                                + " or "
-                                + DirectoryTreeDescriptor.XVOCABULARY_SCHEMA);
-                    }
-                } else {
-                    if (!dirSchema.equals(DirectoryTreeDescriptor.XVOCABULARY_SCHEMA)) {
-                        throw new DirectoryException(directoryName
-                                + "does not have the required schema: "
-                                + DirectoryTreeDescriptor.XVOCABULARY_SCHEMA);
+                                + "does not have the required field: "
+                                + PARENT_FIELD_ID);
                     }
                 }
                 isFirst = false;
