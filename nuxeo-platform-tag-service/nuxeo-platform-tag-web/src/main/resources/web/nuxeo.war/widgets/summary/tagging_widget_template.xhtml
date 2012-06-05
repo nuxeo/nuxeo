@@ -29,8 +29,8 @@
           </ui:include>
         </f:subview>
 
-        <c:forEach id="#{widget.id}_tagsTable" var="tag"
-          items="#{currentDocumentTags}"
+        <nxu:dataList id="#{widget.id}_tagsTable" var="tag"
+          value="#{currentDocumentTags}"
           rendered="#{not empty currentDocumentTags}">
 
           <span class="tag tagLink">
@@ -38,7 +38,7 @@
             <h:commandLink value="#{tag.label}"
               action="#{tagActions.listDocumentsForTag(tag.label)}" />
 
-            <a4j:commandLink id="#{widget.id}_removeTag_#{tag.label}"
+            <a4j:commandLink id="#{widget.id}_removeTag"
               action="#{tagActions.removeTagging(tag.label)}"
               immediate="true"
               reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView"
@@ -48,7 +48,7 @@
 
           </span>
 
-        </c:forEach>
+        </nxu:dataList>
 
         <c:if test="#{tagActions.addTag}">
 

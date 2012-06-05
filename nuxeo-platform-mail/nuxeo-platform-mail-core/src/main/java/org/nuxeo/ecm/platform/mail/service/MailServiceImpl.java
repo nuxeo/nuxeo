@@ -31,6 +31,7 @@ import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
+import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActions;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActionsImpl;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
@@ -132,7 +133,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     public Store getConnectedStore(String name, Map<String, Object> context)
             throws Exception {
         Properties props = getProperties(name, context);
-        Session session = Session.getDefaultInstance(props);
+        Session session = newSession(props);
         Store store = session.getStore();
         store.connect(props.getProperty("user"), props.getProperty("password"));
         return store;
@@ -150,7 +151,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     public Transport getConnectedTransport(String name,
             Map<String, Object> context) throws Exception {
         Properties props = getProperties(name, context);
-        Session session = Session.getDefaultInstance(props);
+        Session session = newSession(props);
         Transport transport = session.getTransport();
         transport.connect(props.getProperty("user"), props.getProperty("password"));
         return transport;
@@ -163,7 +164,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     public Session getSession(String name, Map<String, Object> context)
             throws Exception {
         Properties props = getProperties(name, context);
-        return Session.getDefaultInstance(props);
+        return newSession(props);
     }
 
     public MailBoxActions getMailBoxActions(String factoryName,
@@ -211,4 +212,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return actionPipesRegistry.get(name);
     }
 
+    protected Session newSession(Properties props) {
+        return EmailHelper.newSession(props);
+    }
 }

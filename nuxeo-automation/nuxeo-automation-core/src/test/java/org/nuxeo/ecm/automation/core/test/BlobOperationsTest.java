@@ -17,6 +17,9 @@ import static org.junit.Assert.assertSame;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +35,7 @@ import org.nuxeo.ecm.automation.core.operations.SetInputAsVar;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.BlobToFile;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
+import org.nuxeo.ecm.automation.core.operations.blob.GetAllDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName;
@@ -45,6 +49,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -290,6 +295,40 @@ public class BlobOperationsTest {
         assertEquals("the blob content", blob.getString());
         assertEquals("modified_name.txt", blob.getFilename());
 
+    }
+
+    @Test
+    public void testGetAllDocumentBlobsOperation() throws Exception {
+        // Create a file
+        Blob mainFile = new StringBlob("the blob content");
+        // Create files list
+        Map<String, Serializable> file = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        // Attach one file to the list
+        File tmpFile = File.createTempFile("test", ".txt");
+        tmpFile.deleteOnExit();
+        FileUtils.writeFile(tmpFile, "Content");
+        FileBlob blob = new FileBlob(tmpFile);
+        file.put("file", blob);
+        file.put("filename", "initial_name.txt");
+        files.add(file);
+        // Create document
+        DocumentModel docFile = session.createDocumentModel(
+                src.getPathAsString(), "blobWithName", "File");
+        // Attach files to document
+        docFile.setPropertyValue("dc:title", "The File");
+        docFile.setPropertyValue("file:content", (Serializable) mainFile);
+        docFile.setPropertyValue("files:files", files);
+        docFile = session.createDocument(docFile);
+        session.save();
+        // execute operation chain containing GetAllDocumentBlobs one
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(docFile);
+        OperationChain chain = new OperationChain("testBlobsChain");
+        chain.add(FetchContextDocument.ID);
+        chain.add(GetAllDocumentBlobs.ID);
+        files = (ArrayList<Map<String, Serializable>>) service.run(ctx, chain);
+        assertEquals(files.size(), 2);
     }
 
     // TODO add post and file2pdf tests

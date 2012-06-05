@@ -48,13 +48,13 @@
         <param type="string" name="name">MyDoc</param>
         <param type="properties" name="properties">
           <property key="dc:title">My Doc</property>
-          <property key="dc:description">My Doc desc</property>          
+          <property key="dc:description">My Doc desc</property>
         </param>
       </operation>
     </chain>
     <chain id="runOnList">
       <operation id="runOnListItem" />
-    </chain>    
+    </chain>
     <chain id="core_chain1">
       <operation id="Context.FetchDocument" />
       <operation id="Document.Create">
@@ -68,7 +68,9 @@
       </operation>
       <operation id="Document.SetProperty">
         <param type="string" name="xpath">dc:description</param>
-        <param type="serializable" name="value">mydesc</param>
+        <param type="serializable" name="value">
+          expr:Document.getProperty('dc:description') != null &amp;&amp; Document.getProperty('dc:description') != '' ? Document.getProperty('dc:description').toUpperCase() : 'mydesc'
+        </param>
       </operation>
     </chain>
 
@@ -80,13 +82,13 @@
         <param type="boolean" name="save">true</param>
       </operation>
     </chain>
-    
+
     <chain id="testExitChain">
       <operation id="Test.Exit" >
         <param type="boolean" name="error">true</param>
         <param type="boolean" name="rollback">true</param>
       </operation>
-    </chain>  
+    </chain>
 
   </extension>
 

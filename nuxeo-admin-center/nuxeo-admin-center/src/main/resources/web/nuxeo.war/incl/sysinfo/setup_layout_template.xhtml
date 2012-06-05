@@ -3,6 +3,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
@@ -28,43 +29,16 @@
     <nxl:layoutRow>
       <nxl:layoutRowWidget>
         <tr>
-          <c:if test="#{not layoutRow.properties.hideWidgetLabel}">
-            <c:choose>
-              <c:when test="#{widget.translated}">
-                <td class="wideLabel">
-                  <c:if test="#{empty widget.helpLabel}">
-                    <h:outputText value="#{messages[widget.label]}"
-                      styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                  </c:if>
-                  <c:if test="#{!empty widget.helpLabel}">
-                    <div class="widgetHelpLabel">
-                      <h:outputText value="#{messages[widget.label]}"
-                        styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                    </div>
-                    <div class="tooltip">
-                      #{messages[widget.helpLabel]}
-                    </div>
-                  </c:if>
-                </td>
-              </c:when>
-              <c:otherwise>
-                <td class="wideLabel">
-                  <c:if test="#{empty widget.helpLabel}">
-                    <h:outputText value="#{widget.label}"
-                      styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                  </c:if>
-                  <c:if test="#{!empty widget.helpLabel}">
-                    <div class="widgetHelpLabel">
-                      <h:outputText value="#{widget.label}"
-                        styleClass="#{nxu:test(widget.required and isEditMode, 'required', '')}" />
-                    </div>
-                    <div class="tooltip">
-                      #{widget.helpLabel}
-                    </div>
-                  </c:if>
-                </td>
-              </c:otherwise>
-            </c:choose>
+          <c:if test="#{not widget.handlingLabels}">
+            <td class="wideLabel">
+              <nxu:set var="renderedProp"
+                value="#{widget.properties.rendered}"
+                resolveTwice="true">
+                <c:if test="#{renderedProp != 'false'}">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                </c:if>
+              </nxu:set>
+            </td>
           </c:if>
           <nxu:set
             var="fieldDef"
@@ -75,8 +49,18 @@
             </c:if>
             <td class="fieldColumn"
               id="#{displayId}"
-              colspan="#{nxu:test(layoutRow.properties.hideWidgetLabel, 2, 1)}">
-              <nxl:widget widget="#{widget}" value="#{value}" />
+              colspan="#{nxu:test(widget.handlingLabels, 2, 1)}">
+              <nxu:set var="widgetStyleClass"
+                value="#{isEditMode and empty widget.properties.styleClass?'dataInputText':widget.properties.styleClass}"
+                cache="true" resolveTwice="true">
+              <nxu:set var="widgetSize"
+                value="#{isEditMode and not widget.properties.containsKey('size')?50:widget.properties['size']}"
+                cache="true" resolveTwice="true">
+                <nxl:widget widget="#{widget}" value="#{value}"
+                  styleClass="#{widgetStyleClass}"
+                  size="#{widgetSize}" />
+              </nxu:set>
+              </nxu:set>
             </td>
           </nxu:set>
         </tr>

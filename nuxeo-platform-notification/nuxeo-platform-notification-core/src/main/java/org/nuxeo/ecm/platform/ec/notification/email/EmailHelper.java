@@ -24,7 +24,9 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -186,4 +188,21 @@ public class EmailHelper {
         return session;
     }
 
+
+    /**
+     * Instantiate a new session that authenticate given the protocol's properties. Initialize also
+     * the default transport protocol handler according to the properties.
+     *
+     * @since 5.6
+     */
+    public static Session newSession(Properties props) {
+        Authenticator authenticator = new EmailAuthenticator(
+                props);
+        Session session = Session.getDefaultInstance(props, authenticator);
+        String protocol = props.getProperty("mail.transport.protocol");
+        if (protocol != null && protocol.length() > 0) {
+            session.setProtocolForAddress("rfc822", protocol);
+        }
+        return session;
+    }
 }

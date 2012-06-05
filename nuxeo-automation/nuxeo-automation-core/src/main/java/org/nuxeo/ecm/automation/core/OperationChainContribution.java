@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -72,9 +73,8 @@ public class OperationChainContribution {
                 param.value = param.value.trim();
                 if (param.value.startsWith("expr:")) {
                     param.value = param.value.substring(5);
-                    // decode < and >
-                    param.value = param.value.replaceAll("&lt;", "<");
-                    param.value = param.value.replaceAll("&gt;", ">");
+                    // decode XML entities
+                    param.value = StringEscapeUtils.unescapeXml(param.value);
                     if (param.value.contains("@{")) {
                         params.set(param.name,
                                 Scripting.newTemplate(param.value));
