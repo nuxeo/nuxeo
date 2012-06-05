@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.diff.content;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -170,12 +172,11 @@ public final class ContentDiffHelper {
      */
     public static boolean isDisplayHtmlConversion(Serializable property) {
 
-        // Always relevant except for pdf mime type, see
-        // https://jira.nuxeo.com/browse/NXP-9421
+        // Always relevant except for the blacklisted mime types
         if (isContentProperty(property)) {
             Blob blob = (Blob) property;
             String mimeType = blob.getMimeType();
-            if ("application/pdf".equals(mimeType)) {
+            if (getHtmlConversionBlackListedMimeTypes().contains(mimeType)) {
                 return false;
             }
         }
@@ -212,5 +213,30 @@ public final class ContentDiffHelper {
      */
     public static boolean isContentProperty(Serializable property) {
         return property instanceof Blob;
+    }
+
+    /**
+     * Gets the list of blacklisted mime types for HTML conversion.
+     * <p>
+     * For now:
+     * <ul>
+     * <li>pdf</li>
+     * <li>Office presentation mime types</li>
+     * </ul>
+     * </p>
+     *
+     * @see https://jira.nuxeo.com/browse/NXP-9421
+     * @see https://jira.nuxeo.com/browse/NXP-9431
+     */
+    protected static List<String> getHtmlConversionBlackListedMimeTypes() {
+        List<String> blackListedMimeTypes = new ArrayList<String>();
+        blackListedMimeTypes.add("application/pdf");
+        blackListedMimeTypes.add("application/vnd.ms-powerpoint");
+        blackListedMimeTypes.add("application/vnd.sun.xml.impress");
+        blackListedMimeTypes.add("application/vnd.sun.xml.impress.template");
+        blackListedMimeTypes.add("application/vnd.oasis.opendocument.presentation");
+        blackListedMimeTypes.add("application/vnd.oasis.opendocument.presentation-template");
+        blackListedMimeTypes.add("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        return blackListedMimeTypes;
     }
 }
