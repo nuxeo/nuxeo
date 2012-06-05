@@ -263,8 +263,9 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
                 if (eval == null) {
                     log.error("evaluation of condition " + condition
                             + " failed: returning false");
+                } else if(Boolean.TRUE.equals(eval)) {
+                    return true;
                 }
-                return Boolean.TRUE.equals(eval);
             } catch (Exception e) {
                 log.error("evaluation of condition " + condition
                         + " failed: returning false", e);
