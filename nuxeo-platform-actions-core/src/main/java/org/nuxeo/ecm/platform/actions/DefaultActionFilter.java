@@ -231,8 +231,6 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         DocumentModel doc = context.getCurrentDocument();
         NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
 
-        // FIXME: this loop doesn't loop, so this function doesn't behave as
-        // advertised.
         for (String condition : conditions) {
             try {
                 JexlExpression exp = CachedJEXLManager.getExpression(condition);
@@ -253,8 +251,9 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
                 if (eval == null) {
                     log.error("evaluation of condition " + condition
                             + " failed: returning false");
+                } else if(Boolean.TRUE.equals(eval)) {
+                    return true;
                 }
-                return Boolean.TRUE.equals(eval);
             } catch (Exception e) {
                 log.error("evaluation of condition " + condition
                         + " failed: returning false", e);
