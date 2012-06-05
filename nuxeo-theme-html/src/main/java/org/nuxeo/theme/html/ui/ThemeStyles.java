@@ -73,6 +73,14 @@ public class ThemeStyles {
             if (themeDescriptor != null) {
                 timestamp = themeDescriptor.getLastModified().getTime();
             }
+            Long lastModifiedOnService = Manager.getThemeManager().getLastModified(
+                    themeName);
+            if (lastModifiedOnService != null) {
+                long lastModifiedOnServiceVal = lastModifiedOnService.longValue();
+                if (lastModifiedOnServiceVal > timestamp) {
+                    timestamp = lastModifiedOnServiceVal;
+                }
+            }
         } else {
             timestamp = new Date().getTime();
         }
@@ -102,8 +110,9 @@ public class ThemeStyles {
 
         // add generation comment on top of file
         if (includeDate) {
-            sb.insert(0, String.format("/* CSS styles for theme '%s' (%s) */\n",
-                    themeName, new Date()));
+            sb.insert(0, String.format(
+                    "/* CSS styles for theme '%s' (%s) */\n", themeName,
+                    new Date()));
         } else {
             sb.insert(0, String.format("/* CSS styles for theme '%s' */\n",
                     themeName));
