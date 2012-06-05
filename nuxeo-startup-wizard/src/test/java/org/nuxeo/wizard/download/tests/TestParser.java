@@ -104,13 +104,13 @@ public class TestParser {
 
         // Check selections
         List<String> selectedIds = new ArrayList<String>();
-        selectedIds.add("nuxeo-sc");
+        selectedIds.add("nuxeo-social-collaboration");
 
         pkgs.select(selectedIds);
         assertEquals(4, pkgs.getPkg4Download().size()); // Collab / DM /
                                                         // nuxeo-content-browser
                                                         // / CAP
-        assertEquals("nuxeo-sc", pkgs.getPkg4Download().get(0).getId());
+        assertEquals("nuxeo-social-collaboration", pkgs.getPkg4Download().get(0).getId());
         assertEquals("SC", pkgs.getPkg4Download().get(0).getShortLabel());
         assertEquals("nuxeo-dm", pkgs.getPkg4Download().get(1).getId());
         assertEquals("DM", pkgs.getPkg4Download().get(1).getShortLabel());
