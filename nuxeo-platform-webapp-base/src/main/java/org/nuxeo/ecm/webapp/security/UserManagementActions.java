@@ -167,7 +167,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
         if (currentUser instanceof NuxeoPrincipal) {
             NuxeoPrincipal pal = (NuxeoPrincipal) currentUser;
-            if (pal.isAdministrator()) {
+            if (webActions.checkFilter(USERS_GROUPS_MANAGEMENT_ACCESS_FILTER)) {
                 return true;
             }
             if (allowCurrentUser && selectedUser != null) {

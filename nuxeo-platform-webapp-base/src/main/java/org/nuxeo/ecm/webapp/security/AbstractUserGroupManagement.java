@@ -48,6 +48,8 @@ public abstract class AbstractUserGroupManagement {
 
     public static final String DETAILS_VIEW_MODE = "view";
 
+    public static final String USERS_GROUPS_MANAGEMENT_ACCESS_FILTER = "usersGroupsManagementAccess";
+
     @In(create = true)
     protected Principal currentUser;
 
