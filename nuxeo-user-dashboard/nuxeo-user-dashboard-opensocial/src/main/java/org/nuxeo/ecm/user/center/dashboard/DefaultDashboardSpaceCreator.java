@@ -26,6 +26,8 @@ public class DefaultDashboardSpaceCreator extends AbstractDashboardSpaceCreator 
 
     public static final String DEFAULT_DASHBOARD_SPACE_NAME = "defaultDashboardSpace";
 
+    public static final String POWER_USERS_GROUP = "powerusers";
+
     private static final Log log = LogFactory.getLog(DefaultDashboardSpaceCreator.class);
 
     public DocumentRef defaultDashboardSpaceRef;
@@ -73,8 +75,10 @@ public class DefaultDashboardSpaceCreator extends AbstractDashboardSpaceCreator 
             throws ClientException {
         ACP acp = defaultDashboardSpace.getACP();
         ACL acl = acp.getOrCreateACL();
-        for (String group : getUserManager().getAdministratorsGroups())
+        for (String group : getUserManager().getAdministratorsGroups()) {
             acl.add(new ACE(group, SecurityConstants.EVERYTHING, true));
+        }
+        acl.add(new ACE(POWER_USERS_GROUP, SecurityConstants.EVERYTHING, true));
         defaultDashboardSpace.setACP(acp, true);
     }
 

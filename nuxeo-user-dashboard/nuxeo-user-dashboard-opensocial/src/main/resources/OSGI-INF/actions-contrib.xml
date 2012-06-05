@@ -36,13 +36,13 @@
     <action id="DashboardManagement" link="/incl/dashboard/dashboard_management.xhtml"
       label="admcommand.DashboardManagement" order="70">
       <category>NUXEO_ADMIN</category>
-      <filter-id>only_for_manager</filter-id>
+      <filter-id>dashboardManagementAccess</filter-id>
     </action>
 
     <action id="DefaultDashboardManagement" link="/incl/dashboard/default_dashboard_management.xhtml"
       label="tab.dashboard.management.default" order="10">
       <category>DashboardManagement_sub_tab</category>
-      <filter-id>only_for_manager</filter-id>
+      <filter-id>dashboardManagementAccess</filter-id>
     </action>
 
     <action id="AnonymousDashboardManagement" link="/incl/dashboard/anonymous_dashboard_management.xhtml"
@@ -59,6 +59,18 @@
     <action id="ExternalGadgets">
       <category>DashboardManagement_sub_tab</category>
     </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="dashboardManagementAccess">
+      <rule grant="true">
+        <condition>#{currentUser.administrator}</condition>
+        <condition>#{currentUser.isMemberOf('powerusers')}</condition>
+      </rule>
+    </filter>
 
   </extension>
 
