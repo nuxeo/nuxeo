@@ -49,6 +49,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.xml.sax.InputSource;
 
 @SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed" })
 public class TestJenaGraph extends NXRuntimeTestCase {
@@ -445,14 +448,15 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         assertEquals(statements, this.statements);
     }
 
+
     public void testWrite() throws Exception {
         graph.add(statements);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         graph.write(out, null, null);
-        InputStream written = new ByteArrayInputStream(out.toByteArray());
-        InputStream expected = new FileInputStream(getTestFile());
-        assertEquals(FileUtils.read(expected).replaceAll("\r?\n", ""),
-                FileUtils.read(written).replaceAll("\r?\n", ""));
+        String written = FileUtils.read(new ByteArrayInputStream(out.toByteArray()));
+        String expected = FileUtils.read(new FileInputStream(getTestFile()));
+        Diff diff = XMLUnit.compareXML(written, expected);
+        assertTrue("XML not identitical", diff.identical());
     }
 
     public void testWritePath() throws Exception {
@@ -460,12 +464,10 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         File file = File.createTempFile("test", ".rdf");
         String path = file.getPath();
         graph.write(path, null, null);
-        InputStream written = new FileInputStream(new File(path));
-        InputStream expected = new FileInputStream(getTestFile());
-
-        String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
-        String writtenString = FileUtils.read(written).replaceAll("\r?\n", "");
-        assertEquals(expectedString, writtenString);
+        String written = FileUtils.read(new FileInputStream(new File(path)));
+        String expected = FileUtils.read(new FileInputStream(getTestFile()));
+        Diff diff = XMLUnit.compareXML(written, expected);
+        assertTrue("XML not identitical", diff.identical());
     }
 
     // XXX AT: test serialization of the graph because the RelationServiceBean
