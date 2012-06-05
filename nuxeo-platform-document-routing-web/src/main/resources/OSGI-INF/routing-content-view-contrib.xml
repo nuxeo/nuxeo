@@ -69,16 +69,23 @@
     </contentView>
 
     <contentView name="previous_routes">
-      <showTitle>false</showTitle>
-      <!-- TODO -->
-      <!--
-      <coreQueryPageProvider>
+      <title>Previous Routes</title>
+      <translateTitle>false</translateTitle>
+      <showTitle>true</showTitle>
+      <genericPageProvider
+        class="org.nuxeo.ecm.platform.routing.web.PreviousRoutesPageProvider">
         <property name="coreSession">#{documentManager}</property>
-        <parameter>#{currentDocument.id}</parameter>
-         <whereClause docType=""> <fixedPart> </fixedPart> </whereClause> 
-          <pageSize>20</pageSize> 
-      </coreQueryPageProvider>
-      -->
+        <property name="generateUIComments">false</property>
+        <property name="documentID">#{currentDocument.id}</property>
+        <whereClause docType="BasicAuditSearch">
+          <fixedPart>
+            log.extendedInfos['currentDocumentID'].stringValue = '?' AND log.category = 'Routing'
+          </fixedPart>
+        </whereClause>
+        <sort column="log.eventDate" ascending="false" />
+        <pageSize>10</pageSize>
+        <maxPageSize>1000</maxPageSize>
+      </genericPageProvider>
       <showFilterForm>false</showFilterForm>
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
@@ -90,8 +97,8 @@
       <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
       </cacheKey>
       <resultLayouts>
-        <layout name="" title="" translateTitle="" iconPath=""
-          showCSVExport="false" showPDFExport="false" />
+        <layout name="previous_routes_content_view_layout" title="Previous Routes"
+          translateTitle="true" showCSVExport="false" showPDFExport="false" />
       </resultLayouts>
     </contentView>
   </extension>
