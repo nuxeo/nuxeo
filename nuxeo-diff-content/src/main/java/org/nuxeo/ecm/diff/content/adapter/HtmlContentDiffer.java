@@ -54,8 +54,6 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             throws ContentDiffException {
 
         try {
-            // TODO: check StringBlob, throw exception if not
-
             List<Blob> blobResults = new ArrayList<Blob>();
             StringWriter sw = new StringWriter();
 
