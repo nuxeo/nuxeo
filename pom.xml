@@ -96,6 +96,8 @@
   </modules>
 
   <properties>
+    <flex.sdk.version>3.2.0.3958</flex.sdk.version>
+    <granite.version>1.1.0.GA</granite.version>
     <jboss.version>4.0.4.GA</jboss.version>
     <jboss.ejb.version>3.0-RC8</jboss.ejb.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -573,6 +575,11 @@
         <artifactId>jboss-seam-remoting</artifactId>
         <version>2.0.3.CR1</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-pdf</artifactId>
+        <version>2.0.3.CR1</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
@@ -1332,7 +1339,7 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>3.8</version>
+        <version>4.0.1</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -1680,6 +1687,112 @@
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>
         <version>3.0</version>
+      </dependency>
+
+    <dependency>
+      <groupId>org.knallgrau.utils</groupId>
+      <artifactId>textcat</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>core-api</artifactId>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>report-engine-api</artifactId>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>report-model-api</artifactId>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>org.mozilla.javascript</artifactId>
+        <version>1.7.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>script-api</artifactId>
+        <version>2.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.birt</groupId>
+        <artifactId>birt-runtime-all</artifactId>
+        <version>2.6.1</version>
+        <type>zip</type>
+      </dependency>
+
+    <dependency>
+      <groupId>org.graniteds</groupId>
+      <artifactId>granite-seam</artifactId>
+      <version>${granite.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graniteds</groupId>
+      <artifactId>granite-core</artifactId>
+      <version>${granite.version}</version>
+    </dependency>
+      <dependency>
+        <groupId>papervision</groupId>
+        <artifactId>papervision-phunky</artifactId>
+        <version>1</version>
+        <type>swc</type>
+      </dependency>
+      <dependency>
+        <groupId>effects</groupId>
+        <artifactId>tweener</artifactId>
+        <version>1</version>
+        <type>swc</type>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.flex.framework</groupId>
+        <artifactId>flex-framework</artifactId>
+        <version>${flex.sdk.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.flex.framework</groupId>
+        <artifactId>air-framework</artifactId>
+        <version>${flex.sdk.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.cairngorm</groupId>
+        <artifactId>cairngorm-bin</artifactId>
+        <version>2.2.1</version>
+        <type>swc</type>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.as3core</groupId>
+        <artifactId>corelib.swc</artifactId>
+        <version>0.92</version>
+        <type>swc</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.xmlrpc</groupId>
+        <artifactId>xmlrpc-common</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlrpc</groupId>
+        <artifactId>xmlrpc-server</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlrpc</groupId>
+        <artifactId>xmlrpc-client</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ws.commons.util</groupId>
+        <artifactId>ws-commons-util</artifactId>
+        <version>1.0.2</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
