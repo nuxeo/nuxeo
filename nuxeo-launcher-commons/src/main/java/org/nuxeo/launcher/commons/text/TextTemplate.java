@@ -38,14 +38,15 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Text template processing.
@@ -57,7 +58,7 @@ import org.apache.commons.logging.LogFactory;
  * Method {@link #setTextParsingExtensions(String)} allow to set list of files
  * being processed when using {@link #processDirectory(File, File)} or #pro,
  * others are simply copied.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TextTemplate {
@@ -65,7 +66,7 @@ public class TextTemplate {
     private static final Log log = LogFactory.getLog(TextTemplate.class);
 
     private static final Pattern PATTERN = Pattern.compile("\\$\\{([a-zA-Z_0-9\\-\\.]+)\\}");
-    
+
     private static final int MAX_RECURSION_LEVEL = 10;
 
     private final Properties vars;
@@ -227,7 +228,7 @@ public class TextTemplate {
 
     @SuppressWarnings("unchecked")
     public void initFreeMarker() {
-        // Initialize Freemarker
+        // Initialize FreeMarker
         freemarkerConfiguration = new Configuration();
         freemarkerConfiguration.setObjectWrapper(new DefaultObjectWrapper());
         // Initialize data model
@@ -256,7 +257,7 @@ public class TextTemplate {
                     } else {
                         // silently ignore known conflicts in java properties
                         if (!key.startsWith("java.vendor")) {
-                            log.warn("Freemarker templates: "
+                            log.warn("FreeMarker templates: "
                                     + currentString
                                     + " is already defined - "
                                     + key
@@ -288,12 +289,14 @@ public class TextTemplate {
     /**
      * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
      * each file from "in" directory to "out" directory.
-     * 
+     *
      * @param in Directory to read files from
      * @param out Directory to write files to
+     * @return copied files list
      */
-    public void processDirectory(File in, File out)
+    public List<String> processDirectory(File in, File out)
             throws FileNotFoundException, IOException, TemplateException {
+        List<String> newFiles = new ArrayList<String>();
         if (in.isFile()) {
             if (out.isDirectory()) {
                 out = new File(out, in.getName());
@@ -336,30 +339,36 @@ public class TextTemplate {
                 }
             }
 
-            FileInputStream is = null;
-            FileOutputStream os = null;
-            try {
-                if (processAsText) {
-                    os = new FileOutputStream(out);
+            if (processAsFreemarker) {
+                out = new File(out.getCanonicalPath().replaceAll(
+                        "\\.*" + Pattern.quote(freemarkerExtension) + "$", ""));
+            }
+            // Backup existing file if not already done
+            if (out.exists()) {
+                File backup = new File(out.getPath() + ".bak");
+                if (!backup.exists()) {
+                    log.debug("Backup " + out);
+                    FileUtils.copyFile(out, backup);
+                }
+                newFiles.add(backup.getPath());
+            } else {
+                newFiles.add(out.getPath());
+            }
+            if (processAsFreemarker) {
+                processFreemarker(in, out);
+            } else if (processAsText) {
+                InputStream is = null;
+                OutputStream os = null;
+                try {
                     is = new FileInputStream(in);
+                    os = new FileOutputStream(out);
                     processText(is, os);
-                } else if (processAsFreemarker) {
-                    out = new File(out.getCanonicalPath().replaceAll(
-                            "\\.*" + Pattern.quote(freemarkerExtension) + "$",
-                            ""));
-                    processFreemarker(in, out);
-                } else {
-                    os = new FileOutputStream(out);
-                    is = new FileInputStream(in);
-                    IOUtils.copy(is, os);
+                } finally {
+                    IOUtils.closeQuietly(is);
+                    IOUtils.closeQuietly(os);
                 }
-            } finally {
-                if (is != null) {
-                    is.close();
-                }
-                if (os != null) {
-                    os.close();
-                }
+            } else {
+                FileUtils.copyFile(in, out);
             }
         } else if (in.isDirectory()) {
             if (!out.exists()) {
@@ -371,9 +380,10 @@ public class TextTemplate {
                 out.mkdir();
             }
             for (File file : in.listFiles()) {
-                processDirectory(file, out);
+                newFiles.addAll(processDirectory(file, out));
             }
         }
+        return newFiles;
     }
 
     /**

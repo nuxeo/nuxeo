@@ -648,7 +648,7 @@ public class ConfigurationGenerator {
                     + e.getMessage(), e);
         } catch (TemplateException e) {
             throw new ConfigurationException(
-                    "Could not process Freemarker template: " + e.getMessage(),
+                    "Could not process FreeMarker template: " + e.getMessage(),
                     e);
         }
     }
