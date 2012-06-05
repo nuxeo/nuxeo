@@ -1248,7 +1248,7 @@
                   </label>
                 </helpLabels>
                 <fields>
-                  <field>showFilterForm</field>
+                  <field>showSyndicationLinks</field>
                 </fields>
               </widget>
               <widget name="showCSVExport" type="checkbox">
