@@ -394,11 +394,6 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     @Override
-    public boolean isManager() {
-        return isAdministrator();
-    }
-
-    @Override
     public String getTenantId() {
         return null;
     }
