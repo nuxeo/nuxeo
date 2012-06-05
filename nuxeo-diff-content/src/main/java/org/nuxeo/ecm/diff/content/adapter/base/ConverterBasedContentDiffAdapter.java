@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -266,9 +267,8 @@ public class ConverterBasedContentDiffAdapter extends
             throws ContentDiffException {
         try {
             return new StringBlob(
-                    blob.getString().replace("&", "&amp;").replace("<", "&lt;").replace(
-                            ">", "&gt;").replace("\r\n", "\n").replace("\n",
-                            "<br />"));
+                    StringEscapeUtils.escapeHtml(blob.getString()).replace(
+                            "\r\n", "\n").replace("\n", "<br />"));
         } catch (IOException ioe) {
             throw new ContentDiffException(String.format(
                     "Could not get string from blob %s", blob.getFilename()),
