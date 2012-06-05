@@ -14,8 +14,8 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 .docDiffResult .foldableBox .boxBody {padding: 0.5em;}
 .docDiffResult .dataInput {width: 100%;}
 .docDiffResult .dataInput td {padding: 0.4em 0.3em;}
-.docDiffResult .dataInput td.labelColumn {width: 16%; padding-right: 20px; text-align: left;}
-.docDiffResult .dataInput td.fieldColumn {width: 34%;}
+.docDiffResult .dataInput td.labelColumn {width: 18%; padding-right: 20px; text-align: left;}
+.docDiffResult .dataInput td.fieldColumn {width: 33%;}
 .docDiffResult .dataInput td.contentDiffColumn {width: 16%; vertical-align: top;}
 
 /*.docDiffResult .dataInput .diffDisplayTable {width: 100%;}*/
