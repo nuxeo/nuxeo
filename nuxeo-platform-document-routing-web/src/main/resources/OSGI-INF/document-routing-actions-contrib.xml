@@ -154,7 +154,6 @@
       icon="/icons/file.gif" order="60">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>isRoutable</filter-id>
-      <filter-id>hasRelatedRouteStarted</filter-id>
       <filter id="TAB_ROUTE_WORKFLOW_has_subtabs">
         <rule grant="false">
           <condition>
@@ -169,6 +168,7 @@
       link="/incl/tabs/current_route.xhtml" order="10"
       label="label.document.routing.current.route">
       <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
+      <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
     <!-- 'Workflow' sub tab: previous routes -->
