@@ -16,13 +16,13 @@
       <nxu:dataList var="core" value="#{availableCoreRepositories}">
         <div class="serverChoice">
           <h:commandLink action="#{serverActions.selectRepository(core.name)}">
-            <h:graphicImage value="/img/core_servers.gif" alt="server" />
+            <h:graphicImage value="/img/core_servers.png" alt="server" />
             <br/>
             <h:outputText value="#{core.label} (#{core.name})" />
           </h:commandLink>
         </div>
       </nxu:dataList>
-    <div style="clear:both;" />
+    <div class="clear" />
     </h:form>
   </div>
 </ui:define>

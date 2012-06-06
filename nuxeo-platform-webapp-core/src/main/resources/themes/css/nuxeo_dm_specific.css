@@ -11,13 +11,24 @@ author: lkemen@nuxeo.com
 .nxMainContainer { min-height: 660px; height: auto!important; height: 660px }
 .nxMainContainer .column { border-width: 1px; border-style: none solid none none; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: .85em; padding: 5px }
 
-/* =Document list */
-.serverChoice {
-  float: left;
-  margin-top: 2em;
-  margin-right: 2.3em;
-  text-align: center;
-  width: 200px }
+/* =List of available servers  */
+.serverChoice { float: left }
+.serverChoice a { box-sizing: border-box;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	box-shadow: 0 -5px 5px #eee inset;
+	color: #000;
+	display: block;
+	font-weight: bold;
+	margin: 1em;
+	min-height: 150px;
+	padding: 1.5em 1em 1em;
+	text-align: center;
+	text-decoration: none;
+	width: 200px }
+
+.serverChoice a:hover { background: none "color.major.medium (__FLAVOR__ background)";
+  border-color: "button.hover (__FLAVOR__ border)" }
 
 /* =Advanced Search */
 .listShuttleTable .listShuttleSelectionActions a { display: block }

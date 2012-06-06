@@ -24,8 +24,13 @@ author: lkemen@nuxeo.com
 
 .errorMessage, .errorFeedback { background-color:"warning (__FLAVOR__ background)"; border-color:"error (__FLAVOR__ border)" }
 .warningMessage, .warningFeedback { background-color: "info (__FLAVOR__ background)"; border-color:"warning (__FLAVOR__ border)" }
-.error { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
-.warningLink { color: "warning.status (__FLAVOR__ color)" }
+
+.success { color: "normal.status (__FLAVOR__ color)"; font-weight: bold }
+.error, .warning { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
+
+.successLink { color: "normal.status (__FLAVOR__ color)" }
+.errorLink, .warningLink { color: "warning.status (__FLAVOR__ color)" }
+
 
 /* Help messages in forms */
 .help { color: "gray.medium (__FLAVOR__ color)" }
