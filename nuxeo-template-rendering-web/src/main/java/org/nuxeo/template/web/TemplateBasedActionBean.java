@@ -303,4 +303,21 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return navigationContext.getCurrentDocument().getAdapter(
                 TemplateBasedDocument.class);
     }
+
+    @Factory(value = "associatedRenderableTemplates", scope = ScopeType.EVENT)
+    public List<TemplateSourceDocument> getRenderableTemplates()
+            throws Exception {
+        List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
+        TemplateBasedDocument template = getCurrentDocumentAsTemplateBasedDocument();
+        if (template != null) {
+            List<TemplateSourceDocument> sources = template.getSourceTemplates();
+            for (TemplateSourceDocument source : sources) {
+                if (source.getTargetRenditionName() == null
+                        || source.getTargetRenditionName().isEmpty()) {
+                    result.add(source);
+                }
+            }
+        }
+        return result;
+    }
 }
