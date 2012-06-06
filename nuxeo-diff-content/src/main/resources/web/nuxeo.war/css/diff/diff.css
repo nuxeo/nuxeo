@@ -118,9 +118,9 @@ table.diff-tooltip-link, table.diff-tooltip-link-changed {
 }
 
 table.diff-tooltip-link-changed {
-    border-top: thin dashed #000000; 
-    margin-top: 3px; 
-    padding-top: 3px
+    /*border-top: thin dashed #000000; 
+    margin-top: 3px;
+    padding-top: 3px*/
 }
 td.diff-tooltip-prev {
    text-align: left;

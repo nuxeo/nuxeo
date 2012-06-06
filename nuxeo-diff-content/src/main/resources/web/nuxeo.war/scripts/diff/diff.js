@@ -61,8 +61,7 @@ function constructToolTipC(elem){
    var previous_id = elem.getAttribute("previous");
    var next_id = elem.getAttribute("next");
    var change_id = elem.getAttribute("changeId");
-   return changes_html+
-          "<table class='diff-tooltip-link-changed'>"+
+   return "<table class='diff-tooltip-link-changed'>"+
           "  <tr>"+
           "    <td class='diff-tooltip-prev'>"+
           "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'><img class='diff-icon' src='"+imagePath+"diff-previous.gif' title='Go to previous.'/></a>"+
