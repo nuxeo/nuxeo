@@ -39,6 +39,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class MultiTenantGroupComputer extends AbstractGroupComputer {
 
+    public static final String POWER_USERS_GROUP = "powerusers";
+
     @Override
     public List<String> getGroupsForUser(final NuxeoPrincipalImpl nuxeoPrincipal)
             throws Exception {
@@ -68,6 +70,7 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
                             List<String> tenantAdministrators = (List<String>) tenant.getPropertyValue(TENANT_ADMINISTRATORS_PROPERTY);
                             if (tenantAdministrators.contains(nuxeoPrincipal.getName())) {
                                 groups.add(computeTenantAdministratorsGroup(tenantId));
+                                groups.add(POWER_USERS_GROUP);
                             }
                         }
                     }

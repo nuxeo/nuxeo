@@ -44,16 +44,7 @@
       link="/incl/tabs/tenant_configuration.xhtml" order="40"
       label="label.tenant.configuration" icon="/icons/file.gif">
       <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
-      <filter id="tenantManagers">
-        <rule grant="true">
-          <permission>WriteProperties</permission>
-          <condition>#{currentUser.manager}</condition>
-        </rule>
-        <rule grant="true">
-          <permission>WriteProperties</permission>
-          <condition>#{currentUser.administrator}</condition>
-        </rule>
-      </filter>
+      <filter-id>tenantAdministrators</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
     </action>
 
@@ -61,6 +52,7 @@
       label="action.view.rights" icon="/icons/file.gif">
       <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
       <filter-id>rights</filter-id>
+      <filter-id>tenantAdministrators</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
     </action>
 
@@ -69,12 +61,14 @@
       label="action.view.local.configuration" icon="/icons/file.gif">
       <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
       <filter-id>has_local_configuration_available</filter-id>
+      <filter-id>tenantAdministrators</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
     </action>
 
     <action id="TAB_TENANT_HISTORY" link="/incl/tabs/tenant_history.xhtml"
       enabled="true" label="action.view.tenant.history" icon="/icons/file.gif" order="100">
       <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
+      <filter-id>tenantAdministrators</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
     </action>
 
@@ -83,6 +77,7 @@
       label="action.view.trash.content" icon="/icons/file.gif">
       <category>TAB_TENANT_ADMINISTRATION_sub_tab</category>
       <filter-id>allowForTenantConfig</filter-id>
+      <filter-id>tenantAdministrators</filter-id>
       <filter id="viewTrash">
         <rule grant="true">
           <permission>Manage everything</permission>
@@ -109,9 +104,10 @@
       </rule>
     </filter>
 
-    <filter id="only_for_manager">
+    <filter id="tenantAdministrators">
       <rule grant="true">
-        <condition>#{currentUser.manager}</condition>
+        <condition>#{currentUser.administrator}</condition>
+        <condition>#{currentUser.isMemberOf('powerusers')}</condition>
       </rule>
     </filter>
 
