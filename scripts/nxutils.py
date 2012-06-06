@@ -213,7 +213,7 @@ class Repository(object):
         cwd = os.getcwd()
         os.chdir(self.basedir)
         log("[.]")
-        system("git fetch %s" % (self.alias))
+        system_with_retries("git fetch %s" % (self.alias))
         if version is None:
             version = self.get_current_version()
         self.git_update(version, fallback_branch)
