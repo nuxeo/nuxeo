@@ -5,3 +5,4 @@
 nuxeo.template.includes=common
 
 org.nuxeo.ecm.instance.description=Nuxeo ECM customized
+nuxeo.server.http.port=8080
