@@ -14,22 +14,6 @@
   <name>Nuxeo Diff Content</name>
   <description>Content diff feature</description>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- daisydiff -->
-      <dependency>
-        <groupId>org.outerj.daisy</groupId>
-        <artifactId>daisydiff</artifactId>
-        <version>1.2-NX1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.core.runtime</groupId>
-        <artifactId>eclipse-core-runtime</artifactId>
-        <version>20070801</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
 
     <!-- nuxeo core -->
