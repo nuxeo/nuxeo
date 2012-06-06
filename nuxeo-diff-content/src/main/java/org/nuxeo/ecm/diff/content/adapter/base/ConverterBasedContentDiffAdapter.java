@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
@@ -58,15 +59,15 @@ public class ConverterBasedContentDiffAdapter extends
 
     @Override
     public List<Blob> getContentDiffBlobs(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType)
+            ContentDiffConversionType conversionType, Locale locale)
             throws ContentDiffException {
         return getContentDiffBlobs(otherDoc, getDefaultContentDiffFieldXPath(),
-                conversionType);
+                conversionType, locale);
     }
 
     @Override
     public List<Blob> getContentDiffBlobs(DocumentModel otherDoc, String xpath,
-            ContentDiffConversionType conversionType)
+            ContentDiffConversionType conversionType, Locale locale)
             throws ContentDiffException {
 
         Blob adaptedDocBlob = null;
@@ -123,7 +124,7 @@ public class ConverterBasedContentDiffAdapter extends
                     otherDocBlob = getHtmlStringBlob(otherDocBlob);
                 }
                 blobResults = mtContentDiffer.getContentDiff(adaptedDocBlob,
-                        otherDocBlob, adaptedDoc, otherDoc);
+                        otherDocBlob, adaptedDoc, otherDoc, locale);
                 return blobResults;
             }
         }
@@ -153,7 +154,7 @@ public class ConverterBasedContentDiffAdapter extends
             MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
             blobResults.addAll(contentDiffer.getContentDiff(
                     adaptedDocConvertedBlob, otherDocConvertedBlob, adaptedDoc,
-                    otherDoc));
+                    otherDoc, locale));
 
             // Add secondary blobs (mostly images)
             addSecondaryBlobs(blobResults, adaptedDocConvertedBlobHolder,

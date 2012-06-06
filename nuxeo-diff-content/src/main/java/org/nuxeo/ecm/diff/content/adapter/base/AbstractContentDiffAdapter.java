@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.diff.content.adapter.base;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,24 +50,24 @@ public abstract class AbstractContentDiffAdapter implements ContentDiffAdapter {
     }
 
     public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType)
+            ContentDiffConversionType conversionType, Locale locale)
             throws ContentDiffException {
-        return getContentDiffBlobs(otherDoc, conversionType);
+        return getContentDiffBlobs(otherDoc, conversionType, locale);
     }
 
     public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc,
-            String xpath, ContentDiffConversionType conversionType)
-            throws ContentDiffException {
-        return getContentDiffBlobs(otherDoc, xpath, conversionType);
+            String xpath, ContentDiffConversionType conversionType,
+            Locale locale) throws ContentDiffException {
+        return getContentDiffBlobs(otherDoc, xpath, conversionType, locale);
     }
 
     protected abstract List<Blob> getContentDiffBlobs(DocumentModel otherDoc,
-            ContentDiffConversionType conversionType)
+            ContentDiffConversionType conversionType, Locale locale)
             throws ContentDiffException;
 
     protected abstract List<Blob> getContentDiffBlobs(DocumentModel otherDoc,
-            String xpath, ContentDiffConversionType conversionType)
-            throws ContentDiffException;
+            String xpath, ContentDiffConversionType conversionType,
+            Locale locale) throws ContentDiffException;
 
     public void setAdaptedDocument(DocumentModel doc) {
         this.adaptedDoc = doc;

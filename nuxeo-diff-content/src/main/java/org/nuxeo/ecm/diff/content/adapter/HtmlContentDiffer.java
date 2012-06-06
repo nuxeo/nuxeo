@@ -53,7 +53,7 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
     protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
 
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
-            DocumentModel leftDoc, DocumentModel rightDoc)
+            DocumentModel leftDoc, DocumentModel rightDoc, Locale locale)
             throws ContentDiffException {
 
         try {
@@ -69,8 +69,6 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             ContentHandler postProcess = htmlHeaderXslFilter.xsl(
                     transformHandler, "xslfilter/htmldiffheader.xsl");
 
-            // TODO: use Seam locale
-            Locale locale = Locale.getDefault();
             String prefix = "diff";
 
             HtmlCleaner cleaner = new HtmlCleaner();

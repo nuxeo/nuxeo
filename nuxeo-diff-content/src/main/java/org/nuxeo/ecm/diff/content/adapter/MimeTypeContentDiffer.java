@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.diff.content.adapter;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,7 +33,7 @@ import org.nuxeo.ecm.diff.content.ContentDiffException;
 public interface MimeTypeContentDiffer {
 
     List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
-            DocumentModel leftDoc, DocumentModel rightDoc)
+            DocumentModel leftDoc, DocumentModel rightDoc, Locale locale)
             throws ContentDiffException;
 
 }

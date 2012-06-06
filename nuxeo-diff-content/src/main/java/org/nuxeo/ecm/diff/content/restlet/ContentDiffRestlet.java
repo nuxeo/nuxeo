@@ -193,10 +193,11 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         try {
             if (xpath.equals(ContentDiffHelper.CONTENT_DIFF_URL_DEFAULT_XPATH)) {
                 contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
-                        rightDoc, conversionType);
+                        rightDoc, conversionType, localeSelector.getLocale());
             } else {
                 contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
-                        rightDoc, xpath, conversionType);
+                        rightDoc, xpath, conversionType,
+                        localeSelector.getLocale());
             }
         } catch (ContentDiffException e) {
             contentDiffInProcessing.remove(leftDoc.getId());
