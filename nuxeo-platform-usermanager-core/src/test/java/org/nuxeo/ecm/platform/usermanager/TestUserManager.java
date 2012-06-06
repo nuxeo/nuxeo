@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,12 +33,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
-import org.junit.Test;
+import org.junit.Before;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
-
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -477,7 +482,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         userManager.createGroup(g2);
 
         List<String> expectedTopLevelGroups = Arrays.asList("administrators",
-                "members", "test_g2");
+                "members", "powerusers", "test_g2");
         List<String> topLevelGroups = userManager.getTopLevelGroups();
         Collections.sort(topLevelGroups);
 
@@ -486,7 +491,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         // delete test_g2 and test if test_g1 is toplevel
         userManager.deleteGroup(g2);
         expectedTopLevelGroups = Arrays.asList("administrators", "members",
-                "test_g1");
+                "powerusers", "test_g1");
         topLevelGroups = userManager.getTopLevelGroups();
         Collections.sort(topLevelGroups);
         assertEquals(expectedTopLevelGroups, topLevelGroups);
@@ -497,7 +502,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         g2.setProperty("group", "subGroups", g2Groups);
         userManager.createGroup(g2);
         expectedTopLevelGroups = Arrays.asList("administrators", "members",
-                "test_g2");
+                "powerusers", "test_g2");
         topLevelGroups = userManager.getTopLevelGroups();
         Collections.sort(topLevelGroups);
         assertEquals(expectedTopLevelGroups, topLevelGroups);

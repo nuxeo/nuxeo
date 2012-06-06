@@ -86,7 +86,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
                 PROVIDER_NAME, null, null, null, properties, "");
         List<DocumentModel> groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
-        assertEquals(4, groups.size());
+        assertEquals(5, groups.size());
 
         DocumentModel group = groups.get(0);
         assertEquals("administrators", group.getId());
@@ -96,6 +96,8 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         assertEquals("group2", group.getId());
         group = groups.get(3);
         assertEquals("members", group.getId());
+        group = groups.get(4);
+        assertEquals("powerusers", group.getId());
     }
 
     @Test
