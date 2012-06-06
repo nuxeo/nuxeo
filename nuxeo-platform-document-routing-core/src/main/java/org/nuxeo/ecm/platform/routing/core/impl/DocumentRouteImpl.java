@@ -34,6 +34,11 @@ public class DocumentRouteImpl extends
         followTransition(ElementLifeCycleTransistion.toDone, session, false);
         EventFirer.fireEvent(session, this, null,
                 DocumentRoutingConstants.Events.afterRouteFinish.name());
+        // Fire events for route audit log
+        for (String attachDocumentID : this.getAttachedDocuments()) {
+            AuditEventFirer.fireEvent(session, this, null, "auditLogRoute",
+                    attachDocumentID);
+        }
     }
 
     public DocumentRouteImpl(DocumentModel doc, ElementRunner runner) {

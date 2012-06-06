@@ -79,7 +79,8 @@
         <property name="documentID">#{currentDocument.id}</property>
         <whereClause docType="BasicAuditSearch">
           <fixedPart>
-            log.extendedInfos['currentDocumentID'].stringValue = '?' AND log.category = 'Routing'
+            log.category = 'eventDocumentCategory' AND log.eventId='auditLogRoute' AND
+            log.extendedInfos['attachDocumentID'].stringValue = '?'
           </fixedPart>
         </whereClause>
         <sort column="log.eventDate" ascending="false" />

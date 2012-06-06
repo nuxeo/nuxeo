@@ -2,10 +2,10 @@
   version="1.0">
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="event">
-    <event name="afterRouteFinish" />
+    <event name="auditLogRoute" />
   </extension>
   <extension point="extendedInfo"
     target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
-    <extendedInfo expression="" key="currentDocumentID" />
+    <extendedInfo expression="#{message.properties.attachDocumentID}" key="attachDocumentID" />
   </extension>
 </component>
