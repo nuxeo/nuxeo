@@ -1664,7 +1664,8 @@
         </exclusions>
       </dependency>
 
-      <!-- Guessed versions of code included in JBoss 5.1.0.GA or at least compliant -->
+      <!-- Guessed versions of code included in JBoss 5.1.0.GA or at least 
+        compliant -->
       <dependency>
         <groupId>org.jboss.aop</groupId>
         <artifactId>jboss-aop</artifactId>
@@ -2298,8 +2299,8 @@
         <artifactId>osgi-core</artifactId>
         <version>4.1</version>
       </dependency>
-      <!-- OSGI compendium - do not change to org.osgi group since it is not containing
-        all needed classes -->
+      <!-- OSGI compendium - do not change to org.osgi group since it is 
+        not containing all needed classes -->
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
@@ -3464,6 +3465,19 @@
         <version>3.9</version>
       </dependency>
 
+      <!-- daisydiff -->
+      <dependency>
+        <groupId>org.outerj.daisy</groupId>
+        <artifactId>daisydiff</artifactId>
+        <version>1.2-NX1</version>
+      </dependency>
+      <!-- eclipse core runtime -->
+      <dependency>
+        <groupId>org.eclipse.core.runtime</groupId>
+        <artifactId>eclipse-core-runtime</artifactId>
+        <version>20070801</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -3910,7 +3924,8 @@
             <rules>
               <requirePluginVersions>
                 <message>
-                  Set plugin versions in pluginManagement section.
+                  Set plugin versions in pluginManagement
+                  section.
                 </message>
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
@@ -3990,8 +4005,8 @@
           <artifactId>properties-maven-plugin</artifactId>
           <version>1.0-alpha-2</version>
         </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only.
-          It has no influence on the Maven build itself. -->
+        <!--This plugin's configuration is used to store Eclipse m2e settings 
+          only. It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
@@ -4218,12 +4233,15 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
               <maxmemory>768m</maxmemory>
-              <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css </stylesheetfile -->
+              <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css 
+                </stylesheetfile -->
               <windowtitle>
-                ${project.name} ${project.version} API Documentation
+                ${project.name} ${project.version} API
+                Documentation
               </windowtitle>
               <doctitle>
-                ${project.name} ${project.version} API Documentation
+                ${project.name} ${project.version} API
+                Documentation
               </doctitle>
               <header>${project.name} ${project.version}</header>
               <links>
