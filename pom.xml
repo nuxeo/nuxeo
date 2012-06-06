@@ -16,9 +16,9 @@
   <description>Nuxeo Services: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.6.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>1.6.2-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.common.version>5.3.2-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>5.3.2-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>5.3.2-SNAPSHOT</nuxeo.core.version>
     <nuxeo.services.version>5.3.2-SNAPSHOT</nuxeo.services.version>
   </properties>
 
