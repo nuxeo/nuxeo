@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-chemistry</artifactId>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>5.3.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-chemistry-impl</artifactId>
