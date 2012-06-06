@@ -11,13 +11,13 @@
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-parent</artifactId>
   <name>Nuxeo Runtime Parent</name>
-  <version>1.6.2-SNAPSHOT</version>
+  <version>5.3.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <description>Nuxeo Runtime: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.6.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.6.2-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.common.version>5.3.2-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>5.3.2-SNAPSHOT</nuxeo.runtime.version>
   </properties>
 
   <modules>
