@@ -17,12 +17,27 @@
       <c:choose>
         <c:when test="#{iframe eq null}">
 
+        <nxu:valueHolder
+          id="#{idPrefix}#{action.id}_valueHolder"
+          var="actionClicked"
+          defaultValue="false">
+
+         <f:subview>
           <c:if test="#{not useButton}">
             <a4j:commandLink id="#{idPrefix}#{action.id}_link"
               ajaxSingle="true"
               ignoreDupResponses="true" requestDelay="100"
-              onclick="showFancyBox('##{idPrefix}#{action.id}_box');#{action.properties.onclick}"
-              styleClass="#{actionStyleClass} #{action.properties.styleClass}">
+              oncomplete="showFancyBox('##{idPrefix}#{action.id}_box');#{action.properties.onclick}"
+              styleClass="#{actionStyleClass} #{action.properties.styleClass}"
+              reRender="#{idPrefix}#{action.id}_ajax_panel"
+              >
+              <f:setPropertyActionListener value="true"
+                  target="#{selectionActions.selectedValue}" />
+              <f:setPropertyActionListener
+                  value="#{idPrefix}#{action.id}_valueHolder"
+                  target="#{selectionActions.selectedValueHolder}" />
+              <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
               <ui:include src="/incl/action/action_icon_label_template.xhtml" />
             </a4j:commandLink>
           </c:if>
@@ -31,21 +46,37 @@
             <a4j:commandButton id="#{idPrefix}#{action.id}_link"
               ajaxSingle="true"
               ignoreDupResponses="true" requestDelay="100"
-              onclick="showFancyBox('##{idPrefix}#{action.id}_box');#{action.properties.onclick}"
+              oncomplete="showFancyBox('##{idPrefix}#{action.id}_box');#{action.properties.onclick}"
               value="#{messages[action.label]}"
-              styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
+              styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+              reRender="#{idPrefix}#{action.id}_ajax_panel">
+              <f:setPropertyActionListener value="true"
+                  target="#{selectionActions.selectedValue}" />
+              <f:setPropertyActionListener
+                  value="#{idPrefix}#{action.id}_valueHolder"
+                  target="#{selectionActions.selectedValueHolder}" />
+              <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
               <ui:include src="/incl/action/action_icon_label_template.xhtml">
                 <ui:param name="hideLabel" value="true" />
               </ui:include>
             </a4j:commandButton>
           </c:if>
 
-          <ui:insert name="inside_action" />
-          <div style="display: none;">
-            <div id="#{idPrefix}#{action.id}_box">
-              <ui:include src="#{include}" />
-            </div>
-          </div>
+         <a4j:outputPanel id="#{idPrefix}#{action.id}_ajax_panel">
+          <c:if test="#{actionClicked}">
+           <div style="display:none">
+           <div id="#{idPrefix}#{action.id}_box">
+             <ui:include src="#{include}" />
+           </div>
+           </div>
+          </c:if>
+         </a4j:outputPanel>
+
+          </f:subview>
+
+        </nxu:valueHolder>
+
         </c:when>
 
         <c:otherwise>
