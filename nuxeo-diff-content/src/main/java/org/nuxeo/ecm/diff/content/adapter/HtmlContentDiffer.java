@@ -29,6 +29,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -50,6 +52,8 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class HtmlContentDiffer implements MimeTypeContentDiffer {
 
+    private static final Log LOGGER = LogFactory.getLog(HtmlContentDiffer.class);
+
     protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
 
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
@@ -66,8 +70,23 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
 
             XslFilter htmlHeaderXslFilter = new XslFilter();
 
-            ContentHandler postProcess = htmlHeaderXslFilter.xsl(
-                    transformHandler, "xslfilter/htmldiffheader.xsl");
+            StringBuilder sb = new StringBuilder("xslfilter/htmldiffheader");
+            sb.append("_");
+            sb.append(locale.getLanguage());
+            sb.append(".xsl");
+            String htmlHeaderXslPath = sb.toString();
+            ContentHandler postProcess;
+            try {
+                postProcess = htmlHeaderXslFilter.xsl(transformHandler,
+                        htmlHeaderXslPath);
+            } catch (IllegalStateException ise) {
+                LOGGER.error(
+                        String.format(
+                                "Could not find the HTML diff header xsl file '%s', falling back on the default one.",
+                                htmlHeaderXslPath), ise);
+                postProcess = htmlHeaderXslFilter.xsl(transformHandler,
+                        "xslfilter/htmldiffheader.xsl");
+            }
 
             String prefix = "diff";
 

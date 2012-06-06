@@ -31,13 +31,13 @@
       <script src="/nuxeo/scripts/diff/tip_balloon.js" type="text/javascript"></script>
       <script src="/nuxeo/scripts/diff/dojo.js" type="text/javascript"></script>
       <script src="/nuxeo/scripts/diff/diff.js" type="text/javascript"></script>
-      <script src="/nuxeo/scripts/diff/lang/diff_en.js" type="text/javascript"></script>
+      <script src="/nuxeo/scripts/diff/lang/diff_fr.js" type="text/javascript"></script>
       <script>
         htmlDiffInit();
       </script>
       
         <xsl:variable name="spans" select="diffreport/diff//span[(@class='diff-html-added' or @class='diff-html-removed' or @class='diff-html-changed')  and @id]"/>
-        <div class="diff-topbar">
+      	<div class="diff-topbar">
         <table class="diffpage-html-firstlast">
         <tr><td style="text-align: left;">
             <a>
@@ -53,7 +53,7 @@
               </xsl:attribute>
               <img class="diff-icon"
                 src="/nuxeo/img/diff/diff-first.gif"
-                title="Go to first change"/>
+                title="Aller à la première différence"/>
             </a>
             <a>
               <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
@@ -62,13 +62,13 @@
                 <xsl:text>#</xsl:text>
                 <xsl:value-of select="$spans[1]/@id"/>
               </xsl:attribute>
-              <xsl:text>&#160;First</xsl:text>
+              <xsl:text>&#160;Première différence</xsl:text>
             </a>
         </td>
         
         <td style="text-align: center; font-size: 140%;">
-            Compare report<br/>
-            <span style="font-style: italic; font-size: 70%;">Click on the changed parts to go to the next or previous difference.<br/>You can also use the left and right arrow keys to walk through the modifications.</span>
+            Comparaison détaillée<br/>
+            <span style="font-style: italic; font-size: 70%;">Un clic sur une différence permet d'aller à la différence suivante ou précédente.<br/>Vous pouvez aussi utiliser les flèches gauche et droite du clavier.</span>
         </td>
         
         <td style="text-align: right;">
@@ -79,7 +79,7 @@
                 <xsl:text>#</xsl:text>
                 <xsl:value-of select="$spans[last()]/@id"/>
               </xsl:attribute>
-              Last<xsl:text>&#160;</xsl:text>
+              Dernière différence<xsl:text>&#160;</xsl:text>
             </a>
             <a>
               <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
@@ -94,12 +94,12 @@
               </xsl:attribute>
               <img class="diff-icon"
                 src="/nuxeo/img/diff/diff-last.gif"
-                title="Go to last change"/>
+                title="Aller à la dernière différence"/>
             </a>
          </td></tr></table>
          </div>
-       <xsl:apply-templates select="diffreport/diff/node()"/>
-    </body>
+	     <xsl:apply-templates select="diffreport/diff/node()"/>
+	  </body>
    </html>
 </xsl:template>
 
