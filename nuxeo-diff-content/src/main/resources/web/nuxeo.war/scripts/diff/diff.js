@@ -1,4 +1,4 @@
-var imagePath = '/nuxeo/img/diff/';
+var imagePath = nxContextPath + '/img/diff/';
 var selectedElement=null;
 
 function htmlDiffInit() {

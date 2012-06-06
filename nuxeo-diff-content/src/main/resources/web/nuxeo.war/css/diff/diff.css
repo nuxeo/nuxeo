@@ -39,13 +39,13 @@ span.diff-html-removed {
 }
 
 span.diff-html-changed {
-  background: url("/nuxeo/img/diff/diffunderline.gif") bottom repeat-x;
+  background: url("../../img/diff/diffunderline.gif") bottom repeat-x;
   *background-color: #c6c6fd; /* light blue */
   cursor: pointer;
 }
 
 span.diff-html-conflict {
-/*  background: url("/nuxeo/img/diff/diffunderline.gif") bottom repeat-x; */
+/*  background: url("../../img/diff/diffunderline.gif") bottom repeat-x; */
   background-color: #f781be; /* light rose */
 }
 
@@ -89,23 +89,23 @@ div.diff-removed-image, div.diff-added-image, div.diff-conflict-image  {
 
 div.diff-removed-image {
   background-color: #fdc6c6;
-  background-image: url("/nuxeo/img/diff/diffmin.gif");
+  background-image: url("../../img/diff/diffmin.gif");
 }
 div.diff-added-image {
   background-color: #ccffcc;
-  background-image: url("/nuxeo/img/diff/diffplus.gif");
+  background-image: url("../../img/diff/diffplus.gif");
   background-repeat: no-repeat;
 }
 
 div.diff-conflict-image {
   background-color: #f781be;
-  background-image: url("/nuxeo/img/diff/diffconflict.gif");
+  background-image: url("../../img/diff/diffconflict.gif");
   background-repeat: no-repeat;
 }
 
 img.diff-icon {
   background-color: #FF8800;
-  background-image: url("/nuxeo/img/diff/bg_rounded.gif");
+  background-image: url("../../img/diff/bg_rounded.gif");
   width: 16px;
   height: 16px;
   border: 0px none;

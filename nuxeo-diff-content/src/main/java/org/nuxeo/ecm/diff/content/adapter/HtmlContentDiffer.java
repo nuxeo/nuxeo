@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.outerj.daisy.diff.HtmlCleaner;
 import org.outerj.daisy.diff.XslFilter;
 import org.outerj.daisy.diff.html.HTMLDiffer;
@@ -48,6 +49,8 @@ import org.xml.sax.helpers.AttributesImpl;
  * @since 5.6
  */
 public class HtmlContentDiffer implements MimeTypeContentDiffer {
+
+    protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
 
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
             DocumentModel leftDoc, DocumentModel rightDoc)
@@ -99,7 +102,10 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             postProcess.endElement("", "diffreport", "diffreport");
             postProcess.endDocument();
 
-            Blob mainBlob = new StringBlob(sw.toString());
+            String stringBlob = sw.toString().replaceAll(
+                    NUXEO_DEFAULT_CONTEXT_PATH,
+                    VirtualHostHelper.getContextPathProperty());
+            Blob mainBlob = new StringBlob(stringBlob);
             sw.close();
 
             mainBlob.setFilename("contentDiff.html");

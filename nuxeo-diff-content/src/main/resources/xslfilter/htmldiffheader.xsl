@@ -24,6 +24,9 @@
         <link href="/nuxeo/css/diff/diff.css" type="text/css" rel="stylesheet"/>
       </head>
       <body>
+      <script>
+        var nxContextPath = "/nuxeo";
+      </script>
       <script src="/nuxeo/scripts/diff/wz_tooltip.js" type="text/javascript"></script>
       <script src="/nuxeo/scripts/diff/tip_balloon.js" type="text/javascript"></script>
       <script src="/nuxeo/scripts/diff/dojo.js" type="text/javascript"></script>

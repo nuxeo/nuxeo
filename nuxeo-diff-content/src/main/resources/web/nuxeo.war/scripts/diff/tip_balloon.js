@@ -28,7 +28,7 @@ config. Balloon = true				// true or false - set to true if you want this to be 
 config. BalloonEdgeSize = 5			// Integer - sidelength of quadratic corner images
 config. BalloonStemWidth = 15		// Integer
 config. BalloonStemHeight = 19		// Integer
-config. BalloonImgPath = '/nuxeo/img/diff/tip_balloon/'; // Path to images (border, corners, stem), in quotes. Path must be relative to your HTML file.
+config. BalloonImgPath = nxContextPath + '/img/diff/tip_balloon/'; // Path to images (border, corners, stem), in quotes. Path must be relative to your HTML file.
 //=======  END OF TOOLTIP CONFIG, DO NOT CHANGE ANYTHING BELOW  ==============//
 
 
