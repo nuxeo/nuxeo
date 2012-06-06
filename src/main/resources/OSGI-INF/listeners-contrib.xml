@@ -9,6 +9,7 @@
       class="org.nuxeo.ecm.multi.tenant.MultiTenantListener"
       priority="150">
       <event>documentCreated</event>
+      <event>documentCreatedByCopy</event>
       <event>documentRemoved</event>
     </listener>
 
