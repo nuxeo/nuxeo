@@ -3,7 +3,7 @@ For efficiency, a local disk cache (with limited size) is also used.
 
 To be able to work this addon needs some a custom template with a modified
 default-repository-config.xml which includes the line:
-<binaryManager class="org.nuxeo.ecm.core.storage.sql.S3BinaryManager" />
+\<binaryManager class="org.nuxeo.ecm.core.storage.sql.S3BinaryManager" />  
 in the innermost "repository" section.
 
 Be sure to protect your nuxeo.conf (readable only by the nuxeo user) as the
