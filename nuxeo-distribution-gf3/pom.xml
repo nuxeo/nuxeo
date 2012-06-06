@@ -36,7 +36,7 @@
   </profiles>
   
   <properties>
-    <nuxeo.core.version>1.6.2-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.core.version>5.3.2-SNAPSHOT</nuxeo.core.version>
     <gf3.version>3.0-b38</gf3.version>
     <application.name>${project.artifactId}-${project.version}</application.name>
   </properties>
