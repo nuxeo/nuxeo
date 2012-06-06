@@ -97,8 +97,9 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
                     @Override
                     public void run() {
                         try {
-                            if (app != null)
+                            if (app != null) {
                                 app.shutdown();
+                            }
                         } catch (Exception e) {
                             log.error(e, e);
                         }
@@ -178,6 +179,10 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
             } else {
                 app.build(cfg, useCache());
             }
+            System.setProperty("java.naming.factory.initial",
+                    "org.nuxeo.runtime.jtajca.NamingContextFactory");
+            System.setProperty("java.naming.factory.url.pkgs",
+                    "org.nuxeo.runtime.jtajca");
             app.start();
             return app;
         } catch (Exception e) {

@@ -43,6 +43,7 @@
     It is not required at runtime in web mode
      -->
     <!-- Is this still needed ? seems that distribution tool launcher is quite deprecated -->
+    <!-- Still needed by Studio dev launcher -->
     <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-distribution-tools</artifactId>
