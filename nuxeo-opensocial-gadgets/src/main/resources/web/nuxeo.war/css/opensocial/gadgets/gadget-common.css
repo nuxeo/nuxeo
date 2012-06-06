@@ -29,7 +29,7 @@ button { line-height: 100%;
 
 #nxDocumentList { width:98%; margin:0 auto }
 
-.fullScale { font-size: 125% }
+.fullScale { font-size: 105% }
 .clear { clear: both }
 .floatL { float: left }
 .floatR { float: right }
@@ -37,6 +37,7 @@ button { line-height: 100%;
 .paddingL { padding-left: 1.5em }
 .boldLabel { font-weight: bold }
 .textAlignC, .center { text-align: center }
+.displayN { display: none }
 
 .warning { background-color: #fff7b0 }
 
@@ -101,9 +102,11 @@ textarea { border: 1px solid #bbb;
     color: #666;
     display: inline-block;
     font-family: 'Lucida Grande',Arial,Helvetica,Geneva,sans-serif;
-    font-size: 1em;
+    font-size: 12px;
     line-height: 18px;
     padding: .3em }
+textarea:-moz-placeholder { color: #bbb }
+textarea::-webkit-input-placeholder { color: #bbb }
 
 .creationForm { text-align: center }
 .creationForm table { font-size: 13px; margin: 0 auto }
@@ -113,7 +116,6 @@ textarea { border: 1px solid #bbb;
 .creationForm .actions { margin-top: 5px }
 .creationForm .actions input, .creationForm .actions button { background-color: #fefefe; cursor: pointer; margin: 0 .5em; width: auto }
 .creationForm .actions input:hover, .creationForm .actions button:hover { border-color: #333 }
-textarea { font-size: 11px }
 
 .creationForm table.create { margin: auto }
 
