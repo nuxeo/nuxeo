@@ -37,11 +37,11 @@ public class MultiTenantPrincipal extends NuxeoPrincipalImpl {
         setVirtualGroups(principal.getVirtualGroups());
     }
 
-    @Override
-    public boolean isManager() {
-        String tenantAdminGroup = computeTenantAdministratorsGroup(getTenantId());
-        return isMemberOf(tenantAdminGroup) || super.isManager();
-    }
+//    @Override
+//    public boolean isManager() {
+//        String tenantAdminGroup = computeTenantAdministratorsGroup(getTenantId());
+//        return isMemberOf(tenantAdminGroup) || super.isManager();
+//    }
 
     @Override
     public String getTenantId() {
