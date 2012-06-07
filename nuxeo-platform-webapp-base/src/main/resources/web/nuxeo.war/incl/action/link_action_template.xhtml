@@ -12,7 +12,7 @@
   <c:if test="#{not useAjaxForm}">
     <nxh:commandButton action="#{action.getLink()}"
       id="#{idPrefix}#{action.id}"
-      onclick="#{action.confirm}"
+      onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
       value="#{messages[action.label]}"
       styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
@@ -26,7 +26,7 @@
   <c:if test="#{useAjaxForm}">
     <nxh:commandButton
       id="#{idPrefix}#{action.id}"
-      onclick="#{action.confirm}"
+      onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
       value="#{messages[action.label]}"
       styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
@@ -47,7 +47,7 @@
   <c:if test="#{not useAjaxForm}">
     <nxh:commandLink action="#{action.getLink()}"
       id="#{idPrefix}#{action.id}"
-      onclick="#{action.confirm}"
+      onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
       target="#{action.properties.target}"
       styleClass="#{actionStyleClass} #{action.properties.styleClass}">
@@ -59,7 +59,7 @@
   <c:if test="#{useAjaxForm}">
     <a4j:commandLink
       id="#{idPrefix}#{action.id}"
-      onclick="#{action.confirm}"
+      onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
       styleClass="#{actionStyleClass} #{action.properties.styleClass}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
