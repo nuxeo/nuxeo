@@ -23,6 +23,8 @@ import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +37,9 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.international.TimeZoneSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,11 +54,14 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
+import org.nuxeo.runtime.api.Framework;
 
 @Name("startupHelper")
 @Scope(SESSION)
 @Install(precedence = Install.FRAMEWORK)
 public class StartupHelper implements Serializable {
+
+    public static final String EVENT_TYPE = "org.nuxeo.ecm.web.userSessionStarted";
 
     public static final String LANGUAGE_PARAMETER = "language";
 
@@ -125,6 +132,13 @@ public class StartupHelper implements Serializable {
         if (documentManager == null) {
             documentManager = navigationContext.getOrCreateDocumentManager();
         }
+
+        if (Events.exists()) {
+            Events.instance().raiseEvent(EVENT_TYPE, documentManager);
+        }
+
+        // select home page
+
         DocumentModel rootDocument = documentManager.getRootDocument();
         if (!documentManager.hasPermission(rootDocument.getRef(),
                 SecurityConstants.READ_CHILDREN)) {
@@ -138,6 +152,8 @@ public class StartupHelper implements Serializable {
         if (repositoryManager.getRepositories().size() > 1) {
             return SERVERS_VIEW;
         }
+
+
 
         // the Repository Location is initialized, skip the first screen
         return DOMAINS_VIEW;
