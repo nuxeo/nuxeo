@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DiffTestCase;
 import org.nuxeo.ecm.diff.model.DifferenceType;
@@ -67,7 +66,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", init = DocumentDiffRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DocumentDiffRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/document-xml-exporter-service.xml",
         "org.nuxeo.diff.core", "org.nuxeo.diff.test" })
 public class TestDocumentDiff extends DiffTestCase {
