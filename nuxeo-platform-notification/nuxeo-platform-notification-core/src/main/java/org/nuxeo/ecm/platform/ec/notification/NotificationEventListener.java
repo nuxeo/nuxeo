@@ -118,6 +118,10 @@ public class NotificationEventListener implements PostCommitEventListener {
         for(NotificationListenerHook hookListener:NotificationServiceHelper.getNotificationService().getListenerHooks()) {
             docCtx = hookListener.handleNotifications(event);
         }
+        if (docCtx == null) {
+            // stop sending notification
+            return;
+        }
 
         gatherConcernedUsersForDocument(coreSession,
                 docCtx.getSourceDocument(), notifs, targetUsers);
