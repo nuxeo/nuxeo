@@ -298,7 +298,7 @@ class Release(object):
         self.repo.system_recurse("git checkout -b %s" % self.tag)
         self.update_versions(self.snapshot, self.tag)
         self.repo.system_recurse("git commit -m'Release %s' -a" % self.tag)
-        self.repo.system_recurse("git tag release-%s" % self.tag)
+        self.repo.system_recurse("git tag -f release-%s" % self.tag)
 
         ## TODO NXP-8569 Optionally merge maintenance branch on source
 
