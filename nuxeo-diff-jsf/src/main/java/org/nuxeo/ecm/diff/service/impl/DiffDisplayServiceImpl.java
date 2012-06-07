@@ -1360,8 +1360,6 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
             // Set translated
             wDef.setTranslated(true);
-
-            // TODO: set props ?
         }
 
         // Set field definitions if generic or specific and not already set in
