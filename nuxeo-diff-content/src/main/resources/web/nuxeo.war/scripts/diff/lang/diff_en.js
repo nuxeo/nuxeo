@@ -14,7 +14,7 @@ function translateDiffId(diffId) {
 		if (diffType == "removed-diff") {
 			return "Deletion n° " + diffCount; 
 		} else if (diffType == "added-diff") {
-			return "Addition n° " + diffCount;
+			return "Insertion n° " + diffCount;
 		} else if (diffType == "changed-diff") {
 			return "Change n° " + diffCount;
 		}
