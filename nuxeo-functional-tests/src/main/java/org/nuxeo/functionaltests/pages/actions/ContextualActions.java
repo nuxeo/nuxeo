@@ -23,7 +23,6 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * The document contextual actions
- *
  */
 public class ContextualActions extends AbstractPage {
 
@@ -39,7 +38,9 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@title=\"Permanent link to this document\"]")
     public WebElement permaButton;
 
-    @FindBy(id = "fancybox-overlay")
+    public String permaBoxFocusName = "permalinkFocus";
+
+    @FindBy(id = "fancybox-close")
     public WebElement closePermaBoxButton;
 
     @FindBy(className = "dropDownMenu")

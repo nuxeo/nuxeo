@@ -25,6 +25,7 @@ import org.nuxeo.functionaltests.pages.NavigationSubPage;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
+import org.openqa.selenium.By;
 
 /**
  * Tests the contextual menu actions
@@ -90,6 +91,10 @@ public class ITContextualActionsTest extends AbstractTest {
         actions.clickOnButton(actions.downloadButton);
         // Test permalink action
         actions.clickOnButton(actions.permaButton);
+        // wait for element to be shown to close it, otherwise DOM may not be
+        // udpated yet
+        actions.findElementWithTimeout(By.className(actions.permaBoxFocusName),
+                20 * 1000);
         actions.clickOnButton(actions.closePermaBoxButton);
         // Test Add to Worklist action
         actions.clickOnButton(actions.moreButton);
