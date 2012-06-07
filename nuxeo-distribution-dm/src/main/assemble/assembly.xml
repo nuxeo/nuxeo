@@ -309,6 +309,8 @@
         <include name="geronimo-*" />
         <include name="jaxen-1.1-beta-9*" />
         <include name="jsr311-api-1.0*" />
+        <include name="xalan-*" />
+        <include name="javassist-*" />
       </fileset>
     </delete>
     <copy todir="${nuxeo.ear}/lib" overwrite="true">
