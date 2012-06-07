@@ -247,6 +247,12 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * @deprecated Since 5.6. Use
+     *             {@link org.apache.commons.io.FileUtils#deleteDirectory(File)}
+     *             instead.
+     */
+    @Deprecated
     public static void deleteTree(File dir) {
         emptyDirectory(dir);
         dir.delete();
@@ -627,7 +633,8 @@ public final class FileUtils {
 
         if (expected.length() != source.length()) {
             // Prevent from comparing files with Windows EOL
-            return expected.replace("\r\n", "\n").equals(source.replace("\r\n", "\n"));
+            return expected.replace("\r\n", "\n").equals(
+                    source.replace("\r\n", "\n"));
         } else {
             return expected.equals(source);
         }
