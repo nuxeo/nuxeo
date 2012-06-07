@@ -178,11 +178,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
     private List<Blob> initCachedContentDiffBlobs(Response res, String xpath,
             ContentDiffConversionType conversionType) throws ClientException {
 
-        ContentDiffAdapter contentDiffAdapter = null;
-
-        if (contentDiffAdapter == null) {
-            contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
-        }
+        ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
 
         if (contentDiffAdapter == null) {
             handleNoContentDiff(res, xpath, null);
