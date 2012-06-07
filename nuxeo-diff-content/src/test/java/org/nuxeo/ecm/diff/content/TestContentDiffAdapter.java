@@ -1,0 +1,136 @@
+/*
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Antoine Taillefer
+ */
+package org.nuxeo.ecm.diff.content;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
+
+/**
+ * Tests the {@link ContentDiffAdapter}.
+ *
+ * @author Antoine Taillefer (ataillefer@nuxeo.com)
+ * @since 5.6
+ */
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(init = ContentDiffRepositoryInit.class)
+@Deploy({
+        "org.nuxeo.ecm.platform.convert:OSGI-INF/convert-service-contrib.xml",
+        "org.nuxeo.diff.content" })
+public class TestContentDiffAdapter {
+
+    @Inject
+    protected CoreSession session;
+
+    /**
+     * Tests
+     * {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)}
+     * on HTML files.
+     */
+    @Test
+    public void testHTMLFilesContentDiff() throws ClientException {
+
+        // Get left and right HTML docs
+        DocumentModel leftHTMLDoc = session.getDocument(new PathRef(
+                ContentDiffRepositoryInit.getLeftHTMLDocPath()));
+        DocumentModel rightHTMLDoc = session.getDocument(new PathRef(
+                ContentDiffRepositoryInit.getRightHTMLDocPath()));
+
+        // Get content diff adapter for left doc
+        ContentDiffAdapter contentDiffAdapter = leftHTMLDoc.getAdapter(ContentDiffAdapter.class);
+        assertNotNull(contentDiffAdapter);
+
+        // Get content diff blobs
+        List<Blob> contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
+                rightHTMLDoc, ContentDiffConversionType.html, Locale.ENGLISH);
+        assertNotNull(contentDiffBlobs);
+        assertEquals(1, contentDiffBlobs.size());
+
+        Blob contentDiffBlob = contentDiffBlobs.get(0);
+        assertNotNull(contentDiffBlob);
+
+        // Check content diff
+        checkContentDiff("html_content_diff.html", contentDiffBlob);
+    }
+
+    /**
+     * Tests
+     * {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)}
+     * on Office files using a text conversion.
+     */
+    @Test
+    public void testOfficeFilesTextConversionContentDiff()
+            throws ClientException {
+
+        // Get left and right Office docs
+        DocumentModel leftOfficeDoc = session.getDocument(new PathRef(
+                ContentDiffRepositoryInit.getLeftOfficeDocPath()));
+        DocumentModel rightOfficeDoc = session.getDocument(new PathRef(
+                ContentDiffRepositoryInit.getRightOfficeDocPath()));
+
+        // Get content diff adapter for left doc
+        ContentDiffAdapter contentDiffAdapter = leftOfficeDoc.getAdapter(ContentDiffAdapter.class);
+        assertNotNull(contentDiffAdapter);
+
+        // Get content diff blobs
+        List<Blob> contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
+                rightOfficeDoc, ContentDiffConversionType.text, Locale.ENGLISH);
+        assertNotNull(contentDiffBlobs);
+        assertEquals(1, contentDiffBlobs.size());
+
+        Blob contentDiffBlob = contentDiffBlobs.get(0);
+        assertNotNull(contentDiffBlob);
+
+        // Check content diff
+        checkContentDiff("office_text_conversion_content_diff.html",
+                contentDiffBlob);
+    }
+
+    protected void checkContentDiff(String expectedBlobPath,
+            Blob contentDiffBlob) {
+        try {
+            Blob expectedblob = new FileBlob(
+                    FileUtils.getResourceFileFromContext(expectedBlobPath));
+            assertEquals(expectedblob.getString(), contentDiffBlob.getString());
+        } catch (IOException ioe) {
+            fail("Error while getting content diff blob strings");
+        }
+    }
+}

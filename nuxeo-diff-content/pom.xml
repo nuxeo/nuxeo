@@ -39,6 +39,18 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- test -->
+    <dependency>
+      <groupId>org.nuxeo.ecm</groupId>
+      <artifactId>nuxeo-diff-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-convert</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 </project>
