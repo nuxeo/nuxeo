@@ -86,6 +86,13 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     }
 
     @Override
+    public PartialList<Serializable> query(String query, String queryType,
+            QueryFilter queryFilter, long countUpTo)
+            throws StorageException {
+        return mapper.query(query, queryType, queryFilter, countUpTo);
+    }
+
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
         return mapper.queryAndFetch(query, queryType, queryFilter, params);

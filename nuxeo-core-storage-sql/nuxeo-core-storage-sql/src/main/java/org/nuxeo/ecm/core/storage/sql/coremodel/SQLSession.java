@@ -548,6 +548,12 @@ public class SQLSession implements Session {
         @Override
         public QueryResult execute(QueryFilter queryFilter, boolean countTotal)
                 throws QueryException {
+            return execute(queryFilter, countTotal ? -1: 0);
+        }
+
+        @Override
+        public QueryResult execute(QueryFilter queryFilter, long countUpTo)
+                throws QueryException {
             try {
                 String query = this.query;
                 // do ORDER BY ecm:path by hand in SQLQueryResult as we can't
@@ -573,7 +579,7 @@ public class SQLSession implements Session {
                     queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
                 }
                 PartialList<Serializable> list = session.query(query,
-                        queryType, queryFilter, countTotal);
+                        queryType, queryFilter, countUpTo);
                 return new SQLQueryResult(SQLSession.this, list, orderByPath,
                         limit, offset);
             } catch (StorageException e) {
@@ -589,6 +595,11 @@ public class SQLSession implements Session {
             } catch (StorageException e) {
                 throw new QueryException(e.getMessage(), e);
             }
+        }
+
+        @Override
+        public QueryResult execute(long countUpTo) throws QueryException {
+            return execute(QueryFilter.EMPTY, countUpTo);
         }
 
     }

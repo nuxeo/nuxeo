@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
@@ -74,12 +75,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
-    public static final String DEFAULT_MAX_RESULTS = "1000";
-
-    public static final String MAX_RESULTS_PROPERTY = "org.nuxeo.ecm.core.max.results";
-
-    public static final String LIMIT_RESULTS_PROPETY = "org.nuxeo.ecm.core.limit.results";
-
     private static final Log log = LogFactory.getLog(JDBCMapper.class);
 
     public static Map<String, Serializable> testProps = new HashMap<String, Serializable>();
@@ -137,8 +132,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         tableUpgrader.add(model.LOCK_TABLE_NAME, model.LOCK_OWNER_KEY,
                 "upgradeLocks", TEST_UPGRADE_LOCKS);
 
-        limitedResults = Boolean.parseBoolean(Framework.getProperty(LIMIT_RESULTS_PROPETY));
-        maxResults = Long.parseLong(Framework.getProperty(MAX_RESULTS_PROPERTY, DEFAULT_MAX_RESULTS));
     }
 
     @Override
@@ -672,6 +665,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
+        return query(query, queryType, queryFilter, countTotal ? -1 : 0);
+    }
+
+    @Override
+    public PartialList<Serializable> query(String query, String queryType,
+            QueryFilter queryFilter, long countUpTo) throws StorageException {
         if (sqlInfo.dialect.needsPrepareUserReadAcls()) {
             prepareUserReadAcls(queryFilter);
         }
@@ -688,7 +687,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return new PartialList<Serializable>(
                     Collections.<Serializable> emptyList(), 0);
         }
-
         long limit = queryFilter.getLimit();
         long offset = queryFilter.getOffset();
 
@@ -697,25 +695,24 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             if (limit != 0) {
                 sql += " -- LIMIT " + limit + " OFFSET " + offset;
             }
-            if (countTotal) {
-                sql += " -- COUNT TOTAL";
+            if (countUpTo != 0) {
+                sql += " -- COUNT TOTAL UP TO " + countUpTo;
             }
             logger.logSQL(sql, q.selectParams);
         }
 
         String sql = q.selectInfo.sql;
 
-        if (!countTotal && limit > 0 && sqlInfo.dialect.supportsPaging()) {
+        if (countUpTo == 0 && limit > 0 && sqlInfo.dialect.supportsPaging()) {
             // full result set not needed for counting
             sql += " " + sqlInfo.dialect.getPagingClause(limit, offset);
             limit = 0;
             offset = 0;
-        } else if (countTotal && sqlInfo.dialect.supportsPaging() && limitedResults) {
-            long specialLimit = maxResults;
-            if (offset >= maxResults) {
-                specialLimit += offset;
-            }
-            sql += " " + sqlInfo.dialect.getPagingClause(specialLimit, 0);
+        } else if (countUpTo > 0 && sqlInfo.dialect.supportsPaging()) {
+            // ask one more row
+            sql += " "
+                    + sqlInfo.dialect.getPagingClause(
+                            Math.max(countUpTo + 1, limit + offset), 0);
         }
 
         PreparedStatement ps = null;
@@ -769,7 +766,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
 
             // total size
-            if (countTotal && (totalSize == -1)) {
+            if (countUpTo != 0 && (totalSize == -1)) {
                 if (!available && (rowNum != 0)) {
                     // last row read was the actual last
                     totalSize = rowNum;
@@ -779,10 +776,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     rs.last();
                     totalSize = rs.getRow();
                 }
+                if (countUpTo > 0 && totalSize > countUpTo) {
+                    // the result where truncated we don't know the total size
+                    totalSize = -2;
+                }
             }
 
             if (logger.isLogEnabled()) {
-                logger.logIds(ids, countTotal, totalSize);
+                logger.logIds(ids, countUpTo != 0, totalSize);
             }
 
             return new PartialList<Serializable>(ids, totalSize);

@@ -9,6 +9,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.api;
@@ -132,10 +133,20 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     private static final Comparator<? super Document> pathComparator = new PathComparator();
 
+    public static final String DEFAULT_MAX_RESULTS = "1000";
+
+    public static final String MAX_RESULTS_PROPERTY = "org.nuxeo.ecm.core.max.results";
+
+    public static final String LIMIT_RESULTS_PROPETY = "org.nuxeo.ecm.core.limit.results";
+
     // the repository name
     protected String repositoryName;
 
     protected Map<String, Serializable> sessionContext;
+
+    private Boolean limitedResults;
+
+    private Long maxResults;
 
     /**
      * Private access to protected it again direct access since this field is
@@ -1398,6 +1409,51 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     public DocumentModelList query(String query, String queryType,
             Filter filter, long limit, long offset, boolean countTotal)
             throws ClientException {
+        long countUpTo;
+        if (!countTotal) {
+            countUpTo = 0;
+        } else {
+            if (getLimitedResults()) {
+                countUpTo = getMaxResults();
+            } else {
+                countUpTo = -1;
+            }
+        }
+        return query(query, queryType, filter, limit, offset, countUpTo);
+    }
+
+    protected long getMaxResults() {
+        if (maxResults == null) {
+            maxResults = Long.parseLong(Framework.getProperty(MAX_RESULTS_PROPERTY, DEFAULT_MAX_RESULTS));
+        }
+        return maxResults;
+    }
+
+    protected boolean getLimitedResults() {
+        if (limitedResults == null) {
+                limitedResults = Boolean.parseBoolean(Framework.getProperty(LIMIT_RESULTS_PROPETY));
+        }
+        return limitedResults;
+    }
+
+    protected void setMaxResults(long maxResults) {
+        this.maxResults = maxResults;
+    }
+
+    protected void setLimitedResults(boolean limitedResults) {
+        this.limitedResults = limitedResults;
+    }
+
+    @Override
+    public DocumentModelList query(String query, Filter filter, long limit,
+            long offset, long countUpTo) throws ClientException {
+        return query(query, NXQL.NXQL, filter, limit, offset, countUpTo);
+    }
+
+    @Override
+    public DocumentModelList query(String query, String queryType,
+            Filter filter, long limit, long offset, long countUpTo)
+            throws ClientException {
         SecurityService securityService = getSecurityService();
         Principal principal = getPrincipal();
         try {
@@ -1428,8 +1484,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                                 : null,
                         securityService.getPoliciesQueryTransformers(repoName),
                         postFilter ? 0 : limit, postFilter ? 0 : offset);
-                results = ((FilterableQuery) compiledQuery).execute(
-                        queryFilter, countTotal && !postFilter);
+                if (postFilter) {
+                    results = ((FilterableQuery) compiledQuery).execute(
+                            queryFilter, -1);
+                } else {
+                    results = ((FilterableQuery) compiledQuery).execute(
+                            queryFilter, countUpTo);
+                }
             } else {
                 postFilterPermission = true;
                 postFilterPolicies = securityService.arePoliciesRestrictingPermission(permission);
@@ -1466,7 +1527,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     continue;
                 }
                 if (n >= stop) {
-                    if (!countTotal) {
+                    if (countUpTo == 0) {
                         // can break early
                         break;
                     }
@@ -1476,7 +1537,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 n++;
                 docs.add(model);
             }
-            if (countTotal) {
+            if (countUpTo != 0) {
                 docs.setTotalSize(n);
             }
             return docs;
@@ -2960,7 +3021,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             throw new ClientException("Failed to get document "
                     + docModel.getRef().toString(), e);
         }
-
         return getSecurityService().getSecuritySummary(doc, includeParents);
     }
 

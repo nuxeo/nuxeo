@@ -9,9 +9,18 @@
  * Contributors:
  *     Dragos Mihalache
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 
 package org.nuxeo.ecm.core.storage.sql;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -30,13 +39,12 @@ import java.util.TimeZone;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -671,6 +679,102 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query(sql, null, 99, 50, true);
         assertEquals(0, dml.size());
         assertEquals(7, dml.totalSize());
+    }
+
+    @Test
+    public void testQueryLimits() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        String sql = "SELECT * FROM Document ORDER BY ecm:name";
+
+        dml = session.query(sql);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        // countUpTo = 0 -> no total count, dml set the total size to the list
+        // size
+        // equivalent to totalCount=false
+        dml = session.query(sql, null, 0, 0, 0);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        dml = session.query(sql, null, 2, 2, 0);
+        assertEquals(2, dml.size());
+        assertEquals(2, dml.totalSize());
+
+        dml = session.query(sql, null, 10, 10, 0);
+        assertEquals(0, dml.size());
+        assertEquals(0, dml.totalSize());
+
+        // countUpTo = -1 -> ask for exact total size, regardless of
+        // offset/limit
+        // equivalent to totalCount=true
+        dml = session.query(sql, null, 0, 0, -1);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        dml = session.query(sql, null, 2, 2, -1);
+        assertEquals(2, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        dml = session.query(sql, null, 2, 10, -1);
+        assertEquals(0, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        dml = session.query(sql, null, 20, 0, -1);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        // countUpTo = n
+        // equivalent to totalCount=true if there are less than n results
+        dml = session.query(sql, null, 0, 0, 10);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        dml = session.query(sql, null, 0, 0, 7);
+        assertEquals(7, dml.size());
+        assertEquals(7, dml.totalSize());
+
+        // truncate result to 6
+        dml = session.query(sql, null, 0, 0, 6);
+        assertTrue(dml.totalSize() < 0);
+        // watch out, the size of the list can be countUpTo + 1
+        assertEquals(7, dml.size());
+
+        // use limit to have an exact size
+        dml = session.query(sql, null, 6, 0, 6);
+        assertTrue(dml.totalSize() < 0);
+        assertEquals(6, dml.size());
+
+        // use limit to have an exact size
+        dml = session.query(sql, null, 3, 0, 3);
+        assertTrue(dml.totalSize() < 0);
+        assertEquals(3, dml.size());
+
+        // limit/offset overrides the countUpTo
+        dml = session.query(sql, null, 5, 0, 2);
+        assertTrue(dml.totalSize() < 0);
+        assertEquals(5, dml.size());
+
+        dml = session.query(sql, null, 3, 4, 2);
+        assertTrue(dml.totalSize() < 0);
+        assertEquals(3, dml.size());
+
+        // Test limitation override when using totalCount=true
+        dml = session.query(sql, null, 5, 0, true);
+        assertEquals(5, dml.size());
+        assertEquals(7, dml.totalSize());
+        Framework.getProperties().setProperty(
+                AbstractSession.LIMIT_RESULTS_PROPETY, "true");
+        Framework.getProperties().setProperty(
+                AbstractSession.MAX_RESULTS_PROPERTY, "5");
+        // need to open a new session to refresh properties
+        closeSession(session);
+        session = openSessionAs("Administrator");
+        dml = session.query(sql, null, 5, 0, true);
+        assertEquals(5, dml.size());
+        assertTrue(dml.totalSize() < 0);
     }
 
     // from TestSQLWithPath
