@@ -124,7 +124,7 @@ public class ConverterBasedContentDiffAdapter extends
                     otherDocBlob = getHtmlStringBlob(otherDocBlob);
                 }
                 blobResults = mtContentDiffer.getContentDiff(adaptedDocBlob,
-                        otherDocBlob, adaptedDoc, otherDoc, locale);
+                        otherDocBlob, locale);
                 return blobResults;
             }
         }
@@ -153,8 +153,7 @@ public class ConverterBasedContentDiffAdapter extends
             // Add html content diff blob
             MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
             blobResults.addAll(contentDiffer.getContentDiff(
-                    adaptedDocConvertedBlob, otherDocConvertedBlob, adaptedDoc,
-                    otherDoc, locale));
+                    adaptedDocConvertedBlob, otherDocConvertedBlob, locale));
 
             // Add secondary blobs (mostly images)
             addSecondaryBlobs(blobResults, adaptedDocConvertedBlobHolder,

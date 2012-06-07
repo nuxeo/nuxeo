@@ -32,7 +32,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -57,8 +56,7 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
     protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
 
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
-            DocumentModel leftDoc, DocumentModel rightDoc, Locale locale)
-            throws ContentDiffException {
+            Locale locale) throws ContentDiffException {
 
         try {
             List<Blob> blobResults = new ArrayList<Blob>();
