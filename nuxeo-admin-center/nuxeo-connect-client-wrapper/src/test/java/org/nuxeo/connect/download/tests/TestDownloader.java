@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,14 +19,13 @@
 
 package org.nuxeo.connect.download.tests;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-
-import org.junit.runner.RunWith;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.PackageDescriptor;
@@ -62,7 +61,7 @@ public class TestDownloader {
         List<DownloadingPackage> downloads = new ArrayList<DownloadingPackage>();
 
         for (PackageDescriptor pkg : pkgToDownload) {
-            DownloadingPackage lpkg = cdm.storeDownloadedBundle(pkg);
+            DownloadingPackage lpkg = cdm.storeDownloadedBundle("fake", pkg);
             assertNotNull(lpkg);
             downloads.add(lpkg);
             Thread.sleep(100);
