@@ -23,12 +23,12 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManager;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
-import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -67,17 +67,23 @@ public final class ContentDiffHelper {
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
      * @return the content diff fancy box url
+     * @throws ClientException if url cannot be retrieved from current doc view
      */
     public static String getContentDiffFancyBoxURL(DocumentModel currentDoc,
-            String propertyLabel, String propertyXPath, String conversionType) {
+            String propertyLabel, String propertyXPath, String conversionType)
+            throws ClientException {
 
         DocumentLocation docLocation = new DocumentLocationImpl(
                 currentDoc.getRepositoryName(), currentDoc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation,
                 CONTENT_DIFF_FANCYBOX_VIEW);
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
-        StringBuilder urlSb = new StringBuilder(
-                urlPolicyService.getUrlFromDocumentView(docView, null));
+        String docUrl = urlPolicyService.getUrlFromDocumentView(docView, null);
+        if (docUrl == null) {
+            throw new ClientException(
+                    "Cannot get URL from document view, probably because of a missing urlPattern contribution.");
+        }
+        StringBuilder urlSb = new StringBuilder(docUrl);
         urlSb.append("?");
         urlSb.append(LABEL_URL_PARAM_NAME);
         urlSb.append("=");
@@ -104,7 +110,7 @@ public final class ContentDiffHelper {
      * @return the content diff url
      */
     public static String getContentDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, ContentDiffConversionType conversionType) {
+            DocumentModel rightDoc, String conversionType) {
 
         return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
                 rightDoc, CONTENT_DIFF_URL_DEFAULT_XPATH, conversionType);
@@ -120,8 +126,7 @@ public final class ContentDiffHelper {
      * @return the content diff url
      */
     public static String getContentDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, String propertyXPath,
-            ContentDiffConversionType conversionType) {
+            DocumentModel rightDoc, String propertyXPath, String conversionType) {
 
         return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
                 rightDoc, propertyXPath, conversionType);
@@ -139,7 +144,7 @@ public final class ContentDiffHelper {
      */
     public static String getContentDiffURL(String repositoryName,
             DocumentModel leftDoc, DocumentModel rightDoc,
-            String propertyXPath, ContentDiffConversionType conversionType) {
+            String propertyXPath, String conversionType) {
 
         if (propertyXPath == null) {
             propertyXPath = CONTENT_DIFF_URL_DEFAULT_XPATH;
@@ -156,11 +161,11 @@ public final class ContentDiffHelper {
         sb.append("/");
         sb.append(propertyXPath);
         sb.append("/");
-        if (conversionType != null) {
+        if (!StringUtils.isEmpty(conversionType)) {
             sb.append("?");
             sb.append(CONVERSION_TYPE_URL_PARAM_NAME);
             sb.append("=");
-            sb.append(conversionType.name());
+            sb.append(conversionType);
         }
 
         return sb.toString();

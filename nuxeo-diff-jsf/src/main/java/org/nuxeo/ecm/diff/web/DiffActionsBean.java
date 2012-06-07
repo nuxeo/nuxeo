@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
-import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
@@ -319,30 +318,34 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Gets the content diff fancybox url for the property with xpath
+     * Gets the content diff fancybox URL for the property with xpath
      * {@code propertyXPath}.
      *
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
-     * @return the content diff fancybox url
+     * @return the content diff fancybox URL
+     * @throws ClientException if the content diff fancybox URL cannot be
+     *             retrieved
      */
     public String getContentDiffFancyBoxURL(String propertyLabel,
-            String propertyXPath) {
+            String propertyXPath) throws ClientException {
 
         return getContentDiffFancyBoxURL(propertyLabel, propertyXPath, null);
     }
 
     /**
-     * Gets the content diff fancybox url for the property with xpath
+     * Gets the content diff fancybox URL for the property with xpath
      * {@code propertyXPath} using {@code conversionType}.
      *
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
-     * @return the content diff fancybox url
+     * @return the content diff fancybox URL
+     * @throws ClientException if the content diff fancybox URL cannot be
+     *             retrieved
      */
     public String getContentDiffFancyBoxURL(String propertyLabel,
-            String propertyXPath, String conversionType) {
+            String propertyXPath, String conversionType) throws ClientException {
 
         if (StringUtils.isEmpty(propertyXPath)) {
             log.error("Cannot get content diff fancybox URL with a null propertyXPath.");
@@ -354,11 +357,11 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Gets the content diff url.
+     * Gets the content diff URL.
      *
      * @param propertyXPath the property xpath
      * @param conversionTypeParam the conversion type param
-     * @return the content diff url
+     * @return the content diff URL
      */
     public String getContentDiffURL(String propertyXPath,
             String conversionTypeParam) {
@@ -371,9 +374,9 @@ public class DiffActionsBean implements Serializable {
             log.error("Cannot get content diff URL with a null schemaName or a null fieldName.");
             return null;
         }
-        ContentDiffConversionType conversionType = null;
+        String conversionType = null;
         if (!StringUtils.isEmpty(conversionTypeParam)) {
-            conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
+            conversionType = conversionTypeParam;
         }
         return ContentDiffHelper.getContentDiffURL(
                 navigationContext.getCurrentDocument().getRepositoryName(),
@@ -381,11 +384,11 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
-     * Gets the content diff with blob post processing url.
+     * Gets the content diff with blob post processing URL.
      *
      * @param propertyXPath the property xpath
      * @param conversionTypeParam the conversion type param
-     * @return the content diff with blob post processing url
+     * @return the content diff with blob post processing URL
      */
     public String getContentDiffWithBlobPostProcessingURL(String propertyXPath,
             String conversionTypeParam) {

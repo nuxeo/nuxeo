@@ -40,13 +40,13 @@ public abstract class AbstractContentDiffAdapter implements ContentDiffAdapter {
     public String getFileContentDiffURL(DocumentModel otherDoc,
             ContentDiffConversionType conversionType) {
         return ContentDiffHelper.getContentDiffURL(adaptedDoc, otherDoc,
-                conversionType);
+                conversionType.name());
     }
 
     public String getFileContentDiffURL(DocumentModel otherDoc, String xpath,
             ContentDiffConversionType conversionType) {
         return ContentDiffHelper.getContentDiffURL(adaptedDoc, otherDoc, xpath,
-                conversionType);
+                conversionType.name());
     }
 
     public List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc,
