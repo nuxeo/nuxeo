@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.standalone.registry;
 
@@ -67,8 +67,8 @@ public abstract class SharedFilesTest extends PackageTestCase {
         bundles.mkdirs();
         // cleanup
         FileUtils.emptyDirectory(bundles);
-        new File(service.getDataDir(), "registry.xml").delete();
-        FileUtils.deleteTree(new File(service.getDataDir(), "backup"));
+        service.getRegistry().delete();
+        org.apache.commons.io.FileUtils.deleteDirectory(service.getBackupDir());
     }
 
     protected void createFakeBundles() throws Exception {
@@ -79,8 +79,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
 
     public UpdateManager getManager() throws Exception {
         UpdateManager mgr = new UpdateManager(
-                Environment.getDefault().getHome(), new File(
-                        service.getDataDir(), "registry.xml"));
+                Environment.getDefault().getHome(), service.getRegistry());
         mgr.load();
         return mgr;
     }

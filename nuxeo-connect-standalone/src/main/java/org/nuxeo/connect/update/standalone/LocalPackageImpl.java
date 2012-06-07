@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.standalone;
 
@@ -95,13 +95,11 @@ public class LocalPackageImpl implements LocalPackage {
     }
 
     public File getInstallFile() throws PackageException {
-        File file = data.getEntry(LocalPackage.INSTALL);
-        return file.isFile() ? file : null;
+        return data.getEntry(LocalPackage.INSTALL);
     }
 
     public File getUninstallFile() throws PackageException {
-        File file = data.getEntry(LocalPackage.UNINSTALL);
-        return file.isFile() ? file : null;
+        return data.getEntry(LocalPackage.UNINSTALL);
     }
 
     public String getLicenseType() {

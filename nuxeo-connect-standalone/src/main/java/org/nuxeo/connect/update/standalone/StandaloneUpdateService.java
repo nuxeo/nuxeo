@@ -313,4 +313,14 @@ public class StandaloneUpdateService implements PackageUpdateService {
     public boolean isStarted(String pkgId) {
         return persistence.getState(pkgId) == PackageState.STARTED;
     }
+
+    @Override
+    public File getRegistry() {
+        return new File(getDataDir(), "registry.xml");
+    }
+
+    @Override
+    public File getBackupDir() {
+        return new File(getDataDir(), "backup");
+    }
 }
