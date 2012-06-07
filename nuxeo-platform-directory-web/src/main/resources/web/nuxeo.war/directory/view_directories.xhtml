@@ -47,7 +47,7 @@
     </a4j:outputPanel>
   </c:if>
 
-  <c:if test="#{!currentUser.administrator}">
+  <c:if test="#{!webActions.checkFilter('directoriesManagementAccess')}">
     Unauthorized user
   </c:if>
 
