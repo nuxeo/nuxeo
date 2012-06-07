@@ -153,14 +153,10 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         String useragent = httpRequest.getHeader("User-Agent").toLowerCase();
 
-        // only prompt IE on windows platform
+        // only prompt on windows platform
 
         if (!useragent.contains("windows")) {
             log.debug("No NTLM LoginPrompt : User does not use Win32");
-            return false;
-        }
-        if (!useragent.contains("msie")) {
-            log.debug("No NTLM LoginPrompt : User does not use MSIE");
             return false;
         }
 
