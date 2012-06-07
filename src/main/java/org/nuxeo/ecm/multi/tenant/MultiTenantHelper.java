@@ -75,6 +75,16 @@ public class MultiTenantHelper {
     }
 
     /**
+     * Returns the tenantId for the given {@code username} if any, {@code null}
+     * otherwise.
+     */
+    public static String getTenantId(String username) throws ClientException {
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        NuxeoPrincipal nuxeoPrincipal = userManager.getPrincipal(username);
+        return nuxeoPrincipal.getTenantId();
+    }
+
+    /**
      * Returns the path of the tenant document matching the {@code tenantId}, or
      * {@code null} if there is no document matching.
      */

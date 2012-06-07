@@ -22,6 +22,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.multi.tenant.MultiTenantHelper;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
 import org.nuxeo.ecm.platform.userworkspace.core.service.DefaultUserWorkspaceServiceImpl;
@@ -46,18 +47,96 @@ public class MultiTenantUserWorkspaceService extends
     protected String computePathUserWorkspaceRoot(CoreSession userCoreSession,
             DocumentModel currentDocument) throws ClientException {
         String tenantId = MultiTenantHelper.getCurrentTenantId(userCoreSession.getPrincipal());
-
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
             return super.computePathUserWorkspaceRoot(userCoreSession,
                     currentDocument);
         }
 
+        return computePathUserWorkspaceRoot(userCoreSession, tenantId);
+    }
+
+    protected String computePathUserWorkspaceRoot(CoreSession session,
+            String tenantId) throws ClientException {
         String tenantDocumentPath = MultiTenantHelper.getTenantDocumentPath(
-                userCoreSession, tenantId);
+                session, tenantId);
         Path path = new Path(tenantDocumentPath);
         path = path.append(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         return path.toString();
+    }
+
+    /**
+     * Overridden to compute the right user workspace path for an user which is
+     * not the current user in the {@code userCoreSession}.
+     */
+    @Override
+    protected String computePathForUserWorkspace(CoreSession userCoreSession,
+            String userName, DocumentModel currentDocument)
+            throws ClientException {
+        if (isSameUserName(userCoreSession, userName)) {
+            // default behavior
+            return super.computePathForUserWorkspace(userCoreSession, userName,
+                    currentDocument);
+        }
+
+        String tenantId = MultiTenantHelper.getTenantId(userName);
+        if (StringUtils.isBlank(tenantId)) {
+            // default behavior
+            return super.computePathForUserWorkspace(userCoreSession, userName,
+                    currentDocument);
+        }
+
+        return computePathForUserWorkspace(userCoreSession, tenantId, userName);
+    }
+
+    protected String computePathForUserWorkspace(CoreSession session,
+            String tenantId, String userName) throws ClientException {
+        String rootPath = computePathUserWorkspaceRoot(session, tenantId);
+        Path path = new Path(rootPath);
+        path = path.append(getUserWorkspaceNameForUser(userName));
+        return path.toString();
+    }
+
+    /**
+     * Overridden to get the right user workspace when getting / creating a user
+     * workspace for a different user than the current user in the
+     * {@code userCoreSession}.
+     */
+    @Override
+    protected DocumentModel getCurrentUserPersonalWorkspace(String userName,
+            CoreSession userCoreSession, DocumentModel context)
+            throws ClientException {
+        if (isSameUserName(userCoreSession, userName)) {
+            // default behavior
+            return super.getCurrentUserPersonalWorkspace(userName,
+                    userCoreSession, context);
+        }
+
+        String tenantId = MultiTenantHelper.getTenantId(userName);
+        if (StringUtils.isBlank(tenantId)) {
+            // default behavior
+            return super.getCurrentUserPersonalWorkspace(userName,
+                    userCoreSession, context);
+        }
+
+        PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(
+                userCoreSession, tenantId, userName));
+        if (!userCoreSession.exists(uwsDocRef)) {
+            // do the creation
+            PathRef rootRef = new PathRef(computePathUserWorkspaceRoot(
+                    userCoreSession, tenantId));
+            uwsDocRef = createUserWorkspace(rootRef, uwsDocRef,
+                    userCoreSession, userName);
+        }
+        // force Session synchro to process invalidation (in non JCA cases)
+        if (userCoreSession.getClass().getSimpleName().equals("LocalSession")) {
+            userCoreSession.save();
+        }
+        return userCoreSession.getDocument(uwsDocRef);
+    }
+
+    protected boolean isSameUserName(CoreSession session, String userName) {
+        return session.getPrincipal().getName().equals(userName);
     }
 
 }
