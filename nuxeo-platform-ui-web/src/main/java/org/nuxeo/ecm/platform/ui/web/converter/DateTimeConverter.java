@@ -19,18 +19,23 @@
 
 package org.nuxeo.ecm.platform.ui.web.converter;
 
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.faces.Converter;
+import java.util.TimeZone;
 
 /**
- * Formats dates according to the TimeZone selected in seam.
+ * Formats dates according to the TimeZone of the server.
+ * <p>
+ * In the future the TimeZone of the client should be used
  *
  * @author Narcis Paslaru
  *
  */
-@Converter
-@Name(javax.faces.convert.DateTimeConverter.CONVERTER_ID)
-public class DateTimeConverter extends org.jboss.seam.ui.converter.DateTimeConverter {
+public class DateTimeConverter extends javax.faces.convert.DateTimeConverter {
 
+    public static final String CONVERTER_ID = "org.nuxeo.ecm.platform.ui.web.util.DateTimeConverter";
+
+    public DateTimeConverter() {
+        setTimeZone(TimeZone.getDefault());
+        setPattern("dd/MM/yyyy HH:mm");
+    }
 
 }

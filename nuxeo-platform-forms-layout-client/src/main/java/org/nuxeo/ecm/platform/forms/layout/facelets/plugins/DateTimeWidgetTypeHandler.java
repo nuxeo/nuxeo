@@ -19,9 +19,13 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
-import javax.faces.component.html.HtmlOutputText;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.TimeZone;
 
-import org.jboss.seam.ui.converter.DateTimeConverter;
+import javax.faces.component.html.HtmlOutputText;
+import javax.faces.convert.DateTimeConverter;
+
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -87,7 +91,15 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             return new CompositeFaceletHandler(handlers);
         } else {
             // default on text for other modes
+            // set time zone by default
             TagAttributes convertAttributes = attributes;
+            Map<String, Serializable> properties = widget.getProperties();
+            if (properties == null || !properties.containsKey("timeZone")) {
+                TagAttribute timeZone = helper.createAttribute("timeZone",
+                        TimeZone.getDefault().getID());
+                convertAttributes = FaceletHandlerHelper.addTagAttribute(
+                        attributes, timeZone);
+            }
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
                     tagConfig, widget.getTagConfigId(), convertAttributes,
                     leaf, DateTimeConverter.CONVERTER_ID);
@@ -105,5 +117,4 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             }
         }
     }
-
 }
