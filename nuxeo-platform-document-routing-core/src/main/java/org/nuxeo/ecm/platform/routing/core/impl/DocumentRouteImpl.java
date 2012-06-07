@@ -25,8 +25,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
  * @author arussel
  *
  */
-public class DocumentRouteImpl extends
-        DocumentRouteStepsContainerImpl implements DocumentRoute {
+public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl
+        implements DocumentRoute {
     private static final long serialVersionUID = 1L;
 
     @Override
