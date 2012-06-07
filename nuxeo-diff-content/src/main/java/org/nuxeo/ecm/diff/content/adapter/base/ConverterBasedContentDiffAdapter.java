@@ -266,9 +266,11 @@ public class ConverterBasedContentDiffAdapter extends
     protected StringBlob getHtmlStringBlob(Blob blob)
             throws ContentDiffException {
         try {
-            return new StringBlob(
+            StringBlob htmlStringBlob = new StringBlob(
                     StringEscapeUtils.escapeHtml(blob.getString()).replace(
                             "\r\n", "\n").replace("\n", "<br />"));
+            htmlStringBlob.setFilename(blob.getFilename());
+            return htmlStringBlob;
         } catch (IOException ioe) {
             throw new ContentDiffException(String.format(
                     "Could not get string from blob %s", blob.getFilename()),
