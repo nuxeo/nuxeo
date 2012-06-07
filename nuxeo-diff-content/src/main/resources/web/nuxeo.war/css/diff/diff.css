@@ -50,12 +50,12 @@ span.diff-html-conflict {
 }
 
 span.diff-html-selected {
-  background-color: #FF8800; /* light orange */
+  background-color: #EEEFF0; /* light grey */
   cursor: pointer;
 }
 
 span.diff-html-selected img{
-   border: 2px solid #FF8800; /* light orange */
+   border: 2px solid #EEEFF0; /* light grey */
 }
 
 span.diff-html-added img{
@@ -135,16 +135,26 @@ table.diffpage-html-firstlast {
   Vertical-align: middle;
 }
 
-div.diff-topbar{
- border-bottom: 2px solid #FF8800;
- border-left: 1px solid #FF8800;
- border-right: 1px solid #FF8800;
- background-color: #FFF5F5;
+div.diff-topbar {
+  border: 1px solid #E7E7E7;
+  background-color: #F6F6F6;
+  margin-bottom: 1em;
+  padding: 0.4em;
 }
 
 a.diffpage-html-a, a.diffpage-html-a:hover, a.diffpage-html-a:link, a.diffpage-html-a:visited, a.diffpage-html-a:active {
   text-decoration: none;
-  color: #FF8800;
+  color: #000000;
+  font-size: 0.8em;
+  font-style: italic;
+}
+a.diffpage-html-a:hover {
+  text-decoration: underline;
+}
+.diffType {
+	font-size: 0.8em;
+	font-weight: bold;
+	padding: 0 1em 0;
 }
 
 .diffpage-html-firstlast a img, .dsydiff-prevnextnav a img {
@@ -157,4 +167,33 @@ ul.changelist {
 
 body{
   margin-top: 0px;
+}
+
+/*
+ * Nuxeo styles
+ */
+body {
+  font-family: 'Lucida Grande',Arial,Helvetica,Geneva,sans-serif;
+}
+.headerText {
+	text-align: center;
+}
+.headerText .diff-html-added, .headerText .diff-html-removed {
+  cursor: default;
+}
+h1, h2 {
+  color: #000000;
+  font-size: 1.2em;
+  font-weight: bold;
+  line-height: normal;
+  margin: 0;
+  padding: 0 0 0.4em;
+  word-wrap: break-word;
+}
+h2 {
+	font-size: 1em;
+}
+.compareReportInstructions {
+	font-size: 0.8em;
+	font-style: italic;
 }

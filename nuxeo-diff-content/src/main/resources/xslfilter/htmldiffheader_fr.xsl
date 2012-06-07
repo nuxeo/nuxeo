@@ -51,9 +51,7 @@
               <xsl:attribute name="next">
                 <xsl:value-of select="$spans[1]/@id"/>
               </xsl:attribute>
-              <img class="diff-icon"
-                src="/nuxeo/img/diff/diff-first.gif"
-                title="Aller à la première différence"/>
+              <xsl:text>&lt;&lt;</xsl:text>
             </a>
             <a>
               <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
@@ -66,9 +64,10 @@
             </a>
         </td>
         
-        <td style="text-align: center; font-size: 140%;">
-            Comparaison détaillée<br/>
-            <span style="font-style: italic; font-size: 70%;">Un clic sur une différence permet d'aller à la différence suivante ou précédente.<br/>Vous pouvez aussi utiliser les flèches gauche et droite du clavier.</span>
+        <td class="headerText">
+            <h1>Comparaison détaillée</h1>
+            <h2>Les sections ajoutées au document de droite sont <span class="diff-html-added">surlignées en vert</span>, celles supprimées du document de gauche sont <span class="diff-html-removed">surlignées en rouge</span>.</h2>
+            <span class="compareReportInstructions">Un clic sur une différence permet d'aller à la différence suivante ou précédente.<br/>Vous pouvez aussi utiliser les flèches gauche et droite du clavier.</span>
         </td>
         
         <td style="text-align: right;">
@@ -92,9 +91,7 @@
               <xsl:attribute name="previous">
                 <xsl:value-of select="$spans[last()]/@id"/>
               </xsl:attribute>
-              <img class="diff-icon"
-                src="/nuxeo/img/diff/diff-last.gif"
-                title="Aller à la dernière différence"/>
+              <xsl:text>&gt;&gt;</xsl:text>
             </a>
          </td></tr></table>
          </div>

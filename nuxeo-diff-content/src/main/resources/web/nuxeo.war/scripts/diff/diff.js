@@ -52,6 +52,76 @@ function tipC(content){
     return false;
 }
 
+function constructToolTipC(elem){
+
+   //constructing the tooltip, so this must be the new selected element!
+   selectedElement=elem;
+
+   var changes_html = elem.getAttribute("changes");
+   var previous_id = elem.getAttribute("previous");
+   var next_id = elem.getAttribute("next");
+   var change_id = elem.getAttribute("changeId");
+   return "<table class='diff-tooltip-link-changed'>"+
+          "  <tr>"+
+          "    <td class='diff-tooltip-prev'>"+
+          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'>&lt; "+previousLinkLabel()+"</a>"+
+          "    </td>"+
+          "    <td>"+
+          "      <span class='diffType'>"+translateDiffId(change_id)+"</span>"+
+          "    </td>"+
+          "    <td class='diff-tooltip-next'>"+
+          "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'>"+nextLinkLabel()+"&gt;</a>"+
+          "    </td>"+
+          "  </tr>"+
+          "</table>";
+}
+
+function constructToolTipA(elem){
+   
+   //constructing the tooltip, so this must be the new selected element!
+   selectedElement=elem;
+   
+   var previous_id = elem.getAttribute("previous");
+   var next_id = elem.getAttribute("next");
+   var change_id = elem.getAttribute("changeId");
+   return "<table class='diff-tooltip-link'>"+
+          "  <tr>"+
+          "    <td class='diff-tooltip-prev'>"+
+          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'>&lt;"+previousLinkLabel()+"</a>"+
+          "    </td>"+
+          "    <td>"+
+          "      <span class='diffType'>"+translateDiffId(change_id)+"</span>"+
+          "    </td>"+
+          "    <td class='diff-tooltip-next'>"+
+          "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'>"+nextLinkLabel()+"&gt;</a>"+
+          "    </td>"+
+          "  </tr>"+
+          "</table>";
+}
+
+function constructToolTipR(elem){
+   
+   //constructing the tooltip, so this must be the new selected element!
+   selectedElement=elem;
+   
+   var previous_id = elem.getAttribute("previous");
+   var next_id = elem.getAttribute("next");
+   var change_id = elem.getAttribute("changeId");
+   return "<table class='diff-tooltip-link'>"+
+          "  <tr>"+
+          "    <td class='diff-tooltip-prev'>"+
+          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'>&lt;"+previousLinkLabel()+"</a>"+
+          "    </td>"+
+          "    <td>"+
+          "      <span class='diffType'>"+translateDiffId(change_id)+"</span>"+
+          "    </td>"+
+          "    <td class='diff-tooltip-next'>"+
+          "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'>"+nextLinkLabel()+"&gt;</a>"+
+          "    </td>"+
+          "  </tr>"+
+          "</table>";
+}
+
 function tip2(anchor){
     var destinationLink = document.getElementById(anchor);
     if(destinationLink.className =='diff-html-changed'){
