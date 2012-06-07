@@ -149,6 +149,76 @@
     </widget>
 
     <!-- Specific widgets: name = property xpath -->
+    <widget name="dublincore:created" type="datetime">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.created</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="dublincore:modified" type="datetime">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.modified</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="dublincore:issued" type="datetime">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.issueDate</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="dublincore:valid" type="datetime">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.validationDate</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="dublincore:expired" type="datetime">
+      <categories>
+        <category>diff</category>
+      </categories>
+      <labels>
+        <label mode="any">label.dublincore.expired</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        </property>
+      </properties>
+    </widget>
+
     <widget name="note:note" type="richtext_with_mimetype">
       <categories>
         <category>diff</category>
