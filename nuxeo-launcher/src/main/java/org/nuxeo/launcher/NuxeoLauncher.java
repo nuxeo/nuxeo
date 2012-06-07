@@ -1061,7 +1061,6 @@ public abstract class NuxeoLauncher {
                 // Ensure reload on next start
                 reloadConfiguration = true;
             }
-            checkNoRunningServer();
             configure();
             configurationGenerator.verifyInstallation();
 
@@ -1361,6 +1360,7 @@ public abstract class NuxeoLauncher {
      *             configuration fails
      */
     public void configure() throws ConfigurationException {
+        checkNoRunningServer();
         configurationGenerator.checkJavaVersion();
         configurationGenerator.run();
         overrideJavaTmpDir = Boolean.parseBoolean(configurationGenerator.getUserConfig().getProperty(
