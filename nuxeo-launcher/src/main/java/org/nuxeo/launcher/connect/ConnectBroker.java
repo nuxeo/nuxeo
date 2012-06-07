@@ -496,22 +496,37 @@ public class ConnectBroker {
     public boolean pkgReset() {
         CommandInfo cmdInfo = new CommandInfo();
         cmdInfo.name = CommandInfo.CMD_RESET;
-        try {
-            service.reset();
-            log.info("Packages reset done: All packages were marked as DOWNLOADED");
-            List<LocalPackage> localPackages = service.getPackages();
-            for (LocalPackage localPackage : localPackages) {
-                cmdInfo.packages.add(new PackageInfo(localPackage));
-            }
-            cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
-            return true;
-        } catch (Exception e) {
-            log.error(e);
+        cset.commands.add(cmdInfo);
+        if ("ask".equalsIgnoreCase(accept)) {
+            accept = readConsole(
+                    "The reset will erase Marketplace packages history.\n"
+                            + "Do you want to continue (yes/no)? [yes] ", "yes");
+        }
+        if (!Boolean.parseBoolean(accept)) {
             cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
             return false;
         }
+        try {
+            service.reset();
+            log.info("Packages reset done: all packages were marked as DOWNLOADED");
+            List<LocalPackage> localPackages = service.getPackages();
+            for (LocalPackage localPackage : localPackages) {
+                localPackage.getUninstallFile().delete();
+                FileUtils.deleteDirectory(localPackage.getData().getEntry(
+                        LocalPackage.BACKUP_DIR));
+                cmdInfo.packages.add(new PackageInfo(localPackage));
+            }
+            service.getRegistry().delete();
+            FileUtils.deleteDirectory(service.getBackupDir());
+            cmdInfo.exitCode = 0;
+        } catch (PackageException e) {
+            log.error(e);
+            cmdInfo.exitCode = 1;
+        } catch (IOException e) {
+            log.error(e);
+            cmdInfo.exitCode = 1;
+        }
+        return cmdInfo.exitCode == 0;
     }
 
     public boolean pkgPurge() throws PackageException {
