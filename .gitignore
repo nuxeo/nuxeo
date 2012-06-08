@@ -3,6 +3,6 @@ bin
 .project
 .classpath
 .settings
-build.properties
+build*
 deploy.sh
 TODO*
