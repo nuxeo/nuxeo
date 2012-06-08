@@ -431,8 +431,7 @@ public class ConnectBroker {
     }
 
     public void pkgList(List<? extends Package> packagesList) {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_LIST;
+        CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_LIST);
         try {
             if (packagesList.isEmpty()) {
                 log.info("None");
@@ -470,11 +469,9 @@ public class ConnectBroker {
                 }
             }
             cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
         } catch (Exception e) {
             log.error(e);
             cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
         }
     }
 
@@ -494,9 +491,7 @@ public class ConnectBroker {
     }
 
     public boolean pkgReset() {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_RESET;
-        cset.commands.add(cmdInfo);
+        CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_RESET);
         if ("ask".equalsIgnoreCase(accept)) {
             accept = readConsole(
                     "The reset will erase Marketplace packages history.\n"
@@ -566,8 +561,7 @@ public class ConnectBroker {
         if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
             System.exit(LAUNCHER_CHANGED_EXIT_CODE);
         }
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_UNINSTALL;
+        CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_UNINSTALL);
         cmdInfo.param = pkgId;
         try {
             LocalPackage pkg = service.getPackage(pkgId);
@@ -594,12 +588,10 @@ public class ConnectBroker {
             pkg = service.getPackage(pkgId);
             cmdInfo.packages.add(new PackageInfo(pkg));
             cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
             return pkg;
         } catch (Exception e) {
             log.error("Failed to uninstall package: " + pkgId, e);
             cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
             return null;
         }
     }
@@ -641,8 +633,7 @@ public class ConnectBroker {
      * @return The removed LocalPackage or null if failed
      */
     public LocalPackage pkgRemove(String pkgId) {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_REMOVE;
+        CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_REMOVE);
         cmdInfo.param = pkgId;
         try {
             LocalPackage pkg = service.getPackage(pkgId);
@@ -673,12 +664,10 @@ public class ConnectBroker {
             pkgInfo.state = PackageState.REMOTE;
             cmdInfo.packages.add(pkgInfo);
             cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
             return pkg;
         } catch (Exception e) {
             log.error("Failed to remove package: " + pkgId, e);
             cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
             return null;
         }
     }
@@ -704,8 +693,7 @@ public class ConnectBroker {
      * @return The added LocalPackage or null if failed
      */
     public LocalPackage pkgAdd(String packageFileName) {
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_ADD;
+        CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
         cmdInfo.param = packageFileName;
         try {
             File fileToAdd = getLocalPackageFile(packageFileName);
@@ -740,19 +728,16 @@ public class ConnectBroker {
                 LocalPackage pkg = service.addPackage(fileToAdd);
                 cmdInfo.packages.add(new PackageInfo(pkg));
                 cmdInfo.exitCode = 0;
-                cset.commands.add(cmdInfo);
                 return pkg;
             }
         } catch (FileNotFoundException e) {
             log.error("Cannot find " + packageFileName
                     + " relative to current directory or to NUXEO_HOME");
             cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
             return null;
         } catch (PackageException e) {
             log.error("Failed to add package: " + packageFileName, e);
             cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
             return null;
         }
     }
@@ -786,8 +771,7 @@ public class ConnectBroker {
         if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
             System.exit(LAUNCHER_CHANGED_EXIT_CODE);
         }
-        CommandInfo cmdInfo = new CommandInfo();
-        cmdInfo.name = CommandInfo.CMD_INSTALL;
+        CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
         cmdInfo.param = pkgId;
         try {
             LocalPackage pkg = service.getPackage(pkgId);
@@ -820,12 +804,10 @@ public class ConnectBroker {
             pkg = service.getPackage(pkgId);
             cmdInfo.packages.add(new PackageInfo(pkg));
             cmdInfo.exitCode = 0;
-            cset.commands.add(cmdInfo);
             return pkg;
         } catch (Exception e) {
             log.error("Failed to install package: " + pkgId, e);
             cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
             return null;
         }
     }
@@ -867,11 +849,9 @@ public class ConnectBroker {
                                 pkgInstall(split[1]);
                             }
                         } else {
-                            CommandInfo cmdInfo = new CommandInfo();
-                            cmdInfo.name = CommandInfo.CMD_INSTALL;
+                            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
                             cmdInfo.param = split[1];
                             cmdInfo.pending = true;
-                            cset.commands.add(cmdInfo);
                             log.info("Pending action: install " + split[1]);
                         }
                     } else if (split[0].equals(CommandInfo.CMD_ADD)) {
@@ -882,11 +862,9 @@ public class ConnectBroker {
                                 pkgAdd(split[1]);
                             }
                         } else {
-                            CommandInfo cmdInfo = new CommandInfo();
-                            cmdInfo.name = CommandInfo.CMD_ADD;
+                            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
                             cmdInfo.param = split[1];
                             cmdInfo.pending = true;
-                            cset.commands.add(cmdInfo);
                             log.info("Pending action: add " + split[1]);
                         }
                     } else if (split[0].equals(CommandInfo.CMD_UNINSTALL)) {
@@ -897,11 +875,9 @@ public class ConnectBroker {
                                 pkgUninstall(split[1]);
                             }
                         } else {
-                            CommandInfo cmdInfo = new CommandInfo();
-                            cmdInfo.name = CommandInfo.CMD_UNINSTALL;
+                            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_UNINSTALL);
                             cmdInfo.param = split[1];
                             cmdInfo.pending = true;
-                            cset.commands.add(cmdInfo);
                             log.info("Pending action: uninstall " + split[1]);
                         }
                     } else if (split[0].equals(CommandInfo.CMD_REMOVE)) {
@@ -912,11 +888,9 @@ public class ConnectBroker {
                                 pkgRemove(split[1]);
                             }
                         } else {
-                            CommandInfo cmdInfo = new CommandInfo();
-                            cmdInfo.name = CommandInfo.CMD_REMOVE;
+                            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_REMOVE);
                             cmdInfo.param = split[1];
                             cmdInfo.pending = true;
-                            cset.commands.add(cmdInfo);
                             log.info("Pending action: remove " + split[1]);
                         }
                     } else {
@@ -935,11 +909,9 @@ public class ConnectBroker {
                                 }
                             }
                         } else {
-                            CommandInfo cmdInfo = new CommandInfo();
-                            cmdInfo.name = CommandInfo.CMD_INSTALL;
+                            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
                             cmdInfo.param = line;
                             cmdInfo.pending = true;
-                            cset.commands.add(cmdInfo);
                             log.info("Pending action: install " + line);
                         }
                     }
@@ -1005,10 +977,8 @@ public class ConnectBroker {
                 if (pkg.isCompleted()) {
                     // Digest check not correctly implemented
                     pkgsCompleted.add(pkg);
-                    CommandInfo cmdInfo = new CommandInfo();
-                    cmdInfo.name = CommandInfo.CMD_ADD;
+                    CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
                     cmdInfo.param = pkg.getId();
-                    cset.commands.add(cmdInfo);
                     if (false && !pkg.isDigestOk()) {
                         log.error("Wrong digest for package " + pkg.getName());
                         cmdInfo.exitCode = 1;
@@ -1025,11 +995,9 @@ public class ConnectBroker {
                 && pkgs.size() > 0);
         // Did everything get downloaded?
         for (DownloadingPackage pkg : pkgs) {
-            CommandInfo cmdInfo = new CommandInfo();
-            cmdInfo.name = CommandInfo.CMD_ADD;
+            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
             cmdInfo.param = pkg.getId();
             cmdInfo.exitCode = 1;
-            cset.commands.add(cmdInfo);
         }
         if (pkgs.size() > 0) {
             log.error("Timeout while trying to download packages");
