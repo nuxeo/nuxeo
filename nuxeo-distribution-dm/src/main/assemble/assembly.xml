@@ -207,9 +207,7 @@
         <include name="EditableImage-*" />
         <include name="JAI-Adapter-*" />
         <include name="Operations-*" />
-        <include name="apacheds-core-*" />
-        <include name="apacheds-core-shared-*" />
-        <include name="apacheds-protocol-shared-*" />
+        <include name="apacheds-*" />
         <include name="bcmail-jdk14*" />
         <include name="bcprov-jdk14*" />
         <include name="c3p0-*" />
@@ -242,6 +240,7 @@
         <include name="gwt-log-*" />
         <include name="gwt-user-*" />
         <include name="gwtext-*" />
+        <include name="howl-*" />
         <include name="h2-*" />
         <include name="hibernate-*" />
         <include name="icu4j-*" />
@@ -255,7 +254,11 @@
         <include name="jai_core-*" />
         <include name="javacc-*" />
         <include name="jaxb-api-*" />
+        <include name="jdbm-*" />
         <include name="jenatest-*" />
+        <include name="jboss-archive-*"/>
+        <include name="jboss-seam-2.0.3.CR1.jar"/>
+        <include name="jboss-seam-debug-*"/>
         <include name="jboss-4.0.4.GA*" />
         <include name="jboss-annotations-ejb3-3.0-RC8*" />
         <include name="jboss-common-*" />
@@ -290,6 +293,7 @@
         <include name="mail-*" />
         <include name="metadata-extractor-*" />
         <include name="mlib_jai-*" />
+        <include name="mina-*" />
         <include name="nekohtml-*" />
         <include name="persistence-*" />
         <include name="persistence-api-*" />
@@ -298,7 +302,9 @@
         <include name="postgresql-*" />
         <include name="quartz-all-*" />
         <include name="servlet-api-*" />
-        <include name="slf4j-api-1.5.3*" />
+        <include name="slf4j-api-1.4*" />
+        <include name="slf4j-api-1.5*" />
+        <include name="shared-asn1-*" />
         <include name="stax-api-*" />
         <include name="webservices-api-*" />
         <include name="wstx-asl-*" />
