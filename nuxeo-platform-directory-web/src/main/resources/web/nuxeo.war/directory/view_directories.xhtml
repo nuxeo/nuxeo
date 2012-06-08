@@ -6,7 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <c:if test="#{currentUser.manager}">
+  <c:if test="#{webActions.checkFilter('directoriesManagementAccess')}">
     <a4j:form id="selectDirectoryForm">
     <div class="tabsContent">
       <table class="dataInput">
@@ -47,7 +47,7 @@
     </a4j:outputPanel>
   </c:if>
 
-  <c:if test="#{!currentUser.manager}">
+  <c:if test="#{!webActions.checkFilter('directoriesManagementAccess')}">
     Unauthorized user
   </c:if>
 
