@@ -25,15 +25,13 @@ import java.util.ArrayList;
 import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.ArrayUtils;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeConnectionProtocol;
 import org.artofsolving.jodconverter.office.OfficeManager;
-import org.artofsolving.jodconverter.office.OfficeUtils;
-import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -60,8 +58,6 @@ public class OOoManagerComponent extends DefaultComponent implements
     private static final String OFFICE_PIPES_PROPERTY_KEY = "jod.office.pipes";
 
     private static final String OFFICE_PORTS_PROPERTY_KEY = "jod.office.ports";
-
-    private static final String DEFAULT_LINUX_OO_HOME = "/usr/lib/openoffice/";
 
     protected static final String CONFIG_EP = "oooManagerConfig";
 
@@ -132,18 +128,6 @@ public class OOoManagerComponent extends DefaultComponent implements
         String officeHome = Framework.getProperty(OFFICE_HOME_PROPERTY_KEY);
         if (officeHome != null && !"".equals(officeHome)) {
             configuration.setOfficeHome(officeHome);
-        } else {
-            if (PlatformUtils.isLinux()) {
-                File officeHomeDirectory = new File(DEFAULT_LINUX_OO_HOME);
-                if (officeHomeDirectory.isDirectory()) {
-                    File officeExecutable = OfficeUtils.getOfficeExecutable(officeHomeDirectory);
-                    if (officeExecutable.exists()) {
-                        configuration.setOfficeHome(DEFAULT_LINUX_OO_HOME);
-                    }
-                    officeExecutable = null;
-                }
-                officeHomeDirectory = null;
-            }
         }
 
         String taskExecutionTimeoutProperty = Framework.getProperty(TASK_EXECUTION_TIMEOUT_PROPERTY_KEY);
