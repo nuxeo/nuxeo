@@ -89,10 +89,11 @@ public class TestDiffDisplayContrib {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(3, diffDisplays.size());
+        assertEquals(4, diffDisplays.size());
         assertTrue(diffDisplays.containsKey("Folder"));
         assertTrue(diffDisplays.containsKey("File"));
         assertTrue(diffDisplays.containsKey("Note"));
+        assertTrue(diffDisplays.containsKey("ImportSet"));
 
         // Check a non existing diffDisplay contrib
         List<String> diffDisplay = diffDisplayService.getDiffDisplay("Test");
@@ -118,7 +119,7 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffDisplay);
 
         expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("heading");
+        expectedDiffDisplay.add("damHeading");
         expectedDiffDisplay.add("dublincore");
         expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
@@ -133,6 +134,15 @@ public class TestDiffDisplayContrib {
         expectedDiffDisplay.add("note");
         expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
+
+        // Check ImportSet diffDisplay contrib
+        diffDisplay = diffDisplayService.getDiffDisplay("ImportSet");
+        assertNotNull(diffDisplay);
+
+        expectedDiffDisplay = new ArrayList<String>();
+        expectedDiffDisplay.add("damHeading");
+        expectedDiffDisplay.add("dublincore");
+        assertEquals(expectedDiffDisplay, diffDisplay);
     }
 
     /**
@@ -144,11 +154,12 @@ public class TestDiffDisplayContrib {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(4, contribs.size());
+        assertEquals(5, contribs.size());
         assertTrue(contribs.containsKey("heading"));
         assertTrue(contribs.containsKey("dublincore"));
         assertTrue(contribs.containsKey("files"));
         assertTrue(contribs.containsKey("note"));
+        assertTrue(contribs.containsKey("damHeading"));
 
         // Check a non existing diffBlock contrib
         DiffBlockDefinition diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("test");
@@ -232,6 +243,23 @@ public class TestDiffDisplayContrib {
 
         labelProperty.put("label", "label.diffBlock.note");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note",
+                templates, fields, properties);
+        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
+
+        // Check damHeading diffDisplay contrib
+        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("damHeading");
+        assertNotNull(diffBlockDefinition);
+
+        fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "title"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "description"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dam_common", "author"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dam_common",
+                "authoringDate"));
+
+        labelProperty.put("label", "label.diffBlock.heading");
+        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("damHeading",
                 templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
     }

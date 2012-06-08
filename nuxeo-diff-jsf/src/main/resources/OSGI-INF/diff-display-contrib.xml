@@ -20,7 +20,9 @@
 
     <diffDisplay type="File">
       <diffBlocks>
-        <diffBlock name="heading" />
+        <!-- Using "damHeading" in case the DAM package is installed to benefit 
+          from the "dam_common" schema fields -->
+        <diffBlock name="damHeading" />
         <diffBlock name="dublincore" />
         <diffBlock name="files" />
       </diffBlocks>
@@ -32,6 +34,14 @@
         <diffBlock name="dublincore" />
         <diffBlock name="note" />
         <diffBlock name="files" />
+      </diffBlocks>
+    </diffDisplay>
+
+    <!-- DAM ImportSet -->
+    <diffDisplay type="ImportSet">
+      <diffBlocks>
+        <diffBlock name="damHeading" />
+        <diffBlock name="dublincore" />
       </diffBlocks>
     </diffDisplay>
 
@@ -106,6 +116,22 @@
       </properties>
       <fields>
         <field schema="note" name="note" displayContentDiffLinks="true" />
+      </fields>
+      <templates>
+        <template mode="any">/layouts/layout_diff_template.xhtml
+        </template>
+      </templates>
+    </diffBlock>
+
+    <diffBlock name="damHeading">
+      <properties mode="any">
+        <property name="label">label.diffBlock.heading</property>
+      </properties>
+      <fields>
+        <field schema="dublincore" name="title" />
+        <field schema="dublincore" name="description" />
+        <field schema="dam_common" name="author" />
+        <field schema="dam_common" name="authoringDate" />
       </fields>
       <templates>
         <template mode="any">/layouts/layout_diff_template.xhtml
