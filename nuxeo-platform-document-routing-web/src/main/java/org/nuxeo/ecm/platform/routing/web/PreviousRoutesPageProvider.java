@@ -207,6 +207,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
             int idxParam = 0;
             if (fixedPart != null && !fixedPart.isEmpty()) {
                 while (fixedPart.indexOf("?") > 0) {
+                    // Hack for handling parameter in fixed part TODO
                     if (!getProperties().get(DOC_ID_PROPERTY).equals(null)) {
                         fixedPart = fixedPart.replaceFirst("\\?",
                                 getProperties().get(DOC_ID_PROPERTY).toString());
