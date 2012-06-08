@@ -56,4 +56,15 @@ public interface SchedulerService {
      * @return true if schedule has been successfully removed.
      */
     boolean unregisterSchedule(Schedule schedule);
+
+    /**
+     * Checks if the framework has fully started.
+     * <p>
+     * Used to delay job execution until the framework has fully started.
+     *
+     * @return {@code true} if the framework has started
+     * @since 5.6
+     */
+    boolean hasApplicationStarted();
+
 }

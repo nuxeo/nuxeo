@@ -72,6 +72,12 @@ public class EventJob implements Job {
         String eventCategory = dataMap.getString("eventCategory");
         String username = dataMap.getString("username");
 
+        SchedulerService scheduler = Framework.getLocalService(SchedulerService.class);
+        if (scheduler == null || !scheduler.hasApplicationStarted()) {
+            // too early
+            return;
+        }
+
         EventService eventService = Framework.getService(EventService.class);
         if (eventService == null) {
             log.error("Cannot find EventService");

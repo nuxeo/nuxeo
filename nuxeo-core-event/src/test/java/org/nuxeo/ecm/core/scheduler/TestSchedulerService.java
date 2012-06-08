@@ -39,6 +39,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-eventlistener.xml");
         DummyEventListener.setCount(0);
+        fireFrameworkStarted();
     }
 
     @Test

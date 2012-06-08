@@ -56,6 +56,8 @@ public class SchedulerServiceImpl extends DefaultComponent implements
 
     protected Scheduler scheduler;
 
+    protected boolean applicationStarted;
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         log.debug("Activate");
@@ -86,6 +88,16 @@ public class SchedulerServiceImpl extends DefaultComponent implements
     public void deactivate(ComponentContext context) throws Exception {
         log.debug("Deactivate");
         scheduler.shutdown();
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        applicationStarted = true;
+    }
+
+    @Override
+    public boolean hasApplicationStarted() {
+        return applicationStarted;
     }
 
     @Override
