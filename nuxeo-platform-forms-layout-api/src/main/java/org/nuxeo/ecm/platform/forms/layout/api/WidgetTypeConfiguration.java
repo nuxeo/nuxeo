@@ -28,7 +28,19 @@ import java.util.Map;
  */
 public interface WidgetTypeConfiguration extends Serializable {
 
+    /**
+     * Returns the version name since the widget type has been available (5.4,
+     * 5.4.2, etc...)
+     */
     String getSinceVersion();
+
+    /**
+     * Returns the version name since the widget type has been deprecated (5.4,
+     * 5.4.2, etc...)
+     *
+     * @since 5.6
+     */
+    String getDeprecatedVersion();
 
     String getTitle();
 

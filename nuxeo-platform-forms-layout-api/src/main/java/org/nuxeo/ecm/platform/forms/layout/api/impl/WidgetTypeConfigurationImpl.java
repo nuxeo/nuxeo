@@ -23,6 +23,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected String sinceVersion;
 
+    protected String deprecatedVersion;
+
     protected String title;
 
     protected String description;
@@ -73,6 +75,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
                 defaultFieldDefinitions, categories, propertyLayouts);
     }
 
+    // BBB
     public WidgetTypeConfigurationImpl(String sinceVersion, String title,
             String description, String demoId, boolean demoPreviewEnabled,
             Map<String, Serializable> properties, List<String> supportedModes,
@@ -82,8 +85,26 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
             List<FieldDefinition> defaultFieldDefinitions,
             List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
+        this(sinceVersion, null, title, description, demoId,
+                demoPreviewEnabled, properties, supportedModes,
+                acceptingSubWidgets, list, complex, containingForm,
+                supportedFieldTypes, defaultFieldTypes,
+                defaultFieldDefinitions, categories, propertyLayouts);
+    }
+
+    public WidgetTypeConfigurationImpl(String sinceVersion,
+            String deprecatedVersion, String title, String description,
+            String demoId, boolean demoPreviewEnabled,
+            Map<String, Serializable> properties, List<String> supportedModes,
+            boolean acceptingSubWidgets, boolean list, boolean complex,
+            boolean containingForm, List<String> supportedFieldTypes,
+            List<String> defaultFieldTypes,
+            List<FieldDefinition> defaultFieldDefinitions,
+            List<String> categories,
+            Map<String, List<LayoutDefinition>> propertyLayouts) {
         super();
         this.sinceVersion = sinceVersion;
+        this.deprecatedVersion = deprecatedVersion;
         this.title = title;
         this.description = description;
         this.demoId = demoId;
@@ -104,6 +125,11 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     @Override
     public String getSinceVersion() {
         return sinceVersion;
+    }
+
+    @Override
+    public String getDeprecatedVersion() {
+        return deprecatedVersion;
     }
 
     public String getTitle() {
