@@ -17,21 +17,35 @@
 
 package org.nuxeo.launcher.info;
 
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "commands")
+/**
+ * @since 5.6
+ */
 public class CommandSetInfo {
 
-    public CommandSetInfo() {}
+    public CommandSetInfo() {
+    }
 
     @XmlElement(name = "command")
     public List<CommandInfo> commands = new ArrayList<CommandInfo>();
+
+    /**
+     * @param cmdType Command type. See constants in {@link CommandInfo}
+     * @return new {@link CommandInfo} added to commands
+     */
+    public CommandInfo newCommandInfo(String cmdType) {
+        CommandInfo cmdInfo = new CommandInfo(cmdType);
+        commands.add(cmdInfo);
+        return cmdInfo;
+    }
 
 }

@@ -17,18 +17,21 @@
 
 package org.nuxeo.launcher.info;
 
-import javax.xml.bind.annotation.XmlAccessorType;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlAttribute;
-import java.util.List;
-import java.util.ArrayList;
-
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "command")
+/**
+ * @since 5.6
+ */
 public class CommandInfo {
 
     public static final String CMD_UNKNOWN = "unknown";
@@ -45,7 +48,12 @@ public class CommandInfo {
 
     public static final String CMD_RESET = "reset";
 
-    public CommandInfo() {}
+    public CommandInfo() {
+    }
+
+    public CommandInfo(String cmdType) {
+        name = cmdType;
+    }
 
     @XmlAttribute()
     public String name;
