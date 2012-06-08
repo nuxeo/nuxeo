@@ -681,6 +681,7 @@ public abstract class NuxeoLauncher {
                 || "mp-add".equalsIgnoreCase(launcher.command)
                 || "mp-install".equalsIgnoreCase(launcher.command)
                 || "mp-uninstall".equalsIgnoreCase(launcher.command)
+                || "mp-request".equalsIgnoreCase(launcher.command)
                 || "mp-remove".equalsIgnoreCase(launcher.command)
                 || "mp-hotfix".equalsIgnoreCase(launcher.command)
                 || "mp-upgrade".equalsIgnoreCase(launcher.command)
@@ -779,6 +780,13 @@ public abstract class NuxeoLauncher {
             } else {
                 commandSucceeded = launcher.pkgRequest(null, null, null,
                         Arrays.asList(params));
+            }
+        } else if ("mp-request".equalsIgnoreCase(launcher.command)) {
+            if (launcher.hasOption(OPTION_NODEPS)) {
+                log.error("This command is not available with the --nodeps option");
+                commandSucceeded = false;
+            } else {
+                commandSucceeded = launcher.pkgCompoundRequest(Arrays.asList(params));
             }
         } else if ("mp-hotfix".equalsIgnoreCase(launcher.command)) {
             launcher.pkgHotfix();
@@ -1604,6 +1612,8 @@ public abstract class NuxeoLauncher {
                 + "Else you must provide the package file(s), name(s) or ID(s) as parameter.");
         log.error("\tmp-uninstall\t\tUninstall Marketplace package(s). "
                 + "You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).");
+        log.error("\tmp-request\t\tInstall + uninstall Marketplace package(s) in one command. "
+                + "You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).");
         log.error("\tmp-remove\t\tRemove Marketplace package(s). "
                 + "You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).");
         log.error("\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
@@ -2057,6 +2067,24 @@ public abstract class NuxeoLauncher {
         ConnectBroker pkgman = getConnectBroker();
         pkgman.pkgUpgrade();
         cset = pkgman.getCommandSet();
+    }
+
+    protected boolean pkgCompoundRequest(List<String> params)
+            throws IOException, PackageException {
+        List<String> install = new ArrayList<String>();
+        List<String> uninstall = new ArrayList<String>();
+        for (String param : params) {
+            for (String subparam : param.split(" ")) {
+                if (subparam.charAt(0) == '-') {
+                    uninstall.add(subparam.substring(1));
+                } else if (subparam.charAt(0) == '+') {
+                    install.add(subparam.substring(1));
+                } else {
+                    install.add(subparam);
+                }
+            }
+        }
+        return pkgRequest(null, install, uninstall, null);
     }
 
 }
