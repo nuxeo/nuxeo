@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -6,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-HF01</version>
   </parent>
 
   <groupId>org.nuxeo</groupId>
@@ -14,32 +13,32 @@
   <name>Nuxeo Addons list</name>
   <packaging>pom</packaging>
   <description>Nuxeo Addons list</description>
-  <version>5.3.2-SNAPSHOT</version>
+  <version>5.3.2-HF01</version>
 
   <properties>
-    <nuxeo.addons.version>5.3.2-SNAPSHOT</nuxeo.addons.version>
-    <nuxeo.marianne.version>5.3.2-SNAPSHOT</nuxeo.marianne.version>
-    <nuxeo.login.version>5.3.2-SNAPSHOT</nuxeo.login.version>
-    <nuxeo.facetedsearch.version>5.3.2-SNAPSHOT</nuxeo.facetedsearch.version>
-    <nuxeo.shell.version>5.3.2-SNAPSHOT</nuxeo.shell.version>
-    <nuxeo.opensocial.version>5.3.2-SNAPSHOT</nuxeo.opensocial.version>
-    <nuxeo.usercenter.version>5.3.2-SNAPSHOT</nuxeo.usercenter.version>
-    <nuxeo.fsconnectors.version>5.3.2-SNAPSHOT</nuxeo.fsconnectors.version>
-    <nuxeo.classification.version>5.3.2-SNAPSHOT</nuxeo.classification.version>
-    <nuxeo.importer.version>5.3.2-SNAPSHOT</nuxeo.importer.version>
-    <nuxeo.routing.version>5.3.2-SNAPSHOT</nuxeo.routing.version>
-    <nuxeo.smartsearch.version>5.3.2-SNAPSHOT</nuxeo.smartsearch.version>
-    <nuxeo.sync.version>5.3.2-SNAPSHOT</nuxeo.sync.version>
-    <nuxeo.audio.version>5.3.2-SNAPSHOT</nuxeo.audio.version>
-    <nuxeo.video.version>5.3.2-SNAPSHOT</nuxeo.video.version>
-    <nuxeo.semantic.entities.version>5.3.2-SNAPSHOT</nuxeo.semantic.entities.version>
-    <nuxeo.categorization.version>5.3.2-SNAPSHOT</nuxeo.categorization.version>
-    <nuxeo.rendition.version>5.3.2-SNAPSHOT</nuxeo.rendition.version>
-    <nuxeo.replication.version>5.3.2-SNAPSHOT</nuxeo.replication.version>
-    <nuxeo.birt.version>5.3.2-SNAPSHOT</nuxeo.birt.version>
-    <nuxeo.indexing.gateway.version>5.3.2-SNAPSHOT</nuxeo.indexing.gateway.version>
-    <nuxeo.exalead.connector.version>5.3.2-SNAPSHOT</nuxeo.exalead.connector.version>
-    <nuxeo.user.registration.version>5.3.2-SNAPSHOT</nuxeo.user.registration.version>
+    <nuxeo.addons.version>5.3.2-HF01</nuxeo.addons.version>
+    <nuxeo.marianne.version>5.3.2-HF01</nuxeo.marianne.version>
+    <nuxeo.login.version>5.3.2-HF01</nuxeo.login.version>
+    <nuxeo.facetedsearch.version>5.3.2-HF01</nuxeo.facetedsearch.version>
+    <nuxeo.shell.version>5.3.2-HF01</nuxeo.shell.version>
+    <nuxeo.opensocial.version>5.3.2-HF01</nuxeo.opensocial.version>
+    <nuxeo.usercenter.version>5.3.2-HF01</nuxeo.usercenter.version>
+    <nuxeo.fsconnectors.version>5.3.2-HF01</nuxeo.fsconnectors.version>
+    <nuxeo.classification.version>5.3.2-HF01</nuxeo.classification.version>
+    <nuxeo.importer.version>5.3.2-HF01</nuxeo.importer.version>
+    <nuxeo.routing.version>5.3.2-HF01</nuxeo.routing.version>
+    <nuxeo.smartsearch.version>5.3.2-HF01</nuxeo.smartsearch.version>
+    <nuxeo.sync.version>5.3.2-HF01</nuxeo.sync.version>
+    <nuxeo.audio.version>5.3.2-HF01</nuxeo.audio.version>
+    <nuxeo.video.version>5.3.2-HF01</nuxeo.video.version>
+    <nuxeo.semantic.entities.version>5.3.2-HF01</nuxeo.semantic.entities.version>
+    <nuxeo.categorization.version>5.3.2-HF01</nuxeo.categorization.version>
+    <nuxeo.rendition.version>5.3.2-HF01</nuxeo.rendition.version>
+    <nuxeo.replication.version>5.3.2-HF01</nuxeo.replication.version>
+    <nuxeo.birt.version>5.3.2-HF01</nuxeo.birt.version>
+    <nuxeo.indexing.gateway.version>5.3.2-HF01</nuxeo.indexing.gateway.version>
+    <nuxeo.exalead.connector.version>5.3.2-HF01</nuxeo.exalead.connector.version>
+    <nuxeo.user.registration.version>5.3.2-HF01</nuxeo.user.registration.version>
   </properties>
 
   <scm>
