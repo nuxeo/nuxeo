@@ -452,6 +452,25 @@ public interface Session extends Connection {
             throws StorageException;
 
     /**
+     * Makes a query to the database.
+     *
+     * @param query the query
+     * @param query the query type
+     * @param queryFilter the query filter
+     * @param countUpTo if {@code -1}, also count the total size without
+     *            offset/limit.<br>
+     *            If {@code 0}, don't count the total size.<br>
+     *            If {@code n}, count the total number if there are less than n
+     *            documents otherwise set the size to {@code -1}.
+     * @return the resulting list with total size included
+     *
+     * @Since 5.6
+     */
+    PartialList<Serializable> query(String query, String queryType,
+            QueryFilter queryFilter, long countUpTo)
+            throws StorageException;
+
+    /**
      * Makes a query to the database and returns an iterable (which must be
      * closed when done).
      *

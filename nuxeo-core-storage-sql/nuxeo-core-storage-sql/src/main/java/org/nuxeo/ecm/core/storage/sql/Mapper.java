@@ -125,6 +125,25 @@ public interface Mapper extends RowMapper, XAResource {
             throws StorageException;
 
     /**
+     * Makes a NXQL query to the database.
+     *
+     * @param query the query
+     * @param query the query type
+     * @param queryFilter the query filter
+     * @param countUpTo if {@code -1}, count the total size without
+     *            offset/limit.<br>
+     *            If {@code 0}, don't count the total size.<br>
+     *            If {@code n}, count the total number if there are less than n
+     *            documents otherwise set the size to {@code -1}.
+     * @return the list of matching document ids
+     *
+     * @Since 5.6
+     */
+    PartialList<Serializable> query(String query, String queryType,
+            QueryFilter queryFilter, long countUpTo)
+            throws StorageException;
+
+    /**
      * Makes a query to the database and returns an iterable (which must be
      * closed when done).
      *

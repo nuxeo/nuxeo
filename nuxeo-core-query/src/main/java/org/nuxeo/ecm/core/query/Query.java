@@ -24,8 +24,8 @@ public interface Query {
      * <p>
      * There could be Query implementations for one or another Query Type. If
      * the query factory instantiating a specific implementation of this class
-     * does not support a given Query Type than a {@code
-     * UnsupportedQueryTypeException} should be thrown.
+     * does not support a given Query Type than a
+     * {@code UnsupportedQueryTypeException} should be thrown.
      */
     enum Type {
         NXQL("NXQL"), XPATH("XPATH");
@@ -67,5 +67,26 @@ public interface Query {
      * @see {@link FilterableQuery#execute(QueryFilter,boolean)}
      */
     QueryResult execute(boolean countTotal) throws QueryException;
+
+    /**
+     * Makes a query to the backend. No filter, permission or policy filtering
+     * are done.
+     * <p>
+     * The total number of documents can also be retrieved, it is then stored in
+     * the {@link DocumentModelList} returned by
+     * {@link QueryResult#getDocumentModels}.
+     *
+     * @param countUpTo if {@code -1}, also count the total number of documents
+     *            when no limit/offset is passed. <br>
+     *            If {@code 0}, don't count the total number of documents.<br>
+     *            If {@code n}, count the total number if there are less than n
+     *            documents otherwise set the size to {@code -1}.
+     * @return a query result object describing the resulting documents
+     * @throws QueryException
+     * @see {@link FilterableQuery#execute(QueryFilter,boolean)}
+     *
+     * @since 5.6
+     */
+    QueryResult execute(long countUpTo) throws QueryException;
 
 }

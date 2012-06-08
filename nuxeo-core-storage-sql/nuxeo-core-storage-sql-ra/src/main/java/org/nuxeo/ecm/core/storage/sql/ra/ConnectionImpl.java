@@ -342,6 +342,13 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
+    public PartialList<Serializable> query(String query, String queryType,
+            QueryFilter queryFilter, long countUpTo)
+            throws StorageException {
+        return getSession().query(query, queryType, queryFilter, countUpTo);
+    }
+
+    @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
         return getSession().queryAndFetch(query, queryType, queryFilter, params);

@@ -36,4 +36,26 @@ public interface FilterableQuery extends Query {
     QueryResult execute(QueryFilter queryFilter, boolean countTotal)
             throws QueryException;
 
+    /**
+     * Makes a query to the backend with filtering on the BROWSE permission for
+     * the principal, facets, and query transformers.
+     * <p>
+     * The total number of documents can also be retrieved, it is then stored in
+     * the {@link DocumentModelList} returned by
+     * {@link QueryResult#getDocumentModels}.
+     *
+     * @param queryFilter the query filter
+     * @param countUpTo if {@code -1}, also count the total number of documents
+     *            when no limit/offset is passed.<br>
+     *            If {@code 0}, don't count the total number.<br>
+     *            If {@code n}, count the total number if there are less than n
+     *            documents otherwise set the size to {@code -1}.
+     * @return a query result object describing the resulting documents
+     * @throws QueryException
+     *
+     * @since 5.6
+     */
+    QueryResult execute(QueryFilter queryFilter, long countUpTo)
+            throws QueryException;
+
 }

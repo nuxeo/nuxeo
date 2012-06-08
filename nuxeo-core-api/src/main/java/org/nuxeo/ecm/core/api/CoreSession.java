@@ -1205,6 +1205,28 @@ public interface CoreSession {
             long offset, boolean countTotal) throws ClientException;
 
     /**
+     * Executes the given NXQL query and returns the result that matches the
+     * filter.
+     *
+     * @param query the query to execute
+     * @param filter the filter to apply to result
+     * @param limit the maximum number of documents to retrieve, or 0 for all of
+     *            them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @param countUpTo if {@code -1}, count the total size without
+     *            offset/limit.<br>
+     *            If {@code 0}, don't count the total size.<br>
+     *            If {@code n}, count the total number if there are less than n
+     *            documents otherwise set the size to {@code -1}.
+     * @return the query result
+     * @throws ClientException
+     *
+     * @Since 5.6
+     */
+    DocumentModelList query(String query, Filter filter, long limit,
+            long offset, long countUpTo) throws ClientException;
+
+    /**
      * Executes the given query and returns the result that matches the filter.
      *
      * @param query the query to execute
@@ -1223,6 +1245,31 @@ public interface CoreSession {
      */
     DocumentModelList query(String query, String queryType, Filter filter,
             long limit, long offset, boolean countTotal) throws ClientException;
+
+    /**
+     * Executes the given query and returns the result that matches the filter.
+     *
+     * @param query the query to execute
+     * @param queryType the query type, like "NXQL"
+     * @param filter the filter to apply to result
+     * @param limit the maximum number of documents to retrieve, or 0 for all of
+     *            them
+     * @param offset the offset (starting at 0) into the list of documents
+     * @param countUpTo if {@code -1}, return a {@link DocumentModelList} that
+     *            includes a total size of the underlying list (size if there
+     *            was no limit or offset). <br>
+     *            If {@code 0}, don't return the total size of the underlying
+     *            list. <br>
+     *            If {@code n}, return the total size of the underlying list
+     *            when the size is smaller than {@code n} else return a total
+     *            size of {@code -1}.
+     * @return the query result
+     * @throws ClientException
+     *
+     * @since 5.6
+     */
+    DocumentModelList query(String query, String queryType, Filter filter,
+            long limit, long offset, long countUpTo) throws ClientException;
 
     /**
      *
@@ -1699,10 +1746,10 @@ public interface CoreSession {
      * Find the first parent with the given {@code facet} and adapt it on the
      * {@code adapterClass}.
      * <p>
-     * This method does not check the permissions on the document to be adapted of this
-     * {@code CoreSession}'s {@code Principal}, and so the adapter must not need
-     * other schemas from the {@code DocumentModel} except the schemas related
-     * to the given facet.
+     * This method does not check the permissions on the document to be adapted
+     * of this {@code CoreSession}'s {@code Principal}, and so the adapter must
+     * not need other schemas from the {@code DocumentModel} except the schemas
+     * related to the given facet.
      *
      *
      * @return the first parent with the given {@code facet} adapted, or
@@ -1710,7 +1757,8 @@ public interface CoreSession {
      *         the given {@code adapterClass}.
      * @since 5.4.2
      */
-    <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
-            Class<T> adapterClass) throws ClientException;
+    <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(
+            DocumentRef docRef, String facet, Class<T> adapterClass)
+            throws ClientException;
 
 }
