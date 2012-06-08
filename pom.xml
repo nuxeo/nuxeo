@@ -1,10 +1,8 @@
-<?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.3.2-SNAPSHOT</version>
+  <version>5.3.2-HF01</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
@@ -2049,8 +2047,8 @@
               <configuration>
                 <tasks>
                   <echo>Running ANT assembly in ${basedir}</echo>
-                  <taskdef resource="org/nuxeo/build/ant/antlib.xml" />
-                  <antrun file="${basedir}/build.xml" optional="true" />
+                  <taskdef resource="org/nuxeo/build/ant/antlib.xml"></taskdef>
+                  <antrun file="${basedir}/build.xml" optional="true"></antrun>
                 </tasks>
               </configuration>
             </execution>
