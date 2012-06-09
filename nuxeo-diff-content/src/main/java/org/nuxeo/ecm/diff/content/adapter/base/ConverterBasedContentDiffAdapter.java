@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.nuxeo.ecm.diff.content.HtmlGuesser;
 import org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer;
@@ -60,7 +59,7 @@ public class ConverterBasedContentDiffAdapter extends
     @Override
     public List<Blob> getContentDiffBlobs(DocumentModel otherDoc,
             ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException {
+            throws ContentDiffException, ConversionException {
         return getContentDiffBlobs(otherDoc, getDefaultContentDiffFieldXPath(),
                 conversionType, locale);
     }
@@ -68,7 +67,7 @@ public class ConverterBasedContentDiffAdapter extends
     @Override
     public List<Blob> getContentDiffBlobs(DocumentModel otherDoc, String xpath,
             ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException {
+            throws ContentDiffException, ConversionException {
 
         Blob adaptedDocBlob = null;
         Blob otherDocBlob = null;
@@ -160,8 +159,12 @@ public class ConverterBasedContentDiffAdapter extends
                     adaptedDocConvertedBlob.getFilename());
             addSecondaryBlobs(blobResults, otherDocConvertedBlobHolder,
                     otherDocConvertedBlob.getFilename());
+        } catch (ConversionException ce) {
+            throw ce;
         } catch (ClientException ce) {
-            throw new ContentDiffException("Error while converting blobs", ce);
+            throw new ContentDiffException(
+                    "Error while getting HTML content diff on converted blobs",
+                    ce);
         }
         return blobResults;
     }
@@ -238,8 +241,19 @@ public class ConverterBasedContentDiffAdapter extends
         return defaultFieldXPath;
     }
 
+    /**
+     * Returns a blob holder converted using the specified converter name.
+     *
+     * @param blobHolder the blob holder
+     * @param converterName the converter name
+     * @return the converted blob holder
+     * @throws ClientException if an error occurs while getting the conversion
+     *             service
+     * @throws ConversionException if an error occurs while converting the blob
+     *             holder
+     */
     protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder,
-            String converterName) throws ClientException {
+            String converterName) throws ConversionException, ClientException {
 
         if (converterName == null) {
             log.debug(String.format(
@@ -248,19 +262,10 @@ public class ConverterBasedContentDiffAdapter extends
             converterName = DEFAULT_CONVERTER_NAME;
         }
 
-        BlobHolder convertedBlobHolder;
-        try {
-            convertedBlobHolder = getConversionService().convert(converterName,
-                    blobHolder, null);
-            setMimeType(convertedBlobHolder);
-            return convertedBlobHolder;
-        } catch (ConverterNotAvailable e) {
-            throw new ClientException(e.getMessage(), e);
-        } catch (ConversionException e) {
-            throw new ClientException("Error during conversion", e);
-        } catch (Exception e) {
-            throw new ClientException("Unexpected Error", e);
-        }
+        BlobHolder convertedBlobHolder = getConversionService().convert(
+                converterName, blobHolder, null);
+        setMimeType(convertedBlobHolder);
+        return convertedBlobHolder;
     }
 
     protected StringBlob getHtmlStringBlob(Blob blob)

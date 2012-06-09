@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,8 +42,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
-import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -80,8 +78,6 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
     protected DocumentModel leftDoc;
 
     protected DocumentModel rightDoc;
-
-    protected static final List<String> contentDiffInProcessing = Collections.synchronizedList(new ArrayList<String>());
 
     @Override
     public void handle(Request req, Response res) {
@@ -139,15 +135,8 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             return;
         }
 
-        List<Blob> contentDiffBlobs;
-        try {
-            contentDiffBlobs = initCachedContentDiffBlobs(res, xpath,
-                    conversionType);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            handleError(res, "Unable to get content diff.");
-            return;
-        }
+        List<Blob> contentDiffBlobs = initCachedContentDiffBlobs(res, xpath,
+                conversionType);
         if (CollectionUtils.isEmpty(contentDiffBlobs)) {
             // Response was already handled by initCachedContentDiffBlobs
             return;
@@ -176,7 +165,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
     }
 
     private List<Blob> initCachedContentDiffBlobs(Response res, String xpath,
-            ContentDiffConversionType conversionType) throws ClientException {
+            ContentDiffConversionType conversionType) {
 
         ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
 
@@ -195,9 +184,8 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
                         rightDoc, xpath, conversionType,
                         localeSelector.getLocale());
             }
-        } catch (ContentDiffException e) {
-            contentDiffInProcessing.remove(leftDoc.getId());
-            handleNoContentDiff(res, xpath, e);
+        } catch (ClientException ce) {
+            handleNoContentDiff(res, xpath, ce);
             return null;
         }
 
@@ -208,7 +196,8 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         return contentDiffBlobs;
     }
 
-    protected void handleNoContentDiff(Response res, String xpath, Exception e) {
+    protected void handleNoContentDiff(Response res, String xpath,
+            ClientException e) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("<html><body><center><h1>");
@@ -220,7 +209,11 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             sb.append(xpath);
             sb.append("</pre>");
             sb.append("<pre>");
-            sb.append(e.toString());
+            if (e instanceof ConverterNotRegistered) {
+                sb.append(e.getMessage());
+            } else {
+                sb.append(e.toString());
+            }
             sb.append("</pre>");
         }
 

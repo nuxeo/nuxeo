@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
@@ -68,18 +69,18 @@ public class TestContentDiffAdapter {
     public void testHTMLFilesContentDiff() throws ClientException {
 
         // Get left and right HTML docs
-        DocumentModel leftHTMLDoc = session.getDocument(new PathRef(
+        DocumentModel leftDoc = session.getDocument(new PathRef(
                 ContentDiffRepositoryInit.getLeftHTMLDocPath()));
-        DocumentModel rightHTMLDoc = session.getDocument(new PathRef(
+        DocumentModel rightDoc = session.getDocument(new PathRef(
                 ContentDiffRepositoryInit.getRightHTMLDocPath()));
 
         // Get content diff adapter for left doc
-        ContentDiffAdapter contentDiffAdapter = leftHTMLDoc.getAdapter(ContentDiffAdapter.class);
+        ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
         assertNotNull(contentDiffAdapter);
 
-        // Get content diff blobs
+        // Get content diff blobs using html conversion
         List<Blob> contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
-                rightHTMLDoc, ContentDiffConversionType.html, Locale.ENGLISH);
+                rightDoc, ContentDiffConversionType.html, Locale.ENGLISH);
         assertNotNull(contentDiffBlobs);
         assertEquals(1, contentDiffBlobs.size());
 
@@ -100,18 +101,18 @@ public class TestContentDiffAdapter {
             throws ClientException {
 
         // Get left and right Office docs
-        DocumentModel leftOfficeDoc = session.getDocument(new PathRef(
+        DocumentModel leftDoc = session.getDocument(new PathRef(
                 ContentDiffRepositoryInit.getLeftOfficeDocPath()));
-        DocumentModel rightOfficeDoc = session.getDocument(new PathRef(
+        DocumentModel rightDoc = session.getDocument(new PathRef(
                 ContentDiffRepositoryInit.getRightOfficeDocPath()));
 
         // Get content diff adapter for left doc
-        ContentDiffAdapter contentDiffAdapter = leftOfficeDoc.getAdapter(ContentDiffAdapter.class);
+        ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
         assertNotNull(contentDiffAdapter);
 
-        // Get content diff blobs
+        // Get content diff blobs using text conversion
         List<Blob> contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
-                rightOfficeDoc, ContentDiffConversionType.text, Locale.ENGLISH);
+                rightDoc, ContentDiffConversionType.text, Locale.ENGLISH);
         assertNotNull(contentDiffBlobs);
         assertEquals(1, contentDiffBlobs.size());
 
@@ -121,6 +122,48 @@ public class TestContentDiffAdapter {
         // Check content diff
         checkContentDiff("office_text_conversion_content_diff.html",
                 contentDiffBlob);
+    }
+
+    /**
+     * Tests
+     * {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)}
+     * on files that don't have any "2text" or "2html" converter registered
+     * (images).
+     */
+    @Test
+    public void testImageFilesContentDiff() throws ClientException {
+
+        // Get left and right image docs
+        DocumentModel leftDoc = session.getDocument(new PathRef(
+                ContentDiffRepositoryInit.getLeftImageDocPath()));
+        DocumentModel rightDoc = session.getDocument(new PathRef(
+                ContentDiffRepositoryInit.getRightImageDocPath()));
+
+        // Get content diff adapter for left doc
+        ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
+        assertNotNull(contentDiffAdapter);
+
+        // Try to get content diff blobs using text conversion
+        try {
+            contentDiffAdapter.getFileContentDiffBlobs(rightDoc,
+                    ContentDiffConversionType.text, Locale.ENGLISH);
+            fail("No png2text converter is registered, call should have thrown a ConverterNotRegistered exception.");
+        } catch (ConverterNotRegistered cnr) {
+            assertEquals(
+                    "Converter for sourceMimeType = image/png, destinationMimeType = text/plain is not registered",
+                    cnr.getMessage());
+        }
+
+        // Try to get content diff blobs using html conversion
+        try {
+            contentDiffAdapter.getFileContentDiffBlobs(rightDoc,
+                    ContentDiffConversionType.html, Locale.ENGLISH);
+            fail("No png2html converter is registered, call should have thrown a ConverterNotRegistered exception.");
+        } catch (ConverterNotRegistered cnr) {
+            assertEquals(
+                    "Converter for sourceMimeType = image/png, destinationMimeType = text/html is not registered",
+                    cnr.getMessage());
+        }
     }
 
     protected void checkContentDiff(String expectedBlobPath,

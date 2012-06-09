@@ -19,21 +19,28 @@ package org.nuxeo.ecm.diff.content.converters;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Html converter for content diff.
+ * HTML converter for content diff.
  * <p>
- * Uses the "office2html" converter.
+ * Uses the converter registered with sourceMimeType = mime type of the
+ * {@code blobHolder} and destinationMimeType = {@code text/html}.
  *
- * @author Antoine Taillefer
+ * @author Antoine Taillefer (ataillefer@nuxeo.com)
+ * @since 5.6
  */
 public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
+
+    private static final Log LOGGER = LogFactory.getLog(ContentDiffHtmlConverter.class);
 
     private static final String HTML_MIME_TYPE = "text/html";
 
@@ -51,29 +58,34 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
         try {
             blob = blobHolder.getBlob();
         } catch (ClientException ce) {
-            throw new ConversionException("Cannot fetch blob from blob holder",
-                    ce);
+            throw new ConversionException(
+                    "Cannot fetch blob from blob holder.", ce);
         }
-        // Get HTML converter name from blob mime type
-        if (blob != null) {
-            String mimeType = blob.getMimeType();
-            ConversionService cs = Framework.getLocalService(ConversionService.class);
-            converterName = cs.getConverterName(mimeType, HTML_MIME_TYPE);
-            // We don't want to use the "any2html" converter contributed for the
-            // preview in the case of non pdf blobs since it uses the following
-            // conversion chain : any2pdf --> pdf2html.
-            // In this case we want to use the "office2html" converter which
-            // gives a better result when applying the HTMLContentDiffer on the
-            // converted HTML.
-            if (ANY_2_HTML_CONVERTER_NAME.equals(converterName)
-                    && !"application/pdf".equals(mimeType)) {
-                converterName = OFFICE_2_HTML_CONVERTER_NAME;
-            }
+        if (blob == null) {
+            LOGGER.warn("Trying to convert a blob holder that has a null blob. Nothing to do, returning the blob holder.");
+            return blobHolder;
         }
 
-        // Fall back on the "office2html" converter if no converter was found
-        if (converterName == null) {
+        // Get HTML converter name from blob mime type
+        String mimeType = blob.getMimeType();
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+        converterName = cs.getConverterName(mimeType, HTML_MIME_TYPE);
+        // We don't want to use the "any2html" converter contributed for the
+        // preview in the case of non pdf blobs since it uses the following
+        // conversion chain : any2pdf --> pdf2html.
+        // In this case we want to use the "office2html" converter which
+        // gives a better result when applying the HTMLContentDiffer on the
+        // converted HTML.
+        if (ANY_2_HTML_CONVERTER_NAME.equals(converterName)
+                && !"application/pdf".equals(mimeType)) {
             converterName = OFFICE_2_HTML_CONVERTER_NAME;
+        }
+
+        // No converter found, throw appropriate exception
+        if (converterName == null) {
+            throw new ConverterNotRegistered(String.format(
+                    "for sourceMimeType = %s, destinationMimeType = %s",
+                    mimeType, HTML_MIME_TYPE));
         }
 
         return convert(converterName, blobHolder, parameters);

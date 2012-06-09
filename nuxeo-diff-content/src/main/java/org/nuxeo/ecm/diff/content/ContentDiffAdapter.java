@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 
 /**
@@ -41,11 +42,11 @@ public interface ContentDiffAdapter {
 
     List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc,
             ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException;
+            throws ContentDiffException, ConversionException;
 
     List<Blob> getFileContentDiffBlobs(DocumentModel otherDoc, String xpath,
             ContentDiffConversionType conversionType, Locale locale)
-            throws ContentDiffException;
+            throws ContentDiffException, ConversionException;
 
     void setAdaptedDocument(DocumentModel doc);
 
