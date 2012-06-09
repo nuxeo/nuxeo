@@ -60,14 +60,14 @@ public final class ContentDiffHelper {
     }
 
     /**
-     * Gets the content diff fancy box url.
+     * Gets the content diff fancy box URL.
      *
      * @param currentDoc the current doc
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
-     * @return the content diff fancy box url
-     * @throws ClientException if url cannot be retrieved from current doc view
+     * @return the content diff fancy box URL
+     * @throws ClientException if URL cannot be retrieved from current doc view
      */
     public static String getContentDiffFancyBoxURL(DocumentModel currentDoc,
             String propertyLabel, String propertyXPath, String conversionType)
@@ -103,11 +103,11 @@ public final class ContentDiffHelper {
     }
 
     /**
-     * Gets the content diff url.
+     * Gets the content diff URL.
      *
      * @param leftDoc the left doc
      * @param rightDoc the right doc
-     * @return the content diff url
+     * @return the content diff URL
      */
     public static String getContentDiffURL(DocumentModel leftDoc,
             DocumentModel rightDoc, String conversionType) {
@@ -117,13 +117,13 @@ public final class ContentDiffHelper {
     }
 
     /**
-     * Gets the content diff url.
+     * Gets the content diff URL.
      *
      * @param leftDoc the left doc
      * @param rightDoc the right doc
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
-     * @return the content diff url
+     * @return the content diff URL
      */
     public static String getContentDiffURL(DocumentModel leftDoc,
             DocumentModel rightDoc, String propertyXPath, String conversionType) {
@@ -133,14 +133,14 @@ public final class ContentDiffHelper {
     }
 
     /**
-     * Gets the content diff url.
+     * Gets the content diff URL.
      *
      * @param repositoryName the repository name
      * @param leftDoc the left doc
      * @param rightDoc the right doc
      * @param propertyXPath the xpath
      * @param conversionType the conversion type
-     * @return the content diff url
+     * @return the content diff URL
      */
     public static String getContentDiffURL(String repositoryName,
             DocumentModel leftDoc, DocumentModel rightDoc,
