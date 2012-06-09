@@ -99,10 +99,10 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
 
         String docType = doc.getType();
 
-        log.debug("Looking for HTMLContentDiffAdapter for type " + docType);
+        log.debug("Looking for ContentDiffAdapter for type " + docType);
 
         if (factoryRegistry.containsKey(docType)) {
-            log.debug("Dedicated HTMLContentDiffAdapter factory found");
+            log.debug("Dedicated ContentDiffAdapter factory found");
             return factoryRegistry.get(docType).getAdapter(doc);
         }
 
@@ -112,14 +112,14 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
 
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {
-            log.debug("Using Blob Holder based HtmlContentDiffAdapter factory");
+            log.debug("Using Blob Holder based ContentDiffAdapter factory");
             ContentDiffAdapterFactory factory = new BlobHolderContentDiffAdapterFactory();
             return factory.getAdapter(doc);
 
         }
 
         if (doc.hasSchema("file") || doc.hasSchema("files")) {
-            log.debug("Using default file based HtmlContentDiffAdapter factory");
+            log.debug("Using default file based ContentDiffAdapter factory");
             ContentDiffAdapterFactory factory = new FileBasedContentDiffAdapterFactory();
             return factory.getAdapter(doc);
         } else {
