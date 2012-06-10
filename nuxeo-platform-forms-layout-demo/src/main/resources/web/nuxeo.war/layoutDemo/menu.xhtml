@@ -13,18 +13,18 @@
   </ui:include>
 
   <ui:include src="menu_template.xhtml">
-    <ui:param name="category" value="listing" />
-    <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.listingWidgets']}" />
-    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
-    <ui:param name="widgetTypes" value="#{listingWidgetTypes}" />
-    <ui:param name="openByDefault" value="true" />
-  </ui:include>
-
-  <ui:include src="menu_template.xhtml">
     <ui:param name="category" value="custom" />
     <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.customWidgets']}" />
     <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
     <ui:param name="widgetTypes" value="#{customWidgetTypes}" />
+    <ui:param name="openByDefault" value="true" />
+  </ui:include>
+
+  <ui:include src="menu_template.xhtml">
+    <ui:param name="category" value="listing" />
+    <ui:param name="categoryTitle" value="#{messages['label.layoutDemo.listingWidgets']}" />
+    <ui:param name="currentWidgetType" value="#{currentWidgetType}" />
+    <ui:param name="widgetTypes" value="#{listingWidgetTypes}" />
     <ui:param name="openByDefault" value="true" />
   </ui:include>
 

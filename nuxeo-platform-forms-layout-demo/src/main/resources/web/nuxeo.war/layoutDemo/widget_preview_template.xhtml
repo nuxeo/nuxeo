@@ -40,7 +40,7 @@
             <nxl:layout name="layout_demo_widget_common_settings"
               mode="edit" value="#{widgetPreviewLayoutDef}" />
             <c:forEach var="layoutDef"
-              items="#{currentWidgetTypeConf.getPropertyLayouts(widgetPreviewMode, 'any')}">
+              items="#{currentWidgetTypeDef.configuration.getPropertyLayouts(widgetPreviewMode, 'any')}">
               <nxl:layout definition="#{layoutDef}"
                 mode="edit_demo_preview"
                 value="#{widgetPreviewLayoutDef.properties}"

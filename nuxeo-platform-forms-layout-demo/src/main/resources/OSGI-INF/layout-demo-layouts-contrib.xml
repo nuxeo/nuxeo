@@ -4,6 +4,135 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
+    <layout name="layout_demo_reference_general_information">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>type</widget>
+        </row>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+        <row>
+          <widget>sinceVersion</widget>
+        </row>
+        <row>
+          <widget>deprecatedVersion</widget>
+        </row>
+        <row>
+          <widget>handlerClass</widget>
+        </row>
+        <row>
+          <widget>properties</widget>
+        </row>
+        <row>
+          <widget>categories</widget>
+        </row>
+      </rows>
+      <widget name="type" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.type</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>name</field>
+        </fields>
+      </widget>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.title</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>configuration.title</field>
+        </fields>
+      </widget>
+      <widget name="description" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.description</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>configuration.description</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="escape">false</property>
+        </properties>
+      </widget>
+      <widget name="sinceVersion" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.sinceVersion</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>configuration.sinceVersion</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{empty
+            layoutValue.configuration.sinceVersion?'hidden':mode}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="deprecatedVersion" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.deprecatedVersion</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>configuration.deprecatedVersion</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">
+            #{empty
+            layoutValue.configuration.deprecatedVersion?'hidden':mode}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="handlerClass" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.handlerClass</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>handlerClassName</field>
+        </fields>
+      </widget>
+      <widget name="properties" type="template">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.properties</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>properties</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /layoutDemo/widgets/properties_map_widget_template.xhtml
+          </property>
+        </properties>
+        <widgetModes>
+          <mode value="any">
+            #{empty layoutValue.properties?'hidden':mode}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="categories" type="text">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.categories</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>#{nxu:joinCollection(layoutValue.configuration.categories, ',')}</field>
+        </fields>
+      </widget>
+    </layout>
+
     <layout name="layout_demo_widget_common_settings">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>

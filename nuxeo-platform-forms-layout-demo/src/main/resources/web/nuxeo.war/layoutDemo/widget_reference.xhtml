@@ -6,94 +6,39 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <div class="foldableBox">
-  
-    <h3 class="unfolded">
-      <a href="#nogo" onclick="return toggleBox(this)">
-        <h:outputText
-          value="#{messages['label.layoutDemo.reference.information']}" />
-      </a>
-    </h3>
-  
-    <div class="boxBody">
-      <table class="dataOutput">
-        <tbody>
-          <tr class="dataRowEven">
-            <td class="labelColumn">
-              #{messages['label.layoutDemo.reference.type']}
-            </td>
-            <td class="fieldColumn">
-              #{currentWidgetTypeDef.name}
-            </td>
-          </tr>
-          <tr class="dataRowOdd">
-            <td class="labelColumn">
-              #{messages['label.layoutDemo.reference.handlerClass']}
-            </td>
-            <td class="fieldColumn">
-              #{currentWidgetTypeDef.handlerClassName}
-            </td>
-          </tr>
-          <tr class="dataRowEven">
-            <td class="labelColumn">
-              #{messages['label.layoutDemo.reference.properties']}
-            </td>
-            <td class="fieldColumn">
-              #{currentWidgetTypeDef.properties}
-            </td>
-          </tr>
-          <tr class="dataRowOdd">
-            <td class="labelColumn">
-              #{messages['label.layoutDemo.reference.title']}
-            </td>
-            <td class="fieldColumn">
-              #{currentWidgetTypeConf.title}
-            </td>
-          </tr>
-          <tr class="dataRowEven">
-            <td class="labelColumn">
-              #{messages['label.layoutDemo.reference.description']}
-            </td>
-            <td class="fieldColumn">
-              <h:outputText value="#{currentWidgetTypeConf.description}" escape="false" />
-            </td>
-          </tr>
-          <tr class="dataRowOdd">
-            <td class="labelColumn">
-              #{messages['label.layoutDemo.reference.categories']}
-            </td>
-            <td class="fieldColumn">
-              #{nxu:joinCollection(currentWidgetTypeConf.categories, ',')}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div>
+    <nxl:layout name="layout_demo_reference_general_information" mode="view"
+      value="#{currentWidgetTypeDef}"
+      template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+      title="#{messages['label.layoutDemo.reference.information']}" />
   </div>
 
   <div>
-    <c:forEach var="layoutDef" items="#{currentWidgetTypeConf.getPropertyLayouts('any', null)}">
+    <c:forEach var="layoutDef" items="#{currentWidgetTypeDef.configuration.getPropertyLayouts('any', null)}">
       <nxl:layout definition="#{layoutDef}" mode="view_reference"
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+        showLayoutDefinition="true"
         title="#{messages['label.layoutDemo.reference.anyProperties']}" />
     </c:forEach>
   </div>
 
   <div>
-    <c:forEach var="layoutDef" items="#{currentWidgetTypeConf.getPropertyLayouts('view', null)}">
+    <c:forEach var="layoutDef" items="#{currentWidgetTypeDef.configuration.getPropertyLayouts('view', null)}">
       <nxl:layout definition="#{layoutDef}" mode="view_reference"
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+        showLayoutDefinition="true"
         title="#{messages['label.layoutDemo.reference.viewProperties']}" />
     </c:forEach>
   </div>
 
   <div>
-    <c:forEach var="layoutDef" items="#{currentWidgetTypeConf.getPropertyLayouts('edit', null)}">
+    <c:forEach var="layoutDef" items="#{currentWidgetTypeDef.configuration.getPropertyLayouts('edit', null)}">
       <nxl:layout definition="#{layoutDef}" mode="view_reference"
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
+        showLayoutDefinition="true"
         title="#{messages['label.layoutDemo.reference.editProperties']}" />
     </c:forEach>
   </div>

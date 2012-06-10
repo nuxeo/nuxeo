@@ -250,6 +250,24 @@
       </preview>
     </widgetType>
 
+    <widgetType name="layout">
+      <label>Layout</label>
+      <viewId>layoutWidget</viewId>
+      <category>custom</category>
+      <layouts>
+        <layout name="layoutWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-layout-widget.xml" />
+      </layouts>
+      <preview enabled="true">
+        <fields>
+          <field></field>
+        </fields>
+        <defaultProperties>
+          <property name="name">demoLayout</property>
+        </defaultProperties>
+      </preview>
+    </widgetType>
+
     <widgetType name="actions">
       <label>Actions</label>
       <viewId>actionsWidget</viewId>

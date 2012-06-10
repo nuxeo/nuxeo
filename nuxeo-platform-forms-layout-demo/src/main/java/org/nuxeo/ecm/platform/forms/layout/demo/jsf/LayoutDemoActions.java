@@ -134,15 +134,6 @@ public class LayoutDemoActions implements Serializable {
         return null;
     }
 
-    @Factory(value = "currentWidgetTypeConf", scope = EVENT)
-    public WidgetTypeConfiguration getCurrentWidgetTypeConfiguration() {
-        WidgetTypeDefinition def = getCurrentWidgetTypeDefinition();
-        if (def != null) {
-            return def.getConfiguration();
-        }
-        return null;
-    }
-
     @Factory(value = "layoutDemoCurrentTabId", scope = EVENT)
     public String getCurrentTabId() {
         return currentTabId;

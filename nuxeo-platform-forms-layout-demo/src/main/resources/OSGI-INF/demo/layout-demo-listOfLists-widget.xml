@@ -26,83 +26,67 @@
           <property name="diff">true</property>
         </properties>
         <properties widgetMode="any">
-          <property name="hideSubLabels">true</property>
+          <property name="display">block_left</property>
         </properties>
+        <!-- subwidgets for complex -->
         <subWidgets>
-          <widget name="listOfListsItem" type="complex">
+          <widget name="stringItem" type="text">
+            <fields>
+              <field>stringItem</field>
+            </fields>
             <labels>
-              <label mode="any">List of lists item</label>
+              <label mode="any">String item</label>
+            </labels>
+          </widget>
+          <widget name="stringArrayItem" type="selectManyDirectory">
+            <fields>
+              <field>stringArrayItem</field>
+            </fields>
+            <labels>
+              <label mode="any">String array item</label>
             </labels>
             <properties mode="any">
-              <property name="display">block_left</property>
-              <!-- since 5.6, using a widget of type 'complex' is enough -->
+              <property name="directoryName">layout_demo_crew</property>
+            </properties>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+              <property name="styleClass">dataInputText</property>
+            </properties>
+          </widget>
+          <widget name="stringListItem" type="list">
+            <fields>
+              <field>stringListItem</field>
+            </fields>
+            <labels>
+              <label mode="any">String list item</label>
+            </labels>
+            <properties mode="any">
+              <!-- Since 5.6, use the standard "list" widget type, but
+                add the sub property name as template to allow resolving the
+                new item to add -->
               <!--
                 <property name="template">
-                /widgets/complex_list_item_widget_template.xhtml
+                /widgets/list_subwidget_template.xhtml
                 </property>
               -->
+              <property name="listTemplateItem">
+                #{nxd:propertyDefaultValue('lds:listOfLists/stringListItem')}
+              </property>
             </properties>
-            <!-- subwidgets for complex -->
+            <properties widgetMode="any">
+              <property name="hideSubLabels">true</property>
+            </properties>
             <subWidgets>
-              <widget name="stringItem" type="text">
-                <fields>
-                  <field>stringItem</field>
-                </fields>
+              <widget name="stringListSubItem" type="text">
                 <labels>
-                  <label mode="any">String item</label>
+                  <label mode="any"></label>
                 </labels>
-              </widget>
-              <widget name="stringArrayItem" type="selectManyDirectory">
                 <fields>
-                  <field>stringArrayItem</field>
-                </fields>
-                <labels>
-                  <label mode="any">String array item</label>
-                </labels>
-                <properties mode="any">
-                  <property name="directoryName">layout_demo_crew</property>
-                </properties>
-                <properties widgetMode="edit">
-                  <property name="required">true</property>
-                  <property name="styleClass">dataInputText</property>
-                </properties>
-              </widget>
-              <widget name="stringListItem" type="list">
-                <fields>
-                  <field>stringListItem</field>
-                </fields>
-                <labels>
-                  <label mode="any">String list item</label>
-                </labels>
-                <properties mode="any">
-                  <!-- Since 5.6, use the standard "list" widget type, but
-                    add the sub property name as template to allow resolving the
-                    new item to add -->
-                  <!--
-                    <property name="template">
-                    /widgets/list_subwidget_template.xhtml
-                    </property>
+                  <field>#{value}</field>
+                  <!-- equivalent field definition alternative:
+                    <field></field>
                   -->
-                  <property name="listTemplateItem">
-                    #{nxd:propertyDefaultValue('lds:listOfLists/stringListItem')}
-                  </property>
-                </properties>
-                <properties widgetMode="any">
-                  <property name="hideSubLabels">true</property>
-                </properties>
-                <subWidgets>
-                  <widget name="stringListSubItem" type="text">
-                    <labels>
-                      <label mode="any"></label>
-                    </labels>
-                    <fields>
-                      <field>#{value}</field>
-                      <!-- equivalent field definition alternative:
-                        <field></field>
-                      -->
-                    </fields>
-                  </widget>
-                </subWidgets>
+                </fields>
               </widget>
             </subWidgets>
           </widget>

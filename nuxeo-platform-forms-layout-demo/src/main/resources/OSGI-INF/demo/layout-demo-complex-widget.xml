@@ -27,7 +27,7 @@
           <!-- since 5.6, using a widget of type 'complex' is enough -->
           <!--
             <property name="template">
-            /widgets/complex_list_item_widget_template.xhtml
+            /widgets/complex_widget_template.xhtml
             </property>
           -->
         </properties>

@@ -104,6 +104,11 @@
       <redirect />
     </navigation-case>
     <navigation-case>
+      <from-outcome>layoutWidget</from-outcome>
+      <to-view-id>/layoutDemo/demoWidgets/layoutWidget.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
       <from-outcome>actionsWidget</from-outcome>
       <to-view-id>/layoutDemo/demoWidgets/actionsWidget.xhtml</to-view-id>
       <redirect />

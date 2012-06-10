@@ -2,43 +2,52 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   id="#{layout.id}">
 
   <div class="foldableBox">
-  
+
     <h3 class="unfolded">
       <a href="#nogo" onclick="return toggleBox(this)">
         <h:outputText value="#{layoutProperty_title}" />
       </a>
     </h3>
-  
+
     <div class="boxBody">
-    
       <table class="dataOutput">
         <tbody>
           <nxl:layoutRow>
             <nxl:layoutRowWidget>
               <tr class="#{nxu:test(layoutRowIndex%2 ==0, 'dataRowEven', 'dataRowOdd')}">
                 <td class="labelColumn">
-                  <h:outputText value="#{widget.label}"
-                    styleClass="#{nxu:test(widget.required, 'required', '')}" />
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                    <ui:param name="isEditMode" value="true" />
+                    <ui:param name="hideHelp" value="#{layout.properties.showLayoutDefinition}" />
+                  </ui:include>
                 </td>
-                <td class="fieldColumn">
-                  <h:outputText value="#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}" />
-                </td>
-                <td class="fieldColumn">
-                  <h:outputText value="#{widget.helpLabel}" />
-                </td>
+                <c:if test="#{layout.properties.showLayoutDefinition}">
+                  <td class="fieldColumn">
+                    <h:outputText value="#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}" />
+                  </td>
+                  <td class="fieldColumn">
+                    <h:outputText value="#{widget.helpLabel}" />
+                  </td>
+                </c:if>
+                <c:if test="#{not layout.properties.showLayoutDefinition}">
+                  <td class="fieldColumn">
+                    <nxl:widget widget="#{widget}" value="#{value}" />
+                  </td>
+                </c:if>
               </tr>
             </nxl:layoutRowWidget>
           </nxl:layoutRow>
         </tbody>
       </table>
     </div>
-  
+
   </div>
 
 </f:subview>
