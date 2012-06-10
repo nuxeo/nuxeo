@@ -1675,7 +1675,11 @@
         <title>Actions</title>
         <description>
           <p>This widget displays actions.</p>
-          <p>It needs a list of actions as bound field or value.</p>
+          <p>
+            It needs the list of actions as property "actions".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
         </description>
         <categories>
           <category>summary</category>
@@ -1689,7 +1693,10 @@
             <layout name="generic_actions_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>actionsDisplay</widget>
+                  <widget>actions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
                 </row>
                 <row>
                   <widget>overallDisplay</widget>
@@ -1710,6 +1717,22 @@
                   <widget>moreMenuLabel</widget>
                 </row>
               </rows>
+              <widget name="actions" type="actions">
+                <labels>
+                  <label mode="any">Actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The list of actions to display.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>actions</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+              </widget>
               <widget name="headerStyleClass" type="text">
                 <labels>
                   <label mode="any">Header style class</label>
@@ -1723,42 +1746,6 @@
                 <fields>
                   <field>headerStyleClass</field>
                 </fields>
-              </widget>
-              <widget name="actionsDisplay" type="selectOneListbox">
-                <categories>
-                  <category>widgetTypeConf</category>
-                </categories>
-                <labels>
-                  <label mode="any">Display</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    If set to 'buttons', actions will be
-                    displayed as
-                    command
-                    buttons. If set to 'links', actions will
-                    be displayed as
-                    command links. If set to 'icons', actions
-                    will be displayed
-                    as icons.
-                    Else (default behaviour), actions
-                    will be
-                    displayed as command links
-                    and display their icons
-                    when
-                    defined.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <!-- still named display here -->
-                  <field>display</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Icons and links" itemValue="" />
-                  <option itemLabel="Icons" itemValue="icons" />
-                  <option itemLabel="Buttons" itemValue="buttons" />
-                  <option itemLabel="Links" itemValue="links" />
-                </selectOptions>
               </widget>
               <widget name="overallDisplay" type="selectOneListbox">
                 <categories>
