@@ -18,11 +18,11 @@
         <labels>
           <label mode="any">Actions widget</label>
         </labels>
-        <fields>
-          <field>#{layoutDemoCustomActions}</field>
-        </fields>
         <translated>false</translated>
         <handlingLabels>true</handlingLabels>
+        <properties widgetMode="any">
+          <property name="actions">#{layoutDemoCustomActions}</property>
+        </properties>
       </widget>
     </layout>
 
@@ -56,6 +56,45 @@
         </property>
       </properties>
     </action>
+
+    <action id="layoutDemoWidget" type="widget" label="Action displaying a widget"
+      icon="/icons/action_empty.png" order="30">
+      <category>LAYOUT_DEMO_ACTIONS</category>
+      <properties>
+        <property name="widgetName">
+          actionTextWidget
+        </property>
+        <property name="widgetCategory">
+          layoutDemo
+        </property>
+        <property name="displayWidgetLabel">
+          true
+        </property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="actionTextWidget" type="text">
+      <categories>
+        <category>layoutDemo</category>
+      </categories>
+      <labels>
+        <label mode="any"></label>
+        <label mode="edit">Widget displayed by an action</label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>lds:textField</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
 
   </extension>
 

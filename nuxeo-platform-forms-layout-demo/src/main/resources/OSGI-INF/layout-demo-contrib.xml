@@ -278,8 +278,11 @@
       </layouts>
       <preview enabled="true">
         <fields>
-          <field>#{layoutDemoCustomActions}</field>
+          <field></field>
         </fields>
+        <defaultProperties>
+          <property name="actions">#{layoutDemoCustomActions}</property>
+        </defaultProperties>
       </preview>
     </widgetType>
 
