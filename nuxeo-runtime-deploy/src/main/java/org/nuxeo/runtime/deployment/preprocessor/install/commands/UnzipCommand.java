@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilter;
 import org.nuxeo.common.utils.ZipUtils;
@@ -67,9 +68,10 @@ public class UnzipCommand implements Command {
         if (!srcFile.exists()) {
             throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath() + " to unzip.");
         }
-        
+
         if (srcFile.isDirectory()) {
-        	new CopyCommand(src.addTrailingSeparator(), dst.addTrailingSeparator(), filter).exec(ctx);
+            Path p = !StringUtils.isEmpty(prefix) ? new Path("/"+prefix) : new Path("/");
+        	new CopyCommand(src.addTrailingSeparator(), dst.addTrailingSeparator(), p, filter).exec(ctx);
         	return;
         }
 
