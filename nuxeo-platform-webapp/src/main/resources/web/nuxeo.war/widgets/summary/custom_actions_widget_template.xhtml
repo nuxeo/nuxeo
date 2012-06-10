@@ -9,16 +9,13 @@
 <nxu:set var="actions"
   value="#{webActions.getActionsList(category)}"
   cache="true">
-<nxu:set var="actionWidgetBinding"
-  value="#{fieldOrValue}"
-  cache="true">
 
   <nxl:widgetType name="actions" mode="#{widget.mode}"
     label="#{widget.label}"
-    value="#{actions}" properties="#{widget.properties}"
+    value="#{fieldOrValue}" properties="#{widget.properties}"
+    actions="#{actions}" actionsDisplay="#{widgetProperty_display}"
     ignoreTemplateProperty="true" subWidgets="#{widget.subWidgets}" />
 
-</nxu:set>
 </nxu:set>
 </nxu:set>
 

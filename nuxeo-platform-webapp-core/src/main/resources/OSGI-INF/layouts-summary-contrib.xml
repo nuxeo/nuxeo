@@ -126,7 +126,7 @@
                   <category>widgetTypeConf</category>
                 </categories>
                 <labels>
-                  <label mode="any">Display</label>
+                  <label mode="any">Actions display</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
@@ -140,7 +140,7 @@
                   </label>
                 </helpLabels>
                 <fields>
-                  <!-- still named display here -->
+                  <!-- still named display here, kept for BBB -->
                   <field>display</field>
                 </fields>
                 <selectOptions>
@@ -157,6 +157,11 @@
                 <labels>
                   <label mode="any">Overall display</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Overall display of actions, available since 5.6.
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>overallDisplay</field>
                 </fields>
