@@ -176,7 +176,9 @@ public class LayoutTagHandler extends TagHandler {
         for (TagAttribute var : vars) {
             String localName = var.getLocalName();
             if (!reservedVars.contains(localName)) {
-                additionalProps.put(localName, var.getValue());
+                // resolve value as there's no alias value expression exposed
+                // for layout properties
+                additionalProps.put(localName, var.getValue(ctx));
             }
         }
 

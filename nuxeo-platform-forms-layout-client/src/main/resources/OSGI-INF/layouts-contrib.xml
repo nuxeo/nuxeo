@@ -742,7 +742,7 @@
       </selectOptions>
     </widget>
 
-    <widget name="subwidgets_display" type="selectOneListbox">
+    <widget name="complex_subwidgets_display" type="selectOneListbox">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -759,10 +759,10 @@
         <field>display</field>
       </fields>
       <selectOptions>
-        <option itemLabel="Table (default)" itemValue="table" />
         <!-- block-like renderings available since 5.6 -->
+        <option itemLabel="Block (label on the left, default)" itemValue="block_left" />
         <option itemLabel="Block (label on top)" itemValue="block_top" />
-        <option itemLabel="Block (label on the left)" itemValue="block_left" />
+        <option itemLabel="Table" itemValue="table" />
         <option itemLabel="In line" itemValue="inline" />
       </selectOptions>
     </widget>
@@ -784,7 +784,9 @@
         <field>display</field>
       </fields>
       <selectOptions>
-        <option itemLabel="Table (default)" itemValue="table" />
+        <option itemLabel="Block (label on the left, default)" itemValue="block_left" />
+        <option itemLabel="Block (label on top)" itemValue="block_top" />
+        <option itemLabel="Table" itemValue="table" />
         <option itemLabel="In line" itemValue="inline" />
       </selectOptions>
     </widget>
@@ -896,6 +898,70 @@
       <fields>
         <field>listTemplateItem</field>
       </fields>
+    </widget>
+
+    <widget name="container_subwidgets_display" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display attribute controls the rendering of
+          subwidgets.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>display</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Block (label on the left, default)" itemValue="block_left" />
+        <option itemLabel="Block (label on top)" itemValue="block_top" />
+        <option itemLabel="Table" itemValue="table" />
+        <option itemLabel="In line" itemValue="inline" />
+      </selectOptions>
+    </widget>
+
+    <widget name="container_subwidgets_hideSubLabels" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide subwidgets labels</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the rendering of subwidgets
+          labels.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideSubLabels</field>
+      </fields>
+    </widget>
+
+    <widget name="widgetsDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The display attribute controls the rendering of
+          widgets.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>widgetsDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Label on the left (default)" itemValue="label_left" />
+        <option itemLabel="Label on top" itemValue="label_top" />
+      </selectOptions>
     </widget>
 
   </extension>
@@ -2019,12 +2085,6 @@
                 <row>
                   <widget category="widgetTypeConf">styleClass</widget>
                 </row>
-                <row>
-                  <widget category="widgetTypeConf">subStyleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">subItemStyleClass</widget>
-                </row>
               </rows>
             </layout>
           </layouts>
@@ -2099,16 +2159,13 @@
             <layout name="complex_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">subwidgets_display</widget>
+                  <widget category="widgetTypeConf">complex_subwidgets_display</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">subwidgets_hideSubLabels</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">styleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">subStyleClass</widget>
                 </row>
               </rows>
             </layout>
@@ -2164,10 +2221,10 @@
             <layout name="container_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">subwidgets_display</widget>
+                  <widget category="widgetTypeConf">container_subwidgets_display</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">subwidgets_hideSubLabels</widget>
+                  <widget category="widgetTypeConf">container_subwidgets_hideSubLabels</widget>
                 </row>
                 <row>
                   <widget>foldable</widget>
@@ -2182,7 +2239,7 @@
                   <widget>styleClass</widget>
                 </row>
                 <row>
-                  <widget>subHeaderStyleClass</widget>
+                  <widget>subLabelStyleClass</widget>
                 </row>
                 <row>
                   <widget>subStyleClass</widget>
@@ -2266,18 +2323,17 @@
                   <field>styleClass</field>
                 </fields>
               </widget>
-              <widget name="subHeaderStyleClass" type="text">
+              <widget name="subLabelStyleClass" type="text">
                 <labels>
                   <label mode="any">Sub Header style class</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Style class for the sub header, displaying
-                    this sub widget label.
+                    Style class for the sub widget label.
                   </label>
                 </helpLabels>
                 <fields>
-                  <field>subHeaderStyleClass</field>
+                  <field>subLabelStyleClass</field>
                 </fields>
               </widget>
               <widget name="subStyleClass" type="text">
@@ -2500,7 +2556,13 @@
                   <widget>name</widget>
                 </row>
                 <row>
+                  <widget>nameDemoPreview</widget>
+                </row>
+                <row>
                   <widget>mode</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">widgetsDisplay</widget>
                 </row>
                 <row>
                   <widget>template</widget>
@@ -2520,9 +2582,34 @@
                 <fields>
                   <field>name</field>
                 </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
                 <properties widgetMode="any">
                   <property name="required">true</property>
                   <property name="resourceName">layouts</property>
+                </properties>
+              </widget>
+              <widget name="nameDemoPreview" type="text">
+                <labels>
+                  <label mode="any">Layout(s)</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout name. Since 5.6, this attribute
+                    accepts a list of multiple layout names, separated by
+                    commas.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>name</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="edit_demo_preview">view</mode>
+                </widgetModes>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
                 </properties>
               </widget>
               <widget name="mode" type="text">
@@ -2551,6 +2638,10 @@
                 <properties mode="any">
                   <property name="resourceName">xhtml_templates</property>
                 </properties>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
               </widget>
             </layout>
           </layouts>

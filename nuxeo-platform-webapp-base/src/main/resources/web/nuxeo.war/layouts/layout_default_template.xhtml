@@ -9,30 +9,60 @@
   styleClass="#{layoutProperty_styleClass}">
 
   <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
+  <nxu:set var="layoutWidgetsDisplay"
+    value="#{layout.properties.widgetsDisplay}"
+    resolveTwice="true">
 
-  <table class="dataInput">
-    <tbody>
+    <table class="dataInput">
+      <tbody>
 
-      <nxl:layoutRow>
-        <tr class="#{layoutRow.properties['styleClass']}">
-          <nxl:layoutRowWidget>
-            <nxu:set var="fieldColspan"
-              value="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1) + nxu:test(widget.handlingLabels, 1, 0)}">
-              <c:if test="#{not widget.handlingLabels}">
-                <td class="labelColumn">
-                  <ui:include src="/widgets/incl/widget_label_template.xhtml" />
-                </td>
-              </c:if>
-              <td class="fieldColumn" colspan="#{fieldColspan}">
-                <nxl:widget widget="#{widget}" value="#{value}" />
-              </td>
-            </nxu:set>
-          </nxl:layoutRowWidget>
-        </tr>
-      </nxl:layoutRow>
+        <nxl:layoutRow>
+          <nxu:set var="rowStyleClass"
+            value="#{layoutRow.properties.styleClass}"
+            resolveTwice="true">
+            <tr class="#{rowStyleClass}">
+              <nxl:layoutRowWidget>
 
-    </tbody>
-  </table>
+                <c:if test="#{layoutWidgetsDisplay == 'label_top'}">
+                  <nxu:set var="fieldColspan"
+                    value="#{layout.columns/layoutRow.size}">
+                    <td class="fieldColumn" colspan="#{fieldColspan}">
+                      <c:if test="#{not widget.handlingLabels}">
+                        <div>
+                          <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                            <ui:param name="labelStyleClass"
+                              value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                          </ui:include>
+                        </div>
+                      </c:if>
+                      <nxl:widget widget="#{widget}" value="#{value}" />
+                    </td>
+                  </nxu:set>
+                </c:if>
+
+                <c:if test="#{layoutWidgetsDisplay != 'label_top'}">
+                  <c:if test="#{not widget.handlingLabels}">
+                    <td class="labelColumn">
+                      <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                    </td>
+                  </c:if>
+                  <nxu:set var="fieldColspan"
+                    value="#{2*layout.columns/layoutRow.size -1 + nxu:test(widget.handlingLabels, 1, 0)}">
+                    <td class="fieldColumn" colspan="#{fieldColspan}">
+                      <nxl:widget widget="#{widget}" value="#{value}" />
+                    </td>
+                  </nxu:set>
+                </c:if>
+
+              </nxl:layoutRowWidget>
+            </tr>
+          </nxu:set>
+        </nxl:layoutRow>
+
+      </tbody>
+    </table>
+
+  </nxu:set>
 
 <script>
   jQuery(document).ready(function() {

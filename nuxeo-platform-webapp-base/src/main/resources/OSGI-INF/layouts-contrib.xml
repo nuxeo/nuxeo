@@ -1458,6 +1458,9 @@
                   <widget category="widgetTypeConf">actionsDisplay</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">widgetsDisplay</widget>
+                </row>
+                <row>
                   <widget>showEditOptions</widget>
                 </row>
                 <row>
