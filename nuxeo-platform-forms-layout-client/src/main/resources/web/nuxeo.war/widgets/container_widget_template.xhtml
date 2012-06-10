@@ -51,22 +51,23 @@
 
   <c:set var="isEditMode" value="#{widget.mode == 'edit'}" />
 
-  <div class="containerStyleClass #{nxu:test(widgetProperty_foldable and showHeader, 'foldableBox ', '')} #{widgetProperty_styleClass}">
+  <div class="widgetPanel containerWidgetPanel #{nxu:test(widgetProperty_foldable and showHeader, 'foldableBox ', '')} #{widgetProperty_styleClass}">
 
     <c:if test="#{showHeader}">
       <c:choose>
         <c:when test="#{widgetProperty_foldable}">
-          <h3 class="#{nxu:test(widgetProperty_foldedByDefault, 'folded', 'unfolded')}">
+          <h3 class="widgetHeader #{nxu:test(widgetProperty_foldedByDefault, 'folded', 'unfolded')}">
             <a href="#nogo" onclick="return toggleBox(this)">
               <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                <ui:param name="labelStyleClass" value="#{widgetProperty_headerStyleClass}" />
+                <ui:param name="labelStyleClass"
+                  value="#{widgetProperty_headerStyleClass}" />
               </ui:include>
             </a>
           </h3>
         </c:when>
         <c:otherwise>
           <c:if test="#{not empty widget.label}">
-            <h3 class="summaryTitle #{widgetProperty_headerStyleClass}">
+            <h3 class="widgetHeader summaryTitle #{widgetProperty_headerStyleClass}">
               <ui:include src="/widgets/incl/widget_label_template.xhtml" />
             </h3>
           </c:if>
@@ -79,63 +80,54 @@
 
       <c:choose>
 
+        <c:when test="#{widgetProperty_display == 'table'}">
+          <table class="dataOutput widgetTable containerWidgetTable #{widgetProperty_subStyleClass}">
+            <thead>
+              <c:if test="#{displaySubLabels}">
+                <tr>
+                  <nxl:subWidget>
+                    <th class="boldColumn containerLabel">
+                      <c:if test="#{not widget.handlingLabels}">
+                        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                          <ui:param name="labelStyleClass"
+                            value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                        </ui:include>
+                      </c:if>
+                    </th>
+                  </nxl:subWidget>
+                </tr>
+              </c:if>
+            </thead>
+            <tbody>
+              <tr>
+                <nxl:subWidget>
+                  <td class="fieldColumnn containerField">
+                    <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                    <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
+                    <c:if test="#{addForm}">
+                      <h:form id="#{layout.id}_#{widget.id}_form"
+                        enctype="multipart/form-data"
+                        styleClass="subWidgetForm">
+                        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                      </h:form>
+                    </c:if>
+                    <c:if test="#{not addForm}">
+                      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                    </c:if>
+                  </td>
+                </nxl:subWidget>
+              </tr>
+            </tbody>
+          </table>
+        </c:when>
+
         <c:when test="#{widgetProperty_display == 'inline'}">
           <nxl:subWidget>
-            <c:if test="#{displaySubLabels and not widget.handlingLabels}">
-              <span class="#{widgetProperty_subStyleClass}">
-                <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                  <ui:param name="labelStyleClass"
-                    value="boldLabel #{widgetProperty_subHeaderStyleClass}" />
-                </ui:include>
-              </span>
-            </c:if>
-            <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-            <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-            <c:if test="#{addForm}">
-              <h:form id="#{layout.id}_#{widget.id}_form"
-                enctype="multipart/form-data">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-              </h:form>
-            </c:if>
-            <c:if test="#{not addForm}">
-              <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-            </c:if>
-          </nxl:subWidget>
-        </c:when>
-
-        <c:when test="#{widgetProperty_display == 'block_top'}">
-          <nxl:subWidget>
-            <div class="#{widgetProperty_subStyleClass}">
+            <span class="#{widgetProperty_subStyleClass}">
               <c:if test="#{displaySubLabels and not widget.handlingLabels}">
                 <ui:include src="/widgets/incl/widget_label_template.xhtml">
                   <ui:param name="labelStyleClass"
-                    value="boldLabel #{widgetProperty_subHeaderStyleClass}" />
-                </ui:include>
-              </c:if>
-            </div>
-            <div class="#{widgetProperty_subStyleClass}">
-              <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-              <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-              <c:if test="#{addForm}">
-                <h:form id="#{layout.id}_#{widget.id}_form"
-                  enctype="multipart/form-data">
-                  <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                </h:form>
-              </c:if>
-              <c:if test="#{not addForm}">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-              </c:if>
-            </div>
-          </nxl:subWidget>
-        </c:when>
-
-        <c:when test="#{widgetProperty_display == 'block_left'}">
-          <nxl:subWidget>
-            <div class="#{widgetProperty_subStyleClass}">
-              <c:if test="#{displaySubLabels and not widget.handlingLabels}">
-                <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                  <ui:param name="labelStyleClass"
-                    value="boldLabel #{widgetProperty_subHeaderStyleClass}" />
+                    value="boldLabel #{widgetProperty_subLabelStyleClass}" />
                 </ui:include>
                 <h:outputText value=" " />
               </c:if>
@@ -143,7 +135,35 @@
               <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
               <c:if test="#{addForm}">
                 <h:form id="#{layout.id}_#{widget.id}_form"
-                  enctype="multipart/form-data">
+                  enctype="multipart/form-data"
+                  styleClass="subWidgetForm">
+                  <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                </h:form>
+              </c:if>
+              <c:if test="#{not addForm}">
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+              </c:if>
+            </span>
+          </nxl:subWidget>
+        </c:when>
+
+        <c:when test="#{widgetProperty_display == 'block_top'}">
+          <nxl:subWidget>
+            <c:if test="#{displaySubLabels and not widget.handlingLabels}">
+              <div class="#{widgetProperty_subStyleClass}">
+                <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                  <ui:param name="labelStyleClass"
+                    value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                </ui:include>
+              </div>
+            </c:if>
+            <div class="#{widgetProperty_subStyleClass}">
+              <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+              <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
+              <c:if test="#{addForm}">
+                <h:form id="#{layout.id}_#{widget.id}_form"
+                  enctype="multipart/form-data"
+                  styleClass="subWidgetForm">
                   <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
                 </h:form>
               </c:if>
@@ -155,35 +175,44 @@
         </c:when>
 
         <c:otherwise>
-          <nxl:subWidget>
-            <span class="#{widgetProperty_subStyleClass}">
-              <c:if test="#{displaySubLabels and not widget.handlingLabels}">
-                <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                  <ui:param name="labelStyleClass"
-                    value="boldLabel #{widgetProperty_subHeaderStyleClass}" />
-                </ui:include>
-                <h:outputText value=" " />
-              </c:if>
-              <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-              <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-              <c:if test="#{addForm}">
-                <h:form id="#{layout.id}_#{widget.id}_form"
-                  enctype="multipart/form-data">
-                  <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                </h:form>
-              </c:if>
-              <c:if test="#{not addForm}">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-              </c:if>
-            </span>
-            <h:outputText value=" " />
-          </nxl:subWidget>
+          <table class="dataInput widgetTable containerWidgetTable #{widgetProperty_subStyleClass}">
+            <tbody>
+              <nxl:subWidget>
+                <tr>
+                  <c:if test="#{displaySubLabels}">
+                    <td class="boldColumn containerLabel">
+                      <c:if test="#{not widget.handlingLabels}">
+                        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                          <ui:param name="labelStyleClass"
+                            value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                        </ui:include>
+                      </c:if>
+                    </td>
+                  </c:if>
+                  <td class="fieldColumnn containerField">
+                    <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                    <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
+                    <c:if test="#{addForm}">
+                      <h:form id="#{layout.id}_#{widget.id}_form"
+                        enctype="multipart/form-data"
+                        styleClass="subWidgetForm">
+                        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                      </h:form>
+                    </c:if>
+                    <c:if test="#{not addForm}">
+                      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                    </c:if>
+                  </td>
+                </tr>
+              </nxl:subWidget>
+            </tbody>
+          </table>
         </c:otherwise>
 
       </c:choose>
-    
+
     </div>
-  
+
   </div>
 
 </c:if>

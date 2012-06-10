@@ -17,85 +17,98 @@
   <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
   <c:set var="isEditMode" value="#{widget.mode == 'edit'}" />
 
-  <table class="dataInput complexTable #{widgetProperty_styleClass}">
-    <tbody>
-      <c:choose>
+  <c:choose>
 
-        <c:when test="#{widgetProperty_display == 'inline'}">
+    <c:when test="#{widgetProperty_display == 'table'}">
+      <table class="dataOutput widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+        <thead>
+          <c:if test="#{displaySubLabels}">
+            <tr>
+              <nxl:subWidget>
+                <c:if test="#{not widget.handlingLabels}">
+                  <th class="boldColumn">
+                    <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                      <ui:param name="labelStyleClass"
+                        value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                    </ui:include>
+                  </th>
+                </c:if>
+              </nxl:subWidget>
+            </tr>
+          </c:if>
+        </thead>
+        <tbody>
           <tr>
             <nxl:subWidget>
-              <td class="boldColumn #{widgetProperty_subStyleClass}">
-                <c:if test="#{displaySubLabels and not widget.handlingLabels}">
-                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                    <ui:param name="labelStyleClass" value="labelColumn" />
-                  </ui:include>
-                </c:if>
-              </td>
-              <td class="fieldColumn #{widgetProperty_subStyleClass}">
+              <td class="fieldColumn">
                 <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
               </td>
             </nxl:subWidget>
           </tr>
-        </c:when>
+        </tbody>
+      </table>
+    </c:when>
 
-        <c:when test="#{widgetProperty_display == 'block_top'}">
+    <c:when test="#{widgetProperty_display == 'inline'}">
+      <table class="dataInput widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+        <tbody>
+          <tr>
+            <nxl:subWidget>
+              <td class="boldColumn">
+                <c:if test="#{displaySubLabels and not widget.handlingLabels}">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                </c:if>
+              </td>
+              <td class="fieldColumn">
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+              </td>
+            </nxl:subWidget>
+          </tr>
+        </tbody>
+      </table>
+    </c:when>
+
+    <c:when test="#{widgetProperty_display == 'block_top'}">
+      <table class="dataInput widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+        <tbody>
           <nxl:subWidget>
             <c:if test="#{displaySubLabels and not widget.handlingLabels}">
               <tr>
-                <td class="boldColumn #{widgetProperty_subStyleClass}">
-                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                    <ui:param name="labelStyleClass" value="labelColumn" />
-                  </ui:include>
+                <td class="boldColumn">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml" />
                 </td>
               </tr>
             </c:if>
             <tr>
-              <td class="fieldColumn #{widgetProperty_subStyleClass}">
+              <td class="fieldColumn">
                 <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
               </td>
             </tr>
           </nxl:subWidget>
-        </c:when>
+        </tbody>
+      </table>
+    </c:when>
 
-        <c:when test="#{widgetProperty_display == 'block_left'}">
+    <c:otherwise>
+      <table class="dataInput widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+        <tbody>
           <nxl:subWidget>
             <tr>
               <c:if test="#{displaySubLabels and not widget.handlingLabels}">
-                <td class="labelColumn #{widgetProperty_subStyleClass}">
+                <td class="boldColumn">
                   <ui:include src="/widgets/incl/widget_label_template.xhtml" />
                 </td>
               </c:if>
-              <td class="fieldColumn #{widgetProperty_subStyleClass}">
+              <td class="fieldColumn">
                 <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
               </td>
             </tr>
           </nxl:subWidget>
-        </c:when>
+        </tbody>
+      </table>
+    </c:otherwise>
 
-        <c:otherwise>
-          <c:if test="#{displaySubLabels}">
-            <tr>
-              <c:if test="#{not widget.handlingLabels}">
-                <nxl:subWidget>
-                  <td class="boldColumn #{widgetProperty_subStyleClass}">
-                    <ui:include src="/widgets/incl/widget_label_template.xhtml" />
-                  </td>
-                </nxl:subWidget>
-              </c:if>
-            </tr>
-          </c:if>
-          <tr>
-            <nxl:subWidget>
-              <td class="fieldColumn #{widgetProperty_subStyleClass}">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-              </td>
-            </nxl:subWidget>
-          </tr>
-        </c:otherwise>
-
-      </c:choose>
-    </tbody>
-  </table>
+  </c:choose>
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">

@@ -10,7 +10,8 @@ Accepted parameters:
 - widget: the widget instance (required)
 - isEditMode: boolean indicating if widget is in edit mode (to display
   required field indicators), optional
-- labelStyleClass: CSS style class fot the label item, optional
+- hideHelp: boolean indicating if widget help should be hidden, optional
+- labelStyleClass: CSS style class for the label item, optional
 </c:if>
 
   <nxu:set var="widgetLabel"
@@ -18,14 +19,14 @@ Accepted parameters:
   <nxu:set var="widgetHelpLabel"
     value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}">
 
-    <c:if test="#{empty widget.helpLabel}">
+    <c:if test="#{empty widget.helpLabel or hideHelp}">
       <h:outputText value="#{widgetLabel}"
-        styleClass="#{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+        styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
     </c:if>
-    <c:if test="#{!empty widget.helpLabel}">
+    <c:if test="#{not empty widget.helpLabel and not hideHelp}">
       <div class="widgetHelpLabel">
         <h:outputText value="#{widgetLabel}"
-          styleClass="#{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
+          styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
       </div>
       <div class="tooltip">
         #{widgetHelpLabel}

@@ -9,7 +9,7 @@
 
   <h:outputLink value="#{action.getLink()}"
     target="#{action.properties.target}"
-    onclick="#{action.confirm}"
+    onclick="#{action.confirm};#{action.properties.onclick};"
     immediate="#{action.immediate}"
     styleClass="#{actionStyleClass} #{action.properties.styleClass}">
     <ui:include src="/incl/action/action_icon_label_template.xhtml" />
