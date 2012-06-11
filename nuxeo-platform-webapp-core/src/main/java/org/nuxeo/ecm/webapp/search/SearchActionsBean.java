@@ -115,9 +115,6 @@ public class SearchActionsBean extends InputController implements
     @In(required = false)
     private transient Principal currentUser;
 
-    @In(required = false, create = false)
-    SearchResultsBean searchResults;
-
     // need to be required = false since this is accessed also before
     // connecting
     // to a rep
@@ -138,9 +135,6 @@ public class SearchActionsBean extends InputController implements
 
     @In(create = true)
     private transient ClipboardActions clipboardActions;
-
-    @In(create = true)
-    private transient SearchColumns searchColumns;
 
     @In(create = true)
     private transient Context conversationContext;
@@ -257,11 +251,6 @@ public class SearchActionsBean extends InputController implements
             log.debug("performing searchType: " + searchTypeId);
         }
         try {
-            // XXX : hack !!!
-            if (searchResults != null) {
-                searchResults.reset();
-            }
-
             String page;
             PagedDocumentsProvider resultsProvider;
             if (searchTypeId == SearchType.NXQL) {
@@ -275,21 +264,14 @@ public class SearchActionsBean extends InputController implements
                 resultsProvider = resultsProvidersCache.get(PROV_NXQL);
                 page = ACTION_PAGE_SEARCH_NXQL;
             } else if (searchTypeId == SearchType.FORM) {
-                String sortColumn = searchColumns.getSortColumn();
-                boolean sortAscending = searchColumns.getSortAscending();
-                SortInfo sortInfo = null;
-                if (sortColumn != null) {
-                    sortInfo = new SortInfo(sortColumn, sortAscending);
-                }
-
                 resultsProvidersCache.invalidate(QM_ADVANCED);
-                resultsProvider = resultsProvidersCache.get(QM_ADVANCED,
-                        sortInfo);
+                resultsProvider = resultsProvidersCache.get(QM_ADVANCED, null);
                 page = ACTION_PAGE_SEARCH_ADVANCED;
             } else if (searchTypeId == SearchType.KEYWORDS) {
                 if (simpleSearchKeywords == null || simpleSearchKeywords == "") {
                     log.warn("simpleSearchKeywords not given");
-                    facesMessages.add(StatusMessage.Severity.INFO,
+                    facesMessages.add(
+                            StatusMessage.Severity.INFO,
                             resourcesAccessor.getMessages().get(
                                     "feedback.search.noKeywords"));
                     return ACTION_PAGE_SEARCH_NO_KEYWORDS;
@@ -298,7 +280,8 @@ public class SearchActionsBean extends InputController implements
                 for (String keyword : keywords) {
                     if (keyword.startsWith("*")) {
                         log.warn("Can't begin search with * character");
-                        facesMessages.add(StatusMessage.Severity.INFO,
+                        facesMessages.add(
+                                StatusMessage.Severity.INFO,
                                 resourcesAccessor.getMessages().get(
                                         "feedback.search.star"));
                         return ACTION_PAGE_SEARCH_NO_KEYWORDS;

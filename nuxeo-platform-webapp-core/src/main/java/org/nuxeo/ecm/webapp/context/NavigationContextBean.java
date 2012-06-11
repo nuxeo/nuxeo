@@ -609,14 +609,17 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         try {
             Set<String> typeNames = getSchemaManager().getDocumentTypeNamesExtending(
                     superType);
-            for (String type : typeNames) {
-                if (type.equals(targetDocType)) {
-                    return true;
+            if (typeNames != null) {
+                for (String type : typeNames) {
+                    if (type.equals(targetDocType)) {
+                        return true;
+                    }
                 }
             }
             return false;
         } catch (Exception e) {
-            throw new ClientException("Could not extending types", e);
+            throw new ClientException(
+                    "Could not resolve if document has a supertype", e);
         }
     }
 
