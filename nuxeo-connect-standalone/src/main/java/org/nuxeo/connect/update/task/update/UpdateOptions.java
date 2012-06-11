@@ -22,7 +22,6 @@ import org.nuxeo.connect.update.task.update.JarUtils.Match;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class UpdateOptions {
 
@@ -74,8 +73,14 @@ public class UpdateOptions {
      */
     protected File targetDir;
 
+    /**
+     * Allow install of a lower version
+     */
     protected boolean allowDowngrade;
 
+    /**
+     * Install only if already installed
+     */
     protected boolean upgradeOnly;
 
     protected boolean deleteOnExit = false;

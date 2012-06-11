@@ -33,19 +33,20 @@ import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.ReloadableComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.service.TimestampedService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ComponentInstanceImpl implements ComponentInstance {
 
     private static final Log log = LogFactory.getLog(ComponentInstanceImpl.class);
 
     protected Object instance;
+
     protected RegistrationInfoImpl ri;
 
     protected List<OSGiServiceFactory> factories;
@@ -53,13 +54,11 @@ public class ComponentInstanceImpl implements ComponentInstance {
     public ComponentInstanceImpl(RegistrationInfoImpl ri) throws Exception {
         this.ri = ri;
         if (ri.implementation == null) {
-            //TODO
-            //should be an extension component
+            // TODO: should be an extension component
             instance = this;
         } else {
             // TODO: load class only once when creating the registration info
-            instance = this.ri.context.loadClass(this.ri.implementation)
-            .newInstance();
+            instance = this.ri.context.loadClass(this.ri.implementation).newInstance();
         }
     }
 
@@ -128,7 +127,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
         } catch (Exception e) {
-            log.error("Failed to activate component: "+getName(), e);
+            log.error("Failed to activate component: " + getName(), e);
             Framework.handleDevError(e);
         }
     }
@@ -151,7 +150,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
         } catch (Exception e) {
-            log.error("Failed to deactivate component: "+getName(), e);
+            log.error("Failed to deactivate component: " + getName(), e);
             Framework.handleDevError(e);
         }
     }
@@ -171,22 +170,22 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the reload method is not mandatory
         } catch (Exception e) {
-            log.error("Failed to reload component: "+getName(), e);
+            log.error("Failed to reload component: " + getName(), e);
             Framework.handleDevError(e);
         }
     }
 
     // TODO: cache info about implementation to avoid computing it each time
     @Override
-    public void registerExtension(Extension extension)
-    throws Exception {
-        // if this the target extension point is extending another extension point from another component
+    public void registerExtension(Extension extension) throws Exception {
+        // if this the target extension point is extending another extension
+        // point from another component
         // then delegate the registration to the that component component
         ExtensionPoint xp = ri.getExtensionPoint(extension.getExtensionPoint());
         if (xp != null) {
             String superCo = xp.getSuperComponent();
             if (superCo != null) {
-                ((ExtensionImpl)extension).target = new ComponentName(superCo);
+                ((ExtensionImpl) extension).target = new ComponentName(superCo);
                 ri.manager.registerExtension(extension);
                 return;
             }
@@ -219,8 +218,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     // TODO: cache info about implementation to avoid computing it each time
     @Override
-    public void unregisterExtension(Extension extension)
-    throws Exception {
+    public void unregisterExtension(Extension extension) throws Exception {
         // activate the implementation instance
         if (instance instanceof Component) {
             ((Component) instance).unregisterExtension(extension);
@@ -240,14 +238,20 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
+        T res = null;
         Object object = getInstance();
         if (object instanceof Adaptable) {
-            return ((Adaptable) object).getAdapter(adapter);
+            res = ((Adaptable) object).getAdapter(adapter);
+        } else if (adapter.isAssignableFrom(object.getClass())) {
+            res = adapter.cast(object);
         }
-        if (adapter.isAssignableFrom(object.getClass())) {
-            return adapter.cast(object);
+        // to handle hot reload
+        if (res instanceof TimestampedService
+                && object instanceof TimestampedService) {
+            Long lastModified = ((TimestampedService) object).getLastModified();
+            ((TimestampedService) res).setLastModified(lastModified);
         }
-        return null;
+        return res;
     }
 
     @Override
@@ -305,7 +309,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     public void unregisterServices() throws Exception {
-        //TODO the reload method is not reloading services. do we want this?
+        // TODO the reload method is not reloading services. do we want this?
         if (factories != null) {
             for (OSGiServiceFactory factory : factories) {
                 factory.unregister();
@@ -322,16 +326,17 @@ public class ComponentInstanceImpl implements ComponentInstance {
         return ri.toString();
     }
 
-
     protected class OSGiServiceFactory implements ServiceFactory {
         protected Class<?> clazz;
+
         protected ServiceRegistration reg;
 
         public OSGiServiceFactory(String className) throws Exception {
-            this (ri.getContext().getBundle(), className);
+            this(ri.getContext().getBundle(), className);
         }
 
-        public OSGiServiceFactory(Bundle bundle, String className) throws Exception {
+        public OSGiServiceFactory(Bundle bundle, String className)
+                throws Exception {
             clazz = ri.getContext().getBundle().loadClass(className);
         }
 
@@ -347,7 +352,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
 
         public void register() {
-            reg = ri.getContext().getBundle().getBundleContext().registerService(clazz.getName(), this, null);
+            reg = ri.getContext().getBundle().getBundleContext().registerService(
+                    clazz.getName(), this, null);
         }
 
         public void unregister() {

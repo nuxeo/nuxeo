@@ -23,56 +23,100 @@ import java.io.File;
  */
 public interface ReloadService {
 
-    /**
-     * @since 5.5
-     */
-    String deployBundle(File file, boolean reloadResources) throws Exception;
-    
-    String deployBundle(File file) throws Exception;
+    public static final String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
+
+    public static final String FLUSH_EVENT_ID = "flush";
+
+    public static final String RELOAD_EVENT_ID = "reload";
+
+    public static final String FLUSH_SEAM_EVENT_ID = "flushSeamComponents";
+
+    public static final String RELOAD_SEAM_EVENT_ID = "reloadSeamComponents";
 
     /**
+     * Sends a runtime event with id {@link #RELOAD_EVENT_ID} so that listeners
+     * can be notified that a reload has been done.
+     * <p>
+     * Also calls {@link #reloadProperties()} by default, but not other reload
+     * methods as they could alter the running application behaviour.
+     *
      * @since 5.5
+     * @see #reloadProperties()
      */
-   void undeployBundle(String name) throws Exception;
+    void reload() throws Exception;
 
+    /**
+     * Reloads the Nuxeo repository configuration
+     */
     void reloadRepository() throws Exception;
 
-    void flushJaasCache() throws Exception;
-
-    void reloadProperties() throws Exception;
-    
     /**
+     * Reloads runtime framework properties
+     */
+    void reloadProperties() throws Exception;
+
+    /**
+     * Sends a runtime event with id {@link #RELOAD_SEAM_EVENT_ID}
+     *
      * @since 5.5
      */
     void reloadSeamComponents() throws Exception;
 
-    void addJar(File file) throws Exception;
-
-    void removeJar(File file) throws Exception;
-
     /**
-     * Sends a flush event so that listeners can be notified that a reload has
-     * been done.
-     * @throws Exception 
+     * Sends a runtime event with id {@link #FLUSH_EVENT_ID} so that listeners
+     * can be notified that a flush is needed (after a reload for instance).
+     * <p>
+     * Also calls {@link #flushJaasCache()} by default, but not other flush
+     * methods as they could alter the running application behaviour.
      *
+     * @throws Exception
+     * @see {@link #flushJaasCache()}
      * @since 5.5
      */
     void flush() throws Exception;
 
     /**
-     * Copy web resources in nuxeo WAR
-     * 
-     * @since 5.5
+     * Sends an event that will trigger reset of JaasCache
      */
-    void installWebResources(File file) throws Exception;
+    void flushJaasCache() throws Exception;
 
     /**
-     * @since 5.5
-     */
-    void reload() throws Exception;
-
-    /**
+     * Sends a runtime event with id {@link #FLUSH_SEAM_EVENT_ID}
+     *
      * @since 5.6
      */
     void flushSeamComponents() throws Exception;
+
+    /**
+     * @since 5.5
+     * @deprecated since 5.6: deploy should be handled by tasks directly
+     */
+    @Deprecated
+    String deployBundle(File file, boolean reloadResources) throws Exception;
+
+    /**
+     * @see #deployBundle(File, boolean)
+     * @deprecated since 5.6: deploy should be handled by tasks directly
+     */
+    @Deprecated
+    String deployBundle(File file) throws Exception;
+
+    /**
+     * @since 5.5
+     * @deprecated since 5.6: deploy should be handled by tasks directly
+     */
+    @Deprecated
+    void undeployBundle(String name) throws Exception;
+
+    /**
+     * Copy web resources in nuxeo WAR.
+     * <p>
+     * Called by {@link #deployBundle(File, boolean)}
+     *
+     * @since 5.5
+     * @deprecated since 5.6: install should be handled by tasks directly
+     */
+    @Deprecated
+    void installWebResources(File file) throws Exception;
+
 }

@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -44,6 +45,7 @@ import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContextImpl;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateContribution;
@@ -114,7 +116,6 @@ public class DeploymentPreprocessor {
 
     protected void init(ContainerDescriptor cd) throws Exception {
         cd.context = new CommandContextImpl(cd.directory);
-        //
         initSeamHotDeploy(cd.context);
         // run container install instructions if any
         if (cd.install != null) {
@@ -136,21 +137,18 @@ public class DeploymentPreprocessor {
         }
     }
 
-    public static final String SEAM_HOT_RELOAD_GLOBAL_CONFIG = "config/seam-debug.properties";
-
-    public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
-
     protected void initSeamHotDeploy(CommandContext ctx) throws IOException {
-
-        File f = new File(dir, SEAM_HOT_RELOAD_GLOBAL_CONFIG);
-        if (!f.exists()) {
-            log.info("Nuxeo's Seam HotReload is not enabled");
-            return;
+        ConfigurationGenerator confGen = new ConfigurationGenerator();
+        // this init detects if seam debug mode should be set
+        confGen.init();
+        Properties props = confGen.getUserConfig();
+        String seamDebugPropValue = props.getProperty(
+                ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP, "false");
+        boolean isSeamDebugSet = Boolean.TRUE.equals(Boolean.valueOf(seamDebugPropValue));
+        if (isSeamDebugSet) {
+            // not sure where it's used, but assume this is useful
+            ctx.put(ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP, "true");
         }
-
-        log.info("Nuxeo's Seam HotReload is enabled");
-        ctx.put(SEAM_HOT_RELOAD_SYSTEM_PROP, "true");
-        System.setProperty(SEAM_HOT_RELOAD_SYSTEM_PROP, "true");
     }
 
     protected void processFile(ContainerDescriptor cd, File file)
@@ -532,9 +530,9 @@ public class DeploymentPreprocessor {
     }
 
     /**
-     * Run preprocessing in the given home directory and using the given list of
-     * bundles. Bundles must be ordered by the caller to have same deployment
-     * order on all computers.
+     * Run preprocessing in the given home directory and using the given list
+     * of bundles. Bundles must be ordered by the caller to have same
+     * deployment order on all computers.
      * <p>
      * The metadata file is the metadat file to be used to configure the
      * processor. If null the default location will be used (relative to home):

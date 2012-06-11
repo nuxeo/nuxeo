@@ -111,7 +111,7 @@ public abstract class CommandsTask extends AbstractTask {
 
     /**
      * User parameters are not handled by default. You need to implement your
-     * own task to o this.
+     * own task to do this.
      */
     protected void doRun(Map<String, String> params) throws PackageException {
         for (Command cmd : commands) {

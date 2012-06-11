@@ -15,12 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A component that expose a reload method usefull to completely reload the component and preserving
- * already registered extensions.
+ * A component that expose a reload method usefull to completely reload the
+ * component and preserving already registered extensions.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @deprecated since 5.6: services needing a reload should listen to runtime
+ *             reload events instead
  */
+@Deprecated
 public class ReloadableComponent extends DefaultComponent implements Reloadable {
 
     protected List<Extension> extensions = new ArrayList<Extension>();

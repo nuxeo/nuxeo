@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.reload">
 
-    <implementation
-        class="org.nuxeo.runtime.reload.ReloadComponent" />
+  <implementation class="org.nuxeo.runtime.reload.ReloadComponent" />
 
-    <service>
-        <provide
-            interface="org.nuxeo.runtime.reload.ReloadService" />
-    </service>
+  <service>
+    <provide interface="org.nuxeo.runtime.reload.ReloadService" />
+  </service>
 
 </component>

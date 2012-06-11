@@ -41,8 +41,9 @@ import org.nuxeo.runtime.api.login.LoginService;
  * <p>
  * There are two type of services:
  * <ul>
- * <li>Global Services - these services are uniquely defined by a service class,
- * and there is an unique instance of the service in the system per class.
+ * <li>Global Services - these services are uniquely defined by a service
+ * class, and there is an unique instance of the service in the system per
+ * class.
  * <li>Local Services - these services are defined by a class and an URI. This
  * type of service allows multiple service instances for the same class of
  * services. Each instance is uniquely defined in the system by an URI.
@@ -51,6 +52,30 @@ import org.nuxeo.runtime.api.login.LoginService;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class Framework {
+
+    /**
+     * Global dev property
+     *
+     * @since 5.6
+     * @see #isDevModeSet()
+     */
+    public static final String NUXEO_DEV_SYSTEM_PROP = "org.nuxeo.dev";
+
+    /**
+     * Global testing property
+     *
+     * @since 5.6
+     * @see #isTestModeSet()
+     */
+    public static final String NUXEO_TESTING_SYSTEM_PROP = "org.nuxeo.runtime.testing";
+
+    /**
+     * Global debug property
+     *
+     * @since 5.6
+     * @see #isDebugModeSet()
+     */
+    public static final String NUXEO_DEBUG_SYSTEM_PROP = "org.nuxeo.debug";
 
     /**
      * The runtime instance.
@@ -66,11 +91,12 @@ public final class Framework {
     /**
      * A class loader used to share resources between all bundles.
      * <p>
-     * This is useful to put resources outside any bundle (in a directory on the
-     * file system) and then refer them from XML contributions.
+     * This is useful to put resources outside any bundle (in a directory on
+     * the file system) and then refer them from XML contributions.
      * <p>
-     * The resource directory used by this loader is ${nuxeo_data_dir}/resources
-     * whee ${nuxeo_data_dir} is usually ${nuxeo_home}/data
+     * The resource directory used by this loader is
+     * ${nuxeo_data_dir}/resources whee ${nuxeo_data_dir} is usually
+     * ${nuxeo_home}/data
      */
     protected static SharedResourceLoader resourceLoader;
 
@@ -190,8 +216,8 @@ public final class Framework {
 
     /**
      * Login in the system as the system user (a pseudo-user having all
-     * privileges). The given username will be used to identify the user id that
-     * called this method.
+     * privileges). The given username will be used to identify the user id
+     * that called this method.
      *
      * @param username the originating user id
      * @return the login session if successful. Never returns null.
@@ -214,7 +240,6 @@ public final class Framework {
      * @param username the user name to login as.
      * @return the login context
      * @throws LoginException if any error occurs
-     *
      * @since 5.4.2
      */
     public static LoginContext loginAsUser(String username)
@@ -299,8 +324,8 @@ public final class Framework {
     }
 
     /**
-     * Gets the given property value if any, otherwise returns the given default
-     * value.
+     * Gets the given property value if any, otherwise returns the given
+     * default value.
      * <p>
      * The framework properties will be searched first then if any matching
      * property is found the system properties are searched too.
@@ -314,8 +339,8 @@ public final class Framework {
     }
 
     /**
-     * Gets all the framework properties. The system properties are not included
-     * in the returned map.
+     * Gets all the framework properties. The system properties are not
+     * included in the returned map.
      *
      * @return the framework properties map. Never returns null.
      */
@@ -395,20 +420,53 @@ public final class Framework {
         return isOSGiServiceSupported;
     }
 
+    /**
+     * Returns true id dev mode is set.
+     * <p>
+     * Activating this mode, the Runtime Framework will stop on low-level
+     * errors, see {@link #handleDevError(Throwable)}
+     */
     public static boolean isDevModeSet() {
-        String dev = getProperty("org.nuxeo.dev");
+        String dev = getProperty(NUXEO_DEV_SYSTEM_PROP);
         if (dev == null) {
-            dev = System.getProperty("org.nuxeo.dev");
+            dev = System.getProperty(NUXEO_DEV_SYSTEM_PROP);
         }
-        return dev != null && !dev.equals("false");
+        return Boolean.TRUE.equals(Boolean.valueOf(dev));
     }
 
+    /**
+     * Returns true if test mode is set.
+     * <p>
+     * Activating this mode, some of the code may not behave as it would in
+     * production, to ease up testing.
+     */
     public static boolean isTestModeSet() {
-        String test = getProperty("org.nuxeo.runtime.testing");
+        String test = getProperty(NUXEO_TESTING_SYSTEM_PROP);
         if (test == null) {
-            test = System.getProperty("org.nuxeo.runtime.testing");
+            test = System.getProperty(NUXEO_TESTING_SYSTEM_PROP);
         }
-        return test != null && !test.equals("false");
+        return Boolean.TRUE.equals(Boolean.valueOf(test));
+    }
+
+    /**
+     * Returns true if debug mode is set.
+     * <p>
+     * Activating this mode, some of the code may not behave as it would in
+     * production, to ease up debugging and working on developing the
+     * application.
+     * <p>
+     * For instance, it'll enable hot-reload if some packages are installed
+     * while the framework is running. It will also reset some caches when that
+     * happens.
+     *
+     * @since 5.6
+     */
+    public static boolean isDebugModeSet() {
+        String debug = getProperty(NUXEO_DEBUG_SYSTEM_PROP);
+        if (debug == null) {
+            debug = System.getProperty(NUXEO_DEBUG_SYSTEM_PROP);
+        }
+        return Boolean.TRUE.equals(Boolean.valueOf(debug));
     }
 
     /**
@@ -422,8 +480,8 @@ public final class Framework {
      * entry exists in the XML descriptor but cannot be resolved to a class).
      * <li>Uncatched exception on extension registration / unregistration
      * (either in framework or user component code)
-     * <li>Uncatched exception on component activation / decativation (either in
-     * framework or user component code)
+     * <li>Uncatched exception on component activation / desactivation (either
+     * in framework or user component code)
      * <li>Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be
      * resolved to a resource)
      * </ul>
@@ -432,7 +490,7 @@ public final class Framework {
      */
     public static void handleDevError(Throwable t) {
         if (isDevModeSet()) {
-            System.err.println("Fatal error caught in dev. mode: exiting.");
+            System.err.println("Fatal error caught in dev mode: exiting.");
             t.printStackTrace();
             System.exit(1);
         }

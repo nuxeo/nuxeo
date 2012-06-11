@@ -14,6 +14,8 @@
 
 package org.nuxeo.runtime.model;
 
+import org.nuxeo.runtime.service.TimestampedService;
+
 /**
  * A Nuxeo Runtime component.
  * <p>
@@ -22,7 +24,7 @@ package org.nuxeo.runtime.model;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface Component extends Extensible {
+public interface Component extends Extensible, TimestampedService {
 
     /**
      * Activates the component.
@@ -52,7 +54,6 @@ public interface Component extends Extensible {
      * initialization.
      *
      * @return the order, 1000 by default
-     *
      * @since 5.6
      */
     int getApplicationStartedOrder();

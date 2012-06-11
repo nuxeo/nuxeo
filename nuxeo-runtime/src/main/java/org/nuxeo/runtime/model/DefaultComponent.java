@@ -14,6 +14,8 @@
 
 package org.nuxeo.runtime.model;
 
+import java.util.Date;
+
 /**
  * Empty implementation for a component.
  *
@@ -21,12 +23,19 @@ package org.nuxeo.runtime.model;
  */
 public class DefaultComponent implements Component, Adaptable {
 
+    /**
+     * @since 5.6
+     */
+    protected Long lastModified;
+
     @Override
     public void activate(ComponentContext context) throws Exception {
+        setModifiedNow();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        setModifiedNow();
     }
 
     @Override
@@ -39,6 +48,7 @@ public class DefaultComponent implements Component, Adaptable {
             registerContribution(contrib, extension.getExtensionPoint(),
                     extension.getComponent());
         }
+        setModifiedNow();
     }
 
     @Override
@@ -51,6 +61,7 @@ public class DefaultComponent implements Component, Adaptable {
             unregisterContribution(contrib, extension.getExtensionPoint(),
                     extension.getComponent());
         }
+        setModifiedNow();
     }
 
     public void registerContribution(Object contribution,
@@ -78,4 +89,22 @@ public class DefaultComponent implements Component, Adaptable {
         // do nothing by default
     }
 
+    /**
+     * Sets the last modified date to current date timestamp
+     *
+     * @since 5.6
+     */
+    protected void setModifiedNow() {
+        setLastModified(Long.valueOf(new Date().getTime()));
+    }
+
+    @Override
+    public Long getLastModified() {
+        return lastModified;
+    }
+
+    @Override
+    public void setLastModified(Long lastModified) {
+        this.lastModified = lastModified;
+    }
 }

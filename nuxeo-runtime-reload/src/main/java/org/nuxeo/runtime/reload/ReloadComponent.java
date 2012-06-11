@@ -44,12 +44,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     private static final Log log = LogFactory.getLog(ReloadComponent.class);
 
-    public static final String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
-
-    public static final String FLUSH_EVENT_ID = "flush";
-    
-    public static final String RELOAD_EVENT_ID = "reload";
-
     protected static Bundle bundle;
 
     public static BundleContext getBundleContext() {
@@ -73,16 +67,28 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void flushJaasCache() throws Exception {
+    public void reload() throws Exception {
+        reloadProperties();
         EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event("usermanager", "user_changed", this,
-                "Deployer")); // the data argument is optional
+        eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this,
+                null));
+    }
+
+    @Override
+    public void reloadProperties() throws Exception {
+        Framework.getRuntime().reloadProperties();
     }
 
     @Override
     public void reloadRepository() throws Exception {
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, "reloadRepositories", this, null));
+    }
+
+    @Override
+    public void reloadSeamComponents() throws Exception {
+        Framework.getLocalService(EventService.class).sendEvent(
+                new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
     }
 
     @Override
@@ -94,28 +100,16 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void reload() throws Exception  {
-        reloadProperties();     
+    public void flushJaasCache() throws Exception {
         EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this,
-                null));
-    }
-    /**
-     * Add a JAR to the application classloader - experimental.
-     */
-    @Override
-    public void addJar(File file) throws Exception {
-        MutableClassLoaderDelegate mcl = new MutableClassLoaderDelegate(
-                ReloadComponent.class.getClassLoader());
-        mcl.addURL(file.toURI().toURL());
+        eventService.sendEvent(new Event("usermanager", "user_changed", this,
+                "Deployer")); // the data argument is optional
     }
 
-    /**
-     * Remove a JAR from the application classloader - experimental.
-     */
     @Override
-    public void removeJar(File file) throws Exception {
-        // TODO
+    public void flushSeamComponents() throws Exception {
+        Framework.getLocalService(EventService.class).sendEvent(
+                new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
     }
 
     public String deployBundle(File file, boolean reloadResourceClasspath)
@@ -135,7 +129,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         newBundle.start();
         return newBundle.getSymbolicName();
     }
-    
+
     @Override
     public String deployBundle(File file) throws Exception {
         return deployBundle(file, false);
@@ -155,31 +149,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    @Override
-    public void reloadProperties() throws Exception {
-        Framework.getRuntime().reloadProperties();
-    }
-
-    /**
-     * Rebuild the framework resource class loader and add to it the given file
-     * paths.
-     * <p>
-     * The already added paths are removed from the class loader.
-     */
-    public static void reloadResourceClassPath(Collection<String> files)
-            throws Exception {
-        Framework.reloadResourceLoader();
-        SharedResourceLoader loader = Framework.getResourceLoader();
-        for (String path : files) {
-            URL url = new File(path).toURI().toURL();
-            loader.addURL(url);
-        }
-    }
-
     public void installWebResources(File file) throws Exception {
         log.info("running fragment processor");
         // we cannot use DeploymentPreprocessor since the initial preprocessing
         // will be overridden
+        // FIXME: handle other resources (message bundles for instance)
         if (file.isDirectory()) {
             File war = new File(file, "web");
             war = new File(war, "nuxeo.war");
@@ -200,23 +174,28 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    public static File getAppDir() {
+    /**
+     * Rebuild the framework resource class loader and add to it the given file
+     * paths.
+     * <p>
+     * The already added paths are removed from the class loader.
+     */
+    protected static void reloadResourceClassPath(Collection<String> files)
+            throws Exception {
+        Framework.reloadResourceLoader();
+        SharedResourceLoader loader = Framework.getResourceLoader();
+        for (String path : files) {
+            URL url = new File(path).toURI().toURL();
+            loader.addURL(url);
+        }
+    }
+
+    protected static File getAppDir() {
         return Environment.getDefault().getConfig().getParentFile();
     }
 
-    public static File getWarDir() {
+    protected static File getWarDir() {
         return new File(getAppDir(), "nuxeo.war");
     }
 
-    @Override
-    public void reloadSeamComponents() throws Exception {
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, "reloadSeamComponents", this, null));
-    }
-
-    @Override
-    public void flushSeamComponents() throws Exception {
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, "flushSeamComponents", this, null));
-    }
 }

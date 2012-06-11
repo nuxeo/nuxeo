@@ -170,6 +170,32 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_PRODUCT_VERSION = "org.nuxeo.ecm.product.version";
 
+    /**
+     * Global debug property, dupplicated from runtime framework
+     *
+     * @since 5.6
+     */
+    public static final String NUXEO_DEBUG_SYSTEM_PROP = "org.nuxeo.debug";
+
+    /**
+     * Seam hot reload property, also controlled by
+     * {@link #NUXEO_DEBUG_SYSTEM_PROP}
+     *
+     * @since 5.6
+     */
+    public static final String SEAM_DEBUG_SYSTEM_PROP = "org.nuxeo.seam.debug";
+
+    /**
+     * Old way of detecting if seam debug should be enabled, by looking for the
+     * presence of this file. Setting property {@link #SEAM_DEBUG_SYSTEM_PROP}
+     * in nuxeo.conf is enough now.
+     *
+     * @deprecated since 5.6
+     * @since 5.6
+     */
+    @Deprecated
+    public static final String SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE = "seam-debug.properties";
+
     private final File nuxeoHome;
 
     // User configuration file
@@ -204,7 +230,8 @@ public class ConfigurationGenerator {
     // if PARAM_FORCE_GENERATION=once, set to false; else keep current value
     private boolean setOnceToFalse = true;
 
-    // if PARAM_FORCE_GENERATION=false, set to once; else keep the current value
+    // if PARAM_FORCE_GENERATION=false, set to once; else keep the current
+    // value
     private boolean setFalseToOnce = false;
 
     public boolean isConfigurable() {
@@ -475,17 +502,63 @@ public class ConfigurationGenerator {
             saveConfiguration(newParametersToSave, false, false);
         }
 
+        // init debug mode(s)
+        String debugPropValue = userConfig.getProperty(NUXEO_DEBUG_SYSTEM_PROP,
+                "false");
+        boolean isDebugSet = Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
+        if (isDebugSet) {
+            log.info("Nuxeo Debug mode enabled");
+        } else {
+            log.info("Nuxeo Debug mode is not enabled");
+        }
+
+        // XXX: cannot init seam debug mode when global debug mode is set, as
+        // it needs to be activated at startup, and requires the seam-debug jar
+        // to be in the classpath anyway
+        String seamDebugPropValue = userConfig.getProperty(
+                SEAM_DEBUG_SYSTEM_PROP, "false");
+        boolean isSeamDebugSet = Boolean.TRUE.equals(Boolean.valueOf(seamDebugPropValue))
+                || hasSeamDebugFile();
+        if (isSeamDebugSet) {
+            log.info("Nuxeo Seam HotReload is enabled");
+            // add it to the system props for compat, in case this mode was
+            // detected because of presence of the file in the config dir, and
+            // because it's checked there on code that relies on it
+            System.setProperty(SEAM_DEBUG_SYSTEM_PROP, "true");
+        } else {
+            log.info("Nuxeo Seam HotReload is not enabled");
+        }
+
         // Could be useful to initialize DEFAULT env...
         // initEnv();
+    }
+
+    /**
+     * Old way of detecting if seam debug is set, bu checking for the presence
+     * of a file.
+     * <p>
+     * On 5.6, using the config generator to get the info from the nuxeo.conf
+     * file makes it possible to get the property value this early, so adding
+     * an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer
+     * needed.
+     *
+     * @deprecated since 5.6
+     */
+    @Deprecated
+    protected boolean hasSeamDebugFile() {
+        File f = new File(getServerConfigurator().getConfigDir(),
+                SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE);
+        if (!f.exists()) {
+            return false;
+        }
+        return true;
     }
 
     /**
      * Generate properties which values are based on others
      *
      * @return Map with new parameters to save in {@code nuxeoConf}
-     *
      * @throws ConfigurationException
-     *
      * @since 5.5
      */
     protected HashMap<String, String> evalDynamicProperties()
@@ -500,9 +573,7 @@ public class ConfigurationGenerator {
      * Generate a server status key if not already set
      *
      * @param newParametersToSave
-     *
      * @throws ConfigurationException
-     *
      * @see #PARAM_STATUS_KEY
      * @since 5.5
      */
@@ -552,7 +623,8 @@ public class ConfigurationGenerator {
     /**
      * Read nuxeo.conf, replace backslashes in paths and write new nuxeo.conf
      *
-     * @throws ConfigurationException if any error reading or writing nuxeo.conf
+     * @throws ConfigurationException if any error reading or writing
+     *             nuxeo.conf
      * @since 5.4.1
      */
     protected void replaceBackslashes() throws ConfigurationException {
@@ -743,9 +815,9 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Save changed parameters in {@code nuxeo.conf}. This method does not check
-     * values in map. Use {@link #saveFilteredConfiguration(Map)} for parameters
-     * filtering.
+     * Save changed parameters in {@code nuxeo.conf}. This method does not
+     * check values in map. Use {@link #saveFilteredConfiguration(Map)} for
+     * parameters filtering.
      *
      * @param changedParameters Map of modified parameters
      * @see #saveFilteredConfiguration(Map)
@@ -757,13 +829,13 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Save changed parameters in {@code nuxeo.conf}. This method does not check
-     * values in map. Use {@link #saveFilteredConfiguration(Map)} for parameters
-     * filtering.
+     * Save changed parameters in {@code nuxeo.conf}. This method does not
+     * check values in map. Use {@link #saveFilteredConfiguration(Map)} for
+     * parameters filtering.
      *
      * @param changedParameters Map of modified parameters
-     * @param setGenerationOnceToFalse If generation was on (true or once), then
-     *            set it to false or not?
+     * @param setGenerationOnceToFalse If generation was on (true or once),
+     *            then set it to false or not?
      * @param setGenerationFalseToOnce If generation was off (false), then set
      *            it to once?
      * @see #saveFilteredConfiguration(Map)
@@ -804,8 +876,8 @@ public class ConfigurationGenerator {
 
     /**
      * Filters given parameters including them only if (there was no previous
-     * value and new value is not empty/null) or (there was a previous value and
-     * it differs from the new value)
+     * value and new value is not empty/null) or (there was a previous value
+     * and it differs from the new value)
      *
      * @param changedParameters parameters to be filtered
      * @return filtered map
@@ -985,8 +1057,8 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Extract a database template from a list of templates. Return the last one
-     * if there are multiples
+     * Extract a database template from a list of templates. Return the last
+     * one if there are multiples
      *
      * @see #rebuildTemplatesStr(String)
      */
@@ -1052,12 +1124,11 @@ public class ConfigurationGenerator {
 
     /**
      * Create needed directories. Check existence of old paths. If old paths
-     * have been found and they cannot be upgraded automatically, then upgrading
-     * message is logged and error thrown.
+     * have been found and they cannot be upgraded automatically, then
+     * upgrading message is logged and error thrown.
      *
      * @throws ConfigurationException If a deprecated directory has been
      *             detected.
-     *
      * @since 5.4.2
      */
     public void verifyInstallation() throws ConfigurationException {
@@ -1098,9 +1169,7 @@ public class ConfigurationGenerator {
      * Check that the process is executed with a supported Java version
      *
      * @throws ConfigurationException
-     *
      * @since 5.6
-     *
      */
     public void checkJavaVersion() throws ConfigurationException {
         String version = System.getProperty("java.version");
@@ -1122,7 +1191,6 @@ public class ConfigurationGenerator {
      * {@link #bindAddress} must be set before.
      *
      * @throws ConfigurationException
-     *
      * @since 5.5
      */
     public void checkAddressesAndPorts() throws ConfigurationException {
@@ -1431,9 +1499,9 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Build an {@link URLClassLoader} for the given databaseTemplate looking in
-     * the templates directory and in the server lib directory, then looks for a
-     * driver
+     * Build an {@link URLClassLoader} for the given databaseTemplate looking
+     * in the templates directory and in the server lib directory, then looks
+     * for a driver
      *
      * @param databaseTemplate
      * @param databaseTemplateDir

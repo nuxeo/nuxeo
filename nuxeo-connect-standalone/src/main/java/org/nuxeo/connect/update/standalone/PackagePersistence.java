@@ -153,6 +153,8 @@ public class PackagePersistence {
                 PackageState.DOWNLOADED, service);
         File dir = new File(store, pkg.getId());
         if (dir.exists()) {
+            // FIXME: refactor this way of handling Studio packages to be
+            // consistent with other packages
             if (pkg.getId().endsWith("-0.0.0-SNAPSHOT")) {
                 // this is a special case - reload a studio snapshot package
                 // 1. first we need to uninstall the existing package
@@ -195,8 +197,8 @@ public class PackagePersistence {
     }
 
     /**
-     * Get the local package having the given name and which is in either one of
-     * the following states:
+     * Get the local package having the given name and which is in either one
+     * of the following states:
      * <ul>
      * <li> {@link PackageState#INSTALLING}
      * <li> {@link PackageState#INSTALLED}
