@@ -2,7 +2,7 @@ package org.nuxeo.template.jaxrs;
 
 import org.nuxeo.ecm.core.api.Blob;
 
-import fr.opensagres.xdocreport.remoting.resources.domain.BinaryData;
+import fr.opensagres.xdocreport.remoting.resources.domain.LargeBinaryData;
 
 /**
  * 
@@ -11,9 +11,9 @@ import fr.opensagres.xdocreport.remoting.resources.domain.BinaryData;
  */
 public class BinaryDataWrapper {
 
-    public static BinaryData wrap(Blob blob) throws Exception {
+    public static LargeBinaryData wrap(Blob blob) throws Exception {
 
-        BinaryData data = new BinaryData();
+        LargeBinaryData data = new LargeBinaryData();
         data.setContent(blob.getStream());
         data.setFileName(blob.getFilename());
         data.setMimeType(blob.getMimeType());

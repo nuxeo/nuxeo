@@ -16,6 +16,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -25,7 +26,10 @@ import org.nuxeo.template.processors.xdocreport.FieldDefinitionGenerator;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.BinaryData;
 import fr.opensagres.xdocreport.remoting.resources.domain.Filter;
+import fr.opensagres.xdocreport.remoting.resources.domain.LargeBinaryData;
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
+import fr.opensagres.xdocreport.remoting.resources.domain.ResourceType;
+import fr.opensagres.xdocreport.remoting.resources.services.ResourcesException;
 import fr.opensagres.xdocreport.remoting.resources.services.rest.JAXRSResourcesService;
 
 /**
@@ -42,10 +46,6 @@ public class XDocReportResourceService extends AbstractResourceService
         super(session);
     }
 
-    public Resource getRoot(Filter filter) {
-        return getRoot();
-    }
-
     public List<BinaryData> download(List<String> resourcePaths) {
         return null;
     }
@@ -56,32 +56,15 @@ public class XDocReportResourceService extends AbstractResourceService
 
     public Resource getRoot() {
         Resource root = new Resource();
-        root.setType(Resource.FOLDER_TYPE);
+        root.setType(ResourceType.FILE);
         root.setName("Nuxeo");
         List<Resource> children = new ArrayList<Resource>();
         List<TemplateSourceDocument> templates = getTemplates();
         for (TemplateSourceDocument template : templates) {
             children.add(ResourceWrapper.wrap(template));
         }
-        root.setChildren(children);
+        root.getChildren().addAll(children);
         return root;
-    }
-
-    public BinaryData download(String resourcePath) {
-
-        List<TemplateSourceDocument> templates = getTemplates();
-        for (TemplateSourceDocument template : templates) {
-            if (template.getName().equals(resourcePath)
-                    || template.getId().equals(resourcePath)) {
-                try {
-                    return BinaryDataWrapper.wrap(template.getTemplateBlob());
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
     }
 
     @GET
@@ -117,6 +100,64 @@ public class XDocReportResourceService extends AbstractResourceService
 
     @Override
     public void upload(BinaryData dataIn) {
+        String id = dataIn.getResourceId();
+        if (id != null) {
+            IdRef ref = new IdRef(id);
+            try {
+                DocumentModel target = session.getDocument(ref);
+                TemplateSourceDocument template = target.getAdapter(TemplateSourceDocument.class);
+                if (template != null) {
+                    Blob oldBlob = template.getTemplateBlob();
+
+                    Blob newBlob = new ByteArrayBlob(dataIn.getContent());
+                    // make stream resettable
+                    newBlob.setFilename(oldBlob.getFilename());
+                    newBlob.setMimeType(oldBlob.getMimeType());
+                    template.setTemplateBlob(newBlob, true);
+                }
+            } catch (Exception e) {
+                log.error("Error during template upload", e);
+            }
+        }
+    }
+
+    @Override
+    public List<BinaryData> downloadMultiple(List<String> arg0)
+            throws ResourcesException {
+        return null;
+    }
+
+    @Override
+    public Resource getRootWithFilter(Filter filter) throws ResourcesException {
+        return getRoot();
+    }
+
+    @Override
+    public LargeBinaryData downloadLarge(String resourcePath)
+            throws ResourcesException {
+
+        List<TemplateSourceDocument> templates = getTemplates();
+        for (TemplateSourceDocument template : templates) {
+            if (template.getName().equals(resourcePath)
+                    || template.getId().equals(resourcePath)) {
+                try {
+                    return BinaryDataWrapper.wrap(template.getTemplateBlob());
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public BinaryData download(String resourcePath) {
+        return null;
+    }
+
+    @Override
+    public void uploadLarge(LargeBinaryData dataIn) throws ResourcesException {
         String id = dataIn.getResourceId();
         if (id != null) {
             IdRef ref = new IdRef(id);

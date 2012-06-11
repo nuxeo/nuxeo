@@ -6,6 +6,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
+import fr.opensagres.xdocreport.remoting.resources.domain.ResourceType;
 
 /**
  * 
@@ -16,7 +17,7 @@ public class ResourceWrapper {
 
     public static Resource wrap(TemplateSourceDocument srcDocument) {
         Resource rs = new Resource();
-        rs.setType(Resource.FILE_TYPE);
+        rs.setType(ResourceType.FILE);
         try {
             rs.setName(srcDocument.getFileName());
             rs.setId(srcDocument.getId());
@@ -24,7 +25,7 @@ public class ResourceWrapper {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        rs.setChildren(new ArrayList<Resource>());
+        rs.getChildren().addAll(new ArrayList<Resource>());
         return rs;
     }
 }
