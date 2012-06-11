@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.DocumentContentViews;
-import org.nuxeo.ecm.platform.types.FieldWidget;
 import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -139,14 +138,6 @@ public class TypeInfoAdapter implements TypeInfo {
     public String getLabel() {
         if (type != null) {
             return type.getLabel();
-        }
-
-        return null;
-    }
-
-    public FieldWidget[] getLayout() {
-        if (type != null) {
-            return type.getLayout();
         }
 
         return null;

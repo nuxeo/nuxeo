@@ -22,13 +22,6 @@
         <view id="edit_detail" value="edit_detail_view" />
         <view id="metadata" value="metadata_view" />
       </views>
-      <!-- old layout definition -->
-      <layout>
-        <widget jsfcomponent="jsf1" schemaname="schema1" fieldname="name1" />
-        <widget jsfcomponent="jsf2" schemaname="schema2" fieldname="name2" />
-        <widget jsfcomponent="jsf3" schemaname="schema3" fieldname="name3" />
-      </layout>
-      <!-- new layout definition -->
       <layouts mode="any">
         <layout>dublincore</layout>
       </layouts>
@@ -56,12 +49,6 @@
 
     <type id="DocTypeWithLayout">
       <label>doc type with layout</label>
-      <!-- old layout definition -->
-      <layout>
-        <widget jsfcomponent="jsf1" schemaname="schema1" fieldname="name1" />
-        <widget jsfcomponent="jsf2" schemaname="schema2" fieldname="name2" />
-      </layout>
-      <!-- new layout definition -->
       <layouts mode="any">
         <layout>dublincore</layout>
       </layouts>
@@ -82,13 +69,6 @@
       </layouts>
     </type>
 
-  </extension>
-
-
-  <extension target="org.nuxeo.ecm.platform.types.TypeService"
-    point="default_layout">
-    <widget jsfcomponent="def_jsf1" fieldtype="java.lang.String" />
-    <widget jsfcomponent="def_jsf2" fieldtype="java.lang.Double" />
   </extension>
 
 </component>

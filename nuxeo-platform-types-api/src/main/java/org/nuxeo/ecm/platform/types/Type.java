@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -38,8 +36,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 public class Type implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(Type.class);
 
     public static final String[] EMPTY_ACTIONS = new String[0];
 
@@ -107,9 +103,6 @@ public class Type implements Serializable {
 
     @XNodeList(value = "actions/action", type = String[].class, componentType = String.class)
     protected String[] actions;
-
-    @XNodeList(value = "layout/widget", type = FieldWidget[].class, componentType = FieldWidget.class)
-    protected FieldWidget[] layout;
 
     @XNodeMap(value = "layouts", key = "@mode", type = HashMap.class, componentType = Layouts.class)
     Map<String, Layouts> layouts;
@@ -183,20 +176,6 @@ public class Type implements Serializable {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    /**
-     * @deprecated use {@link #getLayouts(String)} instead, using mode
-     *             {@link BuiltinModes#ANY}.
-     */
-    @Deprecated
-    public FieldWidget[] getLayout() {
-        return layout;
-    }
-
-    @Deprecated
-    public void setLayout(FieldWidget[] layout) {
-        this.layout = layout;
     }
 
     /**
@@ -339,6 +318,69 @@ public class Type implements Serializable {
 
     public void setContentViews(Map<String, DocumentContentViews> contentViews) {
         this.contentViews = contentViews;
+    }
+
+    /**
+     * Clone method to handle hot reload
+     *
+     * @since 5.6
+     */
+    @Override
+    public Type clone() {
+        Type clone = new Type();
+        clone.setId(getId());
+        clone.setIcon(getIcon());
+        clone.setIconExpanded(getIconExpanded());
+        clone.setBigIcon(getBigIcon());
+        clone.setBigIconExpanded(getBigIconExpanded());
+        clone.setLabel(getLabel());
+        Map<String, SubType> subs = getAllowedSubTypes();
+        if (subs != null) {
+            Map<String, SubType> csubs = new HashMap<String, SubType>();
+            for (Map.Entry<String, SubType> item : subs.entrySet()) {
+                csubs.put(item.getKey(), item.getValue().clone());
+            }
+            clone.setAllowedSubTypes(csubs);
+        }
+        String[] denied = getDeniedSubTypes();
+        if (denied != null) {
+            clone.setDeniedSubTypes(denied.clone());
+        }
+        clone.setDefaultView(getDefaultView());
+        clone.setCreateView(getCreateView());
+        clone.setEditView(getEditView());
+        clone.setDescription(getDescription());
+        clone.setCategory(getCategory());
+        if (views != null) {
+            Map<String, TypeView> cviews = new HashMap<String, TypeView>();
+            for (Map.Entry<String, TypeView> item : views.entrySet()) {
+                cviews.put(item.getKey(), item.getValue().clone());
+            }
+            clone.views = cviews;
+        }
+        String[] actions = getActions();
+        if (actions != null) {
+            clone.setActions(actions.clone());
+        }
+        // do not clone old layout definition, nobody's using it anymore
+        Map<String, Layouts> layouts = getLayouts();
+        if (layouts != null) {
+            Map<String, Layouts> clayouts = new HashMap<String, Layouts>();
+            for (Map.Entry<String, Layouts> item : layouts.entrySet()) {
+                clayouts.put(item.getKey(), item.getValue().clone());
+            }
+            clone.setLayouts(clayouts);
+        }
+        Map<String, DocumentContentViews> cvs = getContentViews();
+        if (cvs != null) {
+            Map<String, DocumentContentViews> ccvs = new HashMap<String, DocumentContentViews>();
+            for (Map.Entry<String, DocumentContentViews> item : cvs.entrySet()) {
+                ccvs.put(item.getKey(), item.getValue().clone());
+            }
+            clone.setContentViews(ccvs);
+        }
+        clone.setRemove(getRemove());
+        return clone;
     }
 
 }

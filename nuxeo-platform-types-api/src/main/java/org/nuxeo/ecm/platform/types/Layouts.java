@@ -49,4 +49,20 @@ public class Layouts implements Serializable {
         return append;
     }
 
+    /**
+     * Clone to handle hot reload
+     *
+     * @since 5.6
+     */
+    @Override
+    protected Layouts clone() {
+        Layouts clone = new Layouts();
+        clone.append = getAppend();
+        String[] layouts = getLayouts();
+        if (layouts != null) {
+            clone.layouts = layouts.clone();
+        }
+        return clone;
+    }
+
 }

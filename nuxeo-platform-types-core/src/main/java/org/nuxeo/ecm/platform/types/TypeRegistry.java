@@ -27,71 +27,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.model.Extension;
-import org.nuxeo.runtime.model.ExtensionRegistry;
+import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
-public class TypeRegistry extends ExtensionRegistry<Type> {
+public class TypeRegistry extends ContributionFragmentRegistry<Type> {
 
-    private static final Log log = LogFactory.getLog(TypeRegistry.class);
-
-    protected volatile Map<String, Type> types = new HashMap<String, Type>();
+    protected Map<String, Type> types = new HashMap<String, Type>();
 
     @Override
-    public void removeContributions() {
-        types = new HashMap<String, Type>();
+    public String getContributionId(Type contrib) {
+        return contrib.getId();
     }
 
     @Override
-    public void addContribution(Type contrib, Extension extension) {
-        Type type = contrib;
-        String typeId = type.getId();
-        if (type.getRemove()) {
-            log.debug("Removing type with id " + typeId);
-            removeType(typeId);
+    public void contributionUpdated(String id, Type contrib, Type newOrigContrib) {
+        if (contrib.getRemove()) {
+            types.remove(id);
         } else {
-            if (hasType(typeId)) {
-                type = mergeTypes(getType(typeId), type);
-                removeType(typeId);
-                log.debug("Merging type with id " + typeId);
-            }
-            addType(type);
-            log.info("Registered platform document type: " + typeId);
+            types.put(id, contrib);
         }
     }
 
-    public synchronized void addType(Type type) {
-        if (log.isDebugEnabled()) {
-            log.debug("Registering type: " + type);
+    @Override
+    public void contributionRemoved(String id, Type origContrib) {
+        types.remove(id);
+    }
+
+    @Override
+    public Type clone(Type orig) {
+        if (orig != null) {
+            return orig.clone();
         }
-        String id = type.getId();
-        // do not add twice a type
-        if (!types.containsKey(id)) {
-            types.put(id, type);
-        }
+        return null;
     }
 
-    public synchronized boolean hasType(String id) {
-        return types.containsKey(id);
-    }
+    @Override
+    public void merge(Type newType, Type oldType) {
+        oldType.setRemove(newType.getRemove());
 
-    public synchronized Type removeType(String id) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unregistering type: " + id);
-        }
-        return types.remove(id);
-    }
-
-    public synchronized Collection<Type> getTypes() {
-        return Collections.unmodifiableCollection(types.values());
-    }
-
-    public Type getType(String id) {
-        return types.get(id);
-    }
-
-    public static Type mergeTypes(Type oldType, Type newType) {
         String icon = newType.getIcon();
         if (icon != null) {
             oldType.setIcon(icon);
@@ -180,12 +152,6 @@ public class TypeRegistry extends ExtensionRegistry<Type> {
             oldType.setView(view);
         }
 
-        // overwrite old layout
-        FieldWidget[] layout = newType.getLayout();
-        if (layout != null && layout.length != 0) {
-            oldType.setLayout(layout);
-        }
-
         Map<String, Layouts> layouts = newType.getLayouts();
         if (layouts != null) {
             Map<String, Layouts> layoutsMerged = new HashMap<String, Layouts>(
@@ -235,8 +201,18 @@ public class TypeRegistry extends ExtensionRegistry<Type> {
             }
             oldType.setContentViews(cvMerged);
         }
+    }
 
-        return oldType;
+    public boolean hasType(String id) {
+        return types.containsKey(id);
+    }
+
+    public Collection<Type> getTypes() {
+        return Collections.unmodifiableCollection(types.values());
+    }
+
+    public Type getType(String id) {
+        return types.get(id);
     }
 
 }

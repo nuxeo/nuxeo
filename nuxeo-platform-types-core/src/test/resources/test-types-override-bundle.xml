@@ -17,12 +17,6 @@
       <deniedSubtypes>
         <type>MyOtherDocType</type>
       </deniedSubtypes>
-      <!-- old layout definition -->
-      <layout>
-        <widget jsfcomponent="jsf1" schemaname="schema1" fieldname="name1" />
-        <widget jsfcomponent="jsf2" schemaname="schema2" fieldname="name2" />
-      </layout>
-      <!-- new layout definition -->
       <layouts mode="any">
         <layout>dublincore</layout>
       </layouts>

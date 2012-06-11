@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.types.adapter;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
-import org.nuxeo.ecm.platform.types.FieldWidget;
 import org.nuxeo.ecm.platform.types.SubType;
 import org.nuxeo.ecm.platform.types.TypeView;
 
@@ -46,14 +45,6 @@ public interface TypeInfo {
     String getLabel();
 
     String getId();
-
-    /**
-     * @deprecated use {@link #getLayouts(String)} instead, using mode
-     *             {@link BuiltinModes#ANY}. Not used. Remove in 5.2 => No !
-     *             still used from xhtml files.
-     */
-    @Deprecated
-    FieldWidget[] getLayout();
 
     /**
      * Returns layout names for this mode, defaulting to layouts defined for

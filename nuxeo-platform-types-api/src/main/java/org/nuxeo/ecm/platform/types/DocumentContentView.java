@@ -27,10 +27,10 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class DocumentContentView {
 
     @XNode("@showInExportView")
-    boolean showInExportView = true;
+    protected boolean showInExportView = true;
 
     @XContent
-    String contentView;
+    protected String contentView;
 
     public boolean getShowInExportView() {
         return showInExportView;
@@ -41,6 +41,19 @@ public class DocumentContentView {
             return contentView.trim();
         }
         return null;
+    }
+
+    /**
+     * Clone to handle hot reload
+     *
+     * @since 5.6
+     */
+    @Override
+    public DocumentContentView clone() {
+        DocumentContentView clone = new DocumentContentView();
+        clone.showInExportView = getShowInExportView();
+        clone.contentView = getContentViewName();
+        return clone;
     }
 
 }

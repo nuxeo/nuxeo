@@ -71,4 +71,20 @@ public class DocumentContentViews implements Serializable {
         }
         return res.toArray(new String[] {});
     }
+
+    @Override
+    public DocumentContentViews clone() {
+        DocumentContentViews clone = new DocumentContentViews();
+        clone.append = getAppend();
+        DocumentContentView[] cvs = getContentViews();
+        if (cvs != null) {
+            DocumentContentView[] ccvs = new DocumentContentView[cvs.length];
+            for (int i = 0; i < cvs.length; i++) {
+                ccvs[i] = cvs[i].clone();
+            }
+            clone.contentViews = ccvs;
+        }
+        return clone;
+    }
+
 }

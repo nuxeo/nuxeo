@@ -31,17 +31,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Type view to display a given document sub-type.
  *
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- *
  */
 @XObject("type")
 public class SubType implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    List<String> hidden;
-
     @XNode
-    String name;
+    protected String name;
+
+    protected List<String> hidden;
 
     public List<String> getHidden() {
         if (hidden == null) {
@@ -62,5 +61,23 @@ public class SubType implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Clone method to handle hot reload
+     *
+     * @since 5.6
+     */
+    @Override
+    protected SubType clone() {
+        SubType clone = new SubType();
+        clone.setName(getName());
+        List<String> hidden = getHidden();
+        if (hidden != null) {
+            List<String> chidden = new ArrayList<String>();
+            chidden.addAll(hidden);
+            clone.hidden = chidden;
+        }
+        return clone;
     }
 }

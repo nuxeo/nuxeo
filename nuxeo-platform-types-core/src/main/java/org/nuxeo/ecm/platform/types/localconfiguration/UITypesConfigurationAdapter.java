@@ -91,7 +91,7 @@ public class UITypesConfigurationAdapter extends
     protected boolean getDenyAllTypesProperty(DocumentModel doc) {
         try {
             Boolean value = (Boolean) doc.getPropertyValue(UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY);
-            return value == null ? false : value;
+            return Boolean.TRUE.equals(value);
         } catch (ClientException e) {
             return false;
         }
@@ -181,7 +181,6 @@ public class UITypesConfigurationAdapter extends
 
     /*
      * (non-Javadoc)
-     *
      * @see
      * org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration#
      * getDefaultType()

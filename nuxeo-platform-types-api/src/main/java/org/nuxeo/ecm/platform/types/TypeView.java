@@ -28,7 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Type view to display a given document type view.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  */
 @XObject("view")
 public class TypeView implements Serializable {
@@ -57,4 +56,16 @@ public class TypeView implements Serializable {
         this.value = value;
     }
 
+    /**
+     * Clone to handle hot reload
+     *
+     * @since 5.6
+     */
+    @Override
+    protected TypeView clone() {
+        TypeView clone = new TypeView();
+        clone.setId(getId());
+        clone.setValue(getValue());
+        return clone;
+    }
 }

@@ -162,7 +162,7 @@ public class TestLocalConfiguration {
     protected void setDenyAllTypes(DocumentModel doc, boolean denyAllTypes)
             throws ClientException {
         doc.setPropertyValue(UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY,
-                denyAllTypes);
+                Boolean.valueOf(denyAllTypes));
         session.saveDocument(doc);
         session.save();
     }
