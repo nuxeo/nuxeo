@@ -218,9 +218,10 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         this.templateIdToAssociate = templateIdToAssociate;
     }
 
-    public String associateDocumentToTemplate() throws ClientException {
+    public void associateDocumentToTemplate() throws ClientException {
         if (templateIdToAssociate == null) {
-            return null;
+            // return null;
+            return;
         }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(
@@ -231,8 +232,8 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         navigationContext.invalidateCurrentDocument();
         EventManager.raiseEventsOnDocumentChange(currentDocument);
         templateIdToAssociate = null;
-        return navigationContext.navigateToDocument(currentDocument,
-                "after-edit");
+        // return navigationContext.navigateToDocument(currentDocument,
+        // "after-edit");
     }
 
     public boolean canRenderAndStore() {

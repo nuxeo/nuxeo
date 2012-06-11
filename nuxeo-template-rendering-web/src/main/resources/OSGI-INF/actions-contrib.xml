@@ -34,9 +34,17 @@
       </filter>
     </action>
 
-    <action id="associateTemplate" link="associateTemplate" order="40" label="action.template.associate"
-      icon="/icons/doctemplate.png">
+  <action id="associateTemplate" order="20" label="action.template.associate" type="fancybox"
+       icon="/icons/doctemplate.png">
       <category>DOCUMENT_UPPER_ACTION</category>
+      <properties>
+        <property name="iframe">
+          #{restHelper.getDocumentUrl(currentDocument,'associateTemplate',false)}
+        </property>
+        <property name="width">550</property>
+        <property name="height">150</property>
+        <property name="scrolling">no</property>
+      </properties>
       <filter id="canAssociateTemplate">
         <rule grant="false">
           <facet>Template</facet>
