@@ -38,10 +38,17 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.browsermob.proxy.ProxyServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestWatchman;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -75,6 +82,8 @@ import org.openqa.selenium.support.ui.SystemClock;
  */
 public abstract class AbstractTest {
 
+    private static final Log log = LogFactory.getLog(AbstractTest.class);
+
     public static final String NUXEO_URL = System.getProperty("nuxeoURL",
             "http://localhost:8080/nuxeo").replaceAll("/$", "");
 
@@ -101,6 +110,65 @@ public abstract class AbstractTest {
     protected static File tmp_firebug_xpi;
 
     protected static ProxyServer proxyServer = null;
+
+    /**
+     * Logger method to follow what's being run on server logs and take a
+     * screenshot of the last page in case of failure
+     */
+    @Rule
+    public MethodRule watchman = new TestWatchman() {
+
+        public void starting(FrameworkMethod method) {
+            String message = String.format("Starting test '%s#%s'", getTestClassName(method), method.getName());
+            log.info(message);
+            logOnServer(message);
+        }
+
+        @Override
+        public void failed(Throwable e, FrameworkMethod method) {
+            String className = getTestClassName(method);
+            String methodName = method.getName();
+            log.error(String.format("Test '%s#%s' failed", className, methodName), e);
+            String filename = String.format("screenshot-lastpage-%s-%s", className, methodName);
+            takeScreenshot(filename);
+            super.failed(e, method);
+        }
+
+        @Override
+        public void finished(FrameworkMethod method) {
+            log.info(String.format("Finished test '%s#%s'", getTestClassName(method), method.getName()));
+            super.finished(method);
+        }
+
+        protected String getTestClassName(FrameworkMethod method) {
+            return method.getMethod().getDeclaringClass().getName();
+        }
+
+        protected void logOnServer(String message) {
+            if (driver != null) {
+                driver.get(String.format(
+                        "%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
+                        NUXEO_URL, URIUtils.quoteURIPathComponent(message, true)));
+            } else {
+                log.warn(String.format("Cannot log on server message: %s", message));
+            }
+        }
+
+        protected void takeScreenshot(String filename) {
+            // Temporary code to take snapshots of the last page
+            if (driver instanceof FirefoxDriver) {
+                try {
+                    Thread.sleep(250);
+                    ((FirefoxDriver) driver).getScreenshotAs(new ScreenShotFileOutput(
+                            filename));
+                } catch (InterruptedException ee) {
+                    log.error(ee, ee);
+                }
+            } else {
+                // Not implemented for other drivers
+            }
+        }
+    };
 
     @BeforeClass
     public static void initDriver() throws Exception {
@@ -135,6 +203,7 @@ public abstract class AbstractTest {
         driver = new FirefoxDriver(dc);
     }
 
+    @SuppressWarnings("deprecation")
     protected static void initChromeDriver() throws Exception {
         DesiredCapabilities dc = DesiredCapabilities.chrome();
         ChromeOptions options = new ChromeOptions();
@@ -150,19 +219,6 @@ public abstract class AbstractTest {
 
     @AfterClass
     public static void quitDriver() throws InterruptedException {
-        // Temporary code to take snapshots of the last page
-        // TODO: snapshots only test on failure, prefix using the test name
-        if (driver instanceof FirefoxDriver) {
-            Thread.sleep(250);
-            ((FirefoxDriver) driver).getScreenshotAs(new ScreenShotFileOutput(
-                    "screenshot1-lastpage"));
-            Thread.sleep(250);
-            ((FirefoxDriver) driver).getScreenshotAs(new ScreenShotFileOutput(
-                    "screenshot2-lastpage"));
-        } else {
-            // Not implemented for other drivers
-        }
-
         if (driver != null) {
             driver.close();
             driver = null;
@@ -286,7 +342,7 @@ public abstract class AbstractTest {
     }
 
     protected static Proxy startProxy() throws Exception {
-        if (Boolean.valueOf(System.getProperty("useProxy", "false"))) {
+        if (Boolean.TRUE.equals(Boolean.valueOf(System.getProperty("useProxy", "false")))) {
             proxyServer = new ProxyServer(PROXY_PORT);
             proxyServer.start();
             proxyServer.setCaptureHeaders(true);

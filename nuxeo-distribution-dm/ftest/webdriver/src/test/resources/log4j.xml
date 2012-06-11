@@ -106,6 +106,10 @@
   <category name="org.nuxeo">
     <priority value="WARN" />
   </category>
+  <!-- make webdriver logs visible -->
+  <category name="org.nuxeo.functionaltests">
+    <priority value="INFO" />
+  </category>
   <!-- Uncomment for fragments pre-processing -->
   <!--
   <category name="org.nuxeo.runtime.deployment.preprocessor">
