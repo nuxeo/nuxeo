@@ -25,14 +25,20 @@
              }
            </script>
 
-            <A href="#" onclick="return showNewParameterPanel(event)"> Add a new Parameter </A>
+            <A href="#" onclick="return showNewParameterPanel(event)">
+            <h:outputText value="#{messages['label.template.parameter.add']}"/></A>
             <table border="0" style="display:none">
             <tr>
-            <td class="fieldColumn">
-                            Name <h:inputText value="#{bean.newInput.name}"></h:inputText>
+            <td class="labelColumn">
+               <h:outputText value="#{messages['label.template.parameter.name']}" />
             </td>
             <td class="fieldColumn">
-                Type
+                <h:inputText value="#{bean.newInput.name}"></h:inputText>
+            </td>
+            <td class="labelColumn">
+               <h:outputText value="#{messages['label.template.parameter.type']}" />
+            </td>
+            <td class="fieldColumn">
                 <h:selectOneMenu  value="#{bean.newInput.typeAsString}">
                     <f:selectItem itemLabel="String value" itemValue="String"/>
                     <f:selectItem itemLabel="Boolean value" itemValue="Boolean"/>
@@ -56,7 +62,7 @@
                     <h:commandButton type="submit" class="button" value="#{messages['command.save']}"
                         action="#{bean.saveTemplateInputs}" id="button_save"/>
                     <h:commandButton class="button" value="#{messages['command.cancel']}"
-                        action="#{navigationContext.goBack()}" immediate="true"/>
+                        action="#{bean.cancelTemplateInputsEdit}" immediate="true"/>
                   </p>
                 </c:if>
             </h:form>

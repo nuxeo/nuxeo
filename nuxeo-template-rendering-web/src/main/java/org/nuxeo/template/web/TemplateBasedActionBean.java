@@ -1,7 +1,5 @@
 package org.nuxeo.template.web;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +30,7 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 @Name("templateBasedActions")
-@Scope(CONVERSATION)
+@Scope(ScopeType.CONVERSATION)
 public class TemplateBasedActionBean extends BaseTemplateAction {
 
     private static final long serialVersionUID = 1L;
@@ -129,6 +127,10 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
             currentDocument = template.saveParams(templateEditableInputs, true);
         }
         return navigationContext.navigateToDocument(currentDocument);
+    }
+
+    public void cancelTemplateInputsEdit() throws Exception {
+        reset();
     }
 
     public TemplateInput getNewInput() {

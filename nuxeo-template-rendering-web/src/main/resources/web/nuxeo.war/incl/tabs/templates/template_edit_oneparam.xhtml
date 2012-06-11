@@ -13,13 +13,14 @@
 <h:panelGroup id="param_#{param.name}">
 <table border="0" width="80%">
 <tr>
-<td class="labelColumn" width="20%"><h:outputText value="#{param.name}" />  </td>
-<td class="fieldColumn" width="20%">
+<td class="labelColumn" width="10%">  <h:outputText value="#{messages['label.template.parameter.name']}" /></td>
+<td class="fieldColumn" width="10%"><h:outputText value="#{param.name}" />  </td>
+<td class="labelColumn" width="10%"> <h:outputText value="#{messages['label.template.parameter.type']}" /></td>
+<td class="fieldColumn" width="10%">
 <c:if test="#{param.readOnly}">
   ( <h:outputText value="#{param.typeAsString}"/> )
 </c:if>
 <c:if test="#{!param.readOnly}">
- <h:outputText value="#{messages['label.template.parameter.type']}"/>
     <h:selectOneMenu  value="#{param.typeAsString}">
         <f:selectItem itemLabel="#{messages['label.template.parameter.stringType']}" itemValue="String"/>
         <f:selectItem itemLabel="#{messages['label.template.parameter.booleanType']}" itemValue="Boolean"/>

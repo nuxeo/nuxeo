@@ -12,7 +12,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.mvel2.optimizers.impl.refl.nodes.ArrayLength;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
@@ -42,6 +41,10 @@ public class TemplatesActionBean extends BaseTemplateAction {
     protected List<TemplateInput> templateEditableInputs;
 
     protected TemplateInput newInput;
+
+    protected boolean showParamEditor = false;
+
+    protected boolean showUsageListing = false;
 
     public String createTemplate() throws Exception {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
@@ -88,6 +91,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
     public void reset() {
         templateInputs = null;
         templateEditableInputs = null;
+        showParamEditor = false;
     }
 
     public List<TemplateInput> getTemplateEditableInputs() throws Exception {
@@ -118,6 +122,10 @@ public class TemplatesActionBean extends BaseTemplateAction {
         return navigationContext.navigateToDocument(currentDocument);
     }
 
+    public void cancelTemplateInputsEdit() throws Exception {
+        reset();
+    }
+
     public TemplateInput getNewInput() {
         if (newInput == null) {
             newInput = new TemplateInput("newField");
@@ -132,6 +140,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
     public String addTemplateInput() throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
+        showParamEditor = true;
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         if (template != null) {
             template.addInput(newInput);
@@ -146,6 +155,8 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     public String removeTemplateInput(String name) throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+
+        showParamEditor = true;
 
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         if (template != null) {
@@ -208,7 +219,9 @@ public class TemplatesActionBean extends BaseTemplateAction {
         return new ArrayList<String>();
     }
 
-    protected boolean showUsageListing = false;
+    public boolean isShowParamEditor() {
+        return showParamEditor;
+    }
 
     public boolean isShowUsageListing() {
         return showUsageListing;
