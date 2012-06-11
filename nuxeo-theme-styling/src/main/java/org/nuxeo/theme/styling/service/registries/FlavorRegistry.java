@@ -64,7 +64,7 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
 
     @Override
     public void merge(Flavor src, Flavor dst) {
-        String newExtend = dst.getExtendsFlavor();
+        String newExtend = src.getExtendsFlavor();
         if (newExtend != null) {
             dst.setExtendsFlavor(newExtend);
         }
