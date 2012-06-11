@@ -5,6 +5,8 @@
     point="operations">
     <operation
       class="org.nuxeo.ecm.platform.routing.test.TestOperationSetProperty" />
+    <operation
+      class="org.nuxeo.ecm.platform.routing.test.TestOperationSetVariable" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
@@ -37,6 +39,18 @@
       <operation id="Document.Routing.Test.SetProperty">
         <param type="string" name="field">dc:rights</param>
         <param type="string" name="value">rights 1</param>
+      </operation>
+    </chain>
+    <chain id="testchain_varfoo_1">
+      <operation id="Document.Routing.Test.SetVariable">
+        <param type="string" name="variable">varfoo</param>
+        <param type="string" name="value">val1</param>
+      </operation>
+    </chain>
+    <chain id="testchain_varbar_1">
+      <operation id="Document.Routing.Test.SetVariable">
+        <param type="string" name="variable">varbar</param>
+        <param type="string" name="value">val1</param>
       </operation>
     </chain>
   </extension>

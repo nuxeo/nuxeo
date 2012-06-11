@@ -106,7 +106,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             State jump = null;
             switch (node.getState()) {
             case READY:
-                log.warn("Doing node " + node); // XXX debug
+                log.debug("Doing node " + node);
                 if (node.isMerge()) {
                     jump = State.WAITING;
                 } else {

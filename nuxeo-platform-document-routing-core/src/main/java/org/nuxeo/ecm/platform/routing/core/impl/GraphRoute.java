@@ -30,6 +30,12 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
  */
 public interface GraphRoute {
 
+    String PROP_VARIABLES = "docri:variables";
+
+    String PROP_VAR_NAME = "name";
+
+    String PROP_VAR_VALUE = "value";
+
     /**
      * Gets the start node for this graph.
      *

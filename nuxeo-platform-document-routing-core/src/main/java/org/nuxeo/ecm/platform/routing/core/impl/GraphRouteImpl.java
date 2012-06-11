@@ -45,12 +45,6 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String PROP_VARIABLES = "docri:variables";
-
-    public static final String PROP_VAR_NAME = "name";
-
-    public static final String PROP_VAR_VALUE = "value";
-
     /** To be used through getter. */
     protected List<GraphNode> nodes;
 

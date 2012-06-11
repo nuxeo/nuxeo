@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -38,13 +40,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -72,6 +79,9 @@ import com.google.inject.Inject;
 public class GraphRouteTest {
 
     protected static final String TYPE_ROUTE_NODE = "RouteNode";
+
+    @Inject
+    protected FeaturesRunner featuresRunner;
 
     @Inject
     protected RuntimeHarness harness;
@@ -106,6 +116,18 @@ public class GraphRouteTest {
     @After
     public void tearDown() {
         // breakpoint here to examine database after test
+    }
+
+    protected CoreSession openSession(NuxeoPrincipal principal)
+            throws ClientException {
+        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
+        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
+        return coreFeature.getRepository().getRepositoryHandler().openSession(
+                ctx);
+    }
+
+    protected void closeSession(CoreSession session) {
+        CoreInstance.getInstance().close(session);
     }
 
     protected DocumentModel createRoute(String name) throws ClientException,
@@ -242,6 +264,57 @@ public class GraphRouteTest {
         assertTrue(route.isDone());
         doc.refresh();
         assertEquals("title 2", doc.getTitle());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testAutomationChainVariableChange() throws Exception {
+        // route model var
+        List<Map<String, Serializable>> vars = new LinkedList<Map<String, Serializable>>();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put(GraphRoute.PROP_VAR_NAME, "varfoo");
+        map.put(GraphRoute.PROP_VAR_VALUE, "val0");
+        vars.add(map);
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES,
+                (Serializable) vars);
+        routeDoc = session.saveDocument(routeDoc);
+        // node model
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_varfoo_1");
+        node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN,
+                "testchain_varbar_1");
+        // node model var
+        vars = new LinkedList<Map<String, Serializable>>();
+        map = new HashMap<String, Serializable>();
+        map.put(GraphNode.PROP_VAR_NAME, "varbar");
+        map.put(GraphNode.PROP_VAR_VALUE, "val0");
+        vars.add(map);
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES, (Serializable) vars);
+        node1 = session.saveDocument(node1);
+        DocumentRoute route = instantiateAndRun();
+        assertTrue(route.isDone());
+
+        // check route instance var
+        DocumentModel r = route.getDocument();
+        vars = (List<Map<String, Serializable>>) r.getPropertyValue(GraphRoute.PROP_VARIABLES);
+        assertEquals(1, vars.size());
+        map = vars.get(0);
+        assertEquals("varfoo", map.get(GraphRoute.PROP_VAR_NAME));
+        assertEquals("val1", map.get(GraphRoute.PROP_VAR_VALUE));
+
+        // check node instance var
+        // must be admin to get children, due to rights restrictions
+        NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
+        CoreSession ses = openSession(admin);
+        DocumentModel c = ses.getChildren(r.getRef()).get(0);
+        vars = (List<Map<String, Serializable>>) c.getPropertyValue(GraphNode.PROP_VARIABLES);
+        assertEquals(1, vars.size());
+        map = vars.get(0);
+        assertEquals("varbar", map.get(GraphNode.PROP_VAR_NAME));
+        assertEquals("val1", map.get(GraphNode.PROP_VAR_VALUE));
+        closeSession(ses);
     }
 
     @SuppressWarnings("unchecked")

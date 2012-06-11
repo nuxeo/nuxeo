@@ -157,7 +157,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     @Override
     public void setCanceled() {
-        log.warn("Canceling " + this); // XXX debug
+        log.debug("Canceling " + this);
         incrementProp(PROP_CANCELED);
     }
 
