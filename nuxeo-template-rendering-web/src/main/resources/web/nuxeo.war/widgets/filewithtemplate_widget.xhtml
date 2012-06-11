@@ -17,7 +17,10 @@
         id="#{widget.id}_message" />
     </div>
 
-    <div id="#{widget.id}_templatecontainer" style="display:none">    
+    <span id="#{widget.id}_valueHolder">
+    <h:inputHidden value="#{selectionActions.selectedValue}"/>
+    </span>
+    <div id="#{widget.id}_templatecontainer" style="display:none">
       <h:outputText value="#{messages['label.use.template']}" />
       <h:selectOneMenu value="#{field_2}"
         styleClass="#{widgetProperty_styleClass}"
@@ -32,16 +35,19 @@
 <script>
 jQuery(document).ready(function(){
    var fileContainer = jQuery('#' + '#{widget.id}_filecontainer');
-   var templateChooser = jQuery('#' + '#{widget.id}_templatecontainer');   
+   var templateChooser = jQuery('#' + '#{widget.id}_templatecontainer');
+   var valueHolder = jQuery(jQuery('#' + '#{widget.id}_valueHolder').find('input')[0]);
    // add radio
    var radioOption = jQuery(fileContainer.find('input[type=radio]')[0]).clone();
    radioOption.attr('id','useTemplate');
-   radioOption.removeAttr('checked');   
+   radioOption.removeAttr('checked');
    var radioCell = jQuery('<td></td>').append(radioOption);
+   radioCell.addClass('radioColumn');
    var row = jQuery('<tr></tr>');
    radioCell.appendTo(row);
    // add chooser
    var cell = jQuery('<td></td>');
+   cell.addClass('fieldColumn');
    templateChooser.appendTo(cell);
    cell.appendTo(row);
    fileContainer.find('table').append(row);
@@ -51,6 +57,18 @@ jQuery(document).ready(function(){
         templateChooser.find('select').val('');
       }
     });
+    jQuery(fileContainer.find('input[type=radio]')).click(
+      function() {
+        console.log(valueHolder);
+        if (this.id=='useTemplate') {
+          valueHolder.val('template');
+        } else {
+          valueHolder.val('');
+        }
+      });
+    if (valueHolder.val()=='template') {
+      radioOption.attr('checked','checked');
+    }
 });
 
 </script>
