@@ -1,0 +1,18 @@
+<package type="addon" name="nuxeo-template-rendering" version="@VERSION@">
+  <title>Template Rendering Addon</title>
+  <description>
+    <p>Provides a service to bind Nuxeo documents to template and render them.</p>
+  </description>
+  <home-page>https://github.com/nuxeo/nuxeo-template-rendering</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>testing</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>cap-5.6</platform>
+  </platforms>
+  <license>LGPL</license>
+  <license-url></license-url>
+</package>

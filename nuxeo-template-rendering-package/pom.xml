@@ -1,19 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <parent>
+ <parent>
     <groupId>org.nuxeo.template.rendering</groupId>
     <artifactId>nuxeo-template-rendering-parent</artifactId>
     <version>5.6-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
-  <artifactId>nuxeo-template-rendering-distrib</artifactId>
-  <name>Template Rendering distribution</name>
+  <artifactId>nuxeo-template-rendering-package</artifactId>
+  <name>Template Rendering Package</name>
+  <packaging>zip</packaging>
 
   <dependencies>
-    <dependency>
+   <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-api</artifactId>
     </dependency>
@@ -24,57 +26,34 @@
     <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-xdocreport</artifactId>
-      <version>5.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-jxls</artifactId>
-      <version>5.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-web</artifactId>
-      <version>5.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-samples</artifactId>
-      <version>5.6-SNAPSHOT</version>
     </dependency>
+
   </dependencies>
+
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <!-- <version>2.4</version> -->
-        <executions>
-          <execution>
-            <id>copy-libs</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeGroupIds>fr.opensagres.xdocreport,net.sf.jodreport,net.sf.jxls,org.apache.commons</includeGroupIds>
-              <outputDirectory>${project.build.directory}/libs</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-bundles</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeGroupIds>org.nuxeo.template.rendering</includeGroupIds>
-              <outputDirectory>${project.build.directory}/bundles</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
       </plugin>
     </plugins>
   </build>
-
 </project>

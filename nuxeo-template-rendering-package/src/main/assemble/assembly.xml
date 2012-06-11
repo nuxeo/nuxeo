@@ -1,0 +1,58 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <target name="expand">
+    <artifact:nuxeo-expand />
+    <artifact:print output="${maven.project.build.directory}/dependency-tree.log" />
+  </target>
+
+  <target name="build" depends="expand" description="Build Fico CM Nuxeo plugins">
+    <tstamp />
+    <delete failonerror="false"
+            dir="${maven.project.build.directory}/marketplace" />
+    <mkdir dir="${maven.project.build.directory}/marketplace" />
+    <copy todir="${maven.project.build.directory}/marketplace">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="VERSION" value="${maven.project.version}" />
+      </filterset>
+    </copy>
+
+    <copy todir="${maven.project.build.directory}/marketplace/install/bundles">
+      <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-api::jar" />
+      <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-core::jar" />
+      <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-xdocreport::jar" />
+      <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-jxls::jar" />
+      <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-web::jar" />
+      <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-samples::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-api::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-core::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-web::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-publisher::jar" />
+    </copy> 
+
+    <copy todir="${maven.project.build.directory}/marketplace/install/libs">
+      <artifact:set>
+        <includes>
+          <artifact groupId="fr.opensagres.xdocreport" scope="!test" type="!pom" />
+          <artifact groupId="net.sf.jodreports" scope="!test" type="!pom" />
+          <artifact groupId="net.sf.jxls" scope="!test" type="!pom" />
+          <artifact groupId="org.apache.commons" scope="!test" type="!pom" />
+        </includes>
+      </artifact:set>
+    </copy> 
+
+
+    <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${maven.project.build.directory}/marketplace" />
+    <artifact:attach file="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
+
+</project>
