@@ -81,11 +81,22 @@
 
         <c:otherwise>
 
+         <nxu:set var="iframe_width"
+           value="#{action.properties.width}"
+           resolveTwice="true">
+         <nxu:set var="iframe_height"
+           value="#{action.properties.height}"
+           resolveTwice="true">
+         <nxu:set var="iframe_scrolling"
+           value="#{action.properties.scrolling}"
+           resolveTwice="true">
+
+
           <c:if test="#{not useButton}">
             <a4j:commandLink id="#{idPrefix}#{action.id}_link"
               ajaxSingle="true"
               ignoreDupResponses="true" requestDelay="100"
-              onclick="javascript:showFancyBox('#{iframe}');"
+              onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
               styleClass="#{actionStyleClass} #{action.properties.styleClass}">
               <ui:include src="/incl/action/action_icon_label_template.xhtml" />
               <ui:insert name="inside_action" />
@@ -96,7 +107,7 @@
             <a4j:commandButton id="#{idPrefix}#{action.id}_link"
               ajaxSingle="true"
               ignoreDupResponses="true" requestDelay="100"
-              onclick="javascript:showFancyBox('#{iframe}');"
+              onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
               value="#{messages[action.label]}"
               styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
               <ui:include src="/incl/action/action_icon_label_template.xhtml">
@@ -105,6 +116,10 @@
               <ui:insert name="inside_action" />
             </a4j:commandButton>
           </c:if>
+
+        </nxu:set>
+        </nxu:set>
+        </nxu:set>
 
         </c:otherwise>
 
