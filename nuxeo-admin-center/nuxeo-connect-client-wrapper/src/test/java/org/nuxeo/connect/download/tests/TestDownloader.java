@@ -35,7 +35,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-
 @RunWith(FeaturesRunner.class)
 @Features(DownloadFeature.class)
 @Jetty(port = 8082)
@@ -61,7 +60,7 @@ public class TestDownloader {
         List<DownloadingPackage> downloads = new ArrayList<DownloadingPackage>();
 
         for (PackageDescriptor pkg : pkgToDownload) {
-            DownloadingPackage lpkg = cdm.storeDownloadedBundle("fake", pkg);
+            DownloadingPackage lpkg = cdm.storeDownloadedBundle(pkg);
             assertNotNull(lpkg);
             downloads.add(lpkg);
             Thread.sleep(100);

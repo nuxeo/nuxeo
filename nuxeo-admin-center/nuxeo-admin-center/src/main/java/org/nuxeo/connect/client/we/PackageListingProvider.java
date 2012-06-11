@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.connect.client.we;
@@ -52,6 +51,10 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "packageListingProvider")
 public class PackageListingProvider extends DefaultObject {
 
+    /**
+     * @deprecated since 5.6
+     */
+    @Deprecated
     public String getConnectBaseUrl() {
         return ConnectUrlConfig.getBaseUrl();
     }
@@ -103,18 +106,20 @@ public class PackageListingProvider extends DefaultObject {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         String targetPlatform = PlatformVersionHelper.getPlatformFilter();
 
-        if (type==null) {
+        if (type == null) {
             type = SharedPackageListingsSettings.instance().get("updates").getPackageTypeFilter();
         }
-        if (filterOnPlatform==null) {
-            filterOnPlatform = SharedPackageListingsSettings.instance().get("updates").getPlatformFilter();
+        if (filterOnPlatform == null) {
+            filterOnPlatform = SharedPackageListingsSettings.instance().get(
+                    "updates").getPlatformFilter();
         }
 
         List<DownloadablePackage> pkgs;
         if (type == null || "".equals(type.trim())) {
             pkgs = pm.listUpdatePackages(null, targetPlatform);
         } else {
-            pkgs = pm.listUpdatePackages(PackageType.getByValue(type), targetPlatform);
+            pkgs = pm.listUpdatePackages(PackageType.getByValue(type),
+                    targetPlatform);
         }
 
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
@@ -130,7 +135,7 @@ public class PackageListingProvider extends DefaultObject {
 
         PackageManager pm = Framework.getLocalService(PackageManager.class);
 
-        if (type==null) {
+        if (type == null) {
             type = SharedPackageListingsSettings.instance().get("local").getPackageTypeFilter();
         }
 
@@ -157,11 +162,12 @@ public class PackageListingProvider extends DefaultObject {
 
         boolean useSearch = true;
 
-        if (type==null) {
+        if (type == null) {
             type = SharedPackageListingsSettings.instance().get("remote").getPackageTypeFilter();
         }
-        if (filterOnPlatform==null) {
-            filterOnPlatform = SharedPackageListingsSettings.instance().get("remote").getPlatformFilter();
+        if (filterOnPlatform == null) {
+            filterOnPlatform = SharedPackageListingsSettings.instance().get(
+                    "remote").getPlatformFilter();
         }
         if (onlyRemote == null) {
             onlyRemote = SharedPackageListingsSettings.instance().get("remote").isOnlyRemote();
@@ -227,11 +233,13 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public boolean canInstall(Package pkg) {
-        return PackageState.DOWNLOADED == pkg.getState() && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
+        return PackageState.DOWNLOADED == pkg.getState()
+                && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
     }
 
     public boolean needsRestart(Package pkg) {
-        return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId()) || PackageState.INSTALLED == pkg.getState();
+        return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId())
+                || PackageState.INSTALLED == pkg.getState();
     }
 
     public boolean canUnInstall(Package pkg) {
@@ -245,9 +253,7 @@ public class PackageListingProvider extends DefaultObject {
 
     public boolean canDownload(Package pkg) {
         return PackageState.REMOTE == pkg.getState()
-                && (PackageType.STUDIO == pkg.getType() ||
-                   (ConnectStatusHolder.instance().isRegistred() &&
-                   ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
+                && (PackageType.STUDIO == pkg.getType() || (ConnectStatusHolder.instance().isRegistred() && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
     }
 
     @GET

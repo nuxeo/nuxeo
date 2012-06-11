@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.connect.client.jsf;
@@ -245,25 +244,26 @@ public class ConnectStatusActionBean implements Serializable {
 
     @Factory(scope = ScopeType.EVENT, value = "projectsForRegistration")
     public List<ConnectProject> getProjectsAvailableForRegistration() {
-        if (login == null) {
-            return new ArrayList<ConnectProject>();
-        }
-        try {
-            List<ConnectProject> projects = getService().getAvailableProjectsForRegistration(
-                    login, password);
-            if (projects != null && projects.size() > 0) {
-                Collections.sort(projects, new Comparator<ConnectProject>() {
-                    @Override
-                    public int compare(ConnectProject o1, ConnectProject o2) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-                });
+        List<ConnectProject> projects = new ArrayList<ConnectProject>();
+        if (login != null) {
+            try {
+                projects = getService().getAvailableProjectsForRegistration(
+                        login, password);
+                if (!projects.isEmpty()) {
+                    Collections.sort(projects,
+                            new Comparator<ConnectProject>() {
+                                @Override
+                                public int compare(ConnectProject o1,
+                                        ConnectProject o2) {
+                                    return o1.getName().compareTo(o2.getName());
+                                }
+                            });
+                }
+            } catch (Exception e) {
+                log.error("Error while getting remote project", e);
             }
-            return projects;
-        } catch (Exception e) {
-            log.error("Error while getting remote project", e);
-            return new ArrayList<ConnectProject>();
         }
+        return projects;
     }
 
     public String resetRegister() {
@@ -293,7 +293,7 @@ public class ConnectStatusActionBean implements Serializable {
         } catch (Exception e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
                     messages.get("label.connect.registrationError"));
-            log.error("Error while registring instance", e);
+            log.error("Error while registering instance", e);
         }
 
         flushContextCache();
@@ -360,7 +360,7 @@ public class ConnectStatusActionBean implements Serializable {
             facesMessages.add(
                     StatusMessage.Severity.ERROR,
                     messages.get("label.connect.wrong.package" + ":"
-                            + e.getMessage()));
+                                    + e.getMessage()));
             return;
         } finally {
             tmpFile.delete();
@@ -388,27 +388,27 @@ public class ConnectStatusActionBean implements Serializable {
     public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
         if (connectionStatusCache == null) {
             try {
-                if (!isRegistred()) {
+        if (!isRegistred()) {
                     connectionStatusCache = ConnectUpdateStatusInfo.unregistered();
-                } else {
-                    if (isConnectServerReachable()) {
-                        if (getStatus().isError()) {
+        } else {
+            if (isConnectServerReachable()) {
+                if (getStatus().isError()) {
                             connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
-                        } else {
-                            if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
+                } else {
+                    if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
                                 connectionStatusCache = ConnectUpdateStatusInfo.ok();
-                            } else {
-                                connectionStatusCache = ConnectUpdateStatusInfo.notValid();
-                            }
-                        }
                     } else {
-                        connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
+                                connectionStatusCache = ConnectUpdateStatusInfo.notValid();
                     }
                 }
+            } else {
+                        connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
+            }
+        }
             } catch (Exception e) {
                 log.error(e);
                 connectionStatusCache = null;
-            }
+    }
         }
         return connectionStatusCache;
     }
@@ -416,6 +416,6 @@ public class ConnectStatusActionBean implements Serializable {
     @Factory("nuxeoConnectUrl")
     public String getConnectServerUrl() {
         return ConnectUrlConfig.getBaseUrl();
-    }
+}
 
 }
