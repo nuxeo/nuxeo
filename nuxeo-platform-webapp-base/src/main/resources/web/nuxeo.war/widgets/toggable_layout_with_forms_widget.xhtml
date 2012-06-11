@@ -68,7 +68,8 @@
             value="#{fieldOrValue}"
             template="#{widgetProperty_template}"
             selectedRows="#{widgetProperty_selectedRows}"
-            selectAllByDefault="#{widgetProperty_selectAllByDefault}" />
+            selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+            widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
 
           <c:if test="#{canToggleMode}">
             <p class="buttonsGadget">
@@ -117,7 +118,8 @@
               value="#{fieldOrValue}"
               template="#{widgetProperty_template}"
               selectedRows="#{widgetProperty_selectedRows}"
-              selectAllByDefault="#{widgetProperty_selectAllByDefault}" />
+              selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+              widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
 
             <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
               <nxl:layout name="document_edit_form_options"
@@ -233,7 +235,8 @@
               value="#{fieldOrValue}"
               template="#{widgetProperty_template}"
               selectedRows="#{widgetProperty_selectedRows}"
-              selectAllByDefault="#{widgetProperty_selectAllByDefault}" />
+              selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+              widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
 
             <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
               <nxl:layout name="document_edit_form_options"

@@ -12,7 +12,7 @@
       "id": "test",
       "previewEnabled": true
     },
-    "sinceVersion": "5.4.0",
+    "sinceVersion": "5.4",
     "confProperties":     {
       "confProp": "foo",
       "sortProperty": "dc:title"

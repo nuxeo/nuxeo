@@ -41,118 +41,188 @@
 
   <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
   <c:set var="isEditMode" value="#{widget.mode == 'edit'}" />
-  <c:set value="#{widget.fieldDefinitions[0].propertyName}"
-    var="propValueForTemplate"/>
+  <c:set var="propValueForTemplate"
+    value="#{widget.fieldDefinitions[0].propertyName}" />
+  <c:set var="templateValue"
+    value="#{nxu:test(empty widgetProperty_listTemplateItem, nxd:propertyDefaultValue(propValueForTemplate), widgetProperty_listTemplateItem)}" />
+  <c:set var="showActions"
+    value="#{isEditMode and (not widgetProperty_hideDeleteButton or widgetProperty_orderable)}" />
 
   <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
-    <a4j:outputPanel ajaxRendered="true"
-      styleClass="#{widgetProperty_styleClass}">
+    <a4j:outputPanel id="#{widget.id}_panel"
+      styleClass="widgetPanel listWidgetPanel #{widgetProperty_styleClass}">
 
-      <nxu:inputList value="#{fieldOrValue}"
-        id="#{widget.id}_input" model="model"
-        template="#{nxu:test(empty widgetProperty_listTemplateItem, nxd:propertyDefaultValue(propValueForTemplate), widgetProperty_listTemplateItem)}"
-        required="#{widget.required}" diff="#{widgetProperty_diff}"
-        rendered="#{isEditMode or not empty fieldOrValue}">
+      <c:choose>
 
-        <h:panelGrid columns="#{nxu:test(isEditMode, 2, 1)}"
-          styleClass="listWidgetPanelGrid #{widgetProperty_subStyleClass}">
-
-          <c:if test="#{isEditMode}">
-            <h:panelGroup>
-
-              <c:if test="#{not widgetProperty_hideDeleteButton}">
-                <a4j:commandLink immediate="true"
-                  actionListener="#{editableListBean.performAction}"
-                  id="#{widget.id}_delete" reRender="#{widget.id}_input"
-                  bypassUpdates="true">
-                  <h:graphicImage value="/icons/action_delete.gif" />
-                  <f:param name="for" value="#{widget.id}_input" />
-                  <f:param name="index" value="#{model.rowIndex}" />
-                  <f:param name="type" value="remove" />
-                </a4j:commandLink>
+        <c:when test="#{widgetProperty_display == 'table'}">
+          <table class="dataOutput widgetTable listWidgetTable #{widgetProperty_styleClass}">
+            <thead>
+              <c:if test="#{displaySubLabels and (isEditMode or not empty fieldOrValue)}">
+                <tr>
+                  <c:if test="#{showActions}">
+                    <th class="boldColumn"></th>
+                  </c:if>
+                  <nxl:subWidget>
+                    <th class="boldColumn">
+                      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                        <ui:param name="labelStyleClass"
+                          value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                      </ui:include>
+                    </th>
+                  </nxl:subWidget>
+                </tr>
               </c:if>
+            </thead>
+            <tbody>
+              <nxu:inputList value="#{fieldOrValue}"
+                id="#{widget.id}_input" model="model"
+                template="#{templateValue}"
+                required="#{widget.required}" diff="#{widgetProperty_diff}"
+                rendered="#{isEditMode or not empty fieldOrValue}">
+                <tr class="#{model.rowIndex % 2 == 0 ? 'dataRowEven': 'dataRowOdd'}">
+                  <c:if test="#{showActions}">
+                    <td class="listWidgetActions">
+                      <ui:include src="/widgets/list_widget_template_actions.xhtml" />
+                    </td>
+                  </c:if>
+                  <nxl:subWidget>
+                    <td class="fieldColumn">
+                      <nxl:widget widget="#{widget}"
+                        value="#{model.rowData}" />
+                    </td>
+                  </nxl:subWidget>
+                </tr>
+              </nxu:inputList>
+            </tbody>
+          </table>
+        </c:when>
 
-              <c:if test="#{widgetProperty_orderable}">
-                <a4j:commandLink immediate="true"
-                  actionListener="#{editableListBean.performAction}"
-                  id="#{widget.id}_move_down" reRender="#{widget.id}_input"
-                  bypassUpdates="true" rendered="#{model.rowIndex != model.rowCount - 1}">
-                  <h:graphicImage value="/icons/go_down.png" />
-                  <f:param name="for" value="#{widget.id}_input" />
-                  <f:param name="index" value="#{model.rowIndex}" />
-                  <f:param name="type" value="movedown" />
-                </a4j:commandLink>
-                <h:graphicImage value="/icons/inactive_go_down.png"
-                  rendered="#{model.rowIndex == model.rowCount - 1}" />
+        <c:when test="#{widgetProperty_display == 'inline'}">
+          <table class="dataInput widgetTable listWidgetTable #{widgetProperty_styleClass}">
+            <tbody>
+              <nxu:inputList value="#{fieldOrValue}"
+                id="#{widget.id}_input" model="model"
+                template="#{templateValue}"
+                required="#{widget.required}" diff="#{widgetProperty_diff}"
+                rendered="#{isEditMode or not empty fieldOrValue}">
+                <tr>
+                  <c:if test="#{showActions}">
+                    <td class="listWidgetActions">
+                      <ui:include src="/widgets/list_widget_template_actions.xhtml" />
+                    </td>
+                  </c:if>
+                  <nxl:subWidget>
+                    <c:if test="#{displaySubLabels}">
+                      <td class="boldColumn listWidgetInlineDisplay">
+                        <h:outputText rendered="#{model.rowIndex == 0}">
+                          <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                        </h:outputText>
+                      </td>
+                    </c:if>
+                    <td class="fieldColumn">
+                      <nxl:widget widget="#{widget}"
+                        value="#{model.rowData}" />
+                    </td>
+                  </nxl:subWidget>
+                </tr>
+              </nxu:inputList>
+            </tbody>
+          </table>
+        </c:when>
 
-                <a4j:commandLink immediate="true"
-                  actionListener="#{editableListBean.performAction}"
-                  id="#{widget.id}_move_up" reRender="#{widget.id}_input"
-                  bypassUpdates="true" rendered="#{model.rowIndex != 0}">
-                  <h:graphicImage value="/icons/go_up.png" />
-                  <f:param name="for" value="#{widget.id}_input" />
-                  <f:param name="index" value="#{model.rowIndex}" />
-                  <f:param name="type" value="moveup" />
-                </a4j:commandLink>
-                <h:graphicImage value="/icons/inactive_go_up.png"
-                  rendered="#{model.rowIndex == 0}" />
+        <c:when test="#{widgetProperty_display == 'block_top'}">
+          <nxu:inputList value="#{fieldOrValue}"
+            id="#{widget.id}_input" model="model"
+            template="#{templateValue}"
+            required="#{widget.required}" diff="#{widgetProperty_diff}"
+            rendered="#{isEditMode or not empty fieldOrValue}">
+            <h:panelGrid columns="#{isEditMode and showActions?2:1}">
+              <c:if test="#{showActions}">
+                <h:panelGroup styleClass="listWidgetActionsTable">
+                  <ui:include src="/widgets/list_widget_template_actions.xhtml" />
+                </h:panelGroup>
               </c:if>
-
-            </h:panelGroup>
-          </c:if>
-
-          <h:panelGroup>
-            <table style="display:inline;">
-              <tbody>
-                <c:choose>
-
-                  <c:when test="#{widgetProperty_display == 'inline'}">
-                    <tr>
-                      <nxl:subWidget>
-                        <td class="fieldColumn #{widgetProperty_subItemStyleClass}">
-                          <c:if test="#{displaySubLabels}">
-                            <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                              <ui:param name="labelStyleClass" value="labelColumn" />
-                            </ui:include>
-                          </c:if>
-                          <nxl:widget widget="#{widget}"
-                            value="#{model.rowData}" />
-                        </td>
-                      </nxl:subWidget>
-                    </tr>
-                  </c:when>
-
-                  <c:otherwise>
+              <h:panelGroup>
+                <table>
+                  <tbody>
                     <nxl:subWidget>
                       <tr>
                         <c:if test="#{displaySubLabels}">
-                          <td class="labelColumn #{widgetProperty_subItemStyleClass}">
-                            <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                          <td class="boldColumn">
+                            <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                              <ui:param name="labelStyleClass"
+                                value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                            </ui:include>
+                            <h:outputText value=" " />
                           </td>
                         </c:if>
-                        <td class="fieldColumn #{widgetProperty_subItemStyleClass}">
+                      </tr>
+                      <tr>
+                        <td class="fieldColumn">
                           <nxl:widget widget="#{widget}"
                             value="#{model.rowData}" />
                         </td>
                       </tr>
                     </nxl:subWidget>
-                  </c:otherwise>
+                  </tbody>
+                </table>
+              </h:panelGroup>
+            </h:panelGrid>
+          </nxu:inputList>
+        </c:when>
 
-                </c:choose>
-              </tbody>
-            </table>
-          </h:panelGroup>
+        <c:otherwise>
+          <nxu:inputList value="#{fieldOrValue}"
+            id="#{widget.id}_input" model="model"
+            template="#{templateValue}"
+            required="#{widget.required}" diff="#{widgetProperty_diff}"
+            rendered="#{isEditMode or not empty fieldOrValue}">
+            <h:panelGrid columns="#{isEditMode and showActions?2:1}">
+              <c:if test="#{showActions}">
+                <h:panelGroup styleClass="listWidgetActionsTable">
+                  <ui:include src="/widgets/list_widget_template_actions.xhtml" />
+                </h:panelGroup>
+              </c:if>
+              <h:panelGroup>
+                <table>
+                  <tbody>
+                    <nxl:subWidget>
+                      <tr>
+                        <c:if test="#{displaySubLabels}">
+                          <td class="boldColumn">
+                            <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                              <ui:param name="labelStyleClass"
+                                value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                            </ui:include>
+                            <h:outputText value=" " />
+                          </td>
+                        </c:if>
+                        <td class="fieldColumn">
+                          <nxl:widget widget="#{widget}"
+                            value="#{model.rowData}" />
+                        </td>
+                      </tr>
+                    </nxl:subWidget>
+                  </tbody>
+                </table>
+              </h:panelGroup>
+            </h:panelGrid>
+          </nxu:inputList>
+        </c:otherwise>
 
-        </h:panelGrid>
+      </c:choose>
 
-      </nxu:inputList>
       <h:message styleClass="errorMessage" for="#{widget.id}_input"
         id="#{widget.id}_message" />
+
     </a4j:outputPanel>
 
     <c:if test="#{isEditMode and not widgetProperty_hideAddButton}">
       <a4j:commandLink immediate="true"
-        actionListener="#{editableListBean.performAction}" id="#{widget.id}_add">
+        actionListener="#{editableListBean.performAction}"
+        reRender="#{widget.id}_panel"
+        id="#{widget.id}_add"
+        styleClass="listWidgetActionAdd">
         <f:param name="for" value="#{widget.id}_input" />
         <f:param name="type" value="add" />
         <h:graphicImage value="/widgets/img/action_add.gif" />

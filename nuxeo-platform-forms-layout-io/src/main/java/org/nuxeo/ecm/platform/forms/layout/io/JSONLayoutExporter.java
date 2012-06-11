@@ -156,6 +156,7 @@ public class JSONLayoutExporter {
             json.element("demo", demoInfo);
         }
         json.element("sinceVersion", conf.getSinceVersion());
+        json.element("deprecatedVersion", conf.getDeprecatedVersion());
         JSONObject confProps = exportPropsToJson(conf.getConfProperties());
         if (!confProps.isEmpty()) {
             json.element("confProperties", confProps);
@@ -256,6 +257,7 @@ public class JSONLayoutExporter {
         String title = conf.getString("title");
         String description = conf.optString("description");
         String sinceVersion = conf.optString("sinceVersion");
+        String deprecatedVersion = conf.optString("deprecatedVersion");
 
         JSONObject demoInfo = conf.optJSONObject("demo");
         String demoId = null;
@@ -330,10 +332,11 @@ public class JSONLayoutExporter {
         }
 
         WidgetTypeConfiguration res = new WidgetTypeConfigurationImpl(
-                sinceVersion, title, description, demoId, demoPreviewEnabled,
-                confProps, confSupportedModes, acceptingSubWidgets, list,
-                complex, containingForm, confSupportedTypes, confDefaultTypes,
-                defaultFieldDefinitions, confCats, confLayouts);
+                sinceVersion, deprecatedVersion, title, description, demoId,
+                demoPreviewEnabled, confProps, confSupportedModes,
+                acceptingSubWidgets, list, complex, containingForm,
+                confSupportedTypes, confDefaultTypes, defaultFieldDefinitions,
+                confCats, confLayouts);
 
         return res;
     }

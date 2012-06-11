@@ -151,7 +151,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         WidgetTypeConfiguration conf = def.getConfiguration();
         assertNotNull(conf);
 
-        assertEquals("5.4.0", conf.getSinceVersion());
+        assertEquals("5.4", conf.getSinceVersion());
         assertEquals("Test widget type", conf.getTitle());
         assertEquals("This is a test widget type", conf.getDescription());
         assertEquals("test", conf.getDemoId());

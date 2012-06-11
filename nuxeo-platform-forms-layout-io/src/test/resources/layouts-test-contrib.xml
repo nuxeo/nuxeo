@@ -38,7 +38,8 @@
         <title>Test widget type</title>
         <description>This is a test widget type</description>
         <demo id="test" previewEnabled="true" />
-        <sinceVersion>5.4.0</sinceVersion>
+        <sinceVersion>5.4</sinceVersion>
+        <deprecatedVersion>5.6</deprecatedVersion>
         <confProperties>
           <property name="confProp">foo</property>
           <property name="sortProperty">dc:title</property>

@@ -10,7 +10,7 @@
   value="#{widgetProperty_actionStyleClass}"
   cache="true">
 
-  <c:if test="#{not empty fieldOrValue}">
+  <c:if test="#{not empty widgetProperty_actions}">
 
     <c:if test="#{!empty widget.label}">
       <h3 class="summaryTitle">
@@ -26,12 +26,12 @@
 
         <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
           <div>
-            <c:forEach var="action" items="#{fieldOrValue}"
+            <c:forEach var="action" items="#{widgetProperty_actions}"
               begin="0"
-              end="#{empty widgetProperty_maxActionsNumber?fieldOrValue.size()-1:widgetProperty_maxActionsNumber-1}"
+              end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
               step="1">
               <ui:decorate template="/incl/action/action_template.xhtml">
-                <ui:param name="display" value="#{widgetProperty_display}" />
+                <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                 <ui:param name="idPrefix" value="#{widget.id}_" />
               </ui:decorate>
             </c:forEach>
@@ -40,13 +40,13 @@
 
         <c:when test="#{widgetProperty_overallDisplay == 'menu'}">
           <ul>
-            <c:forEach var="action" items="#{fieldOrValue}"
+            <c:forEach var="action" items="#{widgetProperty_actions}"
               begin="0"
-              end="#{empty widgetProperty_maxActionsNumber?fieldOrValue.size()-1:widgetProperty_maxActionsNumber-1}"
+              end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
               step="1">
               <li class="#{nxu:test(widgetProperty_selectedExpression, 'selected', '')}">
                 <ui:decorate template="/incl/action/action_template.xhtml">
-                  <ui:param name="display" value="#{widgetProperty_display}" />
+                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                   <ui:param name="idPrefix" value="#{widget.id}_" />
                 </ui:decorate>
               </li>
@@ -57,13 +57,13 @@
         <!-- TODO: add rollover menu? -->
 
         <c:otherwise>
-          <c:forEach var="action" items="#{fieldOrValue}"
+          <c:forEach var="action" items="#{widgetProperty_actions}"
             begin="0"
-            end="#{empty widgetProperty_maxActionsNumber?fieldOrValue.size()-1:widgetProperty_maxActionsNumber-1}"
+            end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
             step="1">
             <div>
               <ui:decorate template="/incl/action/action_template.xhtml">
-                <ui:param name="display" value="#{widgetProperty_display}" />
+                <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                 <ui:param name="idPrefix" value="#{widget.id}_" />
               </ui:decorate>
             </div>
@@ -72,13 +72,13 @@
 
       </c:choose>
 
-      <c:if test="#{not empty widgetProperty_maxActionsNumber and fieldOrValue.size > widgetProperty_maxActionsNumber}">
+      <c:if test="#{not empty widgetProperty_maxActionsNumber and widgetProperty_actions.size > widgetProperty_maxActionsNumber}">
         <ul class="actionList">
           <li class="dropDownMenu button dropdown">
             <h:outputText value="#{empty widgetProperty_moreMenuLabel ? messages['label.summary.actions.more'] : widgetProperty_moreMenuLabel}" />
             <ul class="actionSubList">
               <c:forEach var="action" begin="#{widgetProperty_maxActionsNumber}"
-                end="#{fieldOrValue.size-1}" step="1" items="#{fieldOrValue}">
+                end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
                 <li>
                   <ui:decorate template="/incl/action/generic_action_template.xhtml">
                     <ui:param name="idPrefix" value="#{widget.id}_more_" />
