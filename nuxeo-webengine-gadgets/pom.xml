@@ -12,20 +12,6 @@
 
   <build>
     <plugins>
-      <!-- APT plugin for annotation preprocessing -->
-      <plugin>
-        <groupId>org.apache.myfaces.tobago</groupId>
-        <artifactId>maven-apt-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-bindings</id>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- end APT plugin -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -57,10 +43,6 @@
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.build</groupId>
-      <artifactId>nuxeo-webengine-apt</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
