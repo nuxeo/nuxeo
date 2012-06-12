@@ -1347,6 +1347,12 @@
         <version>${nuxeo.distribution.tools.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <version>${nuxeo.distribution.tools.version}</version>
+        <classifier>all</classifier>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-ftest</artifactId>
         <version>${nuxeo.ftest.version}</version>
