@@ -236,37 +236,50 @@ public class ExportedDocumentImpl implements ExportedDocument {
         systemElement.addElement(ExportConstants.PATH_TAG).addText(
                 path.toString());
         // lifecycle
-        try {
-            String lifeCycleState = doc.getCurrentLifeCycleState();
-            if (lifeCycleState != null && lifeCycleState.length() > 0) {
-                systemElement.addElement(ExportConstants.LIFECYCLE_STATE_TAG).addText(
-                        lifeCycleState);
-            }
-            String lifeCyclePolicy = doc.getLifeCyclePolicy();
-            if (lifeCyclePolicy != null && lifeCyclePolicy.length() > 0) {
-                systemElement.addElement(ExportConstants.LIFECYCLE_POLICY_TAG).addText(
-                        lifeCyclePolicy);
-            }
-        } catch (Exception e) {
-            log.error(e, e);
-        } // end of lifecycle
+        readLifeCycleInfo(systemElement, doc);
 
         // facets
-        for (String facet : doc.getFacets()) {
-            systemElement.addElement(ExportConstants.FACET_TAG).addText(facet);
-        }
+        readFacets(systemElement, doc);
         // write security
         Element acpElement = systemElement.addElement(ExportConstants.ACCESS_CONTROL_TAG);
         ACP acp = doc.getACP();
         if (acp != null) {
             readACP(acpElement, acp);
         }
-
         // write schemas
+        readDocumentSchemas(rootElement, doc, inlineBlobs);
+    }
+
+    protected void readLifeCycleInfo(Element element, DocumentModel doc) {
+        try {
+            String lifeCycleState = doc.getCurrentLifeCycleState();
+            if (lifeCycleState != null && lifeCycleState.length() > 0) {
+                element.addElement(ExportConstants.LIFECYCLE_STATE_TAG).addText(
+                        lifeCycleState);
+            }
+            String lifeCyclePolicy = doc.getLifeCyclePolicy();
+            if (lifeCyclePolicy != null && lifeCyclePolicy.length() > 0) {
+                element.addElement(ExportConstants.LIFECYCLE_POLICY_TAG).addText(
+                        lifeCyclePolicy);
+            }
+        } catch (Exception e) {
+            log.error(e, e);
+        }
+    }
+
+    protected void readFacets(Element element, DocumentModel doc) {
+        // facets
+        for (String facet : doc.getFacets()) {
+            element.addElement(ExportConstants.FACET_TAG).addText(facet);
+        }
+    }
+
+    protected void readDocumentSchemas(Element element, DocumentModel doc,
+            boolean inlineBlobs) throws ClientException, IOException {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         String[] schemaNames = doc.getSchemas();
         for (String schemaName : schemaNames) {
-            Element schemaElement = rootElement.addElement(
+            Element schemaElement = element.addElement(
                     ExportConstants.SCHEMA_TAG).addAttribute("name", schemaName);
             Schema schema = schemaManager.getSchema(schemaName);
             Namespace targetNs = schema.getNamespace();
@@ -281,6 +294,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
                 readProperty(schemaElement, targetNs, field, value, inlineBlobs);
             }
         }
+
     }
 
     protected void readProperty(Element parent, Namespace targetNs,
@@ -359,7 +373,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
     }
 
-    private static void readACP(Element element, ACP acp) {
+    protected static void readACP(Element element, ACP acp) {
         ACL[] acls = acp.getACLs();
         for (ACL acl : acls) {
             Element aclElement = element.addElement(ExportConstants.ACL_TAG);
