@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
@@ -49,6 +48,10 @@ public class StatusServlet extends HttpServlet {
     public static final String PARAM_SUMMARY = "summary";
 
     public static final String PARAM_SUMMARY_KEY = "key";
+
+    // duplicated from org.nuxeo.launcher.config.ConfigurationGenerator to avoid
+    // dependencies on nuxeo-launcher-commons
+    public static final String PARAM_STATUS_KEY = "server.status.key";
 
     private OSGiRuntimeService runtimeService;
 
@@ -72,8 +75,8 @@ public class StatusServlet extends HttpServlet {
             getStartedInfo(response);
         } else if (requestedInfo.equals(PARAM_SUMMARY)) {
             String givenKey = req.getParameter(PARAM_SUMMARY_KEY);
-            if (getRuntimeService().getProperty(
-                    ConfigurationGenerator.PARAM_STATUS_KEY).equals(givenKey)) {
+            if (getRuntimeService().getProperty(PARAM_STATUS_KEY).equals(
+                    givenKey)) {
                 getSummaryInfo(response);
             } else {
                 resp.setStatus(403);
