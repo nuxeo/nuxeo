@@ -44,7 +44,7 @@ public class TypeService extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(TypeService.class);
 
-    private SchemaManagerImpl typeManager;
+    private SchemaManagerImpl schemaManager;
 
     private XSDLoader schemaLoader;
 
@@ -63,7 +63,7 @@ public class TypeService extends DefaultComponent {
     }
 
     public SchemaManager getTypeManager() {
-        return typeManager;
+        return schemaManager;
     }
 
     public XSDLoader getSchemaLoader() {
@@ -74,9 +74,9 @@ public class TypeService extends DefaultComponent {
     public void activate(ComponentContext context) {
         this.context = context;
         try {
-            typeManager = new SchemaManagerImpl();
-            schemaLoader = new XSDLoader(typeManager);
-            schemaManagerInstance = typeManager;
+            schemaManager = new SchemaManagerImpl();
+            schemaLoader = new XSDLoader(schemaManager);
+            schemaManagerInstance = schemaManager;
         } catch (Exception e) {
             log.error(e, e);
         }
@@ -84,8 +84,8 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) {
-        typeManager.clear();
-        typeManager = null;
+        schemaManager.clear();
+        schemaManager = null;
         schemaManagerInstance = null;
     }
 
@@ -96,9 +96,9 @@ public class TypeService extends DefaultComponent {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 if (contrib instanceof DocumentTypeDescriptor) {
-                    typeManager.registerDocumentType((DocumentTypeDescriptor) contrib);
+                    schemaManager.registerDocumentType((DocumentTypeDescriptor) contrib);
                 } else if (contrib instanceof FacetDescriptor) {
-                    typeManager.registerFacet((FacetDescriptor) contrib);
+                    schemaManager.registerFacet((FacetDescriptor) contrib);
                 }
             }
         } else if ("schema".equals(xp)) {
@@ -149,9 +149,9 @@ public class TypeService extends DefaultComponent {
                                 + extension.getComponent().getName());
                     }
                     if (provider != null) {
-                        if (provider != typeManager) {
+                        if (provider != schemaManager) {
                             log.info("Importing types from external provider");
-                            typeManager.importTypes(provider);
+                            schemaManager.importTypes(provider);
                         }
                     } else {
                         log.warn("Could not instatiate or locate the type provider contributed by: "
@@ -174,15 +174,15 @@ public class TypeService extends DefaultComponent {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 if (contrib instanceof DocumentTypeDescriptor) {
-                    typeManager.unregisterDocumentType(((DocumentTypeDescriptor) contrib).name);
+                    schemaManager.unregisterDocumentType(((DocumentTypeDescriptor) contrib).name);
                 } else if (contrib instanceof FacetDescriptor) {
-                    typeManager.unregisterFacet(((FacetDescriptor) contrib).name);
+                    schemaManager.unregisterFacet(((FacetDescriptor) contrib).name);
                 }
             }
         } else if ("schema".equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                typeManager.unregisterSchema(((SchemaBindingDescriptor) contrib).name);
+                schemaManager.unregisterSchema(((SchemaBindingDescriptor) contrib).name);
             }
         } else if ("provider".equals(xp)) {
             // ignore provider removal
@@ -201,10 +201,10 @@ public class TypeService extends DefaultComponent {
             if (url != null) {
                 InputStream in = url.openStream();
                 try {
-                    File file = new File(typeManager.getSchemaDirectory(),
+                    File file = new File(schemaManager.getSchemaDirectory(),
                             sd.name + ".xsd");
                     FileUtils.copyToFile(in, file); // may overwrite
-                    Schema oldschema = typeManager.getSchema(sd.name);
+                    Schema oldschema = schemaManager.getSchema(sd.name);
                     // loadSchema also (re)registers it with the typeManager
                     schemaLoader.loadSchema(sd.name, sd.prefix, file,
                             sd.override);
@@ -227,8 +227,8 @@ public class TypeService extends DefaultComponent {
 
     public void setConfiguration(TypeConfiguration configuration) {
         this.configuration = configuration;
-        if (typeManager != null) {
-            typeManager.setPrefetchInfo(new PrefetchInfo(
+        if (schemaManager != null) {
+            schemaManager.setPrefetchInfo(new PrefetchInfo(
                     configuration.prefetchInfo));
         }
     }
@@ -241,9 +241,9 @@ public class TypeService extends DefaultComponent {
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
         if (SchemaManager.class.isAssignableFrom(adapter)) {
-            return (T) typeManager;
+            return (T) schemaManager;
         } else if (TypeProvider.class.isAssignableFrom(adapter)) {
-            return (T) typeManager;
+            return (T) schemaManager;
         }
         return null;
     }

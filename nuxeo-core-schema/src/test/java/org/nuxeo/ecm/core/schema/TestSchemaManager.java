@@ -14,81 +14,79 @@
 
 package org.nuxeo.ecm.core.schema;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestTypeManager extends NXRuntimeTestCase {
+public class TestSchemaManager extends NXRuntimeTestCase {
 
-    SchemaManagerImpl typeManager;
+    SchemaManagerImpl schemaManager;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
-        typeManager = (SchemaManagerImpl) getTypeManager();
+        schemaManager = (SchemaManagerImpl) getSchemaManager();
     }
 
     @After
     public void tearDown() throws Exception {
-        typeManager = null;
+        schemaManager = null;
         super.tearDown();
     }
 
-    public static TypeService getTypeService() {
-        return (TypeService) Framework.getRuntime().getComponent(
-                TypeService.NAME);
-    }
-
-    public static SchemaManager getTypeManager() throws Exception {
+    public static SchemaManager getSchemaManager() throws Exception {
         return Framework.getService(SchemaManager.class);
     }
 
     @Test
     public void testTrivialTypeManager() {
-        Type[] types = typeManager.getTypes();
+        Type[] types = schemaManager.getTypes();
         assertNotNull(types);
-        assertEquals(types.length, typeManager.getTypesCount());
+        assertEquals(types.length, schemaManager.getTypesCount());
         assertTrue(types.length > 0);
 
-        DocumentType[] documentTypes = typeManager.getDocumentTypes();
+        DocumentType[] documentTypes = schemaManager.getDocumentTypes();
         assertNotNull(documentTypes);
         assertEquals(1, documentTypes.length);
         assertEquals("Document", documentTypes[0].getName());
-        assertEquals(1, typeManager.getDocumentTypesCount());
+        assertEquals(1, schemaManager.getDocumentTypesCount());
 
-        Schema[] schemas = typeManager.getSchemas();
+        Schema[] schemas = schemaManager.getSchemas();
         assertNotNull(schemas);
         assertEquals(0, schemas.length);
-        assertEquals(0, typeManager.getSchemasCount());
+        assertEquals(0, schemaManager.getSchemasCount());
     }
 
     @Test
     public void testFacetsCache() {
         // avoid WARN, register facets
-        typeManager.registerFacet(new FacetDescriptor("parent1", null));
-        typeManager.registerFacet(new FacetDescriptor("parent2", null));
-        typeManager.registerFacet(new FacetDescriptor("child", null));
+        schemaManager.registerFacet(new FacetDescriptor("parent1", null));
+        schemaManager.registerFacet(new FacetDescriptor("parent2", null));
+        schemaManager.registerFacet(new FacetDescriptor("child", null));
 
         String[] facets = { "parent1", "parent2" };
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd = new DocumentTypeDescriptor("Document",
                 "Parent", schemas, facets);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
 
-        assertNotNull(typeManager.getDocumentType("Parent"));
-        assertEquals(2, typeManager.getDocumentTypes().length);
+        assertNotNull(schemaManager.getDocumentType("Parent"));
+        assertEquals(2, schemaManager.getDocumentTypes().length);
 
-        assertEquals("Parent", typeManager.getDocumentType("Parent").getName());
-        Set<String> tff = typeManager.getDocumentTypeNamesForFacet("parent1");
+        assertEquals("Parent", schemaManager.getDocumentType("Parent").getName());
+        Set<String> tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
         assertNotNull(tff);
         assertEquals(1, tff.size());
         assertTrue(tff.contains("Parent"));
@@ -97,29 +95,29 @@ public class TestTypeManager extends NXRuntimeTestCase {
         facets = new String[1];
         facets[0] = "child";
         dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, facets);
-        typeManager.registerDocumentType(dtd);
-        assertEquals(3, typeManager.getDocumentTypes().length);
+        schemaManager.registerDocumentType(dtd);
+        assertEquals(3, schemaManager.getDocumentTypes().length);
 
-        tff = typeManager.getDocumentTypeNamesForFacet("parent1");
+        tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
         assertNotNull(tff);
         assertEquals(2, tff.size());
         assertTrue(tff.contains("Parent"));
         assertTrue(tff.contains("Child"));
-        Set<String> tff2 = typeManager.getDocumentTypeNamesForFacet("parent2");
+        Set<String> tff2 = schemaManager.getDocumentTypeNamesForFacet("parent2");
         assertEquals(tff, tff2);
 
-        tff = typeManager.getDocumentTypeNamesForFacet("child");
+        tff = schemaManager.getDocumentTypeNamesForFacet("child");
         assertNotNull(tff);
         assertEquals(1, tff.size());
         assertTrue(tff.contains("Child"));
 
         // Unregister child
-        typeManager.unregisterDocumentType("Child");
-        assertNull(typeManager.getDocumentType("Child"));
-        assertNull(typeManager.getDocumentTypeNamesForFacet("child"));
-        assertEquals(2, typeManager.getDocumentTypes().length);
+        schemaManager.unregisterDocumentType("Child");
+        assertNull(schemaManager.getDocumentType("Child"));
+        assertNull(schemaManager.getDocumentTypeNamesForFacet("child"));
+        assertEquals(2, schemaManager.getDocumentTypes().length);
 
-        tff = typeManager.getDocumentTypeNamesForFacet("parent1");
+        tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
         assertNotNull(tff);
         assertEquals(1, tff.size());
         assertTrue(tff.contains("Parent"));
@@ -131,40 +129,40 @@ public class TestTypeManager extends NXRuntimeTestCase {
         DocumentTypeDescriptor dtd;
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
                 "Parent", schemas, new String[0]);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
         dtd = new DocumentTypeDescriptor("Parent",
                 "Child", schemas, new String[0]);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
                 "TopLevel", schemas, new String[0]);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
         checkInheritanceCache();
     }
 
     private void checkInheritanceCache() {
         Set<String> types;
 
-        types = typeManager.getDocumentTypeNamesExtending("Parent");
+        types = schemaManager.getDocumentTypeNamesExtending("Parent");
         assertNotNull(types);
         assertEquals(2, types.size());
         assertTrue(types.contains("Parent"));
         assertTrue(types.contains("Child"));
 
-        types = typeManager.getDocumentTypeNamesExtending("Document");
+        types = schemaManager.getDocumentTypeNamesExtending("Document");
         assertNotNull(types);
         assertEquals(4, types.size());
 
-        types = typeManager.getDocumentTypeNamesExtending("Child");
+        types = schemaManager.getDocumentTypeNamesExtending("Child");
         assertNotNull(types);
         assertEquals(1, types.size());
         assertTrue(types.contains("Child"));
 
-        types = typeManager.getDocumentTypeNamesExtending("TopLevel");
+        types = schemaManager.getDocumentTypeNamesExtending("TopLevel");
         assertNotNull(types);
         assertEquals(1, types.size());
         assertTrue(types.contains("TopLevel"));
 
-        types = typeManager.getDocumentTypeNamesExtending("Unknown");
+        types = schemaManager.getDocumentTypeNamesExtending("Unknown");
         assertNull(types);
     }
 
@@ -174,33 +172,33 @@ public class TestTypeManager extends NXRuntimeTestCase {
     @Test
     public void testFacetsCacheReversedRegistration() {
         // avoid WARN, register facets
-        typeManager.registerFacet(new FacetDescriptor("parent1", null));
-        typeManager.registerFacet(new FacetDescriptor("parent2", null));
-        typeManager.registerFacet(new FacetDescriptor("child", null));
+        schemaManager.registerFacet(new FacetDescriptor("parent1", null));
+        schemaManager.registerFacet(new FacetDescriptor("parent2", null));
+        schemaManager.registerFacet(new FacetDescriptor("child", null));
 
         DocumentTypeDescriptor dtd;
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         String[] facets = new String[1];
         facets[0] = "child";
         dtd = new DocumentTypeDescriptor("Parent", "Child", schemas, facets);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
 
         facets = new String[2];
         facets[0] = "parent1";
         facets[1] = "parent2";
         dtd = new DocumentTypeDescriptor("Document",
                 "Parent", schemas, facets);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
 
-        Set<String> tff = typeManager.getDocumentTypeNamesForFacet("parent1");
+        Set<String> tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
         assertNotNull(tff);
         assertEquals(2, tff.size());
         assertTrue(tff.contains("Parent"));
         assertTrue(tff.contains("Child"));
-        Set<String> tff2 = typeManager.getDocumentTypeNamesForFacet("parent2");
+        Set<String> tff2 = schemaManager.getDocumentTypeNamesForFacet("parent2");
         assertEquals(tff, tff2);
 
-        tff = typeManager.getDocumentTypeNamesForFacet("child");
+        tff = schemaManager.getDocumentTypeNamesForFacet("child");
         assertNotNull(tff);
         assertEquals(1, tff.size());
         assertTrue(tff.contains("Child"));
@@ -213,15 +211,15 @@ public class TestTypeManager extends NXRuntimeTestCase {
 
         dtd = new DocumentTypeDescriptor("Parent",
                 "Child", schemas, new String[0]);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
 
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
                 "Parent", schemas, new String[0]);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
 
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
                 "TopLevel", schemas, new String[0]);
-        typeManager.registerDocumentType(dtd);
+        schemaManager.registerDocumentType(dtd);
 
         checkInheritanceCache();
     }
