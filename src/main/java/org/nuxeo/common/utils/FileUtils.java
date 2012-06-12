@@ -401,25 +401,41 @@ public final class FileUtils {
 
     public static void copyTree(File src, File dst, PathFilter filter)
             throws IOException {
+        copyTree(src, dst, new Path("/"), filter);
+    }
+
+    public static void copyTree(File src, File dst, Path prefix, PathFilter filter) throws IOException {
+        if (!prefix.isAbsolute()) {
+            prefix = prefix.makeAbsolute();
+        }
         int rootIndex = src.getPath().length() + 1;
         for (File file : src.listFiles()) {
-            copyTree(rootIndex, file, new File(dst, file.getName()), filter);
+            copyTree(rootIndex, file, new File(dst, file.getName()), prefix, filter);
         }
     }
 
     protected static void copyTree(int rootIndex, File src, File dst,
-            PathFilter filter) throws IOException {
+            Path prefix, PathFilter filter) throws IOException {
         if (src.isFile()) {
             String relPath = src.getPath().substring(rootIndex);
             if (!filter.accept(new Path(relPath))) {
                 return;
             }
-            dst.mkdirs();
+            if (!prefix.isRoot()) { // remove prefix from path
+                String path = dst.getPath();
+                String pff = prefix.toString();
+                int prefixIndex = path.lastIndexOf(pff);
+                if (prefixIndex > 0) {
+                    path = path.substring(0, prefixIndex) + path.substring(prefixIndex+pff.length());
+                    dst = new File(path.toString());
+                }
+            }
+            dst.getParentFile().mkdirs();
             copyFile(src, dst);
         } else if (src.isDirectory()) {
             File[] files = src.listFiles();
             for (File file : files) {
-                copyTree(rootIndex, file, new File(dst, file.getName()), filter);
+                copyTree(rootIndex, file, new File(dst, file.getName()), prefix, filter);
             }
         }
     }
