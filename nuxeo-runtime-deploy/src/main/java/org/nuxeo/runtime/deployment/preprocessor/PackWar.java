@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -293,6 +294,8 @@ public class PackWar {
                 FileProcessor processor;
                 if (name.equals(zipWebappsNuxeo + ZIP_WEBINF + "web.xml")) {
                     processor = WebXmlProcessor.INSTANCE;
+                } else if (name.equals(zipWebappsNuxeo + ZIP_WEBINF + "opensocial.properties")) {
+                    processor = new PropertiesFileProcessor("res://config/", zipWebappsNuxeo + ZIP_WEBINF);
                 } else {
                     processor = null;
                 }
@@ -314,6 +317,34 @@ public class PackWar {
             FileInputStream in = new FileInputStream(file);
             try {
                 IOUtils.copy(in, out);
+            } finally {
+                in.close();
+            }
+        }
+    }
+
+    protected class PropertiesFileProcessor implements FileProcessor {
+
+        protected String target;
+
+        protected String replacement;
+
+        public PropertiesFileProcessor(String target, String replacement){
+            this.target = target;
+            this.replacement = replacement;
+        }
+
+        @Override
+        public void process(File file, OutputStream out) throws IOException {
+            FileInputStream in = new FileInputStream(file);
+            try {
+                @SuppressWarnings("unchecked")
+                List<String> lines = IOUtils.readLines(in, "UTF-8");
+                List<String> outLines = new ArrayList<String>();
+                for (String line : lines) {
+                    outLines.add(line.replace(target, replacement));
+                }
+                IOUtils.writeLines(outLines, null, out, "UTF-8");
             } finally {
                 in.close();
             }
