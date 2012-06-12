@@ -39,6 +39,14 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-comment-workflow</artifactId>
       <scope>test</scope>
     </dependency>
@@ -51,23 +59,5 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <!-- APT plugin for annotation preprocessing -->
-      <plugin>
-        <groupId>org.apache.myfaces.tobago</groupId>
-        <artifactId>maven-apt-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-bindings</id>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

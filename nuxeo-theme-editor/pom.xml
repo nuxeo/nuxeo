@@ -49,22 +49,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <!-- APT plugin for annotation preprocessing -->
-      <plugin>
-        <groupId>org.apache.myfaces.tobago</groupId>
-        <artifactId>maven-apt-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-bindings</id>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- end APT plugin -->
-    </plugins>
-  </build>
 </project>
