@@ -221,7 +221,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         return 1 + documents.size() + blobs.size();
     }
 
-    private void readDocument(DocumentModel doc, boolean inlineBlobs)
+    protected void readDocument(DocumentModel doc, boolean inlineBlobs)
             throws IOException, ClientException {
         document = DocumentFactory.getInstance().createDocument();
         document.setName(doc.getName());
