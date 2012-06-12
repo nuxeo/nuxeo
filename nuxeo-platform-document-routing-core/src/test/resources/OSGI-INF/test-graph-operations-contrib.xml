@@ -41,16 +41,16 @@
         <param type="string" name="value">rights 1</param>
       </operation>
     </chain>
-    <chain id="testchain_varfoo_1">
+    <chain id="testchain_stringfield">
       <operation id="Document.Routing.Test.SetVariable">
-        <param type="string" name="variable">varfoo</param>
-        <param type="string" name="value">val1</param>
+        <param type="string" name="variable">stringfield</param>
+        <param type="string" name="value">foo</param>
       </operation>
     </chain>
-    <chain id="testchain_varbar_1">
+    <chain id="testchain_stringfield2">
       <operation id="Document.Routing.Test.SetVariable">
-        <param type="string" name="variable">varbar</param>
-        <param type="string" name="value">val1</param>
+        <param type="string" name="variable">stringfield2</param>
+        <param type="string" name="value">bar</param>
       </operation>
     </chain>
   </extension>

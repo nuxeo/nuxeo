@@ -6,7 +6,7 @@
   <xs:include schemaLocation="base.xsd" />
 
   <xs:element name="nodeId" type="xs:string" />
-  <xs:element name="variables" type="node:variables" />
+  <xs:element name="variablesFacet" type="xs:string" />
   <xs:element name="inputChain" type="xs:string" />
   <xs:element name="outputChain" type="xs:string" />
   <xs:element name="transitions" type="node:transitions" />
@@ -28,22 +28,6 @@
   <xs:element name="startDate" type="xs:date" /> <!-- audit -->
   <xs:element name="endDate" type="xs:date" /> <!-- audit -->
   <xs:element name="canceled" type="xs:int" /> <!-- audit -->
-
-
-  <xs:complexType name="variables">
-    <xs:sequence>
-      <xs:element name="variable" type="node:variable"
-        minOccurs="0" maxOccurs="unbounded" />
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="variable">
-    <xs:sequence>
-      <xs:element name="name" type="xs:string" />
-      <xs:element name="value" type="xs:string" />
-      <!-- type? -->
-    </xs:sequence>
-  </xs:complexType>
 
 
   <xs:complexType name="transitions">

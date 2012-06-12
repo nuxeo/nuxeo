@@ -55,11 +55,7 @@ public interface GraphNode {
 
     String PROP_HAS_TASK = "rnode:hasTask";
 
-    String PROP_VARIABLES = "rnode:variables";
-
-    String PROP_VAR_NAME = "name";
-
-    String PROP_VAR_VALUE = "value";
+    String PROP_VARIABLES_FACET = "rnode:variablesFacet";
 
     String PROP_TRANSITIONS = "rnode:transitions";
 

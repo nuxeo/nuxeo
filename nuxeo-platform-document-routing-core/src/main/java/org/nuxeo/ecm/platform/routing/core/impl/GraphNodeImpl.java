@@ -19,9 +19,6 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -193,46 +190,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         incrementProp(PROP_COUNT);
     }
 
-    /**
-     * Gets the node variables.
-     *
-     * @return the map of variables
-     */
-    protected Map<String, Serializable> getVariables() {
-        try {
-            @SuppressWarnings("unchecked")
-            List<Map<String, Serializable>> vars = (List<Map<String, Serializable>>) document.getPropertyValue(PROP_VARIABLES);
-            Map<String, Serializable> map = new LinkedHashMap<String, Serializable>();
-            for (Map<String, Serializable> var : vars) {
-                String name = (String) var.get(PROP_VAR_NAME);
-                Serializable value = var.get(PROP_VAR_VALUE);
-                map.put(name, value);
-            }
-            return map;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+    public Map<String, Serializable> getVariables() {
+        return GraphVariablesUtil.getVariables(document, PROP_VARIABLES_FACET);
     }
 
-    /**
-     * Sets the node variables.
-     *
-     * @param map the map of variables
-     */
-    protected void setVariables(Map<String, Serializable> map) {
-        try {
-            List<Map<String, Serializable>> vars = new LinkedList<Map<String, Serializable>>();
-            for (Entry<String, Serializable> es : map.entrySet()) {
-                Map<String, Serializable> m = new HashMap<String, Serializable>();
-                m.put(PROP_VAR_NAME, es.getKey());
-                m.put(PROP_VAR_VALUE, es.getValue());
-                vars.add(m);
-            }
-            document.setPropertyValue(PROP_VARIABLES, (Serializable) vars);
-            saveDocument();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+    public void setVariables(Map<String, Serializable> map) {
+        GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
     }
 
     @Override
