@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -140,12 +140,11 @@ public class PackagePersistence {
                 throw new PackageException("Failed to unzip package: "
                         + file.getName());
             } finally {
-                if (tmp.isDirectory()) { // should never happen
-                    FileUtils.deleteTree(tmp);
-                }
+                // cleanup if tmp still exists (should not happen)
+                org.apache.commons.io.FileUtils.deleteQuietly(tmp);
             }
         } else {
-            throw new PackageException("Not a file: " + file);
+            throw new PackageException("Not found: " + file);
         }
     }
 
@@ -170,13 +169,18 @@ public class PackagePersistence {
                     }
                 }
                 // 2. remove the package data
-                FileUtils.deleteTree(dir);
+                org.apache.commons.io.FileUtils.deleteQuietly(dir);
             } else {
                 throw new AlreadyExistsPackageException("Package "
                         + pkg.getId() + " already exists");
             }
         }
-        file.renameTo(dir);
+        try {
+            org.apache.commons.io.FileUtils.moveFile(file, dir);
+        } catch (IOException e) {
+            throw new PackageException(String.format("Failed to move %s to %s",
+                    file, dir), e);
+        }
         pkg.data.setRoot(dir);
         updateState(pkg.getId(), pkg.getState());
         return pkg;
