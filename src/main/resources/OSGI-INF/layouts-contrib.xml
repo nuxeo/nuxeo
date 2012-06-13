@@ -255,8 +255,10 @@
         </fields>
         <widgetModes>
           <mode value="editPassword">hidden</mode>
+          <mode value="create">#{nxu:test(multiTenantActions.isTenantIsolationEnabled()
+            and webActions.checkFilter('only_for_manager'), 'edit', 'hidden')}</mode>
           <mode value="edit">#{nxu:test(multiTenantActions.isTenantIsolationEnabled()
-            and currentUser.isAdministrator(), 'edit', 'hidden')}</mode>
+            and webActions.checkFilter('only_for_manager'), 'edit', 'hidden')}</mode>
           <mode value="view">hidden</mode>
         </widgetModes>
         <selectOptions>
@@ -279,7 +281,7 @@
           <mode value="create">hidden</mode>
           <mode value="edit">hidden</mode>
           <mode value="view">#{nxu:test(multiTenantActions.isTenantIsolationEnabled()
-          and currentUser.isAdministrator(), 'view', 'hidden')}</mode>
+          and webActions.checkFilter('only_for_manager'), 'view', 'hidden')}</mode>
         </widgetModes>
       </widget>
       <widget name="firstPassword" type="secret">
