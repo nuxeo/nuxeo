@@ -41,23 +41,23 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Seam;
 import org.jboss.seam.core.Init;
 import org.jboss.seam.init.Initialization;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
- * Helper class to manage Seam Hot Reload
- *
- * Most of the code comes from Jboss Seam 2.0.3-RC1 Debug package
- * (HotDeployFilter)
+ * Helper class to manage Seam Hot Reload Most of the code comes from Jboss
+ * Seam 2.0.3-RC1 Debug package (HotDeployFilter)
  */
 public class SeamHotReloadHelper {
 
     private static final Log log = LogFactory.getLog(SeamHotReloadHelper.class);
 
-    public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = "org.nuxeo.seam.debug";
+    @Deprecated
+    public static final String SEAM_HOT_RELOAD_SYSTEM_PROP = ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP;
 
     public static boolean isHotReloadEnabled() {
-        String sysProp = System.getProperty(SEAM_HOT_RELOAD_SYSTEM_PROP,
-                "false");
-        return "true".equalsIgnoreCase(sysProp);
+        String sysProp = System.getProperty(
+                ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP, "false");
+        return Boolean.TRUE.equals(Boolean.valueOf(sysProp));
     }
 
     public static void flush() {
@@ -65,7 +65,7 @@ public class SeamHotReloadHelper {
         try {
             Field f = Seam.class.getDeclaredField("CLASSLOADERS_LOADED");
             f.setAccessible(true);
-            ((Set<?>)f.get(null)).clear();
+            ((Set<?>) f.get(null)).clear();
         } catch (Exception e) {
             log.warn("Can't flush seam class loader cache", e);
         }

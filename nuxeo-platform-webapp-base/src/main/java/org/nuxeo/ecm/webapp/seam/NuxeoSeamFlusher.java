@@ -31,6 +31,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.reload.ReloadEventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
@@ -39,6 +40,7 @@ import org.nuxeo.runtime.services.event.EventListener;
  * @author matic
  * @since 5.5
  */
+// TODO: protect methods by checking if seam hot reload is enabled (?)
 public class NuxeoSeamFlusher implements EventListener {
 
     protected Log log = LogFactory.getLog(NuxeoSeamFlusher.class);
@@ -50,18 +52,15 @@ public class NuxeoSeamFlusher implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        if (NuxeoSeamWebGate.isInitialized() == false) {
-            return;
-        }
         String id = event.getId();
-        if ("flushSeamComponents".equals(id)) {
+        if (ReloadEventNames.FLUSH_SEAM_EVENT_ID.equals(id)) {
             SeamHotReloadHelper.flush();
             try {
                 invalidateWebSessions();
             } catch (Exception e) {
                 log.error("Cannot invalidate seam web sessions", e);
             }
-        } else if ("reloadSeamComponents".equals(id)) {
+        } else if (ReloadEventNames.RELOAD_SEAM_EVENT_ID.equals(id)) {
             try {
                 if (postSeamReload() == false) {
                     log.error("Cannot post hot-reload seam components on loopback url");

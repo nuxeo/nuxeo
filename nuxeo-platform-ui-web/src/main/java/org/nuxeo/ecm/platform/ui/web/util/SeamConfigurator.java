@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
-import static org.jboss.seam.ScopeType.*;
+import static org.jboss.seam.ScopeType.APPLICATION;
 
 import java.io.Serializable;
 
@@ -33,6 +33,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.core.Init;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -53,12 +54,13 @@ public class SeamConfigurator implements Serializable {
     transient Init init;
 
     public boolean isDebugEnabled() {
-        String prop = System.getProperty("org.nuxeo.seam.debug");
+        String prop = System.getProperty(ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP);
         if (prop == null) {
             return false;
         }
         return Boolean.parseBoolean(prop);
     }
+
     @Create
     public void init() {
         init.setDebug(isDebugEnabled());

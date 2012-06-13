@@ -77,7 +77,7 @@ public class NuxeoSeamHotReloader implements Serializable {
             response.sendRedirect(bigDownloadURL);
             response.flushBuffer();
             request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
-                    true);
+                    Boolean.TRUE);
             facesContext.responseComplete();
         } catch (Exception e) {
             log.error("Error during redirect", e);

@@ -51,7 +51,8 @@ Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
  OSGI-INF/htmleditor-framework.xml,
  OSGI-INF/htmleditor-contrib.xml,
  OSGI-INF/request-controler-contrib.xml,
- OSGI-INF/seamremotingjsbuilder-framework.xml
+ OSGI-INF/seamremotingjsbuilder-framework.xml,
+ OSGI-INF/reload-jsf-contrib.xml
 Import-Package: com.noelios.restlet.ext.servlet;resolution:=optional,
  com.noelios.restlet.http;resolution:=optional,
  com.sun.facelets;resolution:=optional,

@@ -24,8 +24,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Restlet to trigger the reloading.
- * (can not be done directly from a Seam bean without messing up JSF scopes).
+ * Restlet to trigger the reloading. (can not be done directly from a Seam bean
+ * without messing up JSF scopes).
  *
  * @author tiry
  */
@@ -37,7 +37,7 @@ public class NuxeoSeamHotReloadRestTrigger extends BaseStatelessNuxeoRestlet {
         StringBuffer sb = new StringBuffer();
 
         if (!SeamHotReloadHelper.isHotReloadEnabled()) {
-            sb.append("This operation is not permited");
+            sb.append("This operation is not permitted");
         } else {
 
             long t0 = System.currentTimeMillis();
