@@ -165,19 +165,36 @@ public class FrameworkLoader {
     }
 
     protected static Attributes.Name SYMBOLIC_NAME = new Attributes.Name(Constants.BUNDLE_SYMBOLICNAME);
-    
+
     protected static boolean isBundle(File f) {
+        Manifest mf;
         try {
-            JarFile jf = new JarFile(f);
-            try {
-                Manifest mf = jf.getManifest();
-                return mf.getMainAttributes().containsKey(SYMBOLIC_NAME);
-            } finally {
-                jf.close();
+            if (f.isFile()) { // jar file
+                JarFile jf = new JarFile(f);
+                try {
+                    mf = jf.getManifest();
+                } finally {
+                    jf.close();
+                }
+            } else if (f.isDirectory()) { // directory
+                f = new File(f, "META-INF/MANIFEST.MF");
+                if (!f.isFile()) {
+                    return false;
+                }
+                mf = new Manifest();
+                FileInputStream input = new FileInputStream(f);
+                try {
+                    mf.read(input);
+                } finally {
+                    input.close();
+                }
+            } else {
+                return false;
             }
-        } catch (Throwable e) {
+        } catch (IOException e) {
             return false;
         }
+        return mf.getMainAttributes().containsKey(SYMBOLIC_NAME);
     }
 
     private static void doStart() throws Exception {

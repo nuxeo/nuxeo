@@ -36,6 +36,7 @@ public class CopyCommand implements Command {
 
     protected final Path src;
     protected final Path dst;
+    protected final Path prefix;
     protected final PathFilter filter;
 
     /**
@@ -54,8 +55,13 @@ public class CopyCommand implements Command {
     }
 
     public CopyCommand(Path src, Path dst, PathFilter filter) {
+        this(src, dst, new Path("/"), filter);
+    }
+
+    public CopyCommand(Path src, Path dst, Path prefix, PathFilter filter) {
         this.src = src;
         this.dst = dst;
+        this.prefix = prefix;
         this.filter = filter;
     }
 
@@ -69,7 +75,7 @@ public class CopyCommand implements Command {
             throw new FileNotFoundException("Could not find the file "
                     + srcFile.getAbsolutePath() + " to copy.");
         }
-        
+
         // canonicalize paths
         dstFile = new File(dstFile.getCanonicalPath());
         srcFile = new File(srcFile.getCanonicalPath());
@@ -93,7 +99,7 @@ public class CopyCommand implements Command {
             }
         } else {
             if (srcFile.isDirectory() && src.hasTrailingSeparator()) {
-                FileUtils.copyTree(srcFile, dstFile, filter);
+                FileUtils.copyTree(srcFile, dstFile, prefix, filter);
             } else {
                 FileUtils.copy(srcFile, dstFile);
             }

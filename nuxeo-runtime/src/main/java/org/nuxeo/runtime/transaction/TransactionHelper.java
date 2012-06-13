@@ -16,6 +16,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -240,16 +241,29 @@ public class TransactionHelper {
         if (timeout < 0) {
             timeout = 0;
         }
+        TransactionManager txmgr;
         try {
-            lookupTransactionManager().setTransactionTimeout(timeout);
+            txmgr = lookupTransactionManager();
         } catch (NamingException e) {
             // no transaction
             return false;
-        } catch (Exception e) {
+        }
+
+        try {
+            txmgr.setTransactionTimeout(timeout);
+        } catch (SystemException e) {
             log.error("Unable to set transaction timeout: " + timeout, e);
             return false;
         }
-        return startTransaction();
+        try {
+            return startTransaction();
+        } finally {
+            try {
+                txmgr.setTransactionTimeout(0);
+            } catch (SystemException e) {
+                log.error("Unable to reset transaction timeout", e);
+            }
+        }
     }
 
     /**
