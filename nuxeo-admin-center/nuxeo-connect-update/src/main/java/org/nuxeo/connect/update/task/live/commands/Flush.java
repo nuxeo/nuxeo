@@ -27,6 +27,8 @@ import org.nuxeo.runtime.reload.ReloadService;
 
 /**
  * Flush all nuxeo caches.
+ * <p>
+ * The inverse of this command is itself.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

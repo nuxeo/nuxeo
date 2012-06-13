@@ -16,6 +16,7 @@
  */
 package org.nuxeo.connect.update.task.live.commands;
 
+import java.io.File;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
@@ -25,15 +26,21 @@ import org.nuxeo.connect.update.task.standalone.commands.UndeployConfigPlacehold
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Install bundle, flush any application cache and perform Nuxeo preprocessing
- * on the bundle.
- *
- * The inverse of this command is Undeploy.
+ * Undeploys runtime configuration files to the framework.
+ * <p>
+ * The inverse of this command is Deploy.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class UndeployConfig extends UndeployConfigPlaceholder {
+
+    public UndeployConfig() {
+        super();
+    }
+
+    public UndeployConfig(File file) {
+        super(file);
+    }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
@@ -44,8 +51,7 @@ public class UndeployConfig extends UndeployConfigPlaceholder {
             throw new PackageException("Failed to undeploy configuration file "
                     + file, e);
         }
-        // XXX why not DeployConfig ?
-        return new Deploy(file);
+        return new DeployConfig(file);
     }
 
 }

@@ -31,10 +31,10 @@ import org.nuxeo.connect.update.task.standalone.InstallTask;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
+import org.nuxeo.runtime.reload.ReloadService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class LiveInstallTask extends InstallTask {
 
@@ -58,6 +58,11 @@ public class LiveInstallTask extends InstallTask {
         }
     }
 
+    /**
+     * @deprecated since 5.6: this way of reloading components is not compliant
+     *             with other ways. See {@link ReloadService} API instead.
+     */
+    @Deprecated
     protected static void reloadComponents(LocalPackage localPackage)
             throws PackageException {
         File file = localPackage.getData().getEntry("reload");
@@ -78,7 +83,12 @@ public class LiveInstallTask extends InstallTask {
         }
     }
 
-    private static void reloadComponent(String name) throws PackageException {
+    /**
+     * @deprecated since 5.6: this way of reloading components is not compliant
+     *             with other ways. See {@link ReloadService} API instead.
+     */
+    @Deprecated
+    protected static void reloadComponent(String name) throws PackageException {
         try {
             RegistrationInfoImpl ri = (RegistrationInfoImpl) Framework.getRuntime().getComponentManager().getRegistrationInfo(
                     new ComponentName(name));

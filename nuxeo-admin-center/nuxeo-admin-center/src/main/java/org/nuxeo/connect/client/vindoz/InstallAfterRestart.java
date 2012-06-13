@@ -29,7 +29,8 @@ import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Helper class used to manage packages installation issue under windows systems.
+ * Helper class used to manage packages installation issue under windows
+ * systems.
  * <p>
  * Because the Vindoz OS locks all the jar files loaded by the JVM, we can not
  * do proper installation. So installation is delayed until next restart where
@@ -57,7 +58,9 @@ public class InstallAfterRestart {
     }
 
     public static boolean isNeededForPackage(Package pkg) {
-        return (PackageType.STUDIO != pkg.getType() && isNeededByOs()) || (PackageType.HOT_FIX == pkg.getType()) || (PackageType.ADDON == pkg.getType() && !pkg.supportsHotReload());
+        return (PackageType.STUDIO != pkg.getType() && isNeededByOs())
+                || (PackageType.HOT_FIX == pkg.getType())
+                || (PackageType.ADDON == pkg.getType() && !pkg.supportsHotReload());
     }
 
     protected static boolean isVindozBox() {

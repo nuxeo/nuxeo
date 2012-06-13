@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
@@ -47,6 +48,7 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -75,9 +77,26 @@ public class AppCenterViewsManager implements Serializable {
 
     protected boolean isStudioSnapshopUpdateInProgress = false;
 
+    // FIXME: this should be persisted instead of being local to the seam
+    // component, as other potential users will not see the same information in
+    // the admin center
     protected Calendar lastStudioSnapshotUpdate;
 
     protected String studioSnapshotUpdateError;
+
+    protected enum snapshotStatus {
+        downloading, saving, installing, error, completed, restartNeeded;
+    }
+
+    protected static final Map<String, String> view2PackageListName = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
+        {
+            put("ConnectAppsUpdates", "updates");
+            put("ConnectAppsStudio", "studio");
+            put("ConnectAppsRemote", "remote");
+            put("ConnectAppsLocal", "local");
+        }
+    };
 
     public String getSearchString() {
         if (searchString == null) {
@@ -100,19 +119,7 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     protected String getListName() {
-        if ("ConnectAppsUpdates".equals(currentAdminSubViewId)) {
-            return "updates";
-        }
-        else if ("ConnectAppsStudio".equals(currentAdminSubViewId)) {
-            return "studio";
-        }
-        else if ("ConnectAppsRemote".equals(currentAdminSubViewId)) {
-            return "remote";
-        }
-        else if ("ConnectAppsLocal".equals(currentAdminSubViewId)) {
-            return "local";
-        }
-        return null;
+        return view2PackageListName.get(currentAdminSubViewId);
     }
 
     public void setPlatformFilter(boolean doFilter) {
@@ -121,13 +128,11 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     public boolean getPlatformFilter() {
-        return SharedPackageListingsSettings.instance().get(
-                getListName()).getPlatformFilter();
+        return SharedPackageListingsSettings.instance().get(getListName()).getPlatformFilter();
     }
 
     public String getPackageTypeFilter() {
-        return SharedPackageListingsSettings.instance().get(
-                getListName()).getPackageTypeFilter();
+        return SharedPackageListingsSettings.instance().get(getListName()).getPackageTypeFilter();
     }
 
     public void setPackageTypeFilter(String filter) {
@@ -172,10 +177,7 @@ public class AppCenterViewsManager implements Serializable {
             DownloadingPackage downloadingStudioSnapshot = pm.download(snapshotPkg.getId());
             studioAutoInstaller = new StudioAutoInstaller(
                     downloadingStudioSnapshot);
-
             studioAutoInstaller.run();
-            // Thread thread = new Thread(studioAutoInstaller);
-            // thread.start();
         } else {
             studioSnapshotUpdateError = "No snapshot package found";
         }
@@ -186,24 +188,32 @@ public class AppCenterViewsManager implements Serializable {
         return isStudioSnapshopUpdateInProgress;
     }
 
+    // ??? to remove?
     public void checkStudioSnapshot() {
         return;
     }
 
     public String getStudioInstallationStatus() {
-        if (studioSnapshotUpdateError != null) {
-            return "Error : " + studioSnapshotUpdateError;
-        }
-        if ("downloading".equals(studioSnapshotStatus)) {
-            return "downloading : " + studioSnapshotDownloadProgress + " %";
+        if (snapshotStatus.error.name().equals(studioSnapshotStatus)
+                && studioSnapshotUpdateError != null) {
+            return "Error: " + studioSnapshotUpdateError;
         }
 
-        if ("completed".equals(studioSnapshotStatus)) {
+        if (snapshotStatus.downloading.name().equals(studioSnapshotStatus)) {
+            return "downloading : " + studioSnapshotDownloadProgress + " %";
+        } else if (snapshotStatus.completed.name().equals(studioSnapshotStatus)) {
             DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
                     Locale.US);
             df.setTimeZone(TimeZone.getTimeZone("GMT"));
             return "last update completed : "
                     + df.format(lastStudioSnapshotUpdate.getTime());
+        } else if (snapshotStatus.restartNeeded.name().equals(
+                studioSnapshotStatus)) {
+            DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
+                    Locale.US);
+            return "last update completed : "
+                    + df.format(lastStudioSnapshotUpdate.getTime()
+                            + ", restart needed.");
         }
 
         if (studioSnapshotStatus == null) {
@@ -211,6 +221,12 @@ public class AppCenterViewsManager implements Serializable {
         }
 
         return studioSnapshotStatus;
+    }
+
+    public boolean isDevModeSet() {
+        String debugPropValue = Framework.getProperty(
+                ConfigurationGenerator.NUXEO_DEBUG_SYSTEM_PROP, "false");
+        return Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
     }
 
     protected class StudioAutoInstaller implements Runnable {
@@ -221,10 +237,12 @@ public class AppCenterViewsManager implements Serializable {
             this.pkg = pkg;
         }
 
+        @Override
         public void run() {
+            studioSnapshotUpdateError = null;
 
             try {
-                studioSnapshotStatus = "downloading";
+                studioSnapshotStatus = snapshotStatus.downloading.name();
                 while (!pkg.isCompleted()) {
                     try {
                         studioSnapshotDownloadProgress = pkg.getDownloadProgress();
@@ -244,7 +262,7 @@ public class AppCenterViewsManager implements Serializable {
 
                 PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
 
-                studioSnapshotStatus = "saving";
+                studioSnapshotStatus = snapshotStatus.saving.name();
                 try {
                     while (pus.getPackage(pkg.getId()) == null) {
                         try {
@@ -259,26 +277,33 @@ public class AppCenterViewsManager implements Serializable {
                     log.error(
                             "Error while sending studio snapshot to update manager",
                             e);
-                    studioSnapshotStatus = "error";
+                    studioSnapshotStatus = snapshotStatus.error.name();
                     studioSnapshotUpdateError = " problem while downloading package "
                             + e.getMessage();
                     return;
                 }
 
-                studioSnapshotStatus = "installing";
-
-                try {
-                    LocalPackage lpkg = pus.getPackage(pkg.getId());
-                    Task installTask = lpkg.getInstallTask();
-                    installTask.run(new HashMap<String, String>());
-                } catch (Exception e) {
-                    log.error("Error while installing studio snapshot", e);
-                    studioSnapshotStatus = "error";
-                    studioSnapshotUpdateError = " problem during package installation "
-                            + e.getMessage();
+                if (isDevModeSet()) {
+                    studioSnapshotStatus = snapshotStatus.installing.name();
+                    try {
+                        LocalPackage lpkg = pus.getPackage(pkg.getId());
+                        Task installTask = lpkg.getInstallTask();
+                        installTask.run(new HashMap<String, String>());
+                    } catch (Exception e) {
+                        log.error("Error while installing studio snapshot", e);
+                        studioSnapshotStatus = snapshotStatus.error.name();
+                        studioSnapshotUpdateError = " problem during package installation "
+                                + e.getMessage();
+                    }
+                    lastStudioSnapshotUpdate = Calendar.getInstance();
+                    studioSnapshotStatus = snapshotStatus.completed.name();
+                } else {
+                    lastStudioSnapshotUpdate = Calendar.getInstance();
+                    // TODO: do not install the package if not in dev mode, and
+                    // warn the user that he should restart his server instead
+                    studioSnapshotStatus = snapshotStatus.restartNeeded.name();
                 }
-                lastStudioSnapshotUpdate = Calendar.getInstance();
-                studioSnapshotStatus = "completed";
+
             } finally {
                 studioAutoInstaller = null;
                 isStudioSnapshopUpdateInProgress = false;

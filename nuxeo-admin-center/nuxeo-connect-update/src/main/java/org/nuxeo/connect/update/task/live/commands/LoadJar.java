@@ -19,23 +19,21 @@ package org.nuxeo.connect.update.task.live.commands;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.commands.LoadJarPlaceholder;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 
 /**
- * Install bundle, flush any application cache and perform Nuxeo preprocessing
- * on the bundle.
- *
- * The inverse of this command is Undeploy.
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @deprecated since 5.6
  */
+@Deprecated
 public class LoadJar extends LoadJarPlaceholder {
+
+    private static final Log log = LogFactory.getLog(LoadJar.class);
 
     public LoadJar() {
         super();
@@ -48,11 +46,7 @@ public class LoadJar extends LoadJarPlaceholder {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getLocalService(ReloadService.class).addJar(file);
-        } catch (Exception e) {
-            throw new PackageException("Failed to load JAR " + file, e);
-        }
+        log.warn("LoadJar command is deprecated and does nothing right now");
         return new UnloadJar(file);
     }
 

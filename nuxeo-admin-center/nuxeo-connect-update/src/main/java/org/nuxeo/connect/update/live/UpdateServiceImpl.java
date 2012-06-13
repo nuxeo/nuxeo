@@ -22,6 +22,8 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
+import org.nuxeo.connect.update.task.live.LiveInstallTask;
+import org.nuxeo.connect.update.task.live.LiveUninstallTask;
 import org.nuxeo.connect.update.task.live.commands.Deploy;
 import org.nuxeo.connect.update.task.live.commands.DeployConfig;
 import org.nuxeo.connect.update.task.live.commands.Flush;
@@ -34,13 +36,10 @@ import org.nuxeo.connect.update.task.live.commands.Undeploy;
 import org.nuxeo.connect.update.task.live.commands.UndeployConfig;
 import org.nuxeo.connect.update.task.live.commands.Uninstall;
 import org.nuxeo.connect.update.task.live.commands.UnloadJar;
-import org.nuxeo.connect.update.task.live.LiveInstallTask;
-import org.nuxeo.connect.update.task.live.LiveUninstallTask;
 import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class UpdateServiceImpl extends StandaloneUpdateService implements
         PackageUpdateService {
@@ -57,13 +56,16 @@ public class UpdateServiceImpl extends StandaloneUpdateService implements
         addCommand(FlushCoreCache.ID, FlushCoreCache.class);
         addCommand(FlushJaasCache.ID, FlushJaasCache.class);
         addCommand(Flush.ID, Flush.class);
+
         addCommand(ReloadProperties.ID, ReloadProperties.class);
         addCommand(Deploy.ID, Deploy.class);
         addCommand(Undeploy.ID, Undeploy.class);
         addCommand(DeployConfig.ID, DeployConfig.class);
         addCommand(UndeployConfig.ID, UndeployConfig.class);
+
         addCommand(LoadJar.ID, LoadJar.class);
         addCommand(UnloadJar.ID, UnloadJar.class);
+        // TODO: override the update command to add hot reload support
     }
 
     @Override

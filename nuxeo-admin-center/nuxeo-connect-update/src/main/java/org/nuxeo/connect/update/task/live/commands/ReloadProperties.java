@@ -28,7 +28,6 @@ import org.nuxeo.runtime.api.Framework;
  * Flush all nuxeo caches.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ReloadProperties extends ReloadPropertiesPlaceholder {
 

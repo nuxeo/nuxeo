@@ -27,18 +27,15 @@ import org.nuxeo.connect.update.PackageUpdateComponent;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.commands.UninstallPlaceholder;
+import org.nuxeo.connect.update.task.update.Rollback;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
- * Un-Deploy an OSGi bundle from the running platform. The bundle is specified
- * using the absolute bundle file path. The inverse of this command is the
- * Deploy command.
- *
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @deprecated since 5.6, use {@link Rollback} instead
  */
+@Deprecated
 public class Uninstall extends UninstallPlaceholder {
 
     public Uninstall() {

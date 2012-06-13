@@ -24,18 +24,16 @@ import org.nuxeo.connect.update.PackageUpdateComponent;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.commands.InstallPlaceholder;
+import org.nuxeo.connect.update.task.update.Update;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
 /**
- * Deploy an OSGi bundle into the running platform. The bundle is specified
- * using the absolute bundle file path. The inverse of this command is the
- * Undeploy command.
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @deprecated since 5.6, use {@link Update} instead
  */
+@Deprecated
 public class Install extends InstallPlaceholder {
 
     public Install() {

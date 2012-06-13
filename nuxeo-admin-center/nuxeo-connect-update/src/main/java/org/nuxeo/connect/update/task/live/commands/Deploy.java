@@ -27,8 +27,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 
 /**
- * Install bundle, flush any application cache and perform Nuxeo preprocessing
- * on the bundle.
+ * Install bundle, and perform Nuxeo pseudo-preprocessing on the bundle (by
+ * copying resources, but does not handle the deployment-fragment instructions)
  * <p>
  * The inverse of this command is Undeploy.
  *
@@ -55,7 +55,6 @@ public class Deploy extends DeployPlaceholder {
         ReloadService srv = Framework.getLocalService(ReloadService.class);
         try {
             srv.deployBundle(file, true);
-            srv.flush();
         } catch (Exception e) {
             throw new PackageException("Failed to deploy bundle " + file, e);
         }
