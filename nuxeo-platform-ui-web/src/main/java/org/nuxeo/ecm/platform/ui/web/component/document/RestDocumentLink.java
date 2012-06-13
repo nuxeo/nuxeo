@@ -26,6 +26,7 @@ import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.html.HtmlOutputLink;
+import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -246,6 +247,29 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     public void setView(String view) {
         this.view = view;
+    }
+
+
+    // state holder
+
+    @Override
+    public Object saveState(FacesContext context) {
+        return new Object[] { super.saveState(context), document,
+                documentIdRef, view, tab, subTab, pattern,
+                newConversation };
+    }
+
+    @Override
+    public void restoreState(FacesContext context, Object state) {
+        Object[] values = (Object[]) state;
+        super.restoreState(context, values[0]);
+        document = (DocumentModel) values[1];
+        documentIdRef = (DocumentRef) values[2];
+        view = (String) values[3];
+        tab = (String) values[4];
+        subTab = (String) values[5];
+        pattern = (String) values[6];
+        newConversation = (Boolean) values[7];
     }
 
 }
