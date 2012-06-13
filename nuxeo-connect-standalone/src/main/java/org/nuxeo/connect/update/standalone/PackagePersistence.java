@@ -176,7 +176,7 @@ public class PackagePersistence {
             }
         }
         try {
-            org.apache.commons.io.FileUtils.moveFile(file, dir);
+            org.apache.commons.io.FileUtils.moveDirectory(file, dir);
         } catch (IOException e) {
             throw new PackageException(String.format("Failed to move %s to %s",
                     file, dir), e);
@@ -246,9 +246,7 @@ public class PackagePersistence {
             throw new PackageException("Failed to write package states", e);
         }
         File file = new File(store, id);
-        if (file.isDirectory()) {
-            FileUtils.deleteTree(file);
-        }
+        org.apache.commons.io.FileUtils.deleteQuietly(file);
     }
 
     public synchronized void updateState(String id, int state)
