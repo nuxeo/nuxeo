@@ -234,4 +234,46 @@ public class TypeTest extends NXRuntimeTestCase {
                 type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
     }
 
+    @Test
+    public void testHotReload() throws Exception {
+        Type type = typeService.getTypeRegistry().getType(
+                "DocTypeTestLayoutOverride");
+        assertEquals("doc type with layout to override", type.getLabel());
+        assertEquals(2, type.getLayouts().size());
+        assertEquals(1,
+                type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
+        assertEquals(2,
+                type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
+        // check the one to be removed is there
+        assertNotNull(typeService.getTypeRegistry().getType("MyOtherDocType"));
+
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests",
+                "test-types-override-bundle.xml");
+
+        type = typeService.getTypeRegistry().getType(
+                "DocTypeTestLayoutOverride");
+        // Test layout is left unchanged
+        assertEquals(2, type.getLayouts().size());
+        assertEquals(2,
+                type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
+        assertEquals(1,
+                type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
+        // check the one to be removed is not there
+        assertNull(typeService.getTypeRegistry().getType("MyOtherDocType"));
+
+        undeployContrib("org.nuxeo.ecm.platform.types.core.tests",
+                "test-types-override-bundle.xml");
+
+        type = typeService.getTypeRegistry().getType(
+                "DocTypeTestLayoutOverride");
+        assertEquals("doc type with layout to override", type.getLabel());
+        assertEquals(2, type.getLayouts().size());
+        assertEquals(1,
+                type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
+        assertEquals(2,
+                type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
+        // check the one to be removed is back there again
+        assertNotNull(typeService.getTypeRegistry().getType("MyOtherDocType"));
+    }
+
 }

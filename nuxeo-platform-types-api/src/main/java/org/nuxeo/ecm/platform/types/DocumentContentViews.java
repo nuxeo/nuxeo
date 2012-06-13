@@ -72,6 +72,11 @@ public class DocumentContentViews implements Serializable {
         return res.toArray(new String[] {});
     }
 
+    /**
+     * Clone to handle hot reload
+     *
+     * @since 5.6
+     */
     @Override
     public DocumentContentViews clone() {
         DocumentContentViews clone = new DocumentContentViews();
