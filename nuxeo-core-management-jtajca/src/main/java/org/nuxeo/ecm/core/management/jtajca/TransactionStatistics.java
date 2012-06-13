@@ -18,6 +18,9 @@ package org.nuxeo.ecm.core.management.jtajca;
 
 import java.util.Date;
 
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+
 /**
  * @author matic
  *
@@ -25,28 +28,59 @@ import java.util.Date;
 public interface TransactionStatistics {
 
     enum Status {
-        ACTIVE,
-        COMMITTED,
-        ROLLEDBACK;
+
+        ACTIVE(javax.transaction.Status.STATUS_ACTIVE),
+        COMMITTED(javax.transaction.Status.STATUS_COMMITTED),
+        COMMITTING(javax.transaction.Status.STATUS_COMMITTING),
+        MARKED_ROLLLEDBACK(javax.transaction.Status.STATUS_MARKED_ROLLBACK),
+        NO_TRANSACTION(javax.transaction.Status.STATUS_NO_TRANSACTION),
+        PREPARED(javax.transaction.Status.STATUS_PREPARED),
+        PREPARING(javax.transaction.Status.STATUS_PREPARING),
+        ROLLEDBACK(javax.transaction.Status.STATUS_ROLLEDBACK),
+        ROLLING_BACK(javax.transaction.Status.STATUS_ROLLING_BACK),
+        UNKNOWN(javax.transaction.Status.STATUS_UNKNOWN);
+
+        public final int code;
+
+        Status(int code) {
+            this.code = code;
+        }
+
+        public static Status fromCode(int code) {
+            for (Status e:Status.values()) {
+                if (e.code == code) {
+                    return e;
+                }
+            }
+            return UNKNOWN;
+        }
+
+        public static Status fromTx(Transaction tx) {
+            try {
+                return fromCode(tx.getStatus());
+            } catch (SystemException e) {
+                return UNKNOWN;
+            }
+        }
     }
-    
+
     String getId();
-    
+
     String getThreadName();
-    
+
     Status getStatus();
 
     Date getStartDate();
-    
+
     String getStartCapturedContextMessage();
 
     Date getEndDate();
-    
+
     String getEndCapturedContextMessage();
 
     long getDuration();
 
-     
+
      boolean isEnded();
-     
+
 }

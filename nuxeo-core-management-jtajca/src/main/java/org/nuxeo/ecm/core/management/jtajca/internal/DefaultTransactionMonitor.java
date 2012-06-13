@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
+import org.apache.geronimo.transaction.manager.XidImpl;
 import org.apache.log4j.MDC;
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
@@ -132,52 +133,70 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
 
     protected final Map<Object, DefaultTransactionStatistics> activeStatistics = new HashMap<Object, DefaultTransactionStatistics>();
 
+    public static String id(Object key) {
+        if (key instanceof XidImpl) {
+            byte[] globalId = ((XidImpl)key).getGlobalTransactionId();
+            StringBuffer buffer = new StringBuffer();
+            for (int i = 0; i < globalId.length; i++) {
+                buffer.append(Integer.toHexString(globalId[i]));
+            }
+            return buffer.toString();
+        }
+        return key.toString();
+    }
+
     public static String id(Transaction tx) {
-        return Integer.toHexString(System.identityHashCode(tx));
+        return Integer.toHexString(tx.hashCode());
     }
 
     @Override
     public void threadAssociated(Transaction tx) {
         long now = System.currentTimeMillis();
         Object key = tm.getTransactionKey();
-        MDC.put("TX", key.toString());
-        log.trace("associated tx with thread");
+        MDC.put("tx", id(key));
         Stopwatch sw = SimonManager.getStopwatch("tx");
         final Thread thread = Thread.currentThread();
         DefaultTransactionStatistics info = new DefaultTransactionStatistics(
                 key);
         info.split = sw.start();
         info.threadName = thread.getName();
-        info.status = TransactionStatistics.Status.ACTIVE;
+        info.status = TransactionStatistics.Status.fromTx(tx);
+
         info.startTimestamp = now;
         info.startCapturedContext = new Throwable("** start invoke context **");
         synchronized (this) {
             activeStatistics.put(key, info);
         }
         tm.registerInterposedSynchronization(monitor); // register end status
+        if (log.isTraceEnabled()) {
+            log.trace(info.toString());
+        }
     }
 
     @Override
     public void threadUnassociated(Transaction tx) {
-        long now = System.currentTimeMillis();
-        Object key = ((TransactionImpl) tx).getTransactionKey();
-        MDC.remove("TX");
-        DefaultTransactionStatistics stats;
-        synchronized (DefaultTransactionMonitor.class) {
-            stats = (DefaultTransactionStatistics) activeStatistics.remove(key);
-        }
-        if (stats == null) {
-            log.error(key + " not found in active statitics map");
-            return;
-        }
-        stats.split.stop();
-        stats.split = null;
-        stats.endTimestamp = now;
-        log.trace(stats);
-        if (TransactionStatistics.Status.COMMITTED.equals(stats.status)) {
-            lastCommittedStatistics = stats;
-        } else if (TransactionStatistics.Status.ROLLEDBACK.equals(stats.status)) {
-            lastRollbackedStatistics = stats;
+        try {
+            Object key = ((TransactionImpl) tx).getTransactionKey();
+            DefaultTransactionStatistics stats;
+            synchronized (DefaultTransactionMonitor.class) {
+                stats = activeStatistics.remove(key);
+            }
+            if (stats == null) {
+                log.error(key + " not found in active statitics map");
+                return;
+            }
+            stats.split.stop();
+            stats.split = null;
+            if (log.isTraceEnabled()) {
+                log.trace(stats.toString());
+            }
+            if (TransactionStatistics.Status.COMMITTED.equals(stats.status)) {
+                lastCommittedStatistics = stats;
+            } else if (TransactionStatistics.Status.ROLLEDBACK.equals(stats.status)) {
+                lastRollbackedStatistics = stats;
+            }
+        } finally {
+            MDC.remove("tx");
         }
     }
 
@@ -194,6 +213,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         });
         return l;
     }
+
 
     @Override
     public long getActiveCount() {
@@ -242,21 +262,20 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
     }
 
     @Override
-    public void afterCompletion(int status) {
+    public void afterCompletion(int code) {
         DefaultTransactionStatistics stats = thisStatistics();
         if (stats == null) {
             return;
         }
-        switch (status) {
+        stats.endTimestamp = System.currentTimeMillis();
+        stats.status = TransactionStatistics.Status.fromCode(code);
+        switch (code) {
         case Status.STATUS_COMMITTED:
-            stats.status = TransactionStatistics.Status.COMMITTED;
             lastCommittedStatistics = stats;
             break;
         case Status.STATUS_ROLLEDBACK:
-            stats.status = TransactionStatistics.Status.ROLLEDBACK;
-            ;
             lastRollbackedStatistics = stats;
-            stats.endCapturedContext = new Throwable();
+            stats.endCapturedContext = new Throwable("** rollback context **");
             break;
         }
     }

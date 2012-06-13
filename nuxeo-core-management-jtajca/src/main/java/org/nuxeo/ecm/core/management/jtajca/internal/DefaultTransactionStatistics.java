@@ -26,17 +26,17 @@ import org.nuxeo.ecm.core.management.jtajca.TransactionStatistics;
 
 /**
  * @author matic
- * 
+ *
  */
 public class DefaultTransactionStatistics implements TransactionStatistics {
 
-    protected final Object id;
+    protected final String id;
 
     protected long startTimestamp;
 
     protected Throwable startCapturedContext;
 
-    protected  String threadName;
+    protected String threadName;
 
     protected long endTimestamp;
 
@@ -46,25 +46,24 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
 
     protected Split split;
 
-    protected DefaultTransactionStatistics(Object k) {
-        this.id = k;
+    protected DefaultTransactionStatistics(Object key) {
+        this.id = DefaultTransactionMonitor.id(key);
     }
-    
+
     @Override
     public String getId() {
         return id.toString();
     }
-        
-    
+
     @Override
     public String getThreadName() {
         return threadName;
     }
-    
+
     public Status getStatus() {
         return status;
     }
-    
+
     @Override
     public Date getStartDate() {
         return new Date(startTimestamp);
@@ -78,7 +77,7 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
     public String getStartCapturedContextMessage() {
         return printCapturedContext(startCapturedContext);
     }
-        
+
     @Override
     public Date getEndDate() {
         return new Date(endTimestamp);
@@ -95,7 +94,7 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
         }
         return printCapturedContext(endCapturedContext);
     }
-    
+
     @Override
     public long getDuration() {
         return endTimestamp - startTimestamp;
@@ -113,19 +112,27 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
         pw.flush();
         return sw.toString();
     }
-    
-    @Override
-    public String toString() {
+
+    public void print(PrintWriter writer) {
         final String date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(
                 new Date(startTimestamp));
-        final long duration = endTimestamp - startTimestamp;
-        if (endTimestamp == 0) {
-            return String.format(
-                    "Transaction %s, has started at %s with a duration of %d ms and has %s\n%s%s",
-                    id.toString(), date, duration, status, getStartCapturedContextMessage(), getEndCapturedContextMessage());
+        final long duration = getDuration();
+        if (duration > 0) {
+            writer.write(String.format(
+                    "Transaction has started at %s with a duration of %d ms and was in status %s\n%s",
+                    date, duration, status, getEndCapturedContextMessage()));
+        } else {
+            writer.write(String.format(
+                    "Transaction has started at %s and was in state %s\n%s",
+                    date, status, getStartCapturedContextMessage()));
         }
-        return String.format(
-                "Transaction %s has started at %s and is still active after %d ms\n%s",
-                id.toString(), date, duration, getStartCapturedContextMessage());
+        writer.flush();
+    }
+
+    @Override
+    public String toString() {
+        StringWriter sw = new StringWriter();
+        print(new PrintWriter(sw));
+        return sw.toString();
     }
 }
