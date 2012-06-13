@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-HF02</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -15,18 +14,18 @@
   <description>Build package distributions of nuxeo applications</description>
 
   <properties>
-    <nuxeo.common.version>5.3.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>5.3.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>5.3.2-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.theme.version>5.3.2-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.features.version>5.3.2-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.webengine.version>5.3.2-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.services.version>5.3.2-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.jsf.version>5.3.2-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.dm.version>5.3.2-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.chemistry.version>5.3.2-SNAPSHOT</nuxeo.chemistry.version>
+    <nuxeo.common.version>5.3.2-HF02</nuxeo.common.version>
+    <nuxeo.runtime.version>5.3.2-HF02</nuxeo.runtime.version>
+    <nuxeo.core.version>5.3.2-HF02</nuxeo.core.version>
+    <nuxeo.theme.version>5.3.2-HF02</nuxeo.theme.version>
+    <nuxeo.features.version>5.3.2-HF02</nuxeo.features.version>
+    <nuxeo.webengine.version>5.3.2-HF02</nuxeo.webengine.version>
+    <nuxeo.services.version>5.3.2-HF02</nuxeo.services.version>
+    <nuxeo.jsf.version>5.3.2-HF02</nuxeo.jsf.version>
+    <nuxeo.dm.version>5.3.2-HF02</nuxeo.dm.version>
+    <nuxeo.chemistry.version>5.3.2-HF02</nuxeo.chemistry.version>
     <nuxeo.distribution.version>${version}</nuxeo.distribution.version>
-    <nuxeo.addons.version>5.3.2-SNAPSHOT</nuxeo.addons.version>
+    <nuxeo.addons.version>5.3.2-HF02</nuxeo.addons.version>
   </properties>
 
   <modules>
