@@ -22,10 +22,10 @@ import java.util.regex.Pattern;
 /**
  * Helper class to detect Html5 Dnd compliant browsers based on the User Agent
  * string
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class UserAgentMatcher {
 
@@ -37,7 +37,7 @@ public class UserAgentMatcher {
 
     private static final Pattern UA_CHROME = Pattern.compile("^Mozilla.*AppleWebKit.*Chrom(e|ium)/([1-9][0123456789]).*");
 
-    private static final Pattern UA_MSIE_67 = Pattern.compile("^Mozilla/4.0 \\(compatible; MSIE [67].[0-9].*");
+    private static final Pattern UA_MSIE_67 = Pattern.compile("^Mozilla/4.0 \\(compatible; MSIE [67].[0-9]((?!Trident).)*$");
 
     private static final Pattern UA_MSIE_CF = Pattern.compile("^Mozilla.*chromeframe.*");
 

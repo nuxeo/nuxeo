@@ -26,6 +26,18 @@ import org.nuxeo.common.utils.FileUtils;
 
 public class TestUserAgent {
 
+    public static final String MSIE6_UA = "Mozilla/4.0 (compatible; MSIE 6.1;" +
+            " Windows XP; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+
+    public static final String MSIE7_UA = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1;" +
+            " WOW64; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729;" +
+            " .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C)";
+
+    public static final String MSIE9_COMPATIBILITY_VIEW_UA = "Mozilla/4.0 (compatible; MSIE 7.0;" +
+            " Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727;" +
+            " .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; " +
+            ".NET4.0C)";
+
     @Test
     public void testSupportedBrowsers() throws Exception {
 
@@ -45,7 +57,14 @@ public class TestUserAgent {
                 assertFalse(UserAgentMatcher.html5DndIsSupported(UA));
             }
         }
-
-
     }
+
+    @Test
+    public void testMSIE9compatibilityViewMatching() {
+        assertTrue(UserAgentMatcher.isMSIE6or7(MSIE6_UA));
+        assertTrue(UserAgentMatcher.isMSIE6or7(MSIE7_UA));
+        // IE9 in compatibility view shouldn't be treated as IE 6 or 7
+        assertFalse(UserAgentMatcher.isMSIE6or7(MSIE9_COMPATIBILITY_VIEW_UA));
+    }
+
 }
