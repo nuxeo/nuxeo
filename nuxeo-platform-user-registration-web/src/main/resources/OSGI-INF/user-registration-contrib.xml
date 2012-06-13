@@ -28,7 +28,7 @@
       <requestDocType>UserRegistration</requestDocType>
       <container>
         <docType>UserRegistrationContainer</docType>
-        <parentPath>/default-domain/</parentPath>
+        <parentPath>/management/</parentPath>
         <name>registrationRequests</name>
         <title>Registration Requests Container</title>
       </container>
