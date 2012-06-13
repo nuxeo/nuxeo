@@ -5,6 +5,9 @@
     <repository name="default"
       factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="default">
+<#if "${nuxeo.core.binarymanager}" != "" >
+        <binaryManager class="${nuxeo.core.binarymanager}" />
+</#if>
         <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
         <binaryStore path="${repository.binary.store}" />
         <schema>
