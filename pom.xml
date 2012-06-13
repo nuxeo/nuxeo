@@ -1,28 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-HF02</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-dm-parent</artifactId>
-  <version>5.3.2-SNAPSHOT</version>
+  <version>5.3.2-HF02</version>
   <name>Nuxeo DM Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo DM: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>5.3.2-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>5.3.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>5.3.2-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.services.version>5.3.2-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.jsf.version>5.3.2-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.features.version>5.3.2-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.common.version>5.3.2-HF02</nuxeo.common.version>
+    <nuxeo.runtime.version>5.3.2-HF02</nuxeo.runtime.version>
+    <nuxeo.core.version>5.3.2-HF02</nuxeo.core.version>
+    <nuxeo.services.version>5.3.2-HF02</nuxeo.services.version>
+    <nuxeo.jsf.version>5.3.2-HF02</nuxeo.jsf.version>
+    <nuxeo.features.version>5.3.2-HF02</nuxeo.features.version>
   </properties>
 
   <modules>
