@@ -48,7 +48,6 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -66,6 +65,9 @@ public class AppCenterViewsManager implements Serializable {
 
     @In(create = true)
     protected String currentAdminSubViewId;
+
+    @In(create = true)
+    protected boolean nxDebugModeIsEnabled;
 
     protected String searchString;
 
@@ -193,6 +195,7 @@ public class AppCenterViewsManager implements Serializable {
         return;
     }
 
+    // TODO: internationalize status messages
     public String getStudioInstallationStatus() {
         if (snapshotStatus.error.name().equals(studioSnapshotStatus)
                 && studioSnapshotUpdateError != null) {
@@ -212,8 +215,8 @@ public class AppCenterViewsManager implements Serializable {
             DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
                     Locale.US);
             return "last update completed : "
-                    + df.format(lastStudioSnapshotUpdate.getTime()
-                            + ", restart needed.");
+                    + df.format(lastStudioSnapshotUpdate.getTime())
+                    + ", restart needed.";
         }
 
         if (studioSnapshotStatus == null) {
@@ -221,12 +224,6 @@ public class AppCenterViewsManager implements Serializable {
         }
 
         return studioSnapshotStatus;
-    }
-
-    public boolean isDevModeSet() {
-        String debugPropValue = Framework.getProperty(
-                ConfigurationGenerator.NUXEO_DEBUG_SYSTEM_PROP, "false");
-        return Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
     }
 
     protected class StudioAutoInstaller implements Runnable {
@@ -283,7 +280,7 @@ public class AppCenterViewsManager implements Serializable {
                     return;
                 }
 
-                if (isDevModeSet()) {
+                if (nxDebugModeIsEnabled) {
                     studioSnapshotStatus = snapshotStatus.installing.name();
                     try {
                         LocalPackage lpkg = pus.getPackage(pkg.getId());
@@ -299,8 +296,9 @@ public class AppCenterViewsManager implements Serializable {
                     studioSnapshotStatus = snapshotStatus.completed.name();
                 } else {
                     lastStudioSnapshotUpdate = Calendar.getInstance();
-                    // TODO: do not install the package if not in dev mode, and
-                    // warn the user that he should restart his server instead
+                    // TODO: at least install the package if not in dev mode,
+                    // and warn the user that he should restart his server
+                    // instead
                     studioSnapshotStatus = snapshotStatus.restartNeeded.name();
                 }
 
