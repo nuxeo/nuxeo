@@ -31,11 +31,11 @@ public class UserAgentMatcher {
 
     private static final Pattern UA_FIREFOX_3 = Pattern.compile("^[Mm]ozilla.*[Ff]irefox(/|\\s)?(3\\.[6789].*)");
 
-    private static final Pattern UA_FIREFOX_FROM_4 = Pattern.compile("^[Mm]ozilla.*[Ff]irefox(/|\\s)?(([456789].*)|(1[0123456789].*))");
+    private static final Pattern UA_FIREFOX_FROM_4 = Pattern.compile("^[Mm]ozilla.*[Ff]irefox(/|\\s)?(([456789].*)|([1-9][0123456789].*))");
 
     private static final Pattern UA_SAFARI_5 = Pattern.compile("^Mozilla.*AppleWebKit.*Version/5.*");
 
-    private static final Pattern UA_CHROME = Pattern.compile("^Mozilla.*AppleWebKit.*Chrom(e|ium)/(1[0123456789]).*");
+    private static final Pattern UA_CHROME = Pattern.compile("^Mozilla.*AppleWebKit.*Chrom(e|ium)/([1-9][0123456789]).*");
 
     private static final Pattern UA_MSIE_67 = Pattern.compile("^Mozilla/4.0 \\(compatible; MSIE [67].[0-9].*");
 
