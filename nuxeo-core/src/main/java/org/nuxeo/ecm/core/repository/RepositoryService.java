@@ -144,25 +144,27 @@ public class RepositoryService extends DefaultComponent implements EventListener
         if (handler == null) {
             return;
         }
-        boolean started = false;
-        boolean ok = false;
-        try {
-            started = TransactionHelper.startTransaction();
-            for (String name : repositoryMgr.getRepositoryNames()) {
+
+        for (String name : repositoryMgr.getRepositoryNames()) {
+            boolean started = false;
+            boolean ok = false;
+            try {
+                started = TransactionHelper.startTransaction();
+                ok = true;
                 initializeRepository(handler, name);
-            }
-            ok = true;
-        } finally {
-            if (started) {
-                try {
-                    if (!ok) {
-                        TransactionHelper.setTransactionRollbackOnly();
+            } finally {
+                if (started) {
+                    try {
+                        if (!ok) {
+                            TransactionHelper.setTransactionRollbackOnly();
+                        }
+                    } finally {
+                        TransactionHelper.commitOrRollbackTransaction();
                     }
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
                 }
             }
         }
+
     }
 
     protected void initializeRepository(
