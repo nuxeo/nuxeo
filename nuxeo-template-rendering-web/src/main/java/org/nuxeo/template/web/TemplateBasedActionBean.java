@@ -12,6 +12,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -23,6 +25,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
@@ -40,6 +43,12 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     @In(create = true)
     protected transient WebActions webActions;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected ResourcesAccessor resourcesAccessor;
 
     protected List<TemplateInput> templateInputs;
 
@@ -63,6 +72,10 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
                 }
             } catch (Exception e) {
                 log.error("Error during parameter automatic initialization", e);
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
+                        resourcesAccessor.getMessages().get(
+                                "label.template.err.parameterInit"));
             }
         }
         return documentActions.saveDocument(changeableDocument);
@@ -165,12 +178,19 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         if (doc == null) {
             return null;
         }
-
-        // XXX handle rendering error
-        Blob rendition = doc.renderWithTemplate(templateName);
-        String filename = rendition.getFilename();
-        FacesContext context = FacesContext.getCurrentInstance();
-        return ComponentUtils.download(context, rendition, filename);
+        try {
+            Blob rendition = doc.renderWithTemplate(templateName);
+            String filename = rendition.getFilename();
+            FacesContext context = FacesContext.getCurrentInstance();
+            return ComponentUtils.download(context, rendition, filename);
+        } catch (Exception e) {
+            log.error("Unable to render template ", e);
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.template.err.renderingFailed"));
+            return null;
+        }
     }
 
     public String renderAndStore(String templateName) throws Exception {
@@ -206,10 +226,12 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
     public String detachTemplate(String templateName) throws Exception {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        currentDocument = tps.detachTemplateBasedDocument(currentDocument,
-                templateName, true);
+        DocumentModel detachedDocument = tps.detachTemplateBasedDocument(
+                currentDocument, templateName, true);
         webActions.resetTabList();
-        return navigationContext.navigateToDocument(currentDocument);
+        // because of cacheKey issue
+        navigationContext.setCurrentDocument(null);
+        return navigationContext.navigateToDocument(detachedDocument);
     }
 
     public String getTemplateIdToAssociate() {
@@ -229,13 +251,21 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(
                 templateIdToAssociate));
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-        currentDocument = tps.makeTemplateBasedDocument(currentDocument,
-                sourceTemplate, true);
+        try {
+            currentDocument = tps.makeTemplateBasedDocument(currentDocument,
+                    sourceTemplate, true);
+        } catch (ClientException e) {
+            log.error("Unable to do template association", e);
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.template.err.associationFailed"),
+                    sourceTemplate.getName());
+        }
+
         navigationContext.invalidateCurrentDocument();
         EventManager.raiseEventsOnDocumentChange(currentDocument);
         templateIdToAssociate = null;
-        // return navigationContext.navigateToDocument(currentDocument,
-        // "after-edit");
     }
 
     public boolean canRenderAndStore() {

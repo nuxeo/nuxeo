@@ -34,43 +34,54 @@
 
          <c:if test="#{template.name == templateBasedActions.getEditableTemplateName()}">
          <td>
-             <ui:include src="/incl/tabs/templates/params_editor.xhtml">
-              <ui:param name="targetTemplate" value="#{template.name}" />
-              <ui:param name="bean" value="#{templateBasedActions}" />
-             </ui:include>
-             <h:form enctype="multipart/form-data" id="editParamsForm">
-                    <p class="buttonsGadget">
-                        <h:commandButton type="submit" class="button" value="Cancel"
-                            action="#{templateBasedActions.setEditableTemplateName(null)}" />
-                    </p>
-             </h:form>
-
+              <div class="foldableBox">
+               <h3 class="unfolded">
+                  <a href="#nogo" onclick="return toggleBox(this)">
+                    <h:outputText value="#{messages['label.template.parameters']}"/>
+                  </a>
+               </h3>
+               <div class="boxBody">
+                 <ui:include src="/incl/tabs/templates/params_editor.xhtml">
+                  <ui:param name="targetTemplate" value="#{template.name}" />
+                  <ui:param name="bean" value="#{templateBasedActions}" />
+                 </ui:include>
+                 <h:form enctype="multipart/form-data" id="editParamsForm" rendered="false">
+                        <p class="buttonsGadget">
+                            <h:commandButton type="submit" class="button" value="#{messages['label.template.canceleditparameters']}"
+                                action="#{templateBasedActions.setEditableTemplateName(null)}" />
+                        </p>
+                 </h:form>
+               </div>
+              </div>
          </td>
          <td></td>
          </c:if>
          <c:if test="#{template.name != templateBasedActions.getEditableTemplateName()}">
          <td>
             <c:if test="#{currentTemplateBasedDocument.hasParams(template.name)}">
-            <A href="#" onclick="jQuery(event.target).hide().next().fadeIn('slow'); return false;"> <h:outputText value="#{messages['label.template.parameters']}"/> </A>
-            <span style="display:none;">
-             <table>
-                <tr>
-                <td>
-                <nxu:repeat value="#{currentTemplateBasedDocument.getParams(template.name)}" var="templateInput">
-                 <span> #{templateInput.toString()} </span><br/>
-               </nxu:repeat>
-               </td>
-               <td>
-                <h:form enctype="multipart/form-data">
-                    <p class="buttonsGadget">
-                        <h:commandButton type="submit" class="button" value="Edit"
-                            action="#{templateBasedActions.setEditableTemplateName(template.name)}" />
-                    </p>
-                </h:form>
-               </td>
-               </tr>
-            </table>
-            </span>
+
+               <div class="foldableBox">
+               <h3 class="folded">
+                  <a href="#nogo" onclick="return toggleBox(this)">
+                    <h:outputText value="#{messages['label.template.parameters']}"/>
+                  </a>
+               </h3>
+               <div class="boxBody" style="display:none">
+                  <nxu:repeat value="#{currentTemplateBasedDocument.getParams(template.name)}" var="templateInput">
+                   <span> #{templateInput.toString()} </span><br/>
+                 </nxu:repeat>
+                 <c:if test="#{templateBasedActions.canUpdateTemplateInputs(template.name)}">
+                  <h:form enctype="multipart/form-data">
+                      <p class="buttonsGadget">
+                          <h:commandButton type="submit" class="button" value="#{messages['label.template.editparameters']}"
+                              action="#{templateBasedActions.setEditableTemplateName(template.name)}" />
+                          <input type="button" class="button" value="#{messages['label.template.canceleditparameters']}" onclick="window.location.reload()"/>
+                      </p>
+                  </h:form>
+                 </c:if>
+               </div>
+             </div>
+
             </c:if>
             <c:if test="#{!currentTemplateBasedDocument.hasParams(template.name)}">
                 <h:outputText value="#{messages['label.template.noparameters']}"/>

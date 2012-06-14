@@ -328,6 +328,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
 
     public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc,
             String templateName, boolean save) throws ClientException {
+        DocumentModel docAfterDetach = null;
         TemplateBasedDocument tbd = targetDoc.getAdapter(TemplateBasedDocument.class);
         if (tbd != null) {
             if (!tbd.getTemplateNames().contains(templateName)) {
@@ -336,14 +337,19 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             if (tbd.getTemplateNames().size() == 1) {
                 // remove the whole facet since there is no more binding
                 targetDoc.removeFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
+                log.error("detach after removeFacet, ck="
+                        + targetDoc.getCacheKey());
                 if (save) {
-                    targetDoc = targetDoc.getCoreSession().saveDocument(
+                    docAfterDetach = targetDoc.getCoreSession().saveDocument(
                             targetDoc);
                 }
             } else {
                 // only remove the binding
-                targetDoc = tbd.removeTemplateBinding(templateName, true);
+                docAfterDetach = tbd.removeTemplateBinding(templateName, true);
             }
+        }
+        if (docAfterDetach != null) {
+            return docAfterDetach;
         }
         return targetDoc;
     }

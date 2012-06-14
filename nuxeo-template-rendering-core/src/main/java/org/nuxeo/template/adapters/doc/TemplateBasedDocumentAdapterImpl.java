@@ -172,14 +172,6 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         return result;
     }
 
-    /*
-     * protected boolean useMainContentAsTemplate() { try { Boolean useBlob =
-     * (Boolean) getAdaptedDoc().getPropertyValue( TEMPLATE_USE_BLOB_PROP); if
-     * (useBlob == null) { useBlob = false; } return useBlob; } catch (Exception
-     * e) { log.error("Unable to read template useAsMain prop ", e); return
-     * false; } }
-     */
-
     public String getTemplateType(String templateName) {
         TemplateSourceDocument source = null;
         try {
@@ -281,14 +273,6 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
          */
         return false;
     }
-
-    /*
-     * public DocumentModel updateDocumentModelFromBlob(boolean save) throws
-     * Exception { TemplateProcessor processor = getTemplateProcessor(); if
-     * (isBidirectional()) { adaptedDoc = ((BidirectionalTemplateProcessor)
-     * processor).updateDocumentFromBlob(this); if (save) { adaptedDoc =
-     * getSession().saveDocument(adaptedDoc); } } return adaptedDoc; }
-     */
 
     public Blob getTemplateBlob(String templateName) throws Exception {
         TemplateSourceDocument source = getSourceTemplate(templateName);
