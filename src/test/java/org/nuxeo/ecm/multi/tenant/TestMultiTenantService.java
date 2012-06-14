@@ -222,7 +222,7 @@ public class TestMultiTenantService {
         NuxeoPrincipal bender = createUser("bender", domain.getName());
         LoginContext loginContext = Framework.loginAsUser("bender");
         CoreSession benderSession = openSession(bender);
-        assertFalse(benderSession.hasPermission(domain.getRef(),
+        assertTrue(benderSession.hasPermission(domain.getRef(),
                 SecurityConstants.READ));
         assertFalse(benderSession.hasPermission(domain.getRef(),
                 SecurityConstants.EVERYTHING));
@@ -281,7 +281,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldGiveReadRightOnTenant() throws ClientException, LoginException {
+    public void shouldGiveWriteRightOnTenant() throws ClientException, LoginException {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel domain = session.getDocument(new PathRef(
@@ -303,7 +303,7 @@ public class TestMultiTenantService {
         DocumentModel doc = frySession.getDocument(domain.getRef());
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();
-        acl.add(0, new ACE(nuxeoGroup.getName(), "Read", true));
+        acl.add(0, new ACE(nuxeoGroup.getName(), "Write", true));
         doc.setACP(acp, true);
         frySession.saveDocument(doc);
         frySession.save();
@@ -319,17 +319,18 @@ public class TestMultiTenantService {
         loginContext = Framework.loginAsUser("bender");
         CoreSession benderSession = openSession(bender);
 
-        assertTrue(benderSession.hasPermission(domain.getRef(), "Read"));
+        assertTrue(benderSession.hasPermission(domain.getRef(), "Write"));
 
         CoreInstance.getInstance().close(benderSession);
         loginContext.logout();
 
-        // leela cannot see the document
+        // leela does not have Write permission
         NuxeoPrincipal leela = createUser("leela", domain.getName());
         loginContext = Framework.loginAsUser("leela");
         CoreSession leelaSession = openSession(leela);
 
-        assertFalse(leelaSession.hasPermission(domain.getRef(), "Read"));
+        assertTrue(leelaSession.hasPermission(domain.getRef(), "Read"));
+        assertFalse(leelaSession.hasPermission(domain.getRef(), "Write"));
 
         CoreInstance.getInstance().close(leelaSession);
         loginContext.logout();

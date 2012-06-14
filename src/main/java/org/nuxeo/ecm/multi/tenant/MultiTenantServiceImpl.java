@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -161,10 +162,6 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
             throws ClientException {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        for (String adminGroup : userManager.getAdministratorsGroups()) {
-            acl.add(new ACE(adminGroup, WRITE_PROPERTIES, true));
-        }
 
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
         acl.add(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
@@ -182,33 +179,26 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
             if (doc.hasFacet(TENANT_CONFIG_FACET)) {
                 doc.removeFacet(TENANT_CONFIG_FACET);
             }
-            // removeTenantACL(doc);
+            removeTenantACL(doc);
             session.saveDocument(doc);
         }
         unregisterTenant(doc);
     }
 
     private void removeTenantACL(DocumentModel doc) throws ClientException {
-
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();
-        List<ACE> aces = new ArrayList<ACE>();
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        for (String adminGroup : userManager.getAdministratorsGroups()) {
-            aces.add(new ACE(adminGroup, EVERYTHING, true));
-        }
-
         String tenantId = doc.getName();
+
+        // remove only the ACEs we added
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
-        aces.add(new ACE(tenantAdministratorsGroup,
-                SecurityConstants.EVERYTHING, true));
-        String tenantMembersGroup = computeTenantMembersGroup(tenantId);
-        aces.add(new ACE(tenantMembersGroup,
-                configuration.getMembersGroupPermission(), true));
-
-        aces.add(new ACE(EVERYONE, SecurityConstants.EVERYTHING, false));
-
-        acl.removeAll(aces);
+        int tenantAdministratorsGroupACEIndex = acl.indexOf(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
+        if (tenantAdministratorsGroupACEIndex >= 0) {
+            List<ACE> newACEs = new ArrayList<ACE>();
+            newACEs.addAll(acl.subList(0, tenantAdministratorsGroupACEIndex));
+            newACEs.addAll(acl.subList(tenantAdministratorsGroupACEIndex + 3, acl.size()));
+            acl.setACEs(newACEs.toArray(new ACE[newACEs.size()]));
+        }
         doc.setACP(acp, true);
     }
 
