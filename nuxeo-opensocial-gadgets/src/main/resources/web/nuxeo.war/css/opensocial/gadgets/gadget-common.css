@@ -43,14 +43,20 @@ button { line-height: 100%;
 
 /* Top gray tool bar */
 .tools { background-color: #f4f4f4; line-height: 150%; padding: .5em }
-.linkButton, .linkButton:link { background-color: #fff;
+
+.tools a, .tools a:link, .tools a:visited { color: #999 }
+.tools a.selected, .tools a:hover { color: #06c; text-decoration: underline }
+
+.tools .linkButton, .tools .linkButton:link, .tools .linkButton:visit { background-color: #fff;
    border: 1px solid #ccc;
    border-radius: 2px;
+   display: inline-block;
    color: #333;
    margin: 0 .5em 0 0;
    padding: .1em .3em .2em;
    text-decoration: none }
-.linkButton:hover { border-color: #9d9d9d }
+.tools .linkButton:hover { border-color: #9d9d9d }
+.tools .linkButton img { margin: 0 .2em -0.3em -0.2em }
 
 /* Top white tool bar */
 .header { border-bottom: 1px solid #ddd; margin: 2px 0 5px; padding: 0 0 5px }
@@ -109,9 +115,9 @@ textarea:-moz-placeholder { color: #bbb }
 textarea::-webkit-input-placeholder { color: #bbb }
 
 .creationForm { text-align: center }
-.creationForm table { font-size: 13px; margin: 0 auto }
+.creationForm table { font-size: 11px; margin: 0 auto }
 .creationForm h3 { border-bottom: 1px solid #eee; font-size: 13px; padding: 0 0 1em }
-.creationForm input, .creationForm textarea { border: 1px solid #ddd; width: 160px }
+.creationForm input, .creationForm textarea { border: 1px solid #ddd }
 .creationForm td { vertical-align: top }
 .creationForm .actions { margin-top: 5px }
 .creationForm .actions input, .creationForm .actions button { background-color: #fefefe; cursor: pointer; margin: 0 .5em; width: auto }
