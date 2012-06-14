@@ -29,13 +29,22 @@ import javax.management.ObjectName;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
+import javax.resource.spi.ManagedConnection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager.Interceptors;
+import org.apache.geronimo.connector.outbound.ConnectionInfo;
 import org.apache.geronimo.connector.outbound.ConnectionInterceptor;
+import org.apache.log4j.MDC;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionMonitor;
+import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.CachingMapper;
+import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
+import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.ecm.core.storage.sql.ra.ManagedConnectionImpl;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
@@ -52,7 +61,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         this.cm = enhanceConnectionManager(cm);
     }
 
-    protected static Field field(Class<?> clazz, Object object, String name) {
+    protected static Field field(Class<?> clazz, String name) {
         try {
             Field field = clazz.getDeclaredField(name);
             field.setAccessible(true);
@@ -85,7 +94,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         if (!log.isTraceEnabled()) {
             return cm;
         }
-        Field field = field(AbstractConnectionManager.class, cm, "interceptors");
+        Field field = field(AbstractConnectionManager.class, "interceptors");
         Interceptors interceptors = fetch(field, cm);
         interceptors = enhanceInterceptors(interceptors);
         save(field, cm, interceptors);
@@ -93,7 +102,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
     }
 
     protected Interceptors enhanceInterceptors(Interceptors interceptors) {
-        Field field = field(interceptors.getClass(), interceptors, "stack");
+        Field field = field(interceptors.getClass(), "stack");
         ConnectionInterceptor stack = fetch(field, interceptors);
         save(field, interceptors, enhanceStack(stack));
         return interceptors;
@@ -101,7 +110,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
 
     protected ConnectionInterceptor enhanceStack(ConnectionInterceptor stack) {
         try {
-            Field field = field(stack.getClass(), stack, "next");
+            Field field = field(stack.getClass(), "next");
             ConnectionInterceptor next = fetch(field, stack);
             save(field, stack, enhanceStack(next));
         } catch (RuntimeException e) {
@@ -121,14 +130,60 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
             this.stack = stack;
         }
 
+        protected void traceInvoke(Method m, Object[] args) {
+            if (!log.isTraceEnabled()) {
+                return;
+            }
+            log.trace("invoked " + stack.getClass().getSimpleName() + "."
+                    + m.getName());
+        }
+
+        protected void putMDC(ConnectionInfo info) {
+            MDC.put("mid", mapperId(info));
+        }
+
+        protected void popMDC(ConnectionInfo info) {
+            MDC.remove("mid");
+        }
+
         @Override
         public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
-            if (log.isTraceEnabled()) {
-                log.trace("invoked " + stack.getClass().getSimpleName() + "."
-                        + method.getName());
+            try {
+                return method.invoke(stack, args);
+            } finally {
+                String name = method.getName();
+                traceInvoke(method, args);
+                if (name.startsWith("get")) {
+                    MDC.put("mid", mapperId((ConnectionInfo)args[0]));
+                } else if (name.startsWith("return")) {
+                    MDC.remove("mid");
+                }
             }
-            return method.invoke(stack, args);
+        }
+    }
+
+    private static final Field SESSION_FIELD = field(
+            ManagedConnectionImpl.class, "session");
+
+    private static final Field WRAPPED_FIELD = field(CachingMapper.class,
+            "mapper");
+
+    protected  Identification mapperId(ConnectionInfo info) {
+        ManagedConnection connection = info.getManagedConnectionInfo().getManagedConnection();
+        if (connection == null) {
+            return null;
+        }
+        SessionImpl session = fetch(SESSION_FIELD, connection);
+        Mapper mapper = session.getMapper();
+        if (mapper instanceof CachingMapper) {
+            mapper = fetch(WRAPPED_FIELD, mapper);
+        }
+        try {
+            return mapper.getIdentification();
+        } catch (StorageException e) {
+            log.error("Cannot fetch mapper identification", e);
+            return null;
         }
     }
 

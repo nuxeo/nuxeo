@@ -140,7 +140,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
             for (int i = 0; i < globalId.length; i++) {
                 buffer.append(Integer.toHexString(globalId[i]));
             }
-            return buffer.toString();
+            return buffer.toString().replaceAll("0*$", "");
         }
         return key.toString();
     }
