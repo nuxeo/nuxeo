@@ -78,7 +78,11 @@ public class S3BinaryManager extends DefaultBinaryManager {
 
     public static final String AWS_ID_KEY = "nuxeo.s3storage.awsid";
 
+    public static final String AWS_ID_ENV_KEY = "AWS_ACCESS_KEY_ID";
+
     public static final String AWS_SECRET_KEY = "nuxeo.s3storage.awssecret";
+
+    public static final String AWS_SECRET_ENV_KEY = "AWS_SECRET_ACCESS_KEY";
 
     public static final String CACHE_SIZE_KEY = "nuxeo.s3storage.cachesize";
 
@@ -153,6 +157,14 @@ public class S3BinaryManager extends DefaultBinaryManager {
         String keystorePass = Framework.getProperty(KEYSTORE_PASS_KEY);
         String privkeyAlias = Framework.getProperty(PRIVKEY_ALIAS_KEY);
         String privkeyPass = Framework.getProperty(PRIVKEY_PASS_KEY);
+
+        // Fallback on default env keys for ID and secret
+        if (isBlank(awsID)) {
+            awsID = System.getenv(AWS_ID_ENV_KEY);
+        }
+        if (isBlank(awsSecret)) {
+            awsSecret = System.getenv(AWS_SECRET_ENV_KEY);
+        }
 
         if (isBlank(bucketName)) {
             throw new RuntimeException("Missing conf: " + BUCKET_NAME_KEY);
