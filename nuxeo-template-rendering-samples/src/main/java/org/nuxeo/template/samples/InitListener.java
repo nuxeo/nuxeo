@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.content.template.service.PostContentCreationHandler;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Called by the ContentTemplateService at repository init time to trigger the
@@ -39,6 +40,9 @@ public class InitListener implements PostContentCreationHandler {
 
         ModelImporter importer = new ModelImporter(session);
         try {
+            if (!Framework.isTestModeSet()) {
+                ModelImporter.expandResources();
+            }
             int nbImportedDocs = importer.importModels();
             log.info("Template sample import done : " + nbImportedDocs
                     + " documents imported");
@@ -46,4 +50,5 @@ public class InitListener implements PostContentCreationHandler {
             log.error("Error during template samples import", e);
         }
     }
+
 }

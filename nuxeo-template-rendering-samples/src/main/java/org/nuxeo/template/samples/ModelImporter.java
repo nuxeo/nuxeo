@@ -42,6 +42,8 @@ import org.dom4j.Text;
 import org.dom4j.Visitor;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.utils.PathFilter;
+import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -190,6 +192,44 @@ public class ModelImporter {
 
     }
 
+    protected static Path getDataDirPath() {
+        String dataDir = null;
+
+        if (Framework.isTestModeSet()) {
+            dataDir = "/tmp";
+        } else {
+            dataDir = Framework.getProperty("nuxeo.data.dir");
+        }
+        Path path = new Path(dataDir);
+        path = path.append("resources");
+        return path;
+    }
+
+    public static void expandResources() throws Exception {
+        String jarPath = ModelImporter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+        File jar = new File(jarPath);
+        Path path = getDataDirPath();
+        File dataDir = new File(path.toString());
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
+        }
+
+        ZipUtils.unzip(jar, dataDir, new PathFilter() {
+            @Override
+            public boolean isExclusive() {
+                return true;
+            }
+
+            @Override
+            public boolean accept(Path path) {
+                if (path.toString().contains("templatesamples")) {
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
     public int importModels() throws Exception {
 
         if (isImportAlreadyDone()) {
@@ -200,11 +240,9 @@ public class ModelImporter {
         // in test mode we can directly access the resources as files
         File root = FileUtils.getResourceFileFromContext(RESOURCES_ROOT);
         if (root == null) {
-            // in container mode, we rely on the deployment-frament to do the
+            // in container mode, we rely on expandResources
             // Filesystem extraction
-            String dataDir = Framework.getProperty("nuxeo.data.dir");
-            Path path = new Path(dataDir);
-            path = path.append("resources");
+            Path path = getDataDirPath();
             path = path.append(RESOURCES_ROOT);
             root = new File(path.toString());
         }
