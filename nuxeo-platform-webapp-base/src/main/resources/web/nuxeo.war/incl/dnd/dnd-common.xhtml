@@ -10,7 +10,7 @@
     function getBaseURL() {
       return baseURL;
     }
-    
+
     var ctx = {
       currentDocument : '#{currentDocument.id}',
       <c:if test="#{currentDomain!=null}">
@@ -19,11 +19,11 @@
       <c:if test="#{currentWorkspace!=null}">
         currentWorkspace : '#{currentWorkspace.id}',
       </c:if>
-      conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
+      conversationId : '#{nxu:javaScriptEscape(org.jboss.seam.core.manager.currentConversationId)}',
       lang : '#{localeSelector.localeString}',
       repository : '#{currentDocument.repositoryName}'
     };
-    
+
     function initNXDrapAndDropOnPage(scope) {
       // init Browser Drag out support (Chrome only);
       jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
@@ -31,11 +31,11 @@
       jQuery(".nxDraggable",scope).nxInitDraggables();
       jQuery(".nxDropTarget",scope).nxInitDropTargets();
     }
-    
+
     jQuery(document).ready(function(){
       // init Dropout and Internal DnD
       initNXDrapAndDropOnPage(null);
     });
   </script>
-  
+
 </div>
