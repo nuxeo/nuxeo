@@ -39,6 +39,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -250,6 +251,8 @@ public final class FileUtils {
     /**
      * @deprecated Since 5.6. Use
      *             {@link org.apache.commons.io.FileUtils#deleteDirectory(File)}
+     *             or
+     *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)}
      *             instead.
      */
     @Deprecated
@@ -258,6 +261,14 @@ public final class FileUtils {
         dir.delete();
     }
 
+    /**
+     * @deprecated Since 5.6. Use
+     *             {@link org.apache.commons.io.FileUtils#deleteDirectory(File)}
+     *             or
+     *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)}
+     *             instead.
+     */
+    @Deprecated
     public static void emptyDirectory(File dir) {
         File[] files = dir.listFiles();
         if (files == null) {
@@ -361,15 +372,14 @@ public final class FileUtils {
             dst = new File(dst, src.getName());
         }
         FileInputStream in = null;
-        FileOutputStream out = new FileOutputStream(dst);
+        FileOutputStream out = null;
         try {
+            out = new FileOutputStream(dst);
             in = new FileInputStream(src);
             copy(in, out);
         } finally {
-            if (in != null) {
-                in.close();
-            }
-            out.close();
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 
