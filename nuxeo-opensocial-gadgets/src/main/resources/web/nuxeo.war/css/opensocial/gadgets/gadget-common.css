@@ -47,7 +47,7 @@ button { line-height: 100%;
 .tools a, .tools a:link, .tools a:visited { color: #999 }
 .tools a.selected, .tools a:hover { color: #06c; text-decoration: underline }
 
-.tools .linkButton, .tools .linkButton:link, .tools .linkButton:visit { background-color: #fff;
+.tools .linkButton, .tools .linkButton:link, .tools .linkButton:visited { background-color: #fff;
    border: 1px solid #ccc;
    border-radius: 2px;
    display: inline-block;
