@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
-import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantAdministratorsGroup;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
@@ -37,11 +35,12 @@ public class MultiTenantPrincipal extends NuxeoPrincipalImpl {
         setVirtualGroups(principal.getVirtualGroups());
     }
 
-//    @Override
-//    public boolean isManager() {
-//        String tenantAdminGroup = computeTenantAdministratorsGroup(getTenantId());
-//        return isMemberOf(tenantAdminGroup) || super.isManager();
-//    }
+    // @Override
+    // public boolean isManager() {
+    // String tenantAdminGroup =
+    // computeTenantAdministratorsGroup(getTenantId());
+    // return isMemberOf(tenantAdminGroup) || super.isManager();
+    // }
 
     @Override
     public String getTenantId() {

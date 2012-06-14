@@ -19,6 +19,7 @@ package org.nuxeo.ecm.multi.tenant;
 
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_PROPERTY;
 import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantAdministratorsGroup;
+import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantMembersGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,7 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
                                 groups.add(computeTenantAdministratorsGroup(tenantId));
                                 groups.add(POWER_USERS_GROUP);
                             }
+                            groups.add(computeTenantMembersGroup(tenantId));
                         }
                     }
                 }.runUnrestricted();

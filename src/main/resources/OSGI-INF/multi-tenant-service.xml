@@ -15,7 +15,12 @@
 
   <extension-point name="configuration">
     <documentation>
-      The multi tenant configuration
+      The multi tenant configuration contains:
+
+      - tenantDocumentType: define the document type on which enable the
+        tenant isolation.
+      - membersGroupPermission: the default permission on the tenant for the
+        group containing all the members of the tenant.
     </documentation>
     <object class="org.nuxeo.ecm.multi.tenant.MultiTenantConfiguration" />
   </extension-point>

@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.multi.tenant.Constants.TENANTS_DIRECTORY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
 import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantAdministratorsGroup;
+import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantMembersGroup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -167,6 +168,9 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
 
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
         acl.add(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
+        String tenantMembersGroup = computeTenantMembersGroup(tenantId);
+        acl.add(new ACE(tenantMembersGroup,
+                configuration.getMembersGroupPermission(), true));
         acl.add(new ACE(EVERYONE, EVERYTHING, false));
         doc.setACP(acp, true);
     }
@@ -185,9 +189,6 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     }
 
     private void removeTenantACL(DocumentModel doc) throws ClientException {
-        // ACP acp = doc.getACP();
-        // acp.removeACL(TENANT_ACL_NAME);
-        // doc.setACP(acp, true);
 
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();
@@ -201,6 +202,10 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
         aces.add(new ACE(tenantAdministratorsGroup,
                 SecurityConstants.EVERYTHING, true));
+        String tenantMembersGroup = computeTenantMembersGroup(tenantId);
+        aces.add(new ACE(tenantMembersGroup,
+                configuration.getMembersGroupPermission(), true));
+
         aces.add(new ACE(EVERYONE, SecurityConstants.EVERYTHING, false));
 
         acl.removeAll(aces);

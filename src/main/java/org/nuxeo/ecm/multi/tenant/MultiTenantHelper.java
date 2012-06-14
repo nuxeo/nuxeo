@@ -19,6 +19,7 @@ package org.nuxeo.ecm.multi.tenant;
 
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_GROUP_SUFFIX;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_GROUP_PREFIX;
+import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_MEMBERS_GROUP_SUFFIX;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -47,6 +48,11 @@ public class MultiTenantHelper {
     public static String computeTenantAdministratorsGroup(String tenantId) {
         return TENANT_GROUP_PREFIX + tenantId
                 + TENANT_ADMINISTRATORS_GROUP_SUFFIX;
+    }
+
+    public static String computeTenantMembersGroup(String tenantId) {
+        return TENANT_GROUP_PREFIX + tenantId
+                + TENANT_MEMBERS_GROUP_SUFFIX;
     }
 
     /**

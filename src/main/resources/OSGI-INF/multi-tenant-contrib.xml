@@ -9,6 +9,7 @@
 
     <configuration>
       <tenantDocumentType>Domain</tenantDocumentType>
+      <membersGroupPermission>Read</membersGroupPermission>
     </configuration>
 
   </extension>

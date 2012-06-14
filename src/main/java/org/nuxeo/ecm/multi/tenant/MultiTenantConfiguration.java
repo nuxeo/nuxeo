@@ -22,6 +22,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -33,8 +34,15 @@ public class MultiTenantConfiguration {
     @XNode("tenantDocumentType")
     protected String tenantDocumentType;
 
+    @XNode("membersGroupPermission")
+    protected String membersGroupPermission = SecurityConstants.READ;
+
     public String getTenantDocumentType() {
         return tenantDocumentType;
+    }
+
+    public String getMembersGroupPermission() {
+        return membersGroupPermission;
     }
 
     @Override

@@ -44,4 +44,6 @@ public class Constants {
 
     public static final String TENANT_ADMINISTRATORS_GROUP_SUFFIX = "_tenantAdministrators";
 
+    public static final String TENANT_MEMBERS_GROUP_SUFFIX = "_tenantMembers";
+
 }
