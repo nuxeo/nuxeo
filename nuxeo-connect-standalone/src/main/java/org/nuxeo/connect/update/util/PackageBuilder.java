@@ -31,15 +31,15 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Version;
+import org.nuxeo.connect.update.model.PackageDefinition;
 import org.nuxeo.connect.update.model.TaskDefinition;
-import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.connect.update.xml.FormDefinition;
 import org.nuxeo.connect.update.xml.FormsDefinition;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
@@ -53,7 +53,7 @@ import org.nuxeo.connect.update.xml.XmlSerializer;
  */
 public class PackageBuilder {
 
-    protected final PackageDefinitionImpl def;
+    protected final PackageDefinition def;
 
     protected final List<FormDefinition> installForms;
 
@@ -105,6 +105,22 @@ public class PackageBuilder {
 
     public PackageBuilder type(PackageType type) {
         def.setType(type);
+        return this;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public PackageBuilder visibility(String visibility) {
+        def.setVisibility(PackageVisibility.valueOf(visibility));
+        return this;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public PackageBuilder visibility(PackageVisibility visibility) {
+        def.setVisibility(visibility);
         return this;
     }
 

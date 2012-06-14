@@ -31,6 +31,7 @@ import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
+import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
@@ -304,6 +305,11 @@ public class LocalPackageImpl implements LocalPackage {
     @Override
     public boolean supportsHotReload() {
         return def.supportsHotReload();
+    }
+
+    @Override
+    public PackageVisibility getVisibility() {
+        return def.getVisibility();
     }
 
 }
