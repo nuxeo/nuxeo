@@ -19,6 +19,7 @@
 package org.nuxeo.template.fm;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,12 +29,12 @@ import org.nuxeo.template.api.TemplateInput;
 /**
  * Helper class used to extract variable names from a FreeMarker template. This
  * is used to initialize the {@link TemplateInput} parameters.
- *
+ * 
  * Extraction is for now simple and system may not detect all the cases, but
  * user is able to add parameters from the UI.
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class FreeMarkerVariableExtractor {
 
@@ -125,6 +126,15 @@ public class FreeMarkerVariableExtractor {
         // remove reserved variables that don't need specific bindings
         for (String bVar : FMContextBuilder.RESERVED_VAR_NAMES) {
             variables.remove(bVar);
+        }
+
+        // remove any non valid variable names
+        Iterator<String> varIter = variables.iterator();
+        while (varIter.hasNext()) {
+            String var = varIter.next();
+            if (var.contains("<") || var.contains(">")) {
+                varIter.remove();
+            }
         }
 
         return variables;
