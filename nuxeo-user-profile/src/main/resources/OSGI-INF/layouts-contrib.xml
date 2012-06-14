@@ -33,7 +33,8 @@
         <sinceVersion>5.5</sinceVersion>
         <title>User Profile Avatar</title>
         <description>
-          Widget allowing to upload a picture for the user avatar.
+          Widget allowing to upload a picture for the user
+          avatar.
         </description>
         <categories>
           <category>configuration_not_ready</category>
@@ -46,12 +47,36 @@
         /widgets/avatar_widget_template.xhtml
       </property>
     </widgetType>
+    <widgetType name="summary_user_preferences">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>User Profile Summary</title>
+        <description>
+          <p>This widget displays the user preferences layout.</p>
+        </description>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/user_preferences_widget_template.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
     <widget name="summary_user_profile" type="summary_user_profile" />
+
+    <widget name="summary_user_preferences" type="summary_user_preferences" />
 
     <widget name="avatar" type="avatar">
       <labels>
@@ -119,6 +144,37 @@
         </property>
       </properties>
     </widget>
+
+    <widget name="locale" type="selectOneDirectory">
+      <labels>
+        <label mode="any">label.userpreferences.locale</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>userprofile:locale</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="localize">false</property>
+        <property name="directoryName">locale</property>
+        <property name="displayIdAndLabel">false</property>
+        <property name="required">false</property>
+      </properties>
+    </widget>
+
+    <widget name="timezone" type="template">
+      <labels>
+        <label mode="any">label.userpreferences.timezone</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>userprofile:timezone</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">/widgets/timezone_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -126,7 +182,8 @@
 
     <layout name="summary_user_profile_layout">
       <templates>
-        <template mode="any">/layouts/layout_summary_template.xhtml</template>
+        <template mode="any">/layouts/layout_summary_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -153,6 +210,34 @@
         </row>
         <row>
           <widget>gender</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="summary_user_preferences_layout">
+      <templates>
+        <template mode="any">/layouts/layout_summary_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>summary_user_preferences</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="userpreferences">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+
+      <rows>
+        <row>
+          <widget>locale</widget>
+        </row>
+        <row>
+          <widget>timezone</widget>
         </row>
       </rows>
     </layout>

@@ -1,0 +1,81 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <a4j:region>
+    <a4j:outputPanel id="preferencesPanel">
+
+      <div class="globalActionBar">
+        <h:form id="userpreferencesButtons" rendered="#{userPreferencesActions.mode == 'view'}">
+          <h1>
+            <h:outputText value="#{userPreferencesActions.userProfile.user.firstName} #{userPreferencesActions.userProfile.user.lastName}"/>
+          </h1>
+          <ul class="actionList">
+             <li class="dropDownMenu button dropdown">
+               <h:outputText value="#{messages['label.content.header.actions']}" />
+               <ul class="actionSubList">
+                 <li>
+                   <a4j:commandLink id="editUserButton"
+                        action="#{userPreferencesActions.setMode('edit')}"
+                        immediate="#{action.immediate}"
+                        rendered="#{userPreferencesActions.mode == 'view'}"
+                        reRender="preferencesPanel">
+                        <h:outputText value="#{messages['label.userManager.editUser']}" />
+                   </a4j:commandLink>
+                 </li>
+               </ul>
+             </li>
+          </ul>
+        </h:form>
+      </div>
+      <div class="clear"></div>
+
+      <h:form id="viewUser" rendered="#{userPreferencesActions.mode == 'view'}">
+        <nxl:layout name="summary_user_preferences_layout" mode="view"
+          value="#{userPreferencesActions.userProfile}" />
+      </h:form>
+
+      <h:form id="editUser" enctype="multipart/form-data"
+        rendered="#{userPreferencesActions.mode == 'edit'}">
+        <nxl:layout name="userpreferences" mode="edit" value="#{userPreferencesActions.userProfileDocument}" />
+        <table class="dataInput">
+          <tbody>
+            <tr>
+              <td class="iconColumn"></td>
+              <td class="labelColumn"></td>
+              <td class="fieldColumn">
+                <h:commandButton id="saveUserButton"
+                  value="#{messages['command.save']}"
+                  action="#{userPreferencesActions.updateUser}"
+                  styleClass="button" />
+                <h:commandButton
+                  value="#{messages['command.cancel']}"
+                  actionListener="#{editableListBean.resetAllListsCachedModels}"
+                  action="#{userPreferencesActions.setMode('view')}"
+                  immediate="true"
+                  styleClass="button" id="viewUserButton"
+                  rendered="#{userPreferencesActions.mode != 'view'}" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </h:form>
+
+    <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        jQuery('.dropDownMenu').click(function(e) {
+          jQuery('.dropDownMenu').find('ul').hide();
+          jQuery(this).find("ul").show();
+          e.stopPropagation();
+        });
+
+        jQuery(document).click(function() {
+          jQuery('.dropDownMenu').find('ul').hide();
+        })
+      });
+    </script>
+
+    </a4j:outputPanel>
+  </a4j:region>
+</div>
