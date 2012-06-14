@@ -222,11 +222,6 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>opensymphony</groupId>
-                  <artifactId>oscache</artifactId>
-                  <version>2.3.2</version>
-                </artifactItem>
-                <artifactItem>
                   <groupId>taglibs</groupId>
                   <artifactId>standard</artifactId>
                   <version>1.1.2</version>
