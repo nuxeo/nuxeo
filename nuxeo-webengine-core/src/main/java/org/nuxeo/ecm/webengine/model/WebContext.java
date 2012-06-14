@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     bstefanescu
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.webengine.model;
@@ -167,7 +166,8 @@ public interface WebContext extends Adaptable {
     /**
      * Gets the principal identifying the user that originated the request.
      *
-     * @return the current principal. Cannot return null.
+     * @return the current principal. Can return null if the user has not been
+     *         authenticated.
      */
     Principal getPrincipal();
 
@@ -240,7 +240,6 @@ public interface WebContext extends Adaptable {
      * a logout. After the login/logout is done the current page in that context
      * will be served.
      *
-     * @return
      */
     String getLoginPath();
 
@@ -378,8 +377,8 @@ public interface WebContext extends Adaptable {
      * <p>
      * The path is resolved as following:
      * <ol>
-     * <li>if the path begin with a dot '.' then a local path is assumed and
-     * the path will be resolved relative to the current executed script if any.
+     * <li>if the path begin with a dot '.' then a local path is assumed and the
+     * path will be resolved relative to the current executed script if any.
      * Note that the directory stack will be consulted as well. If there is no
      * current executed script then the path will be transformed into an
      * absolute path and next step is entered.
@@ -399,8 +398,8 @@ public interface WebContext extends Adaptable {
      * Renders the given template using the rendering engine registered in that
      * web engine.
      * <p>
-     * This is similar to the {@link #render(String, Object, Writer)} method with a null
-     * value for the <i>args</i> argument.
+     * This is similar to the {@link #render(String, Object, Writer)} method
+     * with a null value for the <i>args</i> argument.
      *
      * @param template the template to render. Can be a path absolute to the web
      *            directory or relative to the caller script if any.
