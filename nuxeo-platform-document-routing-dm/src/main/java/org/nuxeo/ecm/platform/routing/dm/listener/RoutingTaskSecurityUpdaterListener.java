@@ -42,9 +42,9 @@ import org.nuxeo.runtime.api.Framework;
  * Grants the READ permission on the route instance to all task actors. This is
  * needed beacuse an user having a task assigned should be able to see the
  * relatedRoute
- * 
+ *
  * @author mcedica
- * 
+ *
  */
 public class RoutingTaskSecurityUpdaterListener implements EventListener {
 

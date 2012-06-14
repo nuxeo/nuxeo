@@ -37,31 +37,24 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.dm.adapter.TaskStep;
 import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants;
-import org.nuxeo.ecm.platform.routing.dm.task.RoutingTaskService;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Creates a routing task
- * 
+ *
  * @author ldoguin
  * @since 5.6
  */
@@ -224,7 +217,7 @@ public class CreateRoutingTask {
             }
             try {
                 taskDoc.setPropertyValue(getter,
-                        (String) setterDoc.getPropertyValue(setter));
+                        setterDoc.getPropertyValue(setter));
             } catch (PropertyException e) {
                 log.error(
                         "Could not map property on the task document in the taskVariables ",

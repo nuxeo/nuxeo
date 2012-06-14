@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.routing.dm;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/dm-task-adapter-contrib.xml,
- OSGI-INF/dm-task-core-types-contrib.xml,
- OSGI-INF/dm-task-routing-service.xml,
+ OSGI-INF/dm-task-core-types-contrib.xml
  OSGI-INF/dm-task-ecm-types-contrib.xml,
  OSGI-INF/dm-task-operation-chains-contrib.xml,
  OSGI-INF/dm-task-type-chains-contrib.xml,

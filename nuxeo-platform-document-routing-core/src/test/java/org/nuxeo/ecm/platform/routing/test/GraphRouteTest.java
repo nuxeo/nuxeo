@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -47,8 +48,11 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
+import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -60,7 +64,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+@Deploy({
+        "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
         "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.platform.usermanager", //
@@ -68,7 +73,10 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.userworkspace.core", //
         "org.nuxeo.ecm.platform.userworkspace.types", //
+        "org.nuxeo.ecm.platform.task.api", "org.nuxeo.ecm.platform.task.core",
+        "org.nuxeo.ecm.platform.task.testing",
         "org.nuxeo.ecm.platform.routing.core" //
+
 })
 @LocalDeploy({
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml",
@@ -93,6 +101,12 @@ public class GraphRouteTest {
     // init userManager now for early user tables creation (cleaner debug)
     @Inject
     protected UserManager userManager;
+
+    @Inject
+    protected RoutingTaskService routingTaskService;
+
+    @Inject
+    protected TaskService taskService;
 
     // a doc, associated to the route
     protected DocumentModel doc;
@@ -167,6 +181,21 @@ public class GraphRouteTest {
             Map<String, Serializable>... transitions) throws ClientException {
         node.setPropertyValue(GraphNode.PROP_TRANSITIONS,
                 (Serializable) Arrays.asList(transitions));
+    }
+
+    protected Map<String, Serializable> button(String name, String label,
+            String filter) {
+        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        m.put(GraphNode.PROP_BTN_NAME, name);
+        m.put(GraphNode.PROP_BTN_LABEL, label);
+        m.put(GraphNode.PROP_BTN_FILTER, filter);
+        return m;
+    }
+
+    protected void setButtons(DocumentModel node,
+            Map<String, Serializable>... buttons) throws ClientException {
+        node.setPropertyValue(GraphNode.PROP_TASK_BUTTONS,
+                (Serializable) Arrays.asList(buttons));
     }
 
     protected DocumentRoute instantiateAndRun() throws ClientException {
@@ -480,6 +509,49 @@ public class GraphRouteTest {
         assertEquals("title 1", doc.getTitle());
         assertEquals("descr 1", doc.getPropertyValue("dc:description"));
         assertEquals("rights 1", doc.getPropertyValue("dc:rights"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRouteWithTasks() throws Exception {
+
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        assertNotNull(user1);
+
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(
+                node1,
+                transition("trans1", "node2",
+                        "Context[\"status\"] == \"trans1\"", "testchain_title1"));
+
+        // task properties
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users = { user1.getName() };
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
+        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+
+        DocumentRoute route = instantiateAndRun();
+
+        List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("status", "trans1");
+        CoreSession sessionUser1 = openSession(user1);
+        routingTaskService.endTask(sessionUser1, tasks.get(0), data);
+        closeSession(sessionUser1);
+        // end task and verify that route was done
+        // assertTrue(route.isDone());
     }
 
 }

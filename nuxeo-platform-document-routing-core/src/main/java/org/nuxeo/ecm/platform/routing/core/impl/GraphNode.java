@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +69,20 @@ public interface GraphNode {
     String PROP_TRANS_RESULT = "result";
 
     String PROP_TRANS_CHAIN = "chain";
+
+    String PROP_TASK_ASSIGNEES = "rnode:taskAssignees";
+
+    String PROP_TASK_DUE_DATE = "rnode:taskDueDate";
+
+    String PROP_TASK_DIRECTIVE = "rnode:taskDirective";
+
+    String PROP_TASK_BUTTONS = "rnode:taskButtons";
+
+    String PROP_BTN_NAME = "name";
+
+    String PROP_BTN_LABEL = "label";
+
+    String PROP_BTN_FILTER = "filter";
 
     /**
      * The internal state of a node.
@@ -167,6 +182,33 @@ public interface GraphNode {
         }
     }
 
+    class Button implements Comparable<Button>{
+
+        public GraphNode source;
+
+        public String name;
+
+        public String label;
+
+        public String filter;
+
+        public MapProperty prop;
+
+        public Button(GraphNode source, Property p) throws ClientException {
+            this.source = source;
+            this.prop = (MapProperty) p;
+            name = (String) prop.get(PROP_BTN_NAME).getValue();
+            label = (String) prop.get(PROP_BTN_LABEL).getValue();
+            filter = (String) prop.get(PROP_BTN_FILTER).getValue();
+        }
+
+        @Override
+        public int compareTo(Button other) {
+            return name.compareTo(other.name);
+        }
+
+    }
+
     /**
      * Get the node id.
      *
@@ -246,6 +288,27 @@ public interface GraphNode {
     boolean hasTask();
 
     /**
+     * Gets the task assignees
+     *
+     * @return the task assignees
+     */
+    List<String> getTaskAssignees();
+
+    /**
+     * Gets the due date
+     *
+     * @return
+     */
+    Date getTaskDueDate();
+
+    /**
+     * Gets the task directive
+     *
+     * @return
+     */
+     String getTaskDirective();
+
+    /**
      * Increments the execution counter for this node.
      */
     void incrementCount();
@@ -295,5 +358,10 @@ public interface GraphNode {
      * @param map the map of variables
      */
     void setAllVariables(Map<String, Object> map);
+
+    /**
+     * Gets the task buttons
+     */
+    List<Button> getTaskButtons();
 
 }

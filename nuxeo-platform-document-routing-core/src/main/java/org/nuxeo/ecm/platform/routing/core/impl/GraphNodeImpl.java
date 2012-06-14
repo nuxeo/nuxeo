@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,6 +63,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     /** To be used through getter. */
     protected List<Transition> outputTransitions;
+
+    /** To be used through getter. */
+    protected List<Button> taskButtons;
 
     public GraphNodeImpl(DocumentModel doc, GraphRouteImpl graph) {
         super(doc, new GraphRunner());
@@ -185,6 +189,22 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         return getBoolean(PROP_HAS_TASK);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<String> getTaskAssignees() {
+        return (List<String>) getProperty(PROP_TASK_ASSIGNEES);
+    }
+
+    @Override
+    public Date getTaskDueDate() {
+        return (Date) getProperty(PROP_TASK_DUE_DATE);
+    }
+
+    @Override
+    public String getTaskDirective() {
+        return (String) getProperty(PROP_TASK_DIRECTIVE);
+    }
+
     @Override
     public void incrementCount() {
         incrementProp(PROP_COUNT);
@@ -252,7 +272,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         // task context
         context.put("assignees", ""); // TODO
         context.put("comment", ""); // TODO filled by form
-        context.put("status", ""); // TODO filled by form
         // associated docs
         context.setInput(graph.getAttachedDocumentModels());
         return context;
@@ -401,4 +420,25 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public List<Button> getTaskButtons(){
+        if (taskButtons == null) {
+            taskButtons = computeTaskButtons();
+        }
+        return taskButtons;
+    }
+
+    protected List<Button> computeTaskButtons() {
+        try {
+            ListProperty props = (ListProperty) document.getProperty(PROP_TASK_BUTTONS);
+            List<Button> btns = new ArrayList<Button>(props.size());
+            for (Property p : props) {
+                btns.add(new Button(this, p));
+            }
+            Collections.sort(btns);
+            return btns;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
 }

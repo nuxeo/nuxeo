@@ -19,7 +19,7 @@ package org.nuxeo.ecm.platform.routing.dm.adapter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  *
@@ -30,7 +30,7 @@ public class RoutingTaskAdapterFactory implements DocumentAdapterFactory {
     @Override
     public Object getAdapter(DocumentModel doc,
             @SuppressWarnings("rawtypes") Class itf) {
-        if (doc.hasFacet(RoutingTaskConstants.ROUTING_TASK_FACET_NAME)) {
+        if (doc.hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME)) {
             return new RoutingTaskImpl(doc);
         }
         return null;

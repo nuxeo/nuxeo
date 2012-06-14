@@ -4,5 +4,6 @@
   targetNamespace="http://www.nuxeo.org/ecm/schemas/test_var_node1/">
 
   <xs:element name="stringfield2" type="xs:string" />
+  <xs:element name="status" type="xs:string" />
 
 </xs:schema>

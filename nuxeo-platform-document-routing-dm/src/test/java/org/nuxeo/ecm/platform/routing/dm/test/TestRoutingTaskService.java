@@ -29,8 +29,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask;
-import org.nuxeo.ecm.platform.routing.dm.task.RoutingTaskService;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -58,6 +58,7 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
     protected DocumentModel targetDoc;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -98,6 +99,7 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         targetDoc = session.createDocument(targetDoc);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();

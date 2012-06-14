@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,10 +28,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Runs the proper nodes depending on the graph state.
@@ -40,6 +45,8 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 public class GraphRunner extends AbstractRunner implements ElementRunner {
 
     private static final Log log = LogFactory.getLog(GraphRunner.class);
+
+    protected RoutingTaskService routingTaskService;
 
     /**
      * Maximum number of steps we do before deciding that this graph is looping.
@@ -51,7 +58,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         try {
             GraphRoute graph = (GraphRoute) element;
             element.setRunning(session);
-            boolean done = runGraph(graph, graph.getStartNode());
+            boolean done = runGraph(session, graph, graph.getStartNode());
             if (done) {
                 element.setDone(session);
             }
@@ -72,7 +79,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                         "Cannot resume on non-suspended node: " + node);
             }
             node.setAllVariables(data);
-            boolean done = runGraph(graph, node);
+            boolean done = runGraph(session, graph, node);
             if (done) {
                 element.setDone(session);
             }
@@ -90,8 +97,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
      * @return {@code true} if the graph execution is done, {@code false} if
      *         there are still suspended nodes
      */
-    protected boolean runGraph(GraphRoute graph, GraphNode initialNode)
-            throws DocumentRouteException {
+    protected boolean runGraph(CoreSession session, GraphRoute graph,
+            GraphNode initialNode) throws DocumentRouteException {
         LinkedList<GraphNode> pendingNodes = new LinkedList<GraphNode>();
         pendingNodes.add(initialNode);
         boolean done = false;
@@ -123,7 +130,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             case RUNNING_INPUT:
                 node.executeChain(node.getInputChain());
                 if (node.hasTask()) {
-                    // TODO create task
+                    createTask(session, graph, node);
                     node.setState(State.SUSPENDED);
                     // next node
                 } else {
@@ -209,4 +216,36 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         }
     }
 
+    // TODO : check docs?
+    protected void createTask(CoreSession session, GraphRoute graph,
+            GraphNode node) throws DocumentRouteException {
+        DocumentRouteElement routeInstance = (DocumentRouteElement) graph;
+        Map<String, String> taskVariables = new HashMap<String, String>();
+        taskVariables.put(
+                DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
+                routeInstance.getDocument().getId());
+        taskVariables.put(DocumentRoutingConstants.TASK_NODE_ID_KEY,
+                node.getId());
+
+        try {
+            getRoutingTaskService().createRoutingTask(session,
+                    (NuxeoPrincipal) session.getPrincipal(),
+                    graph.getAttachedDocumentModels().get(0), node.getId(),
+                    node.getTaskAssignees(), false, node.getTaskDirective(),
+                    null, node.getTaskDueDate(), taskVariables, null);
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Can not create task", e);
+        }
+    }
+
+    private RoutingTaskService getRoutingTaskService() {
+        if (routingTaskService == null) {
+            try {
+                routingTaskService = Framework.getService(RoutingTaskService.class);
+            } catch (Exception e) {
+                throw new ClientRuntimeException(e);
+            }
+        }
+        return routingTaskService;
+    }
 }

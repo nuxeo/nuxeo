@@ -159,4 +159,13 @@ public interface DocumentRoutingConstants {
     String INITIATOR_EVENT_CONTEXT_KEY = "initiator";
 
     String ROUTING_CATEGORY = "Routing";
+
+
+    public static final String TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY = "routeInstanceDocId";
+
+    public static final String TASK_NODE_ID_KEY = "nodeId";
+
+    public static final String TASK_BUTTONS_KEY = "taskButtons";
+
+    public static final String ROUTING_TASK_FACET_NAME = "RoutingTask";
 }

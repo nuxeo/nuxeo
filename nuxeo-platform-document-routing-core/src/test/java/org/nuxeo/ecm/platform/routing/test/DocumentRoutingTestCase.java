@@ -54,6 +54,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
 
     public static final String ROUTE1 = "route1";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -92,6 +93,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         service = Framework.getService(DocumentRoutingService.class);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
