@@ -31,12 +31,13 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * Lazy directory initialization.
- *
+ * 
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 public class SQLDirectoryProxy implements Directory {
 
     private final SQLDirectoryDescriptor descriptor;
+
     private SQLDirectory directory;
 
     public SQLDirectoryProxy(SQLDirectoryDescriptor descriptor) {
@@ -56,7 +57,7 @@ public class SQLDirectoryProxy implements Directory {
     }
 
     public IdGenerator getIdGenerator() throws DirectoryException {
-        return getDirectory().getIdGenerator();
+        return null;
     }
 
     public String getName() throws DirectoryException {
@@ -91,7 +92,8 @@ public class SQLDirectoryProxy implements Directory {
         }
     }
 
-    public Reference getReference(String referenceFieldName) throws DirectoryException {
+    public Reference getReference(String referenceFieldName)
+            throws DirectoryException {
         return getDirectory().getReference(referenceFieldName);
     }
 

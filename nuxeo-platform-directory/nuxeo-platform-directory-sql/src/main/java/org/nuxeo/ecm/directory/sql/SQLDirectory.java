@@ -62,8 +62,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     private DataSource dataSource;
 
-    private final SimpleIdGenerator idGenerator;
-
     private List<Session> sessions = new ArrayList<Session>();
 
     private final Table table;
@@ -137,6 +135,11 @@ public class SQLDirectory extends AbstractDirectory {
                     column.setDefaultValue(defaultValue.toString());
                 }
 
+                if (fieldName.equals(config.idField)
+                        && config.autoincrementIdField) {
+                    column.setIdentity(true);
+                }
+
                 try {
                     table.addColumn(column);
                 } catch (ConfigurationException e) {
@@ -158,12 +161,12 @@ public class SQLDirectory extends AbstractDirectory {
                     config.dataFileName, config.createTablePolicy);
             helper.setupTable();
 
-            if (config.autoincrementIdField) {
-                idGenerator = new SimpleIdGenerator(sqlConnection, table,
-                        dialect, config.getIdField());
-            } else {
-                idGenerator = null;
-            }
+            // if (config.autoincrementIdField) {
+            // idGenerator = new SimpleIdGenerator(sqlConnection, table,
+            // dialect, config.getIdField());
+            // } else {
+            // idGenerator = null;
+            // }
 
             try {
                 if (config.dataSourceName == null) {
@@ -194,8 +197,9 @@ public class SQLDirectory extends AbstractDirectory {
             if (config.dataSourceName != null) {
                 managedSQLSession = true;
                 dataSource = DataSourceHelper.getDataSource(config.dataSourceName);
-                //InitialContext context = new InitialContext();
-                //dataSource = (DataSource) context.lookup(config.dataSourceName);
+                // InitialContext context = new InitialContext();
+                // dataSource = (DataSource)
+                // context.lookup(config.dataSourceName);
             } else {
                 managedSQLSession = false;
                 dataSource = new SimpleDataSource(config.dbUrl,
@@ -215,10 +219,6 @@ public class SQLDirectory extends AbstractDirectory {
         } catch (SQLException e) {
             throw new DirectoryException("could not obtain a connection", e);
         }
-    }
-
-    public IdGenerator getIdGenerator() {
-        return idGenerator;
     }
 
     public String getName() {
@@ -242,8 +242,7 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     public Session getSession() throws DirectoryException {
-        Session session = new SQLSession(this, config, idGenerator,
-                managedSQLSession);
+        Session session = new SQLSession(this, config, managedSQLSession);
         sessions.add(session);
         return session;
     }
@@ -283,7 +282,7 @@ public class SQLDirectory extends AbstractDirectory {
     /**
      * Gets the dialect, by connecting to the datasource if needed to check what
      * database is used.
-     *
+     * 
      * @throws DirectoryException if a SQL connection problem occurs.
      */
     private Dialect buildDialect() throws DirectoryException {
@@ -311,6 +310,11 @@ public class SQLDirectory extends AbstractDirectory {
             }
         }
         return DialectFactory.determineDialect(dbname, dbmajor);
+    }
+
+    public IdGenerator getIdGenerator() throws DirectoryException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -29,7 +29,7 @@ import org.hibernate.dialect.Dialect;
 
 /**
  * A SQL table.
- *
+ * 
  * @author Florent Guillaume
  */
 public class Table implements Serializable {
@@ -46,7 +46,7 @@ public class Table implements Serializable {
 
     /**
      * Creates a new empty table.
-     *
+     * 
      * @param name the table name.
      */
     public Table(String name) {
@@ -70,7 +70,7 @@ public class Table implements Serializable {
 
     /**
      * Adds a {@link Column} to the table.
-     *
+     * 
      * @param column the column
      */
     public void addColumn(Column column) throws ConfigurationException {
@@ -99,7 +99,7 @@ public class Table implements Serializable {
 
     /**
      * Computes the SQL statement to create the table.
-     *
+     * 
      * @param dialect the dialect.
      * @return the SQL create string.
      */
@@ -157,7 +157,7 @@ public class Table implements Serializable {
 
     /**
      * Computes the SQL statement to drop the table.
-     *
+     * 
      * @param dialect the dialect.
      * @return the SQL drop string.
      */

@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -35,8 +36,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +55,6 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
-import org.nuxeo.ecm.directory.IdGenerator;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.sql.repository.Column;
@@ -66,7 +66,7 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
 
 /**
  * This class represents a session against an SQLDirectory.
- *
+ * 
  * @author glefter@nuxeo.com
  */
 public class SQLSession extends BaseSession implements EntrySource {
@@ -95,11 +95,11 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     final String passwordHashAlgorithm;
 
-    IdGenerator idGenerator;
-
     final SQLDirectory directory;
 
     protected SQLStaticFilter[] staticFilters;
+
+    private boolean autoIncrementIdField;
 
     String sid;
 
@@ -110,13 +110,13 @@ public class SQLSession extends BaseSession implements EntrySource {
     private final Dialect dialect;
 
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
-            IdGenerator idGenerator, boolean managedSQLSession)
-            throws DirectoryException {
+            boolean managedSQLSession) throws DirectoryException {
         this.directory = directory;
         this.schemaName = config.getSchemaName();
         this.table = directory.getTable();
         this.idField = config.getIdField();
         this.passwordField = config.getPasswordField();
+        this.autoIncrementIdField = config.autoincrementIdField;
         this.passwordHashAlgorithm = config.passwordHashAlgorithm;
         this.schemaFieldMap = directory.getSchemaFieldMap();
         this.storedFieldNames = directory.getStoredFieldNames();
@@ -126,7 +126,6 @@ public class SQLSession extends BaseSession implements EntrySource {
         this.sid = String.valueOf(SIDGenerator.next());
         this.managedSQLSession = managedSQLSession;
         this.substringMatchType = config.getSubstringMatchType();
-        this.idGenerator = idGenerator;
         this.staticFilters = config.getStaticFilters();
     }
 
@@ -164,10 +163,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             log.warn(READ_ONLY_VOCABULARY_WARN);
         }
         acquireConnection();
-        if (idGenerator != null) {
-            Integer idValue = idGenerator.nextId();
-            fieldMap.put(idField, idValue);
-        } else {
+        if (!autoIncrementIdField) {
             // check id that was given
             Object rawId = fieldMap.get(idField);
             if (rawId == null) {
@@ -202,7 +198,12 @@ public class SQLSession extends BaseSession implements EntrySource {
         DocumentModel entry;
         PreparedStatement ps = null;
         try {
-            ps = sqlConnection.prepareStatement(sql);
+            if (autoIncrementIdField) {
+                ps = sqlConnection.prepareStatement(sql,
+                        Statement.RETURN_GENERATED_KEYS);
+            } else {
+                ps = sqlConnection.prepareStatement(sql);
+            }
             int index = 1;
             for (Column column : columnList) {
                 String fieldName = column.getName();
@@ -211,6 +212,11 @@ public class SQLSession extends BaseSession implements EntrySource {
                 index++;
             }
             ps.execute();
+            if (autoIncrementIdField) {
+                ResultSet rs = ps.getGeneratedKeys();
+                rs.next();
+                fieldMap.put(idField, rs.getInt(1));
+            }
             entry = fieldMapToDocumentModel(fieldMap);
         } catch (SQLException e) {
             throw new DirectoryException("createEntry failed", e);
@@ -832,8 +838,8 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
             } else if ("date".equals(typeName)) {
                 if (value instanceof Calendar) {
-                    ps.setTimestamp(index, new Timestamp(
-                            ((Calendar) value).getTimeInMillis()));
+                    ps.setTimestamp(index,
+                            new Timestamp(((Calendar) value).getTimeInMillis()));
                 } else if (value == null) {
                     ps.setNull(index, Types.TIMESTAMP);
                 } else {
@@ -968,7 +974,7 @@ public class SQLSession extends BaseSession implements EntrySource {
      * Public getter to allow custom {@link Reference} implementation to access
      * the current connection even if it lives in a separate java package,
      * typically: com.company.custom.nuxeo.project.MyCustomReference
-     *
+     * 
      * @return the current {@link Connection} instance
      */
     public Connection getSqlConnection() {
