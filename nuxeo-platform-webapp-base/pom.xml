@@ -218,47 +218,6 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.restlet</groupId>
-                  <artifactId>org.restlet</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.restlet</groupId>
-                  <artifactId>org.restlet.ext.fileupload</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.noelios.restlet</groupId>
-                  <artifactId>com.noelios.restlet</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>com.noelios.restlet</groupId>
-                  <artifactId>com.noelios.restlet.ext.servlet</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.outputDirectory}/lib
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
   <reporting>
     <plugins>
       <plugin>
