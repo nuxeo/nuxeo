@@ -824,16 +824,17 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentModel modelsRoot = session.getDocument(new PathRef(
                 "/default-domain/document-route-models-root/"));
         assertNotNull(modelsRoot);
-        DocumentModel route =session.getDocument(new PathRef("/default-domain/document-route-models-root/route"));
+        DocumentModel route =session.getDocument(new PathRef("/default-domain/document-route-models-root/myRoute"));
         assertNotNull(route);
         assertEquals("DocumentRoute", route.getType());
-        DocumentModel step1 =session.getDocument(new PathRef("/default-domain/document-route-models-root/route/step1"));
+        DocumentModel step1 =session.getDocument(new PathRef("/default-domain/document-route-models-root/myRoute/Step1"));
         assertNotNull(step1);
-        assertEquals("DocumentRouteStep", step1.getType());
-        DocumentModel step2 =session.getDocument(new PathRef("/default-domain/document-route-models-root/route/step2"));
+        assertEquals("RouteNode", step1.getType());
+        DocumentModel step2 =session.getDocument(new PathRef("/default-domain/document-route-models-root/myRoute/Step2"));
         assertNotNull(step2);
-        assertEquals("DocumentRouteStep", step2.getType());
+        assertEquals("RouteNode", step2.getType());
     }
+
 
     protected void waitForAsyncExec() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
