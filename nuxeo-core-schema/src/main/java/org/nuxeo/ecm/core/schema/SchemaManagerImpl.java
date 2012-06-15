@@ -20,7 +20,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +27,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.schema.registries.DocumentTypeRegistry;
+import org.nuxeo.ecm.core.schema.registries.FacetRegistry;
+import org.nuxeo.ecm.core.schema.registries.SchemaRegistry;
+import org.nuxeo.ecm.core.schema.registries.SchemaTypeRegistry;
 import org.nuxeo.ecm.core.schema.types.AnyType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
@@ -47,26 +50,19 @@ public class SchemaManagerImpl implements SchemaManager {
 
     private static final Log log = LogFactory.getLog(SchemaManagerImpl.class);
 
-    private final Map<String, Type> typeReg = new HashMap<String, Type>();
+    // types reg
 
-    private final Map<String, Schema> schemaReg = new HashMap<String, Schema>();
+    private final SchemaTypeRegistry typeReg;
 
-    private final Map<String, Schema> uri2schemaReg = new HashMap<String, Schema>();
+    private final DocumentTypeRegistry docTypeReg;
 
-    private final Map<String, Schema> prefix2schemaReg = new HashMap<String, Schema>();
+    private final FacetRegistry facetReg;
 
-    private final Map<String, DocumentType> docTypeReg = new HashMap<String, DocumentType>();
-
-    private final Map<String, CompositeType> facetReg = new HashMap<String, CompositeType>();
-
-    private final Map<String, Set<String>> inheritanceCache = new HashMap<String, Set<String>>();
+    private final SchemaRegistry schemaReg;
 
     private final Map<String, List<DocumentTypeDescriptor>> pendingDocTypes;
 
     private final Map<String, Field> fields = new HashMap<String, Field>();
-
-    /** Facet -> docTypes having this facet. */
-    private Map<String, Set<String>> facetsCache;
 
     private File schemaDir;
 
@@ -76,6 +72,10 @@ public class SchemaManagerImpl implements SchemaManager {
     public SchemaManagerImpl() throws Exception {
         pendingDocTypes = new HashMap<String, List<DocumentTypeDescriptor>>();
         schemaDir = new File(Framework.getRuntime().getHome(), "schemas");
+        typeReg = new SchemaTypeRegistry();
+        docTypeReg = new DocumentTypeRegistry();
+        facetReg = new FacetRegistry();
+        schemaReg = new SchemaRegistry();
         if (!schemaDir.isDirectory()) {
             schemaDir.mkdirs();
         }
@@ -123,15 +123,15 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public Type getType(String schema, String name) {
         if (SchemaNames.BUILTIN.equals(schema)) {
-            return typeReg.get(name);
+            return typeReg.getType(name);
         } else if (SchemaNames.DOCTYPES.equals(schema)) {
-            return docTypeReg.get(name);
+            return docTypeReg.getType(name);
         } else if (SchemaNames.SCHEMAS.equals(schema)) {
-            return schemaReg.get(name);
+            return schemaReg.getSchema(name);
         } else if (SchemaNames.FACETS.equals(schema)) {
-            return facetReg.get(name);
+            return facetReg.getFacet(name);
         } else {
-            Schema ownerSchema = schemaReg.get(schema);
+            Schema ownerSchema = schemaReg.getSchema(schema);
             if (ownerSchema != null) {
                 return ownerSchema.getType(name);
             }
@@ -143,15 +143,15 @@ public class SchemaManagerImpl implements SchemaManager {
     public void registerType(Type type) {
         String schema = type.getSchemaName();
         if (SchemaNames.BUILTIN.equals(schema)) {
-            typeReg.put(type.getName(), type);
+            typeReg.addContribution(type);
         } else if (SchemaNames.SCHEMAS.equals(schema)) {
-            schemaReg.put(type.getName(), (Schema) type);
+            schemaReg.addContribution((Schema) type);
         } else if (SchemaNames.DOCTYPES.equals(schema)) {
-            docTypeReg.put(type.getName(), (DocumentType) type);
+            docTypeReg.addContribution((DocumentType) type);
         } else if (SchemaNames.FACETS.equals(schema)) {
-            facetReg.put(type.getName(), (CompositeType) type);
+            facetReg.addContribution((CompositeType) type);
         } else {
-            Schema ownerSchema = schemaReg.get(schema);
+            Schema ownerSchema = schemaReg.getSchema(schema);
             if (ownerSchema != null) {
                 ownerSchema.registerType(type);
             }
@@ -160,22 +160,24 @@ public class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public Type unregisterType(String name) {
-        return typeReg.remove(name);
+        Type type = getType(name);
+        typeReg.removeContribution(type);
+        return type;
     }
 
     @Override
     public Type getType(String name) {
-        return typeReg.get(name);
+        return typeReg.getType(name);
     }
 
     @Override
     public Type[] getTypes() {
-        return typeReg.values().toArray(new Type[typeReg.size()]);
+        return typeReg.getTypes();
     }
 
     @Override
     public Type[] getTypes(String schema) {
-        Schema ownerSchema = schemaReg.get(schema);
+        Schema ownerSchema = schemaReg.getSchema(schema);
         if (schema != null) {
             return ownerSchema.getTypes();
         }
@@ -190,46 +192,42 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public void registerSchema(Schema schema) {
         synchronized (schemaReg) {
-            Namespace ns = schema.getNamespace();
-            uri2schemaReg.put(ns.uri, schema);
-            prefix2schemaReg.put(ns.prefix, schema);
-            schemaReg.put(schema.getName(), schema);
+            schemaReg.addContribution(schema);
         }
     }
 
     @Override
     public Schema unregisterSchema(String name) {
-        Schema schema = schemaReg.get(name);
+        Schema schema = schemaReg.getSchema(name);
         if (schema == null) {
             return null;
         }
         Namespace ns = schema.getNamespace();
         log.info("Unregister schema: " + name);
         synchronized (schemaReg) {
-            uri2schemaReg.remove(ns.uri);
-            prefix2schemaReg.remove(ns.prefix);
-            return schemaReg.remove(name);
+            schemaReg.removeContribution(schema);
+            return schema;
         }
     }
 
     @Override
     public Schema getSchema(String name) {
         synchronized (schemaReg) {
-            return schemaReg.get(name);
+            return schemaReg.getSchema(name);
         }
     }
 
     @Override
     public Schema getSchemaFromPrefix(String schemaPrefix) {
         synchronized (schemaReg) {
-            return prefix2schemaReg.get(schemaPrefix);
+            return schemaReg.getSchemaFromPrefix(schemaPrefix);
         }
     }
 
     @Override
     public Schema getSchemaFromURI(String schemaURI) {
         synchronized (schemaReg) {
-            return uri2schemaReg.get(schemaURI);
+            return schemaReg.getSchemaFromURI(schemaURI);
         }
     }
 
@@ -257,7 +255,7 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public Schema[] getSchemas() {
         synchronized (schemaReg) {
-            return schemaReg.values().toArray(new Schema[schemaReg.size()]);
+            return schemaReg.getSchemas();
         }
     }
 
@@ -282,8 +280,7 @@ public class SchemaManagerImpl implements SchemaManager {
     public void registerDocumentType(DocumentType docType) {
         log.info("Register document type: " + docType.getName());
         synchronized (docTypeReg) {
-            docTypeReg.put(docType.getName(), docType);
-            facetsCache = null;
+            docTypeReg.addContribution(docType);
         }
     }
 
@@ -291,7 +288,7 @@ public class SchemaManagerImpl implements SchemaManager {
         synchronized (docTypeReg) {
             DocumentType superType = null;
             if (dtd.superTypeName != null) {
-                superType = docTypeReg.get(dtd.superTypeName);
+                superType = docTypeReg.getType(dtd.superTypeName);
                 if (superType == null) {
                     postponeDocTypeRegistration(dtd);
                     return;
@@ -328,8 +325,7 @@ public class SchemaManagerImpl implements SchemaManager {
                 // use global prefetch info if not a local one was defined
                 docType.setPrefetchInfo(dtd.prefetch != null ? new PrefetchInfo(
                         dtd.prefetch) : prefetchInfo);
-                docTypeReg.put(dtd.name, docType);
-                facetsCache = null;
+                docTypeReg.addContribution(docType);
                 log.info("Registered document type: " + dtd.name);
                 registerPendingDocTypes(docType);
                 return docType;
@@ -351,41 +347,14 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    private void removeFromFacetsCache(DocumentType docType) {
-        if (facetsCache == null) {
-            return;
-        }
-        String name = docType.getName();
-        for (String facet : docType.getFacets()) {
-            Set<String> types = facetsCache.get(facet);
-            types.remove(name);
-            if (types.isEmpty()) {
-                facetsCache.remove(facet); // Consistency
-            }
-        }
-    }
-
-    private void removeFromInheritanceCache(DocumentType docType) {
-        String name = docType.getName();
-        for (String type : inheritanceCache.keySet()) {
-            Set<String> types = inheritanceCache.get(type);
-            types.remove(name);
-        }
-        // The only case where an entry becomes empty.
-        inheritanceCache.remove(name);
-    }
-
     @Override
     public DocumentType unregisterDocumentType(String name) {
         log.info("Unregister document type: " + name);
         // TODO handle the case when the doctype to unreg is in the reg.
         // pending queue
         synchronized (docTypeReg) {
-            DocumentType docType = docTypeReg.remove(name);
-            if (docType != null) {
-                removeFromFacetsCache(docType);
-                removeFromInheritanceCache(docType);
-            }
+            DocumentType docType = docTypeReg.getType(name);
+            docTypeReg.removeContribution(docType);
             return docType;
         }
     }
@@ -402,15 +371,14 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public DocumentType getDocumentType(String name) {
         synchronized (docTypeReg) {
-            return docTypeReg.get(name);
+            return docTypeReg.getType(name);
         }
     }
 
     @Override
     public DocumentType[] getDocumentTypes() {
         synchronized (docTypeReg) {
-            return docTypeReg.values().toArray(
-                    new DocumentType[docTypeReg.size()]);
+            return docTypeReg.getDocumentTypes();
         }
     }
 
@@ -424,7 +392,7 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public void registerFacet(CompositeType facet) {
         synchronized (facetReg) {
-            facetReg.put(facet.getName(), facet);
+            facetReg.addContribution(facet);
             log.info("Registered facet: " + facet.getName());
         }
     }
@@ -440,21 +408,23 @@ public class SchemaManagerImpl implements SchemaManager {
     public CompositeType unregisterFacet(String name) {
         synchronized (facetReg) {
             log.info("Unregistered facet: " + name);
-            return facetReg.remove(name);
+            CompositeType facet = facetReg.getFacet(name);
+            facetReg.removeContribution(facet);
+            return facet;
         }
     }
 
     @Override
     public CompositeType getFacet(String name) {
         synchronized (facetReg) {
-            return facetReg.get(name);
+            return facetReg.getFacet(name);
         }
     }
 
     @Override
     public CompositeType[] getFacets() {
         synchronized (facetReg) {
-            return facetReg.values().toArray(new CompositeType[facetReg.size()]);
+            return facetReg.getFacets();
         }
     }
 
@@ -464,9 +434,6 @@ public class SchemaManagerImpl implements SchemaManager {
     public void clear() {
         synchronized (docTypeReg) {
             docTypeReg.clear();
-            if (facetsCache != null) {
-                facetsCache.clear();
-            }
         }
         synchronized (schemaReg) {
             schemaReg.clear();
@@ -499,76 +466,25 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     /**
-     * Same remarks as in {@link #getDocumentTypeNamesExtending}. Tested in
-     * nuxeo-core
+     * Implementation details: there is a cache on each server for this.
+     * <p>
+     * Assumes that types never change in the lifespan of this server process
+     * and that the Core server has finished loading its types.
      */
     @Override
     public Set<String> getDocumentTypeNamesForFacet(String facet) {
-        if (facetsCache == null) {
-            initFacetsCache();
-        }
-        return facetsCache.get(facet);
-    }
-
-    private void initFacetsCache() {
-        if (facetsCache != null) {
-            // another thread just did it
-            return;
-        }
-        synchronized (this) {
-            facetsCache = new HashMap<String, Set<String>>();
-            for (DocumentType dt : getDocumentTypes()) {
-                for (String facet : dt.getFacets()) {
-                    Set<String> dts = facetsCache.get(facet);
-                    if (dts == null) {
-                        dts = new HashSet<String>();
-                        facetsCache.put(facet, dts);
-                    }
-                    dts.add(dt.getName());
-                }
-            }
-        }
+        return docTypeReg.getDocumentTypeNamesForFacet(facet);
     }
 
     /**
-     * Implementation details: there is a cache on each server for this Assumes
-     * that types never change in the lifespan of this server process and that
-     * the Core server has finished loading its types.
+     * Implementation details: there is a cache on each server for this.
      * <p>
-     * This is tested in nuxeo-core and SearchBackendTestCase (hence compass
-     * plugin).
+     * Assumes that types never change in the lifespan of this server process
+     * and that the Core server has finished loading its types.
      */
     @Override
     public Set<String> getDocumentTypeNamesExtending(String docTypeName) {
-        Set<String> res = inheritanceCache.get(docTypeName);
-        if (res != null) {
-            return res;
-        }
-        synchronized (inheritanceCache) {
-            // recheck in case another thread just did it
-            res = inheritanceCache.get(docTypeName);
-            if (res != null) {
-                return res;
-            }
-
-            if (getDocumentType(docTypeName) == null) {
-                return null;
-            }
-            res = new HashSet<String>();
-            res.add(docTypeName);
-            for (DocumentType dt : getDocumentTypes()) {
-                Type parent = dt.getSuperType();
-                if (parent == null) {
-                    // Must be the root document
-                    continue;
-                }
-                if (docTypeName.equals(parent.getName())) {
-                    res.addAll(getDocumentTypeNamesExtending(dt.getName()));
-                }
-            }
-            inheritanceCache.put(docTypeName, res);
-            return res;
-        }
+        return docTypeReg.getDocumentTypeNamesExtending(docTypeName);
     }
 
     @Override
