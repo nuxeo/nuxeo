@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -66,7 +66,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
  * Because the BLOB length can be accessed independently of the binary stream,
  * it is also cached in a simple text file if accessed before the stream.
  */
-public class S3BinaryManager extends DefaultBinaryManager {
+public class S3BinaryManager extends AbstractBinaryManager {
 
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
 
@@ -272,7 +272,6 @@ public class S3BinaryManager extends DefaultBinaryManager {
         createGarbageCollector();
     }
 
-    @Override
     protected void createGarbageCollector() {
         garbageCollector = new S3BinaryGarbageCollector(this);
     }
