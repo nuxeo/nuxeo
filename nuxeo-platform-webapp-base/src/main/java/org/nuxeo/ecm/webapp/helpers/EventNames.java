@@ -24,18 +24,17 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Seam event identifiers.
  * <p>
- * This should stay with nuxeo, since it is related to the nuxeo
- * infrastructure. All code that depends on nuxeo infrastructure will need to
- * depend on nuxeo anyways. NXCommon is not a good place to move this because
- * it is used from nxruntime. It is not a good idea to add web client
- * dependencies there.
+ * This should stay with nuxeo, since it is related to the nuxeo infrastructure.
+ * All code that depends on nuxeo infrastructure will need to depend on nuxeo
+ * anyways. NXCommon is not a good place to move this because it is used from
+ * nxruntime. It is not a good idea to add web client dependencies there.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 public final class EventNames {
     /**
-     * This is fired when the user selection changes. This should be listened
-     * by componens that want to do some work when the user selection changes,
+     * This is fired when the user selection changes. This should be listened by
+     * componens that want to do some work when the user selection changes,
      * regardles of the type of selected document.
      */
     public static final String USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED = "userAllDocumentTypesSelectionChanged";
@@ -77,8 +76,7 @@ public final class EventNames {
     public static final String LOCATION_SELECTION_CHANGED = "locationSelectionChanged";
 
     /**
-     * Fired after navigating to a document, the document is passed as
-     * argument.
+     * Fired after navigating to a document, the document is passed as argument.
      *
      * @since 5.4.2
      */
@@ -192,6 +190,8 @@ public final class EventNames {
      * @since 5.5
      */
     public static final String DIRECTORY_CHANGED = "directoryChanged";
+
+    public static final String USER_SESSION_STARTED = "org.nuxeo.ecm.web.userSessionStarted";
 
     /**
      * Flush event sent to the Seam layer, only when using the dev mode, and
