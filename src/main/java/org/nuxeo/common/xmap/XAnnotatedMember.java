@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.common.xmap;
@@ -75,13 +74,13 @@ public class XAnnotatedMember {
         }
     }
 
-    public void toXML(Object instance, Element parent) throws Exception{
+    public void toXML(Object instance, Element parent) throws Exception {
         Element e = XMLBuilder.getOrCreateElement(parent, path);
         Object v = accessor.getValue(instance);
-        if (xao == null ) {
-            if ( v != null && valueFactory != null){
-                String value = valueFactory.serialize(null,v);
-                if ( value != null) {
+        if (xao == null) {
+            if (v != null && valueFactory != null) {
+                String value = valueFactory.serialize(null, v);
+                if (value != null) {
 
                     XMLBuilder.fillField(e, value, path.attribute);
                 }
@@ -112,6 +111,10 @@ public class XAnnotatedMember {
         if (val != null) {
             if (trim) {
                 val = val.trim();
+            }
+            if (valueFactory == null) {
+                throw new NullPointerException("Missing XValueFactory for "
+                        + type);
             }
             return valueFactory.deserialize(ctx, val);
         }
