@@ -161,7 +161,8 @@
         <module>nuxeo-distribution-dm/ftest/funkload</module>
         <module>nuxeo-distribution-dam/ftest/selenium</module>
         <module>nuxeo-distribution-cmf/ftest/selenium</module>
-        <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
+        <!-- temporarily DEACTIVATE SOCIAL COLLABORATION Selenium tests -->
+        <!-- <module>nuxeo-distribution-social-collaboration/ftest/selenium</module> -->
       </modules>
     </profile>
     <profile>
