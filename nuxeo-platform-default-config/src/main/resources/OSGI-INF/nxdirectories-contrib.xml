@@ -135,6 +135,18 @@
       <dataFile>directories/nature.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
+
+    <directory name="locale">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>locale</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/locale.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
   </extension>
 
 </component>

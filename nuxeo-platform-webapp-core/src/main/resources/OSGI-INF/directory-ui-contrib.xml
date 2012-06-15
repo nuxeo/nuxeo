@@ -33,6 +33,8 @@
     <directory name="language" layout="vocabulary" sortField="label" />
     <directory name="nature" layout="vocabulary" sortField="label" />
 
+    <directory name="locale" layout="vocabulary" sortField="label" />
+
     <directory name="l10ncoverage" layout="l10ncoverage_vocabulary"
       sortField="id">
       <deleteConstraint
