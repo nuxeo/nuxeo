@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,9 +44,7 @@ import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Document type service for document type creation.
@@ -67,6 +68,8 @@ public class TypesTool implements Serializable {
 
     protected Map<String, List<List<Type>>> typesMap;
 
+    protected Long typesMapTimestamp;
+
     protected Type selectedType;
 
     @In(create = true)
@@ -79,6 +82,7 @@ public class TypesTool implements Serializable {
     @BypassInterceptors
     public void resetTypesList() {
         typesMap = null;
+        typesMapTimestamp = null;
     }
 
     /**
@@ -98,6 +102,7 @@ public class TypesTool implements Serializable {
             // set an empty list
             typesMap = new HashMap<String, List<List<Type>>>();
         }
+        typesMapTimestamp = typeManager.getLastModified();
     }
 
     public Map<String, List<List<Type>>> getOrganizedTypeMapForDocumentType(
@@ -133,8 +138,8 @@ public class TypesTool implements Serializable {
 
     /**
      * Split each @{code List} of {@code Type} in one or more new {@code List},
-     * with maximum 4 {@code Type}s in each new {@code List} and returns the new
-     * computed {@code Map}.
+     * with maximum 4 {@code Type}s in each new {@code List} and returns the
+     * new computed {@code Map}.
      */
     protected Map<String, List<List<Type>>> organizeType(
             Map<String, List<Type>> types) {
@@ -186,12 +191,34 @@ public class TypesTool implements Serializable {
     @Factory(value = "typesMap", scope = EVENT)
     public Map<String, List<List<Type>>> getTypesList() {
         // XXX : should cache per currentDocument type
-        if (typesMap == null) {
+        if (typesMap == null || shouldResetTypesMap()) {
             // cache the list of allowed subtypes
             populateTypesList();
         }
         selectedType = null;
         return typesMap;
+    }
+
+    /**
+     * Checks timestamp on TypeManager service to handle cache reset when using
+     * hot reload
+     *
+     * @since 5.6
+     */
+    protected boolean shouldResetTypesMap() {
+        if (!Framework.isDebugModeSet()) {
+            // use usual cache reset logics
+            return false;
+        }
+        boolean res = false;
+        if (typesMapTimestamp == null) {
+            return true;
+        }
+        Long serviceTimestamp = typeManager.getLastModified();
+        if (typesMapTimestamp.compareTo(serviceTimestamp) < 0) {
+            res = true;
+        }
+        return res;
     }
 
     public void setTypesList(Map<String, List<List<Type>>> typesList) {
