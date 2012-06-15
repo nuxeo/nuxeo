@@ -61,6 +61,21 @@ public class XAnnotatedMember {
         trim = anno.trim();
         type = setter.getType();
         valueFactory = xmap.getValueFactory(type);
+        if (valueFactory == null && type.isEnum()) {
+            valueFactory = new XValueFactory() {
+                @Override
+                public String serialize(Context arg0, Object arg1) {
+                    return ((Enum<?>) arg1).name();
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public Object deserialize(Context arg0, String arg1) {
+                    return Enum.valueOf(type, arg1);
+                }
+            };
+            xmap.setValueFactory(type, valueFactory);
+        }
         xao = xmap.register(type);
     }
 
