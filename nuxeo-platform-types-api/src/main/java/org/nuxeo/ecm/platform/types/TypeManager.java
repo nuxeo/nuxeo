@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.service.TimestampedService;
 
 /**
  * Service handling registered UI Types.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public interface TypeManager {
+public interface TypeManager extends TimestampedService {
 
     /**
      * Gets the super type names for the given type.

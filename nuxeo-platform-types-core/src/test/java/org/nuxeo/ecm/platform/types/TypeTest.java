@@ -245,7 +245,11 @@ public class TypeTest extends NXRuntimeTestCase {
         assertEquals(2,
                 type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
         // check the one to be removed is there
-        assertNotNull(typeService.getTypeRegistry().getType("MyOtherDocType"));
+        Type typeToBeRemoved = typeService.getTypeRegistry().getType(
+                "MyOtherDocType");
+        assertNotNull(typeToBeRemoved);
+        assertEquals("initial alternative doc type", typeToBeRemoved.getLabel());
+        assertEquals("initial icon", typeToBeRemoved.getIcon());
 
         deployContrib("org.nuxeo.ecm.platform.types.core.tests",
                 "test-types-override-bundle.xml");
@@ -259,7 +263,27 @@ public class TypeTest extends NXRuntimeTestCase {
         assertEquals(1,
                 type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
         // check the one to be removed is not there
-        assertNull(typeService.getTypeRegistry().getType("MyOtherDocType"));
+        typeToBeRemoved = typeService.getTypeRegistry().getType(
+                "MyOtherDocType");
+        assertNull(typeToBeRemoved);
+
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests",
+                "test-types-override-remove-bundle.xml");
+
+        // check the one to be removed is back there again and has not been
+        // merged with the contribution before removal
+        typeToBeRemoved = typeService.getTypeRegistry().getType(
+                "MyOtherDocType");
+        assertNotNull(typeToBeRemoved);
+        assertEquals("Resurrected doc type", typeToBeRemoved.getLabel());
+        assertNull(typeToBeRemoved.getIcon());
+
+        undeployContrib("org.nuxeo.ecm.platform.types.core.tests",
+                "test-types-override-remove-bundle.xml");
+        // check the one to be removed is not there
+        typeToBeRemoved = typeService.getTypeRegistry().getType(
+                "MyOtherDocType");
+        assertNull(typeToBeRemoved);
 
         undeployContrib("org.nuxeo.ecm.platform.types.core.tests",
                 "test-types-override-bundle.xml");
@@ -272,8 +296,12 @@ public class TypeTest extends NXRuntimeTestCase {
                 type.getLayouts().get(BuiltinModes.ANY).getLayouts().length);
         assertEquals(2,
                 type.getLayouts().get(BuiltinModes.CREATE).getLayouts().length);
-        // check the one to be removed is back there again
-        assertNotNull(typeService.getTypeRegistry().getType("MyOtherDocType"));
+        // check the one to be removed is back there again and again and again
+        typeToBeRemoved = typeService.getTypeRegistry().getType(
+                "MyOtherDocType");
+        assertNotNull(typeToBeRemoved);
+        assertEquals("initial alternative doc type", typeToBeRemoved.getLabel());
+        assertEquals("initial icon", typeToBeRemoved.getIcon());
     }
 
 }

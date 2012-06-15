@@ -31,7 +31,9 @@
       </contentViews>
     </type>
 
-    <type id="MyOtherDocType" remove="true" />
+    <type id="MyOtherDocType" remove="true">
+      <label>removed alternative doc type</label>
+    </type>
 
     <type id="DocTypeWithLayout">
       <label>overridden doc type, but layout left unchanged</label>

@@ -62,89 +62,103 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
 
     @Override
     public void merge(Type newType, Type oldType) {
-        oldType.setRemove(newType.getRemove());
+        boolean remove = newType.getRemove();
+        // keep old remove info: if old type was removed, new type should
+        // replace the old one completely
+        boolean wasRemoved = oldType.getRemove();
+        oldType.setRemove(remove);
+        if (remove) {
+            // don't bother merging
+            return;
+        }
 
         String icon = newType.getIcon();
-        if (icon != null) {
+        if (icon != null || wasRemoved) {
             oldType.setIcon(icon);
         }
         String iconExpanded = newType.getIconExpanded();
-        if (iconExpanded != null) {
+        if (iconExpanded != null || wasRemoved) {
             oldType.setIconExpanded(iconExpanded);
         }
         String bigIcon = newType.getBigIcon();
-        if (bigIcon != null) {
+        if (bigIcon != null || wasRemoved) {
             oldType.setBigIcon(bigIcon);
         }
         String bigIconExpanded = newType.getBigIconExpanded();
-        if (bigIconExpanded != null) {
+        if (bigIconExpanded != null || wasRemoved) {
             oldType.setBigIconExpanded(bigIconExpanded);
         }
         String label = newType.getLabel();
-        if (label != null) {
+        if (label != null || wasRemoved) {
             oldType.setLabel(label);
         }
         String description = newType.getDescription();
-        if (description != null) {
+        if (description != null || wasRemoved) {
             oldType.setDescription(description);
         }
         String category = newType.getCategory();
-        if (category != null) {
+        if (category != null || wasRemoved) {
             oldType.setCategory(category);
         }
+
         Map<String, SubType> newTypeAllowedSubTypes = newType.getAllowedSubTypes();
-        if (newTypeAllowedSubTypes != null) {
-            Set<String> newTypeKeySet = newTypeAllowedSubTypes.keySet();
+        if (wasRemoved) {
+            oldType.setAllowedSubTypes(newTypeAllowedSubTypes);
+        } else {
+            if (newTypeAllowedSubTypes != null) {
+                Set<String> newTypeKeySet = newTypeAllowedSubTypes.keySet();
+                Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
+                for (String newTypeKey : newTypeKeySet) {
+                    oldTypeAllowedSubTypes.put(newTypeKey,
+                            newTypeAllowedSubTypes.get(newTypeKey));
+                }
+
+            }
+
+            // Code added to delete the denied SubType from allowed subtypes
+
+            List<String> result = new ArrayList<String>();
+            String[] deniedSubTypes = newType.getDeniedSubTypes();
             Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
-            for (String newTypeKey : newTypeKeySet) {
-                oldTypeAllowedSubTypes.put(newTypeKey,
-                        newTypeAllowedSubTypes.get(newTypeKey));
-            }
-        }
+            boolean toAdd = true;
 
-        // Code added to delete the denied SubType from allowed subtype
-
-        List<String> result = new ArrayList<String>();
-        String[] deniedSubTypes = newType.getDeniedSubTypes();
-        Map<String, SubType> oldTypeAllowedSubTypes = oldType.getAllowedSubTypes();
-        boolean toAdd = true;
-
-        if (oldTypeAllowedSubTypes != null) {
-            Set<String> oldTypeKeySet = oldTypeAllowedSubTypes.keySet();
-            for (String allowedSubType : oldTypeKeySet) {
-                for (String deniedSubType : deniedSubTypes) {
-                    if (deniedSubType.equals(allowedSubType)) {
-                        toAdd = false;
-                        break;
+            if (oldTypeAllowedSubTypes != null) {
+                Set<String> oldTypeKeySet = oldTypeAllowedSubTypes.keySet();
+                for (String allowedSubType : oldTypeKeySet) {
+                    for (String deniedSubType : deniedSubTypes) {
+                        if (deniedSubType.equals(allowedSubType)) {
+                            toAdd = false;
+                            break;
+                        }
                     }
+                    if (toAdd) {
+                        result.add(allowedSubType);
+                    }
+                    toAdd = true;
                 }
-                if (toAdd) {
-                    result.add(allowedSubType);
-                }
-                toAdd = true;
             }
+
+            Map<String, SubType> mapResult = new HashMap<String, SubType>();
+            for (String resultTypeName : result) {
+                mapResult.put(resultTypeName,
+                        oldTypeAllowedSubTypes.get(resultTypeName));
+            }
+
+            oldType.setAllowedSubTypes(mapResult);
+
+            // end of added code
         }
-
-        Map<String, SubType> mapResult = new HashMap<String, SubType>();
-        for (String resultTypeName : result) {
-            mapResult.put(resultTypeName,
-                    oldTypeAllowedSubTypes.get(resultTypeName));
-        }
-
-        oldType.setAllowedSubTypes(mapResult);
-
-        // end of added code
 
         String defaultView = newType.getDefaultView();
-        if (defaultView != null) {
+        if (defaultView != null || wasRemoved) {
             oldType.setDefaultView(defaultView);
         }
         String createView = newType.getCreateView();
-        if (createView != null) {
+        if (createView != null || wasRemoved) {
             oldType.setCreateView(createView);
         }
         String editView = newType.getEditView();
-        if (editView != null) {
+        if (editView != null || wasRemoved) {
             oldType.setEditView(editView);
         }
 
@@ -153,53 +167,63 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
         }
 
         Map<String, Layouts> layouts = newType.getLayouts();
-        if (layouts != null) {
-            Map<String, Layouts> layoutsMerged = new HashMap<String, Layouts>(
-                    oldType.getLayouts());
-            for (Map.Entry<String, Layouts> entry : layouts.entrySet()) {
-                String key = entry.getKey();
-                Layouts newLayouts = entry.getValue();
-                if (layoutsMerged.containsKey(key) && newLayouts.getAppend()) {
-                    List<String> allLayouts = new ArrayList<String>();
-                    for (String layoutName : layoutsMerged.get(key).getLayouts()) {
-                        allLayouts.add(layoutName);
+        if (wasRemoved) {
+            oldType.setLayouts(layouts);
+        } else {
+            if (layouts != null) {
+                Map<String, Layouts> layoutsMerged = new HashMap<String, Layouts>(
+                        oldType.getLayouts());
+                for (Map.Entry<String, Layouts> entry : layouts.entrySet()) {
+                    String key = entry.getKey();
+                    Layouts newLayouts = entry.getValue();
+                    if (layoutsMerged.containsKey(key)
+                            && newLayouts.getAppend()) {
+                        List<String> allLayouts = new ArrayList<String>();
+                        for (String layoutName : layoutsMerged.get(key).getLayouts()) {
+                            allLayouts.add(layoutName);
+                        }
+                        for (String layoutName : newLayouts.getLayouts()) {
+                            allLayouts.add(layoutName);
+                        }
+                        Layouts mergedLayouts = new Layouts();
+                        mergedLayouts.layouts = allLayouts.toArray(new String[allLayouts.size()]);
+                        layoutsMerged.put(key, mergedLayouts);
+                    } else {
+                        layoutsMerged.put(key, newLayouts);
                     }
-                    for (String layoutName : newLayouts.getLayouts()) {
-                        allLayouts.add(layoutName);
-                    }
-                    Layouts mergedLayouts = new Layouts();
-                    mergedLayouts.layouts = allLayouts.toArray(new String[allLayouts.size()]);
-                    layoutsMerged.put(key, mergedLayouts);
-                } else {
-                    layoutsMerged.put(key, newLayouts);
                 }
+                oldType.setLayouts(layoutsMerged);
             }
-            oldType.setLayouts(layoutsMerged);
         }
 
         Map<String, DocumentContentViews> contentViews = newType.getContentViews();
-        if (contentViews != null) {
-            Map<String, DocumentContentViews> cvMerged = new HashMap<String, DocumentContentViews>(
-                    oldType.getContentViews());
-            for (Map.Entry<String, DocumentContentViews> entry : contentViews.entrySet()) {
-                String key = entry.getKey();
-                DocumentContentViews newContentViews = entry.getValue();
-                if (cvMerged.containsKey(key) && newContentViews.getAppend()) {
-                    List<DocumentContentView> allContentViews = new ArrayList<DocumentContentView>();
-                    for (DocumentContentView cv : cvMerged.get(key).getContentViews()) {
-                        allContentViews.add(cv);
+        if (wasRemoved) {
+            oldType.setContentViews(contentViews);
+        } else {
+            if (contentViews != null) {
+                Map<String, DocumentContentViews> cvMerged = new HashMap<String, DocumentContentViews>(
+                        oldType.getContentViews());
+                for (Map.Entry<String, DocumentContentViews> entry : contentViews.entrySet()) {
+                    String key = entry.getKey();
+                    DocumentContentViews newContentViews = entry.getValue();
+                    if (cvMerged.containsKey(key)
+                            && newContentViews.getAppend()) {
+                        List<DocumentContentView> allContentViews = new ArrayList<DocumentContentView>();
+                        for (DocumentContentView cv : cvMerged.get(key).getContentViews()) {
+                            allContentViews.add(cv);
+                        }
+                        for (DocumentContentView cv : newContentViews.getContentViews()) {
+                            allContentViews.add(cv);
+                        }
+                        DocumentContentViews mergedContentViews = new DocumentContentViews();
+                        mergedContentViews.contentViews = allContentViews.toArray(new DocumentContentView[allContentViews.size()]);
+                        cvMerged.put(key, mergedContentViews);
+                    } else {
+                        cvMerged.put(key, newContentViews);
                     }
-                    for (DocumentContentView cv : newContentViews.getContentViews()) {
-                        allContentViews.add(cv);
-                    }
-                    DocumentContentViews mergedContentViews = new DocumentContentViews();
-                    mergedContentViews.contentViews = allContentViews.toArray(new DocumentContentView[allContentViews.size()]);
-                    cvMerged.put(key, mergedContentViews);
-                } else {
-                    cvMerged.put(key, newContentViews);
                 }
+                oldType.setContentViews(cvMerged);
             }
-            oldType.setContentViews(cvMerged);
         }
     }
 

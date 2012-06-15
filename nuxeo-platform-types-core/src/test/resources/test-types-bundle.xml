@@ -43,7 +43,10 @@
       </contentViews>
     </type>
 
-    <type id="MyOtherDocType" />
+    <type id="MyOtherDocType">
+      <label>initial alternative doc type</label>
+      <icon>initial icon</icon>
+    </type>
 
     <type id="MyHiddenDocType" />
 
