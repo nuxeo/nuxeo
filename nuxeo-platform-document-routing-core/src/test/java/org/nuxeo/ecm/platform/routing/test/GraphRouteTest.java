@@ -551,7 +551,10 @@ public class GraphRouteTest {
         routingTaskService.endTask(sessionUser1, tasks.get(0), data);
         closeSession(sessionUser1);
         // end task and verify that route was done
-        // assertTrue(route.isDone());
+        NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
+        session = openSession(admin);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
     }
-
 }
