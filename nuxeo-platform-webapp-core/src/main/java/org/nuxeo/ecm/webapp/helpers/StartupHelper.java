@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -125,6 +126,13 @@ public class StartupHelper implements Serializable {
         if (documentManager == null) {
             documentManager = navigationContext.getOrCreateDocumentManager();
         }
+
+        if (Events.exists()) {
+            Events.instance().raiseEvent(EventNames.USER_SESSION_STARTED, documentManager);
+        }
+
+        // select home page
+
         DocumentModel rootDocument = documentManager.getRootDocument();
         if (!documentManager.hasPermission(rootDocument.getRef(),
                 SecurityConstants.READ_CHILDREN)) {
