@@ -12,22 +12,6 @@ String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
 String context = request.getContextPath();
-Locale locale = request.getLocale();
-String language = locale == null ? "en" : locale.getLanguage();
-String country = locale == null ? "US" : locale.getCountry();
-String selectedLanguage = null;
-// handle variants
-if ("en".equals(language)) {
-    if ("US".equals(country) || "GB".equals(country)) {
-        selectedLanguage = "en_" + country;
-    } else {
-        selectedLanguage = "en_US";
-    }
-} else if ("pt".equals(language)) {
-    selectedLanguage = "pt_BR";
-} else {
-    selectedLanguage = language;
-}
 
 boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
 String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
@@ -296,74 +280,6 @@ body {
                 </td>
                 <td>
                   <input class="login_input" type="password" name="user_password" id="password">
-                </td>
-              </tr>
-              <tr>
-                <td class="login_label">
-                  <label for="language">
-                    <fmt:message bundle="${messages}" key="label.login.language" />
-                  </label>
-                </td>
-                <td>
-                  <select class="login_input" name="language" id="language">
-                    <option value="en_US" <%="en_US".equals(selectedLanguage)?"selected":""%>>
-                      English (United States)
-                    </option>
-                    <option value="en_GB" <%="en_GB".equals(selectedLanguage)?"selected=":""%>>
-                      English (United Kingdom)
-                    </option>
-                    <option value="fr" <%="fr".equals(selectedLanguage)?"selected":""%>>
-                      Fran&ccedil;ais
-                    </option>
-                    <option value="de" <%="de".equals(selectedLanguage)?"selected":""%>>
-                      Deutsch
-                    </option>
-                    <option value="it" <%="it".equals(selectedLanguage)?"selected":""%>>
-                      Italiano
-                    </option>
-                    <option value="el_GR" <%="el_GR".equals(selectedLanguage)?"selected":""%>>
-                      Greek (Greece)
-                    </option>
-                    <option value="es" <%="es".equals(selectedLanguage)?"selected":""%>>
-                      Espa&ntilde;ol
-                    </option>
-                    <option value="pt" <%="pt".equals(selectedLanguage)?"selected":""%>>
-                      Portugu&ecirc;s
-                    </option>
-                    <option value="pt_BR" <%="pt_BR".equals(selectedLanguage)?"selected":""%>>
-                      Portugu&ecirc;s (Brasil)
-                    </option>
-                    <option value="pl" <%="pl".equals(selectedLanguage)?"selected":""%>>
-                      Polski
-                    </option>
-                    <option value="ca" <%="ca".equals(selectedLanguage)?"selected":""%>>
-                      Catal&agrave;
-                    </option>
-                    <option value="eu" <%="gl".equals(selectedLanguage)?"selected":""%>>
-                      Galego
-                    </option>
-                    <option value="eu" <%="eu".equals(selectedLanguage)?"selected":""%>>
-                      Basque
-                    </option>
-                    <option value="sr" <%="sr".equals(selectedLanguage)?"selected":""%>>
-                      Serbian - Cyrillic
-                    </option>
-                    <option value="ru" <%="ru".equals(selectedLanguage)?"selected":""%>>
-                      &#1088;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;
-                    </option>
-                    <option value="ar" <%="ar".equals(selectedLanguage)?"selected":""%>>
-                      &#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;
-                    </option>
-                    <option value="cn" <%="cn".equals(selectedLanguage)?"selected":""%>>
-                      中文
-                    </option>
-                    <option value="ja" <%="ja".equals(selectedLanguage)?"selected":""%>>
-                      日本語
-                    </option>
-                    <option value="vn" <%="vn".equals(selectedLanguage)?"selected":""%>>
-                      Tiếng Việt
-                    </option>
-                  </select>
                 </td>
               </tr>
               <tr>
