@@ -16,12 +16,14 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
@@ -76,6 +78,8 @@ public interface GraphNode {
 
     String PROP_TASK_DIRECTIVE = "rnode:taskDirective";
 
+    String PROP_TASK_LAYOUT = "rnode:taskLayout";
+    
     String PROP_TASK_BUTTONS = "rnode:taskButtons";
 
     String PROP_BTN_NAME = "name";
@@ -207,6 +211,10 @@ public interface GraphNode {
             return name.compareTo(other.name);
         }
 
+        public String getLabel(){
+            return label;
+        }
+        
     }
 
     /**
@@ -307,6 +315,13 @@ public interface GraphNode {
      * @return
      */
      String getTaskDirective();
+     
+     /**
+      * Gets the task layout
+      *
+      * @return
+      */
+      String getTaskLayout();
 
     /**
      * Increments the execution counter for this node.
@@ -363,5 +378,16 @@ public interface GraphNode {
      * Gets the task buttons
      */
     List<Button> getTaskButtons();
-
+    
+    /**
+     * Gets the document representing this node
+     * @return
+     */
+    DocumentModel getDocument();
+    
+    /**
+     * Gets a map containing the variables currently defined on this node
+     * @return
+     */
+    Map<String, Serializable> getVariables();
 }

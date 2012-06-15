@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Graph Node implementation as an adapter over a DocumentModel.
- *
+ * 
  * @since 5.6
  */
 public class GraphNodeImpl extends DocumentRouteElementImpl implements
@@ -197,12 +198,18 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     @Override
     public Date getTaskDueDate() {
-        return (Date) getProperty(PROP_TASK_DUE_DATE);
+        Calendar cal = (Calendar) getProperty(PROP_TASK_DUE_DATE);
+        return cal == null ? null : cal.getTime();
     }
 
     @Override
     public String getTaskDirective() {
         return (String) getProperty(PROP_TASK_DIRECTIVE);
+    }
+
+    @Override
+    public String getTaskLayout() {
+        return (String) getProperty(PROP_TASK_LAYOUT);
     }
 
     @Override
@@ -421,7 +428,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public List<Button> getTaskButtons(){
+    public List<Button> getTaskButtons() {
         if (taskButtons == null) {
             taskButtons = computeTaskButtons();
         }

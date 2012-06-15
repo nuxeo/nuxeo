@@ -226,7 +226,6 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 routeInstance.getDocument().getId());
         taskVariables.put(DocumentRoutingConstants.TASK_NODE_ID_KEY,
                 node.getId());
-
         try {
             getRoutingTaskService().createRoutingTask(session,
                     (NuxeoPrincipal) session.getPrincipal(),
