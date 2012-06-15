@@ -63,6 +63,9 @@ public class SeamConfigurator implements Serializable {
 
     @Create
     public void init() {
+        // FIXME: this init is done too late: debug components have already
+        // been scanned and not installed => debug page will not work if
+        // available (needs jar jboss-seam-debug to be available)
         init.setDebug(isDebugEnabled());
         init.setJbpmInstalled(false);
         try {
@@ -74,5 +77,4 @@ public class SeamConfigurator implements Serializable {
             init.setTransactionManagementEnabled(false);
         }
     }
-
 }
