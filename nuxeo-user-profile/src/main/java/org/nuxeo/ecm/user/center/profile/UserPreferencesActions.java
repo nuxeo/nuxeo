@@ -16,8 +16,10 @@
 package org.nuxeo.ecm.user.center.profile;
 
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.webapp.action.WebActionsBean;
 
 /**
  * Seam component to manage user preferences editing. UI is showing user
@@ -31,5 +33,13 @@ import org.jboss.seam.annotations.Scope;
 public class UserPreferencesActions extends UserProfileActions {
 
     private static final long serialVersionUID = 1L;
+
+    @In
+    WebActionsBean webActions;
+
+    public String navigateToPreferencesPage() {
+        webActions.setCurrentTabIds("MAIN_TABS:home,USER_CENTER:Preferences");
+        return "view_home";
+    }
 
 }

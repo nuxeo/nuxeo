@@ -14,8 +14,9 @@
       <category>Profile_sub_tab</category>
     </action>
 
-    <action id="Preferences" link="user_center_fragment.xhtml" label="user.center.preferences"
-      icon="/icons/preferences.png" order="30">
+    <action id="Preferences" link="user_center_fragment.xhtml"
+      label="user.center.preferences" icon="/icons/preferences.png"
+      order="30">
       <category>USER_CENTER</category>
     </action>
 
@@ -23,6 +24,13 @@
       label="user.center.preferences.tab.view" order="20">
       <category>Preferences_sub_tab</category>
     </action>
+
+    <action enabled="true" label="user.center.preferences"
+      link="#{userPreferencesActions.navigateToPreferencesPage}"
+      order="70">
+      <category>USER_MENU_ACTIONS</category>
+    </action>
+
 
   </extension>
 
