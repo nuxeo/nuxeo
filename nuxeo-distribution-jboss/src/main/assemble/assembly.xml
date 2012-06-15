@@ -285,6 +285,7 @@ install nuxeo-cmf
     <move todir="${distribution.dir}/server/default/lib">
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
         <include name="commons-lang*" />
+        <include name="commons-io*" />
         <include name="freemarker*" />
         <include name="lucene-core*" />
         <include name="lucene-analyzers*" />
