@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -57,10 +58,25 @@ public class InstallAfterRestart {
         return isVindozBox();
     }
 
+    /**
+     * Returns true if a restart should be triggered after install
+     */
     public static boolean isNeededForPackage(Package pkg) {
-        return (PackageType.STUDIO != pkg.getType() && isNeededByOs())
-                || (PackageType.HOT_FIX == pkg.getType())
-                || (PackageType.ADDON == pkg.getType() && !pkg.supportsHotReload());
+        if (!isDebugMode()) {
+            return true;
+        }
+        boolean isNotStudioOrWindows = PackageType.STUDIO != pkg.getType()
+                && isNeededByOs();
+        boolean isHotFix = PackageType.HOT_FIX == pkg.getType();
+        boolean isAddonAndNoHotReload = PackageType.ADDON == pkg.getType()
+                && !pkg.supportsHotReload();
+        return isNotStudioOrWindows || isHotFix || isAddonAndNoHotReload;
+    }
+
+    protected static boolean isDebugMode() {
+        String debugPropValue = Framework.getProperty(
+                ConfigurationGenerator.NUXEO_DEBUG_SYSTEM_PROP, "false");
+        return Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
     }
 
     protected static boolean isVindozBox() {

@@ -24,14 +24,13 @@ import org.nuxeo.connect.update.PackageUpdateComponent;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.commands.InstallPlaceholder;
-import org.nuxeo.connect.update.task.update.Update;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated since 5.6, use {@link Update} instead
+ * @deprecated since 5.6, use {@link Deploy} instead
  */
 @Deprecated
 public class Install extends InstallPlaceholder {

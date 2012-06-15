@@ -27,13 +27,12 @@ import org.nuxeo.connect.update.PackageUpdateComponent;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.commands.UninstallPlaceholder;
-import org.nuxeo.connect.update.task.update.Rollback;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated since 5.6, use {@link Rollback} instead
+ * @deprecated since 5.6, use {@link Undeploy} instead
  */
 @Deprecated
 public class Uninstall extends UninstallPlaceholder {

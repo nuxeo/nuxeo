@@ -40,6 +40,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
+import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
@@ -65,9 +66,6 @@ public class AppCenterViewsManager implements Serializable {
 
     @In(create = true)
     protected String currentAdminSubViewId;
-
-    @In(create = true)
-    protected boolean nxDebugModeIsEnabled;
 
     protected String searchString;
 
@@ -280,25 +278,23 @@ public class AppCenterViewsManager implements Serializable {
                     return;
                 }
 
-                if (nxDebugModeIsEnabled) {
+                if (Framework.isDebugModeSet()) {
                     studioSnapshotStatus = snapshotStatus.installing.name();
                     try {
                         LocalPackage lpkg = pus.getPackage(pkg.getId());
                         Task installTask = lpkg.getInstallTask();
                         installTask.run(new HashMap<String, String>());
+                        lastStudioSnapshotUpdate = Calendar.getInstance();
+                        studioSnapshotStatus = snapshotStatus.completed.name();
                     } catch (Exception e) {
                         log.error("Error while installing studio snapshot", e);
                         studioSnapshotStatus = snapshotStatus.error.name();
                         studioSnapshotUpdateError = " problem during package installation "
                                 + e.getMessage();
                     }
-                    lastStudioSnapshotUpdate = Calendar.getInstance();
-                    studioSnapshotStatus = snapshotStatus.completed.name();
                 } else {
+                    InstallAfterRestart.addPackageForInstallation(pkg.getId());
                     lastStudioSnapshotUpdate = Calendar.getInstance();
-                    // TODO: at least install the package if not in dev mode,
-                    // and warn the user that he should restart his server
-                    // instead
                     studioSnapshotStatus = snapshotStatus.restartNeeded.name();
                 }
 
