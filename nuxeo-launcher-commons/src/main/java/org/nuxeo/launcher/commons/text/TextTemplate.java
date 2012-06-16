@@ -349,8 +349,8 @@ public class TextTemplate {
                 if (!backup.exists()) {
                     log.debug("Backup " + out);
                     FileUtils.copyFile(out, backup);
+                    newFiles.add(backup.getPath());
                 }
-                newFiles.add(backup.getPath());
             } else {
                 newFiles.add(out.getPath());
             }
