@@ -18,14 +18,14 @@ file will have your AWS identifiers.
 
 # Optional parameters
 
-- nuxeo.s3storage.region : the region code your S3 bucket will be placed in.
-  For us-east-1 (the default), don't set this parameter
-  For us-west-1 (Northern California), use us-west-1
-  For us-west-2 (Oregon), use us-west-2
-  For eu-west-1 (Ireland), use EU
-  For ap-southeast-1 (Singapore), use ap-southeast-1
-  For ap-northeast-1 (Tokyo), use ap-northeast-1
-  For sa-east-1 (Sao Paulo), use sa-east-1
+- nuxeo.s3storage.region : the region code your S3 bucket will be placed in.  
+  For us-east-1 (the default), don't set this parameter  
+  For us-west-1 (Northern California), use us-west-1  
+  For us-west-2 (Oregon), use us-west-2  
+  For eu-west-1 (Ireland), use EU  
+  For ap-southeast-1 (Singapore), use ap-southeast-1  
+  For ap-northeast-1 (Tokyo), use ap-northeast-1  
+  For sa-east-1 (Sao Paulo), use sa-east-1  
 
 - nuxeo.s3storage.cachesize : size of the local cache (default is 100MB).
 
