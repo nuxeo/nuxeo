@@ -47,6 +47,9 @@ public class AdvancedMSOfficeConverterTest extends SimpleConverterTest {
                     FileUtils.getResourceFileFromContext("test-docs/advanced/MSOffice_paragraphs.txt"));
             blob.setEncoding("UTF-8");
             String expectedContent = blob.getString();
+            // get rid of carriage return characters
+            expectedContent.replaceAll("\\r", "");
+            textContent.replaceAll("\\r", "");
 
             assertEquals(expectedContent, textContent);
         } catch (IOException ioe) {
