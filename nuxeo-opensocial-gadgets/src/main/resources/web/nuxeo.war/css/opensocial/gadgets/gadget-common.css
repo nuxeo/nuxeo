@@ -9,20 +9,19 @@ a:hover { text-decoration: underline }
 
 img { border: none }
 
-button { line-height: 100%;
+input.button { background-color: #e7e7e7;
+  border: 1px solid #c9c9c9;
+  border-radius: 3px;
+  box-shadow: 0 10px 8px #fff inset;
   cursor: pointer;
-  color: #333;
-  text-align: center;
+  color: #000;
+  font-size: .9em;
+  font-weight: bold;
+  margin: .3em 0 .8em .8em;
+  padding: .2em .5em;
   text-decoration: none;
-  padding: .1em .5em .2em;
-  margin:.5em 1em .5em 0;
-  -webkit-border-radius: .3em;
-  -moz-border-radius: .3em;
-  border-radius: .3em;
-	border: solid 1px #da7c0c;
-	background: -moz-linear-gradient(top, #ffffff 0%, #eaeaea 100%) #f1f2f3;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#eaeaea)) #f1f2f3;
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f1f2f3');}
+  text-shadow: 1px 1px 0 #fff;
+  white-space: nowrap }
 
 #content, .content { clear: both; padding: .5em; overflow: auto }
 .content h2 { border-bottom: 1px solid #39f; margin: 0 0 .5em; padding: .3em 0 .4em; text-align: center }
@@ -77,7 +76,7 @@ input.searchBox { font: 11px 'Lucida Grande',Verdana,Arial,sans-serif; padding: 
 .dataList thead th a:visited, .dataList thead th a:active { color: #fff }
 .dataList thead th a:hover { color: #fff; text-decoration: underline }
 
-.dataList td { border-style: none none solid; border-width: 1px; border-color: #c7c7c7; font-size: 11px; line-height: 110%; margin: 0; padding: .6em .3em; vertical-align: top }
+.dataList td { border-style: solid none none; border-width: 1px; border-color: #c7c7c7; font-size: 11px; line-height: 110%; margin: 0; padding: .6em .3em; vertical-align: top }
 
 .dataList .iconColumn { text-align: center; width: 20px }
 .dataOutput td table td { border: 0 none transparent }
@@ -126,6 +125,18 @@ textarea::-webkit-input-placeholder { color: #bbb }
 .creationForm table.create { margin: auto }
 
 .required { background:transparent url(../icons/required.gif) top right no-repeat; padding:0 1em 0 0 }
+
+/* User identification elements */
+.avatar { height: 16px; margin: .1em .5em 0 0; width: 16px }
+.avatar img { max-height: 16px; max-width: 16px }
+
+.username { font-weight: bold }
+.username a { color: #519eec }
+
+.timestamp { color: #999 }
+
+/* Actions under comments and messages */
+.actionItem, .actionItem a:link, .actionItem a:visited { color: #9db6d1 }
 
 /* Tooltips */
 a.button { text-decoration: none; position: relative }
