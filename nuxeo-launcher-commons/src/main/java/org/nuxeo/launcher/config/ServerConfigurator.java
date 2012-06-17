@@ -205,7 +205,7 @@ public abstract class ServerConfigurator {
             // Store new files listing
             File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
             writer = new BufferedWriter(new FileWriter(newFiles, false));
-            int index = generator.getNuxeoHome().getPath().length() + 1;
+            int index = generator.getNuxeoHome().getCanonicalPath().length() + 1;
             for (String filepath : newFilesList) {
                 writer.write(new File(filepath).getCanonicalPath().substring(
                         index));
