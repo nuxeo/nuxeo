@@ -126,4 +126,59 @@ This tab provides :
 
  - a "update template parameters" action : will resync the document with the Template Document parameters (useful if you edited the Template Document since the initial association)
 
+## Rendering context
+
+From withing the template itself, you have access to a set of variable and functions.
+In most of the cases, the template synthax is very close to bare freemarker, but it may depends on the actual rendering engine :
+
+ - xdocreport : FreeMarker based
+ - FreeMarker : FreeMarker !
+ - jod : FreeMarker based
+ - jxls : JEXL based 
+
+### Context variable
+
+Anyway, there are a set of variable that will always be available :
+
+ - doc or document : the DocumentModel being rendered
+ - blobHolder : the BlobHodler adapter on the DocumentModel being rendered
+ - username  : interactive username (String)
+ - principal : interactive User (Principal)
+ - templateName : the name of the template being currently rendered (String)
+
+In addition of this basic context, extensions can be registered to extend the content of the Context.
+
+Default extensions include :
+
+ - Audit : exposes audit entries associated to the DocumentModel being rendered
+
+   - auditEntries (List&lt;LogEntry&gt;)
+
+ - Helper function : misc function that may be useful
+
+   - functions.getVocabularyTranslatedLabel(vocname, key, lang)
+   - functions.getVocabularyLabel(vocname, key)
+   - functions.getVocabularyLabel(vocname, key)
+   - functions.formatDate(calendar)
+   - functions.formatDateTime(calendar)
+   - functions.formatTime(calendar)
+
+ - Core Repository :
+
+   - core.getParent()
+   - core.getChildren()
+
+### Document Property bindings
+
+For all Freemarker based template system, the binding is the same than WebEngine binding.
+
+ - doc['schemaPrefix:propertyName']
+ - doc.schemaName.propertyName
+
+For JEXL based mapping only the synthax doc.schemaName.propertyName is supported.
+
+
+
+
+
 
