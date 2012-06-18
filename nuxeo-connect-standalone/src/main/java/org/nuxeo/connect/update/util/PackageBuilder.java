@@ -112,15 +112,21 @@ public class PackageBuilder {
      * @since 5.6
      */
     public PackageBuilder visibility(String visibility) {
-        def.setVisibility(PackageVisibility.valueOf(visibility));
-        return this;
+        return visibility(PackageVisibility.valueOf(visibility));
     }
 
     /**
      * @since 5.6
      */
     public PackageBuilder visibility(PackageVisibility visibility) {
-        def.setVisibility(visibility);
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.setVisibility",
+                    PackageVisibility.class);
+            def.setVisibility(visibility);
+        } catch (NoSuchMethodException e) {
+            // Ignore visibility with old Connect Client versions
+        }
         return this;
     }
 
@@ -170,28 +176,64 @@ public class PackageBuilder {
     }
 
     public PackageBuilder validationState(NuxeoValidationState validationState) {
-        def.setValidationState(validationState);
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.validationState",
+                    NuxeoValidationState.class);
+            def.setValidationState(validationState);
+        } catch (NoSuchMethodException e) {
+            // Ignore visibility with old Connect Client versions
+        }
         return this;
     }
 
     public PackageBuilder productionState(ProductionState productionState) {
-        def.setProductionState(productionState);
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.productionState",
+                    ProductionState.class);
+            def.setProductionState(productionState);
+        } catch (NoSuchMethodException e) {
+            // Ignore visibility with old Connect Client versions
+        }
         return this;
     }
 
     public PackageBuilder supported(boolean supported) {
-        def.setSupported(supported);
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.setSupported",
+                    boolean.class);
+            def.setSupported(supported);
+        } catch (NoSuchMethodException e) {
+            // Ignore setSupported with old Connect Client versions
+        }
         return this;
     }
 
     public PackageBuilder hotReloadSupport(boolean hotReloadSupport) {
-        def.setHotReloadSupport(hotReloadSupport);
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.setHotReloadSupport",
+                    boolean.class);
+            def.setHotReloadSupport(hotReloadSupport);
+        } catch (NoSuchMethodException e) {
+            // Ignore setHotReloadSupport with old Connect Client versions
+        }
         return this;
     }
 
     public PackageBuilder requireTermsAndConditionsAcceptance(
             boolean requireTermsAndConditionsAcceptance) {
-        def.setRequireTermsAndConditionsAcceptance(requireTermsAndConditionsAcceptance);
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.requireTermsAndConditionsAcceptance",
+                    boolean.class);
+            def.setRequireTermsAndConditionsAcceptance(requireTermsAndConditionsAcceptance);
+        } catch (NoSuchMethodException e) {
+            // Ignore setRequireTermsAndConditionsAcceptance with old Connect
+            // Client versions
+        }
         return this;
     }
 

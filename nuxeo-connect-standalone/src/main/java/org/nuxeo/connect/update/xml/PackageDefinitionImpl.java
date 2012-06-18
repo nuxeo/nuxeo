@@ -378,8 +378,10 @@ public class PackageDefinitionImpl implements PackageDefinition {
         if (type != null) {
             writer.attr("type", type.getValue());
         }
+        if (visibility != null) {
+            writer.attr("visibility", visibility.toString());
+        }
         writer.startContent();
-
         writer.element("title", title);
         writer.element("description", description);
         writer.element("classifier", classifier);
@@ -394,7 +396,6 @@ public class PackageDefinitionImpl implements PackageDefinition {
                 Boolean.valueOf(requireTermsAndConditionsAcceptance).toString());
         writer.element("production-state", productionState.toString());
         writer.element("nuxeo-validation", validationState.toString());
-
         if (platforms != null) {
             writer.start("platforms");
             writer.startContent();
@@ -421,11 +422,9 @@ public class PackageDefinitionImpl implements PackageDefinition {
         }
         if (uninstaller != null) {
             writer.start("uninstaller");
-            // FIXME: I think this should be 'uninstaller' below, not
-            // 'installer'
-            writer.attr("class", installer.getType());
+            writer.attr("class", uninstaller.getType());
             writer.attr("restart",
-                    String.valueOf(installer.getRequireRestart()));
+                    String.valueOf(uninstaller.getRequireRestart()));
             writer.end();
         }
         writer.element("validator", validator);
