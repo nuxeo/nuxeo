@@ -77,7 +77,7 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     @Override
     protected Collection<? extends String> getServerProperties() {
         ArrayList<String> serverProperties = new ArrayList<String>();
-        // serverProperties.add("-Dprogram.name=nuxeoctl");
+        serverProperties.add("-Dorg.jboss.security.SecurityAssociation.ThreadLocal=true");
         serverProperties.add("-Djava.endorsed.dirs="
                 + new File(configurationGenerator.getNuxeoHome(), "lib"
                         + File.separator + "endorsed"));
