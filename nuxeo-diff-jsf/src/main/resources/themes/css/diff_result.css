@@ -4,7 +4,7 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 */
 
 /* =Header */
-#diffHeader {margin-bottom: 0.5em; padding: 0 0.5em 0.5em 0.5em;}
+#diffHeader {margin-bottom: 1.5em; padding: 0 0.5em 0.5em 0.5em;}
 #diffHeader .dataInput {margin-top: 0;}
 #diffHeader h2 {padding: 0;}
 #diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover {color: #000000;}

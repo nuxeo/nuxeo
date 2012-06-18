@@ -20,8 +20,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,14 +102,16 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // --------------------------------------------------------------------
 
         // Create left and right docs
-        DocumentModel leftDoc = session.createDocumentModel("Note");
-        leftDoc.setPropertyValue("dc:title", "My note");
+        DocumentModel leftDoc = session.createDocumentModel("/", "myNote",
+                "Note");
+        leftDoc.setPropertyValue("dc:description", "Description of my note");
         leftDoc.setPropertyValue("dc:creator", "Joe");
         leftDoc.setPropertyValue("note:note", "The content of my note.");
         leftDoc = session.createDocument(leftDoc);
 
-        DocumentModel rightDoc = session.createDocumentModel("File");
-        rightDoc.setPropertyValue("dc:title", "My file");
+        DocumentModel rightDoc = session.createDocumentModel("/", "myFile",
+                "File");
+        leftDoc.setPropertyValue("dc:description", "Description of my file");
         rightDoc.setPropertyValue("dc:creator", "Jack");
         rightDoc.setPropertyValue("file:content", new StringBlob(
                 "Joe is not rich, nor is Jack."));
@@ -125,7 +130,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         DiffDisplayBlock diffDisplayBlock = diffDisplayBlocks.get(0);
         checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
         checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 2,
-                Arrays.asList("title", "creator"));
+                Arrays.asList("description", "creator"));
 
         // -----------------------------------------------------------------
         // Check diff display for 2 documents of the same type: OtherSampleType
@@ -134,13 +139,17 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // -----------------------------------------------------------------
 
         // Create left and right docs
-        leftDoc = session.createDocumentModel("OtherSampleType");
-        leftDoc.setPropertyValue("dc:title", "My first other sample type");
+        leftDoc = session.createDocumentModel("/", "myFirstOtherSampleType",
+                "OtherSampleType");
+        leftDoc.setPropertyValue("dc:description",
+                "Description of my first other sample type");
         leftDoc.setPropertyValue("st:boolean", true);
         leftDoc = session.createDocument(leftDoc);
 
-        rightDoc = session.createDocumentModel("OtherSampleType");
-        rightDoc.setPropertyValue("dc:title", "My second other sample type");
+        rightDoc = session.createDocumentModel("/", "mySecondOtherSampleType",
+                "OtherSampleType");
+        rightDoc.setPropertyValue("dc:description",
+                "Description of my second other sample type");
         rightDoc.setPropertyValue("st:boolean", false);
         rightDoc = session.createDocument(rightDoc);
 
@@ -157,7 +166,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         diffDisplayBlock = diffDisplayBlocks.get(0);
         checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
         checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
-                Arrays.asList("title"));
+                Arrays.asList("description"));
 
         diffDisplayBlock = diffDisplayBlocks.get(1);
         checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.simpletypes",
@@ -172,15 +181,17 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // -----------------------------------------------------------------
 
         // Create left and right docs
-        leftDoc = session.createDocumentModel("Note");
-        leftDoc.setPropertyValue("dc:title", "My first note");
+        leftDoc = session.createDocumentModel("/", "myFirstNote", "Note");
+        leftDoc.setPropertyValue("dc:description",
+                "Description of my first note");
         leftDoc.setPropertyValue("dc:creator", "Joe");
         leftDoc.setPropertyValue("note:note",
                 "The content of my first note is short.");
         leftDoc = session.createDocument(leftDoc);
 
-        rightDoc = session.createDocumentModel("Note");
-        rightDoc.setPropertyValue("dc:title", "My second note");
+        rightDoc = session.createDocumentModel("/", "mySecondNote", "Note");
+        rightDoc.setPropertyValue("dc:description",
+                "Description of my second note");
         rightDoc.setPropertyValue("dc:creator", "Jack");
         rightDoc.setPropertyValue("note:note",
                 "The content of my second note written by Jack is still short.");
@@ -193,20 +204,15 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff,
                 leftDoc, rightDoc);
         assertNotNull(diffDisplayBlocks);
-        assertEquals(3, diffDisplayBlocks.size());
+        assertEquals(2, diffDisplayBlocks.size());
 
         // Check diff display blocks
         diffDisplayBlock = diffDisplayBlocks.get(0);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.heading", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
-                Arrays.asList("title"));
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 2,
+                Arrays.asList("description", "creator"));
 
         diffDisplayBlock = diffDisplayBlocks.get(1);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
-                Arrays.asList("creator"));
-
-        diffDisplayBlock = diffDisplayBlocks.get(2);
         checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.note", 1);
         checkDiffDisplayBlockSchema(diffDisplayBlock, "note", 2,
                 Arrays.asList("note"));
@@ -218,14 +224,18 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // -----------------------------------------------------------------
 
         // Create left and right docs
-        leftDoc = session.createDocumentModel("ExtendedNote");
-        leftDoc.setPropertyValue("dc:title", "My extended note");
+        leftDoc = session.createDocumentModel("/", "myExtendedNote",
+                "ExtendedNote");
+        leftDoc.setPropertyValue("dc:description",
+                "Description of my extended note");
         leftDoc.setPropertyValue("dc:creator", "Jack");
         leftDoc.setPropertyValue("note:note", "Joe is not rich, nor is Jack.");
         leftDoc = session.createDocument(leftDoc);
 
-        rightDoc = session.createDocumentModel("ExtendedNote");
-        rightDoc.setPropertyValue("dc:title", "My second extended note");
+        rightDoc = session.createDocumentModel("/", "mySecondExtendedNote",
+                "ExtendedNote");
+        rightDoc.setPropertyValue("dc:description",
+                "Description of my second extended note");
         rightDoc.setPropertyValue("dc:creator", "Joe");
         rightDoc.setPropertyValue("note:note", "Joe is much richer than Jack.");
         rightDoc = session.createDocument(rightDoc);
@@ -237,20 +247,15 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff,
                 leftDoc, rightDoc);
         assertNotNull(diffDisplayBlocks);
-        assertEquals(3, diffDisplayBlocks.size());
+        assertEquals(2, diffDisplayBlocks.size());
 
         // Check diff display blocks
         diffDisplayBlock = diffDisplayBlocks.get(0);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.heading", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
-                Arrays.asList("title"));
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 2,
+                Arrays.asList("description", "creator"));
 
         diffDisplayBlock = diffDisplayBlocks.get(1);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
-                Arrays.asList("creator"));
-
-        diffDisplayBlock = diffDisplayBlocks.get(2);
         checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.note", 1);
         checkDiffDisplayBlockSchema(diffDisplayBlock, "note", 2,
                 Arrays.asList("note"));
@@ -262,14 +267,18 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // -----------------------------------------------------------------
 
         // Create left and right docs
-        leftDoc = session.createDocumentModel("ExtendedNote");
-        leftDoc.setPropertyValue("dc:title", "My extended note");
+        leftDoc = session.createDocumentModel("/", "myExtendedNote",
+                "ExtendedNote");
+        leftDoc.setPropertyValue("dc:description",
+                "Description of my extended note");
         leftDoc.setPropertyValue("dc:creator", "Jack");
         leftDoc.setPropertyValue("note:note", "Joe is not rich, nor is Jack.");
         leftDoc = session.createDocument(leftDoc);
 
-        rightDoc = session.createDocumentModel("ExtendedExtendedNote");
-        rightDoc.setPropertyValue("dc:title", "My extended extended note");
+        rightDoc = session.createDocumentModel("/", "myExtendedExtendedNote",
+                "ExtendedExtendedNote");
+        rightDoc.setPropertyValue("dc:description",
+                "Description of my extended extended note");
         rightDoc.setPropertyValue("dc:creator", "Joe");
         rightDoc.setPropertyValue("note:note", "Joe is much richer than Jack.");
         rightDoc = session.createDocument(rightDoc);
@@ -281,20 +290,15 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(docDiff,
                 leftDoc, rightDoc);
         assertNotNull(diffDisplayBlocks);
-        assertEquals(3, diffDisplayBlocks.size());
+        assertEquals(2, diffDisplayBlocks.size());
 
         // Check diff display blocks
         diffDisplayBlock = diffDisplayBlocks.get(0);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.heading", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
-                Arrays.asList("title"));
+        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
+        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 2,
+                Arrays.asList("description", "creator"));
 
         diffDisplayBlock = diffDisplayBlocks.get(1);
-        checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 1,
-                Arrays.asList("creator"));
-
-        diffDisplayBlock = diffDisplayBlocks.get(2);
         checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.note", 1);
         checkDiffDisplayBlockSchema(diffDisplayBlock, "note", 2,
                 Arrays.asList("note"));
@@ -321,158 +325,166 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         List<DiffDisplayBlock> diffDisplayBlocks = diffDisplayService.getDiffDisplayBlocks(
                 docDiff, leftDoc, rightDoc);
         assertNotNull(diffDisplayBlocks);
-        assertEquals(5, diffDisplayBlocks.size());
+        assertEquals(4, diffDisplayBlocks.size());
 
-        // ----------------------------------------
-        // Check first diff display block: heading
-        // ----------------------------------------
+        // -------------------------------------------
+        // Check first diff display block: dublincore
+        // -------------------------------------------
         DiffDisplayBlock diffDisplayBlock = diffDisplayBlocks.get(0);
 
         // Check label
-        assertEquals("label.diffBlock.heading", diffDisplayBlock.getLabel());
+        assertEquals("label.diffBlock.dublincore", diffDisplayBlock.getLabel());
 
         // Check left value
         Map<String, Map<String, PropertyDiffDisplay>> expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
         Map<String, PropertyDiffDisplay> expectedFields = new HashMap<String, PropertyDiffDisplay>();
-        expectedFields.put("title", new PropertyDiffDisplayImpl(
-                "My first sample", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        // description
         expectedFields.put("description", new PropertyDiffDisplayImpl(
                 "description", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
-        // Calendar cal =
-        // DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
-        // Calendar.DECEMBER, 29, 11, 24, 25);
-        // expectedFields.put("modified", cal.getTime());
-        // List<Serializable> listField = new ArrayList<Serializable>();
-        // Map<String, Serializable> item1 = new HashMap<String,
-        // Serializable>();
-        // item1.put("index", 1);
-        // item1.put("value", "Architecture");
-        // listField.add((Serializable) item1);
-        // // TODO: test list / complex field
-        // expectedFields.put("subjects", (Serializable) listField);
+        // subjects
+        List<Map<String, Serializable>> subjects = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> subject = new HashMap<String, Serializable>();
+        subject.put("index", 2);
+        subject.put("value", new PropertyDiffDisplayImpl("Architecture",
+                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        subjects.add(subject);
+        expectedFields.put("subjects", new PropertyDiffDisplayImpl(
+                (Serializable) subjects));
+        // created
+        Calendar cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 25);
+        expectedFields.put("created", new PropertyDiffDisplayImpl(
+                cal.getTime(), PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        // modified
+        cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 25);
+        expectedFields.put("modified",
+                new PropertyDiffDisplayImpl(cal.getTime(),
+                        PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedValue.put("dublincore", expectedFields);
+        // contributors
+        List<Map<String, Serializable>> contributors = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> contributor1 = new HashMap<String, Serializable>();
+        contributor1.put("index", 1);
+        contributor1.put("value", new PropertyDiffDisplayImpl("Administrator",
+                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        contributors.add(contributor1);
+        Map<String, Serializable> contributor2 = new HashMap<String, Serializable>();
+        contributor2.put("index", 3);
+        contributor2.put("value", new PropertyDiffDisplayImpl(null,
+                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        contributors.add(contributor2);
+        expectedFields.put("contributors", new PropertyDiffDisplayImpl(
+                (Serializable) contributors));
+        // TODO: test a complex field
         assertEquals(expectedValue, diffDisplayBlock.getLeftValue());
 
         // Check right value
         expectedValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
         expectedFields = new HashMap<String, PropertyDiffDisplay>();
-        expectedFields.put("title", new PropertyDiffDisplayImpl(
-                "My second sample", PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        // description
         expectedFields.put("description", new PropertyDiffDisplayImpl(null,
                 PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
-        // cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
-        // Calendar.DECEMBER, 30, 12, 05, 02);
-        // expectedFields.put("modified", cal.getTime());
-        // listField = new ArrayList<Serializable>();
-        // item1 = new HashMap<String, Serializable>();
-        // item1.put("index", 1);
-        // item1.put("value", "N/A");
-        // listField.add((Serializable) item1);
-        // // TODO: test list / complex field
-        // expectedFields.put("subjects", (Serializable) listField);
+        // subjects
+        subjects = new ArrayList<Map<String, Serializable>>();
+        subject = new HashMap<String, Serializable>();
+        subject.put("index", 2);
+        subject.put("value", new PropertyDiffDisplayImpl(null,
+                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        subjects.add(subject);
+        expectedFields.put("subjects", new PropertyDiffDisplayImpl(
+                (Serializable) subjects));
+        // created
+        cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+                Calendar.DECEMBER, 30, 12, 05, 02);
+        expectedFields.put("created", new PropertyDiffDisplayImpl(
+                cal.getTime(), PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        // modified
+        cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+                Calendar.DECEMBER, 30, 12, 05, 02);
+        expectedFields.put("modified",
+                new PropertyDiffDisplayImpl(cal.getTime(),
+                        PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedValue.put("dublincore", expectedFields);
+        // contributors
+        contributors = new ArrayList<Map<String, Serializable>>();
+        contributor1 = new HashMap<String, Serializable>();
+        contributor1.put("index", 1);
+        contributor1.put("value",
+                new PropertyDiffDisplayImpl("anotherAdministrator",
+                        PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        contributors.add(contributor1);
+        contributor2 = new HashMap<String, Serializable>();
+        contributor2.put("index", 3);
+        contributor2.put("value", new PropertyDiffDisplayImpl("jack",
+                PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        contributors.add(contributor2);
+        expectedFields.put("contributors", new PropertyDiffDisplayImpl(
+                (Serializable) contributors));
+        // TODO: test a complex field
         assertEquals(expectedValue, diffDisplayBlock.getRightValue());
 
         // TODO: check contentDiff
 
         // Check layout definition
         LayoutDefinition layoutDef = diffDisplayBlock.getLayoutDefinition();
-        assertEquals("heading", layoutDef.getName());
+        assertEquals("dublincore", layoutDef.getName());
 
         // Check layout row definitions
         LayoutRowDefinition[] layoutRowDefinitions = layoutDef.getRows();
-        assertEquals(2, layoutRowDefinitions.length);
+        assertEquals(5, layoutRowDefinitions.length);
 
         LayoutRowDefinition layoutRowDef = layoutRowDefinitions[0];
-        assertEquals("dublincore:title", layoutRowDef.getName());
+        assertEquals("dublincore:description", layoutRowDef.getName());
         assertEquals(1, layoutRowDef.getSize());
         WidgetReference[] widgetRefs = layoutRowDef.getWidgetReferences();
         assertEquals(1, widgetRefs.length);
         WidgetReference widgetRef = widgetRefs[0];
         assertEquals("diff", widgetRef.getCategory());
-        assertEquals("dublincore:title", widgetRef.getName());
+        assertEquals("dublincore:description", widgetRef.getName());
 
         layoutRowDef = layoutRowDefinitions[1];
-        assertEquals("dublincore:description", layoutRowDef.getName());
+        assertEquals("dublincore:created", layoutRowDef.getName());
         assertEquals(1, layoutRowDef.getSize());
         widgetRefs = layoutRowDef.getWidgetReferences();
         assertEquals(1, widgetRefs.length);
         widgetRef = widgetRefs[0];
         assertEquals("diff", widgetRef.getCategory());
-        assertEquals("dublincore:description", widgetRef.getName());
-
-        // layoutRowDef = layoutRowDefinitions[1];
-        // assertEquals("dublincore:modified", layoutRowDef.getName());
-        // assertEquals(1, layoutRowDef.getSize());
-        // widgetRefs = layoutRowDef.getWidgetReferences();
-        // assertEquals(1, widgetRefs.length);
-        // widgetRef = widgetRefs[0];
-        // assertEquals("diff", widgetRef.getCategory());
-        // assertEquals("dublincore:modified", widgetRef.getName());
-
-        // layoutRowDef = layoutRowDefinitions[2];
-        // assertEquals("dublincore:subjects", layoutRowDef.getName());
-        // assertEquals(1, layoutRowDef.getSize());
-        // widgetRefs = layoutRowDef.getWidgetReferences();
-        // assertEquals(1, widgetRefs.length);
-        // widgetRef = widgetRefs[0];
-        // assertEquals("diff", widgetRef.getCategory());
-        // assertEquals("dublincore:subjects", widgetRef.getName());
+        assertEquals("dublincore:created", widgetRef.getName());
 
         // Check layout widget definitions
-        WidgetDefinition wDef = layoutDef.getWidgetDefinition("dublincore:title");
-        assertNotNull(wDef);
-        assertEquals("dublincore:title", wDef.getName());
-        assertEquals("template", wDef.getType());
-        assertEquals("label.dublincore.title", wDef.getLabel(BuiltinModes.ANY));
-        assertTrue(wDef.isTranslated());
-        FieldDefinition[] fieldDefs = wDef.getFieldDefinitions();
-        assertEquals(2, fieldDefs.length);
-        FieldDefinition fieldDef = fieldDefs[0];
-        assertEquals("dublincore:title/value", fieldDef.getPropertyName());
-        fieldDef = fieldDefs[1];
-        assertEquals("dublincore:title/styleClass", fieldDef.getPropertyName());
-
-        wDef = layoutDef.getWidgetDefinition("dublincore:description");
+        WidgetDefinition wDef = layoutDef.getWidgetDefinition("dublincore:description");
         assertNotNull(wDef);
         assertEquals("dublincore:description", wDef.getName());
         assertEquals("template", wDef.getType());
         assertEquals("label.dublincore.description",
                 wDef.getLabel(BuiltinModes.ANY));
         assertTrue(wDef.isTranslated());
-        fieldDefs = wDef.getFieldDefinitions();
+        FieldDefinition[] fieldDefs = wDef.getFieldDefinitions();
         assertEquals(2, fieldDefs.length);
-        fieldDef = fieldDefs[0];
+        FieldDefinition fieldDef = fieldDefs[0];
         assertEquals("dublincore:description/value", fieldDef.getPropertyName());
         fieldDef = fieldDefs[1];
         assertEquals("dublincore:description/styleClass",
                 fieldDef.getPropertyName());
 
-        // wDef = layoutDef.getWidgetDefinition("dublincore:modified");
-        // assertNotNull(wDef);
-        // assertEquals("dublincore:modified", wDef.getName());
-        // assertEquals("dateTime", wDef.getType());
-        // assertEquals("label.diff.widget.dublincore.modified",
-        // wDef.getLabel(BuiltinModes.ANY));
-        // assertTrue(wDef.isTranslated());
-        // fieldDefs = wDef.getFieldDefinitions();
-        // assertEquals(1, fieldDefs.length);
-        // fieldDef = fieldDefs[0];
-        // assertEquals("dublincore:modified", fieldDef.getPropertyName());
-        //
-        // wDef = layoutDef.getWidgetDefinition("dublincore:subjects");
-        // assertNotNull(wDef);
-        // assertEquals("dublincore:subjects", wDef.getName());
-        // assertEquals("list", wDef.getType());
-        // assertEquals("label.diff.widget.dublincore.subjects",
-        // wDef.getLabel(BuiltinModes.ANY));
-        // assertTrue(wDef.isTranslated());
-        // fieldDefs = wDef.getFieldDefinitions();
-        // assertEquals(1, fieldDefs.length);
-        // fieldDef = fieldDefs[0];
-        // assertEquals("dublincore:subjects", fieldDef.getPropertyName());
+        wDef = layoutDef.getWidgetDefinition("dublincore:created");
+        assertNotNull(wDef);
+        assertEquals("dublincore:created", wDef.getName());
+        assertEquals("datetime", wDef.getType());
+        assertEquals("label.dublincore.created",
+                wDef.getLabel(BuiltinModes.ANY));
+        assertTrue(wDef.isTranslated());
+        fieldDefs = wDef.getFieldDefinitions();
+        assertEquals(2, fieldDefs.length);
+        fieldDef = fieldDefs[0];
+        assertEquals("dublincore:created/value", fieldDef.getPropertyName());
+        fieldDef = fieldDefs[1];
+        assertEquals("dublincore:created/styleClass",
+                fieldDef.getPropertyName());
 
-        // TODO: check props ?
+        // TODO: check other widget definitions
 
+        // TODO: check props?
     }
 }

@@ -13,16 +13,12 @@
 
     <diffDisplay type="Folder">
       <diffBlocks>
-        <diffBlock name="heading" />
         <diffBlock name="dublincore" />
       </diffBlocks>
     </diffDisplay>
 
     <diffDisplay type="File">
       <diffBlocks>
-        <!-- Using "damHeading" in case the DAM package is installed to benefit 
-          from the "dam_common" schema fields -->
-        <diffBlock name="damHeading" />
         <diffBlock name="dublincore" />
         <diffBlock name="files" />
       </diffBlocks>
@@ -30,18 +26,9 @@
 
     <diffDisplay type="Note">
       <diffBlocks>
-        <diffBlock name="heading" />
         <diffBlock name="dublincore" />
         <diffBlock name="note" />
         <diffBlock name="files" />
-      </diffBlocks>
-    </diffDisplay>
-
-    <!-- DAM ImportSet -->
-    <diffDisplay type="ImportSet">
-      <diffBlocks>
-        <diffBlock name="damHeading" />
-        <diffBlock name="dublincore" />
       </diffBlocks>
     </diffDisplay>
 
@@ -50,25 +37,16 @@
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
     point="diffBlock">
 
-    <diffBlock name="heading">
-      <properties mode="any">
-        <property name="label">label.diffBlock.heading</property>
-      </properties>
-      <fields>
-        <field schema="dublincore" name="title" />
-        <field schema="dublincore" name="description" />
-      </fields>
-      <templates>
-        <template mode="any">/layouts/layout_diff_template.xhtml
-        </template>
-      </templates>
-    </diffBlock>
-
     <diffBlock name="dublincore">
       <properties mode="any">
         <property name="label">label.diffBlock.dublincore</property>
       </properties>
       <fields>
+        <field schema="dublincore" name="description" />
+        <!-- Display the "dam_common" schema fields in case the DAM package 
+          is installed -->
+        <field schema="dam_common" name="author" />
+        <field schema="dam_common" name="authoringDate" />
         <field schema="dublincore" name="nature" />
         <field schema="dublincore" name="subjects" />
         <field schema="dublincore" name="rights" />
@@ -116,22 +94,6 @@
       </properties>
       <fields>
         <field schema="note" name="note" displayContentDiffLinks="true" />
-      </fields>
-      <templates>
-        <template mode="any">/layouts/layout_diff_template.xhtml
-        </template>
-      </templates>
-    </diffBlock>
-
-    <diffBlock name="damHeading">
-      <properties mode="any">
-        <property name="label">label.diffBlock.heading</property>
-      </properties>
-      <fields>
-        <field schema="dublincore" name="title" />
-        <field schema="dublincore" name="description" />
-        <field schema="dam_common" name="author" />
-        <field schema="dam_common" name="authoringDate" />
       </fields>
       <templates>
         <template mode="any">/layouts/layout_diff_template.xhtml

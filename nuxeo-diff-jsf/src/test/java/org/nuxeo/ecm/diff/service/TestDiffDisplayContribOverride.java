@@ -95,19 +95,17 @@ public class TestDiffDisplayContribOverride {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(5, diffDisplays.size());
+        assertEquals(4, diffDisplays.size());
         assertTrue(diffDisplays.containsKey("Folder"));
         assertTrue(diffDisplays.containsKey("File"));
         assertTrue(diffDisplays.containsKey("Note"));
         assertTrue(diffDisplays.containsKey("SampleType"));
-        assertTrue(diffDisplays.containsKey("ImportSet"));
 
         // Check non overridden Folder diffDisplay contrib
         List<String> diffDisplay = diffDisplayService.getDiffDisplay("Folder");
         assertNotNull(diffDisplay);
 
         List<String> expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
@@ -116,7 +114,6 @@ public class TestDiffDisplayContribOverride {
         assertNotNull(diffDisplay);
 
         expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("files");
         expectedDiffDisplay.add("testNoFields");
         assertEquals(expectedDiffDisplay, diffDisplay);
@@ -126,7 +123,6 @@ public class TestDiffDisplayContribOverride {
         assertNotNull(diffDisplay);
 
         expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
         expectedDiffDisplay.add("note");
         expectedDiffDisplay.add("files");
@@ -137,20 +133,10 @@ public class TestDiffDisplayContribOverride {
         assertNotNull(diffDisplay);
 
         expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
         expectedDiffDisplay.add("files");
         expectedDiffDisplay.add("simpleTypes");
         expectedDiffDisplay.add("complexTypesAndListOfLists");
-        assertEquals(expectedDiffDisplay, diffDisplay);
-
-        // Check non overridden ImportSet diffDisplay contrib
-        diffDisplay = diffDisplayService.getDiffDisplay("ImportSet");
-        assertNotNull(diffDisplay);
-
-        expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("damHeading");
-        expectedDiffDisplay.add("dublincore");
         assertEquals(expectedDiffDisplay, diffDisplay);
     }
 
@@ -163,12 +149,10 @@ public class TestDiffDisplayContribOverride {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(7, contribs.size());
-        assertTrue(contribs.containsKey("heading"));
+        assertEquals(5, contribs.size());
         assertTrue(contribs.containsKey("dublincore"));
         assertTrue(contribs.containsKey("files"));
         assertTrue(contribs.containsKey("note"));
-        assertTrue(contribs.containsKey("damHeading"));
         assertTrue(contribs.containsKey("simpleTypes"));
         assertTrue(contribs.containsKey("complexTypesAndListOfLists"));
 
@@ -176,32 +160,13 @@ public class TestDiffDisplayContribOverride {
         DiffBlockDefinition diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("testNoFields");
         assertNull(diffBlockDefinition);
 
-        // Check non overridden heading diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("heading");
-        assertNotNull(diffBlockDefinition);
-
-        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "title"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
-                "description"));
-
-        Map<String, String> templates = new HashMap<String, String>();
-        templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
-
-        Map<String, Map<String, Serializable>> properties = new HashMap<String, Map<String, Serializable>>();
-        Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
-        labelProperty.put("label", "label.diffBlock.heading");
-        properties.put(BuiltinModes.ANY, labelProperty);
-
-        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "heading", templates, fields, properties);
-        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
-
         // Check overridden dublincore diffDisplay contrib
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("dublincore");
         assertNotNull(diffBlockDefinition);
 
-        fields = new ArrayList<DiffFieldDefinition>();
+        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "description"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "created"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "creator"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "modified"));
@@ -211,9 +176,16 @@ public class TestDiffDisplayContribOverride {
                 "contributors"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "subjects"));
 
+        Map<String, String> templates = new HashMap<String, String>();
+        templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
+
+        Map<String, Map<String, Serializable>> properties = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
         labelProperty.put("label", "label.diffBlock.dublincore");
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore",
-                templates, fields, properties);
+        properties.put(BuiltinModes.ANY, labelProperty);
+
+        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
+                "dublincore", templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 
         // Check non overridden files diffDisplay contrib
@@ -240,23 +212,6 @@ public class TestDiffDisplayContribOverride {
 
         labelProperty.put("label", "label.diffBlock.note");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note",
-                templates, fields, properties);
-        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
-
-        // Check non overriden damHeading diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("damHeading");
-        assertNotNull(diffBlockDefinition);
-
-        fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "title"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
-                "description"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dam_common", "author"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dam_common",
-                "authoringDate"));
-
-        labelProperty.put("label", "label.diffBlock.heading");
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("damHeading",
                 templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
 

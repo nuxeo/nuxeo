@@ -69,7 +69,6 @@
       <code>
         <diffDisplay type="File">
           <diffBlocks>
-            <diffBlock name="heading" />
             <diffBlock name="dublincore" />
             <diffBlock name="files" />
           </diffBlocks>
@@ -96,10 +95,12 @@
       </pre>
 
       <code>
-        <diffBlock name="heading" label="label.diffBlock.heading">
+        <diffBlock name="dublincore" label="label.diffBlock.dublincore">
           <fields>
-            <field schema="dublincore" name="title" />
             <field schema="dublincore" name="description" />
+            <field schema="dublincore" name="coverage" />
+            <field schema="dublincore" name="created" />
+            <field schema="dublincore" name="modified" />
           </fields>
         </diffBlock>
         <diffBlock name="files" label="label.diffBlock.files">

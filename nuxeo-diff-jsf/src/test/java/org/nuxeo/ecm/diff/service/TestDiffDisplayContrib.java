@@ -89,11 +89,10 @@ public class TestDiffDisplayContrib {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(4, diffDisplays.size());
+        assertEquals(3, diffDisplays.size());
         assertTrue(diffDisplays.containsKey("Folder"));
         assertTrue(diffDisplays.containsKey("File"));
         assertTrue(diffDisplays.containsKey("Note"));
-        assertTrue(diffDisplays.containsKey("ImportSet"));
 
         // Check a non existing diffDisplay contrib
         List<String> diffDisplay = diffDisplayService.getDiffDisplay("Test");
@@ -104,8 +103,16 @@ public class TestDiffDisplayContrib {
         assertNotNull(diffDisplay);
 
         List<String> expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
+        assertEquals(expectedDiffDisplay, diffDisplay);
+
+        // Check File diffDisplay contrib
+        diffDisplay = diffDisplayService.getDiffDisplay("File");
+        assertNotNull(diffDisplay);
+
+        expectedDiffDisplay = new ArrayList<String>();
+        expectedDiffDisplay.add("dublincore");
+        expectedDiffDisplay.add("files");
         assertEquals(expectedDiffDisplay, diffDisplay);
 
         // Check that order is taken into account
@@ -114,34 +121,14 @@ public class TestDiffDisplayContrib {
         expectedDiffDisplay.add(diffBlockRef);
         assertFalse(expectedDiffDisplay.equals(diffDisplay));
 
-        // Check File diffDisplay contrib
-        diffDisplay = diffDisplayService.getDiffDisplay("File");
-        assertNotNull(diffDisplay);
-
-        expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("damHeading");
-        expectedDiffDisplay.add("dublincore");
-        expectedDiffDisplay.add("files");
-        assertEquals(expectedDiffDisplay, diffDisplay);
-
         // Check Note diffDisplay contrib
         diffDisplay = diffDisplayService.getDiffDisplay("Note");
         assertNotNull(diffDisplay);
 
         expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("heading");
         expectedDiffDisplay.add("dublincore");
         expectedDiffDisplay.add("note");
         expectedDiffDisplay.add("files");
-        assertEquals(expectedDiffDisplay, diffDisplay);
-
-        // Check ImportSet diffDisplay contrib
-        diffDisplay = diffDisplayService.getDiffDisplay("ImportSet");
-        assertNotNull(diffDisplay);
-
-        expectedDiffDisplay = new ArrayList<String>();
-        expectedDiffDisplay.add("damHeading");
-        expectedDiffDisplay.add("dublincore");
         assertEquals(expectedDiffDisplay, diffDisplay);
     }
 
@@ -154,50 +141,25 @@ public class TestDiffDisplayContrib {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(5, contribs.size());
-        assertTrue(contribs.containsKey("heading"));
+        assertEquals(3, contribs.size());
         assertTrue(contribs.containsKey("dublincore"));
         assertTrue(contribs.containsKey("files"));
         assertTrue(contribs.containsKey("note"));
-        assertTrue(contribs.containsKey("damHeading"));
 
         // Check a non existing diffBlock contrib
         DiffBlockDefinition diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("test");
         assertNull(diffBlockDefinition);
 
-        // Check heading diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("heading");
-        assertNotNull(diffBlockDefinition);
-
-        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "title"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
-                "description"));
-
-        Map<String, String> templates = new HashMap<String, String>();
-        templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
-
-        Map<String, Map<String, Serializable>> properties = new HashMap<String, Map<String, Serializable>>();
-        Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
-        labelProperty.put("label", "label.diffBlock.heading");
-        properties.put(BuiltinModes.ANY, labelProperty);
-
-        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
-                "heading", templates, fields, properties);
-        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
-
-        // Check that order is taken into account
-        DiffFieldDefinition diffFieldDefinition = expectedDiffBlockDefinition.getFields().get(
-                0);
-        expectedDiffBlockDefinition.getFields().remove(0);
-        expectedDiffBlockDefinition.getFields().add(diffFieldDefinition);
-        assertFalse(expectedDiffBlockDefinition.equals(diffBlockDefinition));
-
         // Check dublincore diffDisplay contrib
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("dublincore");
         assertNotNull(diffBlockDefinition);
 
-        fields = new ArrayList<DiffFieldDefinition>();
+        List<DiffFieldDefinition> fields = new ArrayList<DiffFieldDefinition>();
+        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
+                "description"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dam_common", "author"));
+        fields.add(new DiffFieldDefinitionImpl(null, "dam_common",
+                "authoringDate"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "nature"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "subjects"));
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "rights"));
@@ -214,10 +176,24 @@ public class TestDiffDisplayContrib {
         fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
                 "lastContributor"));
 
+        Map<String, String> templates = new HashMap<String, String>();
+        templates.put(BuiltinModes.ANY, "/layouts/layout_diff_template.xhtml");
+
+        Map<String, Map<String, Serializable>> properties = new HashMap<String, Map<String, Serializable>>();
+        Map<String, Serializable> labelProperty = new HashMap<String, Serializable>();
         labelProperty.put("label", "label.diffBlock.dublincore");
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("dublincore",
-                templates, fields, properties);
+        properties.put(BuiltinModes.ANY, labelProperty);
+
+        DiffBlockDefinition expectedDiffBlockDefinition = new DiffBlockDefinitionImpl(
+                "dublincore", templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
+
+        // Check that order is taken into account
+        DiffFieldDefinition diffFieldDefinition = expectedDiffBlockDefinition.getFields().get(
+                0);
+        expectedDiffBlockDefinition.getFields().remove(0);
+        expectedDiffBlockDefinition.getFields().add(diffFieldDefinition);
+        assertFalse(expectedDiffBlockDefinition.equals(diffBlockDefinition));
 
         // Check files diffDisplay contrib
         diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("files");
@@ -243,23 +219,6 @@ public class TestDiffDisplayContrib {
 
         labelProperty.put("label", "label.diffBlock.note");
         expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("note",
-                templates, fields, properties);
-        assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
-
-        // Check damHeading diffDisplay contrib
-        diffBlockDefinition = diffDisplayService.getDiffBlockDefinition("damHeading");
-        assertNotNull(diffBlockDefinition);
-
-        fields = new ArrayList<DiffFieldDefinition>();
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore", "title"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dublincore",
-                "description"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dam_common", "author"));
-        fields.add(new DiffFieldDefinitionImpl(null, "dam_common",
-                "authoringDate"));
-
-        labelProperty.put("label", "label.diffBlock.heading");
-        expectedDiffBlockDefinition = new DiffBlockDefinitionImpl("damHeading",
                 templates, fields, properties);
         assertEquals(expectedDiffBlockDefinition, diffBlockDefinition);
     }

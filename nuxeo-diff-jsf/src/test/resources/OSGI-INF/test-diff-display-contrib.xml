@@ -23,7 +23,6 @@
     <!-- Override File diffDisplay -->
     <diffDisplay type="File">
       <diffBlocks>
-        <diffBlock name="heading" />
         <diffBlock name="files" />
         <diffBlock name="testNoFields" />
       </diffBlocks>
@@ -32,7 +31,6 @@
     <!-- SampleType diffDisplay -->
     <diffDisplay type="SampleType">
       <diffBlocks>
-        <diffBlock name="heading" />
         <diffBlock name="dublincore" />
         <diffBlock name="files" />
         <diffBlock name="simpleTypes" />
@@ -54,6 +52,7 @@
         <property name="label">label.diffBlock.dublincore</property>
       </properties>
       <fields>
+        <field schema="dublincore" name="description" />
         <field schema="dublincore" name="created" />
         <field schema="dublincore" name="creator" />
         <field schema="dublincore" name="modified" />
