@@ -1,58 +1,23 @@
 
- function getHiddenFormFields() {
+ function wizard_getHiddenFormFields() {
   var filter = "#nxl_" + wizard_params.advancedLayout;
   return jQuery(filter).find("input,select");
  } 
 
- function getInputValue(domInput) {
-   if (domInput.tagName == "INPUT" && domInput.type == 'text' ) {
-     return domInput.value;      
-   }
-   if (domInput.tagName == "INPUT" && domInput.type == 'radio' ) {
-     return domInput.checked;      
-   }
-   if (domInput.tagName == "INPUT" && domInput.type == 'checkbox' ) {
-     return domInput.checked;      
-   }
-   if (domInput.tagName == "SELECT" ) {
-     return jQuery(domInput).val();
-   }
- }
-
- function setInputValue(domInput, value) {
-   if (domInput.tagName == "INPUT" && domInput.type == 'text' ) {
-     domInput.value = value;      
-   }
-   if (domInput.tagName == "INPUT" && domInput.type == 'radio' ) {      
-     domInput.checked = value;
-   }
-   if (domInput.tagName == "INPUT" && domInput.type == 'checkbox' ) {
-     if (value==true) {
-        domInput.checked = true;
-     } else {
-        jQuery(domInput).removeAttr("checked");
-     }
-
-   }
-   if (domInput.tagName == "SELECT" ) {
-     jQuery(domInput).val(value);      
-   }
- }
- function saveForm() {
-   jQuery(getHiddenFormFields()).each( function() {
-         jQuery(this).attr("nxw_data",getInputValue(this));
+ function wizard_saveForm() {
+   jQuery(wizard_getHiddenFormFields()).each( function() {
+         jQuery(this).attr("nxw_data",getFormInputValue(this));
    });
  }
 
- function restoreFormState() {
-   jQuery(getHiddenFormFields()).each( function() {
-         setInputValue(this, jQuery(this).attr("nxw_data"));
+ function wizard_restoreFormState() {
+   jQuery(wizard_getHiddenFormFields()).each( function() {
+         setFormInputValue(this, jQuery(this).attr("nxw_data"));
    });
  }
  
- function selectPreset(name) {
-    //resetForm();    
-    restoreFormState();
+ function wizard_selectPreset(name) {
+    wizard_restoreFormState();
     var wParam = wizard_params.mapping[name];
     for (var wIdx = 0; wIdx < wParam.length; wIdx++) {
       var widget = wParam[wIdx]; 
@@ -65,7 +30,7 @@
     }      
  }
 
-function selectMode(radio) {
+function wizard_selectMode(radio) {
      var mode = jQuery(radio).val();
      jQuery(".modeSelectorContainer").css("backgroundColor", "white");
      jQuery(radio).parent(".modeSelectorContainer").css("backgroundColor", "#DDDDDD");
@@ -87,37 +52,37 @@ function selectMode(radio) {
   
 jQuery(document).ready(function(){
 
-  saveForm();
+  wizard_saveForm();
 
-
-  // bind mode selector container
-  
+  // bind mode selector container  
   jQuery(jQuery('.modeSelectorContainer')[0]).css("backgroundColor", "#DDDDDD");
   jQuery('.modeSelectorContainer').css("cursor","pointer").click( function() {
     if (this.tagName!="INPUT") {
        var targetInput = jQuery(this).children("input[@type=radio]")[0];
-//       jQuery(targetInput).click();
-       selectMode(targetInput);
+       wizard_selectMode(targetInput);
     }
     return true});
   
 
   // bind mode selector
   jQuery('.modeSelector').click( function(){    
-     selectMode(this)     
+     wizard_selectMode(this)     
      return true;
   });
 
-    // change CSS on presetSelector
-    jQuery('.presetSelector').css("cursor","pointer");
+  // change CSS on presetSelector
+  jQuery('.presetSelector').css("cursor","pointer");
 
-    // bind presetSelector
-    jQuery('.presetSelector').click( function(){
+  // bind presetSelector
+  jQuery('.presetSelector').click( function(){
       jQuery('li.presetSelector').css("backgroundColor", "white");
       jQuery(this).css("backgroundColor", "#DDDDDD");
       var inputOption = jQuery(jQuery(this).children("input[@type=radio]")[0]); 
       var presetName =inputOption.val();     
-      selectPreset(presetName);
+      wizard_selectPreset(presetName);
       inputOption.attr("checked","checked");
     });
 });
+
+
+

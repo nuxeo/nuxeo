@@ -17,16 +17,17 @@
   </div>
 
   <div id="#{layout.id}_wizard">
-    
+
   <c:set var="isEditMode" value="#{nxl:isBoundToEditMode(layout.mode)}" />
 
   <script>
      var wizard_params = { "mapping" : #{layoutProperty_wizardMapping},
                            "advancedLayout" :  "#{layoutProperty_wizardAdvancedLayout}",
                            "presetLayout"  : "#{layout.id}_wizard",
-                           "form" : "document_create"};                  
+                           "form" : "document_create"};
   </script>
-  <script src="/nuxeo/scripts/template-wizard.js"></script>
+  <script src="#{contextPath}/scripts/formHelper.js"></script>
+  <script src="#{contextPath}/scripts/template-wizard.js"></script>
 
   <table class="dataInput">
     <tbody>
