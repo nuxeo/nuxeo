@@ -41,19 +41,4 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.types.TypeService"
-             point="types">
-    <type id="SocialFolder">
-      <subtypes>
-        <type>VEVENT</type>
-      </subtypes>
-    </type>
-
-    <type id="SocialWorkspace">
-      <subtypes>
-        <type>VEVENT</type>
-      </subtypes>
-    </type>
-  </extension>
-
 </component>
