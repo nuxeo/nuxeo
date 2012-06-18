@@ -183,7 +183,10 @@
     <resource name="accessKey.js">
       <path>scripts/accessKey.js</path>
     </resource>
-
+    <!-- Moment.js -->
+    <resource name="moment.js">
+      <path>scripts/moment.min-1.5.0nx.js</path>
+    </resource>
   </extension>
 
   <!-- Register mapping between theme pages and resources -->
