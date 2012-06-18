@@ -14,7 +14,6 @@
 
 package org.nuxeo.runtime.model;
 
-import java.util.Date;
 
 /**
  * Empty implementation for a component.
@@ -95,7 +94,7 @@ public class DefaultComponent implements Component, Adaptable {
      * @since 5.6
      */
     protected void setModifiedNow() {
-        setLastModified(Long.valueOf(new Date().getTime()));
+        setLastModified(Long.valueOf(System.currentTimeMillis()));
     }
 
     @Override

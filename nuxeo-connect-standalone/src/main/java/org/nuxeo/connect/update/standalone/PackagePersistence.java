@@ -31,6 +31,7 @@ import org.nuxeo.connect.update.AlreadyExistsPackageException;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
+import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
 
@@ -155,7 +156,10 @@ public class PackagePersistence {
         if (dir.exists()) {
             // FIXME: refactor this way of handling Studio packages to be
             // consistent with other packages
-            if (pkg.getId().endsWith("-0.0.0-SNAPSHOT")) {
+            if (PackageType.STUDIO.equals(pkg.getType())
+                    && pkg.getId().endsWith("-0.0.0-SNAPSHOT")) {
+                // FIXME: maybe check for pkg#supportsHotReload and
+                // Framework.isDevModeSet() or Framework.isDebugModeSet()?
                 // this is a special case - reload a studio snapshot package
                 // 1. first we need to uninstall the existing package
                 LocalPackage oldpkg = getPackage(pkg.getId());

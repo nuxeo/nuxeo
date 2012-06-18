@@ -28,7 +28,7 @@ package org.nuxeo.runtime.service;
 public interface TimestampedService {
 
     /**
-     * Returns the last modification timestamp.
+     * Returns the last modification timestamp or null if unknown.
      * <p>
      * This method is useful for third-party code implementing caching on
      * resources held by the component/service.

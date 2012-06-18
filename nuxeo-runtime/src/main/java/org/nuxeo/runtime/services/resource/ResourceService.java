@@ -22,8 +22,8 @@ import org.nuxeo.runtime.model.ReloadableComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
+// FIXME: make it handle hot reload correctly
 public class ResourceService extends ReloadableComponent {
 
     public final static String XP_RESOURCES = "resources";
@@ -64,7 +64,7 @@ public class ResourceService extends ReloadableComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP_RESOURCES.equals(extensionPoint)) {
-            addResource((ResourceDescriptor)contribution);
+            addResource((ResourceDescriptor) contribution);
         }
     }
 
@@ -73,7 +73,7 @@ public class ResourceService extends ReloadableComponent {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (XP_RESOURCES.equals(extensionPoint)) {
-            ResourceDescriptor rd = (ResourceDescriptor)contribution;
+            ResourceDescriptor rd = (ResourceDescriptor) contribution;
             ResourceDescriptor last = findLastContributedResource(rd.getName());
             if (last != null) {
                 addResource(last);
@@ -84,11 +84,11 @@ public class ResourceService extends ReloadableComponent {
     }
 
     protected ResourceDescriptor findLastContributedResource(String name) {
-        for (int i=extensions.size()-1; i>=0; i--) {
+        for (int i = extensions.size() - 1; i >= 0; i--) {
             Extension xt = extensions.get(i);
             Object[] contribs = xt.getContributions();
-            for (int k=contribs.length-1; k>=0; k--) {
-                ResourceDescriptor r = (ResourceDescriptor)contribs[k];
+            for (int k = contribs.length - 1; k >= 0; k--) {
+                ResourceDescriptor r = (ResourceDescriptor) contribs[k];
                 if (name.equals(r.getName())) {
                     return r;
                 }

@@ -171,15 +171,15 @@ public class ConfigurationGenerator {
     public static final String PARAM_PRODUCT_VERSION = "org.nuxeo.ecm.product.version";
 
     /**
-     * Global debug property, dupplicated from runtime framework
+     * Global dev property, dupplicated from runtime framework
      *
      * @since 5.6
      */
-    public static final String NUXEO_DEBUG_SYSTEM_PROP = "org.nuxeo.debug";
+    public static final String NUXEO_DEV_SYSTEM_PROP = "org.nuxeo.dev";
 
     /**
      * Seam hot reload property, also controlled by
-     * {@link #NUXEO_DEBUG_SYSTEM_PROP}
+     * {@link #NUXEO_DEV_SYSTEM_PROP}
      *
      * @since 5.6
      */
@@ -503,13 +503,13 @@ public class ConfigurationGenerator {
         }
 
         // init debug mode(s)
-        String debugPropValue = userConfig.getProperty(NUXEO_DEBUG_SYSTEM_PROP,
+        String debugPropValue = userConfig.getProperty(NUXEO_DEV_SYSTEM_PROP,
                 "false");
         boolean isDebugSet = Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
         if (isDebugSet) {
-            log.info("Nuxeo Debug mode enabled");
+            log.info("Nuxeo Dev mode enabled");
         } else {
-            log.info("Nuxeo Debug mode is not enabled");
+            log.info("Nuxeo Dev mode is not enabled");
         }
 
         // XXX: cannot init seam debug mode when global debug mode is set, as

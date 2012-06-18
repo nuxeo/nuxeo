@@ -14,13 +14,17 @@ package org.nuxeo.runtime.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.runtime.service.TimestampedService;
+
 /**
  * A component that expose a reload method usefull to completely reload the
  * component and preserving already registered extensions.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @deprecated since 5.6: services needing a reload should listen to runtime
- *             reload events instead
+ *             reload events instead. They can also implement the
+ *             {@link TimestampedService} interface in case they should not
+ *             need to be reloaded when event is received.
  */
 @Deprecated
 public class ReloadableComponent extends DefaultComponent implements Reloadable {

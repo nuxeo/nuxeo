@@ -24,6 +24,8 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
@@ -53,6 +55,8 @@ import org.nuxeo.runtime.api.login.LoginService;
  */
 public final class Framework {
 
+    private static final Log log = LogFactory.getLog(Framework.class);
+
     /**
      * Global dev property
      *
@@ -70,12 +74,12 @@ public final class Framework {
     public static final String NUXEO_TESTING_SYSTEM_PROP = "org.nuxeo.runtime.testing";
 
     /**
-     * Global debug property
+     * Property to control strict runtime mode
      *
      * @since 5.6
-     * @see #isDebugModeSet()
+     * @see #handleDevError(Throwable)
      */
-    public static final String NUXEO_DEBUG_SYSTEM_PROP = "org.nuxeo.debug";
+    public static final String NUXEO_STRICT_RUNTIME_SYSTEM_PROP = "org.nuxeo.runtime.strict";
 
     /**
      * The runtime instance.
@@ -421,17 +425,22 @@ public final class Framework {
     }
 
     /**
-     * Returns true id dev mode is set.
+     * Returns true if dev mode is set.
      * <p>
-     * Activating this mode, the Runtime Framework will stop on low-level
-     * errors, see {@link #handleDevError(Throwable)}
+     * Activating this mode, some of the code may not behave as it would in
+     * production, to ease up debugging and working on developing the
+     * application.
+     * <p>
+     * For instance, it'll enable hot-reload if some packages are installed
+     * while the framework is running. It will also reset some caches when that
+     * happens.
+     * <p>
+     * Before 5.6, when activating this mode, the Runtime Framework stopped on
+     * low-level errors, see {@link #handleDevError(Throwable)} but this
+     * behaviour has been removed.
      */
     public static boolean isDevModeSet() {
-        String dev = getProperty(NUXEO_DEV_SYSTEM_PROP);
-        if (dev == null) {
-            dev = System.getProperty(NUXEO_DEV_SYSTEM_PROP);
-        }
-        return Boolean.TRUE.equals(Boolean.valueOf(dev));
+        return isBooleanPropertyTrue(NUXEO_DEV_SYSTEM_PROP);
     }
 
     /**
@@ -441,38 +450,29 @@ public final class Framework {
      * production, to ease up testing.
      */
     public static boolean isTestModeSet() {
-        String test = getProperty(NUXEO_TESTING_SYSTEM_PROP);
+        return isBooleanPropertyTrue(NUXEO_TESTING_SYSTEM_PROP);
+    }
+
+    /**
+     * Returns true if given property is true when compared to a boolean value.
+     * <p>
+     * Checks for the system properties if property is not found in the runtime
+     * properties.
+     *
+     * @since 5.6
+     */
+    public static boolean isBooleanPropertyTrue(String propName) {
+        String test = getProperty(propName);
         if (test == null) {
-            test = System.getProperty(NUXEO_TESTING_SYSTEM_PROP);
+            test = System.getProperty(propName);
         }
         return Boolean.TRUE.equals(Boolean.valueOf(test));
     }
 
     /**
-     * Returns true if debug mode is set.
-     * <p>
-     * Activating this mode, some of the code may not behave as it would in
-     * production, to ease up debugging and working on developing the
-     * application.
-     * <p>
-     * For instance, it'll enable hot-reload if some packages are installed
-     * while the framework is running. It will also reset some caches when that
-     * happens.
-     *
-     * @since 5.6
-     */
-    public static boolean isDebugModeSet() {
-        String debug = getProperty(NUXEO_DEBUG_SYSTEM_PROP);
-        if (debug == null) {
-            debug = System.getProperty(NUXEO_DEBUG_SYSTEM_PROP);
-        }
-        return Boolean.TRUE.equals(Boolean.valueOf(debug));
-    }
-
-    /**
-     * This method stops the application if development mode is enabled (i.e.
-     * org.nuxeo.dev system property is set) and one of the following errors
-     * occurs during startup:
+     * Since 5.6, this method stops the application if property
+     * {@link #NUXEO_STRICT_RUNTIME_SYSTEM_PROP} is set to true, and one of the
+     * following errors occured during startup.
      * <ul>
      * <li>Component XML parse error.
      * <li>Contribution to an unknown extension point.
@@ -485,14 +485,22 @@ public final class Framework {
      * <li>Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be
      * resolved to a resource)
      * </ul>
+     * <p>
+     * Before 5.6, this method stopped the application if development mode was
+     * enabled (i.e. org.nuxeo.dev system property is set) but this is not the
+     * case anymore to handle a dev mode that does not stop the runtime
+     * framework when using hot reload.
      *
      * @param t the exception or null if none
      */
     public static void handleDevError(Throwable t) {
-        if (isDevModeSet()) {
-            System.err.println("Fatal error caught in dev mode: exiting.");
+        if (isBooleanPropertyTrue(NUXEO_STRICT_RUNTIME_SYSTEM_PROP)) {
+            System.err.println("Fatal error caught in strict "
+                    + "runtime mode => exiting.");
             t.printStackTrace();
             System.exit(1);
+        } else {
+            log.error(t, t);
         }
     }
 

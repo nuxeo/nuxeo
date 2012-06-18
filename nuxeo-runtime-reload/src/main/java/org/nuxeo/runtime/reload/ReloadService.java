@@ -18,10 +18,14 @@ package org.nuxeo.runtime.reload;
 
 import java.io.File;
 
+import org.nuxeo.runtime.service.TimestampedService;
+
 /**
+ * Service tracking reload related events or commands when installing a package
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface ReloadService {
+public interface ReloadService extends TimestampedService {
 
     public static final String RELOAD_TOPIC = "org.nuxeo.runtime.reload";
 
@@ -76,7 +80,16 @@ public interface ReloadService {
     void flush() throws Exception;
 
     /**
-     * Sends an event that will trigger reset of JaasCache
+     * Returns the last time one of the flush commands where called on this
+     * service instance ({@link #flush()} or {@link #flushJaasCache()} or
+     * {@link #flushSeamComponents()}, or null if never called
+     *
+     * @since 5.6
+     */
+    Long lastFlushed();
+
+    /**
+     * Sends an event that can trigger reset of JaasCache
      */
     void flushJaasCache() throws Exception;
 
@@ -89,32 +102,21 @@ public interface ReloadService {
 
     /**
      * @since 5.5
-     * @deprecated since 5.6: deploy should be handled by tasks directly
      */
-    @Deprecated
     String deployBundle(File file, boolean reloadResources) throws Exception;
 
     /**
-     * @see #deployBundle(File, boolean)
-     * @deprecated since 5.6: deploy should be handled by tasks directly
+     * @since 5.6
      */
-    @Deprecated
-    String deployBundle(File file) throws Exception;
+    void undeployBundle(File file) throws Exception;
 
     /**
-     * @since 5.5
-     * @deprecated since 5.6: deploy should be handled by tasks directly
-     */
-    @Deprecated
-    void undeployBundle(String name) throws Exception;
-
-    /**
-     * Copy web resources in nuxeo WAR.
-     * <p>
-     * Called by {@link #deployBundle(File, boolean)}
+     * Copies the bundle web resources into the nuxeo WAR directory.
      *
      * @since 5.5
-     * @deprecated since 5.6: install should be handled by tasks directly
+     * @deprecated since 5.6: {@link #deployBundle(File, boolean)} method now
+     *             re-deploys all jars so that the nuxeo.war holds the same
+     *             content than it would at startup.
      */
     @Deprecated
     void installWebResources(File file) throws Exception;
