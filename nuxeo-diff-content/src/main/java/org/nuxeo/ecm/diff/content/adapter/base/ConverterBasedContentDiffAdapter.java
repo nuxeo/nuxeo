@@ -132,6 +132,10 @@ public class ConverterBasedContentDiffAdapter extends
         // common mime type.
         // Fall back on a conversion (conversionType) + HtmlContentDiffer.
         try {
+            // Default conversion type is HTML
+            if (conversionType == null) {
+                conversionType = ContentDiffConversionType.html;
+            }
             String converterName = conversionType.getValue();
             BlobHolder adaptedDocConvertedBlobHolder = getConvertedBlobHolder(
                     adaptedDocBlobHolder, converterName);

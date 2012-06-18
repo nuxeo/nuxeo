@@ -63,6 +63,37 @@ public class TestContentDiffAdapter {
     /**
      * Tests
      * {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)}
+     * on plain text files.
+     */
+    @Test
+    public void testPlainTextFilesContentDiff() throws ClientException {
+
+        // Get left and right plain text docs
+        DocumentModel leftDoc = session.getDocument(new PathRef(
+                ContentDiffRepositoryInit.getLeftPlainTextDocPath()));
+        DocumentModel rightDoc = session.getDocument(new PathRef(
+                ContentDiffRepositoryInit.getRightPlainTextDocPath()));
+
+        // Get content diff adapter for left doc
+        ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
+        assertNotNull(contentDiffAdapter);
+
+        // Get content diff blobs
+        List<Blob> contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(
+                rightDoc, null, Locale.ENGLISH);
+        assertNotNull(contentDiffBlobs);
+        assertEquals(1, contentDiffBlobs.size());
+
+        Blob contentDiffBlob = contentDiffBlobs.get(0);
+        assertNotNull(contentDiffBlob);
+
+        // Check content diff
+        checkContentDiff("plain_text_content_diff.html", contentDiffBlob);
+    }
+
+    /**
+     * Tests
+     * {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)}
      * on HTML files.
      */
     @Test

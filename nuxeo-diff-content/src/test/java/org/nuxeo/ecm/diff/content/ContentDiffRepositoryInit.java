@@ -38,6 +38,14 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
  */
 public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
 
+    public static String getLeftPlainTextDocPath() {
+        return "/leftPlainTextDoc";
+    }
+
+    public static String getRightPlainTextDocPath() {
+        return "/rightPlainTextDoc";
+    }
+
     public static String getLeftHTMLDocPath() {
         return "/leftHTMLDoc";
     }
@@ -65,6 +73,10 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
     @Override
     public void populate(CoreSession session) throws ClientException {
 
+        createFileDoc(session, "leftPlainTextDoc", "Left plain text doc",
+                "left_doc.txt", "text/plain");
+        createFileDoc(session, "rightPlainTextDoc", "Right plain text doc",
+                "right_doc.txt", "text/plain");
         createFileDoc(session, "leftHTMLDoc", "Left HTML doc", "left_doc.html",
                 "text/html");
         createFileDoc(session, "rightHTMLDoc", "Right HTML doc",
