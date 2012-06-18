@@ -11,7 +11,8 @@
     This component provides a registry for Directory Factories
     <p />
     Directories are abstract representations of data sources. A
-    Directory Factory represents an implementation of such data
+    Directory Factory
+    represents an implementation of such data
     sources, e.g. using SQL, LDAP, etc.
   </documentation>
 
@@ -21,13 +22,20 @@
       factories.
       <p />
       The XML extension can contain an arbitrary number of factory
-      declarations of the form:
+      declarations
+      of the form:
       <factoryDescriptor component="org.pkg.Foo" />
-      Here, Foo must be a class that implements the org.nuxeo.ecm.directory.DirectoryFactory interface
+      Here, Foo must be a class that implements the
+      org.nuxeo.ecm.directory.DirectoryFactory interface
     </documentation>
 
-    <object
-      class="org.nuxeo.ecm.directory.DirectoryFactoryDescriptor" />
+    <object class="org.nuxeo.ecm.directory.DirectoryFactoryDescriptor" />
   </extension-point>
+
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener class="org.nuxeo.ecm.directory.DirectoryCacheFlusher">
+      <topic>org.nuxeo.runtime.reload</topic>
+    </listener>
+  </extension>
 
 </component>
