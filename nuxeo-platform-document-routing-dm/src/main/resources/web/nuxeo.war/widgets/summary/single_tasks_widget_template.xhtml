@@ -4,41 +4,31 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:nxh="http://nuxeo.org/nxweb/html">
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
-<c:if test="false">
-DELETE ME; and moved this template in nuxeo-platform-task-web after merging the branch NXP-8068-integrate-routing-in-dm
-</c:if>
-  
-    <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
+ <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
     <h3 class="summaryTitle">
       <h:outputText value="#{messages['action.view.associatedTasks']}" />
     </h3>
 
-   <c:forEach var="dashboardItem" items="#{currentDashBoardItemsExceptPublishingTasks}">    
-      <div>
-          <nxl:layout name="#{routingTaskActions.getTaskLayout(dashboardItem.task)}" mode="edit" value="#{routingTaskActions.getCurrentVariables(dashboardItem.task)}"/>
+<c:forEach var="dashboardItem" items="#{currentDashBoardItemsExceptPublishingTasks}" cache="true">    
+  <div>
+   <nxu:set var="task" value="#{routingTaskActions.setCurrentTask(dashboardItem.task)}" cache="true">
+      <a4j:form id="taskForm_#{task.id}" ajaxSubmit="true">
+        <nxl:layout name="#{routingTaskActions.getTaskLayout(task)}" mode="edit" value="#{routingTaskActions.formVariables}"/>
            <div class="buttons">
-            <nxu:set var="actions"
-                   value="#{routingTaskActions.getTaskButtons(dashboardItem.task)}"
-                     cache="true">
-                 <nxu:dataList var="sel_action" value="#{actions}" id="versionActionsTable">
-                      <span id="#{sel_action.id}">
-                            <nxh:commandButton
-                              styleClass="button"
-                              action="#{routingTaskActions.endTask(dashboardItem.task)}"
-                              value="#{messages[sel_action.label]}"
-                              onclick="#{sel_action.confirm}"
-                              disabled="#{!sel_action.available}"
-                              immediate="#{sel_action.immediate}"
-                              id="versionActionsButton" />
-                           </span>
-                        </nxu:dataList>
-               </nxu:set>   
-          </div>
-       </div>   
-   </c:forEach>
-
-   </c:if>
- 
+             <nxu:set var="actions"  value="#{routingTaskActions.getTaskButtons(task)}" cache="true">
+                <nxu:dataList var="btn_action" value="#{actions}" id="versionActionsTable">
+                   <span id="#{sel_action.id}">
+                     <a4j:commandLink action="#{routingTaskActions.endTask(task)}" value="#{messages[btn_action]}"  styleClass="button"/>
+                  </span>
+               </nxu:dataList>
+             </nxu:set>   
+         </div>
+     </a4j:form>    
+   </nxu:set>
+  </div>   
+ </c:forEach>
+</c:if>
 </div>

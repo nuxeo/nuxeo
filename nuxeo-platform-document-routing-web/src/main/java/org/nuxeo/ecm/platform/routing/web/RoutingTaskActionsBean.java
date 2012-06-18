@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -47,7 +48,6 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
@@ -55,6 +55,8 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Button;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -63,7 +65,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  * Task validators
  *
- * @author mcedica
  * @since 5.6
  *
  */
@@ -78,13 +79,20 @@ public class RoutingTaskActionsBean {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    @In(required = true, create = true)
+    protected NavigationContext navigationContext;
+
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    RoutingTaskService routingTaskService;
+    protected RoutingTaskService routingTaskService;
+
+    protected Map<String, Serializable> formVariables;
+
+    protected Task currentTask;
 
     public void validateTaskDueDate(FacesContext context,
             UIComponent component, Object value) {
@@ -133,19 +141,16 @@ public class RoutingTaskActionsBean {
         return node.getTaskLayout();
     }
 
-    public List<Action> getTaskButtons(Task task) throws ClientException {
-        List<Action> btnActions = new ArrayList<Action>();
+    public List<String> getTaskButtons(Task task) throws ClientException {
+        List<String> btnActions = new ArrayList<String>();
         GraphNode node = getSourceGraphNode(task);
         if (node == null) {
             return btnActions;
         }
         for (Button btn : node.getTaskButtons()) {
-            Action actionBtn = new Action();
-            actionBtn.setLabel(btn.getLabel());
-            actionBtn.setImmediate(true);
-            actionBtn.setEnabled(true);
-            // action link is set in the xhtml template
-            btnActions.add(actionBtn);
+            // TODO evaluate action filter? ( btn.getFilter) to display or not
+            // this action
+            btnActions.add(btn.getLabel());
         }
         return btnActions;
     }
@@ -153,8 +158,9 @@ public class RoutingTaskActionsBean {
     public String endTask(Task task) throws ClientException {
         // collect form data
         Map<String, Object> data = new HashMap<String, Object>();
-        GraphNode node = getSourceGraphNode(task);
-        data.putAll(node.getVariables());
+        if (formVariables != null) {
+            data.putAll(formVariables);
+        }
         try {
             getRoutingTaskService().endTask(documentManager, task, data);
         } catch (DocumentRouteException e) {
@@ -163,17 +169,20 @@ public class RoutingTaskActionsBean {
                     resourcesAccessor.getMessages().get(
                             "label.review.task.error.resume.workflow"));
         }
-        return null;
+        Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+        clear();
+        // TODO : not sure where to navigate after task is ended
+        return navigationContext.goHome();
     }
 
-    public VariablesMap getCurrentVariables(Task task) throws ClientException {
-        GraphNode node = getSourceGraphNode(task);
-        GraphRoute route = getSourceGraphRoute(task);
-        VariablesMap map = new VariablesMap();
-        map.addVariables(node.getVariables());
-        map.addVariables(route.getVariables());
-        return map;
+    private void clear() {
+        currentTask = null;
+        formVariables = null;
+    }
 
+    public Task setCurrentTask(Task task) throws ClientException {
+        currentTask = task;
+        return currentTask;
     }
 
     protected GraphNode getSourceGraphNode(Task task) throws ClientException {
@@ -205,31 +214,23 @@ public class RoutingTaskActionsBean {
             }
         }
         return routingTaskService;
-
     }
 
-    public class VariablesMap {
-
-        Map<String, Serializable> variables;
-
-        public VariablesMap() {
-            variables = new HashMap<String, Serializable>();
+    public Map<String, Serializable> getFormVariables() throws ClientException {
+        if (formVariables == null) {
+            if (currentTask == null) {
+                throw new ClientException("No current task defined");
+            }
+            GraphNode node = getSourceGraphNode(currentTask);
+            GraphRoute route = getSourceGraphRoute(currentTask);
+            formVariables = new HashMap<String, Serializable>();
+            formVariables.putAll(node.getVariables());
+            formVariables.putAll(route.getVariables());
         }
+        return formVariables;
+    }
 
-        public void addVariables(Map<String, Serializable> vars) {
-            variables.putAll(vars);
-        }
-
-        Map<String, Serializable> getVariables() {
-            return variables;
-        }
-
-        public Serializable get(String key){
-            return variables.get(key);
-        }
-
-        public void setVariables(Map<String, Serializable> variables) {
-            this.variables = variables;
-        }
+    public void setFormVariables(Map<String, Serializable> formVariables) {
+        this.formVariables = formVariables;
     }
 }
