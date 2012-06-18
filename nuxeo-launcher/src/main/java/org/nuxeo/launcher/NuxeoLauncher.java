@@ -1118,13 +1118,16 @@ public abstract class NuxeoLauncher {
             }
         } catch (ConfigurationException e) {
             errorValue = 6;
-            log.error("Could not run configuration", e);
+            log.error("Could not run configuration" + e.getMessage());
+            log.debug(e, e);
         } catch (IOException e) {
             errorValue = 1;
-            log.error("Could not start process", e);
+            log.error("Could not start process" + e.getMessage());
+            log.debug(e, e);
         } catch (InterruptedException e) {
             errorValue = 1;
-            log.error("Could not start process", e);
+            log.error("Could not start process" + e.getMessage());
+            log.debug(e, e);
         } catch (IllegalStateException e) {
             log.error(e.getMessage());
         }
