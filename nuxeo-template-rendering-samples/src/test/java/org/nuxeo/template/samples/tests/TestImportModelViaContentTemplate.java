@@ -20,12 +20,17 @@ package org.nuxeo.template.samples.tests;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
@@ -88,6 +93,34 @@ public class TestImportModelViaContentTemplate extends SQLRepositoryTestCase {
         String dump = sb.toString();
         System.out.println("Import completed : " + docs.size() + " docs");
         System.out.println(dump);
+
+    }
+
+    @Test
+    public void testWebTemplateRendering() throws Exception {
+
+        PathRef ref = new PathRef("/default-domain/templates/WebTemplate");
+        assertTrue(session.exists(ref));
+
+        DocumentModel webTemplate = session.getDocument(ref);
+        TemplateSourceDocument source = webTemplate.getAdapter(TemplateSourceDocument.class);
+        assertNotNull(source);
+
+        List<TemplateBasedDocument> using = source.getTemplateBasedDocuments();
+        assertNotNull(using);
+        assertEquals(1, using.size());
+
+        TemplateBasedDocument note = using.get(0);
+
+        Blob blob = note.renderWithTemplate(source.getName());
+        assertNotNull(blob);
+
+        String html = blob.getString();
+        assertNotNull(html);
+
+        String targetUrl = "templates/doc/" + note.getAdaptedDoc().getId()
+                + "/resource/" + source.getName() + "/style.css";
+        assertTrue(html.contains(targetUrl));
 
     }
 }

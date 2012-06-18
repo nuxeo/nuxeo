@@ -1,0 +1,13 @@
+html {overflow-y: scroll;}
+  body{
+    margin:20px;
+    padding:20px;
+    font: 13px Helmet, Freesans, sans-serif;
+  }
+  .rounded-corner{
+    padding:20px;
+    background-color:#EEEEEE;
+    -moz-border-radius:10px; /* defining radius value for mozila */
+    -webkit-border-radius: 10px; /* CSS3 Standard syntax */
+    border: 1px solid #CCC;
+  }
