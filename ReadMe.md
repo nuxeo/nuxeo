@@ -127,13 +127,17 @@ See : http://jxls.sourceforge.net/
 Contribute JOD Report based template processor for ODT files.
 This renderer is historical and replaced by xdocreport that is more powerful.
 
+**nuxeo-template-rendering-jaxrs**
+
+Contribute a JAXRS simple API as well as a new WebTemplate doc type that is based on a Note rather than a file.
+
 **nuxeo-template-rendering-sandbox**
 
 Misc code and extensions that are currently experimental.
 
-**nuxeo-template-rendering-distrib**
+**nuxeo-template-rendering-package**
 
-Distribution module.
+Builder for marketplace package.
 
 ## Building
 
@@ -146,18 +150,7 @@ You need :
  - to install needed bundles
  - to install needed third paarty libs
 
-A simple way to do that is to use nuxeo-template-rendering-distrib.
-
- 	mvn clean install
-
-This will create in target directory 2 sub dirs with the needed jars :
-
-	cp target/bundles/* into nxserver/bundles or nxserver/plugins
-
-        cp target/libs/*  nxserver/lib/
-
-NB : By default, only XDocReport and JXLS plugins are included, but you can change the pom dependencies to alter that.
-
+You can use the Marketplace package for that.
 
 	
 
