@@ -272,7 +272,8 @@ public class ConverterBasedContentDiffAdapter extends
             throws ContentDiffException {
         try {
             StringBlob htmlStringBlob = new StringBlob(
-                    StringEscapeUtils.escapeHtml(blob.getString()).replace(
+                    StringEscapeUtils.escapeHtml(
+                            new String(blob.getByteArray(), "UTF-8")).replace(
                             "\r\n", "\n").replace("\n", "<br />"));
             htmlStringBlob.setFilename(blob.getFilename());
             return htmlStringBlob;
