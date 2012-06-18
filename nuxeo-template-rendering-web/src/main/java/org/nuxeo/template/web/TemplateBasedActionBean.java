@@ -249,12 +249,8 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
             // return null;
             return;
         }
-
-        TransactionHelper.commitOrRollbackTransaction();
-
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        CoreSession session = currentDocument.getCoreSession();
-        DocumentModel sourceTemplate = session.getDocument(new IdRef(
+        DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(
                 templateIdToAssociate));
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         try {
@@ -268,11 +264,6 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
                             "label.template.err.associationFailed"),
                     sourceTemplate.getName());
         }
-
-        TransactionHelper.startTransaction();
-        currentDocument.setPropertyValue("dc:title", currentDocument.getTitle()
-                + "--BadTx");
-        currentDocument = documentManager.saveDocument(currentDocument);
         navigationContext.invalidateCurrentDocument();
         EventManager.raiseEventsOnDocumentChange(currentDocument);
         templateIdToAssociate = null;
