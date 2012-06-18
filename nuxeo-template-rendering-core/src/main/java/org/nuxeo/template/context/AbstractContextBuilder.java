@@ -20,7 +20,7 @@ public abstract class AbstractContextBuilder {
             "auditEntries", "username" };
 
     public Map<String, Object> build(DocumentModel doc,
-            DocumentWrapper nuxeoWrapper) throws Exception {
+            DocumentWrapper nuxeoWrapper, String templateName) throws Exception {
 
         Map<String, Object> ctx = new HashMap<String, Object>();
 
@@ -37,6 +37,8 @@ public abstract class AbstractContextBuilder {
         ctx.put("username", session.getPrincipal().getName());
         ctx.put("principal", session.getPrincipal());
 
+        ctx.put("templateName", templateName);
+
         // fetch extensions
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         tps.addContextExtensions(doc, nuxeoWrapper, ctx);
@@ -50,15 +52,16 @@ public abstract class AbstractContextBuilder {
 
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
 
-        Map<String, Object> context = build(doc);
+        Map<String, Object> context = build(doc, templateName);
 
         return context;
     }
 
     protected abstract DocumentWrapper getWrapper();
 
-    public Map<String, Object> build(DocumentModel doc) throws Exception {
+    public Map<String, Object> build(DocumentModel doc, String templateName)
+            throws Exception {
 
-        return build(doc, getWrapper());
+        return build(doc, getWrapper(), templateName);
     }
 }

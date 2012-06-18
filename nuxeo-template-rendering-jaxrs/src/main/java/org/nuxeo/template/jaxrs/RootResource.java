@@ -2,6 +2,7 @@ package org.nuxeo.template.jaxrs;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -35,19 +36,26 @@ public class RootResource extends ModuleRoot {
         return "pong";
     }
 
-    @Path("resources")
-    public ResourceService getResourceService() {
-        return new ResourceService(getContext().getCoreSession());
+    @Path("templates")
+    public Object getTemplates() {
+        return getContext().newObject("templateResource");
     }
 
-    @Path("xdocresources")
-    public XDocReportResourceService getXDocResourceService() {
-        return new XDocReportResourceService(getContext().getCoreSession());
+    @Path("docs")
+    public Object getDocs() {
+        return getContext().newObject("templateBasedResource");
     }
 
-    @Path("reports")
-    public ReportService getReportService() {
-        return new ReportService();
+    @Path("template/{id}")
+    public Object getTemplates(@PathParam(value = "id")
+    String id) {
+        return getContext().newObject("templateResource", id);
+    }
+
+    @Path("doc/{id}")
+    public Object getDocs(@PathParam(value = "id")
+    String id) {
+        return getContext().newObject("templateBasedResource", id);
     }
 
 }

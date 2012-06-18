@@ -25,6 +25,7 @@
     <module>nuxeo-template-rendering-jod</module>
     <module>nuxeo-template-rendering-sandbox</module>
     <module>nuxeo-template-rendering-web</module>
+    <module>nuxeo-template-rendering-jaxrs</module>
     <module>nuxeo-template-rendering-samples</module>
     <module>nuxeo-template-rendering-package</module>
   </modules>
@@ -49,6 +50,11 @@
     <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-jxls</artifactId>
+     <version>${nuxeo.templates.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-jaxrs</artifactId>
      <version>${nuxeo.templates.version}</version>
     </dependency>
     <dependency>

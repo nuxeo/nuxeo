@@ -16,6 +16,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -27,6 +28,7 @@ import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
@@ -247,8 +249,12 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
             // return null;
             return;
         }
+
+        TransactionHelper.commitOrRollbackTransaction();
+
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentModel sourceTemplate = documentManager.getDocument(new IdRef(
+        CoreSession session = currentDocument.getCoreSession();
+        DocumentModel sourceTemplate = session.getDocument(new IdRef(
                 templateIdToAssociate));
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         try {
@@ -263,6 +269,10 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
                     sourceTemplate.getName());
         }
 
+        TransactionHelper.startTransaction();
+        currentDocument.setPropertyValue("dc:title", currentDocument.getTitle()
+                + "--BadTx");
+        currentDocument = documentManager.saveDocument(currentDocument);
         navigationContext.invalidateCurrentDocument();
         EventManager.raiseEventsOnDocumentChange(currentDocument);
         templateIdToAssociate = null;

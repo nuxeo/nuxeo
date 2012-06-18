@@ -167,7 +167,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor
 
         // add default context vars
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        context.putAll(fmContextBuilder.build(doc));
+        context.putAll(fmContextBuilder.build(doc, templateName));
 
         File workingDir = getWorkingDir();
         File generated = new File(workingDir, "JODReportresult");

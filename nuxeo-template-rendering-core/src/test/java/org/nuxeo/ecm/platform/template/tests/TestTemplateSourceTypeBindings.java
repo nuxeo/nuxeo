@@ -1,7 +1,12 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -16,8 +21,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
-
-import static org.junit.Assert.*;
 
 public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
@@ -198,25 +201,6 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // verify that template has been associated
         assertNotNull(simpleNote.getAdapter(TemplateBasedDocument.class));
-
-    }
-
-    @Test
-    public void testAvailableTemplates() throws Exception {
-        TemplateSourceDocument t1 = createTemplateDoc("t1");
-        session.save();
-        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-
-        List<DocumentModel> docs = tps.getAvailableTemplateDocs(session, null);
-        assertEquals(1, docs.size());
-
-        docs = tps.getAvailableTemplateDocs(session, "all");
-        assertEquals(1, docs.size());
-
-        TemplateSourceDocument t2 = createWebTemplateDoc("t2");
-        session.save();
-        docs = tps.getAvailableTemplateDocs(session, "all");
-        assertEquals(2, docs.size());
 
     }
 

@@ -47,6 +47,7 @@ public class TestImportModel extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle("org.nuxeo.template.manager.api");
         deployBundle("org.nuxeo.template.manager");
+        deployBundle("org.nuxeo.template.manager.jaxrs");
 
         fireFrameworkStarted();
 

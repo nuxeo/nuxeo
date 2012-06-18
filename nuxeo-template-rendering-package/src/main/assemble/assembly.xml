@@ -29,6 +29,7 @@
       <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-xdocreport::jar" />
       <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-jxls::jar" />
       <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-web::jar" />
+      <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-jaxrs::jar" />
       <artifact:resolveFile key="org.nuxeo.template.rendering:nuxeo-template-rendering-samples::jar" />
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-api::jar" />
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-core::jar" />

@@ -31,20 +31,6 @@
       <facet name="Template" />
     </doctype>
 
-    <doctype name="WebTemplateSource" extends="Document">
-      <schema name="common"/>
-      <schema name="note"/>
-      <schema name="files"/>
-      <schema name="dublincore"/>
-      <schema name="uid"/>
-      <schema name="documenttemplate" />
-      <facet name="Downloadable"/>
-      <facet name="Versionable"/>
-      <facet name="Commentable"/>
-      <facet name="HasRelatedText"/>
-      <facet name="Template" />
-    </doctype>
-
     <doctype name="TemplateBasedFile" extends="File">
       <facet name="TemplateBased" />
     </doctype>

@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="org.nuxeo.platform.TemplateSources.types.contrib">
+<component name="org.nuxeo.platform.TemplateSources.jxrs.types.contrib">
 
-  <require>org.nuxeo.ecm.platform.types.TypeService</require>
-  <require>org.nuxeo.ecm.platform.types</require>
+  <require>org.nuxeo.platform.TemplateSources.types.contrib</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
 
-    <type id="TemplateSource" coretype="TemplateSource">
-      <label>Document template</label>
-      <icon>/icons/sourcetemplate.png</icon>
-      <bigIcon>/icons/sourcetemplate_100.png</bigIcon>
+    <type id="WebTemplateSource" coretype="WebTemplateSource">
+      <label>Document web template </label>
+      <icon>/icons/webtemplate.png</icon>
+      <bigIcon>/icons/webtemplate_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>SimpleDocument</category>
      <layouts mode="create">
        <layout>heading</layout>
        <layout>templateOptionsWizard</layout>
        <layout>templateOptions</layout>
-       <layout>fileWithoutTemplate</layout>
+       <layout>note</layout>
       </layouts>
       <layouts mode="view">
         <layout>heading</layout>
+        <layout>note</layout>
         <layout>templateOptions</layout>
         <layout>templateParams</layout>
+        <layout>linkedTemplateBasedDocs</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <!-- <layout>templateOptions</layout>  -->
-        <layout>fileWithoutTemplate</layout>
+        <layout>note</layout>
       </layouts>
     </type>
 
      <type id="Folder" coretype="Folder">
       <subtypes>
-        <type>TemplateSource</type>
+        <type>WebTemplateSource</type>
       </subtypes>
     </type>
     <type id="Workspace" coretype="Workspace">
       <subtypes>
-        <type>TemplateSource</type>
+        <type>WebTemplateSource</type>
       </subtypes>
     </type>
     <type id="TemplateRoot">
       <subtypes>
-        <type>TemplateSource</type>
+        <type>WebTemplateSource</type>
       </subtypes>
     </type>
 

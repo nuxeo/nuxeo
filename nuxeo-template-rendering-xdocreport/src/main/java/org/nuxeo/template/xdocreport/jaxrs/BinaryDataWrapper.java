@@ -1,4 +1,4 @@
-package org.nuxeo.template.jaxrs;
+package org.nuxeo.template.xdocreport.jaxrs;
 
 import org.nuxeo.ecm.core.api.Blob;
 

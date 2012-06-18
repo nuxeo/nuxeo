@@ -115,7 +115,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements
 
         // fill Freemarker context
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
-        Map<String, Object> ctx = fmContextBuilder.build(doc);
+        Map<String, Object> ctx = fmContextBuilder.build(doc, templateName);
 
         XDocReportBindingResolver resolver = new XDocReportBindingResolver(
                 metadata);

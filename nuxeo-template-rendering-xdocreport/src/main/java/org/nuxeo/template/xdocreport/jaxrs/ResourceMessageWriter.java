@@ -1,4 +1,4 @@
-package org.nuxeo.template.jaxrs;
+package org.nuxeo.template.xdocreport.jaxrs;
 
 import java.io.IOException;
 import java.io.OutputStream;

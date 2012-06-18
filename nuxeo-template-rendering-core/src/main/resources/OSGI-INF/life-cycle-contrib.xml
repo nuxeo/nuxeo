@@ -5,7 +5,6 @@
     point="types">
     <types>
       <type name="TemplateSource">default</type>
-      <type name="WebTemplateSource">default</type>
       <type name="TemplateBasedFile">default</type>
     </types>
   </extension>

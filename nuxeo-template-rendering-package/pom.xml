@@ -33,6 +33,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-web</artifactId>
     </dependency>
     <dependency>
