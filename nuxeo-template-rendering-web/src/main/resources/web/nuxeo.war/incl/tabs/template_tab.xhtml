@@ -25,7 +25,7 @@
 
    <c:if test="#{!templateActions.showParamEditor}">
      <h3 class="folded">
-            <a href="#nogo" onclick="return toggleBox(this)">
+            <a href="#nogo" onclick="initContentWidgets();return toggleBox(this)">
               <h:outputText value="#{messages['label.template.params.title']}"/>
             </a>
      </h3>

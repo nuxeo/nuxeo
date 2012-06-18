@@ -8,11 +8,9 @@ function setupDisplay(jqSelect, initVal) {
       jqSelect.next().css('display','none');
       jqSelect.prev().val(inputType);
     }
-
 }
 
 function initContentIncludeWidget(index, widget) {
-
   var select = jQuery(widget).children("select")[0];  
   select = jQuery(select);
 
@@ -42,6 +40,3 @@ function initContentWidgets() {
   });
 }
 
-jQuery(document).ready(function() {
- initContentWidgets();
-});
