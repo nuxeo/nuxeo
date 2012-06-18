@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
@@ -129,6 +130,9 @@ public class ThemeDirective implements TemplateDirectiveModel {
         if (themeUrl == null) {
             return false;
         }
+        if (Framework.isDevModeSet()) {
+            return true;
+        }
         if (themeUrl.getProtocol().equals("nxtheme")) {
             Long lastRefreshed = lastRefreshedMap.get(themeUrl);
             if (lastRefreshed == null) {
@@ -185,8 +189,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
         }
 
         try {
-            final String spec = new WebNegotiator(strategy, context,
-                    request).getSpec();
+            final String spec = new WebNegotiator(strategy, context, request).getSpec();
             themeUrl = new URL(spec);
         } catch (NegotiationException e) {
             log.error(getErrorMessage(
