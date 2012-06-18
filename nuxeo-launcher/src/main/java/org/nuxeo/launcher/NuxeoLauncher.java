@@ -2072,11 +2072,20 @@ public abstract class NuxeoLauncher {
         cset = pkgman.getCommandSet();
     }
 
-    protected boolean pkgCompoundRequest(List<String> params)
+    /**
+     * Combined install/uninstall request
+     *
+     * @param request Space separated list of package names or IDs prefixed with
+     *            + (install) or - (uninstall)
+     * @throws IOException
+     * @throws PackageException
+     * @since 5.6
+     */
+    protected boolean pkgCompoundRequest(List<String> request)
             throws IOException, PackageException {
         List<String> install = new ArrayList<String>();
         List<String> uninstall = new ArrayList<String>();
-        for (String param : params) {
+        for (String param : request) {
             for (String subparam : param.split(" ")) {
                 if (subparam.charAt(0) == '-') {
                     uninstall.add(subparam.substring(1));
