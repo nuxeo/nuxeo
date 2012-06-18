@@ -56,8 +56,9 @@ public class XDocReportResourceService extends AbstractResourceService
 
     public Resource getRoot() {
         Resource root = new Resource();
-        root.setType(ResourceType.FILE);
+        root.setType(ResourceType.FOLDER);
         root.setName("Nuxeo");
+        root.setId("nuxeo");
         List<Resource> children = new ArrayList<Resource>();
         List<TemplateSourceDocument> templates = getTemplates();
         for (TemplateSourceDocument template : templates) {
