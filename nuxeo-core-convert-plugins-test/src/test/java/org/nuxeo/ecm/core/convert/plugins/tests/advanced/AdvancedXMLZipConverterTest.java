@@ -37,7 +37,9 @@ public class AdvancedXMLZipConverterTest extends SimpleConverterTest {
             Blob blob = new FileBlob(
                     FileUtils.getResourceFileFromContext("test-docs/advanced/XMLZip_paragraphs.txt"));
             blob.setEncoding("UTF-8");
-            String expectedContent = blob.getString();
+
+            // Get blob string with Unix end of line characters
+            String expectedContent = blob.getString().replace("\r\n", "\n");
 
             assertEquals(expectedContent, textContent);
         } catch (IOException ioe) {

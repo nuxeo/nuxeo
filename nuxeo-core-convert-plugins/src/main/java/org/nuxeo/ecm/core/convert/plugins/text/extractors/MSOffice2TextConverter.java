@@ -47,8 +47,10 @@ public class MSOffice2TextConverter implements Converter {
         try {
             POITextExtractor extractor = ExtractorFactory.createExtractor(blobHolder.getBlob().getStream());
             // TODO: find a way to distinguish headings from paragraphs using
-            // WordExtractor#.getParagraphText()?
-            String extractedText = extractor.getText().replace("\r", "");
+            // WordExtractor#getParagraphText()?
+
+            // Get extracted text with Unix end of line characters
+            String extractedText = extractor.getText().replace("\r\n", "\n");
 
             byte[] bytes = extractedText.getBytes("UTF-8");
             f = File.createTempFile("po-msoffice2text", ".txt");
