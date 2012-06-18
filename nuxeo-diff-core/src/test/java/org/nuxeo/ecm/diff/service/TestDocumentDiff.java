@@ -107,10 +107,6 @@ public class TestDocumentDiff extends DiffTestCase {
         DocumentModel rightDoc = session.getDocument(new PathRef(
                 DocumentDiffRepositoryInit.getRightDocPath()));
 
-        // Create XML export temporary files
-        createXMLExportTempFile(leftDoc);
-        createXMLExportTempFile(rightDoc);
-
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
         assertEquals("Wrong schema count.", 6, docDiff.getSchemaCount());
@@ -371,10 +367,6 @@ public class TestDocumentDiff extends DiffTestCase {
                 DocumentDiffRepositoryInit.getRightDocPath()));
         DocumentModel rightDoc = session.getDocument(new PathRef(
                 DocumentDiffRepositoryInit.getLeftDocPath()));
-
-        // Create XML export temporary files
-        createXMLExportTempFile(leftDoc);
-        createXMLExportTempFile(rightDoc);
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);
