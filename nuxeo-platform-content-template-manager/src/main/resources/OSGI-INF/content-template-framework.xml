@@ -30,7 +30,7 @@
       -factoryBinding
         - name: name of the factory, defining a factory with the same name will override the first to be registered.
         - factoryName: the name of the factory defined in the factory extensionPoint.
-        - targetType: The document Type for wich the factory will be executed.
+        - targetType: The document Type for which the factory will be executed.
 
       -acl: set rights on document to your users.
         -principal: Name of the group/user
