@@ -119,7 +119,8 @@ public abstract class AbstractTest {
     public MethodRule watchman = new TestWatchman() {
 
         public void starting(FrameworkMethod method) {
-            String message = String.format("Starting test '%s#%s'", getTestClassName(method), method.getName());
+            String message = String.format("Starting test '%s#%s'",
+                    getTestClassName(method), method.getName());
             log.info(message);
             logOnServer(message);
         }
@@ -128,15 +129,19 @@ public abstract class AbstractTest {
         public void failed(Throwable e, FrameworkMethod method) {
             String className = getTestClassName(method);
             String methodName = method.getName();
-            log.error(String.format("Test '%s#%s' failed", className, methodName), e);
-            String filename = String.format("screenshot-lastpage-%s-%s", className, methodName);
+            log.error(
+                    String.format("Test '%s#%s' failed", className, methodName),
+                    e);
+            String filename = String.format("screenshot-lastpage-%s-%s",
+                    className, methodName);
             takeScreenshot(filename);
             super.failed(e, method);
         }
 
         @Override
         public void finished(FrameworkMethod method) {
-            log.info(String.format("Finished test '%s#%s'", getTestClassName(method), method.getName()));
+            log.info(String.format("Finished test '%s#%s'",
+                    getTestClassName(method), method.getName()));
             super.finished(method);
         }
 
@@ -148,9 +153,11 @@ public abstract class AbstractTest {
             if (driver != null) {
                 driver.get(String.format(
                         "%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
-                        NUXEO_URL, URIUtils.quoteURIPathComponent(message, true)));
+                        NUXEO_URL,
+                        URIUtils.quoteURIPathComponent(message, true)));
             } else {
-                log.warn(String.format("Cannot log on server message: %s", message));
+                log.warn(String.format("Cannot log on server message: %s",
+                        message));
             }
         }
 
@@ -254,7 +261,7 @@ public abstract class AbstractTest {
                 urls[i] = new URL("file:" + paths[i]);
             }
         } else {
-            System.err.println("Unknow classloader type: "
+            System.err.println("Unknown classloader type: "
                     + cl.getClass().getName());
             return null;
         }
@@ -310,7 +317,6 @@ public abstract class AbstractTest {
             }
         }
         if (xpi == null) {
-
             String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll(
                     "/$", "");
             // try to guess the location in the M2 repo
@@ -342,7 +348,8 @@ public abstract class AbstractTest {
     }
 
     protected static Proxy startProxy() throws Exception {
-        if (Boolean.TRUE.equals(Boolean.valueOf(System.getProperty("useProxy", "false")))) {
+        if (Boolean.TRUE.equals(Boolean.valueOf(System.getProperty("useProxy",
+                "false")))) {
             proxyServer = new ProxyServer(PROXY_PORT);
             proxyServer.start();
             proxyServer.setCaptureHeaders(true);
