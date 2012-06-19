@@ -24,6 +24,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
@@ -60,6 +61,18 @@ public class ContentViewObserverActions implements Serializable {
     public void onDocumentChildrenChanged() {
         contentViewActions.refreshOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
         contentViewActions.resetPageProviderOnSeamEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
+    }
+
+    /**
+     * Resets all caches on {@link EventNames#FLUSH_EVENT}, triggered by hot
+     * reload when dev mode is set.
+     *
+     * @since 5.6
+     */
+    @Observer(value = { EventNames.FLUSH_EVENT }, create = false)
+    @BypassInterceptors
+    public void onHotReloadFlush() {
+        contentViewActions.resetAll();
     }
 
 }

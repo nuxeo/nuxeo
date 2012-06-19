@@ -31,8 +31,8 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.ui.web.reload.ReloadEventNames;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadEventNames;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 

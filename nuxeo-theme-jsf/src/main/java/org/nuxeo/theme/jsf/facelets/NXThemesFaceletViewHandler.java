@@ -31,6 +31,9 @@ import com.sun.facelets.util.ReflectionUtil;
 
 /**
  * ViewHandler implementation for Facelets
+ * <p>
+ * Modified to add checks for parameter values held by the Nuxeo Runtime
+ * framework.
  *
  * @author Jacob Hookom
  * @version $Id: FaceletViewHandler.java,v 1.49.2.6 2006/03/20 07:22:00 jhook
@@ -40,18 +43,7 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
 
     private static final Log log = LogFactory.getLog(NXThemesFaceletViewHandler.class);
 
-    // Seam
-
     private static final String SEAM_EXPRESSION_FACTORY = "org.jboss.seam.el.SeamExpressionFactoryImpl";
-
-    // Facelets
-    @SuppressWarnings("hiding")
-    private static final long DEFAULT_REFRESH_PERIOD = 2;
-
-    private static final String PARAM_REFRESH_PERIOD = "facelets.REFRESH_PERIOD";
-
-    @SuppressWarnings("hiding")
-    private static final String PARAM_RESOURCE_RESOLVER = "facelets.RESOURCE_RESOLVER";
 
     public NXThemesFaceletViewHandler(ViewHandler parent) {
         super(parent);
@@ -79,6 +71,10 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
             if (userPeriod != null && userPeriod.length() > 0) {
                 refreshPeriod = Long.parseLong(userPeriod);
             }
+        }
+        if (Framework.isDevModeSet() && refreshPeriod <= 0) {
+            // force refresh period to 2 seconds
+            refreshPeriod = 2;
         }
         // resource resolver
         ResourceResolver resolver = new DefaultResourceResolver();

@@ -46,6 +46,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloader;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
@@ -72,9 +73,14 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     protected transient CoreSession documentManager;
 
     @In(create = true)
+    protected NuxeoSeamHotReloader seamReload;
+
+    @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
     protected transient Map<String, DirectoryTreeNode> treeModels;
+
+    protected Long treeModelsTimestamp;
 
     protected transient DirectoryTreeService directoryTreeService;
 
@@ -83,14 +89,19 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
     private transient List<DirectoryTreeNode> directoryTrees;
 
     /*
-     * The directoryTrees need a working core session in order to perform search
-     * actions.
+     * The directoryTrees need a working core session in order to perform
+     * search actions.
      */
     public boolean isInitialized() {
         return documentManager != null;
     }
 
     public DirectoryTreeNode get(String treeName) {
+        if (seamReload.isDevModeSet()
+                && seamReload.shouldResetCache(getDirectoryTreeService(),
+                        treeModelsTimestamp)) {
+            treeModels = null;
+        }
         if (treeModels == null) {
             treeModels = new HashMap<String, DirectoryTreeNode>();
         }

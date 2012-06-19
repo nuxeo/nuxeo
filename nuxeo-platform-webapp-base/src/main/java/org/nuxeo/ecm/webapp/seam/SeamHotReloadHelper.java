@@ -100,6 +100,7 @@ public class SeamHotReloadHelper {
 
     }
 
+    // FIXME: not used?
     protected static boolean scan(Init init, File file) {
         if (file.isFile()) {
             if (!file.exists() || file.lastModified() > init.getTimestamp()) {

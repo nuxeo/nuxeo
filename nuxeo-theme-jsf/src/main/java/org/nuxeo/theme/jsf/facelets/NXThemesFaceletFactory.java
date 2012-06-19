@@ -16,6 +16,7 @@ package org.nuxeo.theme.jsf.facelets;
 
 import java.net.URL;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.jsf.facelets.vendor.DefaultFacelet;
 import org.nuxeo.theme.jsf.facelets.vendor.DefaultFaceletFactory;
 
@@ -41,8 +42,8 @@ public final class NXThemesFaceletFactory extends DefaultFaceletFactory {
         // theme facelets
         if (url.getProtocol().equals("nxtheme")) {
             try {
-                // no cache if the refresh period is 0
-                if (refreshPeriod == 0) {
+                // no cache if the refresh period is 0 or debug mode is set
+                if (refreshPeriod == 0 || Framework.isDevModeSet()) {
                     return true;
                 }
 

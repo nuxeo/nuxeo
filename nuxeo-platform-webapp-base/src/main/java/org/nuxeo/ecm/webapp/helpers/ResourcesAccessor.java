@@ -25,11 +25,14 @@ import java.util.Map;
  * Global resources can be injected by Seam into a application scoped component
  * that doesn't need to be serialized.
  * <p>
- * This circumvents possible Seam bugs in Seam post-activation injection problems
- * regarding resource bundles.
+ * This circumvents possible Seam bugs in Seam post-activation injection
+ * problems regarding resource bundles.
  *
  * @author DM
+ * @deprecated since 5.6: this is useless and does not play well with hot
+ *             reload enabled
  */
+@Deprecated
 public interface ResourcesAccessor {
 
     Map<String, String> getMessages();

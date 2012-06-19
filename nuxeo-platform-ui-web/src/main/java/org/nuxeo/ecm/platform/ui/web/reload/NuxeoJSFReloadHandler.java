@@ -16,10 +16,12 @@
  */
 package org.nuxeo.ecm.platform.ui.web.reload;
 
+import java.util.ResourceBundle;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadEventNames;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
@@ -49,22 +51,15 @@ public class NuxeoJSFReloadHandler implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        if (!isDebugModeSet()) {
+        if (!Framework.isDevModeSet()) {
             log.info("Do not flush the JSF application: debug mode is not set");
             return;
         }
         String id = event.getId();
         if (ReloadEventNames.FLUSH_EVENT_ID.equals(id)) {
-            // TODO:
-            // - handle navigation cases reload from the faces-config.xml jar
-            // - handle i18n messages reload
+            // force i18n messages reload at the bundle level
+            ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
         }
-    }
-
-    protected boolean isDebugModeSet() {
-        String debugPropValue = Framework.getProperty(
-                ConfigurationGenerator.NUXEO_DEBUG_SYSTEM_PROP, "false");
-        return Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
     }
 
 }

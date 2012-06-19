@@ -18,9 +18,9 @@ package org.nuxeo.ecm.platform.ui.web.rest.services;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.ui.web.reload.ReloadEventNames;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadEventNames;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
@@ -40,6 +40,10 @@ public class URLPolicyServiceCacheFlusher implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
+        if (!Framework.isDevModeSet()) {
+            log.info("Do not flush the URL policy service: dev mode is not set");
+            return;
+        }
         if (!ReloadEventNames.FLUSH_EVENT_ID.equals(event.getId())) {
             return;
         }

@@ -21,6 +21,9 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 
 import java.io.IOException;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.MethodExpression;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
@@ -30,9 +33,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService;
 import org.nuxeo.runtime.api.Framework;
@@ -42,7 +48,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RestfulPhaseListener implements PhaseListener {
 
-    private static final long serialVersionUID = -1064952127559721398L;
+    private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(RestfulPhaseListener.class);
+
+    public static final String SEAM_HOTRELOAD_TRIGGER_ACTION = "#{seamReloadContext.triggerReloadIdNeeded()}";
 
     protected URLPolicyService service;
 
@@ -76,6 +86,8 @@ public class RestfulPhaseListener implements PhaseListener {
                 if (!Transaction.instance().isActiveOrMarkedRollback()) {
                     Transaction.instance().begin();
                 }
+                // hot reload hook
+                resetHotReloadContext(context);
                 // restore state
                 service.navigate(context);
                 // apply requests parameters after - they may need the state
@@ -114,4 +126,33 @@ public class RestfulPhaseListener implements PhaseListener {
         }
     }
 
+    /**
+     * Hack trigger of a Seam component that will trigger reset of most Seam
+     * components caches, only if dev mode is enabled
+     * <p>
+     * This is handled here to be done very early, before response is
+     * constructed.
+     *
+     * @since 5.6
+     * @see Framework#isDevModeSet()
+     */
+    protected void resetHotReloadContext(FacesContext facesContext) {
+        if (Framework.isDevModeSet()) {
+            try {
+                ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
+                ELContext context = facesContext.getELContext();
+                String actionBinding = SEAM_HOTRELOAD_TRIGGER_ACTION;
+                MethodExpression action = ef.createMethodExpression(context,
+                        actionBinding, String.class,
+                        new Class[] { DocumentView.class });
+                action.invoke(context, new Object[0]);
+            } catch (Exception e) {
+                String msg = String.format(
+                        "Error while trying to flush seam context after "
+                                + "a reload, executing method expression '%s'",
+                        SEAM_HOTRELOAD_TRIGGER_ACTION);
+                log.error(msg, e);
+            }
+        }
+    }
 }

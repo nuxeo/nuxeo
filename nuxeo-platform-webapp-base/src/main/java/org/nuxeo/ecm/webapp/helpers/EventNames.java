@@ -19,20 +19,23 @@
 
 package org.nuxeo.ecm.webapp.helpers;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * Seam event identifiers.
  * <p>
- * This should stay with nuxeo, since it is related to the nuxeo infrastructure.
- * All code that depends on nuxeo infrastructure will need to depend on nuxeo
- * anyways. NXCommon is not a good place to move this because it is used from
- * nxruntime. It is not a good idea to add web client dependencies there.
+ * This should stay with nuxeo, since it is related to the nuxeo
+ * infrastructure. All code that depends on nuxeo infrastructure will need to
+ * depend on nuxeo anyways. NXCommon is not a good place to move this because
+ * it is used from nxruntime. It is not a good idea to add web client
+ * dependencies there.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 public final class EventNames {
     /**
-     * This is fired when the user selection changes. This should be listened by
-     * componens that want to do some work when the user selection changes,
+     * This is fired when the user selection changes. This should be listened
+     * by componens that want to do some work when the user selection changes,
      * regardles of the type of selected document.
      */
     public static final String USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED = "userAllDocumentTypesSelectionChanged";
@@ -74,26 +77,30 @@ public final class EventNames {
     public static final String LOCATION_SELECTION_CHANGED = "locationSelectionChanged";
 
     /**
-     * Fired after navigating to a document, the document is passed as argument.
+     * Fired after navigating to a document, the document is passed as
+     * argument.
+     *
      * @since 5.4.2
      */
     public static final String NAVIGATE_TO_DOCUMENT = "navigateToDocument";
 
-
     /**
      * Should be raised before an edited document is saved.
+     *
      * @since 5.4.2
      */
     public static final String BEFORE_DOCUMENT_CHANGED = "beforeDocumentChanged";
 
     /**
      * Fired after a document is locked, the document is passed as argument.
+     *
      * @since 5.4.2
      */
     public static final String DOCUMENT_LOCKED = "documentLocked";
 
     /**
      * Fired after a document is unlocked, the document is passed as argument.
+     *
      * @since 5.4.2
      */
     public static final String DOCUMENT_UNLOCKED = "documentUnlocked";
@@ -181,9 +188,20 @@ public final class EventNames {
 
     /**
      * Event raised when the content of a directory has changed
+     *
      * @since 5.5
      */
     public static final String DIRECTORY_CHANGED = "directoryChanged";
+
+    /**
+     * Flush event sent to the Seam layer, only when using the dev mode, and
+     * useful for components to reset their cache smoothly: Seam components
+     * should not be destroyed completely.
+     *
+     * @since 5.6
+     * @see Framework#isDevModeSet()
+     */
+    public static final String FLUSH_EVENT = "flush";
 
     // Constant utility class.
     private EventNames() {

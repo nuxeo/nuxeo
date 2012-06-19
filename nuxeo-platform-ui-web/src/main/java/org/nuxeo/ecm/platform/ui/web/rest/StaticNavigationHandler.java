@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.rest;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +27,11 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.jboss.seam.util.DTDEntityResolver;
+import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.application.ApplicationAssociate;
 import com.sun.faces.application.ConfigNavigationCase;
@@ -33,6 +39,9 @@ import com.sun.faces.application.ConfigNavigationCase;
 /**
  * View id helper that matches view ids and outcomes thanks to navigation cases
  * defined in a faces-config.xml file.
+ * <p>
+ * Also handle some hot reload cases, by parsing the main faces-config.xml
+ * file.
  */
 public class StaticNavigationHandler {
 
@@ -51,6 +60,9 @@ public class StaticNavigationHandler {
                 outcomeToViewId.put(fromOutcome, toViewId);
                 viewIdToOutcome.put(toViewId, fromOutcome);
             }
+        }
+        if (Framework.isDevModeSet()) {
+            handleHotReloadResources(context);
         }
     }
 
@@ -72,7 +84,67 @@ public class StaticNavigationHandler {
         if (outcomeToViewId.containsKey(outcome)) {
             return outcomeToViewId.get(outcome).replace(".xhtml", ".faces");
         }
-        return "/" + outcome + ".faces";
+        // try to guess the view name
+        String viewId = "/" + outcome + ".faces";
+        log.warn(String.format("Guessing view id for outcome '%s': use '%s'",
+                outcome, viewId));
+        return viewId;
+    }
+
+    /**
+     * XXX hack: add manual parsing of the main faces-config.xml file
+     * navigation cases, to handle hot reload and work around the JSF
+     * application cache.
+     *
+     * @since 5.6
+     */
+    protected void handleHotReloadResources(ServletContext context) {
+        InputStream stream = null;
+        if (context != null) {
+            stream = context.getResourceAsStream("/WEB-INF/faces-config.xml");
+        }
+        if (stream != null) {
+            parse(stream);
+        }
+    }
+
+    /**
+     * @since 5.6
+     */
+    @SuppressWarnings("unchecked")
+    protected void parse(InputStream stream) {
+        Element root = getDocumentRoot(stream);
+        List<Element> elements = root.elements("navigation-rule");
+        for (Element rule : elements) {
+            List<Element> nav_cases = rule.elements("navigation-case");
+            for (Element nav_case : nav_cases) {
+                Element from_el = nav_case.element("from-outcome");
+                Element to_el = nav_case.element("to-view-id");
+
+                if ((from_el != null) && (to_el != null)) {
+                    String from = from_el.getTextTrim();
+                    String to = to_el.getTextTrim();
+                    outcomeToViewId.put(from, to);
+                    viewIdToOutcome.put(to, from);
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the root element of the document.
+     *
+     * @since 5.6
+     */
+    protected static Element getDocumentRoot(InputStream stream) {
+        try {
+            SAXReader saxReader = new SAXReader();
+            saxReader.setEntityResolver(new DTDEntityResolver());
+            saxReader.setMergeAdjacentText(true);
+            return saxReader.read(stream).getRootElement();
+        } catch (DocumentException de) {
+            throw new RuntimeException(de);
+        }
     }
 
 }

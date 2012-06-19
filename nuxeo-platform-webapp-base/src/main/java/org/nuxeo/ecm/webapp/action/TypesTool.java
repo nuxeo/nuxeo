@@ -44,7 +44,7 @@ import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloader;
 
 /**
  * Document type service for document type creation.
@@ -65,6 +65,9 @@ public class TypesTool implements Serializable {
 
     @In(create = true)
     protected transient TypeManager typeManager;
+
+    @In(create = true)
+    protected NuxeoSeamHotReloader seamReload;
 
     protected Map<String, List<List<Type>>> typesMap;
 
@@ -191,34 +194,14 @@ public class TypesTool implements Serializable {
     @Factory(value = "typesMap", scope = EVENT)
     public Map<String, List<List<Type>>> getTypesList() {
         // XXX : should cache per currentDocument type
-        if (typesMap == null || shouldResetTypesMap()) {
+        if (typesMap == null
+                || (seamReload.isDevModeSet() && seamReload.shouldResetCache(
+                        typeManager, typesMapTimestamp))) {
             // cache the list of allowed subtypes
             populateTypesList();
         }
         selectedType = null;
         return typesMap;
-    }
-
-    /**
-     * Checks timestamp on TypeManager service to handle cache reset when using
-     * hot reload
-     *
-     * @since 5.6
-     */
-    protected boolean shouldResetTypesMap() {
-        if (!Framework.isDebugModeSet()) {
-            // use usual cache reset logics
-            return false;
-        }
-        boolean res = false;
-        if (typesMapTimestamp == null) {
-            return true;
-        }
-        Long serviceTimestamp = typeManager.getLastModified();
-        if (typesMapTimestamp.compareTo(serviceTimestamp) < 0) {
-            res = true;
-        }
-        return res;
     }
 
     public void setTypesList(Map<String, List<List<Type>>> typesList) {

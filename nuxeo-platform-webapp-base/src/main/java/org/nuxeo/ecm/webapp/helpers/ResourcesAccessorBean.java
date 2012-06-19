@@ -33,13 +33,16 @@ import org.jboss.seam.annotations.Scope;
  * Global resources can be injected by Seam into a application scoped component
  * that doesn't need to be serialized.
  * <p>
- * This circumvents possible Seam bugs in Seam post-activation injection problems
- * regarding resource bundles.
+ * This circumvents possible Seam bugs in Seam post-activation injection
+ * problems regarding resource bundles.
  *
  * @author DM
+ * @deprecated since 5.6: this is useless and does not play well with hot
+ *             reload enabled
  */
 @Name("resourcesAccessor")
 @Scope(ScopeType.APPLICATION)
+@Deprecated
 public class ResourcesAccessorBean implements ResourcesAccessor {
 
     private static final Log log = LogFactory.getLog(ResourcesAccessorBean.class);
@@ -54,11 +57,10 @@ public class ResourcesAccessorBean implements ResourcesAccessor {
     private Map<String, String> messages;
 
     public Map<String, String> getMessages() {
-        if (messages==null) {
+        if (messages == null) {
             log.warn("Unable to get message map");
             return new HashMap<String, String>();
-        }
-        else {
+        } else {
             return messages;
         }
     }
