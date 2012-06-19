@@ -39,22 +39,9 @@
         <xsl:variable name="spans" select="diffreport/diff//span[(@class='diff-html-added' or @class='diff-html-removed' or @class='diff-html-changed')  and @id]"/>
       	<div class="diff-topbar">
         <table class="diffpage-html-firstlast">
-        <tr><td style="text-align: left;">
+        <tr><td>
             <a>
-              <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
-              <xsl:attribute name="onclick">scrollToEvent(event)</xsl:attribute>
-              <xsl:attribute name="id">first-diff</xsl:attribute>
-              <xsl:attribute name="href">
-                <xsl:text>#</xsl:text>
-                <xsl:value-of select="$spans[1]/@id"/>
-              </xsl:attribute>
-              <xsl:attribute name="next">
-                <xsl:value-of select="$spans[1]/@id"/>
-              </xsl:attribute>
-              <xsl:text>&lt;&lt;</xsl:text>
-            </a>
-            <a>
-              <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
+              <xsl:attribute name="class">diffpage-html-a button</xsl:attribute>
               <xsl:attribute name="onclick">scrollToEvent(event)</xsl:attribute>
               <xsl:attribute name="href">
                 <xsl:text>#</xsl:text>
@@ -65,33 +52,19 @@
         </td>
         
         <td class="headerText">
-            <h1>Comparaison détaillée</h1>
-            <h2>Les sections ajoutées au document de droite sont <span class="diff-html-added">surlignées en vert</span>, celles supprimées du document de gauche sont <span class="diff-html-removed">surlignées en rouge</span>.</h2>
-            <span class="compareReportInstructions">Un clic sur une différence permet d'aller à la différence suivante ou précédente.<br/>Vous pouvez aussi utiliser les flèches gauche et droite du clavier.</span>
+            <span>Les sections ajoutées au document de droite sont <span class="diff-html-added">surlignées en vert</span>, celles supprimées du document de gauche sont <span class="diff-html-removed">surlignées en rouge</span>.</span>
+            <span> Un clic sur une différence permet d'aller à la différence suivante ou précédente. Vous pouvez aussi utiliser les flèches gauche et droite du clavier.</span>
         </td>
         
-        <td style="text-align: right;">
+        <td>
             <a>
-              <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
+              <xsl:attribute name="class">diffpage-html-a button</xsl:attribute>
               <xsl:attribute name="onclick">scrollToEvent(event)</xsl:attribute>
               <xsl:attribute name="href">
                 <xsl:text>#</xsl:text>
                 <xsl:value-of select="$spans[last()]/@id"/>
               </xsl:attribute>
               Dernière différence<xsl:text>&#160;</xsl:text>
-            </a>
-            <a>
-              <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
-              <xsl:attribute name="onclick">scrollToEvent(event)</xsl:attribute>
-              <xsl:attribute name="id">last-diff</xsl:attribute>
-              <xsl:attribute name="href">
-                <xsl:text>#</xsl:text>
-                <xsl:value-of select="$spans[last()]/@id"/>
-              </xsl:attribute>
-              <xsl:attribute name="previous">
-                <xsl:value-of select="$spans[last()]/@id"/>
-              </xsl:attribute>
-              <xsl:text>&gt;&gt;</xsl:text>
             </a>
          </td></tr></table>
          </div>

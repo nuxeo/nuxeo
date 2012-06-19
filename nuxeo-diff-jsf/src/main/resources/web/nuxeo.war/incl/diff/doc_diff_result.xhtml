@@ -3,6 +3,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout" class="docDiffResult">
   
@@ -38,21 +39,30 @@
             </td>
             <td class="contentDiffColumn">
               <c:if test="#{diffActions.diffSelectionType == 'content'}">
-                <nxd:restDocumentLink document="#{currentDocument}" styleClass="docLink">
-                  <h:outputText value="#{messages['document.diff.backToCurrentDoc']}" />
-                </nxd:restDocumentLink>
+                <span class="action_bar">
+                  <nxd:restDocumentLink document="#{currentDocument}" styleClass="docLink">
+                    <nxh:graphicImage value="/icons/arrow_left.gif" />
+                    <h:outputText value="#{messages['document.diff.backToCurrentDoc']}" />
+                  </nxd:restDocumentLink>
+                </span>
               </c:if>
               <c:if test="#{diffActions.diffSelectionType == 'version'}">
-                <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_CONTENT_HISTORY"
-                  subTab="TAB_VERSIONS" styleClass="docLink">
-                  <h:outputText value="#{messages['document.diff.backToVersions']}" />
-                </nxd:restDocumentLink>
+                <span class="action_bar">
+                  <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_CONTENT_HISTORY"
+                    subTab="TAB_VERSIONS" styleClass="docLink">
+                    <nxh:graphicImage value="/icons/arrow_left.gif" />
+                    <h:outputText value="#{messages['document.diff.backToVersions']}" />
+                  </nxd:restDocumentLink>
+                </span>
               </c:if>
               <c:if test="#{diffActions.diffSelectionType == 'trash'}">
-                <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_MANAGE"
-                  subTab="TAB_TRASH_CONTENT" styleClass="docLink">
-                  <h:outputText value="#{messages['document.diff.backToTrash']}" />
-                </nxd:restDocumentLink>
+                <span class="action_bar">
+                  <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_MANAGE"
+                    subTab="TAB_TRASH_CONTENT" styleClass="docLink">
+                    <nxh:graphicImage value="/icons/arrow_left.gif" />
+                    <h:outputText value="#{messages['document.diff.backToTrash']}" />
+                  </nxd:restDocumentLink>
+                </span>
               </c:if>
             </td>
           </tr>

@@ -39,22 +39,9 @@
         <xsl:variable name="spans" select="diffreport/diff//span[(@class='diff-html-added' or @class='diff-html-removed' or @class='diff-html-changed')  and @id]"/>
       	<div class="diff-topbar">
         <table class="diffpage-html-firstlast">
-        <tr><td style="text-align: left;">
+        <tr><td>
             <a>
-              <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
-              <xsl:attribute name="onclick">scrollToEvent(event)</xsl:attribute>
-              <xsl:attribute name="id">first-diff</xsl:attribute>
-              <xsl:attribute name="href">
-                <xsl:text>#</xsl:text>
-                <xsl:value-of select="$spans[1]/@id"/>
-              </xsl:attribute>
-              <xsl:attribute name="next">
-                <xsl:value-of select="$spans[1]/@id"/>
-              </xsl:attribute>
-              <xsl:text>&lt;&lt;</xsl:text>
-            </a>
-            <a>
-              <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
+              <xsl:attribute name="class">diffpage-html-a button</xsl:attribute>
               <xsl:attribute name="onclick">scrollToEvent(event)</xsl:attribute>
               <xsl:attribute name="href">
                 <xsl:text>#</xsl:text>
@@ -65,33 +52,19 @@
         </td>
         
         <td class="headerText">
-            <h1>Compare report</h1>
-            <h2>The parts added to the right document are <span class="diff-html-added">highlighted in green</span>, the ones removed from the left document are <span class="diff-html-removed">highlighted in red</span>.</h2>
-            <span class="compareReportInstructions">Click on the changed parts to go to the next or previous difference.<br/>You can also use the left and right arrow keys to walk through the modifications.</span>
+            <span>The parts added to the right document are <span class="diff-html-added">highlighted in green</span>, the ones removed from the left document are <span class="diff-html-removed">highlighted in red</span>.</span>
+            <span> Click on the changed parts to go to the next or previous difference. You can also use the left and right arrow keys to walk through the modifications.</span>
         </td>
         
-        <td style="text-align: right;">
+        <td>
             <a>
-              <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
+              <xsl:attribute name="class">diffpage-html-a button</xsl:attribute>
               <xsl:attribute name="onclick">scrollToEvent(event)</xsl:attribute>
               <xsl:attribute name="href">
                 <xsl:text>#</xsl:text>
                 <xsl:value-of select="$spans[last()]/@id"/>
               </xsl:attribute>
               Last<xsl:text>&#160;</xsl:text>
-            </a>
-            <a>
-              <xsl:attribute name="class">diffpage-html-a</xsl:attribute>
-              <xsl:attribute name="onclick">scrollToEvent(event)</xsl:attribute>
-              <xsl:attribute name="id">last-diff</xsl:attribute>
-              <xsl:attribute name="href">
-                <xsl:text>#</xsl:text>
-                <xsl:value-of select="$spans[last()]/@id"/>
-              </xsl:attribute>
-              <xsl:attribute name="previous">
-                <xsl:value-of select="$spans[last()]/@id"/>
-              </xsl:attribute>
-              <xsl:text>&gt;&gt;</xsl:text>
             </a>
          </td></tr></table>
          </div>

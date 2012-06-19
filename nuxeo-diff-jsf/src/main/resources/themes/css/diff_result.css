@@ -4,29 +4,29 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 */
 
 /* =Header */
-#diffHeader {margin-bottom: 1.5em; padding: 0 0.5em 0.5em 0.5em;}
-#diffHeader .dataInput {margin-top: 0;}
-#diffHeader h2 {padding: 0;}
-#diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover {color: #000000;}
-#diffHeader .diffSubTitle {padding-left: 5px; font-style: italic;}
+#diffHeader { margin-bottom: .8em; padding: 0 .5em .5em .5em }
+#diffHeader .dataInput { margin-top: 0 }
+#diffHeader h2 { padding: 0 }
+#diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover { color: #000 }
+#diffHeader .diffSubTitle { padding-left: .5em; font-style: italic }
 
 /* =Foldable boxes */
-.docDiffResult .foldableBox .boxBody {padding: 0.5em;}
-.docDiffResult .dataInput {width: 100%;}
-.docDiffResult .dataInput td {padding: 0.4em 0.3em;}
-.docDiffResult .dataInput td.labelColumn {width: 18%; padding-right: 20px; text-align: left;}
-.docDiffResult .dataInput td.fieldColumn {width: 33%;}
-.docDiffResult .dataInput td.contentDiffColumn {width: 16%; vertical-align: top;}
+.docDiffResult .foldableBox .boxBody { padding: .5em }
+.docDiffResult .dataInput { width: 100% }
+.docDiffResult .dataInput td { padding: .4em .3em }
+.docDiffResult .dataInput td.labelColumn { width: 18%; padding-right: 2em; text-align: left }
+.docDiffResult .dataInput td.fieldColumn { width: 33% }
+.docDiffResult .dataInput td.contentDiffColumn { vertical-align: top }
+.docDiffResult .contentDiffColumn .action_bar { float: right; margin: 0 }
 
-/*.docDiffResult .dataInput .diffDisplayTable {width: 100%;}*/
-.docDiffResult .dataInput .diffDisplayTable th, .docDiffResult .dataInput .diffDisplayTable td {border: 1px solid #E7E7E7; padding: 0.4em 0.5em;}
-.docDiffResult .dataInput .diffDisplayTable th {background-color: #EEEFF0; padding: 0.1em 0.5em; text-align: center; font-weight: bold;}
-.docDiffResult .dataInput .diffDisplayTable td.subItemCell {width: 48%;}
-.docDiffResult .dataInput td.contentDiffColumn .diffDisplayTable td {text-align: center;}
-.docDiffResult .note_content_block {border:none; margin: 0; padding: 0;}
+.docDiffResult .diffDisplayTable { border-collapse: collapse }
+.docDiffResult .dataInput .diffDisplayTable th, .docDiffResult .dataInput .diffDisplayTable td { border: 1px solid #e7e7e7; padding: .4em .5em }
+.docDiffResult .dataInput .diffDisplayTable th { background-color: #eeeff0; padding: .1em .5em; font-weight: bold }
+.docDiffResult .dataInput .diffDisplayTable td.subItemCell { width: 48% }
+.docDiffResult .dataInput td.contentDiffColumn .diffDisplayTable td { text-align: center }
+.docDiffResult .note_content_block { border: none; margin: 0; padding: 0 1em 0 0 }
 
-/*.docDiffResult .noBackgroundColor {}*/
-.docDiffResult .redBackgroundColor {display: block; min-height: 18px; min-width: 40px; padding: 0px 4px; background-color: #FDC6C6;}
-.docDiffResult .greenBackgroundColor {display: block; min-height: 18px; min-width: 40px; padding: 0px 4px; background-color: #CCFFCC;}
+.docDiffResult .redBackgroundColor { display: block; min-height: 18px; min-width: 40px; padding: 0 .9em; background-color: #fdc6c6 }
+.docDiffResult .greenBackgroundColor { display: block; min-height: 18px; min-width: 40px; padding: 0 .9em; background-color: #cfc }
 
-.docDiffResult .contentDiffLink {margin-right: 10px;}
+.docDiffResult .contentDiffLink { margin-right: 1em }
