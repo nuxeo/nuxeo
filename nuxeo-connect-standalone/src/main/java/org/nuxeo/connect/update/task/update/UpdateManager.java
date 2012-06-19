@@ -40,14 +40,16 @@ import org.nuxeo.connect.update.task.update.JarUtils.Match;
  * <p>
  * Only reading the registry is thread safe.
  * <p>
- * TODO backup md5 are not really used since we rely on versions - we can remove
- * md5
+ * TODO backup md5 are not really used since we rely on versions - we can
+ * remove md5
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class UpdateManager {
 
     private static final Log log = LogFactory.getLog(UpdateManager.class);
+
+    public static final String STUDIO_SNAPSHOT_VERSION = "0.0.0-SNAPSHOT";
 
     protected Task task;
 
@@ -66,7 +68,6 @@ public class UpdateManager {
         this.serverRoot = serverRoot;
     }
 
-    @SuppressWarnings("hiding")
     public UpdateOptions createUpdateOptions(String pkgId, File file,
             File targetDir) {
         return UpdateOptions.newInstance(pkgId, file, targetDir);
@@ -166,8 +167,27 @@ public class UpdateManager {
     }
 
     /**
-     * Perform a rollback.
+     * Ugly method to know what file is going to be deleted before it is, so
+     * that it can be undeployed for hotreloaded.
+     * <p>
+     * FIXME: Only handle simple cases for now (ignores version, etc...), e.g
+     * only tested with the main Studio jars.
      *
+     * @since 5.6
+     */
+    public File getRollbackTarget(RollbackOptions opt) {
+        String entryKey = opt.getKey();
+        Entry entry = registry.get(entryKey);
+        if (entry == null) {
+            return null;
+        }
+        Match<File> m = findInstalledJar(entryKey);
+        return m.object;
+    }
+
+    /**
+     * Perform a rollback.
+     * <p>
      * TODO the deleteOnExit is inherited from the current rollback command ...
      * may be it should be read from the version that is rollbacked.
      * (deleteOnExit should be an attribute of the entry not of the version)
@@ -181,6 +201,10 @@ public class UpdateManager {
             return;
         }
         Version v = entry.getVersion(opt.getVersion());
+        if (v == null) {
+            // allow empty version for Studio snapshot...
+            v = entry.getVersion(STUDIO_SNAPSHOT_VERSION);
+        }
         if (v == null) {
             return;
         }
@@ -204,7 +228,8 @@ public class UpdateManager {
             // we removed the current installed version so we need to rollback
             rollbackVersion(entry, versionToRollback, opt);
         } else {
-            // handle jars that were blocked using allowDowngrade or onlyUpgrade
+            // handle jars that were blocked using allowDowngrade or
+            // onlyUpgrade
             Match<File> m = findInstalledJar(opt.getKey());
             if (m != null) {
                 if (entry.getVersion(m.version) == null) {
@@ -346,7 +371,8 @@ public class UpdateManager {
         try {
             dst.getParentFile().mkdirs();
             File tmp = new File(dst.getPath() + ".tmp");
-            // File tmp = new File(dst.getParentFile(), dst.getName() + ".tmp");
+            // File tmp = new File(dst.getParentFile(), dst.getName() +
+            // ".tmp");
             FileUtils.copy(src, tmp);
             if (!tmp.renameTo(dst)) {
                 tmp.delete();

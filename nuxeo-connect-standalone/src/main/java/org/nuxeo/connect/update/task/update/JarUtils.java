@@ -24,12 +24,13 @@ import org.nuxeo.common.utils.FileMatcher;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JarUtils {
 
     // the r? is for supporting version like: caja-r1234
     public final static Pattern JAR_NAME = Pattern.compile("(.+)-(r?[0-9]+.*)\\.jar");
+
+    public final static Pattern JAR_WITHOUT_VERSION_NAME = Pattern.compile("(.+)\\.jar");
 
     /**
      * Try to find the version part in the given JAR name. Return null if name
@@ -47,6 +48,14 @@ public class JarUtils {
             result.version = m.group(2);
             return result;
         }
+        // try to find without version
+        m = JAR_WITHOUT_VERSION_NAME.matcher(name);
+        if (m.matches()) {
+            Match<String> result = new Match<String>();
+            result.object = m.group(1);
+            result.version = UpdateManager.STUDIO_SNAPSHOT_VERSION;
+            return result;
+        }
         return null;
     }
 
@@ -58,11 +67,19 @@ public class JarUtils {
         File dir = filePattern.getParentFile();
         File[] files = dir.listFiles();
         if (files != null) {
-            FileMatcher fm = FileMatcher.getMatcher(filePattern.getName().concat("-{v:[0-9]+.*}\\.jar"));
+            FileMatcher fm = FileMatcher.getMatcher(filePattern.getName().concat(
+                    "-{v:[0-9]+.*}\\.jar"));
+            String studioSnapshotName = filePattern.getName().concat(".jar");
             for (File f : files) {
                 if (fm.match(f.getName())) {
                     Match<File> result = new Match<File>();
                     result.version = fm.getValue();
+                    result.object = f;
+                    return result;
+                }
+                if (studioSnapshotName.equals(f.getName())) {
+                    Match<File> result = new Match<File>();
+                    result.version = UpdateManager.STUDIO_SNAPSHOT_VERSION;
                     result.object = f;
                     return result;
                 }

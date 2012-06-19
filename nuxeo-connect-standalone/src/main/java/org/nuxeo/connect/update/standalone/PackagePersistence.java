@@ -34,6 +34,7 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.connect.update.task.update.UpdateManager;
 
 /**
  * The file {@code nxserver/data/packages/.packages} stores the state of all
@@ -157,7 +158,8 @@ public class PackagePersistence {
             // FIXME: refactor this way of handling Studio packages to be
             // consistent with other packages
             if (PackageType.STUDIO.equals(pkg.getType())
-                    && pkg.getId().endsWith("-0.0.0-SNAPSHOT")) {
+                    && pkg.getId().endsWith(
+                            "-" + UpdateManager.STUDIO_SNAPSHOT_VERSION)) {
                 // FIXME: maybe check for pkg#supportsHotReload and
                 // Framework.isDevModeSet() or Framework.isDebugModeSet()?
                 // this is a special case - reload a studio snapshot package

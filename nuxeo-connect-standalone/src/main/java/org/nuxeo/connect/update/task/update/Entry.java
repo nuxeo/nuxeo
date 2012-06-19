@@ -92,7 +92,9 @@ public class Entry implements Iterable<Version> {
 
     public Version getVersion(String version) {
         for (Version v : versions) {
-            if (v.getVersion().equals(version)) {
+            String ov = v.getVersion();
+            if ((ov != null && ov.equals(version))
+                    || (ov == null && version == null)) {
                 return v;
             }
         }

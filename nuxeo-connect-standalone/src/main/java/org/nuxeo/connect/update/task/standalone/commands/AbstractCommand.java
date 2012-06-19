@@ -30,8 +30,8 @@ import org.w3c.dom.Element;
  * All commands have 2 attributes: fail and ignore which are EL expressions.
  * <p>
  * If ignore is defined and evaluated to true then the command will be ignored
- * (null is returned as the inverse command) If fail is defined and evaluated to
- * true then the validation fails.
+ * (null is returned as the inverse command) If fail is defined and evaluated
+ * to true then the validation fails.
  * <p>
  * Commands extending this class must implement the {@link #doRun} and
  * {@link #doValidate} methods instead of the one in the interface. These
@@ -60,6 +60,11 @@ public abstract class AbstractCommand implements Command {
     protected AbstractCommand(String id) {
         this.id = id;
         guardVars = new HashMap<String, Object>();
+    }
+
+    public AbstractCommand(AbstractCommand command) {
+        this.id = command.id;
+        guardVars = command.guardVars;
     }
 
     @Override

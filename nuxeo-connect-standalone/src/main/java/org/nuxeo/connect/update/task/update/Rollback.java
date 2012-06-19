@@ -16,6 +16,7 @@
  */
 package org.nuxeo.connect.update.task.update;
 
+import java.io.File;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -26,6 +27,7 @@ import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.AbstractTask;
 import org.nuxeo.connect.update.task.standalone.commands.AbstractCommand;
+import org.nuxeo.connect.update.task.standalone.commands.UndeployPlaceholder;
 import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
@@ -54,6 +56,20 @@ public class Rollback extends AbstractCommand {
         this.key = opt.key;
         this.version = opt.version;
         this.deleteOnExit = opt.deleteOnExit;
+    }
+
+    /**
+     * Constructor that gets back rollback options from original rollback
+     * command
+     *
+     * @since 5.6
+     * @param rollback
+     */
+    public Rollback(Rollback rollback) {
+        super(rollback);
+        this.key = rollback.key;
+        this.version = rollback.version;
+        this.deleteOnExit = rollback.deleteOnExit;
     }
 
     @Override
@@ -90,25 +106,40 @@ public class Rollback extends AbstractCommand {
     @Override
     protected void doValidate(Task task, ValidationStatus status)
             throws PackageException {
-        if (key == null || version == null) {
+        // allow null version for Studio snapshot jar
+        if (key == null) {
             status.addError("Cannot execute command in installer."
-                    + " Invalid rollback syntax: key or version was not specified.");
+                    + " Invalid rollback syntax: key was not specified.");
         }
     }
 
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-
         UpdateManager mgr = ((AbstractTask) task).getUpdateManager();
+        String entryKey = task.getPackage().getId();
+        RollbackOptions opt = mgr.createRollbackOptions(entryKey, key, version);
 
-        RollbackOptions opt = mgr.createRollbackOptions(
-                task.getPackage().getId(), key, version);
+        Command undeploy = getUndeployCommand(mgr.getRollbackTarget(opt));
+        if (undeploy != null) {
+            undeploy.run(task, prefs);
+        }
+
         opt.setDeleteOnExit(deleteOnExit);
 
         mgr.rollback(opt);
 
         return null;
+    }
+
+    /**
+     * Method to be overriden by subclasses to provide a undeploy command for
+     * hot reload
+     *
+     * @since 5.6
+     */
+    protected Command getUndeployCommand(File targetFile) {
+        return new UndeployPlaceholder(targetFile);
     }
 
 }

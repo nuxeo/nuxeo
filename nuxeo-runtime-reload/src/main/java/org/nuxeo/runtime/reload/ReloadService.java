@@ -18,6 +18,7 @@ package org.nuxeo.runtime.reload;
 
 import java.io.File;
 
+import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.service.TimestampedService;
 
 /**
@@ -101,20 +102,33 @@ public interface ReloadService extends TimestampedService {
     void flushSeamComponents() throws Exception;
 
     /**
+     * Deploys bundle to the runtime
+     *
      * @since 5.5
      */
     String deployBundle(File file, boolean reloadResources) throws Exception;
 
     /**
+     * Undeploys bundle from the runtime
+     *
      * @since 5.6
      */
     void undeployBundle(File file) throws Exception;
 
     /**
+     * Runs the deployment preprocessor
+     *
+     * @since 5.6
+     * @throws Exception
+     * @See {@link DeploymentPreprocessor}
+     */
+    public void runDeploymentPreprocessor() throws Exception;
+
+    /**
      * Copies the bundle web resources into the nuxeo WAR directory.
      *
      * @since 5.5
-     * @deprecated since 5.6: {@link #deployBundle(File, boolean)} method now
+     * @deprecated since 5.6: {@link #runDeploymentPreprocessor()} method now
      *             re-deploys all jars so that the nuxeo.war holds the same
      *             content than it would at startup.
      */

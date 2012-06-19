@@ -128,7 +128,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         if (reloadResourceClasspath) {
             reloadResourceClassPath(Collections.singletonList(path));
         }
-        runDeploymentPreprocessor();
 
         Bundle newBundle = getBundleContext().installBundle(path);
         if (newBundle == null) {
@@ -155,7 +154,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
             try {
                 for (Bundle b : srv.getBundles(name, null)) {
-                    if (bundle.getState() == Bundle.ACTIVE) {
+                    if (b!= null && b.getState() == Bundle.ACTIVE) {
                         b.stop();
                         b.uninstall();
                     }
@@ -224,18 +223,14 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    public static void runDeploymentPreprocessor() {
+    public void runDeploymentPreprocessor() throws Exception {
         String rootPath = Environment.getDefault().getHome().getAbsolutePath();
         File root = new File(rootPath);
         DeploymentPreprocessor processor = new DeploymentPreprocessor(root);
-        try {
-            // initialize
-            processor.init();
-            // and predeploy
-            processor.predeploy();
-        } catch (Exception e) {
-            log.error(e, e);
-        }
+        // initialize
+        processor.init();
+        // and predeploy
+        processor.predeploy();
     }
 
     protected static File getAppDir() {

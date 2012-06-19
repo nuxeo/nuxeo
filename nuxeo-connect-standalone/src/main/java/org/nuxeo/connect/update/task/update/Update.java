@@ -29,16 +29,14 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.AbstractTask;
 import org.nuxeo.connect.update.task.standalone.commands.AbstractCommand;
 import org.nuxeo.connect.update.task.standalone.commands.CompositeCommand;
+import org.nuxeo.connect.update.task.standalone.commands.DeployPlaceholder;
 import org.nuxeo.connect.update.task.update.JarUtils.Match;
 import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Element;
 
 /**
- *
  * @since 5.5
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Update extends AbstractCommand {
 
@@ -49,18 +47,18 @@ public class Update extends AbstractCommand {
     /**
      * The source file. It can be a file or a directory.
      */
-    private File file;
+    protected File file;
 
     /**
      * The target file. It can be a directory since 5.5
      */
-    private File todir;
+    protected File todir;
 
-    private boolean removeOnExit;
+    protected boolean removeOnExit;
 
-    private boolean allowDowngrade = false;
+    protected boolean allowDowngrade = false;
 
-    private boolean upgradeOnly = false;
+    protected boolean upgradeOnly = false;
 
     protected Update(String id) {
         super(id);
@@ -68,6 +66,11 @@ public class Update extends AbstractCommand {
 
     public Update() {
         this(ID);
+    }
+
+    @Override
+    public void initialize(Element element) throws PackageException {
+        super.initialize(element);
     }
 
     @Override
@@ -159,16 +162,25 @@ public class Update extends AbstractCommand {
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         if (!file.exists()) {
-            log.warn("Can't update using " + file + " . File is missing.");
+            log.warn("Can't update using " + file + ". File is missing.");
             return null;
         }
         UpdateManager mgr = ((AbstractTask) task).getUpdateManager();
 
+        Command rollback;
         if (file.isDirectory()) {
-            return updateDirectory(task, file, mgr);
+            rollback = updateDirectory(task, file, mgr);
         } else {
-            return updateFile(task, file, mgr);
+            rollback = updateFile(task, file, mgr);
         }
+
+        Command deploy = getDeployCommand();
+        Command undeploy = null;
+        if (deploy != null) {
+            undeploy = deploy.run(task, prefs);
+        }
+
+        return new Rollback((Rollback) rollback);
 
     }
 
@@ -198,7 +210,8 @@ public class Update extends AbstractCommand {
             RollbackOptions r = mgr.update(opt);
             return new Rollback(r);
         } catch (VersionAlreadyExistException e) {
-            // should never happens
+            // should never happen
+            log.error(e, e);
             return null;
         }
     }
@@ -211,6 +224,16 @@ public class Update extends AbstractCommand {
         } else {
             opt.deleteOnExit = removeOnExit;
         }
+    }
+
+    /**
+     * Method to be overriden by subclasses to provide a deploy command for hot
+     * reload
+     *
+     * @since 5.6
+     */
+    protected Command getDeployCommand() {
+        return new DeployPlaceholder(file);
     }
 
 }

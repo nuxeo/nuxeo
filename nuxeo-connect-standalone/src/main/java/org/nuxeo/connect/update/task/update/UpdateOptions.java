@@ -30,6 +30,14 @@ public class UpdateOptions {
         // compute JAR name without version and the the JAR version
         String name = file.getName();
         Match<String> match = JarUtils.findJarVersion(name);
+        // FIXME: hack to get the Studio snapshot version...
+        if (match == null && pkgId != null
+                && pkgId.endsWith("-" + UpdateManager.STUDIO_SNAPSHOT_VERSION)) {
+            match = new Match<String>();
+            match.object = pkgId.substring(0, pkgId.length()
+                    - ("-" + UpdateManager.STUDIO_SNAPSHOT_VERSION).length());
+            match.version = UpdateManager.STUDIO_SNAPSHOT_VERSION;
+        }
         if (match == null) {
             return null;
         }
