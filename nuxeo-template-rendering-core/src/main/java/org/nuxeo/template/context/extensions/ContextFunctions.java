@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,6 +34,7 @@ public class ContextFunctions {
         if (labelKey == null) {
             return null;
         }
+
         Locale locale = new Locale(lang);
         if (voc_name.contains("/") && labelKey.contains(" / ")) {
             String[] parts = labelKey.split(" \\/ ");
@@ -42,22 +44,32 @@ public class ContextFunctions {
                 if (i > 0) {
                     result = result + " / ";
                 }
-                result = result
-                        + I18NUtils.getMessageString("messages", parts[i],
-                                null, locale);
+                try {
+                    result = result
+                            + I18NUtils.getMessageString("messages", parts[i],
+                                    null, locale);
+                } catch (MissingResourceException e) {
+                    result = result + parts[i];
+                }
             }
             return result;
         } else {
-            return I18NUtils.getMessageString("messages", labelKey, null,
-                    locale);
+            try {
+                return I18NUtils.getMessageString("messages", labelKey, null,
+                        locale);
+            } catch (MissingResourceException e) {
+                return labelKey;
+            }
         }
-
     }
 
     public String getVocabularyLabel(String voc_name, String key)
             throws Exception {
 
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        if (ds == null) {
+            return key;
+        }
 
         List<String> vocs = new ArrayList<String>();
         List<String> keys = new ArrayList<String>();

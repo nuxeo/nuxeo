@@ -1,5 +1,6 @@
 package org.nuxeo.template.context.extensions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
                 if (Framework.isTestModeSet() && testAuditEntries != null) {
                     auditEntries = testAuditEntries;
                 } else {
+                    auditEntries = new ArrayList<LogEntry>();
                     log.warn("Can not add Audit info to rendering context");
                 }
             }
@@ -52,6 +54,11 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
             }
         } catch (Exception e) {
             log.error("Error during Audit context extension", e);
+            try {
+                ctx.put("auditEntries", wrapper.wrap(new ArrayList<LogEntry>()));
+            } catch (Exception e1) {
+                log.error("Unable to fill context with mock AuditEntries", e1);
+            }
         }
         return null;
     }
