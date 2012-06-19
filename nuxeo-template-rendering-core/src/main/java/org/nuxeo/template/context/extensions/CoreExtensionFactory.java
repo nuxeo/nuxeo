@@ -11,8 +11,7 @@ public class CoreExtensionFactory implements ContextExtensionFactory {
     @Override
     public Object getExtension(DocumentModel currentDocument,
             DocumentWrapper wrapper, Map<String, Object> ctx) {
-        // TODO Auto-generated method stub
-        return null;
+        return new CoreExtensions(currentDocument, wrapper);
     }
 
 }

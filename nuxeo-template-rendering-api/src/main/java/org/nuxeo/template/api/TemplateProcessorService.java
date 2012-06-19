@@ -155,4 +155,5 @@ public interface TemplateProcessorService {
 
     Map<String, ContextExtensionFactoryDescriptor> getRegistredContextExtensions();
 
+    List<String> getReservedContextKeywords();
 }

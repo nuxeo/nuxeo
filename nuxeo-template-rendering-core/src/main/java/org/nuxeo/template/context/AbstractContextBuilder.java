@@ -17,7 +17,7 @@ public abstract class AbstractContextBuilder {
     protected static final Log log = LogFactory.getLog(AbstractContextBuilder.class);
 
     public static final String[] RESERVED_VAR_NAMES = { "doc", "document",
-            "auditEntries", "username" };
+            "blobHolder", "username", "principal", "templateName" };
 
     public Map<String, Object> build(DocumentModel doc,
             DocumentWrapper nuxeoWrapper, String templateName) throws Exception {

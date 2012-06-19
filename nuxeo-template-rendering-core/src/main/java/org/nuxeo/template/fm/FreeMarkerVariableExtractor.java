@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessorService;
 
 /**
  * Helper class used to extract variable names from a FreeMarker template. This
@@ -49,6 +51,8 @@ public class FreeMarkerVariableExtractor {
 
     protected final static Pattern[] assignMatchers = new Pattern[] { Pattern.compile("\\[\\#assign\\s(.+)=.*\\]") };
 
+    protected static final List<String> reservedContextKeywords = new ArrayList<String>();
+
     protected static String extractVariableName(String match) {
 
         String varName = match.trim();
@@ -68,9 +72,17 @@ public class FreeMarkerVariableExtractor {
                 varName = varName.substring(0, idx);
             }
         }
-
         return varName;
+    }
 
+    protected static List<String> getreservedContextKeywords() {
+        synchronized (reservedContextKeywords) {
+            if (reservedContextKeywords.size() == 0) {
+                TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+                reservedContextKeywords.addAll(tps.getReservedContextKeywords());
+            }
+        }
+        return reservedContextKeywords;
     }
 
     public static List<String> extractVariables(String content) {
@@ -124,7 +136,7 @@ public class FreeMarkerVariableExtractor {
         }
 
         // remove reserved variables that don't need specific bindings
-        for (String bVar : FMContextBuilder.RESERVED_VAR_NAMES) {
+        for (String bVar : getreservedContextKeywords()) {
             variables.remove(bVar);
         }
 

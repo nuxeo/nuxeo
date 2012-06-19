@@ -28,6 +28,7 @@ import org.nuxeo.template.api.context.ContextExtensionFactory;
 import org.nuxeo.template.api.context.DocumentWrapper;
 import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
+import org.nuxeo.template.context.AbstractContextBuilder;
 
 /**
  * Runtime Component used to handle Extension Points and expose the
@@ -136,6 +137,20 @@ public class TemplateProcessorComponent extends DefaultComponent implements
                 }
             }
         }
+    }
+
+    public List<String> getReservedContextKeywords() {
+
+        List<String> keywords = new ArrayList<String>();
+        Map<String, ContextExtensionFactoryDescriptor> factories = contextExtensionRegistry.getExtensionFactories();
+        for (String name : factories.keySet()) {
+            keywords.add(name);
+            keywords.addAll(factories.get(name).getAliases());
+        }
+        for (String keyword : AbstractContextBuilder.RESERVED_VAR_NAMES) {
+            keywords.add(keyword);
+        }
+        return keywords;
     }
 
     public Map<String, ContextExtensionFactoryDescriptor> getRegistredContextExtensions() {
