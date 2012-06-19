@@ -486,7 +486,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 && name != null) {
             // infer filename from name property
             contentStream = new ContentStreamImpl(name,
-                    contentStream.getBigLength(), contentStream.getMimeType(),
+                    contentStream.getBigLength(), contentStream.getMimeType().trim(),
                     contentStream.getStream());
         }
 
