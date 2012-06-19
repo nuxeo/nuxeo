@@ -21,6 +21,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
@@ -30,6 +32,8 @@ import org.nuxeo.connect.update.xml.XmlWriter;
  *
  */
 public abstract class PackageDef {
+
+    private static final Log log = LogFactory.getLog(PackageDef.class);
 
     private File pkgFile;
 
@@ -119,7 +123,8 @@ public abstract class PackageDef {
         }
         try {
             task.run(new HashMap<String, String>());
-        } catch (Throwable t) {
+        } catch (Exception e) {
+            log.error(e, e);
             task.rollback();
         }
     }
@@ -135,7 +140,8 @@ public abstract class PackageDef {
         }
         try {
             task.run(new HashMap<String, String>());
-        } catch (Throwable t) {
+        } catch (Exception e) {
+            log.error(e, e);
             task.rollback();
         }
     }

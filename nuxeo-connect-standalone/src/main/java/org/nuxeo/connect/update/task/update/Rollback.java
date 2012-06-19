@@ -58,20 +58,6 @@ public class Rollback extends AbstractCommand {
         this.deleteOnExit = opt.deleteOnExit;
     }
 
-    /**
-     * Constructor that gets back rollback options from original rollback
-     * command
-     *
-     * @since 5.6
-     * @param rollback
-     */
-    public Rollback(Rollback rollback) {
-        super(rollback);
-        this.key = rollback.key;
-        this.version = rollback.version;
-        this.deleteOnExit = rollback.deleteOnExit;
-    }
-
     @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);

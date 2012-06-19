@@ -16,12 +16,8 @@
  */
 package org.nuxeo.connect.update;
 
-import org.nuxeo.connect.update.PackageException;
-import org.nuxeo.connect.update.ValidationStatus;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class PackageValidationException extends PackageException {
 
@@ -30,12 +26,26 @@ public class PackageValidationException extends PackageException {
     protected ValidationStatus status;
 
     public PackageValidationException(ValidationStatus status) {
-        super("validation exception: " + status);
+        super("Validation exception: " + statusToString(status));
         this.status = status;
     }
 
     public ValidationStatus getStatus() {
         return status;
+    }
+
+    public static String statusToString(ValidationStatus status) {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append("PackageValidationException");
+        buf.append(" {");
+        buf.append(" errors=");
+        buf.append(status.getErrors());
+        buf.append(", warnings=");
+        buf.append(status.getWarnings());
+        buf.append('}');
+
+        return buf.toString();
     }
 
 }

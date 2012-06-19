@@ -175,13 +175,12 @@ public class Update extends AbstractCommand {
         }
 
         Command deploy = getDeployCommand();
-        Command undeploy = null;
         if (deploy != null) {
-            undeploy = deploy.run(task, prefs);
+            // should it give the result undeploy command to the rollback (?)
+            deploy.run(task, prefs);
         }
 
-        return new Rollback((Rollback) rollback);
-
+        return rollback;
     }
 
     protected CompositeCommand updateDirectory(Task task, File dir,
