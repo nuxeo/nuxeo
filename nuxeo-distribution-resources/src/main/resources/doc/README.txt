@@ -1,6 +1,6 @@
-# Nuxeo platform 5.5.0-HF09-SNAPSHOT Release Notes
+# Nuxeo platform 5.5.0-HF09 Release Notes
 
-Welcome to the Nuxeo Platform 5.5.0-HF09-SNAPSHOT.
+Welcome to the Nuxeo Platform 5.5.0-HF09.
 
 You can always download the latest releases of Nuxeo modules
 on the Nuxeo Platform from
@@ -8,11 +8,11 @@ on the Nuxeo Platform from
 
 ## Requirements
 
-The applications based on Nuxeo EP 5.5.0-HF09-SNAPSHOT need Java. Please install and
+The applications based on Nuxeo EP 5.5.0-HF09 need Java. Please install and
 set up the recommended [Sun Java Development Kit (JDK) 6][2] if it's not
 already installed on your computer.
 
-Nuxeo Platform 5.5.0-HF09-SNAPSHOT supports OpenJDK 6 as a default Java setup.
+Nuxeo Platform 5.5.0-HF09 supports OpenJDK 6 as a default Java setup.
 We don't consider Java 7 as a supported version yet, but we welcome
 your feedback if you encounter any trouble with it.
 
