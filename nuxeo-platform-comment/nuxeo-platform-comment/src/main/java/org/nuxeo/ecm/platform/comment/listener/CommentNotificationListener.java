@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 public class CommentNotificationListener implements NotificationListenerHook {
 
     @Override
-    public DocumentEventContext handleNotifications(Event event)
+    public void handleNotifications(Event event)
             throws Exception {
         EventContext ctx = event.getContext();
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
@@ -45,6 +45,5 @@ public class CommentNotificationListener implements NotificationListenerHook {
                 docCtx.setArgs(args);
             }
         }
-        return docCtx;
     }
 }
