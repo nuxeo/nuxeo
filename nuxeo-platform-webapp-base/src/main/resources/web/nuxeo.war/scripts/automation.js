@@ -59,6 +59,43 @@ function AutomationWrapper(operationId,opts) {
         }
       })
   }
+  
+  AutomationWrapper.prototype.executeGetBlob = function(successCB, failureCB, blobOp){
+	    var targetUrl = this.opts.url + '/' + this.operationId;
+	    if (!blobOp) {
+	      voidOp=false;
+	    }
+	    jQuery.ajax({
+	        type: 'POST',
+	        contentType : 'application/json+nxrequest',
+	        data: JSON.stringify(this.opts.automationParams),
+	        beforeSend : function (xhr) {
+	            xhr.setRequestHeader('CTYPE_MULTIPART_MIXED', blobOp);
+	        },
+	        url: targetUrl,
+	        timeout: 30000,
+	        error: function(xhr, status, e) {
+	          if (failureCB) {
+	              failureCB(xhr,status,"No Data");
+	            } else {
+	              log("Failed to execute");
+	              log("Error, Status =" + status);
+	            }
+	        },
+	        success: function(data, status,xhr) {
+	          log("Executed OK");
+	          if (status=="success") {
+	            successCB(data,status,xhr);
+	          } else {
+	            if (failureCB) {
+	              failureCB(xhr,status,"No Data");
+	            } else {
+	              log("Error, Status =" + status);
+	            }
+	          }
+	        }
+	      })
+   }
 
   AutomationWrapper.prototype.log = function (msg) {
     if (window.console) {
