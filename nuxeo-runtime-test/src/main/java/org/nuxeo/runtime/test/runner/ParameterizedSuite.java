@@ -42,7 +42,7 @@ import org.junit.runners.model.RunnerBuilder;
 import org.junit.runners.model.TestClass;
 
 /**
- * JUnit4 ParentRunner that knows how to run a test class on multiple backend
+ * JUnit4 ParentRunner for executing parameterized suite of Feature tests
  * types.
  * <p>
  * To use it :
@@ -124,12 +124,6 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
 
     public ParameterizedSuite(RunnerBuilder builder, Class<?> testClass,
             Class<?>[] classes) throws InitializationError {
-        // this(testClass, builder.runners(null, classes));
-        // }
-        //
-        // protected ParameterizedSuite(Class<?> testClass, List<Runner>
-        // runners)
-        // throws InitializationError {
         super(testClass);
         try {
             this.parametersList = getParametersList(getTestClass());
@@ -141,7 +135,6 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
             List<Runner> runners2 = builder.runners(testClass, classes);
             for (Runner runner : runners2) {
                 FeaturesRunner featureRunner = (FeaturesRunner) runner;
-                // featureRunner.getDescription().addChild(new Descriptio)
                 this.runners.add(featureRunner);
                 try {
                     if (parameterizedClass != null) {
@@ -188,23 +181,9 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
 
     @Override
     protected void runChild(FeaturesRunner child, RunNotifier notifier) {
-        // for (Object[] params : parametersList) {
         System.out.println(String.format(
                 "\r\n============= RUNNING %s =================",
                 describeChild(child)));
-        // try {
-        // if (parameterizedClass != null) {
-        // RunnerFeature feature = child.getFeature(parameterizedClass);
-        // for (Method method : feature.getClass().getMethods()) {
-        // if (method.getAnnotation(ParameterizedMethod.class) != null) {
-        // method.invoke(feature, new Object[] { params });
-        // }
-        // }
-        // }
         child.run(notifier);
-        // } catch (Throwable e) {
-        // notifier.fireTestFailure(new Failure(child.getDescription(), e));
-        // }
-        // }
     }
 }
