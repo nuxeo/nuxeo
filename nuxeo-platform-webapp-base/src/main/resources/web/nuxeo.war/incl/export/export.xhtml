@@ -23,16 +23,19 @@
   <ui:define name="body">
     <div>
 
-      <div class="exportViewBrowseBack">
-        <p class="directoryBack">
+      <h:form id="document_header_layout_form" class="titleBlock">
+        <nxl:documentLayout mode="header" value="#{currentDocument}"
+          defaultLayout="document_header" includeAnyMode="false" />
+      </h:form>
+
+     <div class="exportViewBrowseBack">
+        <p class="action_bar directoryBack">
           <nxd:restDocumentLink document="#{currentDocument}">
+            <nxh:graphicImage value="/icons/arrow_left.gif" />
             <h:outputText value="#{messages['label.browse.backToDocumentView']}" />
           </nxd:restDocumentLink>
         </p>
       </div>
-
-      <nxl:documentLayout mode="header" value="#{currentDocument}"
-        defaultLayout="document_header" includeAnyMode="false" />
 
       <ui:include src="/incl/message_banner.xhtml"/>
 

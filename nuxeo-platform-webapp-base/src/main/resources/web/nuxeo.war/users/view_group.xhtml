@@ -12,12 +12,14 @@
   <a4j:outputPanel id="groupDetailsPanel">
 
   <h:form>
-    <p class="directoryBack">
+    <p class="action_bar directoryBack">
       <a4j:commandLink immediate="true"
         value="#{messages['command.directoryBack']}"
         action="#{groupManagementActions.toggleShowUserOrGroup}"
         reRender="groupsPanel"
-        eventsQueue="adminCenterQueue" />
+        eventsQueue="adminCenterQueue">
+        <h:graphicImage value="/icons/arrow_left.gif" />
+      </a4j:commandLink>
     </p>
   </h:form>
 
