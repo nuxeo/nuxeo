@@ -130,7 +130,7 @@ As example we provide a sample DocumentType that is called TemplateBasedDocument
 
  - you select the Template associated
 
- - you can render the template and have the resulting file stored in the file schema.
+ - you can render the template and have the resulting file stored in the file schemas.
 
 But this is probably not the main use case.
 

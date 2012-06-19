@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
@@ -49,8 +50,21 @@ public class FieldDefinitionGenerator {
                     fieldsMetadata.addField(fieldName, true, null, null, null);
                 } else {
                     fieldsMetadata.addField(fieldName, false, null, null, null);
-                }
+                    if (field.getType().isComplexType()) {
 
+                        ComplexType ct = (ComplexType) field.getType();
+                        if ("content".equals(ct.getName())) {
+                            fieldsMetadata.addField(fieldName + ".filename",
+                                    false, null, null, null);
+                        } else {
+                            for (Field subField : ct.getFields()) {
+                                fieldsMetadata.addField(fieldName + "."
+                                        + subField.getName().getLocalName(),
+                                        false, null, null, null);
+                            }
+                        }
+                    }
+                }
             }
         }
 

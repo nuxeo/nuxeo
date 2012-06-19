@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.test.doctypes">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="testComplex" src="schemas/testComplex.xsd"
+      prefix="cplx" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <doctype name="DocWithComplex" extends="File">
+      <schema name="testComplex"/>
+    </doctype>
+
+  </extension>
+
+</component>
