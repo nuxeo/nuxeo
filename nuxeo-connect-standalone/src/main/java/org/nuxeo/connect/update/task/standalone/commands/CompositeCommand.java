@@ -87,4 +87,8 @@ public class CompositeCommand extends AbstractCommand {
         }
     }
 
+    public boolean isEmpty() {
+        return commands.isEmpty();
+    }
+
 }

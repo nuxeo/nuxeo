@@ -135,4 +135,12 @@ public interface ReloadService extends TimestampedService {
     @Deprecated
     void installWebResources(File file) throws Exception;
 
+    /***
+     * Returns the OSGI bundle name if given file can be identified as an OSGI
+     * bundle, or null.
+     *
+     * @since 5.6
+     */
+    String getOSGIBundleName(File file);
+
 }

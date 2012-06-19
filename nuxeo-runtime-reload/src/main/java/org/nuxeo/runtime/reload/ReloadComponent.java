@@ -17,6 +17,7 @@
 package org.nuxeo.runtime.reload;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -122,12 +123,22 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     public String deployBundle(File file, boolean reloadResourceClasspath)
             throws Exception {
+        String name = getOSGIBundleName(file);
+        if (name == null) {
+            log.error(String.format(
+                    "No Bundle-SymbolicName found in MANIFEST for jar at '%s'",
+                    file.getAbsolutePath()));
+            return null;
+        }
+
         String path = file.getAbsolutePath();
         // FIXME this will remove from classpath other bundles deployed at
         // runtime
         if (reloadResourceClasspath) {
             reloadResourceClassPath(Collections.singletonList(path));
         }
+
+        // check if this is a bundle
 
         Bundle newBundle = getBundleContext().installBundle(path);
         if (newBundle == null) {
@@ -142,9 +153,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     public void undeployBundle(File file) throws Exception {
         BundleContext ctx = getBundleContext();
 
-        JarFile jar = new JarFile(file);
-        Manifest mf = jar.getManifest();
-        String name = mf.getMainAttributes().getValue("Bundle-SymbolicName");
+        String name = getOSGIBundleName(file);
         if (name == null) {
             log.error(String.format(
                     "No Bundle-SymbolicName found in MANIFEST for jar at '%s'",
@@ -154,7 +163,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
             try {
                 for (Bundle b : srv.getBundles(name, null)) {
-                    if (b!= null && b.getState() == Bundle.ACTIVE) {
+                    if (b != null && b.getState() == Bundle.ACTIVE) {
                         b.stop();
                         b.uninstall();
                     }
@@ -239,6 +248,24 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     protected static File getWarDir() {
         return new File(getAppDir(), "nuxeo.war");
+    }
+
+    @Override
+    public String getOSGIBundleName(File file) {
+        if (!file.exists() || file.isDirectory()) {
+            return null;
+        }
+        try {
+            JarFile jar = new JarFile(file);
+            Manifest mf = jar.getManifest();
+            if (mf != null) {
+                return mf.getMainAttributes().getValue("Bundle-SymbolicName");
+            }
+        } catch (IOException e) {
+            // maybe not even a jar
+            return null;
+        }
+        return null;
     }
 
 }
