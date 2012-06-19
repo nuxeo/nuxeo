@@ -40,4 +40,9 @@
       class="org.nuxeo.ecm.platform.ec.notification.service.GeneralSettingsDescriptor" />
   </extension-point>
 
+  <extension-point name="notificationListenerVeto">
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationListenerVetoDescriptor" />
+  </extension-point>
+
 </component>

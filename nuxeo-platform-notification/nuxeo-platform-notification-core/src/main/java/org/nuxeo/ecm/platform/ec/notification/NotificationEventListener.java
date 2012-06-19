@@ -66,25 +66,25 @@ public class NotificationEventListener implements
 
     private EmailHelper emailHelper = new EmailHelper();
 
+    private NotificationService notificationService = NotificationServiceHelper.getNotificationService();
+
     @Override
     public boolean acceptEvent(Event event) {
-        NotificationService service = NotificationServiceHelper.getNotificationService();
-        if (service == null) {
+        if (notificationService == null) {
             return false;
         }
-        return service.getNotificationEventNames().contains(event.getName());
+        return notificationService.getNotificationEventNames().contains(event.getName());
     }
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
 
-        NotificationService service = NotificationServiceHelper.getNotificationService();
-        if (service == null) {
+        if (notificationService == null) {
             log.error("Unable to get NotificationService, exiting");
             return;
         }
         boolean processEvents = false;
-        for (String name : service.getNotificationEventNames()) {
+        for (String name : notificationService.getNotificationEventNames()) {
             if (events.containsEventName(name)) {
                 processEvents = true;
                 break;
@@ -99,7 +99,7 @@ public class NotificationEventListener implements
                 // ignore the event - we are blocked by the caller
                 continue;
             }
-            List<Notification> notifs = service.getNotificationsForEvents(event.getName());
+            List<Notification> notifs = notificationService.getNotificationsForEvents(event.getName());
             if (notifs != null && !notifs.isEmpty()) {
                 try {
                     handleNotifications(event, notifs);
@@ -128,8 +128,14 @@ public class NotificationEventListener implements
         Map<String, Serializable> properties = event.getContext().getProperties();
         Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
 
-        for(NotificationListenerHook hookListener:NotificationServiceHelper.getNotificationService().getListenerHooks()) {
-            docCtx = hookListener.handleNotifications(event);
+        for (NotificationListenerVeto veto : notificationService.getNotificationVetos()) {
+            if (!veto.accept(event)) {
+                return;
+            }
+        }
+
+        for(NotificationListenerHook hookListener:notificationService.getListenerHooks()) {
+            hookListener.handleNotifications(event);
         }
 
         gatherConcernedUsersForDocument(coreSession,
@@ -223,7 +229,7 @@ public class NotificationEventListener implements
         eventInfo.put(NotificationConstants.DOCUMENT_CREATED, created.getTime());
         StringBuilder userUrl = new StringBuilder();
         userUrl.append(
-                NotificationServiceHelper.getNotificationService().getServerUrlPrefix()).append(
+                notificationService.getServerUrlPrefix()).append(
                 "user/").append(ctx.getPrincipal().getName());
         eventInfo.put(NotificationConstants.USER_URL_KEY, userUrl.toString());
         eventInfo.put(NotificationConstants.DOCUMENT_LOCATION,
@@ -233,7 +239,7 @@ public class NotificationEventListener implements
         if (bh != null && bh.getBlob() != null) {
             StringBuilder docMainFile = new StringBuilder();
             docMainFile.append(
-                    NotificationServiceHelper.getNotificationService().getServerUrlPrefix()).append(
+                    notificationService.getServerUrlPrefix()).append(
                     "nxfile/default/").append(doc.getId()).append(
                     "/blobholder:0/").append(bh.getBlob().getFilename());
             eventInfo.put(NotificationConstants.DOCUMENT_MAIN_FILE,
@@ -249,7 +255,7 @@ public class NotificationEventListener implements
                         getDocLocator().getUrlFromDocumentView(
                                 docView,
                                 true,
-                                NotificationServiceHelper.getNotificationService().getServerUrlPrefix()));
+                                notificationService.getServerUrlPrefix()));
             } else {
                 eventInfo.put(NotificationConstants.DOCUMENT_URL_KEY, "");
             }
@@ -321,7 +327,7 @@ public class NotificationEventListener implements
         mail.put(NotificationConstants.DOCUMENT_KEY, ctx.getSourceDocument());
         String subject = notif.getSubject() == null ? NotificationConstants.NOTIFICATION_KEY
                 : notif.getSubject();
-        subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
+        subject = notificationService.getEMailSubjectPrefix()
                 + subject;
         mail.put("subject", subject);
         mail.put("template", mailTemplate);
@@ -376,7 +382,7 @@ public class NotificationEventListener implements
             Map<Notification, List<String>> targetUsers) throws Exception {
         for (Notification notification : notifs) {
             if (!notification.getAutoSubscribed()) {
-                List<String> userGroup = NotificationServiceHelper.getNotificationService().getSubscribers(
+                List<String> userGroup = notificationService.getSubscribers(
                         notification.getName(), doc.getId());
                 for (String subscriptor : userGroup) {
                     if (subscriptor != null) {

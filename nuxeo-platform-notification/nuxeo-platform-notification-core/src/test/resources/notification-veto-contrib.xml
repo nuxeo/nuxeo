@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.notification.service.NotificationVetoContrib-test">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notificationListenerVeto">
+
+    <veto class="org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto1" name="veto1" />
+
+    <veto class="org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto2" name="veto2" />
+
+    <veto class="org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto3" name="veto3" />
+
+  </extension>
+</component>

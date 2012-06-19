@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
+import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 import org.nuxeo.ecm.platform.ec.notification.UserSubscription;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.placeful.Annotation;
@@ -80,8 +81,10 @@ public class NotificationService extends DefaultComponent implements
     protected static final String TEMPLATES_EP = "templates";
 
     protected static final String GENERAL_SETTINGS_EP = "generalSettings";
-    
+
     protected static final String NOTIFICATION_HOOK_EP = "notificationListenerHook";
+
+    protected static final String NOTIFICATION_VETO_EP = "notificationListenerVeto";
 
     // FIXME: performance issue when putting URLs in a Map.
     protected static final Map<String, URL> TEMPLATES_MAP = new HashMap<String, URL>();
@@ -95,7 +98,9 @@ public class NotificationService extends DefaultComponent implements
     protected DocumentViewCodecManager docLocator;
 
     protected final Map<String,NotificationListenerHook> hookListeners = new HashMap<String,NotificationListenerHook>();
-    
+
+    protected NotificationListenerVetoRegistry notificationVetoRegistry;
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
@@ -108,6 +113,7 @@ public class NotificationService extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         notificationRegistry = new NotificationRegistryImpl();
+        notificationVetoRegistry = new NotificationListenerVetoRegistry();
 
         // init default settings
         generalSettings = new GeneralSettingsDescriptor();
@@ -119,7 +125,9 @@ public class NotificationService extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         notificationRegistry.clear();
+        notificationVetoRegistry.clear();
         notificationRegistry = null;
+        notificationVetoRegistry = null;
     }
 
     @Override
@@ -169,12 +177,23 @@ public class NotificationService extends DefaultComponent implements
                     log.error(e);
                 }
             }
+        } else if (NOTIFICATION_VETO_EP.equals(xp)) {
+            Object[] contribs = extension.getContributions();
+            for (Object contrib : contribs) {
+                try {
+                    NotificationListenerVetoDescriptor desc = (NotificationListenerVetoDescriptor) contrib;
+                    notificationVetoRegistry.addContribution(desc);
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
         }
     }
 
     private void registerHookListener(String name, NotificationListenerHook hookListener) {
         hookListeners.put(name, hookListener);
     }
+
     protected void registerGeneralSettings(GeneralSettingsDescriptor desc) {
         generalSettings = desc;
         generalSettings.serverPrefix = Framework.expandVars(generalSettings.serverPrefix);
@@ -216,11 +235,22 @@ public class NotificationService extends DefaultComponent implements
                     log.error(e);
                 }
             }
+        } else if (NOTIFICATION_VETO_EP.equals(xp)) {
+            Object[] contribs = extension.getContributions();
+            for (Object contrib : contribs) {
+                NotificationListenerVetoDescriptor vetoDescriptor = (NotificationListenerVetoDescriptor) contrib;
+                notificationVetoRegistry.removeContribution(vetoDescriptor);
+            }
         }
     }
 
     public NotificationRegistry getNotificationRegistry() {
         return notificationRegistry;
+    }
+
+
+    public NotificationListenerVetoRegistry getNotificationListenerVetoRegistry() {
+        return notificationVetoRegistry;
     }
 
     public List<String> getSubscribers(String notification, String docId)
@@ -559,6 +589,10 @@ public class NotificationService extends DefaultComponent implements
 
     public Collection<NotificationListenerHook> getListenerHooks(){
         return hookListeners.values();
+    }
+
+    public Collection<NotificationListenerVeto> getNotificationVetos() {
+        return notificationVetoRegistry.getVetos();
     }
 
 }

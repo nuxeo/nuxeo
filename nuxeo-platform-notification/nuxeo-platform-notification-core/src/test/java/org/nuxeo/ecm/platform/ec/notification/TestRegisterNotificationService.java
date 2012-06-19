@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,12 +61,17 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         InputStream notificationsProperties = new FileInputStream(notificationsPropertiesFile);
         ((OSGiRuntimeService) runtime).loadProperties(notificationsProperties);
 
+        deployBundle("org.nuxeo.ecm.platform.notification.core.tests");
         deployContrib("org.nuxeo.ecm.platform.notification.core.tests",
                 "NotificationService.xml");
         deployContrib("org.nuxeo.ecm.platform.notification.core.tests",
                 "notification-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.notification.core.tests",
                 "notification-contrib-overridden.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.notification.core.tests",
+                "notification-veto-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.notification.core.tests",
+                "notification-veto-contrib-overridden.xml");
         notificationService = (NotificationService) runtime.getComponent(NotificationService.NAME);
         notificationRegistry = notificationService.getNotificationRegistry();
     }
@@ -81,7 +87,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
     @Test
     public void testTemplateOverride() {
-        URL newModifTemplate = notificationService.getTemplateURL("modif");
+        URL newModifTemplate = NotificationService.getTemplateURL("modif");
         assertTrue(newModifTemplate.getFile().endsWith("templates/modif_fr.ftl"));
     }
 
@@ -118,8 +124,23 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         assertEquals("http://testServerPrefix/nuxeo", notificationService.getServerUrlPrefix());
         assertEquals("testSubjectPrefix", notificationService.getEMailSubjectPrefix());
 
-        // this on should not be expanded
+        // this one should not be expanded
         assertEquals("${not.existing.property}", notificationService.getMailSessionJndiName());
+    }
+
+    @Test
+    public void testVetoRegistration() {
+        Collection<NotificationListenerVeto> vetos = notificationService.getNotificationVetos();
+        assertEquals(2, vetos.size());
+        assertEquals(
+                "org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto1",
+                notificationService.getNotificationListenerVetoRegistry().getVeto(
+                        "veto1").getClass().getCanonicalName());
+        assertEquals(
+                "org.nuxeo.ecm.platform.ec.notification.veto.NotificationVeto20",
+                notificationService.getNotificationListenerVetoRegistry().getVeto(
+                        "veto2").getClass().getCanonicalName());
+
     }
 
 }

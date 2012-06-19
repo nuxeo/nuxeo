@@ -15,7 +15,6 @@
 package org.nuxeo.ecm.platform.ec.notification;
 
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * @description NotificationListenerHook interface
@@ -23,6 +22,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public interface NotificationListenerHook {
 
-    DocumentEventContext handleNotifications(Event event) throws Exception;
+    void handleNotifications(Event event) throws Exception;
 
 }
