@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Florent Guillaume
  *
@@ -56,7 +56,7 @@ public class RFC2231 {
             bytes = UNKNOWN_BYTES;
         }
         for (byte b : bytes) {
-            if (b < '+' || b == ';' || b == '\\' || b > 'z') {
+            if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
                 buf.append('%');
                 String s = Integer.toHexString(b & 0xff).toUpperCase();
                 if (s.length() < 2) {
@@ -87,7 +87,7 @@ public class RFC2231 {
         if (userAgent == null) {
             userAgent = "";
         }
-        if (userAgent.contains("Firefox")) {
+        if (userAgent.contains("Firefox") || userAgent.contains("Chrome")) {
             // proper RFC2231
             buf.append("filename*=UTF-8''");
             percentEscape(buf, filename);
