@@ -6,7 +6,7 @@ author: lkemen@nuxeo.com
 */
 
 /* =Default boxes */
-.foldableBox { border-width: 1px; border-style: solid; border-color:"neutral.lighter (__FLAVOR__ border)"; font-size: .9em; margin-bottom: 1.8em }
+.foldableBox { border-radius: 5px; border-width: 1px; border-style: solid; border-color:"neutral.lighter (__FLAVOR__ border)"; font-size: .9em; margin-bottom: 1.8em }
 
 .foldableBox h3 {
   background-color: #fff;

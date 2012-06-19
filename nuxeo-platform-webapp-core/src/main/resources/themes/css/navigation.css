@@ -54,4 +54,5 @@ author: lkemen@nuxeo.com
 .pageNavigationControls input[disabled=disabled], #pageNavigationControls input[disabled=disabled] { cursor: default; filter: alpha(opacity=50); opacity: .4 }
 
 /* =Back Arrow */
-.directoryBack { background: url("${basePath}/icons/arrow_left.gif") no-repeat scroll 3px 1px transparent; padding: .2em .2em .2em 2em }
+.directoryBack { display: inline; float: right }
+.directoryBack:after { clear: both }

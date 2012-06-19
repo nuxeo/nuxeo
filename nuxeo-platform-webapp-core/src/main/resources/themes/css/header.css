@@ -24,7 +24,7 @@ author: lkemen@nuxeo.com
 .searchService { opacity: 0.85; margin: 0 1em 0 .5em }
 .searchService input[type="text"]:focus, .searchService:hover { opacity: 1 }
 .searchService .directoryFilter { border: 1px solid #fff; margin: 0 .3em 0 0 }
-.searchService input.button { margin: .3em .5em 0 .3em; padding: .2em }
+.searchService input.button {  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset; margin: .3em .5em 0 .3em; padding: .2em }
 .advancedSearchLink a { font-size: .8em }
 
 /* =UserServices */
