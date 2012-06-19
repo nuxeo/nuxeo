@@ -144,7 +144,7 @@ public class DialectOracle extends Dialect {
         case FTSTORED:
             return jdbcInfo("NCLOB", Types.CLOB);
         case CLUSTERNODE:
-            return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
+            return jdbcInfo("VARCHAR(25)", Types.VARCHAR);
         case CLUSTERFRAGS:
             return jdbcInfo("VARCHAR2(4000)", Types.VARCHAR);
         }
@@ -432,12 +432,12 @@ public class DialectOracle extends Dialect {
     @Override
     public String getClusterGetInvalidations() {
         return "SELECT id, fragments, kind FROM cluster_invals "
-                + "WHERE nodeid = SYS_CONTEXT('USERENV','SID')";
+                + "WHERE nodeid = NX_NODEID()";
     }
 
     @Override
     public String getClusterDeleteInvalidations() {
-        return "DELETE FROM cluster_invals WHERE nodeid = SYS_CONTEXT('USERENV','SID')";
+        return "DELETE FROM cluster_invals WHERE nodeid = NX_NODEID()";
     }
 
     @Override
