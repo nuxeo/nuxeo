@@ -50,6 +50,11 @@ public class Undeploy extends UndeployPlaceholder {
 
     protected void undeployFile(File file, ReloadService service)
             throws PackageException {
+        String name = service.getOSGIBundleName(file);
+        if (name == null) {
+            // not an OSGI bundle => ignore
+            return;
+        }
         try {
             service.undeployBundle(file);
         } catch (Exception e) {

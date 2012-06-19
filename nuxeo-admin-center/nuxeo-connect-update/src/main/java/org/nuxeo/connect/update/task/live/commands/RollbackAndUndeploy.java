@@ -37,10 +37,6 @@ public class RollbackAndUndeploy extends Rollback {
         super();
     }
 
-    public RollbackAndUndeploy(Rollback rollback) {
-        super(rollback);
-    }
-
     public RollbackAndUndeploy(RollbackOptions opt) {
         super(opt);
     }

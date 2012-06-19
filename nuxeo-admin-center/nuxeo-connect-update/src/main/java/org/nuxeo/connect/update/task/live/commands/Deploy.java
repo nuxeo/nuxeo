@@ -50,6 +50,11 @@ public class Deploy extends DeployPlaceholder {
 
     protected Undeploy deployFile(File file, ReloadService service)
             throws PackageException {
+        String name = service.getOSGIBundleName(file);
+        if (name == null) {
+            // not an OSGI bundle => ignore
+            return null;
+        }
         try {
             service.deployBundle(file, true);
         } catch (Exception e) {
@@ -64,9 +69,15 @@ public class Deploy extends DeployPlaceholder {
         File[] files = dir.listFiles();
         if (files != null) {
             for (File fileInDir : files) {
-                // TODO: check if file is a runtime bundle (?)
-                cmd.addCommand(deployFile(fileInDir, service));
+                Command ud = deployFile(fileInDir, service);
+                if (ud != null) {
+                    cmd.addCommand(ud);
+                }
             }
+        }
+        if (cmd.isEmpty()) {
+            // nothing to rollback
+            return null;
         }
         return cmd;
     }
@@ -85,10 +96,13 @@ public class Deploy extends DeployPlaceholder {
         } else {
             rollback = deployFile(file, srv);
         }
-        try {
-            srv.runDeploymentPreprocessor();
-        } catch (Exception e) {
-            throw new PackageException(e.getMessage(), e);
+        if (rollback != null) {
+            // some deployments where done
+            try {
+                srv.runDeploymentPreprocessor();
+            } catch (Exception e) {
+                throw new PackageException(e.getMessage(), e);
+            }
         }
         return rollback;
     }
