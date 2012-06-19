@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
     <artifactId>nuxeo-automation-parent</artifactId>
-    <version>5.5.0-HF09-SNAPSHOT</version>
+    <version>5.5.0-HF10-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-automation-test</artifactId>
   <name>Nuxeo Automation Tests</name>

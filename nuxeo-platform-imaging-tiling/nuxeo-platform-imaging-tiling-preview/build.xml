@@ -4,7 +4,7 @@
   <property name="mvn.opts" value="" />
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
-  <property name="version" value="5.5.0-HF09-SNAPSHOT" />
+  <property name="version" value="5.5.0-HF10-SNAPSHOT" />
   <property name="mvn.opts2" value=""/>
   <property name="project.name" value="nuxeo-platform-imaging-tiling-preview" />
   <target name="copy-gwt" depends="make-gwt" description="Copy gwt's javascript to the JBoss server.">
