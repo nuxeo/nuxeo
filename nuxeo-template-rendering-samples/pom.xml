@@ -27,6 +27,16 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-xdocreport</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-jxls</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-jaxrs</artifactId>
       <scope>test</scope>
     </dependency>
