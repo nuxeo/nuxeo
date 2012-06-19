@@ -240,6 +240,7 @@
       </widget>
     </layout>
 
+    <!-- TODO: debug/dev mode -->
     <layout name="admin_setup_main">
       <templates>
         <template mode="any">

@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 
 /**
- * Flush all nuxeo caches.
+ * Flush all Nuxeo caches by calling {@link ReloadService#flush()}
  * <p>
  * The inverse of this command is itself.
  *
@@ -34,6 +34,12 @@ import org.nuxeo.runtime.reload.ReloadService;
  */
 public class Flush extends FlushPlaceholder {
 
+    /**
+     * Calls the {@link ReloadService#flush()} method
+     *
+     * @since 5.6
+     * @throws PackageException
+     */
     public static void flush() throws PackageException {
         try {
             Framework.getRuntime().reloadProperties();

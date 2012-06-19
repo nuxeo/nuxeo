@@ -59,8 +59,12 @@ public class LiveInstallTask extends InstallTask {
     }
 
     /**
-     * @deprecated since 5.6: this way of reloading components is not compliant
-     *             with other ways. See {@link ReloadService} API instead.
+     * @deprecated since 5.6: this way of reloading components is smarter
+     *             because the package installed can declare what needs to be
+     *             reloaded exactly, but this is too complicated to handle, and
+     *             risky given potential dependency issues => make components
+     *             listen for the "flush" event instead, @see
+     *             {@link ReloadService}
      */
     @Deprecated
     protected static void reloadComponents(LocalPackage localPackage)
@@ -84,8 +88,7 @@ public class LiveInstallTask extends InstallTask {
     }
 
     /**
-     * @deprecated since 5.6: this way of reloading components is not compliant
-     *             with other ways. See {@link ReloadService} API instead.
+     * @deprecated since 5.6: see {@link #reloadComponents(LocalPackage)}
      */
     @Deprecated
     protected static void reloadComponent(String name) throws PackageException {

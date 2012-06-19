@@ -55,9 +55,8 @@ public class NavTreeService extends DefaultComponent {
         return allTrees;
     }
 
-    protected synchronized List<NavTreeDescriptor> getDirectoryTrees() {
-        DirectoryTreeService directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
-                DirectoryTreeService.NAME);
+    protected List<NavTreeDescriptor> getDirectoryTrees() {
+        DirectoryTreeService directoryTreeService = getDirectoryTreeService();
         if (directoryTreeService == null) {
             return null;
         }
@@ -68,6 +67,18 @@ public class NavTreeService extends DefaultComponent {
             trees.add(new NavTreeDescriptor(dTreeName, desc.getLabel(), true));
         }
         return trees;
+    }
+
+    /**
+     * @since 5.6
+     */
+    protected DirectoryTreeService getDirectoryTreeService() {
+        DirectoryTreeService directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
+                DirectoryTreeService.NAME);
+        if (directoryTreeService == null) {
+            return null;
+        }
+        return directoryTreeService;
     }
 
     @Override
@@ -110,4 +121,27 @@ public class NavTreeService extends DefaultComponent {
         }
     }
 
+    /**
+     * Returns the last modified time of this service or of the
+     * {@link DirectoryTreeService}, whichever the greater
+     *
+     * @since 5.6
+     */
+    @Override
+    public Long getLastModified() {
+        Long res = super.getLastModified();
+        DirectoryTreeService treeService = getDirectoryTreeService();
+        if (treeService != null) {
+            Long other = treeService.getLastModified();
+            if (res == null && other == null) {
+                return null;
+            }
+            if (res != null && res.compareTo(other) < 0) {
+                res = other;
+            } else if (other != null) {
+                res = other;
+            }
+        }
+        return res;
+    }
 }

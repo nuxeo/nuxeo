@@ -19,8 +19,6 @@
 
 package org.nuxeo.connect.client.jsf;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,13 +30,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
@@ -49,6 +50,8 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.ecm.admin.AdminViewManager;
+import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloadContextKeeper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -57,34 +60,14 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @Name("appsViews")
-@Scope(CONVERSATION)
+@Scope(ScopeType.CONVERSATION)
 public class AppCenterViewsManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     protected static final Log log = LogFactory.getLog(AppCenterViewsManager.class);
 
-    @In(create = true)
-    protected String currentAdminSubViewId;
-
-    protected String searchString;
-
-    protected StudioAutoInstaller studioAutoInstaller;
-
-    protected int studioSnapshotDownloadProgress;
-
-    protected String studioSnapshotStatus;
-
-    protected boolean isStudioSnapshopUpdateInProgress = false;
-
-    // FIXME: this should be persisted instead of being local to the seam
-    // component, as other potential users will not see the same information in
-    // the admin center
-    protected Calendar lastStudioSnapshotUpdate;
-
-    protected String studioSnapshotUpdateError;
-
-    protected enum snapshotStatus {
+    protected enum SnapshotStatus {
         downloading, saving, installing, error, completed, restartNeeded;
     }
 
@@ -97,6 +80,30 @@ public class AppCenterViewsManager implements Serializable {
             put("ConnectAppsLocal", "local");
         }
     };
+
+    @In(create = true)
+    protected String currentAdminSubViewId;
+
+    @In(create = true)
+    protected NuxeoSeamHotReloadContextKeeper seamReloadContext;
+
+    @In(create = true)
+    protected Map<String, String> messages;
+
+    protected String searchString;
+
+    protected SnapshotStatus studioSnapshotStatus;
+
+    protected int studioSnapshotDownloadProgress;
+
+    protected boolean isStudioSnapshopUpdateInProgress = false;
+
+    // FIXME: this should be persisted instead of being local to the seam
+    // component, as other potential users will not see the same information in
+    // the admin center
+    protected Calendar lastStudioSnapshotUpdate;
+
+    protected String studioSnapshotUpdateError;
 
     public String getSearchString() {
         if (searchString == null) {
@@ -162,6 +169,19 @@ public class AppCenterViewsManager implements Serializable {
         pm.flushCache();
     }
 
+    /**
+     * Method binding for the update button: needs to perform a real
+     * redirection (as ajax context is broken after hot reload) and to provide
+     * an outcome so that redirection through the URL service goes ok (even if
+     * it just reset its navigation handler cache).
+     *
+     * @since 5.6
+     */
+    public String installStudioSnapshotAndRedirect() throws Exception {
+        installStudioSnapshot();
+        return AdminViewManager.VIEW_ADMIN;
+    }
+
     public void installStudioSnapshot() throws Exception {
         if (isStudioSnapshopUpdateInProgress) {
             return;
@@ -174,70 +194,83 @@ public class AppCenterViewsManager implements Serializable {
         studioSnapshotUpdateError = null;
         if (snapshotPkg != null) {
             isStudioSnapshopUpdateInProgress = true;
-            DownloadingPackage downloadingStudioSnapshot = pm.download(snapshotPkg.getId());
-            studioAutoInstaller = new StudioAutoInstaller(
-                    downloadingStudioSnapshot);
-            studioAutoInstaller.run();
+            try {
+                StudioAutoInstaller studioAutoInstaller = new StudioAutoInstaller(
+                        pm, snapshotPkg.getId());
+                studioAutoInstaller.run();
+            } finally {
+                isStudioSnapshopUpdateInProgress = false;
+            }
         } else {
-            studioSnapshotUpdateError = "No snapshot package found";
+            studioSnapshotUpdateError = translate("label.studio.error.noSnapshotPackageFound");
         }
-
     }
 
     public boolean isStudioSnapshopUpdateInProgress() {
         return isStudioSnapshopUpdateInProgress;
     }
 
-    // ??? to remove?
-    public void checkStudioSnapshot() {
-        return;
+    // TODO: move into ResourcesAccessor?
+    protected static String translate(String label, Object... params) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        String bundleName = context.getApplication().getMessageBundle();
+        Locale locale = context.getViewRoot().getLocale();
+        label = I18NUtils.getMessageString(bundleName, label, params, locale);
+        return label;
     }
 
-    // TODO: internationalize status messages
+    protected String getLastUpdateDate() {
+        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
+                Locale.US);
+        df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return df.format(lastStudioSnapshotUpdate.getTime());
+    }
+
     public String getStudioInstallationStatus() {
-        if (snapshotStatus.error.name().equals(studioSnapshotStatus)
-                && studioSnapshotUpdateError != null) {
-            return "Error: " + studioSnapshotUpdateError;
-        }
-
-        if (snapshotStatus.downloading.name().equals(studioSnapshotStatus)) {
-            return "downloading : " + studioSnapshotDownloadProgress + " %";
-        } else if (snapshotStatus.completed.name().equals(studioSnapshotStatus)) {
-            DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
-                    Locale.US);
-            df.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return "last update completed : "
-                    + df.format(lastStudioSnapshotUpdate.getTime());
-        } else if (snapshotStatus.restartNeeded.name().equals(
-                studioSnapshotStatus)) {
-            DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
-                    Locale.US);
-            return "last update completed : "
-                    + df.format(lastStudioSnapshotUpdate.getTime())
-                    + ", restart needed.";
-        }
-
+        String prefix = "label.studio.update.status.";
         if (studioSnapshotStatus == null) {
-            return " No previous Studio package installation";
+            return translate(prefix + "noStatus");
         }
 
-        return studioSnapshotStatus;
+        Object[] params = new Object[0];
+        if (SnapshotStatus.error.equals(studioSnapshotStatus)) {
+            if (studioSnapshotUpdateError == null) {
+                studioSnapshotUpdateError = "???";
+            }
+            params = new Object[] { studioSnapshotUpdateError };
+        } else if (SnapshotStatus.downloading.equals(studioSnapshotStatus)) {
+            params = new Object[] { String.valueOf(studioSnapshotDownloadProgress) };
+        } else if (SnapshotStatus.completed.equals(studioSnapshotStatus)
+                || SnapshotStatus.restartNeeded.equals(studioSnapshotStatus)) {
+            params = new Object[] { getLastUpdateDate() };
+        }
+
+        return translate(prefix + studioSnapshotStatus.name(), params);
     }
 
+    // FIXME: seems thread is not killed when download is stuck, even when
+    // logging/out + package is still shown as "installation in progress" in
+    // the admin center
+    // TODO: run DM connect test against a test connect server
+    // TODO: plug a notifier for status to be shown to the user
     protected class StudioAutoInstaller implements Runnable {
 
-        protected final DownloadingPackage pkg;
+        protected final String packageId;
 
-        protected StudioAutoInstaller(DownloadingPackage pkg) {
-            this.pkg = pkg;
+        protected final PackageManager pm;
+
+        protected StudioAutoInstaller(PackageManager pm, String packageId) {
+            this.pm = pm;
+            this.packageId = packageId;
         }
 
         @Override
         public void run() {
-            studioSnapshotUpdateError = null;
-
             try {
-                studioSnapshotStatus = snapshotStatus.downloading.name();
+                setStatus(SnapshotStatus.downloading, null);
+
+                DownloadingPackage pkg = pm.download(packageId);
+
                 while (!pkg.isCompleted()) {
                     try {
                         studioSnapshotDownloadProgress = pkg.getDownloadProgress();
@@ -257,7 +290,7 @@ public class AppCenterViewsManager implements Serializable {
 
                 PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
 
-                studioSnapshotStatus = snapshotStatus.saving.name();
+                setStatus(SnapshotStatus.saving, null);
                 try {
                     while (pus.getPackage(pkg.getId()) == null) {
                         try {
@@ -272,37 +305,44 @@ public class AppCenterViewsManager implements Serializable {
                     log.error(
                             "Error while sending studio snapshot to update manager",
                             e);
-                    studioSnapshotStatus = snapshotStatus.error.name();
-                    studioSnapshotUpdateError = " problem while downloading package "
-                            + e.getMessage();
+                    setStatus(
+                            SnapshotStatus.error,
+                            translate("label.studio.update.downloading.error",
+                                    e.getMessage()));
                     return;
                 }
 
-                if (Framework.isDebugModeSet()) {
-                    studioSnapshotStatus = snapshotStatus.installing.name();
+                if (Framework.isDevModeSet()) {
+                    setStatus(SnapshotStatus.installing, null);
                     try {
                         LocalPackage lpkg = pus.getPackage(pkg.getId());
                         Task installTask = lpkg.getInstallTask();
                         installTask.run(new HashMap<String, String>());
                         lastStudioSnapshotUpdate = Calendar.getInstance();
-                        studioSnapshotStatus = snapshotStatus.completed.name();
+                        setStatus(SnapshotStatus.completed, null);
                     } catch (Exception e) {
                         log.error("Error while installing studio snapshot", e);
-                        studioSnapshotStatus = snapshotStatus.error.name();
-                        studioSnapshotUpdateError = " problem during package installation "
-                                + e.getMessage();
+                        setStatus(
+                                SnapshotStatus.error,
+                                translate(
+                                        "label.studio.update.installation.error",
+                                        e.getMessage()));
                     }
                 } else {
                     InstallAfterRestart.addPackageForInstallation(pkg.getId());
                     lastStudioSnapshotUpdate = Calendar.getInstance();
-                    studioSnapshotStatus = snapshotStatus.restartNeeded.name();
+                    setStatus(SnapshotStatus.restartNeeded, null);
                 }
-
-            } finally {
-                studioAutoInstaller = null;
-                isStudioSnapshopUpdateInProgress = false;
+            } catch (Exception e) {
+                setStatus(SnapshotStatus.error, e.getMessage());
             }
         }
+
+    }
+
+    protected void setStatus(SnapshotStatus status, String errorMessage) {
+        studioSnapshotStatus = status;
+        studioSnapshotUpdateError = errorMessage;
     }
 
 }

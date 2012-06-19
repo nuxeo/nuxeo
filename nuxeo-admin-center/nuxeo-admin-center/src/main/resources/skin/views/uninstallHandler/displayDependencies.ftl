@@ -17,7 +17,7 @@ function display(url) {
       // NOP
    }
  }
- subWin = window.open(url,"Nuxeo Admin Center Unnstallation","width=640,height=480");
+ subWin = window.open(url,"Nuxeo Admin Center Uninstallation","width=640,height=480");
 }
 
 function rmPackage(pkgId) {

@@ -57,6 +57,10 @@ public class MultiNavTreeManager implements Serializable {
 
     protected List<NavTreeDescriptor> availableNavigationTrees;
 
+    protected Long availableNavigationTreesTimestamp;
+
+    protected String selectedNavigationTree;
+
     protected String thePath = "";
 
     @In(create = true)
@@ -65,10 +69,8 @@ public class MultiNavTreeManager implements Serializable {
     @In(required = false, create = true)
     protected DirectoryTreeManager directoryTreeManager;
 
-    private String selectedNavigationTree;
-
     public List<NavTreeDescriptor> getAvailableNavigationTrees() {
-        if (availableNavigationTrees == null) {
+        if (availableNavigationTrees == null || shouldResetCache()) {
             availableNavigationTrees = new ArrayList<NavTreeDescriptor>();
             // default tree
             availableNavigationTrees.add(new NavTreeDescriptor(STD_NAV_TREE,
@@ -77,9 +79,31 @@ public class MultiNavTreeManager implements Serializable {
             // add registred additional tress
             NavTreeService navTreeService = Framework.getLocalService(NavTreeService.class);
             availableNavigationTrees.addAll(navTreeService.getTreeDescriptors());
-
+            availableNavigationTreesTimestamp = navTreeService.getLastModified();
         }
         return availableNavigationTrees;
+    }
+
+    /**
+     * Checks timestamp on service to handle cache reset when using hot reload
+     *
+     * @since 5.6
+     */
+    protected boolean shouldResetCache() {
+        if (!Framework.isDevModeSet()) {
+            // use usual cache reset logics
+            return false;
+        }
+        boolean res = false;
+        if (availableNavigationTreesTimestamp == null) {
+            return true;
+        }
+        NavTreeService navTreeService = Framework.getLocalService(NavTreeService.class);
+        Long serviceTimestamp = navTreeService.getLastModified();
+        if (availableNavigationTreesTimestamp.compareTo(serviceTimestamp) < 0) {
+            res = true;
+        }
+        return res;
     }
 
     @Factory(value = "selectedNavigationTree", scope = ScopeType.EVENT)

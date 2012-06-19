@@ -32,10 +32,14 @@ import org.nuxeo.connect.update.task.live.commands.FlushJaasCache;
 import org.nuxeo.connect.update.task.live.commands.Install;
 import org.nuxeo.connect.update.task.live.commands.LoadJar;
 import org.nuxeo.connect.update.task.live.commands.ReloadProperties;
+import org.nuxeo.connect.update.task.live.commands.RollbackAndUndeploy;
 import org.nuxeo.connect.update.task.live.commands.Undeploy;
 import org.nuxeo.connect.update.task.live.commands.UndeployConfig;
 import org.nuxeo.connect.update.task.live.commands.Uninstall;
 import org.nuxeo.connect.update.task.live.commands.UnloadJar;
+import org.nuxeo.connect.update.task.live.commands.UpdateAndDeploy;
+import org.nuxeo.connect.update.task.update.Rollback;
+import org.nuxeo.connect.update.task.update.Update;
 import org.nuxeo.runtime.reload.NuxeoRestart;
 
 /**
@@ -58,14 +62,19 @@ public class UpdateServiceImpl extends StandaloneUpdateService implements
         addCommand(Flush.ID, Flush.class);
 
         addCommand(ReloadProperties.ID, ReloadProperties.class);
+
         addCommand(Deploy.ID, Deploy.class);
         addCommand(Undeploy.ID, Undeploy.class);
+
         addCommand(DeployConfig.ID, DeployConfig.class);
         addCommand(UndeployConfig.ID, UndeployConfig.class);
 
         addCommand(LoadJar.ID, LoadJar.class);
         addCommand(UnloadJar.ID, UnloadJar.class);
-        // TODO: override the update command to add hot reload support
+
+        // override the update command to add hot reload support
+        addCommand(Update.ID, UpdateAndDeploy.class);
+        addCommand(Rollback.ID, RollbackAndUndeploy.class);
     }
 
     @Override

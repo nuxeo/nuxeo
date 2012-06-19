@@ -62,7 +62,7 @@ public class InstallAfterRestart {
      * Returns true if a restart should be triggered after install
      */
     public static boolean isNeededForPackage(Package pkg) {
-        if (!isDebugMode()) {
+        if (!Framework.isDevModeSet()) {
             return true;
         }
         boolean isNotStudioOrWindows = PackageType.STUDIO != pkg.getType()
@@ -73,9 +73,9 @@ public class InstallAfterRestart {
         return isNotStudioOrWindows || isHotFix || isAddonAndNoHotReload;
     }
 
-    protected static boolean isDebugMode() {
+    protected static boolean isDevMode() {
         String debugPropValue = Framework.getProperty(
-                ConfigurationGenerator.NUXEO_DEBUG_SYSTEM_PROP, "false");
+                ConfigurationGenerator.NUXEO_DEV_SYSTEM_PROP, "false");
         return Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
     }
 

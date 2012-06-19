@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -47,15 +48,15 @@ import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.status.ConnectUpdateStatusInfo;
 import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
+import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.ConnectProject;
 import org.nuxeo.connect.data.SubscriptionStatusType;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
-import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
+import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,7 +64,7 @@ import org.nuxeo.runtime.api.Framework;
  * <ul>
  * <li>getting status
  * <li>registering
- * <li> ...
+ * <li>...
  * </ul>
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
@@ -84,7 +85,7 @@ public class ConnectStatusActionBean implements Serializable {
     protected FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected Map<String, String> messages;
 
     protected String login;
 
@@ -99,6 +100,8 @@ public class ConnectStatusActionBean implements Serializable {
     protected boolean loginValidated = false;
 
     protected String CLID;
+
+    protected ConnectUpdateStatusInfo connectionStatusCache;
 
     public String getRegistredCLID() throws Exception {
         if (isRegistred()) {
@@ -184,8 +187,7 @@ public class ConnectStatusActionBean implements Serializable {
     public void validateLogin() {
         if (login == null || password == null) {
             facesMessages.add(StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.empty.loginpassword"));
+                    messages.get("label.empty.loginpassword"));
             loginValidated = false;
             flushContextCache();
             return;
@@ -193,8 +195,7 @@ public class ConnectStatusActionBean implements Serializable {
         List<ConnectProject> prjs = getProjectsAvailableForRegistration();
         if (prjs == null || prjs.size() == 0) {
             facesMessages.add(StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.bad.loginpassword.or.noproject"));
+                    messages.get("label.bad.loginpassword.or.noproject"));
             loginValidated = false;
             flushContextCache();
             return;
@@ -278,7 +279,7 @@ public class ConnectStatusActionBean implements Serializable {
     public String register() {
         if (registredProject == null) {
             facesMessages.add(StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get("label.empty.project"));
+                    messages.get("label.empty.project"));
             return null;
         }
         if (instanceDescription == null || instanceDescription.isEmpty()) {
@@ -291,8 +292,7 @@ public class ConnectStatusActionBean implements Serializable {
                     instanceDescription);
         } catch (Exception e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.connect.registrationError"));
+                    messages.get("label.connect.registrationError"));
             log.error("Error while registring instance", e);
         }
 
@@ -310,12 +310,10 @@ public class ConnectStatusActionBean implements Serializable {
             getService().localRegisterInstance(CLID, instanceDescription);
         } catch (InvalidCLID e) {
             facesMessages.add(StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "label.connect.wrongCLID"));
+                    messages.get("label.connect.wrongCLID"));
         } catch (IOException e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.connect.registrationError"));
+                    messages.get("label.connect.registrationError"));
             log.error("Error while registring instance locally", e);
         }
 
@@ -359,10 +357,10 @@ public class ConnectStatusActionBean implements Serializable {
         try {
             pus.addPackage(tmpFile);
         } catch (Exception e) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.connect.wrong.package" + ":"
-                                    + e.getMessage()));
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
+                    messages.get("label.connect.wrong.package" + ":"
+                            + e.getMessage()));
             return;
         } finally {
             tmpFile.delete();
@@ -371,11 +369,9 @@ public class ConnectStatusActionBean implements Serializable {
         }
     }
 
-    //@Factory(scope = ScopeType.EVENT, value = "connectUpdateStatusInfo")
     public ConnectUpdateStatusInfo getDynamicConnectUpdateStatusInfo() {
         HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String bannerType = req.getParameter("bannerType");
-
         if ("unregistered".equals(bannerType)) {
             return ConnectUpdateStatusInfo.unregistered();
         } else if ("notreachable".equals(bannerType)) {
@@ -388,25 +384,38 @@ public class ConnectStatusActionBean implements Serializable {
         return getConnectUpdateStatusInfo();
     }
 
-    @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
+    @Factory(scope = ScopeType.CONVERSATION, value = "connectUpdateStatusInfo")
     public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
-        if (!isRegistred()) {
-            return ConnectUpdateStatusInfo.unregistered();
-        } else {
-            if (isConnectServerReachable()) {
-                if (getStatus().isError()) {
-                    return ConnectUpdateStatusInfo.connectServerUnreachable();
+        if (connectionStatusCache == null) {
+            try {
+                if (!isRegistred()) {
+                    connectionStatusCache = ConnectUpdateStatusInfo.unregistered();
                 } else {
-                    if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
-                        return ConnectUpdateStatusInfo.ok();
+                    if (isConnectServerReachable()) {
+                        if (getStatus().isError()) {
+                            connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
+                        } else {
+                            if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
+                                connectionStatusCache = ConnectUpdateStatusInfo.ok();
+                            } else {
+                                connectionStatusCache = ConnectUpdateStatusInfo.notValid();
+                            }
+                        }
                     } else {
-                        return ConnectUpdateStatusInfo.notValid();
+                        connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
                     }
                 }
-            } else {
-                return ConnectUpdateStatusInfo.connectServerUnreachable();
+            } catch (Exception e) {
+                log.error(e);
+                connectionStatusCache = null;
             }
         }
+        return connectionStatusCache;
+    }
+
+    @Factory("nuxeoConnectUrl")
+    public String getConnectServerUrl() {
+        return ConnectUrlConfig.getBaseUrl();
     }
 
 }

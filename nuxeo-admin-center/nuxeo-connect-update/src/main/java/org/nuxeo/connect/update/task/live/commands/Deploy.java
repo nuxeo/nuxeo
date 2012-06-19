@@ -19,22 +19,26 @@ package org.nuxeo.connect.update.task.live.commands;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.connect.update.task.standalone.commands.CompositeCommand;
 import org.nuxeo.connect.update.task.standalone.commands.DeployPlaceholder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 
 /**
- * Install bundle, and perform Nuxeo pseudo-preprocessing on the bundle (by
- * copying resources, but does not handle the deployment-fragment instructions)
+ * Deploy a runtime bundle, or a directory containing runtime bundles.
  * <p>
  * The inverse of this command is Undeploy.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Deploy extends DeployPlaceholder {
+
+    private static final Log log = LogFactory.getLog(Deploy.class);
 
     public Deploy() {
         super();
@@ -44,21 +48,49 @@ public class Deploy extends DeployPlaceholder {
         super(file);
     }
 
-    @Override
-    protected Command doRun(Task task, Map<String, String> prefs)
+    protected Undeploy deployFile(File file, ReloadService service)
             throws PackageException {
-        if (!file.isFile()) {
-            // avoid throwing errors - this may happen at uninstall for broken
-            // packages
-            return null;
-        }
-        ReloadService srv = Framework.getLocalService(ReloadService.class);
         try {
-            srv.deployBundle(file, true);
+            service.deployBundle(file, true);
         } catch (Exception e) {
             throw new PackageException("Failed to deploy bundle " + file, e);
         }
         return new Undeploy(file);
+    }
+
+    protected CompositeCommand deployDirectory(File dir, ReloadService service)
+            throws PackageException {
+        CompositeCommand cmd = new CompositeCommand();
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File fileInDir : files) {
+                // TODO: check if file is a runtime bundle (?)
+                cmd.addCommand(deployFile(fileInDir, service));
+            }
+        }
+        return cmd;
+    }
+
+    @Override
+    protected Command doRun(Task task, Map<String, String> prefs)
+            throws PackageException {
+        if (!file.exists()) {
+            log.warn("Can't deploy file " + file + ". File is missing.");
+            return null;
+        }
+        ReloadService srv = Framework.getLocalService(ReloadService.class);
+        Command rollback;
+        if (file.isDirectory()) {
+            rollback = deployDirectory(file, srv);
+        } else {
+            rollback = deployFile(file, srv);
+        }
+        try {
+            srv.runDeploymentPreprocessor();
+        } catch (Exception e) {
+            throw new PackageException(e.getMessage(), e);
+        }
+        return rollback;
     }
 
 }

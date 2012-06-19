@@ -34,7 +34,7 @@
         <div class="detail">
         <p><h:outputText
           value="#{messages['label.nuxeo.connect.onlineRegistrationDescription']}" />
-        (<a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form"
+        (<a href="#{nuxeoConnectUrl}connect/trial/form"
           class="connectLink" target="NuxeoConnectSite">#{messages['connect.message.newaccount']}</a>).</p>
         </div>
         <div class="body">
@@ -128,7 +128,7 @@
         <p><h:outputText
           value="#{messages['label.nuxeo.connect.offlineReg.message1']}" />
         <a
-          href="https://connect.nuxeo.com/nuxeo/site/connect/registerInstance"
+          href="#{nuxeoConnectUrl}connect/registerInstance"
           target="NuxeoConnectSite"> <h:outputText
           value="#{messages['label.nuxeo.connect.offlineReg.webSite']}" /></a></p>
         <p><h:outputText styleClass="importantLabel"
