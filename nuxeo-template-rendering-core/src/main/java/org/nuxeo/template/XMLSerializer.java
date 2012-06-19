@@ -112,6 +112,7 @@ public class XMLSerializer {
 
         Document xmlDoc = DocumentHelper.parseText(xml);
 
+        @SuppressWarnings("rawtypes")
         List nodes = xmlDoc.getRootElement().elements(fieldTag);
 
         for (Object node : nodes) {

@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
-import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
 
 public class TestImportedModelRendering extends SQLRepositoryTestCase {
 

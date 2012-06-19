@@ -75,6 +75,7 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         return result;
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testAvailableTemplates() throws Exception {
         TemplateSourceDocument t1 = createTemplateDoc("t1");

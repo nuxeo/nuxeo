@@ -19,20 +19,12 @@
 package org.nuxeo.template.adapters;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.XMLSerializer;
-import org.nuxeo.template.api.TemplateInput;
-import org.nuxeo.template.api.TemplateProcessor;
-import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 

@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
@@ -186,8 +187,8 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor
             newBlob.setFilename(sourceTemplateBlob.getFilename());
         }
 
-        // XXX bad !
-        generated.deleteOnExit();
+        // mark the file for automatic deletion on GC
+        Framework.trackFile(generated, newBlob);
 
         return newBlob;
     }

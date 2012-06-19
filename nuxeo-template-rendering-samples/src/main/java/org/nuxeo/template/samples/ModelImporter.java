@@ -387,7 +387,6 @@ public class ModelImporter {
 
                         @Override
                         public void visit(Element node) {
-                            // XXX Should do better
                             if ("templateId".equalsIgnoreCase(node.getName())
                                     && "templateEntry".equalsIgnoreCase(node.getParent().getName())) {
                                 log.debug("Translating uuid to " + targetUUID);

@@ -1,7 +1,5 @@
 package org.nuxeo.template.processors;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -16,10 +14,8 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.ContentInputType;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
