@@ -42,6 +42,8 @@ public interface GraphNode {
 
     String PROP_NODE_ID = "rnode:nodeId";
 
+    String PROP_TITLE = "dc:title";
+    
     String PROP_START = "rnode:start";
 
     String PROP_STOP = "rnode:stop";
@@ -72,6 +74,8 @@ public interface GraphNode {
 
     String PROP_TRANS_CHAIN = "chain";
 
+    String PROP_TRANS_LABEL = "label";
+
     String PROP_TASK_ASSIGNEES = "rnode:taskAssignees";
 
     String PROP_TASK_DUE_DATE = "rnode:taskDueDate";
@@ -79,7 +83,7 @@ public interface GraphNode {
     String PROP_TASK_DIRECTIVE = "rnode:taskDirective";
 
     String PROP_TASK_LAYOUT = "rnode:taskLayout";
-    
+
     String PROP_TASK_BUTTONS = "rnode:taskButtons";
 
     String PROP_BTN_NAME = "name";
@@ -87,6 +91,11 @@ public interface GraphNode {
     String PROP_BTN_LABEL = "label";
 
     String PROP_BTN_FILTER = "filter";
+    
+    String PROP_NODE_X_COORDINATE = "rnode:taskX";
+    
+    String PROP_NODE_Y_COORDINATE = "rnode:taskY";
+    
 
     /**
      * The internal state of a node.
@@ -154,6 +163,8 @@ public interface GraphNode {
 
         public String target;
 
+        public String label;
+
         public boolean result;
 
         /** Computed by graph. */
@@ -167,6 +178,7 @@ public interface GraphNode {
             condition = (String) prop.get(PROP_TRANS_CONDITION).getValue();
             chain = (String) prop.get(PROP_TRANS_CHAIN).getValue();
             target = (String) prop.get(PROP_TRANS_TARGET).getValue();
+            label = (String) prop.get(PROP_TRANS_LABEL).getValue();
         }
 
         protected void setResult(boolean bool) throws ClientException {
@@ -184,9 +196,21 @@ public interface GraphNode {
             return new ToStringBuilder(this).append("id", id).append(
                     "condition", condition).append("result", result).toString();
         }
+
+        public String getTarget() {
+            return target;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
-    class Button implements Comparable<Button>{
+    class Button implements Comparable<Button> {
 
         public GraphNode source;
 
@@ -211,10 +235,10 @@ public interface GraphNode {
             return name.compareTo(other.name);
         }
 
-        public String getLabel(){
+        public String getLabel() {
             return label;
         }
-        
+
     }
 
     /**
@@ -314,14 +338,14 @@ public interface GraphNode {
      *
      * @return
      */
-     String getTaskDirective();
-     
-     /**
-      * Gets the task layout
-      *
-      * @return
-      */
-      String getTaskLayout();
+    String getTaskDirective();
+
+    /**
+     * Gets the task layout
+     *
+     * @return
+     */
+    String getTaskLayout();
 
     /**
      * Increments the execution counter for this node.
@@ -378,16 +402,19 @@ public interface GraphNode {
      * Gets the task buttons
      */
     List<Button> getTaskButtons();
-    
+
     /**
      * Gets the document representing this node
+     *
      * @return
      */
     DocumentModel getDocument();
-    
+
     /**
      * Gets a map containing the variables currently defined on this node
+     *
      * @return
      */
     Map<String, Serializable> getVariables();
+
 }

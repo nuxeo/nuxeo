@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -68,5 +69,12 @@ public interface GraphRoute {
      * @throws IllegalArgumentException if there is no such node
      */
     GraphNode getNode(String id) throws IllegalArgumentException;
+
+    /**
+     * Gets a collection of the route nodes
+     *
+     * @return
+     */
+    Collection<GraphNode> getNodes();
 
 }

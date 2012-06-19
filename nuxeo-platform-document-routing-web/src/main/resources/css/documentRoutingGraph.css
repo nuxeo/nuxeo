@@ -1,0 +1,52 @@
+.node {
+	border: 1px dotted gray;
+	height: 50px;
+	width: 50px;
+	position: absolute;
+	z-index: 200;
+	color: gray;
+	font-family: serif;
+	font-style: italic;
+	padding-top: 0.9em;
+	font-size: 0.9em;
+	text-align: center;
+}
+
+.node_draft {
+	background-color: white;
+}
+
+.node_validated {
+	background-color: #FF6666;
+}
+
+.node_ready {
+	background-color: white;
+}
+
+.node_running {
+	background-color: #FFFFCC;
+}
+
+.node_done {
+	background-color: #DB4D4D;
+}
+
+.node_waiting {
+	background-color: #FF9966;
+}
+
+.node_suspended {
+	background-color: #CCFF99;
+}
+
+.node_canceled {
+	background-color: #FF3300;
+}
+
+.targetDiv {
+	position: relative;
+}
+
+.jsPlumb_LabelOverlay {
+}

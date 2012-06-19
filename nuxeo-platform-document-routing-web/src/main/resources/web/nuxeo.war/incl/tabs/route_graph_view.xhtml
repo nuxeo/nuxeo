@@ -1,0 +1,18 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<!-- div container for the graph -->
+<div id="target" class="targetDiv"></div>
+
+<script>
+jQuery(function(){
+   <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}'" />
+    loadGraph(routeDocId);
+  });
+</script>
+
+</div>

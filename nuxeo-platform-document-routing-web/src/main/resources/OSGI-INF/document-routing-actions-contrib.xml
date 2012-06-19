@@ -163,9 +163,16 @@
       </filter>
     </action>
 
+   <!-- 'Workflow' sub tab: graph view -->
+    <action id="TAB_ROUTE_GRAPH_VIEW" enabled="true"
+      link="/incl/tabs/route_graph_view.xhtml" order="10"
+      label="label.document.routing.route.graph.view">
+      <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
+    </action>
+    
     <!-- 'Workflow' sub tab: current route -->
     <action id="TAB_CURRENT_ROUTE" enabled="true"
-      link="/incl/tabs/current_route.xhtml" order="10"
+      link="/incl/tabs/current_route.xhtml" order="20"
       label="label.document.routing.current.route">
       <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
       <filter-id>hasRelatedRouteStarted</filter-id>
