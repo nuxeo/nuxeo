@@ -37,20 +37,6 @@ public interface CommentsModerationService {
             throws ClientException;
 
     /**
-     * Gets the moderation process for the given Comment posted on a documentModel.
-     *
-     * @param session the coreSession
-     * @param document the document were the comment is posted
-     * @param commentId the commentId
-     * @throws ClientException
-     */
-    /**
-    ProcessInstance getModerationProcess(JbpmService jbpmService,
-            CoreSession session, DocumentModel doc, String commentId)
-            throws ClientException;
-            **/
-
-    /**
      * Approve the comment with the given commentId.
      *
      * @param session the coreSession
