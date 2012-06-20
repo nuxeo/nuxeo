@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.query.core;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.After;
@@ -26,6 +27,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.AbstractSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -95,6 +97,18 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         List<?> p = pp.getCurrentPage();
         assertNotNull(p);
         assertEquals(0, p.size());
+    }
+
+    @Test
+    public void testMergedProperties() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put("myprop", "foo");
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pps.getPageProvider(
+                CURRENT_DOCUMENT_CHILDREN, null, null, null, props);
+        assertTrue(pp.getProperties().containsKey("myprop"));
+        assertTrue(pp.getProperties().containsKey("dummy"));
     }
 
 }

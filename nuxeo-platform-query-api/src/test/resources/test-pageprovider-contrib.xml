@@ -7,6 +7,7 @@
     point="providers">
 
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN">
+      <property name="dummy">dummy</property>"
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
