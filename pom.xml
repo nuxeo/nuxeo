@@ -881,6 +881,29 @@
         <artifactId>nuxeo-core-binarymanager-s3</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+
+      <!-- Nuxeo diff -->
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-content</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-test</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
