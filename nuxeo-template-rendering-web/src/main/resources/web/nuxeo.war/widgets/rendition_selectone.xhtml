@@ -9,7 +9,7 @@
 
   <c:if test="#{widget.mode == 'view' }">
       <c:if test="#{!empty field_0 }">
-        <h:outputText value="#{field_0}"/>
+        <h:outputText value="#{messages[field_0]}"/>
       </c:if>
       <c:if test="#{empty field_0 }">
        <h:outputText value="#{messages['label.rendition.none']}" />

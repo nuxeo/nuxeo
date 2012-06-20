@@ -211,6 +211,7 @@
           <property name="initialLayoutName">templateOptions</property>
           <property name="toggledLayoutName">templateOptions</property>
           <property name="canToggleMode">true</property>
+          <property name="actionsDisplay">buttons</property>
         </properties>
       </widget>
     </layout>

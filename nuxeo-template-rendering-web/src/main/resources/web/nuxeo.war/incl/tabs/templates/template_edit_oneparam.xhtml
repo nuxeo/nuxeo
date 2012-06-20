@@ -83,7 +83,7 @@
 <c:if test="#{!param.readOnly}">
    <td class="fieldColumn" width="10%">
        <span class="buttonsGadget">
-           <h:commandButton type="submit" class="button" value="#{messages['command.delete']}"
+           <h:commandButton type="submit" styleClass="button" value="#{messages['command.delete']}"
                     action="#{bean.removeTemplateInput(param.name)}" id="button_rm_#{param.name}" />
        </span>
    </td>

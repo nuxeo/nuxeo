@@ -7,7 +7,7 @@
     point="types">
 
     <type id="WebTemplateSource" coretype="WebTemplateSource">
-      <label>Document web template </label>
+      <label>WebTemplateSource</label>
       <icon>/icons/webtemplate.png</icon>
       <bigIcon>/icons/webtemplate_100.png</bigIcon>
       <default-view>view_documents</default-view>

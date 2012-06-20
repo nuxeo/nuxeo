@@ -25,7 +25,9 @@
              }
            </script>
 
-            <A href="#" onclick="return showNewParameterPanel(event)">
+
+            <span class="buttonsGadget">
+            <A href="#" onclick="return showNewParameterPanel(event)" class="button">
             <h:outputText value="#{messages['label.template.parameter.add']}"/></A>
             <table border="0" style="display:none">
             <tr>
@@ -50,18 +52,19 @@
             </td>
             <td class="fieldColumn">
                 <span class="buttonsGadget">
-                    <h:commandButton type="submit" class="button" value="#{messages['command.add']}"
+                    <h:commandButton type="submit" styleClass="button" value="#{messages['command.add']}"
                         action="#{bean.addTemplateInput}" id="button_add" />
                 </span>
             </td>
             </tr>
             </table>
+            </span>
         </c:if>
 
                   <p class="buttonsGadget">
-                    <h:commandButton type="submit" class="button" value="#{messages['command.save']}"
+                    <h:commandButton type="submit" styleClass="button" value="#{messages['command.save']}"
                         action="#{bean.saveTemplateInputs}" id="button_save"/>
-                    <h:commandButton class="button" value="#{messages['command.cancel']}"
+                    <h:commandButton styleClass="button" value="#{messages['command.cancel']}"
                         action="#{bean.cancelTemplateInputsEdit}" immediate="true"/>
                   </p>
                 </c:if>

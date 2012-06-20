@@ -8,7 +8,7 @@
     point="types">
 
     <type id="TemplateSource" coretype="TemplateSource">
-      <label>Document template</label>
+      <label>TemplateSource</label>
       <icon>/icons/sourcetemplate.png</icon>
       <bigIcon>/icons/sourcetemplate_100.png</bigIcon>
       <default-view>view_documents</default-view>
