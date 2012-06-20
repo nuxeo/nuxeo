@@ -22,13 +22,10 @@
             <h:outputText value="#{threadEntry.comment.post.author}"/>
             <h:outputText value=" "/>
             <span class="commentCreationDate">
-              <h:outputText value="#{logEntry.eventDate}" >
-                <f:convertDateTime pattern="#{nxu:basicDateFormater()}"
+              <h:outputText value="#{threadEntry.comment.post.creationDate}" >
+                <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
                   timeZone="#{timeZone}" />
               </h:outputText>
-              <h:outputText value=" "/>
-              <h:outputText value="#{threadEntry.comment.post.creationDate}"
-                converter="TimeConverter"/>
 
               <h:outputText value=" ( "/>
               <h:outputText styleClass="error"
