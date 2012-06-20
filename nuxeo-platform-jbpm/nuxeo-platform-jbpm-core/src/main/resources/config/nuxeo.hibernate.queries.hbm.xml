@@ -25,6 +25,7 @@
       from org.jbpm.context.exe.variableinstance.StringInstance si
       where si.value in (:initiators)
       and si.name = 'initiator'
+      order by si.token.processInstance.start desc
     ]]>
   </query>
 

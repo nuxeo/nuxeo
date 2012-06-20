@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -157,6 +158,13 @@ public class JbpmServiceImpl implements JbpmService {
         if (filter != null) {
             tis = filter.filter(context, null, tis, currentUser);
         }
+        // reverse chronological sorting
+        Collections.sort(tis, new Comparator<TaskInstance>() {
+            @Override
+            public int compare(TaskInstance t1, TaskInstance t2) {
+                return t2.getCreate().compareTo(t1.getCreate());
+            }
+        });
         return tis;
     }
 
