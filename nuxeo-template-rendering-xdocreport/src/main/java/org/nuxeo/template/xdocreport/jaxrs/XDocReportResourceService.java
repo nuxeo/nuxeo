@@ -142,7 +142,7 @@ public class XDocReportResourceService extends AbstractResourceService
             if (template.getName().equals(resourcePath)
                     || template.getId().equals(resourcePath)) {
                 try {
-                    return BinaryDataWrapper.wrap(template.getTemplateBlob());
+                    return BinaryDataWrapper.wrap(template);
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
