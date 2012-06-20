@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.common.xmap;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -37,11 +35,15 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.w3c.dom.DocumentFragment;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @XObject(value = "author", order = { "item1", "item2" })
 public class Author {
+
+    public enum Gender {
+        MALE, FEMALE;
+    }
 
     @XNode("metadata/title")
     String title;
@@ -58,6 +60,9 @@ public class Author {
     @XNode("metadata/name@type")
     String nameType;
 
+    @XNode("metadata/name@gender")
+    Gender gender;
+
     @XNodeList(value = "list/item", type = ArrayList.class, componentType = String.class)
     List<String> items;
 
@@ -70,8 +75,6 @@ public class Author {
     @XNodeList(value = "friends/friend", type = ArrayList.class, componentType = Name.class)
     List<Name> friends;
 
-
-
     @XNodeList(value = "metadata/double", type = Double[].class, componentType = Double.class)
     Double[] doubleArray;
 
@@ -81,9 +84,7 @@ public class Author {
     @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties;
 
-
     int age;
-
 
     @XContent("testContent")
     String testContent;
@@ -93,8 +94,8 @@ public class Author {
 
     boolean item1;
 
-
     boolean item2;
+
     boolean item3;
 
     @XNode("@id")
@@ -142,35 +143,24 @@ public class Author {
         item3 = true;
     }
 
-    @XNodeList(value = "testNullByDefaultForList", type = ArrayList.class,
-            componentType = String.class, nullByDefault = true)
+    @XNodeList(value = "testNullByDefaultForList", type = ArrayList.class, componentType = String.class, nullByDefault = true)
     List<String> testNullByDefaultForList;
 
-    @XNodeList(value = "testNullByDefaultForList", type = HashSet.class,
-            componentType = String.class, nullByDefault = true)
+    @XNodeList(value = "testNullByDefaultForList", type = HashSet.class, componentType = String.class, nullByDefault = true)
     HashSet<String> testNullByDefaultForListHashSet;
 
-    @XNodeMap(value = "testNullByDefaultForMap", key = "@name",
-            type = HashMap.class, componentType = String.class, nullByDefault = true)
+    @XNodeMap(value = "testNullByDefaultForMap", key = "@name", type = HashMap.class, componentType = String.class, nullByDefault = true)
     Map<String, String> testNullByDefaultForMap;
 
     @Override
     public String toString() {
-        return "Author {\n"
-                + "  title: " + title + '\n'
-                + "  description: " + description + '\n'
-                + "  id: " + id + '\n'
-                + "  nameType: " + nameType + '\n'
-                + "  name: " + name + '\n'
-                + "  age: " + age + '\n'
-                + "  items: " + items + '\n'
-                + "  itemIds: " + itemIds + '\n'
-                + "  content: <" + content + '>' + '\n'
-                + "  friends: " + friends + '\n'
-                + "  properties: " + properties + '\n'
-                + '}';
+        return "Author {\n" + "  title: " + title + '\n' + "  description: "
+                + description + '\n' + "  id: " + id + '\n' + "  nameType: "
+                + nameType + '\n' + "  name: " + name + '\n' + "  age: " + age
+                + '\n' + "  items: " + items + '\n' + "  itemIds: " + itemIds
+                + '\n' + "  content: <" + content + '>' + '\n' + "  friends: "
+                + friends + '\n' + "  properties: " + properties + '\n' + '}';
     }
-
 
     // getter used to reverse xmap
     public int getAge() {
@@ -182,13 +172,12 @@ public class Author {
     }
 
     public String getField2() {
-        return "" +item2;
+        return "" + item2;
     }
 
     public String getField3() {
-        return ""+ item3;
+        return "" + item3;
     }
-
 
     // map to load objects
     @XNodeMap(value = "persons/person", key = "firstName", type = HashMap.class, componentType = Name.class)

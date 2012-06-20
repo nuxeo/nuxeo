@@ -8,7 +8,7 @@
       <title>First test 22</title>
       <description>bla bla</description>
 
-      <name type="author">
+      <name type="author" gender="MALE">
         <firstName>my first name</firstName>
         <lastName>my last name</lastName>
       </name>
@@ -53,7 +53,8 @@
 
 
     <testContent>
-      Test <b>content</b>
+      Test
+      <b>content</b>
     </testContent>
 
     <item2>b</item2>

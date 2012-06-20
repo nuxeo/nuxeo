@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,24 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.common.xmap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.nuxeo.common.xmap.Author.Gender;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class XMapTest {
 
@@ -64,6 +69,7 @@ public class XMapTest {
         assertEquals("my last name", author.name.lastName);
         assertEquals("The content", author.content.trim());
         assertEquals("author", author.nameType);
+        assertEquals(Gender.MALE, author.gender);
         assertEquals(32, author.age);
         assertEquals("test1", author.getId());
         assertEquals(3, author.items.size());
@@ -80,7 +86,7 @@ public class XMapTest {
         assertEquals("friend2_fn", author.friends.get(1).firstName);
         assertEquals("friend2_ln", author.friends.get(1).lastName);
 
-        assertEquals("Test <b>content</b>", author.testContent.trim());
+        assertEquals("Test\n      <b>content</b>", author.testContent.trim());
         String t = author.testContent2.getFirstChild().getTextContent().trim();
         assertEquals("Test", t);
 
