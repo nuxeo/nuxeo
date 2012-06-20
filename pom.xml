@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.4.1.1-SNAPSHOT</version>
+    <version>5.4.1-HF17</version>
   </parent>
 
   <artifactId>nuxeo-platform-shibboleth-groups-web</artifactId>
@@ -13,7 +13,7 @@
   <description>Nuxeo Shibboleth login module</description>
 
   <properties>
-    <nuxeo.shibboleth.version>5.4.1.1-SNAPSHOT</nuxeo.shibboleth.version>
+    <nuxeo.shibboleth.version>5.4.1-HF17</nuxeo.shibboleth.version>
   </properties>
 
   <dependencies>
