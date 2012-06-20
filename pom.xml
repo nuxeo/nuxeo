@@ -904,6 +904,12 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
+      <!-- Sample project -->
+      <dependency>
+        <groupId>nuxeo-sample-project</groupId>
+        <artifactId>nuxeo-sample-project</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
