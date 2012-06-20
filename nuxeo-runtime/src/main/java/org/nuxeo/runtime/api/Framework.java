@@ -16,6 +16,7 @@ package org.nuxeo.runtime.api;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -131,6 +132,43 @@ public final class Framework {
         resourceLoader = new SharedResourceLoader(
                 new URL[] { rs.toURI().toURL() },
                 Framework.class.getClassLoader());
+    }
+
+    /**
+     * Reload the resources loader, keeping URLs already tracked, and adding
+     * possibility to add or remove some URLs.
+     * <p>
+     * Useful for hot reload of jars.
+     *
+     * @since 5.6
+     * @throws Exception
+     */
+    public static void reloadResourceLoader(List<URL> urlsToAdd,
+            List<URL> urlsToRemove) throws Exception {
+        File rs = new File(Environment.getDefault().getData(), "resources");
+        rs.mkdirs();
+        URL[] existing = null;
+        if (resourceLoader != null) {
+            existing = resourceLoader.getURLs();
+        }
+        // reinit
+        resourceLoader = new SharedResourceLoader(
+                new URL[] { rs.toURI().toURL() },
+                Framework.class.getClassLoader());
+        // add back existing urls unless they should be removed, and add new
+        // urls
+        if (existing != null) {
+            for (URL oldURL : existing) {
+                if (urlsToRemove == null || !urlsToRemove.contains(oldURL)) {
+                    resourceLoader.addURL(oldURL);
+                }
+            }
+        }
+        if (urlsToAdd != null) {
+            for (URL newURL : urlsToAdd) {
+                resourceLoader.addURL(newURL);
+            }
+        }
     }
 
     public static void shutdown() throws Exception {

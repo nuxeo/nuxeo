@@ -102,18 +102,34 @@ public interface ReloadService extends TimestampedService {
     void flushSeamComponents() throws Exception;
 
     /**
-     * Deploys bundle to the runtime
+     * Deploys bundle to the runtime, without reloading resources
+     *
+     * @since 5.5
+     */
+    String deployBundle(File file) throws Exception;
+
+    /**
+     * Deploys bundle to the runtime, gives possibility to control resources
+     * reloading
      *
      * @since 5.5
      */
     String deployBundle(File file, boolean reloadResources) throws Exception;
 
     /**
-     * Undeploys bundle from the runtime
+     * Undeploys bundle from the runtime, given the bundle resource, gives
+     * possibility to control resources reloading
      *
      * @since 5.6
      */
-    void undeployBundle(File file) throws Exception;
+    void undeployBundle(File file, boolean reloadResources) throws Exception;
+
+    /**
+     * Undeploys bundle from the runtime, given the bundle filename
+     *
+     * @since 5.6
+     */
+    void undeployBundle(String bundleName) throws Exception;
 
     /**
      * Runs the deployment preprocessor

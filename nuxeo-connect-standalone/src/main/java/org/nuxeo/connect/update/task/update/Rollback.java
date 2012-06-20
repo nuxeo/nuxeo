@@ -41,6 +41,8 @@ public class Rollback extends AbstractCommand {
 
     public static String ID = "rollback";
 
+    protected String pkgId;
+
     protected String key;
 
     protected String version;
@@ -53,6 +55,7 @@ public class Rollback extends AbstractCommand {
 
     public Rollback(RollbackOptions opt) {
         super(ID);
+        this.pkgId = opt.pkgId;
         this.key = opt.key;
         this.version = opt.version;
         this.deleteOnExit = opt.deleteOnExit;
@@ -61,11 +64,14 @@ public class Rollback extends AbstractCommand {
     @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
-        if (version != null) {
-            writer.attr("version", version);
-        }
         if (key != null) {
             writer.attr("key", key);
+        }
+        if (pkgId != null) {
+            writer.attr("pkgId", pkgId);
+        }
+        if (version != null) {
+            writer.attr("version", version);
         }
         if (deleteOnExit) {
             writer.attr("deleteOnExit", "true");
@@ -78,6 +84,10 @@ public class Rollback extends AbstractCommand {
         String v = element.getAttribute("version");
         if (v.length() > 0) {
             version = v;
+        }
+        v = element.getAttribute("pkgId");
+        if (v.length() > 0) {
+            pkgId = v;
         }
         v = element.getAttribute("key");
         if (v.length() > 0) {
@@ -116,6 +126,10 @@ public class Rollback extends AbstractCommand {
         mgr.rollback(opt);
 
         return null;
+    }
+
+    public RollbackOptions getRollbackOptions() {
+        return new RollbackOptions(pkgId, key, version);
     }
 
     /**

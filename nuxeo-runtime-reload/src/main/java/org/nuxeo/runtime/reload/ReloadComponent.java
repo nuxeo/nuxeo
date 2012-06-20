@@ -19,8 +19,8 @@ package org.nuxeo.runtime.reload;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -121,6 +121,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         setFlushedNow();
     }
 
+    @Override
+    public String deployBundle(File file) throws Exception {
+        return deployBundle(file, false);
+    }
+
     public String deployBundle(File file, boolean reloadResourceClasspath)
             throws Exception {
         String name = getOSGIBundleName(file);
@@ -132,10 +137,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
 
         String path = file.getAbsolutePath();
-        // FIXME this will remove from classpath other bundles deployed at
-        // runtime
         if (reloadResourceClasspath) {
-            reloadResourceClassPath(Collections.singletonList(path));
+            URL url = new File(path).toURI().toURL();
+            Framework.reloadResourceLoader(Arrays.asList(url), null);
         }
 
         // check if this is a bundle
@@ -150,27 +154,42 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void undeployBundle(File file) throws Exception {
-        BundleContext ctx = getBundleContext();
-
+    public void undeployBundle(File file, boolean reloadResources)
+            throws Exception {
         String name = getOSGIBundleName(file);
+        String path = file.getAbsolutePath();
         if (name == null) {
             log.error(String.format(
                     "No Bundle-SymbolicName found in MANIFEST for jar at '%s'",
-                    file.getAbsolutePath()));
-        } else {
-            ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
-            PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
-            try {
-                for (Bundle b : srv.getBundles(name, null)) {
-                    if (b != null && b.getState() == Bundle.ACTIVE) {
-                        b.stop();
-                        b.uninstall();
-                    }
+                    path));
+            return;
+        }
+        undeployBundle(name);
+
+        if (reloadResources) {
+            URL url = new File(path).toURI().toURL();
+            Framework.reloadResourceLoader(null, Arrays.asList(url));
+        }
+    }
+
+    @Override
+    public void undeployBundle(String bundleName) throws Exception {
+        if (bundleName == null) {
+            // ignore
+            return;
+        }
+        BundleContext ctx = getBundleContext();
+        ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
+        PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
+        try {
+            for (Bundle b : srv.getBundles(bundleName, null)) {
+                if (b != null && b.getState() == Bundle.ACTIVE) {
+                    b.stop();
+                    b.uninstall();
                 }
-            } finally {
-                ctx.ungetService(ref);
             }
+        } finally {
+            ctx.ungetService(ref);
         }
     }
 

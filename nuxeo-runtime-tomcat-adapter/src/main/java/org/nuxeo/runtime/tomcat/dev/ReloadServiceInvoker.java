@@ -19,11 +19,12 @@ package org.nuxeo.runtime.tomcat.dev;
 import java.io.File;
 import java.lang.reflect.Method;
 
-
-
 /**
+ * Invokes the ReloadService by reflection as this module does not have access
+ * to the runtime context.
+ *
  * @author matic
- * 
+ * @since 5.5
  */
 public class ReloadServiceInvoker {
 
@@ -50,17 +51,22 @@ public class ReloadServiceInvoker {
                 new Object[] { reloadServiceClass });
         deployBundle = reloadServiceClass.getDeclaredMethod("deployBundle",
                 new Class<?>[] { File.class });
-        undeployBundle = reloadServiceClass.getDeclaredMethod("undeployBundle", new Class<?>[] { String.class });
+        undeployBundle = reloadServiceClass.getDeclaredMethod("undeployBundle",
+                new Class<?>[] { String.class });
         flush = reloadServiceClass.getDeclaredMethod("flush", new Class<?>[0]);
         reload = reloadServiceClass.getDeclaredMethod("reload", new Class<?>[0]);
-        flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents", new Class<?>[0]);
-        reloadSeam = reloadServiceClass.getDeclaredMethod("reloadSeamComponents", new Class<?>[0]);
+        flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents",
+                new Class<?>[0]);
+        reloadSeam = reloadServiceClass.getDeclaredMethod(
+                "reloadSeamComponents", new Class<?>[0]);
     }
 
     protected void hotDeployBundles(DevBundle[] bundles) throws Exception {
         boolean hasSeam = false;
         for (DevBundle bundle : bundles) {
             if (bundle.devBundleType == DevBundleType.Bundle) {
+                // TODO: use other existing method to be able to reload the
+                // resources classpath?
                 bundle.name = (String) deployBundle.invoke(reloadService,
                         new Object[] { bundle.file() });
             } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
@@ -78,6 +84,8 @@ public class ReloadServiceInvoker {
         for (DevBundle bundle : bundles) {
             if (bundle.devBundleType.equals(DevBundleType.Bundle)
                     && bundle.name != null) {
+                // TODO: use other API to reload file instead, to be able to
+                // reload resources (?)
                 undeployBundle.invoke(reloadService,
                         new Object[] { bundle.name });
             } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
@@ -98,7 +106,7 @@ public class ReloadServiceInvoker {
         reload.invoke(reloadService);
     }
 
-    protected void reloadSeam()throws Exception {
+    protected void reloadSeam() throws Exception {
         reloadSeam.invoke(reloadService);
     }
 }

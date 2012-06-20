@@ -534,7 +534,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Old way of detecting if seam debug is set, bu checking for the presence
+     * Old way of detecting if seam debug is set, by checking for the presence
      * of a file.
      * <p>
      * On 5.6, using the config generator to get the info from the nuxeo.conf

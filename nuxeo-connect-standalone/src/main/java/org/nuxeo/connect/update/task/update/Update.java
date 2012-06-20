@@ -174,9 +174,8 @@ public class Update extends AbstractCommand {
             rollback = updateFile(task, file, mgr);
         }
 
-        Command deploy = getDeployCommand();
+        Command deploy = getDeployCommand(mgr, file, rollback);
         if (deploy != null) {
-            // should it give the result undeploy command to the rollback (?)
             deploy.run(task, prefs);
         }
 
@@ -231,7 +230,8 @@ public class Update extends AbstractCommand {
      *
      * @since 5.6
      */
-    protected Command getDeployCommand() {
+    protected Command getDeployCommand(UpdateManager updateManager, File file,
+            Command rollbackCommand) {
         return new DeployPlaceholder(file);
     }
 
