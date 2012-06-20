@@ -3,7 +3,7 @@
   <parent>
     <artifactId>nuxeo-runtime-parent</artifactId>
     <groupId>org.nuxeo.runtime</groupId>
-    <version>5.4.1.1-SNAPSHOT</version>
+    <version>5.4.1-HF17</version>
   </parent>
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-management-metrics</artifactId>
