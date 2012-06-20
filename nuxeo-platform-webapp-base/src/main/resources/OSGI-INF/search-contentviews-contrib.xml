@@ -16,6 +16,7 @@
       <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
           SELECT * FROM Document WHERE ecm:fulltext LIKE ? AND
@@ -75,6 +76,7 @@
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <whereClause docType="AdvancedSearch">
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
             <field schema="advanced_search" name="fulltext_all" />
@@ -208,6 +210,7 @@
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <pattern quoteParameters="false" escapeParameters="false">?</pattern>
         <parameter>#{documentSearchActions.nxqlQuery}</parameter>
         <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->

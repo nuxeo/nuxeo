@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
+import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
@@ -338,6 +339,95 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                 selections.getEntries().get(1).getData().getPropertyValue(
                         "dc:title"));
         assertTrue(selections.getEntries().get(1).isSelected());
+    }
+
+    @Test
+    public void testCoreQueryMaxResults() throws Exception {
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(contentView);
+
+        String parentIdParam = session.getRootDocument().getId();
+        assertEquals(parentIdParam, contentView.getCacheKey());
+
+        CoreQueryDocumentPageProvider pp = (CoreQueryDocumentPageProvider) contentView.getPageProviderWithParams(
+                parentIdParam, dummyParam);
+        pp.setMaxResults(2);
+        assertEquals(2, pp.getPageSize());
+
+        // page 1/3
+        List<DocumentModel> docs = pp.getCurrentPage();
+        assertEquals(AbstractPageProvider.UNKNOWN_SIZE_AFTER_QUERY,
+                pp.getResultsCount());
+
+        assertFalse(pp.isPreviousPageAvailable());
+        assertFalse(pp.isLastPageAvailable());
+        assertTrue(pp.isNextPageAvailable());
+
+        assertEquals(0, pp.getNumberOfPages());
+
+        assertNotNull(docs);
+        assertEquals(2, docs.size());
+
+        // page 2/3
+        pp.nextPage();
+        docs = pp.getCurrentPage();
+        assertTrue(pp.isPreviousPageAvailable());
+        assertFalse(pp.isLastPageAvailable());
+        assertTrue(pp.isNextPageAvailable());
+
+        assertNotNull(docs);
+        assertEquals(2, docs.size());
+
+        // page 3/3
+        pp.nextPage();
+        docs = pp.getCurrentPage();
+        assertTrue(pp.isPreviousPageAvailable());
+        assertFalse(pp.isLastPageAvailable());
+        // last page detected because there are less than pagesize docs
+        assertFalse(pp.isNextPageAvailable());
+
+        assertNotNull(docs);
+        assertEquals(1, docs.size());
+
+        // page 4/3
+        // dummy case
+        pp.nextPage();
+        docs = pp.getCurrentPage();
+        assertTrue(pp.isPreviousPageAvailable());
+        assertFalse(pp.isLastPageAvailable());
+        assertFalse(pp.isNextPageAvailable());
+        assertNotNull(docs);
+        assertEquals(0, docs.size());
+
+        // borderline case
+        pp.setPageSize(5);
+        pp.setMaxResults(3);
+        pp.firstPage();
+        pp.refresh();
+
+        // page 1/2
+        docs = pp.getCurrentPage();
+        assertEquals(AbstractPageProvider.UNKNOWN_SIZE_AFTER_QUERY,
+                pp.getResultsCount());
+
+        assertFalse(pp.isPreviousPageAvailable());
+        assertFalse(pp.isLastPageAvailable());
+        // correct because we don't know if there is another page
+        assertTrue(pp.isNextPageAvailable());
+
+        assertEquals(0, pp.getNumberOfPages());
+        assertNotNull(docs);
+        assertEquals(5, docs.size());
+
+        // page 2/2
+        // there is no more results, user see an empty page
+        pp.nextPage();
+        docs = pp.getCurrentPage();
+        assertTrue(pp.isPreviousPageAvailable());
+        assertFalse(pp.isLastPageAvailable());
+        assertFalse(pp.isNextPageAvailable());
+        assertNotNull(docs);
+        assertEquals(0, docs.size());
     }
 
     @SuppressWarnings("unchecked")

@@ -13,6 +13,7 @@
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <whereClause docType="AdvancedSearch">
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
             <field schema="advanced_search" name="fulltext_all" />
@@ -135,6 +136,7 @@
 
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <whereClause docType="AdvancedSearch">
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
             <field schema="advanced_search" name="fulltext_all" />

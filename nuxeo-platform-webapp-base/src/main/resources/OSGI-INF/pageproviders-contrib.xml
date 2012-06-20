@@ -20,6 +20,7 @@
     </documentation>
 
     <coreQueryPageProvider name="tree_children">
+      <property name="maxResults">PAGE_SIZE</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isProxy = 0 AND
         ecm:mixinType = 'Folderish' AND ecm:mixinType != 'HiddenInNavigation'
@@ -31,6 +32,7 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="default_document_suggestion">
+      <property name="maxResults">PAGE_SIZE</property>
       <pattern quoteParameters="false" escapeParameters="true">
         SELECT * FROM Document WHERE ecm:fulltext LIKE '?*' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND

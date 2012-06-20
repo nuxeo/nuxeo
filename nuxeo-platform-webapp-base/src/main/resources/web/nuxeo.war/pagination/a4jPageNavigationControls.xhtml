@@ -50,7 +50,7 @@
                      image="/icons/action_page_fastforward.gif"
                      eventsQueue="a4jPageNavigationQueue"
                      reRender="#{contentIdToBeReRendered}" >
-      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+      <f:attribute name="disabled" value="#{not provider.lastPageAvailable}"/>
     </a4j:commandButton>
 
     <a4j:status>
