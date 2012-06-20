@@ -5,6 +5,7 @@
     point="providers">
 
     <coreQueryPageProvider name="user_domains">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType = 'Domain' AND
         ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState !=
@@ -15,6 +16,7 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="domain_documents">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:path STARTSWITH ?
         AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
@@ -26,6 +28,7 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="domain_published_documents">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
@@ -36,6 +39,7 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="user_documents">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
@@ -47,6 +51,7 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="user_sections">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType = 'Section' AND
         ecm:mixinType != 'HiddenInNavigation' AND ecm:path STARTSWITH ?
@@ -56,6 +61,7 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="user_sites">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType = 'WebView' AND
         ecm:currentLifeCycleState != 'deleted' AND webc:isWebContainer = 1 AND
@@ -66,6 +72,7 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="user_workspaces">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Workspace WHERE ecm:mixinType != 'HiddenInNavigation' AND
         ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 AND ecm:path
@@ -76,6 +83,7 @@
     </coreQueryPageProvider>
 
     <coreQueryPageProvider name="user_deleted_documents">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
