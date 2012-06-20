@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-chemistry</artifactId>
-    <version>5.4.1.1-SNAPSHOT</version>
+    <version>5.4.1-HF17</version>
   </parent>
 
   <artifactId>nuxeo-opencmis-tests</artifactId>
@@ -16,8 +16,8 @@
   <description>Nuxeo Core: Chemistry OpenCMIS Tests</description>
 
   <properties>
-    <nuxeo.version>5.4.1.1-SNAPSHOT</nuxeo.version>
-    <nuxeo.opencmis.version>5.4.1.1-SNAPSHOT</nuxeo.opencmis.version>
+    <nuxeo.version>5.4.1-HF17</nuxeo.version>
+    <nuxeo.opencmis.version>5.4.1-HF17</nuxeo.opencmis.version>
     <chemistry.opencmis.version>0.2.0-incubating-r1031674</chemistry.opencmis.version>
   </properties>
 
