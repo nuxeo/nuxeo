@@ -23,6 +23,8 @@ import static org.nuxeo.ecm.platform.mail.web.utils.MailWebConstants.CURRENT_PAG
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.MAIL_FOLDER_TYPE;
 
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.faces.application.FacesMessage;
 
@@ -54,6 +56,9 @@ public class MailActionsBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(MailActionsBean.class);
+
+    Pattern pattern = Pattern.compile(".*?<body.*?>(.*?)</body>.*?",
+            Pattern.DOTALL);
 
     @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
@@ -92,6 +97,14 @@ public class MailActionsBean implements Serializable {
     public boolean isMailFolder() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return MAIL_FOLDER_TYPE.equals(currentDocument.getType());
+    }
+
+    public String getCleanBody(String htmlSource) {
+        Matcher matcher = pattern.matcher(htmlSource);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
+        return htmlSource;
     }
 
 }

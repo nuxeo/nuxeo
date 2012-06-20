@@ -21,14 +21,7 @@
       </h:panelGroup>
     </f:facet>
 
-    <f:subview rendered="#{field_1 != null}" > 
-      <span>
-      <h:outputText escape="false" value="#{field_1}" />
-      </span>
-    </f:subview>  
-    <f:subview rendered="#{field_1 == null}" > 
-      <h:outputText value="#{field_0}" />
-    </f:subview>  
+    <h:outputText value="#{field_0}" />
 
   </rich:modalPanel>
 

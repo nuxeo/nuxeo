@@ -317,7 +317,7 @@
           <property name="template">/widgets/join_list_widget_template.xhtml</property>
         </properties>
       </widget>
-      <widget name="text" type="text">
+      <widget name="text" type="template">
         <labels>
           <label mode="any">label.mail.text</label>
         </labels>
@@ -328,8 +328,11 @@
           <property name="escape">false</property>
         </properties>
         <fields>
-          <field>mail:text</field>
+          <field>mail:htmlText</field>
         </fields>
+        <properties mode="any">
+          <property name="template">/widgets/htmltext_widget_template.xhtml</property>
+        </properties>
       </widget>
     </layout>
     
