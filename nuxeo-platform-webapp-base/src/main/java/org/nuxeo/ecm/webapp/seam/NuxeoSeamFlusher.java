@@ -52,6 +52,9 @@ public class NuxeoSeamFlusher implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
+        if (NuxeoSeamWebGate.isInitialized() == false) {
+            return;
+        }
         String id = event.getId();
         if (ReloadEventNames.FLUSH_SEAM_EVENT_ID.equals(id)) {
             SeamHotReloadHelper.flush();

@@ -21,10 +21,8 @@
  */
 package org.nuxeo.ecm.webapp.seam;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.management.InstanceNotFoundException;
@@ -69,7 +67,14 @@ public class SeamHotReloadHelper {
         } catch (Exception e) {
             log.warn("Can't flush seam class loader cache", e);
         }
-        flushI18N();
+        try {
+            // TODO: check if this would be needed for Studio hot reload (?)
+            flushWebResources();
+        } catch (Exception e) {
+            log.error(
+                    "Cannot flush web resources, did you start with the sdk profile active ?",
+                    e);
+        }
     }
 
     public static Set<String> reloadSeamComponents(
@@ -93,47 +98,15 @@ public class SeamHotReloadHelper {
 
     public static Set<String> getHotDeployableComponents(
             HttpServletRequest httpRequest) {
-
         ServletContext servletContext = httpRequest.getSession().getServletContext();
         Init init = (Init) servletContext.getAttribute(Seam.getComponentName(Init.class));
         return init.getHotDeployableComponents();
 
     }
 
-    // FIXME: not used?
-    protected static boolean scan(Init init, File file) {
-        if (file.isFile()) {
-            if (!file.exists() || file.lastModified() > init.getTimestamp()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("file updated: " + file.getName());
-                }
-                return true;
-            }
-        } else if (file.isDirectory()) {
-            for (File f : file.listFiles()) {
-                if (scan(init, f)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     /**
-     * @since 5.5
-     */
-    protected static void flushI18N() {
-        try {
-            flushWebResources();
-        } catch (Exception e) {
-            log.error(
-                    "Cannot flush web resources, did you start with the sdk profile active ?",
-                    e);
-        }
-        ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
-    }
-
-    /**
+     * Flushes resources for tomcat cache
+     *
      * @since 5.5
      */
     protected static void flushWebResources()

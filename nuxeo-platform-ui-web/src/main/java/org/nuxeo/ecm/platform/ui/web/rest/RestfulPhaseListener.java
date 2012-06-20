@@ -86,7 +86,9 @@ public class RestfulPhaseListener implements PhaseListener {
                 if (!Transaction.instance().isActiveOrMarkedRollback()) {
                     Transaction.instance().begin();
                 }
-                // hot reload hook
+                // hot reload hook, maybe to move up so that it's handled on
+                // all requests, not only the ones using the URLservice
+                // framework (?)
                 resetHotReloadContext(context);
                 // restore state
                 service.navigate(context);

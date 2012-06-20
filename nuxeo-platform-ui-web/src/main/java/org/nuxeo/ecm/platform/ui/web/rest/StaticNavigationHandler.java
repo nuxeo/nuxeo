@@ -95,6 +95,9 @@ public class StaticNavigationHandler {
      * XXX hack: add manual parsing of the main faces-config.xml file
      * navigation cases, to handle hot reload and work around the JSF
      * application cache.
+     * <p>
+     * TODO: try to reset and rebuild the app navigation cases by reflection,
+     * if it works...
      *
      * @since 5.6
      */
