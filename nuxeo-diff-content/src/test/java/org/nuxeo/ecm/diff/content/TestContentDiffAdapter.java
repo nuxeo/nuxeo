@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -97,7 +96,6 @@ public class TestContentDiffAdapter {
      * {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)}
      * on HTML files.
      */
-    @Ignore
     @Test
     public void testHTMLFilesContentDiff() throws ClientException {
 
@@ -129,7 +127,6 @@ public class TestContentDiffAdapter {
      * {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)}
      * on Office files using a text conversion.
      */
-    @Ignore
     @Test
     public void testOfficeFilesTextConversionContentDiff()
             throws ClientException {
@@ -164,7 +161,6 @@ public class TestContentDiffAdapter {
      * on files that don't have any "2text" or "2html" converter registered
      * (images).
      */
-    @Ignore
     @Test
     public void testImageFilesContentDiff() throws ClientException {
 
