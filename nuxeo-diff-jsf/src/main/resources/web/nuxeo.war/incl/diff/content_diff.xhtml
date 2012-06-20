@@ -10,7 +10,7 @@
   <nxu:set var="conversionType" value="#{param['conversionType']}" cache="true">
   
   <h2>
-    <h:outputText value="#{messages[propertyLabel]}" />-<h:outputText value=" #{messages['document.diff.preview.compareTitle']}" />
+    <h:outputText value="#{messages[propertyLabel]} " />-<h:outputText value=" #{messages['document.diff.preview.compareTitle']}" />
   </h2>
   
   <iframe src="#{diffActions.getContentDiffURL(propertyXPath, conversionType)}" id="content-diff-frame"
