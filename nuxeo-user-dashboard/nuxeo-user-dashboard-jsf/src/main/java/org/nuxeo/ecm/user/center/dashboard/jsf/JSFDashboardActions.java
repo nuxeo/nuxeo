@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
-import org.nuxeo.ecm.platform.jbpm.JbpmEventNames;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -134,17 +134,17 @@ public class JSFDashboardActions implements Serializable {
      * workflow/task event.
      */
     @Observer(value = {
-            JbpmEventNames.WORKFLOW_ENDED,
-            JbpmEventNames.WORKFLOW_NEW_STARTED,
-            JbpmEventNames.WORKFLOW_TASK_STOP,
-            JbpmEventNames.WORKFLOW_TASK_REJECTED,
-            JbpmEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
-            JbpmEventNames.WORKFLOW_TASK_COMPLETED,
-            JbpmEventNames.WORKFLOW_TASK_REMOVED,
-            JbpmEventNames.WORK_ITEMS_LIST_LOADED,
-            JbpmEventNames.WORKFLOW_TASKS_COMPUTED,
-            JbpmEventNames.WORKFLOW_ABANDONED,
-            JbpmEventNames.WORKFLOW_CANCELED,
+            TaskEventNames.WORKFLOW_ENDED,
+            TaskEventNames.WORKFLOW_NEW_STARTED,
+            TaskEventNames.WORKFLOW_TASK_STOP,
+            TaskEventNames.WORKFLOW_TASK_REJECTED,
+            TaskEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
+            TaskEventNames.WORKFLOW_TASK_COMPLETED,
+            TaskEventNames.WORKFLOW_TASK_REMOVED,
+            TaskEventNames.WORK_ITEMS_LIST_LOADED,
+            TaskEventNames.WORKFLOW_TASKS_COMPUTED,
+            TaskEventNames.WORKFLOW_ABANDONED,
+            TaskEventNames.WORKFLOW_CANCELED,
             EventNames.DOCUMENT_PUBLICATION_REJECTED,
             EventNames.DOCUMENT_PUBLICATION_APPROVED,
             EventNames.DOCUMENT_PUBLISHED }, create = false)
