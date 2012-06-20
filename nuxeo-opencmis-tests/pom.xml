@@ -183,6 +183,13 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <!-- exclude this which contains servlet 2.5 classes -->
+          <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-server-standalone</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

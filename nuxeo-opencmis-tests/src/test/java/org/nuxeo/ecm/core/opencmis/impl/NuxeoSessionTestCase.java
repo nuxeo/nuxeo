@@ -55,11 +55,13 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
  * Tests that hit the high-level Session abstraction.
@@ -89,6 +91,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     protected Map<String, String> repoDetails;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -133,6 +136,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         isAtomPub = this instanceof TestNuxeoSessionAtomPub;
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         tearDownData();
@@ -144,6 +148,9 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     /** Sets up the client, fills "session". */
     public abstract void setUpCmisSession() throws Exception;
+
+    /** Sets up the client, fills "session". */
+    protected abstract void setUpCmisSession(String username) throws Exception;
 
     /** Tears down the client. */
     public abstract void tearDownCmisSession() throws Exception;
@@ -325,13 +332,16 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put(PropertyIds.TARGET_ID, id2);
         ObjectId relid = session.createRelationship(properties);
 
-        // has to be superuser to get relations
+        // note: has to be an administrator to get relations
         closeSession();
-        super.session = openSessionAs(SecurityConstants.SYSTEM_USERNAME);
+        NuxeoPrincipal admin = new NuxeoPrincipalImpl("admin", false, true);
+        super.session = openSessionAs(admin);
         tearDownCmisSession();
         Thread.sleep(1000); // otherwise sometimes fails to set up again
-        setUpCmisSession();
+        // for tests, server-side TrustingLoginProvider makes "admin*" an admin
+        setUpCmisSession(admin.getName());
 
+        session.clear(); // clear cache
         ItemIterable<Relationship> rels = session.getRelationships(
                 session.createObjectId(id1), false,
                 RelationshipDirection.SOURCE, null,

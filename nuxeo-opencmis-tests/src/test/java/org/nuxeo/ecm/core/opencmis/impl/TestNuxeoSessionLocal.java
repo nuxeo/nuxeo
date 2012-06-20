@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -38,14 +38,19 @@ import org.nuxeo.ecm.core.opencmis.tests.Helper;
  */
 public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
 
+    @Override
     @Before
     public void setUpCmisSession() throws Exception {
+        setUpCmisSession(USERNAME);
+    }
+
+    @Override
+    protected void setUpCmisSession(String username) throws Exception {
         boolean objectInfoRequired = true; // for tests
         CallContextImpl context = new CallContextImpl(
                 CallContext.BINDING_LOCAL, getRepositoryId(),
                 objectInfoRequired);
-        context.put(CallContext.USERNAME, USERNAME);
-        context.put("useranme", USERNAME); // misspelled in older versions
+        context.put(CallContext.USERNAME, username);
         context.put(CallContext.PASSWORD, PASSWORD);
         context.put(CallContext.SERVLET_CONTEXT,
                 FakeServletContext.getServletContext());
@@ -54,6 +59,7 @@ public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
         session = new NuxeoSession(getCoreSession(), repository, context);
     }
 
+    @Override
     @After
     public void tearDownCmisSession() throws Exception {
         session = null;

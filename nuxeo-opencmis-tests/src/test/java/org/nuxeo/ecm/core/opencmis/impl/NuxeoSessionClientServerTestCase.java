@@ -69,6 +69,11 @@ public abstract class NuxeoSessionClientServerTestCase extends
 
     @Override
     public void setUpCmisSession() throws Exception {
+        setUpCmisSession(USERNAME);
+    }
+
+    @Override
+    protected void setUpCmisSession(String username) throws Exception {
         setUpServer();
 
         SessionFactory sf = SessionFactoryImpl.newInstance();
@@ -82,7 +87,7 @@ public abstract class NuxeoSessionClientServerTestCase extends
         params.put(SessionParameter.CACHE_SIZE_OBJECTS, "100");
 
         params.put(SessionParameter.REPOSITORY_ID, getRepositoryId());
-        params.put(SessionParameter.USER, USERNAME);
+        params.put(SessionParameter.USER, username);
         params.put(SessionParameter.PASSWORD, PASSWORD);
 
         addParams(params);
@@ -95,8 +100,10 @@ public abstract class NuxeoSessionClientServerTestCase extends
 
     @Override
     public void tearDownCmisSession() throws Exception {
-        session.clear(); // TODO XXX close
-        session = null;
+        if (session != null) {
+            session.clear();
+            session = null;
+        }
 
         tearDownServer();
     }

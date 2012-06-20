@@ -33,6 +33,7 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -61,6 +62,7 @@ public class TrustingNuxeoAuthFilter implements Filter {
             LoginContext loginContext = Framework.loginAsUser(username);
             try {
                 Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
+                maybeMakeAdministrator(principal);
                 // propagate
                 ClientLoginModule.getThreadLocalLogin().push(principal, null,
                         loginContext.getSubject());
@@ -84,6 +86,16 @@ public class TrustingNuxeoAuthFilter implements Filter {
     protected String getUserName(HttpServletRequest request) {
         BasicAuthCallContextHandler ba = new BasicAuthCallContextHandler();
         return ba.getCallContextMap(request).get(CallContext.USERNAME);
+    }
+
+    /**
+     * If its name starts with "admin", makes the principal an Administrator.
+     */
+    protected static void maybeMakeAdministrator(Principal principal) {
+        if (principal.getName().toLowerCase().startsWith("admin")
+                && principal instanceof NuxeoPrincipalImpl) {
+            ((NuxeoPrincipalImpl) principal).isAdministrator = true;
+        }
     }
 
 }

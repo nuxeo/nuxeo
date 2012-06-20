@@ -21,6 +21,7 @@ import org.apache.chemistry.opencmis.commons.impl.server.AbstractServiceFactory;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.support.CmisServiceWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
@@ -56,7 +57,7 @@ public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
     public CmisService getService(CallContext context) {
         String repositoryId = context.getRepositoryId();
         NuxeoRepository repository;
-        if (repositoryId == null) {
+        if (StringUtils.isEmpty(repositoryId)) {
             repository = null;
         } else {
             repository = NuxeoRepositories.getRepository(repositoryId);
