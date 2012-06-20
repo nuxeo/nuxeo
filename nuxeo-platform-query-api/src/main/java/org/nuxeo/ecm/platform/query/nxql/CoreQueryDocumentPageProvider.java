@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Benoit Delbosc
  */
 package org.nuxeo.ecm.platform.query.nxql;
 
@@ -32,12 +33,13 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Page provider performing a query on a core session.
  * <p>
- * It builds the query at each call so that it can refresh itself when the
- * query changes.
+ * It builds the query at each call so that it can refresh itself when the query
+ * changes.
  * <p>
  * TODO: describe needed properties
  *
@@ -49,6 +51,18 @@ public class CoreQueryDocumentPageProvider extends
 
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
+    public static final String MAX_RESULTS_PROPERTY = "maxResults";
+
+    // Special maxResults value used for navigation, can be tuned
+    public static final String DEFAULT_NAVIGATION_RESULTS_KEY = "DEFAULT_NAVIGATION_RESULTS";
+
+    // Special maxResults value that means same as the page size
+    public static final String PAGE_SIZE_RESULTS_KEY = "PAGE_SIZE";
+
+    public static final String DEFAULT_NAVIGATION_RESULTS_PROPERTY = "org.nuxeo.ecm.platform.query.nxql.defaultNavigationResults";
+
+    public static final String DEFAULT_NAVIGATION_RESULTS_VALUE = "200";
+
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
     private static final Log log = LogFactory.getLog(CoreQueryDocumentPageProvider.class);
@@ -58,6 +72,8 @@ public class CoreQueryDocumentPageProvider extends
     protected String query;
 
     protected List<DocumentModel> currentPageDocuments;
+
+    protected Long maxResults;
 
     @Override
     public List<DocumentModel> getCurrentPage() {
@@ -90,16 +106,30 @@ public class CoreQueryDocumentPageProvider extends
                             Long.valueOf(offset)));
                 }
 
-                DocumentModelList docs = coreSession.query(query, null,
-                        minMaxPageSize, offset, true);
+                DocumentModelList docs;
+                if (getMaxResults() > 0) {
+                    docs = coreSession.query(query, null, minMaxPageSize,
+                            offset, getMaxResults());
+                } else {
+                    // use a totalCount=true instead of countUpTo=-1 to enable
+                    // global limitation described in NXP-9381
+                    docs = coreSession.query(query, null, minMaxPageSize,
+                            offset, true);
+                }
                 long resultsCount = docs.totalSize();
-                setResultsCount(resultsCount);
+                if (resultsCount < 0) {
+                    // results count is truncated
+                    setResultsCount(UNKNOWN_SIZE_AFTER_QUERY);
+                } else {
+                    setResultsCount(resultsCount);
+                }
                 currentPageDocuments = docs;
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                            "Performed query for provider '%s': got %s hits",
-                            getName(), Long.valueOf(resultsCount)));
+                            "Performed query for provider '%s': got %s hits (limit %s)",
+                            getName(), Long.valueOf(resultsCount),
+                            Long.valueOf(getMaxResults())));
                 }
 
                 // refresh may have triggered display of an empty page => go
@@ -135,6 +165,20 @@ public class CoreQueryDocumentPageProvider extends
                     }
                 }
 
+                if (getResultsCount() < 0) {
+                    // additional info to handle next page when results count is
+                    // unknown
+                    if (currentPageDocuments != null
+                            && currentPageDocuments.size() > 0) {
+                        int higherNonEmptyPage = getCurrentHigherNonEmptyPageIndex();
+                        int currentFilledPage = Long.valueOf(
+                                getCurrentPageIndex()).intValue();
+                        if ((docs.size() >= getPageSize())
+                                && (currentFilledPage > higherNonEmptyPage)) {
+                            setCurrentHigherNonEmptyPageIndex(currentFilledPage);
+                        }
+                    }
+                }
             } catch (Exception e) {
                 error = e;
                 errorMessage = e.getMessage();
@@ -195,6 +239,45 @@ public class CoreQueryDocumentPageProvider extends
             throw new ClientRuntimeException("cannot find core session");
         }
         return coreSession;
+    }
+
+    /**
+     * Returns the maximum number of results or
+     * <code>0<code> if there is no limit.
+     *
+     * @since 5.6
+     */
+    public long getMaxResults() {
+        if (maxResults == null) {
+            maxResults = 0L;
+            String maxResultsStr = (String) getProperties().get(MAX_RESULTS_PROPERTY);
+            if (maxResultsStr != null) {
+                if (DEFAULT_NAVIGATION_RESULTS_KEY.equals(maxResultsStr)) {
+                    maxResultsStr = Framework.getProperty(
+                            DEFAULT_NAVIGATION_RESULTS_PROPERTY,
+                            DEFAULT_NAVIGATION_RESULTS_VALUE);
+                } else if (PAGE_SIZE_RESULTS_KEY.equals(maxResultsStr)) {
+                    maxResultsStr = Long.valueOf(getPageSize()).toString();
+                }
+                try {
+                    maxResults = Long.parseLong(maxResultsStr);
+                } catch (NumberFormatException e) {
+                    log.warn(String.format(
+                            "Invalid maxResults property value: %s for page provider: %s, fallback to unlimited.",
+                            maxResultsStr, getName()));
+                }
+            }
+        }
+        return maxResults;
+    }
+
+    /**
+     * Sets the maximum number of result elements.
+     *
+     * @since 5.6
+     */
+    public void setMaxResults(long maxResults) {
+        this.maxResults = maxResults;
     }
 
     @Override
