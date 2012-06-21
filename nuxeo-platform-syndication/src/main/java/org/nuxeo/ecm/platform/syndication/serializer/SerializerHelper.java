@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
 import org.restlet.data.Response;
 
 public class SerializerHelper {
@@ -67,34 +66,6 @@ public class SerializerHelper {
             dms.serialize(summary, dmList, columnsDefinition, res, req);
         }
 
-    }
-
-    public static void formatResult(ResultSummary summary,
-            List<DashBoardItem> tasks, Response response, String format,
-            String columnsDefinition, HttpServletRequest req)
-            throws ClientException {
-        formatResult(summary, tasks, response, format, columnsDefinition, req,
-                null, null);
-    }
-
-    public static void formatResult(ResultSummary summary,
-            List<DashBoardItem> tasks, Response response, String format,
-            String columnsDefinition, HttpServletRequest req,
-            List<String> labels, String lang) throws ClientException {
-        DashBoardItemSerializer dis;
-
-        if (format.equalsIgnoreCase("JSON")) {
-            dis = new DMJSONSerializer();
-        } else if (format.equalsIgnoreCase("XML")) {
-            dis = new SimpleXMLSerializer();
-        } else if (format.equalsIgnoreCase("ATOM")) {
-            dis = new ATOMSerializer();
-        } else {
-            dis = new SimpleXMLSerializer();
-        }
-
-        dis.serialize(summary, tasks, columnsDefinition, labels, lang,
-                response, req);
     }
 
 }

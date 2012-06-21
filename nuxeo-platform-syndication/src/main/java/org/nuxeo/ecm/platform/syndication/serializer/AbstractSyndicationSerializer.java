@@ -19,15 +19,12 @@
 package org.nuxeo.ecm.platform.syndication.serializer;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.syndication.FeedItem;
 import org.nuxeo.ecm.platform.syndication.FeedItemAdapter;
-import org.nuxeo.ecm.platform.syndication.workflow.DashBoardItem;
-import org.restlet.data.Response;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
@@ -109,12 +106,6 @@ public class AbstractSyndicationSerializer extends
         url = url.replace("{repoId}", repository);
         url = url.replace("{format}", syndicationFormat);
         return url;
-    }
-
-    public static String serialize(List<DashBoardItem> workItems,
-            String columnsDefinition, Map<String, String> options, Response res, HttpServletRequest req) {
-        // To be overridden
-        return null;
     }
 
 }

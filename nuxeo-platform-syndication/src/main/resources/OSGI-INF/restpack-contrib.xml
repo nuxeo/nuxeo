@@ -46,19 +46,6 @@
       </urlPatterns>
     </restletPlugin>
 
-    <documentation>GET /nuxeo/restAPI/workflowTasks/default/</documentation>
-    <restletPlugin name="workflowTaskRestlet"
-      class="org.nuxeo.ecm.platform.syndication.restAPI.TasksRestlet"
-      enabled="true" useSeam="false" useConversation="false">
-      <urlPatterns>
-        <urlPattern>/workflowTasks/{repo}</urlPattern>
-        <urlPattern>/workflowTasks/{repo}/</urlPattern>
-        <urlPattern>/workflowTasks/</urlPattern>
-        <urlPattern>/workflowTasks</urlPattern>
-        <!-- <urlPattern>/workflowTasks/{repo}/{username}</urlPattern> -->
-      </urlPatterns>
-    </restletPlugin>
-
   </extension>
 
 </component>

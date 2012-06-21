@@ -69,8 +69,4 @@ public interface DocumentModelListSerializer {
     void serialize(ResultSummary summary, DocumentModelList docList,
             String columnsDefinition, Response res, HttpServletRequest req, List<String> labels, String lang) throws ClientException;
 
-    /*
-     * String serialize(List<DashBoardItem> workItems, String
-     * columnsDefinition, Map<String,String> options, Response res);
-     */
 }
