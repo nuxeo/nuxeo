@@ -474,8 +474,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 Serializable principals = queryFilter.getPrincipals();
                 Serializable permissions = queryFilter.getPermissions();
                 if (!dialect.supportsArrays()) {
-                    principals = StringUtils.join((String[]) principals, '|');
-                    permissions = StringUtils.join((String[]) permissions, '|');
+                    principals = StringUtils.join((String[]) principals, Dialect.ARRAY_SEP);
+                    permissions = StringUtils.join((String[]) permissions, Dialect.ARRAY_SEP);
                 }
                 // when using WITH for the query, the main column is referenced
                 // through an alias because of the subselect

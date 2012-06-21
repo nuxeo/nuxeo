@@ -13,7 +13,7 @@
 # ${idType} VARCHAR(36)
 # ${fulltextCatalog} configured catalog
 # ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
-# ${usersSeparator} default is "|", but it depends on the configuration
+# ${usersSeparator} Used to store aclr default is "|", but it depends on the configuration. Note that array parameters always use "|" separator.
 # Conditions used:
 # fulltextEnabled
 # aclOptimizationsEnabled
@@ -88,8 +88,8 @@ BEGIN
   DECLARE @gr TINYINT;
   DECLARE @pe VARCHAR(1000);
   DECLARE @us VARCHAR(1000);
-  SET @allusers = N'${usersSeparator}' + @users + N'${usersSeparator}';
-  SET @allperms = N'${usersSeparator}' + @perms + N'${usersSeparator}';
+  SET @allusers = N'|' + @users + N'|';
+  SET @allperms = N'|' + @perms + N'|';
   SET @first = 1;
   SET @curid = @id;
   WHILE @curid IS NOT NULL BEGIN
@@ -100,7 +100,7 @@ BEGIN
     OPEN @cur;
     FETCH FROM @cur INTO @gr, @pe, @us;
     WHILE @@FETCH_STATUS = 0 BEGIN
-      IF @allusers LIKE (N'%${usersSeparator}' + @us + N'${usersSeparator}%') AND @allperms LIKE (N'%${usersSeparator}' + @pe + N'${usersSeparator}%')
+      IF @allusers LIKE (N'%|' + @us + N'|%') AND @allperms LIKE (N'%|' + @pe + N'|%')
       BEGIN
         CLOSE @cur;
         DEALLOCATE @cur;
@@ -662,7 +662,7 @@ BEGIN
   DECLARE @perm VARCHAR(250);
   FETCH FROM @cur INTO @perm;
   WHILE @@FETCH_STATUS = 0 BEGIN
-    SET @ret = @ret + N'${usersSeparator}' + @perm;
+    SET @ret = @ret + N'|' + @perm;
     FETCH FROM @cur INTO @perm;
   END;
   CLOSE @cur;
