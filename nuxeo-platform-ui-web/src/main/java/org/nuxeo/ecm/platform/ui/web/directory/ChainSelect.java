@@ -812,7 +812,7 @@ public class ChainSelect extends UIInput {
     public void processUpdates(FacesContext context) {
         super.processUpdates(context);
         if (Boolean.TRUE.equals(getResetCacheOnUpdate()) && isValid()) {
-            componentValue = null;
+            componentValue = new Selection[0];
         }
     }
 
