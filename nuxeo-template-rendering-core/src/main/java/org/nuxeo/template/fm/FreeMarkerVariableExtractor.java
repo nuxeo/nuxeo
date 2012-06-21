@@ -79,7 +79,9 @@ public class FreeMarkerVariableExtractor {
         synchronized (reservedContextKeywords) {
             if (reservedContextKeywords.size() == 0) {
                 TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-                reservedContextKeywords.addAll(tps.getReservedContextKeywords());
+                if (tps != null) {
+                    reservedContextKeywords.addAll(tps.getReservedContextKeywords());
+                }
             }
         }
         return reservedContextKeywords;
