@@ -56,7 +56,7 @@ public class Undeploy extends UndeployPlaceholder {
             return;
         }
         try {
-            service.undeployBundle(file);
+            service.undeployBundle(file, true);
         } catch (Exception e) {
             throw new PackageException("Failed to undeploy bundle " + file, e);
         }
@@ -67,7 +67,6 @@ public class Undeploy extends UndeployPlaceholder {
         File[] files = dir.listFiles();
         if (files != null) {
             for (File fileInDir : files) {
-                // TODO: check if file is a runtime bundle (?)
                 undeployFile(fileInDir, service);
             }
         }

@@ -7,43 +7,23 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   class="setupPanel">
 
-<script>
-  function confirmRestart() {
-    return window.confirm("<h:outputText value="#{messages['label.restart.confirm']}" />");
-  }
-</script>
-
-<a4j:log />
-
 <a4j:outputPanel id="setupPanel">
 
   <c:if test="false">
-    <h:outputText value="DEBUG: Configurable: #{configurable}" />
+    <h:outputText value="DEBUG: Configurable: #{setupConfigurable}" />
     <br />
     <h:outputText
       value="DEBUG: nuxeo.dbtemplate #{setupParams['nuxeo.dbtemplate']}" />
   </c:if>
 
-  <h:panelGroup rendered="#{setupRequiresRestart}">
-    <div class="warningFeedback">
-      <h:outputText value="#{messages['label.setup.restartNeeded']}" />
-      <h:form>
-        <h:commandButton onclick="return confirmRestart();"
-          action="#{systemInfo.restartServer()}"
-          value="#{messages['label.action.restart']}"/>
-      </h:form>
-    </div>
-    <br />
-  </h:panelGroup>
-
-  <h:panelGroup rendered="#{!configurable}">
+  <h:panelGroup rendered="#{!setupConfigurable}">
     <div class="warningFeedback">
       <h:outputText value="#{messages['label.setup.notconfigurable']}" />
     </div>
     <br />
   </h:panelGroup>
 
-  <nxu:set var="setupLayoutMode" value="#{nxu:test(configurable, 'edit', 'view')}">
+  <nxu:set var="setupLayoutMode" value="#{nxu:test(setupConfigurable, 'edit', 'view')}">
 
     <a4j:form id="setupForm" ajaxSubmit="true" reRender="setupPanel">
 
@@ -59,7 +39,7 @@
       <nxl:layout name="admin_setup_custom_properties"
         mode="#{setupLayoutMode}" value="#{setupParams}" />
 
-      <c:if test="#{configurable}">
+      <c:if test="#{setupConfigurable}">
         <div class="actionBar">
           <a4j:region id="setupForm_submitTopRegion">
             <h:commandButton value="#{messages['action.setup.save']}"
@@ -112,7 +92,7 @@
               </h2>
             </div>
 
-            <c:if test="#{configurable}">
+            <c:if test="#{setupConfigurable}">
               <p>
                 <h:outputText styleClass="warningLabel"
                   value="#{messages['label.setup.advancedSearch.warning']} " />
@@ -150,7 +130,7 @@
               </c:forEach>
             </table>
 
-            <c:if test="#{configurable}">
+            <c:if test="#{setupConfigurable}">
               <div class="actionBar">
                 <a4j:region id="setupForm_submitBottonRegion">
                   <h:commandButton value="#{messages['action.setup.save']}"

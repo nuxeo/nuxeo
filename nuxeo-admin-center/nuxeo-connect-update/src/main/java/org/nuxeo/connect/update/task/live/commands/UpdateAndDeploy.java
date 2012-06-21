@@ -16,8 +16,13 @@
  */
 package org.nuxeo.connect.update.task.live.commands;
 
+import java.io.File;
+
 import org.nuxeo.connect.update.task.Command;
+import org.nuxeo.connect.update.task.update.Rollback;
+import org.nuxeo.connect.update.task.update.RollbackOptions;
 import org.nuxeo.connect.update.task.update.Update;
+import org.nuxeo.connect.update.task.update.UpdateManager;
 
 /**
  * Live version of the update command, that handle hot-reloading of the jar by
@@ -33,7 +38,19 @@ public class UpdateAndDeploy extends Update {
     }
 
     @Override
-    protected Command getDeployCommand() {
+    protected Command getDeployCommand(UpdateManager updateManager, File file,
+            Command rollbackCommand) {
+        // file is the file to be deployed, so it's not in its final place.
+        // But deploy should use the final place => extract info from the
+        // rollback command...
+        if (rollbackCommand instanceof Rollback) {
+            // FIXME: only handle one file right now => deploy the file
+            // with options given by rollback, only when it's not a composite
+            // command
+            Rollback rollback = (Rollback) rollbackCommand;
+            RollbackOptions opt = rollback.getRollbackOptions();
+            return new Deploy(updateManager.getRollbackTarget(opt));
+        }
         return new Deploy(file);
     }
 

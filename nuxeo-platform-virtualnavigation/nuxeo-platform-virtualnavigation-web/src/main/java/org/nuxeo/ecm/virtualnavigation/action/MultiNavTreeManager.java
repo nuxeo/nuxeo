@@ -24,6 +24,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
@@ -38,7 +39,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.virtualnavigation.service.NavTreeService;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloader;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,11 +64,14 @@ public class MultiNavTreeManager implements Serializable {
 
     protected String thePath = "";
 
-    @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
-
     @In(required = false, create = true)
     protected DirectoryTreeManager directoryTreeManager;
+
+    @In(create = true)
+    protected NuxeoSeamHotReloader seamReload;
+
+    @In(create = true)
+    protected Map<String, String> messages;
 
     public List<NavTreeDescriptor> getAvailableNavigationTrees() {
         if (availableNavigationTrees == null || shouldResetCache()) {
@@ -90,20 +94,13 @@ public class MultiNavTreeManager implements Serializable {
      * @since 5.6
      */
     protected boolean shouldResetCache() {
-        if (!Framework.isDevModeSet()) {
-            // use usual cache reset logics
-            return false;
-        }
-        boolean res = false;
-        if (availableNavigationTreesTimestamp == null) {
+        NavTreeService navTreeService = Framework.getLocalService(NavTreeService.class);
+        if (seamReload.isDevModeSet()
+                && seamReload.shouldResetCache(navTreeService,
+                        availableNavigationTreesTimestamp)) {
             return true;
         }
-        NavTreeService navTreeService = Framework.getLocalService(NavTreeService.class);
-        Long serviceTimestamp = navTreeService.getLastModified();
-        if (availableNavigationTreesTimestamp.compareTo(serviceTimestamp) < 0) {
-            res = true;
-        }
-        return res;
+        return false;
     }
 
     @Factory(value = "selectedNavigationTree", scope = ScopeType.EVENT)
@@ -146,8 +143,7 @@ public class MultiNavTreeManager implements Serializable {
         String[] partOfPath = thePath.split("/");
         String finalPath = "";
         for (String aPart : partOfPath) {
-            finalPath = finalPath + " > "
-                    + resourcesAccessor.getMessages().get(aPart);
+            finalPath = finalPath + " > " + messages.get(aPart);
         }
         return finalPath;
     }

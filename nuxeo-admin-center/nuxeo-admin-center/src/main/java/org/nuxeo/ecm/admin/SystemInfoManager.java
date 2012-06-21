@@ -61,6 +61,8 @@ public class SystemInfoManager implements Serializable {
 
     private static final Log log = LogFactory.getLog(SystemInfoManager.class);
 
+    protected static final String RESTART_PATH = "site/connectClient/restartView";
+
     private static final long serialVersionUID = 1L;
 
     protected List<Repository> repositories;
@@ -279,9 +281,9 @@ public class SystemInfoManager implements Serializable {
     public String restartServer() {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
-        String restartUrl = BaseURL.getBaseURL(request);
-        restartUrl += "site/connectClient/restartView";
+        request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
+                Boolean.TRUE);
+        String restartUrl = BaseURL.getBaseURL(request) + RESTART_PATH;
         try {
             context.getExternalContext().redirect(restartUrl);
         } catch (IOException e) {

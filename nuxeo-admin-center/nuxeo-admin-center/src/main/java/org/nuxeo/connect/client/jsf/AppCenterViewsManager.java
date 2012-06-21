@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TimeZone;
 
 import javax.faces.context.FacesContext;
@@ -39,6 +40,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
@@ -51,7 +54,9 @@ import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.ecm.admin.AdminViewManager;
+import org.nuxeo.ecm.admin.setup.SetupWizardActionBean;
 import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloadContextKeeper;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -86,6 +91,12 @@ public class AppCenterViewsManager implements Serializable {
 
     @In(create = true)
     protected NuxeoSeamHotReloadContextKeeper seamReloadContext;
+
+    @In(create = true)
+    protected SetupWizardActionBean setupWizardAction;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
 
     @In(create = true)
     protected Map<String, String> messages;
@@ -229,6 +240,8 @@ public class AppCenterViewsManager implements Serializable {
     public String getStudioInstallationStatus() {
         String prefix = "label.studio.update.status.";
         if (studioSnapshotStatus == null) {
+            // TODO: should initialize status according to Studio snapshot
+            // package installation
             return translate(prefix + "noStatus");
         }
 
@@ -332,6 +345,7 @@ public class AppCenterViewsManager implements Serializable {
                     InstallAfterRestart.addPackageForInstallation(pkg.getId());
                     lastStudioSnapshotUpdate = Calendar.getInstance();
                     setStatus(SnapshotStatus.restartNeeded, null);
+                    setupWizardAction.setNeedsRestart(true);
                 }
             } catch (Exception e) {
                 setStatus(SnapshotStatus.error, e.getMessage());
@@ -345,4 +359,47 @@ public class AppCenterViewsManager implements Serializable {
         studioSnapshotUpdateError = errorMessage;
     }
 
+    public void setDevMode(boolean value) {
+        String feedbackCompId = "changeDevModeForm";
+        ConfigurationGenerator conf = setupWizardAction.getConfigurationGenerator();
+        boolean configurable = conf.isConfigurable();
+        if (!configurable) {
+            facesMessages.addToControl(
+                    feedbackCompId,
+                    StatusMessage.Severity.ERROR,
+                    translate("label.setup.nuxeo.org.nuxeo.dev.changingDevModeNotConfigurable"));
+            return;
+        }
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(Framework.NUXEO_DEV_SYSTEM_PROP, Boolean.toString(value));
+        try {
+            conf.saveFilteredConfiguration(params);
+            Properties props = conf.getUserConfig();
+            conf.getServerConfigurator().dumpProperties(props);
+            // force reload of framework properties to ensure it's immediately
+            // taken into account by all code checking for
+            // Framework#isDevModeSet
+            Framework.getRuntime().reloadProperties();
+
+            if (value) {
+                facesMessages.addToControl(feedbackCompId,
+                        StatusMessage.Severity.WARN,
+                        translate("label.admin.center.devMode.justActivated"));
+            } else {
+                facesMessages.addToControl(feedbackCompId,
+                        StatusMessage.Severity.INFO,
+                        translate("label.admin.center.devMode.justDisabled"));
+            }
+        } catch (Exception e) {
+            log.error(e, e);
+            facesMessages.addToControl(
+                    feedbackCompId,
+                    StatusMessage.Severity.ERROR,
+                    translate("label.admin.center.devMode.errorSaving",
+                            e.getMessage()));
+        } finally {
+            setupWizardAction.setNeedsRestart(true);
+            setupWizardAction.resetParameters();
+        }
+    }
 }

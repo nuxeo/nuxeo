@@ -54,11 +54,20 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
+/**
+ * Serves UI for the setup screen, handling properties that can be saved on the
+ * bin/nuxeo.conf file on server.
+ * <p>
+ * Manages some important parameters to perform validation on them, and accepts
+ * custom parameters that would be present in the server nuxeo.conf file, and
+ * moves to advanced mode any property that would not be in that list.
+ *
+ * @since 5.5
+ */
 @Scope(ScopeType.SESSION)
 @Name("setupWizardAction")
 public class SetupWizardActionBean implements Serializable {
@@ -67,6 +76,10 @@ public class SetupWizardActionBean implements Serializable {
 
     protected static final Log log = LogFactory.getLog(SetupWizardActionBean.class);
 
+    /**
+     * The list of important parameters that need to be presented first to the
+     * user
+     */
     private static final String[] managedKeyParameters = {
             "nuxeo.bind.address", "nuxeo.url", "nuxeo.data.dir",
             "nuxeo.log.dir", "org.nuxeo.ecm.product.name",
@@ -77,15 +90,14 @@ public class SetupWizardActionBean implements Serializable {
             "nuxeo.db.max-pool-size", "nuxeo.vcs.min-pool-size",
             "nuxeo.vcs.max-pool-size", "nuxeo.notification.eMailSubjectPrefix",
             "mailservice.user", "mailservice.password", "mail.store.protocol",
-            "mail.transport.protocol", "mail.store.host", "mail.store.port", "mail.store.user", "mail.store.password", "mail.debug",
-            "mail.transport.host", "mail.transport.port", "mail.transport.auth",
-            "mail.transport.user", "mail.transport.password", "mail.from",
-            "mail.user", "mail.transport.usetls", "nuxeo.http.proxy.host",
+            "mail.transport.protocol", "mail.store.host", "mail.store.port",
+            "mail.store.user", "mail.store.password", "mail.debug",
+            "mail.transport.host", "mail.transport.port",
+            "mail.transport.auth", "mail.transport.user",
+            "mail.transport.password", "mail.from", "mail.user",
+            "mail.transport.usetls", "nuxeo.http.proxy.host",
             "nuxeo.http.proxy.port", "nuxeo.http.proxy.login",
-            "nuxeo.http.proxy.password" };
-
-    @In(create = true, required = false)
-    protected FacesMessages facesMessages;
+            "nuxeo.http.proxy.password", "org.nuxeo.dev" };
 
     protected Map<String, String> parameters;
 
@@ -105,75 +117,51 @@ public class SetupWizardActionBean implements Serializable {
 
     protected String proxyType = PROXY_NONE;
 
-    @Factory(value = "advancedParams", scope = ScopeType.EVENT)
-    public Map<String, String> getAdvancedParameters() {
-        if (advancedParameters == null) {
-            readParameters();
-        }
-        return advancedParameters;
-    }
-
-    // @Factory(value = "dbtemplates", scope = ScopeType.APPLICATION)
-    // public List<String> getDBTemplates() {
-    // return ConfigurationGenerator.DB_LIST;
-    // }
-
-    // protected List<String> dbTemplatesLabels = null;
-
-    // @Factory(value = "dbtemplatesLabels", scope = ScopeType.APPLICATION)
-    // public List<String> getDBTemplatesLabels() {
-    // if (dbTemplatesLabels == null) {
-    // dbTemplatesLabels = new ArrayList<String>(
-    // ConfigurationGenerator.DB_LIST.size());
-    // for (String templateName : ConfigurationGenerator.DB_LIST) {
-    // dbTemplatesLabels.add(resourcesAccessor.getMessages().get(
-    // "label.setup.nuxeo.template." + templateName));
-    // }
-    // }
-    // return dbTemplatesLabels;
-    // }
-
     protected boolean needsRestart = false;
 
-    protected boolean configurable = false;
-
     @In(create = true)
-    protected transient ResourcesAccessor resourcesAccessor;
-
-    @Factory(value = "configurable", scope = ScopeType.SESSION)
-    public boolean isConfigurable() {
-        if (configGenerator == null) {
-            readParameters();
-        }
-        return configurable;
-    }
-
-    private transient ConfigurationGenerator configGenerator;
+    private transient ConfigurationGenerator setupConfigGenerator;
 
     protected Properties userConfig;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected Map<String, String> messages;
 
     @Factory(value = "setupRequiresRestart", scope = ScopeType.EVENT)
     public boolean isNeedsRestart() {
         return needsRestart;
     }
 
-    @Factory(value = "setupParams", scope = ScopeType.EVENT)
-    public Map<String, String> getParameters() {
-        if (parameters == null) {
-            readParameters();
-        }
-        return parameters;
+    public void setNeedsRestart(boolean needsRestart) {
+        this.needsRestart = needsRestart;
     }
 
-    protected void readParameters() {
-        configGenerator = new ConfigurationGenerator();
-        configGenerator.init();
-        configurable = configGenerator.isConfigurable();
-        if (configurable) {
+    @Factory(value = "setupConfigGenerator", scope = ScopeType.PAGE)
+    public ConfigurationGenerator getConfigurationGenerator() {
+        if (setupConfigGenerator == null) {
+            setupConfigGenerator = new ConfigurationGenerator();
+            setupConfigGenerator.init();
             setParameters();
-        } else {
-            log.debug("Server not configurable !");
         }
+        return setupConfigGenerator;
+    }
+
+    @Factory(value = "setupConfigurable", scope = ScopeType.APPLICATION)
+    public boolean isConfigurable() {
+        return setupConfigGenerator.isConfigurable();
+    }
+
+    @Factory(value = "advancedParams", scope = ScopeType.EVENT)
+    public Map<String, String> getAdvancedParameters() {
+        return advancedParameters;
+    }
+
+    @Factory(value = "setupParams", scope = ScopeType.EVENT)
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
     /**
@@ -183,7 +171,7 @@ public class SetupWizardActionBean implements Serializable {
      * @since 5.6
      */
     protected void setParameters() {
-        userConfig = configGenerator.getUserConfig();
+        userConfig = setupConfigGenerator.getUserConfig();
         parameters = new HashMap<String, String>();
         advancedParameters = new TreeMap<String, String>();
         // will remove managed parameters later in setParameter()
@@ -195,7 +183,8 @@ public class SetupWizardActionBean implements Serializable {
             }
         }
         for (String keyParam : managedKeyParameters) {
-            setParameter(keyParam);
+            String parameter = userConfig.getProperty(keyParam);
+            setParameter(keyParam, parameter);
         }
 
         proxyType = PROXY_NONE;
@@ -208,22 +197,23 @@ public class SetupWizardActionBean implements Serializable {
     }
 
     /**
+     * Adds parameter value to the
+     *
      * @param key parameter key such as used in templates and nuxeo.conf
      */
-    private void setParameter(String key) {
-        String parameter = userConfig.getProperty(key);
-        if (parameter != null) {
-            parameters.put(key, parameter.trim());
+    private void setParameter(String key, String value) {
+        if (value != null) {
+            parameters.put(key, value.trim());
             advancedParameters.remove(key);
         }
     }
 
     public void save() {
         saveParameters();
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("label.parameters.saved"));
-        needsRestart = true;
+        setNeedsRestart(true);
         resetParameters();
+        facesMessages.add(StatusMessage.Severity.INFO,
+                messages.get("label.parameters.saved"));
     }
 
     @SuppressWarnings("unchecked")
@@ -263,17 +253,16 @@ public class SetupWizardActionBean implements Serializable {
         customParameters.putAll(parameters);
         customParameters.putAll(advancedParameters);
         try {
-            configGenerator.saveFilteredConfiguration(customParameters);
+            setupConfigGenerator.saveFilteredConfiguration(customParameters);
         } catch (ConfigurationException e) {
-            log.error(e);
+            log.error(e, e);
         }
     }
 
     public void resetParameters() {
-        readParameters();
-        Contexts.getEventContext().remove("setupParams");
-        Contexts.getEventContext().remove("advancedParams");
-        Contexts.getEventContext().remove("setupRequiresRestart");
+        setupConfigGenerator = null;
+        parameters = null;
+        advancedParameters = null;
     }
 
     /**
@@ -320,7 +309,7 @@ public class SetupWizardActionBean implements Serializable {
         String errorLabel = null;
         Exception error = null;
         try {
-            configGenerator.checkDatabaseConnection(
+            setupConfigGenerator.checkDatabaseConnection(
                     parameters.get(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME),
                     dbName, dbUser, dbPwd, dbHost, dbPort);
         } catch (FileNotFoundException e) {
@@ -337,7 +326,7 @@ public class SetupWizardActionBean implements Serializable {
             error = e;
         }
         if (error != null) {
-            log.error(error);
+            log.error(error, error);
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
                             context, errorLabel), null);
@@ -360,7 +349,7 @@ public class SetupWizardActionBean implements Serializable {
             throw new AbortProcessingException("Bad component returned "
                     + select);
         }
-        configGenerator.changeDBTemplate(dbTemplate);
+        setupConfigGenerator.changeDBTemplate(dbTemplate);
         setParameters();
         Contexts.getEventContext().remove("setupParams");
         Contexts.getEventContext().remove("advancedParams");

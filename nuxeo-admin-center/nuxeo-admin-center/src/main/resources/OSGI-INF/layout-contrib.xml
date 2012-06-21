@@ -273,6 +273,9 @@
           <widget>log.dir</widget>
         </row>
         <row>
+          <widget>org.nuxeo.dev</widget>
+        </row>
+        <row>
           <widget>dbtemplate</widget>
         </row>
         <row>
@@ -361,6 +364,23 @@
         </fields>
         <properties mode="edit">
           <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="org.nuxeo.dev" type="template">
+        <labels>
+          <label mode="any">label.setup.nuxeo.org.nuxeo.dev</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">label.setup.nuxeo.org.nuxeo.dev.help</label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>['org.nuxeo.dev']</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /incl/sysinfo/widgets/dev_mode_widget_template.xhtml
+          </property>
         </properties>
       </widget>
       <widget name="dbtemplate" type="template">
