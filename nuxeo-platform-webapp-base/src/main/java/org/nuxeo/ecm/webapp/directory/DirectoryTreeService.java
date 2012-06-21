@@ -18,14 +18,8 @@
  */
 package org.nuxeo.ecm.webapp.directory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -40,24 +34,15 @@ public class DirectoryTreeService extends DefaultComponent {
 
     public static final String NAME = DirectoryTreeService.class.getName();
 
-    private static final Log log = LogFactory.getLog(DirectoryTreeService.class);
-
-    protected Map<String, DirectoryTreeDescriptor> registry;
+    protected DirectoryTreeRegistry registry;
 
     public DirectoryTreeDescriptor getDirectoryTreeDescriptor(String treeName) {
-
-        DirectoryTreeDescriptor desc = registry.get(treeName);
-        if (desc.getEnabled()) {
-            return desc;
-        }
-        else {
-            return null;
-        }
+        return registry.getDirectoryTreeDescriptor(treeName);
     }
 
     @Override
     public void activate(ComponentContext context) {
-        registry = new HashMap<String, DirectoryTreeDescriptor>();
+        registry = new DirectoryTreeRegistry();
     }
 
     @Override
@@ -68,56 +53,29 @@ public class DirectoryTreeService extends DefaultComponent {
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
-
-        if (registry.containsKey(descriptor.getName())) {
-            DirectoryTreeDescriptor existing_descriptor =registry.get(descriptor.getName());
-            existing_descriptor.merge(descriptor);
-            log.debug("merged DirectoryTreeDescriptor: " + descriptor.getName());
-        }
-        else {
-            registry.put(descriptor.getName(), descriptor);
-            log.debug("registered DirectoryTreeDescriptor: " + descriptor.getName());
-        }
+        registry.addContribution(descriptor);
     }
 
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
-        registry.remove(descriptor.getName());
-        log.debug("unregistered DirectoryTreeDescriptor: "
-                + descriptor.getName());
+        registry.removeContribution(descriptor);
     }
 
     public List<String> getDirectoryTrees() {
-        List<String> directoryTrees = new ArrayList<String>();
-        for (DirectoryTreeDescriptor desc : registry.values()) {
-            if (desc.getEnabled()) {
-                directoryTrees.add(desc.getName());
-            }
-        }
-        Collections.sort(directoryTrees);
-        return directoryTrees;
+        return registry.getDirectoryTrees();
     }
 
     /**
-     * Returns only the enabled Directory Trees marked
-     * as being also Navigation Trees.
+     * Returns only the enabled Directory Trees marked as being also Navigation
+     * Trees.
      *
      * @since 5.4
      */
     public List<String> getNavigationDirectoryTrees() {
-        List<String> directoryTrees = new ArrayList<String>();
-        for (DirectoryTreeDescriptor desc : registry.values()) {
-            if (desc.getEnabled() && desc.isNavigationTree()) {
-                directoryTrees.add(desc.getName());
-            }
-        }
-        Collections.sort(directoryTrees);
-        return directoryTrees;
+        return registry.getNavigationDirectoryTrees();
     }
 
 }

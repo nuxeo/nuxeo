@@ -75,7 +75,8 @@ public class DirectoryTreeDescriptor {
     protected String contentView;
 
     /**
-     * Name of the QueryModel field that will be used updated on node selection.
+     * Name of the QueryModel field that will be used updated on node
+     * selection.
      */
     @XNode("@field")
     protected String fieldName;
@@ -192,6 +193,24 @@ public class DirectoryTreeDescriptor {
         }
         this.enabled = other.enabled;
         this.isNavigationTree = other.isNavigationTree;
+    }
+
+    public DirectoryTreeDescriptor clone() {
+        DirectoryTreeDescriptor clone = new DirectoryTreeDescriptor();
+        clone.name = name;
+        clone.enabled = enabled;
+        clone.isNavigationTree = isNavigationTree;
+        clone.label = label;
+        clone.querymodel = querymodel;
+        clone.contentView = contentView;
+        clone.fieldName = fieldName;
+        clone.schemaName = schemaName;
+        clone.outcome = outcome;
+        clone.multiselect = multiselect;
+        if (directories != null) {
+            clone.directories = directories.clone();
+        }
+        return clone;
     }
 
 }
