@@ -53,6 +53,8 @@ public class TestVersionning extends RepositoryOSGITestCase {
 
         openRepository();
 
+        fireFrameworkStarted();
+
         createTestDocuments();
     }
 

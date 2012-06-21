@@ -58,6 +58,7 @@ public class TestFileManagerService extends RepositoryOSGITestCase {
                 "nxfilemanager-test-contribs.xml");
 
         openRepository();
+        fireFrameworkStarted();
         service = Framework.getService(FileManager.class);
         root = coreSession.getRootDocument();
         createWorkspaces();
