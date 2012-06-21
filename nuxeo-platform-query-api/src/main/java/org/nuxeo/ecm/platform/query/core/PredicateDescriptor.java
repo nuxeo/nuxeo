@@ -89,4 +89,24 @@ public class PredicateDescriptor implements PredicateDefinition {
         return operatorSchema;
     }
 
+    /**
+     * @since 5.6
+     */
+    public PredicateDescriptor clone() {
+        PredicateDescriptor clone = new PredicateDescriptor();
+        clone.parameter = parameter;
+        clone.type = type;
+        clone.operator = operator;
+        clone.operatorField = operatorField;
+        clone.operatorSchema = operatorSchema;
+        if (values != null) {
+            clone.values = new PredicateFieldDefinition[values.length];
+            for (int i = 0; i < values.length; i++) {
+                clone.values[i] = values[i].clone();
+            }
+        }
+
+        return clone;
+    }
+
 }

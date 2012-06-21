@@ -36,6 +36,11 @@ public interface PageProviderDefinition extends Serializable {
 
     boolean isEnabled();
 
+    /**
+     * @since 5.6
+     */
+    void setEnabled(boolean enabled);
+
     Map<String, String> getProperties();
 
     String[] getQueryParameters();
@@ -61,5 +66,10 @@ public interface PageProviderDefinition extends Serializable {
     String getPageSizeBinding();
 
     Long getMaxPageSize();
+
+    /**
+     * @since 5.6
+     */
+    PageProviderDefinition clone();
 
 }

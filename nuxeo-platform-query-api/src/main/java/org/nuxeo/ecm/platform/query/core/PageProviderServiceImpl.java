@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -41,14 +39,12 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(PageProviderServiceImpl.class);
-
     public static final String PROVIDER_EP = "providers";
 
-    Map<String, PageProviderDefinition> providers = new HashMap<String, PageProviderDefinition>();
+    protected PageProviderRegistry providerReg = new PageProviderRegistry();
 
     public PageProviderDefinition getPageProviderDefinition(String name) {
-        return providers.get(name);
+        return providerReg.getPageProvider(name);
     }
 
     public PageProvider<?> getPageProvider(String name,
@@ -124,7 +120,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Map<String, Serializable> properties, Object... parameters)
             throws ClientException {
-        PageProviderDefinition desc = providers.get(name);
+        PageProviderDefinition desc = providerReg.getPageProvider(name);
         return getPageProvider(name, desc, sortInfos, pageSize, currentPage,
                 properties, parameters);
     }
@@ -135,23 +131,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             throws Exception {
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
-            String name = desc.getName();
-            if (name == null) {
-                log.error("Cannot register page provider without a name");
-                return;
-            }
-            boolean enabled = desc.isEnabled();
-            if (providers.containsKey(name)) {
-                log.info("Overriding page provider with name " + name);
-                if (!enabled) {
-                    providers.remove(name);
-                    log.info("Disabled page provider with name " + name);
-                }
-            }
-            if (enabled) {
-                log.info("Registering page provider with name " + name);
-                providers.put(name, desc);
-            }
+            providerReg.addContribution(desc);
         }
     }
 
@@ -161,10 +141,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             throws Exception {
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
-            String name = desc.getName();
-            providers.remove(name);
-            log.info("Unregistering page provider with name " + name);
+            providerReg.removeContribution(desc);
         }
     }
-
 }

@@ -65,4 +65,15 @@ public class FieldDescriptor implements PredicateFieldDefinition {
         return xpath;
     }
 
+    /**
+     * @since 5.6
+     */
+    public FieldDescriptor clone() {
+        FieldDescriptor clone = new FieldDescriptor();
+        clone.name = name;
+        clone.schema = schema;
+        clone.xpath = xpath;
+        return clone;
+    }
+
 }

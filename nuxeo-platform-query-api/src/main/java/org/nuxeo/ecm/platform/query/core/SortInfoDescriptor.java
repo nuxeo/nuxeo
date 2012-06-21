@@ -46,4 +46,13 @@ public class SortInfoDescriptor {
         return new SortInfo(column, ascending);
     }
 
+    /**
+     * @since 5.6
+     */
+    public SortInfoDescriptor clone() {
+        SortInfoDescriptor clone = new SortInfoDescriptor();
+        clone.column = column;
+        clone.ascending = ascending;
+        return clone;
+    }
 }

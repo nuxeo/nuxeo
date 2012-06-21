@@ -62,4 +62,23 @@ public class ReferencePageProviderDescriptor implements Serializable {
         return queryParameters;
     }
 
+    /**
+     * @since 5.6
+     */
+    public ReferencePageProviderDescriptor clone() {
+        ReferencePageProviderDescriptor clone = new ReferencePageProviderDescriptor();
+        clone.name = getName();
+        clone.enabled = isEnabled();
+        Map<String, String> props = getProperties();
+        if (props != null) {
+            clone.properties = new HashMap<String, String>();
+            clone.properties.putAll(props);
+        }
+        String[] params = getQueryParameters();
+        if (params != null) {
+            clone.queryParameters = params.clone();
+        }
+        return clone;
+    }
+
 }

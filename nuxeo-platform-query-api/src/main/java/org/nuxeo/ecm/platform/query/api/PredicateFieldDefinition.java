@@ -25,4 +25,9 @@ public interface PredicateFieldDefinition {
 
     String getXpath();
 
+    /**
+     * @since 5.6
+     */
+    PredicateFieldDefinition clone();
+
 }

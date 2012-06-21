@@ -91,4 +91,22 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
         return escaperClass;
     }
 
+    /**
+     * @since 5.6
+     */
+    public WhereClauseDescriptor clone() {
+        WhereClauseDescriptor clone = new WhereClauseDescriptor();
+        clone.docType = getDocType();
+        clone.escaperClass = getEscaperClass();
+        if (predicates != null) {
+            clone.predicates = new PredicateDefinition[predicates.length];
+            for (int i = 0; i < predicates.length; i++) {
+                clone.predicates[i] = predicates[i].clone();
+            }
+        }
+        clone.fixedPart = fixedPart;
+        clone.quoteFixedPartParameters = quoteFixedPartParameters;
+        clone.escapeFixedPartParameters = escapeFixedPartParameters;
+        return clone;
+    }
 }

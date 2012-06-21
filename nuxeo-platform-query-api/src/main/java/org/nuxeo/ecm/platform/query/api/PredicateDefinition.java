@@ -44,4 +44,9 @@ public interface PredicateDefinition {
 
     String getOperatorSchema();
 
+    /**
+     * @since 5.6
+     */
+    PredicateDefinition clone();
+
 }

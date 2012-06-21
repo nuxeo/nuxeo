@@ -135,6 +135,11 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDefinition {
         return enabled;
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public String getPageSizeBinding() {
         return pageSizeBinding;
     }
@@ -150,6 +155,42 @@ public class CoreQueryPageProviderDescriptor implements PageProviderDefinition {
     @Override
     public Long getMaxPageSize() {
         return maxPageSize;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public CoreQueryPageProviderDescriptor clone() {
+        CoreQueryPageProviderDescriptor clone = new CoreQueryPageProviderDescriptor();
+        clone.name = getName();
+        clone.enabled = isEnabled();
+        Map<String, String> props = getProperties();
+        if (props != null) {
+            clone.properties = new HashMap<String, String>();
+            clone.properties.putAll(props);
+        }
+        String[] params = getQueryParameters();
+        if (params != null) {
+            clone.queryParameters = params.clone();
+        }
+        clone.pageSize = getPageSize();
+        clone.pageSizeBinding = getPageSizeBinding();
+        clone.maxPageSize = getMaxPageSize();
+        clone.sortable = isSortable();
+        if (sortInfos != null) {
+            clone.sortInfos = new ArrayList<SortInfoDescriptor>();
+            for (SortInfoDescriptor item : sortInfos) {
+                clone.sortInfos.add(item.clone());
+            }
+        }
+        clone.sortInfosBinding = getSortInfosBinding();
+        clone.pattern = getPattern();
+        clone.quotePatternParameters = getQuotePatternParameters();
+        clone.escapePatternParameters = getEscapePatternParameters();
+        if (whereClause != null) {
+            clone.whereClause = whereClause.clone();
+        }
+        return clone;
     }
 
 }
