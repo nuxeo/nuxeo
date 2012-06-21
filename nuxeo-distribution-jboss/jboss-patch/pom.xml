@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>5.3.2-SNAPSHOT</version>
+    <version>5.3.2-HF04</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -157,13 +156,12 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <echo message="Patching nuxeo.properties..." />
+                    <echo message="Patching nuxeo.properties..."></echo>
                     <!--
                       patch patchfile="src/main/nuxeo.properties.web-patch"
                       originalfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"/
                     -->
-                    <concat destfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"
-                      append="true">
+                    <concat append="true" destfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties">
 
                       #################### HTTP Invoker Patch ########################
                       # Uncomment these lines to activate nuxeo runtime remoting over HTTP
@@ -231,31 +229,26 @@
             </goals>
             <configuration>
               <tasks>
-                <echo message="Add log4j DTD..." />
-                <copy file="src/main/dtd/log4j.dtd" todir="${jboss.conf}"
-                  overwrite="true" />
-                <echo message="Replace log4j configuration..." />
-                <copy file="src/main/xml/jboss-log4j.xml" todir="${jboss.conf}"
-                  overwrite="true" />
+                <echo message="Add log4j DTD..."></echo>
+                <copy file="src/main/dtd/log4j.dtd" overwrite="true" todir="${jboss.conf}"></copy>
+                <echo message="Replace log4j configuration..."></echo>
+                <copy file="src/main/xml/jboss-log4j.xml" overwrite="true" todir="${jboss.conf}"></copy>
 
-                <echo message="Patching main deployer ..." />
-                <copy
-                  file="src/main/xml/org.jboss.deployment.MainDeployer-xmbean.xml"
-                  todir="${jboss.conf}/xmdesc" overwrite="true" />
+                <echo message="Patching main deployer ..."></echo>
+                <copy file="src/main/xml/org.jboss.deployment.MainDeployer-xmbean.xml" overwrite="true" todir="${jboss.conf}/xmdesc"></copy>
 
-                <echo message="Deleting Jboss WS stack..." />
-                <delete dir="${jboss.deploy}/jbossws.sar" />
-                <delete file="${jboss.lib}/jboss-jaxws-ext.jar" />
-                <delete file="${jboss.lib}/jboss-jaxws.jar" />
-                <delete file="${jboss.lib}/jboss-saaj.jar" />
-                <delete file="${jboss.lib}/jbossws-framework.jar" />
-                <delete file="${jboss.lib}/jbossws-jboss42.jar" />
+                <echo message="Deleting Jboss WS stack..."></echo>
+                <delete dir="${jboss.deploy}/jbossws.sar"></delete>
+                <delete file="${jboss.lib}/jboss-jaxws-ext.jar"></delete>
+                <delete file="${jboss.lib}/jboss-jaxws.jar"></delete>
+                <delete file="${jboss.lib}/jboss-saaj.jar"></delete>
+                <delete file="${jboss.lib}/jbossws-framework.jar"></delete>
+                <delete file="${jboss.lib}/jbossws-jboss42.jar"></delete>
 
-                <echo message="Removing hibernate3 ..." />
-                <delete file="${jboss.lib}/hibernate3.jar" />
-                <delete file="${jboss.lib}/hibernate3-3.2.1.ga-NXP-3881.jar" />
-                <delete
-                  file="${jboss.lib}/hibernate3-3.2.4.SP1_CP01-brew_NXP-3881.jar" />
+                <echo message="Removing hibernate3 ..."></echo>
+                <delete file="${jboss.lib}/hibernate3.jar"></delete>
+                <delete file="${jboss.lib}/hibernate3-3.2.1.ga-NXP-3881.jar"></delete>
+                <delete file="${jboss.lib}/hibernate3-3.2.4.SP1_CP01-brew_NXP-3881.jar"></delete>
               </tasks>
             </configuration>
           </execution>
@@ -267,21 +260,16 @@
             </goals>
             <configuration>
               <tasks>
-                <echo message="Patching XML resources..." />
-                <copy todir="${jboss.server}" overwrite="true" failonerror="false">
-                  <fileset
-                    dir="${project.build.directory}/generated-resources/xml/xslt" />
+                <echo message="Patching XML resources..."></echo>
+                <copy failonerror="false" overwrite="true" todir="${jboss.server}">
+                  <fileset dir="${project.build.directory}/generated-resources/xml/xslt"></fileset>
                 </copy>
 
-                <echo message="Patching EAR deployer..." />
-                <copy file="${basedir}/src/main/xml/ear-deployer.xml"
-                  todir="${jboss.deploy}" overwrite="true" />
+                <echo message="Patching EAR deployer..."></echo>
+                <copy file="${basedir}/src/main/xml/ear-deployer.xml" overwrite="true" todir="${jboss.deploy}"></copy>
 
-                <echo
-                  message="Patch ejb3-interceptors-aop.xml replacing SessionSynchronizationInterceptor with NXSessionSynchronizationInterceptor..." />
-                <replace file="${jboss.deploy}/ejb3-interceptors-aop.xml"
-                  token="org.jboss.ejb3.stateful.SessionSynchronizationInterceptor"
-                  value="org.nuxeo.jboss.interceptors.NXSessionSynchronizationInterceptor" />
+                <echo message="Patch ejb3-interceptors-aop.xml replacing SessionSynchronizationInterceptor with NXSessionSynchronizationInterceptor..."></echo>
+                <replace file="${jboss.deploy}/ejb3-interceptors-aop.xml" token="org.jboss.ejb3.stateful.SessionSynchronizationInterceptor" value="org.nuxeo.jboss.interceptors.NXSessionSynchronizationInterceptor"></replace>
               </tasks>
             </configuration>
           </execution>
