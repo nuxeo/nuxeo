@@ -16,6 +16,12 @@
 
   <dependencies>
 
+    <!-- nuxeo services -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-forms-layout-core</artifactId>
+    </dependency>
+
     <!-- nuxeo dm -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -37,10 +43,6 @@
       <groupId>org.nuxeo.ecm</groupId>
       <artifactId>nuxeo-diff-test</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-forms-layout-core</artifactId>
     </dependency>
 
   </dependencies>
