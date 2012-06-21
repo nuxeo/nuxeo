@@ -13,10 +13,7 @@
 
 package org.nuxeo.ecm.core.lifecycle.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +34,6 @@ import org.nuxeo.runtime.model.Extension;
  * Life cycle service implementation.
  *
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycleService
- *
  * @author Julien Anguenot
  * @author Florent Guillaume
  */
@@ -49,25 +45,16 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(LifeCycleServiceImpl.class);
 
-    /** Lifecycle name -> life cycle descriptor instance. */
-    private final Map<String, LifeCycle> lifeCycles;
+    protected LifeCycleRegistry lifeCycles = new LifeCycleRegistry();
 
-    /** Type name -> life cycle name. */
-    private final Map<String, String> typesMapping;
-
-    /**
-     * a Mapping from doc type => list of transition that should no recurse.
-     */
-    protected final Map<String, List<String>> docTypeToNonRecursiveTransition = new HashMap<String, List<String>>();
+    protected LifeCycleTypeRegistry lifeCycleTypes = new LifeCycleTypeRegistry();
 
     public LifeCycleServiceImpl() {
-        lifeCycles = new HashMap<String, LifeCycle>();
-        typesMapping = new HashMap<String, String>();
     }
 
     @Override
     public LifeCycle getLifeCycleByName(String name) {
-        return lifeCycles.get(name);
+        return lifeCycles.getLifeCycle(name);
     }
 
     @Override
@@ -78,28 +65,22 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     @Override
     public String getLifeCycleNameFor(String typeName) {
-        return typesMapping.get(typeName);
+        return lifeCycleTypes.getLifeCycleNameForType(typeName);
     }
 
     @Override
     public Collection<LifeCycle> getLifeCycles() {
-        return lifeCycles.values();
+        return lifeCycles.getLifeCycles();
     }
 
     @Override
     public Collection<String> getTypesFor(String lifeCycleName) {
-        Collection<String> types = new ArrayList<String>();
-        for (String typeName : typesMapping.keySet()) {
-            if (typesMapping.get(typeName).equals(lifeCycleName)) {
-                types.add(typeName);
-            }
-        }
-        return types;
+        return lifeCycleTypes.getTypesFor(lifeCycleName);
     }
 
     @Override
     public Map<String, String> getTypesMapping() {
-        return typesMapping;
+        return lifeCycleTypes.getTypesMapping();
     }
 
     @Override
@@ -155,8 +136,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             doc.setCurrentLifeCycleState(destinationStateName);
         } else {
             throw new LifeCycleException("Not allowed to follow transition <"
-                    + transitionName + "> from state <" + lifeCycleState
-                    + '>');
+                    + transitionName + "> from state <" + lifeCycleState + '>');
         }
     }
 
@@ -181,27 +161,14 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             if (point.equals("lifecycle")) {
                 for (Object contribution : contributions) {
                     LifeCycleDescriptor desc = (LifeCycleDescriptor) contribution;
-                    log.info("Registering lifecycle: " + desc.getName());
-                    lifeCycles.put(desc.getName(), desc.getLifeCycle());
+                    lifeCycles.addContribution(desc);
                 }
             } else if (point.equals("lifecyclemanager")) {
                 log.warn("Ignoring deprecated lifecyclemanager extension point");
             } else if (point.equals("types")) {
                 for (Object mapping : contributions) {
                     LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) mapping;
-                    log.info("Registering lifecycle types mapping: "
-                            + desc.getDocumentType() + "-"
-                            + desc.getLifeCycleName());
-                    typesMapping.put(desc.getDocumentType(),
-                            desc.getLifeCycleName());
-                    String transitionArray = desc.getNoRecursionForTransitions();
-                    List<String> transitions = new ArrayList<String>();
-                    if (transitionArray != null && !transitionArray.isEmpty()) {
-                        transitions = Arrays.asList(desc.getNoRecursionForTransitions().split(
-                                ","));
-                    }
-                    docTypeToNonRecursiveTransition.put(desc.getDocumentType(),
-                            transitions);
+                    lifeCycleTypes.addContribution(desc);
                 }
             }
         }
@@ -219,14 +186,12 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             if (point.equals("lifecycle")) {
                 for (Object lifeCycle : contributions) {
                     LifeCycleDescriptor lifeCycleDescriptor = (LifeCycleDescriptor) lifeCycle;
-                    log.debug("Unregistering lifecycle: "
-                            + lifeCycleDescriptor.getName());
-                    lifeCycles.remove(lifeCycleDescriptor.getName());
+                    lifeCycles.removeContribution(lifeCycleDescriptor);
                 }
             } else if (point.equals("types")) {
                 for (Object contrib : contributions) {
                     LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) contrib;
-                    typesMapping.remove(desc.getDocumentType());
+                    lifeCycleTypes.removeContribution(desc);
                 }
 
             }
@@ -235,7 +200,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     @Override
     public List<String> getNonRecursiveTransitionForDocType(String docTypeName) {
-        return docTypeToNonRecursiveTransition.get(docTypeName);
+        return lifeCycleTypes.getNonRecursiveTransitionForDocType(docTypeName);
     }
 
 }
