@@ -220,10 +220,14 @@ install nuxeo-cmf
 
     <nx:rmdups dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib" />
 
+    <!-- JBoss requires a RAR file instead of JAR -->
+    <nx:rename from="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles/nuxeo-core-storage-sql-ra-${nuxeo.distribution.version}.jar"
+               to="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles/nuxeo-core-storage-sql-ra-${nuxeo.distribution.version}.rar" />
+
     <!-- Define seam as EJB module-->
     <move todir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/lib">
-        <include name="jboss-seam-${seam.version}.jar"/>
+        <include name="jboss-seam-${seam.version}.jar" />
       </fileset>
     </move>
 
@@ -240,7 +244,6 @@ install nuxeo-cmf
     <!-- remove libraries already provided by JBoss or unneeded -->
     <delete>
       <fileset dir="${distribution.dir}/server/default/deploy/nuxeo.ear/bundles">
-        <include name="nuxeo-core-storage-sql-ra-*.jar" />
         <include name="nuxeo-runtime-jetty-*" />
         <include name="nuxeo-runtime-jtajca*" />
       </fileset>
