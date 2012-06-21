@@ -57,7 +57,7 @@ function displayGraph(data) {
 		var node = '<div class="node" id="' + this.id + '">' + this.title
 				+ '</div>';
 		jQuery(node).appendTo('#target').css('left', this.x - 100).css('top',
-				this.y - 100).addClass('node_' + this.state);
+				this.y).addClass('node_' + this.state);
 		jsPlumb.makeSource(this.id, sourceEndpointOptions());
 	});
 

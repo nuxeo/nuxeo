@@ -28,6 +28,7 @@
   <xs:element name="startDate" type="xs:date" /> <!-- audit -->
   <xs:element name="endDate" type="xs:date" /> <!-- audit -->
   <xs:element name="canceled" type="xs:int" /> <!-- audit -->
+  <xs:element name="button" type="xs:string" />
   
  <!-- used to display the graphView -->
   <xs:element name="taskX" type="xs:string" />

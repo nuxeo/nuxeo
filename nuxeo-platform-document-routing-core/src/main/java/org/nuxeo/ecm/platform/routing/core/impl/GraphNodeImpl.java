@@ -279,6 +279,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         // task context
         context.put("assignees", ""); // TODO
         context.put("comment", ""); // TODO filled by form
+        context.put("button", (String) getProperty(PROP_NODE_BUTTON));
         // associated docs
         context.setInput(graph.getAttachedDocumentModels());
         return context;

@@ -96,6 +96,8 @@ public interface GraphNode {
     
     String PROP_NODE_Y_COORDINATE = "rnode:taskY";
     
+    String PROP_NODE_BUTTON = "rnode:button";
+    
 
     /**
      * The internal state of a node.
