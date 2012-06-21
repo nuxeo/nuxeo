@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.api;
@@ -17,14 +16,13 @@ package org.nuxeo.ecm.core.api;
 /**
  * A PATH reference to a document.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PathRef implements DocumentRef {
 
     private static final long serialVersionUID = 4817248580727120854L;
 
     public final String value;
-
 
     public PathRef(String parentPath, String name) {
         if (parentPath == null) {
@@ -38,6 +36,13 @@ public class PathRef implements DocumentRef {
 
     public PathRef(String path) {
         value = path;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public PathRef(PathRef parentRef, String name) {
+        this(parentRef.value, name);
     }
 
     @Override
