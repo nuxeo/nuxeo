@@ -34,6 +34,7 @@
     <nuxeo.classification.version>5.6-SNAPSHOT</nuxeo.classification.version>
     <nuxeo.importer.version>5.6-SNAPSHOT</nuxeo.importer.version>
     <nuxeo.routing.version>5.6-SNAPSHOT</nuxeo.routing.version>
+    <nuxeo.jbpm.version>5.6-SNAPSHOT</nuxeo.jbpm.version>
     <nuxeo.smartsearch.version>5.6-SNAPSHOT</nuxeo.smartsearch.version>
     <nuxeo.sync.version>5.6-SNAPSHOT</nuxeo.sync.version>
     <nuxeo.audio.version>5.6-SNAPSHOT</nuxeo.audio.version>
@@ -71,6 +72,7 @@
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-document-routing</module>
+    <module>nuxeo-platform-jbpm</module>
     <module>nuxeo-platform-faceted-search</module>
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-forms-layout-demo</module>
@@ -432,6 +434,39 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-document-routing-dm</artifactId>
         <version>${nuxeo.routing.version}</version>
+      </dependency>
+
+      <!-- jBPM -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-api</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-automation</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-core</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-test</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-web</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-task-migration</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
       </dependency>
 
       <!-- Smart Search -->
