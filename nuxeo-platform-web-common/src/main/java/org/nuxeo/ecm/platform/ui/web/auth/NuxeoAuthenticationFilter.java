@@ -77,6 +77,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     // protected static final String EJB_LOGIN_DOMAIN = "nuxeo-system-login";
 
+    public static final String IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY = "org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.isLoginNotSynchronized";
+
     public static final String DEFAULT_START_PAGE = "nxstartup.faces";
 
     protected static final String LOGIN_DOMAIN = "nuxeo-ecm-web";
@@ -86,6 +88,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
 
     private static final Log log = LogFactory.getLog(NuxeoAuthenticationFilter.class);
+
 
     private static String anonymous;
 
@@ -99,6 +102,8 @@ public class NuxeoAuthenticationFilter implements Filter {
      * On WebEngine (Jetty) with don't have JMS enabled so we should disable log
      */
     protected boolean byPassAuthenticationLog = false;
+
+    protected boolean notSynchronizedLogin = true;
 
     /**
      * Which security domain to use
@@ -204,8 +209,12 @@ public class NuxeoAuthenticationFilter implements Filter {
             CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
             loginContext = new LoginContext(securityDomain, handler);
 
-            synchronized (NuxeoAuthenticationFilter.class) {
+            if (notSynchronizedLogin) {
+              loginContext.login();
+            } else {
+              synchronized (NuxeoAuthenticationFilter.class) {
                 loginContext.login();
+              }
             }
 
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
@@ -561,6 +570,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             throw new ServletException(
                     "Can't initialize Nuxeo Pluggable Authentication Service");
         }
+
+        notSynchronizedLogin = Boolean.parseBoolean(Framework.getProperty(IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY));
     }
 
     /**
