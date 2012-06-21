@@ -17,15 +17,9 @@
  */
 package org.nuxeo.ecm.virtualnavigation.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.virtualnavigation.action.NavTreeDescriptor;
-import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -42,43 +36,16 @@ public class NavTreeService extends DefaultComponent {
 
     public static String NAVTREE_EP = "navigationTree";
 
-    protected Map<String, NavTreeDescriptor> registry;
+    protected NavTreeRegistry registry;
 
-    public List<NavTreeDescriptor> getTreeDescriptors() {
-        List<NavTreeDescriptor> allTrees = new ArrayList<NavTreeDescriptor>();
-        allTrees.addAll(registry.values());
-        List<NavTreeDescriptor> directoryTrees = getDirectoryTrees();
-        if (directoryTrees != null) {
-            allTrees.addAll(directoryTrees);
-        }
-        Collections.sort(allTrees, NavTreeDescriptorOrderComparator.INSTANCE);
-        return allTrees;
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        registry = new NavTreeRegistry();
     }
 
-    protected List<NavTreeDescriptor> getDirectoryTrees() {
-        DirectoryTreeService directoryTreeService = getDirectoryTreeService();
-        if (directoryTreeService == null) {
-            return null;
-        }
-        List<String> treeNames = directoryTreeService.getNavigationDirectoryTrees();
-        List<NavTreeDescriptor> trees = new ArrayList<NavTreeDescriptor>();
-        for (String dTreeName : treeNames) {
-            DirectoryTreeDescriptor desc = directoryTreeService.getDirectoryTreeDescriptor(dTreeName);
-            trees.add(new NavTreeDescriptor(dTreeName, desc.getLabel(), true));
-        }
-        return trees;
-    }
-
-    /**
-     * @since 5.6
-     */
-    protected DirectoryTreeService getDirectoryTreeService() {
-        DirectoryTreeService directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
-                DirectoryTreeService.NAME);
-        if (directoryTreeService == null) {
-            return null;
-        }
-        return directoryTreeService;
+    @Override
+    public void deactivate(ComponentContext context) {
+        registry = null;
     }
 
     @Override
@@ -87,38 +54,34 @@ public class NavTreeService extends DefaultComponent {
             throws Exception {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
-            if (registry.containsKey(contrib.getTreeId())) {
-                registry.remove(contrib.getTreeId());
-            }
-            if (contrib.isEnabled()) {
-                registry.put(contrib.getTreeId(), contrib);
-            }
+            registry.addContribution(contrib);
         }
-    }
-
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        registry = new HashMap<String, NavTreeDescriptor>();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        registry = null;
     }
 
     /**
-     * Comparator of {@link NavTreeDescriptor}s according to their order..
+     * @since 5.6 (no unregister before...)
      */
-    public static class NavTreeDescriptorOrderComparator implements
-            Comparator<NavTreeDescriptor> {
-
-        public static final NavTreeDescriptorOrderComparator INSTANCE = new NavTreeDescriptorOrderComparator();
-
-        @Override
-        public int compare(NavTreeDescriptor descriptor1,
-                NavTreeDescriptor descriptor2) {
-            return descriptor1.getOrder() - descriptor2.getOrder();
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (NAVTREE_EP.equals(extensionPoint)) {
+            NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
+            registry.removeContribution(contrib);
         }
+    }
+
+    public List<NavTreeDescriptor> getTreeDescriptors() {
+        return registry.getTreeDescriptors(getDirectoryTreeService());
+    }
+
+    protected DirectoryTreeService getDirectoryTreeService() {
+        DirectoryTreeService directoryTreeService = (DirectoryTreeService) Framework.getRuntime().getComponent(
+                DirectoryTreeService.NAME);
+        if (directoryTreeService == null) {
+            return null;
+        }
+        return directoryTreeService;
     }
 
     /**

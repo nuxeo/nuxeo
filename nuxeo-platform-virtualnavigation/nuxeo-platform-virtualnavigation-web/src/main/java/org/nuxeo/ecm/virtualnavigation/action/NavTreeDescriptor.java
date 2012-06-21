@@ -24,7 +24,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("navTree")
-public class NavTreeDescriptor implements Serializable {
+public class NavTreeDescriptor implements Serializable,
+        Comparable<NavTreeDescriptor> {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,7 +71,8 @@ public class NavTreeDescriptor implements Serializable {
         this(treeId, treeLabel, false);
     }
 
-    public NavTreeDescriptor(String treeId, String treeLabel, boolean directoryTreeBased) {
+    public NavTreeDescriptor(String treeId, String treeLabel,
+            boolean directoryTreeBased) {
         this.treeId = treeId;
         this.treeLabel = treeLabel;
         this.directoryTreeBased = directoryTreeBased;
@@ -102,6 +104,14 @@ public class NavTreeDescriptor implements Serializable {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    public int compareTo(NavTreeDescriptor o) {
+        return getOrder().compareTo(o.getOrder());
     }
 
 }
