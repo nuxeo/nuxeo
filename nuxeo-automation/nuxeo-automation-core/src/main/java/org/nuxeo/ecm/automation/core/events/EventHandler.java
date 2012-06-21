@@ -67,7 +67,9 @@ public class EventHandler {
         this.attribute = DocumentAttributeFilterFactory.getFilter(attribute);
     }
 
-    /** the principal should be member of at least one of the groups. OR is used */
+    /**
+     * the principal should be member of at least one of the groups. OR is used
+     */
     @XNodeList(value = "filters/group", type = ArrayList.class, componentType = String.class)
     protected List<String> memberOf;
 
@@ -257,4 +259,5 @@ public class EventHandler {
         }
         return true;
     }
+
 }
