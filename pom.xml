@@ -1019,37 +1019,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-automation</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-test</artifactId>
-        <version>${nuxeo.features.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-web</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-jbpm-task-migration</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-lang</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
