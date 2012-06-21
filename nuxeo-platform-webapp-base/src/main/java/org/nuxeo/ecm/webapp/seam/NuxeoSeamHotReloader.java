@@ -20,6 +20,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
+import java.security.Principal;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -29,13 +30,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
+import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -56,13 +60,15 @@ public class NuxeoSeamHotReloader implements Serializable {
 
     private static final Log log = LogFactory.getLog(NuxeoSeamHotReloader.class);
 
+    @In(required = false, create = true)
+    private transient Principal currentUser;
+
     /**
      * Returns true if dev mode is set
      *
      * @since 5.6
      * @see Framework#isDevModeSet()
      */
-    // TODO: move this to scope application?
     @Factory(value = "nxDevModeSet", scope = ScopeType.EVENT)
     public boolean isDevModeSet() {
         return Framework.isDevModeSet();
@@ -71,6 +77,20 @@ public class NuxeoSeamHotReloader implements Serializable {
     @Factory(value = "seamHotReloadIsEnabled", scope = ScopeType.APPLICATION)
     public boolean isHotReloadEnabled() {
         return SeamHotReloadHelper.isHotReloadEnabled();
+    }
+
+    /**
+     * Returns true if dev mode is set and current user is an administrator.
+     *
+     * @since 5.6
+     * @return
+     */
+    public boolean getCanTriggerFlush() {
+        NuxeoPrincipal pal = null;
+        if (currentUser instanceof NuxeoPrincipal) {
+            pal = (NuxeoPrincipal) currentUser;
+        }
+        return isDevModeSet() && pal != null && pal.isAdministrator();
     }
 
     /**
@@ -89,9 +109,12 @@ public class NuxeoSeamHotReloader implements Serializable {
      * @see #shouldResetCache(TimestampedService, Long)
      * @since 5.6
      */
-    //
-    public void doFlush() {
+    public String doFlush() {
         if (Framework.isDevModeSet()) {
+            FacesContext faces = FacesContext.getCurrentInstance();
+            String viewId = faces.getViewRoot().getViewId();
+            URLPolicyService service = Framework.getLocalService(URLPolicyService.class);
+            String outcome = service.getOutcomeFromViewId(viewId, null);
             ReloadService srv = Framework.getLocalService(ReloadService.class);
             try {
                 srv.flush();
@@ -99,7 +122,11 @@ public class NuxeoSeamHotReloader implements Serializable {
                 log.error("Error while flushing the application in dev mode", e);
             }
             Events.instance().raiseEvent(EventNames.FLUSH_EVENT);
+            // return the current view id otherwise an error appears in logs
+            // because navigation cache needs to be rebuilt after execution
+            return outcome;
         }
+        return null;
     }
 
     /**

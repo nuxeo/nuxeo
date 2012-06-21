@@ -4,8 +4,14 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+    <action id="devModeFlush" link="#{seamReload.doFlush}" enabled="true"
+      label="Dev mode: force flush" order="10">
+      <category>USER_SERVICES</category>
+      <filter-id>devModeEnabledForAdmin</filter-id>
+    </action>
+
     <action id="seamReload" link="#{seamReload.doReload}" enabled="true"
-      label="Reload Seam" order="10">
+      label="Reload Seam" order="20">
       <category>USER_MENU_ACTIONS</category>
       <filter-id>seamHotReloadIsEnabled</filter-id>
     </action>
@@ -119,6 +125,12 @@
       <rule grant="true">
         <condition>#{deleteActions.restoreActionDisplay()}
         </condition>
+      </rule>
+    </filter>
+
+    <filter id="devModeEnabledForAdmin">
+      <rule grant="true">
+        <condition>#{seamReload.getCanTriggerFlush()}</condition>
       </rule>
     </filter>
 

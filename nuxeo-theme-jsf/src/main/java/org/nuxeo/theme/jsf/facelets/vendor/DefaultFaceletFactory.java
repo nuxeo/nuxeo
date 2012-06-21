@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 import javax.el.ELException;
 import javax.faces.FacesException;
 
+import org.nuxeo.runtime.api.Framework;
+
 import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletFactory;
@@ -83,7 +85,6 @@ public class DefaultFaceletFactory extends FaceletFactory {
 
     /*
      * (non-Javadoc)
-     *
      * @see com.sun.facelets.FaceletFactory#getFacelet(java.lang.String)
      */
     @Override
@@ -169,11 +170,17 @@ public class DefaultFaceletFactory extends FaceletFactory {
         if (this.refreshPeriod == 0) {
             return true;
         }
+        boolean devMode = Framework.isDevModeSet();
         // if set to -1, never reload
-        if (this.refreshPeriod == -1) {
+        if (!devMode && this.refreshPeriod == -1) {
             return false;
         }
-        long ttl = facelet.getCreateTime() + this.refreshPeriod;
+        long period = this.refreshPeriod;
+        if (devMode && this.refreshPeriod == -1) {
+            // dev mode => force refresh
+            period = 2 * 1000;
+        }
+        long ttl = facelet.getCreateTime() + period;
         URL url = facelet.getSource();
         InputStream is = null;
         if (System.currentTimeMillis() > ttl) {

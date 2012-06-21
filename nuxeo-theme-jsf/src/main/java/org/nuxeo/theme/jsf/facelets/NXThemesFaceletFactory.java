@@ -42,8 +42,14 @@ public final class NXThemesFaceletFactory extends DefaultFaceletFactory {
         // theme facelets
         if (url.getProtocol().equals("nxtheme")) {
             try {
-                // no cache if the refresh period is 0 or debug mode is set
-                if (refreshPeriod == 0 || Framework.isDevModeSet()) {
+                // no cache if the refresh period is 0 or dev mode is set
+                if (refreshPeriod == 0) {
+                    return true;
+                }
+
+                boolean devMode = Framework.isDevModeSet();
+                if (devMode && refreshPeriod < 0) {
+                    // force refresh
                     return true;
                 }
 

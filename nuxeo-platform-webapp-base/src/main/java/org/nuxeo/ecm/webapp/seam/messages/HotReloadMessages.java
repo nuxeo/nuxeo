@@ -54,16 +54,6 @@ import org.jboss.seam.international.Messages;
 @Install(precedence = APPLICATION, debug = false)
 public class HotReloadMessages extends Messages {
 
-    /**
-     * Returns usual seam bundle, but with a custom resource control
-     */
-    protected ResourceBundle getSeamResourceBundle() {
-        ResourceBundle.Control control = HotReloadResourceBundleControl.instance();
-        return ResourceBundle.getBundle(SeamResourceBundle.class.getName(),
-                org.jboss.seam.core.Locale.instance(),
-                Thread.currentThread().getContextClassLoader(), control);
-    }
-
     @Override
     @SuppressWarnings("rawtypes")
     // mostly copy/pasted from parent class
@@ -73,12 +63,23 @@ public class HotReloadMessages extends Messages {
         // operations - for a resource bundle this is very inefficient for keys
         return new AbstractMap<String, String>() {
 
+            private ResourceBundle seamResourceBundle = getSeamResourceBundle();
+            /**
+             * Returns usual seam bundle, but with a custom resource control
+             */
+            protected ResourceBundle getSeamResourceBundle() {
+                ResourceBundle.Control control = HotReloadResourceBundleControl.instance();
+                return ResourceBundle.getBundle(SeamResourceBundle.class.getName(),
+                        org.jboss.seam.core.Locale.instance(),
+                        Thread.currentThread().getContextClassLoader(), control);
+            }
+
             @Override
             public String get(Object key) {
                 if (key instanceof String) {
                     String resourceKey = (String) key;
                     String resource = null;
-                    ResourceBundle bundle = getSeamResourceBundle();
+                    ResourceBundle bundle = seamResourceBundle;
                     if (bundle != null) {
                         try {
                             resource = bundle.getString(resourceKey);
@@ -94,7 +95,7 @@ public class HotReloadMessages extends Messages {
 
             @Override
             public Set<Map.Entry<String, String>> entrySet() {
-                ResourceBundle bundle = getSeamResourceBundle();
+                ResourceBundle bundle = seamResourceBundle;
                 Enumeration<String> keys = bundle.getKeys();
                 Map<String, String> map = new HashMap<String, String>();
                 while (keys.hasMoreElements()) {
@@ -111,7 +112,7 @@ public class HotReloadMessages extends Messages {
 
             @Override
             public Set<String> keySet() {
-                ResourceBundle bundle = getSeamResourceBundle();
+                ResourceBundle bundle = seamResourceBundle;
                 Enumeration<String> keys = bundle.getKeys();
                 return new HashSet<String>(Collections.list(keys));
             }

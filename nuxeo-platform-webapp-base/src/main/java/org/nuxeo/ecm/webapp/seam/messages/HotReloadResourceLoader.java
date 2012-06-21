@@ -38,10 +38,10 @@ import org.jboss.seam.log.Logging;
  */
 @Scope(ScopeType.STATELESS)
 @BypassInterceptors
-@Install(precedence = APPLICATION)
 @Name("org.jboss.seam.core.resourceLoader")
 //XXX: since debug mode cannot be set by using nuxeo debug/dev mode, make
 //sure this component is deployed even in production => debug = false
+@Install(precedence = APPLICATION, debug = false)
 public class HotReloadResourceLoader extends ResourceLoader {
 
     private static final LogProvider log = Logging.getLogProvider(HotReloadResourceLoader.class);

@@ -72,7 +72,7 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
                 refreshPeriod = Long.parseLong(userPeriod);
             }
         }
-        if (Framework.isDevModeSet() && refreshPeriod <= 0) {
+        if (Framework.isDevModeSet() && refreshPeriod < 0) {
             // force refresh period to 2 seconds
             refreshPeriod = 2;
         }
