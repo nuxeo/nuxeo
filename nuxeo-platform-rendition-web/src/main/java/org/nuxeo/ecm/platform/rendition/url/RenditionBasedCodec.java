@@ -16,6 +16,7 @@
 
 package org.nuxeo.ecm.platform.rendition.url;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
     public static final String PATH_URL_PATTERN = "/" // slash
             + "([\\w\\.]+)" // server name (group 1)
             + "(?:/(.*))?" // path (group 2) (optional)
-            + "@([\\w\\-\\.]+)" // renditioName (group 3)
+            + "@([\\w\\-\\.\\%]+)" // renditioName (group 3)
             + "/?" // final slash (optional)
             + "(?:\\?(.*)?)?";
 
@@ -88,7 +89,7 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
             }
             final DocumentRef docRef = new PathRef(path);
 
-            final String renditionName = pathMatcher.group(3);
+            final String renditionName = URIUtils.unquoteURIPathComponent(pathMatcher.group(3));
 
             // get other parameters
             String query = pathMatcher.group(4);
@@ -178,7 +179,8 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
             String renditionName = docView.getViewId();
 
             if (renditionName != null) {
-                uri += "@" + renditionName;
+                uri += "@"
+                        + URIUtils.quoteURIPathComponent(renditionName, true);
             }
 
             String uriWithParam = URIUtils.addParametersToURIQuery(uri,
