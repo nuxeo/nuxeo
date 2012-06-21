@@ -383,14 +383,6 @@
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql-ra</artifactId>
         <version>${nuxeo.core.version}</version>
-        <type>rar</type>
-      </dependency>
-      <!-- nuxeo-core-storage-sql-ra JAR is also needed -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-storage-sql-ra</artifactId>
-        <version>${nuxeo.core.version}</version>
-        <type>jar</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
