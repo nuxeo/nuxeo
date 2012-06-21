@@ -90,9 +90,9 @@ public class TestImportModelViaContentTemplate extends SQLRepositoryTestCase {
             sb.append("\n");
         }
 
-        String dump = sb.toString();
-        System.out.println("Import completed : " + docs.size() + " docs");
-        System.out.println(dump);
+        // String dump = sb.toString();
+        // System.out.println("Import completed : " + docs.size() + " docs");
+        // System.out.println(dump);
 
     }
 

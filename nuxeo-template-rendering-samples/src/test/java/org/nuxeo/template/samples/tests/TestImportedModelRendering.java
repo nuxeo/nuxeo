@@ -26,20 +26,41 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
-public class TestImportedModelRendering extends SQLRepositoryTestCase {
+import com.google.inject.Inject;
+
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(type = BackendType.H2, user = "Administrator", cleanup = Granularity.CLASS)
+@Deploy({ "org.nuxeo.ecm.platform.content.template",
+        "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.convert.api",
+        "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
+        "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore",
+        "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
+        "org.nuxeo.template.manager.jaxrs",
+        "org.nuxeo.template.manager.xdocreport",
+        "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples" })
+public class TestImportedModelRendering {
 
     DocumentModel rootDocument;
 
@@ -47,38 +68,8 @@ public class TestImportedModelRendering extends SQLRepositoryTestCase {
 
     DocumentModel docToExport;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployBundle("org.nuxeo.ecm.platform.convert");
-        deployBundle("org.nuxeo.ecm.platform.preview");
-        deployBundle("org.nuxeo.ecm.platform.dublincore");
-
-        deployBundle("org.nuxeo.template.manager.api");
-        deployBundle("org.nuxeo.template.manager");
-        deployBundle("org.nuxeo.template.manager.jaxrs");
-        deployBundle("org.nuxeo.template.manager.xdocreport");
-        deployBundle("org.nuxeo.template.manager.jxls");
-        deployBundle("org.nuxeo.template.manager.samples");
-
-        fireFrameworkStarted();
-
-        openSession();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testNote4Web() throws Exception {
@@ -176,4 +167,37 @@ public class TestImportedModelRendering extends SQLRepositoryTestCase {
         assertTrue(text.contains("Format Html"));
     }
 
+    @Test
+    public void testInterventionStatement() throws Exception {
+
+        PathRef ref = new PathRef("default-domain/workspaces/templateSamples/");
+        DocumentModel sampleFolder = session.getDocument(ref);
+        assertNotNull(sampleFolder);
+
+        ref = new PathRef(
+                "default-domain/workspaces/templateSamples/intervention");
+        DocumentModel intervention = session.getDocument(ref);
+
+        TemplateBasedDocument interventionTemplate = intervention.getAdapter(TemplateBasedDocument.class);
+        assertNotNull(interventionTemplate);
+
+        List<String> templateNames = interventionTemplate.getTemplateNames();
+        assertEquals(1, templateNames.size());
+        assertEquals("Delivery Statement", templateNames.get(0));
+
+        Blob blob = interventionTemplate.renderWithTemplate("Delivery Statement");
+        assertNotNull(blob);
+        assertTrue(blob.getFilename().endsWith(".pdf"));
+
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+
+        BlobHolder textBH = cs.convertToMimeType("text/plain",
+                new SimpleBlobHolder(blob), new HashMap<String, Serializable>());
+        assertNotNull(textBH);
+        String text = textBH.getBlob().getString();
+
+        assertTrue(text.contains("110"));
+        assertTrue(text.contains("Freeman"));
+        assertTrue(text.contains("Poissonniers"));
+    }
 }

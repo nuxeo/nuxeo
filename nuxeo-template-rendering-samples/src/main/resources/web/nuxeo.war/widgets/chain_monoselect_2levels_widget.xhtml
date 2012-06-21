@@ -1,0 +1,60 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions" id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'edit' and not empty field_0}">
+    <table class="dataOutput">
+      <tbody>
+        <tr>
+          <td><nxdir:directoryEntryOutput
+            directoryName="#{widget.properties['parentDirectory']}"
+            value="#{fn:split(field_0, '/')[0]}"
+            localize="#{widget.properties['localize']}" /></td>
+          <td><nxdir:directoryEntryOutput
+            directoryName="#{widget.properties['childDirectory']}"
+            value="#{field_0}"
+            localize="#{widget.properties['localize']}"
+            keySeparator="/" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+    <a4j:region id="#{widget.id}_region" renderRegionOnly="true">
+      <nxdir:chainSelect size="2" value="#{field_0}"
+        id="#{widget.id}_editselect" multiSelect="false"
+        multiParentSelect="false" allowBranchSelection="false"
+        defaultRootKey=""
+        required="#{widget.required}">
+        <nxdir:chainSelectListbox index="0" size="1"
+          directoryName="#{widget.properties['parentDirectory']}"
+          localize="#{widget.properties['localize']}"
+          id="#{widget.id}_parent" ordering="label">
+          <a4j:support event="onchange"
+            reRender="#{widget.id}_child,#{widget.id}_message"
+            immediate="true">
+            <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+          </a4j:support>
+        </nxdir:chainSelectListbox>
+        <f:subview rendered="#{widget.properties['on2rows']}">
+          <br />
+        </f:subview>
+        <nxdir:chainSelectListbox size="1" index="1"
+          directoryName="#{widget.properties['childDirectory']}"
+          localize="#{widget.properties['localize']}"
+          id="#{widget.id}_child" ordering="label" />
+      </nxdir:chainSelect>
+    </a4j:region>
+    <a4j:outputPanel ajaxRendered="true">
+      <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
+        id="#{widget.id}_message" />
+    </a4j:outputPanel>
+  </c:if>
+
+</f:subview>

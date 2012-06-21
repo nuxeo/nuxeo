@@ -1,0 +1,56 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+  <c:if test="false">
+    Standard layout template without widget labels.
+  </c:if>
+
+  <table class="dataOutput">
+    <tbody>
+  
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+  
+            <c:set var="colspanName" value="nxl_colspan_#{widgetIndex}" />
+            <c:set var="colspan" value="#{layoutRow.properties[colspanName]}" />
+            <c:set var="renderingColspan" value="#{2*colspan*layout.columns}" />
+            <c:set var="fieldColspan" value="#{renderingColspan}" />
+            <c:set var="headerColspan" value="#{2*renderingColspan}" />
+  
+            <c:choose>
+              <c:when test="${widget.type == 'studio_header'}">
+                <td colspan="#{headerColspan}">
+                  <h:outputText value="#{widget.label}"
+                    rendered="#{!widget.translated}"
+                    styleClass="#{widget.properties['styleClass']}"
+                    style="#{widget.properties['style']}" />
+                  <h:outputText value="#{messages[widget.label]}"
+                    rendered="#{widget.translated}"
+                    styleClass="#{widget.properties['styleClass']}"
+                    style="#{widget.properties['style']}" />
+                </td>
+              </c:when>
+  
+              <c:otherwise>
+                <td style="vertical-align:top;"
+                  colspan="#{fieldColspan}">
+                  <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
+                </td>
+              </c:otherwise>
+  
+            </c:choose>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+  
+    </tbody>
+  </table>
+
+</f:subview>

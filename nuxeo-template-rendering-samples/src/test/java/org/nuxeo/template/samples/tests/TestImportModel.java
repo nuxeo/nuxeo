@@ -21,6 +21,7 @@ package org.nuxeo.template.samples.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +49,8 @@ public class TestImportModel extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.template.manager.api");
         deployBundle("org.nuxeo.template.manager");
         deployBundle("org.nuxeo.template.manager.jaxrs");
-
+        deployContrib("org.nuxeo.template.manager.samples",
+                "OSGI-INF/extensions.xml");
         fireFrameworkStarted();
 
         openSession();
@@ -92,9 +94,9 @@ public class TestImportModel extends SQLRepositoryTestCase {
 
         assertEquals(nbImportedDocs, docs.size());
 
-        String dump = sb.toString();
-        System.out.println("Import completed : " + docs.size() + " docs");
-        System.out.println(dump);
+        // String dump = sb.toString();
+        // System.out.println("Import completed : " + docs.size() + " docs");
+        // System.out.println(dump);
 
     }
 }
