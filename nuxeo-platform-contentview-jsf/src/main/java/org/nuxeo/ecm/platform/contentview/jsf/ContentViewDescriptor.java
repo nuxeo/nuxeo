@@ -207,6 +207,10 @@ public class ContentViewDescriptor {
         return enabled;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     /**
      * @since 5.4.2
      */
@@ -247,6 +251,73 @@ public class ContentViewDescriptor {
      */
     public Boolean getTranslateEmptySentence() {
         return translateEmptySentence;
+    }
+
+    public ContentViewDescriptor clone() {
+        ContentViewDescriptor clone = new ContentViewDescriptor();
+        clone.name = getName();
+        clone.enabled = isEnabled();
+        clone.title = getTitle();
+        clone.translateTitle = getTranslateTitle();
+        clone.emptySentence = getEmptySentence();
+        clone.translateEmptySentence = getTranslateEmptySentence();
+        clone.iconPath = getIconPath();
+        CoreQueryPageProviderDescriptor cpp = getCoreQueryPageProvider();
+        if (cpp != null) {
+            clone.coreQueryPageProvider = cpp.clone();
+        }
+        GenericPageProviderDescriptor gpp = getGenericPageProvider();
+        if (gpp != null) {
+            clone.genericPageProvider = gpp.clone();
+        }
+        ReferencePageProviderDescriptor rpp = getReferencePageProvider();
+        if (rpp != null) {
+            clone.referencePageProvider = rpp.clone();
+        }
+        clone.selectionList = getSelectionListName();
+        clone.pagination = getPagination();
+        List<String> actionCats = getActionCategories();
+        if (actionCats != null) {
+            clone.actionCategories = new ArrayList<String>();
+            clone.actionCategories.addAll(actionCats);
+        }
+        clone.searchDocument = getSearchDocumentBinding();
+        ContentViewLayoutImpl searchLayout = getSearchLayout();
+        if (searchLayout != null) {
+            clone.searchLayout = searchLayout.clone();
+        }
+        clone.appendResultLayouts = getAppendResultLayouts();
+        List<ContentViewLayout> resultLayouts = getResultLayouts();
+        if (resultLayouts != null) {
+            clone.resultLayouts = new ArrayList<ContentViewLayout>();
+            for (ContentViewLayout item : resultLayouts) {
+                clone.resultLayouts.add(item.clone());
+            }
+        }
+        clone.resultColumns = getResultColumnsBinding();
+        List<String> flags = getFlags();
+        if (flags != null) {
+            clone.flags = new ArrayList<String>();
+            clone.flags.addAll(flags);
+        }
+        clone.cacheKey = getCacheKey();
+        clone.cacheSize = getCacheSize();
+        clone.useGlobalPageSize = getUseGlobalPageSize();
+        clone.showTitle = getShowTitle();
+        clone.showPageSizeSelector = getShowPageSizeSelector();
+        clone.showRefreshCommand = getShowRefreshCommand();
+        clone.showFilterForm = getShowFilterForm();
+        List<String> refresh = getRefreshEventNames();
+        if (refresh != null) {
+            clone.refreshEventNames = new ArrayList<String>();
+            clone.refreshEventNames.addAll(refresh);
+        }
+        List<String> reset = getResetEventNames();
+        if (reset != null) {
+            clone.resetEventNames = new ArrayList<String>();
+            clone.resetEventNames.addAll(reset);
+        }
+        return clone;
     }
 
 }

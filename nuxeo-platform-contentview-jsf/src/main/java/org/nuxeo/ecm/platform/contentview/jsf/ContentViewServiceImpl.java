@@ -58,13 +58,11 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(ContentViewServiceImpl.class);
 
-    protected final Map<String, ContentViewDescriptor> contentViews = new HashMap<String, ContentViewDescriptor>();
-
-    protected final Map<String, Set<String>> contentViewsByFlag = new HashMap<String, Set<String>>();
+    protected ContentViewRegistry contentViewReg = new ContentViewRegistry();
 
     @Override
     public ContentView getContentView(String name) throws ClientException {
-        ContentViewDescriptor desc = contentViews.get(name);
+        ContentViewDescriptor desc = contentViewReg.getContentView(name);
         if (desc == null) {
             return null;
         }
@@ -171,7 +169,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     @Override
     public ContentViewHeader getContentViewHeader(String name) {
-        ContentViewDescriptor desc = contentViews.get(name);
+        ContentViewDescriptor desc = contentViewReg.getContentView(name);
         if (desc == null) {
             return null;
         }
@@ -179,13 +177,13 @@ public class ContentViewServiceImpl extends DefaultComponent implements
     }
 
     public Set<String> getContentViewNames() {
-        return Collections.unmodifiableSet(contentViews.keySet());
+        return Collections.unmodifiableSet(contentViewReg.getContentViewNames());
     }
 
     @Override
     public Set<ContentViewHeader> getContentViewHeaders() {
         Set<ContentViewHeader> res = new HashSet<ContentViewHeader>();
-        for (ContentViewDescriptor desc : contentViews.values()) {
+        for (ContentViewDescriptor desc : contentViewReg.getContentViews()) {
             res.add(getContentViewHeader(desc));
         }
         return Collections.unmodifiableSet(res);
@@ -193,7 +191,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     public Set<String> getContentViewNames(String flag) {
         Set<String> res = new HashSet<String>();
-        Set<String> items = contentViewsByFlag.get(flag);
+        Set<String> items = contentViewReg.getContentViewsByFlag(flag);
         if (items != null) {
             res.addAll(items);
         }
@@ -216,7 +214,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
     public PageProvider<?> getPageProvider(String name,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Object... parameters) throws ClientException {
-        ContentViewDescriptor contentViewDesc = contentViews.get(name);
+        ContentViewDescriptor contentViewDesc = contentViewReg.getContentView(name);
         if (contentViewDesc == null) {
             return null;
         }
@@ -315,144 +313,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             throws Exception {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
-            String name = desc.getName();
-            if (name == null) {
-                log.error("Cannot register content view without a name");
-                return;
-            }
-            boolean enabled = desc.isEnabled();
-            if (contentViews.containsKey(name)) {
-                log.info("Overriding content view with name " + name);
-                ContentViewDescriptor oldDesc = contentViews.get(name);
-                removeContentViewFlags(oldDesc);
-                if (enabled) {
-                    desc = mergeContentViews(oldDesc, desc);
-                } else {
-                    contentViews.remove(name);
-                    log.info("Disabled content view with name " + name);
-                }
-            }
-            if (enabled) {
-                log.info("Registering content view with name " + name);
-                contentViews.put(name, desc);
-                addContentViewFlags(desc);
-            }
+            contentViewReg.addContribution(desc);
         }
-    }
-
-    protected ContentViewDescriptor mergeContentViews(
-            ContentViewDescriptor oldDesc, ContentViewDescriptor newDesc) {
-        String title = newDesc.getTitle();
-        if (title != null) {
-            oldDesc.title = title;
-        }
-
-        Boolean translateTitle = newDesc.getTranslateTitle();
-        if (translateTitle != null) {
-            oldDesc.translateTitle = translateTitle;
-        }
-
-        String iconPath = newDesc.getIconPath();
-        if (iconPath != null) {
-            oldDesc.iconPath = iconPath;
-        }
-
-        List<String> actions = newDesc.getActionCategories();
-        if (actions != null && !actions.isEmpty()) {
-            oldDesc.actionCategories = actions;
-        }
-
-        String cacheKey = newDesc.getCacheKey();
-        if (cacheKey != null) {
-            oldDesc.cacheKey = cacheKey;
-        }
-
-        Integer cacheSize = newDesc.getCacheSize();
-        if (cacheSize != null) {
-            oldDesc.cacheSize = cacheSize;
-        }
-
-        CoreQueryPageProviderDescriptor coreDesc = newDesc.getCoreQueryPageProvider();
-        if (coreDesc != null && coreDesc.isEnabled()) {
-            oldDesc.coreQueryPageProvider = coreDesc;
-        }
-
-        GenericPageProviderDescriptor genDesc = newDesc.getGenericPageProvider();
-        if (genDesc != null && genDesc.isEnabled()) {
-            oldDesc.genericPageProvider = genDesc;
-        }
-
-        String pagination = newDesc.getPagination();
-        if (pagination != null) {
-            oldDesc.pagination = pagination;
-        }
-
-        List<String> events = newDesc.getRefreshEventNames();
-        if (events != null && !events.isEmpty()) {
-            oldDesc.refreshEventNames = events;
-        }
-        events = newDesc.getResetEventNames();
-        if (events != null && !events.isEmpty()) {
-            oldDesc.resetEventNames = events;
-        }
-
-        ContentViewLayoutImpl searchLayout = newDesc.getSearchLayout();
-        if (searchLayout != null) {
-            oldDesc.searchLayout = searchLayout;
-        }
-
-        List<ContentViewLayout> resultLayouts = newDesc.getResultLayouts();
-        if (resultLayouts != null) {
-            Boolean appendResultLayout = newDesc.getAppendResultLayouts();
-            if (Boolean.TRUE.equals(appendResultLayout)
-                    || resultLayouts.isEmpty()) {
-                List<ContentViewLayout> allLayouts = new ArrayList<ContentViewLayout>();
-                if (oldDesc.resultLayouts != null) {
-                    allLayouts.addAll(oldDesc.resultLayouts);
-                }
-                allLayouts.addAll(resultLayouts);
-                oldDesc.resultLayouts = allLayouts;
-            } else {
-                oldDesc.resultLayouts = resultLayouts;
-            }
-        }
-
-        List<String> flags = newDesc.getFlags();
-        if (flags != null && !flags.isEmpty()) {
-            oldDesc.flags = flags;
-        }
-
-        String selectionList = newDesc.getSelectionListName();
-        if (selectionList != null) {
-            oldDesc.selectionList = selectionList;
-        }
-
-        Boolean useGlobalPageSize = newDesc.getUseGlobalPageSize();
-        if (useGlobalPageSize != null) {
-            oldDesc.useGlobalPageSize = useGlobalPageSize;
-        }
-
-        Boolean showPageSizeSelector = newDesc.getShowPageSizeSelector();
-        if (showPageSizeSelector != null) {
-            oldDesc.showPageSizeSelector = showPageSizeSelector;
-        }
-
-        Boolean showRefreshCommand = newDesc.getShowRefreshCommand();
-        if (showRefreshCommand != null) {
-            oldDesc.showRefreshCommand = showRefreshCommand;
-        }
-
-        Boolean showFilterForm = newDesc.getShowFilterForm();
-        if (showFilterForm != null) {
-            oldDesc.showFilterForm = showFilterForm;
-        }
-
-        String searchDocument = newDesc.getSearchDocumentBinding();
-        if (searchDocument != null) {
-            oldDesc.searchDocument = searchDocument;
-        }
-
-        return oldDesc;
     }
 
     @Override
@@ -461,39 +323,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             throws Exception {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
-            String name = desc.getName();
-            contentViews.remove(name);
-            removeContentViewFlags(desc);
-            log.info("Unregistering content view with name " + name);
-        }
-    }
-
-    protected void addContentViewFlags(ContentViewDescriptor desc) {
-        String name = desc.getName();
-        List<String> flags = desc.getFlags();
-        if (flags != null) {
-            for (String flag : flags) {
-                Set<String> items = contentViewsByFlag.get(flag);
-                if (items == null) {
-                    items = new HashSet<String>();
-                }
-                items.add(name);
-                contentViewsByFlag.put(flag, items);
-            }
-        }
-    }
-
-    protected void removeContentViewFlags(ContentViewDescriptor desc) {
-        String name = desc.getName();
-        List<String> flags = desc.getFlags();
-        if (flags != null) {
-            for (String flag : flags) {
-                Set<String> items = contentViewsByFlag.get(flag);
-                if (items != null) {
-                    items.remove(name);
-                    contentViewsByFlag.put(flag, items);
-                }
-            }
+            contentViewReg.removeContribution(desc);
         }
     }
 

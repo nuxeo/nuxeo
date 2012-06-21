@@ -108,4 +108,17 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
                         showCSVExport));
     }
 
+    public ContentViewLayoutImpl clone() {
+        ContentViewLayoutImpl clone = new ContentViewLayoutImpl();
+        clone.name = getName();
+        clone.title = getTitle();
+        clone.translateTitle = getTranslateTitle();
+        clone.iconPath = getIconPath();
+        clone.showCSVExport = getShowCSVExport();
+        clone.showPDFExport = getShowPDFExport();
+        clone.showSyndicationLinks = getShowSyndicationLinks();
+        clone.filterDisplayType = getFilterDisplayType();
+        return clone;
+    }
+
 }

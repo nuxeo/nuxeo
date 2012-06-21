@@ -78,4 +78,6 @@ public interface ContentViewLayout extends Serializable {
      */
     String getFilterDisplayType();
 
+    ContentViewLayout clone();
+
 }
