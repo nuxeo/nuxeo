@@ -52,11 +52,6 @@ public class PermissionVisibilityDescriptor {
         sortedPermissionNames = null;
     }
 
-    protected void setPermissionUIItems(List<PermissionUIItemDescriptor> items) {
-        this.items = items;
-        sortedPermissionNames = null;
-    }
-
     public String getTypeName() {
         return typeName;
     }
