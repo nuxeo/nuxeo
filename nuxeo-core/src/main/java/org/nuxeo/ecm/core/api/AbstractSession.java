@@ -137,7 +137,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     public static final String MAX_RESULTS_PROPERTY = "org.nuxeo.ecm.core.max.results";
 
-    public static final String LIMIT_RESULTS_PROPETY = "org.nuxeo.ecm.core.limit.results";
+    public static final String LIMIT_RESULTS_PROPERTY = "org.nuxeo.ecm.core.limit.results";
 
     // the repository name
     protected String repositoryName;
@@ -1413,7 +1413,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         if (!countTotal) {
             countUpTo = 0;
         } else {
-            if (getLimitedResults()) {
+            if (isLimitedResults()) {
                 countUpTo = getMaxResults();
             } else {
                 countUpTo = -1;
@@ -1429,9 +1429,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         return maxResults;
     }
 
-    protected boolean getLimitedResults() {
+    protected boolean isLimitedResults() {
         if (limitedResults == null) {
-                limitedResults = Boolean.parseBoolean(Framework.getProperty(LIMIT_RESULTS_PROPETY));
+                limitedResults = Boolean.parseBoolean(Framework.getProperty(LIMIT_RESULTS_PROPERTY));
         }
         return limitedResults;
     }
