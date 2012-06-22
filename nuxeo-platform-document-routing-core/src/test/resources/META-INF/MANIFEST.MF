@@ -7,5 +7,4 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/test-document-routing-operations-contrib.xml,
   OSGI-INF/test-document-routing-operation-chains-contrib.xml,
   OSGI-INF/test-document-routing-type-chains-contrib.xml,
-  OSGI-INF/test-document-routing-listeners.xml,
-  OSGI-INF/test-document-routing-route-models-template-resource-contrib.xml
+  OSGI-INF/test-document-routing-listeners.xml

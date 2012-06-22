@@ -121,7 +121,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         } else if (ROUTE_MODELS_IMPORTER_XP.equals(extensionPoint)) {
             RouteModelsImporterDescriptor des = (RouteModelsImporterDescriptor) contribution;
             if (des.getPath() != null && des.getId() != null) {
-                routeModelTemplateResouces.put(des.getId(),
+                registerRouteModelTemplateResource(des.getId(),
                         contribution.getClass().getResource(des.getPath()));
             }
         }
@@ -591,7 +591,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<URL> getRouteModelTemplateResouces() throws ClientException {
+    public void registerRouteModelTemplateResource(String id, URL resource) {
+        routeModelTemplateResouces.put(id, resource);
+    }
+
+    @Override
+    public List<URL> getRouteModelTemplateResources() throws ClientException {
         List<URL> urls = new ArrayList<URL>();
         for (URL url : routeModelTemplateResouces.values()) {
             urls.add(url);

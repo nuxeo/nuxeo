@@ -332,12 +332,22 @@ public interface DocumentRoutingService {
             CoreSession session) throws ClientException;
 
     /**
+     * Registers a new route model template to be imported at application startup.
+     *
+     * @param id the id
+     * @param resource the resource
+     *
+     * @since 5.6
+     */
+    void registerRouteModelTemplateResource(String id, URL resource);
+
+    /**
      * Returns all the route models resource templates. Use the
      * <code>routeModelImporter</code> extension point to contribute new
      * resources.
      *
      * @since 5.6
      */
-    List<URL> getRouteModelTemplateResouces() throws ClientException;
+    List<URL> getRouteModelTemplateResources() throws ClientException;
 
 }

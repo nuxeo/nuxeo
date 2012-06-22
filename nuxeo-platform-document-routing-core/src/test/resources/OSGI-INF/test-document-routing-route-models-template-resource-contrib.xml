@@ -1,10 +1,11 @@
 <component
-	name="org.nuxeo.ecm.platform.routing.models.template.resource.contrib"
-	version="1.0">
+  name="org.nuxeo.ecm.platform.routing.models.template.resource.contrib"
+  version="1.0">
 
-	<extension target="org.nuxeo.ecm.platform.routing.service"
-		point="routeModelImporter">
-		<template-resource id="resource1" path="/myRoute.zip" />
-	</extension>
+  <extension target="org.nuxeo.ecm.platform.routing.service"
+    point="routeModelImporter">
+    <!-- test parsing, this actually should point to a ZIP file -->
+    <template-resource id="resource1" path="/META-INF/MANIFEST.MF" />
+  </extension>
 
 </component>

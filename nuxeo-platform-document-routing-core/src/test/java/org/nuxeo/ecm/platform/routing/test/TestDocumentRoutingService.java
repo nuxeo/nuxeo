@@ -16,12 +16,24 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -51,6 +63,17 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
+
+    protected File tmp;
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        if (tmp != null) {
+            tmp.delete();
+        }
+        super.tearDown();
+    }
 
     @Test
     public void testAddStepToDraftRoute() throws Exception {
@@ -819,8 +842,32 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle(TEST_BUNDLE);
-        assertEquals(1, service.getRouteModelTemplateResouces().size());
-        service.importRouteModel(service.getRouteModelTemplateResouces().get(0), true, session);
+
+        // test contrib parsing and deployment
+        deployTestContrib(TEST_BUNDLE, "OSGI-INF/test-document-routing-route-models-template-resource-contrib.xml");
+        List<URL> urls = service.getRouteModelTemplateResources();
+        assertEquals(1, urls.size());
+
+        // create a ZIP for the contrib
+        tmp = File.createTempFile("nuxeoRoutingTest", ".zip");
+        ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(tmp));
+        URL url = getClass().getResource("/routes/myRoute");
+        File dir = new File(url.toURI().getPath());
+        zipTree("", dir, false, zout);
+        zout.finish();
+        zout.close();
+
+        // deploy computed contrib directly
+        service.registerRouteModelTemplateResource("resource1",tmp.toURI().toURL());
+
+        // check overrode previous one
+        urls = service.getRouteModelTemplateResources();
+        assertEquals(1, urls.size());
+
+        // trigger model creation (calls service.importRouteModel)
+        fireFrameworkStarted();
+        session.save(); // process invalidations
+
         DocumentModel modelsRoot = session.getDocument(new PathRef(
                 "/default-domain/document-route-models-root/"));
         assertNotNull(modelsRoot);
@@ -835,6 +882,47 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertEquals("RouteNode", step2.getType());
     }
 
+    protected void zipTree(String prefix, File root, boolean includeRoot,
+            ZipOutputStream zout) throws IOException {
+        if (includeRoot) {
+            prefix += root.getName() + '/';
+            zipDirectory(prefix, zout);
+        }
+        for (String name : root.list()) {
+            File file = new File(root, name);
+            if (file.isDirectory()) {
+                zipTree(prefix, file, true, zout);
+            } else {
+                if (name.endsWith("~") || name.endsWith("#")
+                        || name.endsWith(".bak")) {
+                    continue;
+                }
+                name = prefix + name;
+                zipFile(name, file, zout);
+            }
+        }
+    }
+
+    protected void zipDirectory(String entryName, ZipOutputStream zout)
+            throws IOException {
+        ZipEntry zentry = new ZipEntry(entryName);
+        zout.putNextEntry(zentry);
+        zout.closeEntry();
+    }
+
+    protected void zipFile(String entryName, File file, ZipOutputStream zout)
+            throws IOException {
+        ZipEntry zentry = new ZipEntry(entryName);
+        zentry.setTime(file.lastModified());
+        zout.putNextEntry(zentry);
+        FileInputStream in = new FileInputStream(file);
+        try {
+            IOUtils.copy(in, zout);
+        } finally {
+            in.close();
+        }
+        zout.closeEntry();
+    }
 
     protected void waitForAsyncExec() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
