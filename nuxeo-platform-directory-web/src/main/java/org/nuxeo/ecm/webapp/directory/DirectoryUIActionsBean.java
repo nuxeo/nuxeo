@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -45,13 +46,16 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
+import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
+import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Manages directories editable by administrators.
- *
+ * 
  * @author Anahide Tchertchian
  */
 @Name("directoryUIActions")
@@ -73,6 +77,12 @@ public class DirectoryUIActionsBean implements Serializable {
 
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
+
+    @In(create = true, required = false)
+    protected transient ActionManager actionManager;
+
+    @In(create = true)
+    private transient NuxeoPrincipal currentNuxeoPrincipal;
 
     protected List<String> directoryNames;
 
@@ -329,7 +339,7 @@ public class DirectoryUIActionsBean implements Serializable {
         }
     }
 
-    public boolean isReadOnly() throws ClientException {
+    public boolean isReadOnly(String directoryName) throws ClientException {
 
         Session dirSession = null;
         boolean isReadOnly = false;
@@ -355,8 +365,19 @@ public class DirectoryUIActionsBean implements Serializable {
             }
 
         }
-
         return isReadOnly;
+    }
 
+    protected ActionContext createDirectoryActionContext() {
+        ActionContext ctx = new ActionContext();
+        ctx.put("SeamContext", new SeamContextHelper());
+        ctx.put("directoryName", selectedDirectoryName);
+        ctx.setCurrentPrincipal(currentNuxeoPrincipal);
+        return ctx;
+    }
+
+    public boolean checkContextualDirectoryFilter(String filterName) {
+        return actionManager.checkFilter(filterName,
+                createDirectoryActionContext());
     }
 }

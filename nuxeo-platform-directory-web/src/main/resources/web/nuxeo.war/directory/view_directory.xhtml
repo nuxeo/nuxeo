@@ -16,8 +16,8 @@
 
   <a4j:outputPanel id="viewDirectoryPanel">
 
-  <nxu:set var="currentVoc" value="#{directoryUIActions.currentDirectory}">
-  <nxu:set var="isReadOnly" value="#{directoryUIActions.readOnly}">
+  <nxu:set var="currentVoc" cache="true" value="#{directoryUIActions.currentDirectory}">
+  <nxu:set var="isReadOnly" cache="true" value="#{directoryUIActions.checkContextualDirectoryFilter('readOnlyDirectory')}">
 
   <ui:include src="/incl/message_banner.xhtml" />
 
