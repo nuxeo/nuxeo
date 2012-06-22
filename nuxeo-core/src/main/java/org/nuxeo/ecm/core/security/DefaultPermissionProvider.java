@@ -97,8 +97,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                     PermissionVisibilityDescriptor defaultPerms = new PermissionVisibilityDescriptor(
                             mergedPermissionsVisibility.get(""));
                     defaultPerms.merge(mergedPvd);
-                    mergedPvd.setPermissionUIItems(defaultPerms.getPermissionUIItems().toArray(
-                            new PermissionUIItemDescriptor[] {}));
+                    mergedPvd.setPermissionUIItems(defaultPerms.getPermissionUIItems());
                 }
                 mergedPermissionsVisibility.put(mergedPvd.getTypeName(),
                         mergedPvd);
