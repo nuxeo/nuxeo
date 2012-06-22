@@ -37,6 +37,7 @@
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-publisher::jar" />
     </copy> 
 
+
     <copy todir="${maven.project.build.directory}/marketplace/install/libs">
       <artifact:set>
         <includes>
@@ -47,6 +48,9 @@
         </includes>
       </artifact:set>
     </copy> 
+
+    <!-- rename jexl2 so that update system does not remplace jexl 1 lib that is already part of Nuxeo -->
+    <nx:rename from="${maven.project.build.directory}/marketplace/install/libs/commons-jexl-*" to="${maven.project.build.directory}/marketplace/install/libs/commons-jexl2-do-not-remove-2.jar"/>
 
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
