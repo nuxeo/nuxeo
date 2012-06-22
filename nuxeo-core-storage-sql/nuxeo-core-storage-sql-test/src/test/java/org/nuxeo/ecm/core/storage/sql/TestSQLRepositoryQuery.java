@@ -766,7 +766,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(5, dml.size());
         assertEquals(7, dml.totalSize());
         Framework.getProperties().setProperty(
-                AbstractSession.LIMIT_RESULTS_PROPETY, "true");
+                AbstractSession.LIMIT_RESULTS_PROPERTY, "true");
         Framework.getProperties().setProperty(
                 AbstractSession.MAX_RESULTS_PROPERTY, "5");
         // need to open a new session to refresh properties
