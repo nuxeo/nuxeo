@@ -41,9 +41,9 @@ import org.nuxeo.runtime.api.Framework;
  * The cache only holds {@link Row}s that are known to be identical to what's in
  * the underlying {@link RowMapper}.
  */
-public class CachingRowMapper implements RowMapper {
+public class SoftRefCachingRowMapper implements RowMapper {
 
-    private static final Log log = LogFactory.getLog(CachingRowMapper.class);
+    private static final Log log = LogFactory.getLog(SoftRefCachingRowMapper.class);
 
     private static final String ABSENT = "__ABSENT__\0\0\0";
 
@@ -62,13 +62,13 @@ public class CachingRowMapper implements RowMapper {
     // references to it which would prevent its GCing
     private final Map<RowId, Row> cache;
 
-    private final Model model;
+    private Model model;
 
     /**
      * The {@link RowMapper} to which operations that cannot be processed from
      * the cache are delegated.
      */
-    private final RowMapper rowMapper;
+    private RowMapper rowMapper;
 
     /**
      * The local invalidations due to writes through this mapper that should be
@@ -85,7 +85,7 @@ public class CachingRowMapper implements RowMapper {
     /**
      * The propagator of invalidations to other mappers.
      */
-    private final InvalidationsPropagator cachePropagator;
+    private InvalidationsPropagator cachePropagator;
 
     /**
      * The queue of invalidations used for events, a single queue is shared by
@@ -96,7 +96,7 @@ public class CachingRowMapper implements RowMapper {
     /**
      * The propagator of event invalidations to all event queues.
      */
-    private final InvalidationsPropagator eventPropagator;
+    private InvalidationsPropagator eventPropagator;
 
     /**
      * The session, used for event propagation.
@@ -133,23 +133,26 @@ public class CachingRowMapper implements RowMapper {
     private boolean cacheStatistics;
 
     @SuppressWarnings("unchecked")
-    public CachingRowMapper(Model model, RowMapper rowMapper,
+    public SoftRefCachingRowMapper() {
+        cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+        localInvalidations = new Invalidations();
+        cacheQueue = new InvalidationsQueue("mapper-" + this);
+        forRemoteClient = false;
+        String prop = Framework.getProperty(CACHE_STATS_PROP, "false");
+        cacheStatistics = Boolean.parseBoolean(prop);
+    }
+
+    public void initialize(Model model, RowMapper rowMapper,
             InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
             InvalidationsQueue repositoryEventQueue) {
         this.model = model;
         this.rowMapper = rowMapper;
-        cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
-        localInvalidations = new Invalidations();
-        cacheQueue = new InvalidationsQueue("mapper-" + this);
         this.cachePropagator = cachePropagator;
         cachePropagator.addQueue(cacheQueue);
         eventQueue = repositoryEventQueue;
         this.eventPropagator = eventPropagator;
         eventPropagator.addQueue(repositoryEventQueue);
-        forRemoteClient = false;
-        String prop = Framework.getProperty(CACHE_STATS_PROP, "false");
-        cacheStatistics = Boolean.parseBoolean(prop);
     }
 
     public void close() throws StorageException {
@@ -353,7 +356,7 @@ public class CachingRowMapper implements RowMapper {
     /**
      * Sets the session, used for event propagation.
      */
-    protected void setSession(SessionImpl session) {
+    public void setSession(SessionImpl session) {
         this.session = session;
     }
 

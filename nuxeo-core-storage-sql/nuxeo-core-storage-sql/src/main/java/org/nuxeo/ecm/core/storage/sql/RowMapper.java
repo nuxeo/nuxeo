@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
  * <p>
  * These are the operations that can benefit from a cache.
  *
- * @see CachingRowMapper
+ * @see SoftRefCachingRowMapper
  */
 public interface RowMapper {
 

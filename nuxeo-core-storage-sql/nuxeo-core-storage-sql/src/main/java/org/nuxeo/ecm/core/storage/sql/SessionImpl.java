@@ -100,7 +100,9 @@ public class SessionImpl implements Session, XAResource {
             Credentials credentials) throws StorageException {
         this.repository = repository;
         this.mapper = mapper;
-        ((CachingMapper) mapper).setSession(this);
+        if (mapper instanceof CachingMapper) {
+            ((CachingMapper) mapper).setSession(this);
+        }
         // this.credentials = credentials;
         this.model = model;
         context = new PersistenceContext(model, mapper, this);

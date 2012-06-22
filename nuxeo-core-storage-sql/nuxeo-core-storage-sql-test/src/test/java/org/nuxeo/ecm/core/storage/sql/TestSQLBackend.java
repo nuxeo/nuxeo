@@ -3684,7 +3684,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // clear context, the mapper cache should still be used
         ((SessionImpl) session).context.pristine.clear();
-        JDBCConnection jdbc = (JDBCConnection) ((CachingMapper) ((SessionImpl) session).getMapper()).mapper;
+        JDBCConnection jdbc = (JDBCConnection) ((SoftRefCachingMapper) ((SessionImpl) session).getMapper()).mapper;
         jdbc.countExecutes = true;
         jdbc.executeCount = 0;
 

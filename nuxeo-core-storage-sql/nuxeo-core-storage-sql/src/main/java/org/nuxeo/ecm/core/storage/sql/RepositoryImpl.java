@@ -212,6 +212,28 @@ public class RepositoryImpl implements Repository {
         }
     }
 
+    protected Mapper createCachingMapper(Model model, Mapper mapper)
+            throws StorageException {
+        if (!repositoryDescriptor.cachingMapperEnabled) {
+            log.warn("VCS Mapper cache is disabled.");
+            return mapper;
+        }
+        Class<? extends CachingMapper> cachingMapperClass = repositoryDescriptor.cachingMapperClass;
+        if (cachingMapperClass == null) {
+            // default cache
+            cachingMapperClass = SoftRefCachingMapper.class;
+        }
+        CachingMapper cachingMapper;
+        try {
+            cachingMapper = cachingMapperClass.newInstance();
+            cachingMapper.initialize(model, mapper, cachePropagator,
+                    eventPropagator, repositoryEventQueue);
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
+        return cachingMapper;
+    }
+
     protected void createServer() {
         ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
         if (serverDescriptor != null && !serverDescriptor.disabled) {
@@ -380,8 +402,7 @@ public class RepositoryImpl implements Repository {
 
     protected SessionImpl newSession(Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
-        mapper = new CachingMapper(model, mapper, cachePropagator,
-                eventPropagator, repositoryEventQueue);
+        mapper = createCachingMapper(model, mapper);
         return new SessionImpl(this, model, mapper, credentials);
     }
 
