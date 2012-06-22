@@ -195,7 +195,9 @@ public class StatusServletClient {
             answer = Boolean.parseBoolean(s.readLine());
             // Next (if exists) is a response body
             while ((line = s.readLine()) != null) {
-                response.append(line + "\n");
+                if (response != null) {
+                    response.append(line + "\n");
+                }
             }
         } catch (IOException e) {
             throw e;
