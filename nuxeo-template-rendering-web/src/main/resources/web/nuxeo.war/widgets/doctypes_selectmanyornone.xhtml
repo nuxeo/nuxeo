@@ -11,7 +11,7 @@
   <c:if test="#{widget.mode == 'view' }">
    <c:choose>
      <c:when test="#{field_0 == null or fn:length(field_0) == 0 or field_0[0] == 'all'}">
-       All
+       <h:outputText value="#{messages['label.typebinding.all']}" />
      </c:when>
      <c:otherwise>
       <nxu:repeat value="#{field_0}" var="targetType">
