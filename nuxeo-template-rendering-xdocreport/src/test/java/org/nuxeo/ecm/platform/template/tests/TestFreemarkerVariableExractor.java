@@ -1,18 +1,30 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
 import java.io.File;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
 
-public class TestFreemarkerVariableExractor extends TestCase {
+public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.template.manager.api");
+        deployContrib("org.nuxeo.template.manager",
+                "OSGI-INF/templateprocessor-service.xml");
+        deployContrib("org.nuxeo.template.manager",
+                "OSGI-INF/templateprocessor-contrib.xml");
+    }
 
     @Test
     public void testDocXParamExtraction() throws Exception {
