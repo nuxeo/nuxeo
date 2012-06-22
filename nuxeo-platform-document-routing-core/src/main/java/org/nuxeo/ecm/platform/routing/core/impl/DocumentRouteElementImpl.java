@@ -79,8 +79,8 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
 
     @Override
     public void resume(CoreSession session, String nodeId,
-            Map<String, Object> data) {
-        runner.resume(session, this, nodeId, data);
+            Map<String, Object> data, String status) {
+        runner.resume(session, this, nodeId, data, status);
     }
 
     @Override

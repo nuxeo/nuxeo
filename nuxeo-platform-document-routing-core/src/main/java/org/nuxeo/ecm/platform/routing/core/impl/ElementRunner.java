@@ -40,7 +40,7 @@ public interface ElementRunner {
      * @since 5.6
      */
     void resume(CoreSession session, DocumentRouteElement element,
-            String nodeId, Map<String, Object> data);
+            String nodeId, Map<String, Object> data, String status);
 
     /**
      * Run the undo chain on this element. If this element is not a step, then

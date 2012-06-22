@@ -43,7 +43,7 @@ public interface GraphNode {
     String PROP_NODE_ID = "rnode:nodeId";
 
     String PROP_TITLE = "dc:title";
-    
+
     String PROP_START = "rnode:start";
 
     String PROP_STOP = "rnode:stop";
@@ -91,13 +91,12 @@ public interface GraphNode {
     String PROP_BTN_LABEL = "label";
 
     String PROP_BTN_FILTER = "filter";
-    
+
     String PROP_NODE_X_COORDINATE = "rnode:taskX";
-    
+
     String PROP_NODE_Y_COORDINATE = "rnode:taskY";
-    
+
     String PROP_NODE_BUTTON = "rnode:button";
-    
 
     /**
      * The internal state of a node.
@@ -418,5 +417,13 @@ public interface GraphNode {
      * @return
      */
     Map<String, Serializable> getVariables();
+
+    /**
+     * Sets the property button on the node, keeping the id of the last action
+     * executed by the user on the associated task if any
+     *
+     * @param status
+     */
+    void setButton(String status);
 
 }

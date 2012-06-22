@@ -217,6 +217,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         incrementProp(PROP_COUNT);
     }
 
+    @Override
     public Map<String, Serializable> getVariables() {
         return GraphVariablesUtil.getVariables(document, PROP_VARIABLES_FACET);
     }
@@ -279,7 +280,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         // task context
         context.put("assignees", ""); // TODO
         context.put("comment", ""); // TODO filled by form
-        context.put("button", (String) getProperty(PROP_NODE_BUTTON));
+        context.put("button", getProperty(PROP_NODE_BUTTON));
         // associated docs
         context.setInput(graph.getAttachedDocumentModels());
         return context;
@@ -446,6 +447,17 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             Collections.sort(btns);
             return btns;
         } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public void setButton(String status) {
+        try {
+            document.setPropertyValue(PROP_NODE_BUTTON, status);
+            CoreSession session = document.getCoreSession();
+            session.saveDocument(document);
+        } catch (Exception e) {
             throw new ClientRuntimeException(e);
         }
     }

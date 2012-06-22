@@ -524,7 +524,7 @@ public class GraphRouteTest {
         setTransitions(
                 node1,
                 transition("trans1", "node2",
-                        "Context[\"status\"] == \"trans1\"", "testchain_title1"));
+                        "Context[\"button\"] == \"trans1\"", "testchain_title1"));
 
         // task properties
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
@@ -546,9 +546,8 @@ public class GraphRouteTest {
         assertEquals(1, tasks.size());
 
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("status", "trans1");
         CoreSession sessionUser1 = openSession(user1);
-        routingTaskService.endTask(sessionUser1, tasks.get(0), data);
+        routingTaskService.endTask(sessionUser1, tasks.get(0), data, "trans1");
         closeSession(sessionUser1);
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);

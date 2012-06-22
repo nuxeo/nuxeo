@@ -69,7 +69,7 @@ public class StepElementRunner implements ElementRunner {
 
     @Override
     public void resume(CoreSession session, DocumentRouteElement element,
-            String nodeId, Map<String, Object> data) {
+            String nodeId, Map<String, Object> data, String status) {
         throw new UnsupportedOperationException();
     }
 

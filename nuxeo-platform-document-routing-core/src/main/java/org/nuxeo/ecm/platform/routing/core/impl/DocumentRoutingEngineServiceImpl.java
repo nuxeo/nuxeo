@@ -34,8 +34,8 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent
 
     @Override
     public void resume(DocumentRoute routeInstance, CoreSession session,
-            String nodeId, Map<String, Object> data) {
-        routeInstance.resume(session, nodeId, data);
+            String nodeId, Map<String, Object> data, String status) {
+        routeInstance.resume(session, nodeId, data, status);
     }
 
 }

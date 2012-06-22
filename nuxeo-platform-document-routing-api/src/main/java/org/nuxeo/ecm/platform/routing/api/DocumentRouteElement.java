@@ -128,9 +128,12 @@ public interface DocumentRouteElement extends Serializable {
      * @param session the session
      * @param nodeId the node id to resume on
      * @param data the data coming from UI form
+     * @param status the id of the button clicked to submit the related task
+     *            form
      * @since 5.6
      */
-    void resume(CoreSession session, String nodeId, Map<String, Object> data);
+    void resume(CoreSession session, String nodeId, Map<String, Object> data,
+            String status);
 
     /**
      * Set this element to the validate state and put it in read only mode.

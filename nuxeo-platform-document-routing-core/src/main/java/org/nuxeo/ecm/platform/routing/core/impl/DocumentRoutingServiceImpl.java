@@ -193,7 +193,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             DocumentRoutingEngineService engineService = Framework.getLocalService(DocumentRoutingEngineService.class);
             DocumentModel routeDoc = session.getDocument(routeRef);
             DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
-            engineService.resume(routeInstance, session, nodeId, data);
+            engineService.resume(routeInstance, session, nodeId, data, null);
         }
     }
 

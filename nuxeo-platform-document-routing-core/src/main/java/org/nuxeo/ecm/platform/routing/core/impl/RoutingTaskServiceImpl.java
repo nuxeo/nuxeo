@@ -62,7 +62,8 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void endTask(CoreSession session, Task task, Map<String, Object> data)
+    public void endTask(CoreSession session, Task task,
+            Map<String, Object> data, String status)
             throws DocumentRouteException {
         String comment = (String) data.get("comment");
         try {
@@ -99,7 +100,8 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
                             + routeInstanceId);
         }
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
-        getDocumentRoutingEngineService().resume(route, session, nodeId, data);
+        getDocumentRoutingEngineService().resume(route, session, nodeId, data,
+                status);
 
     }
 

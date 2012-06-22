@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -70,7 +71,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
 
     @Override
     public void resume(CoreSession session, DocumentRouteElement element,
-            String nodeId, Map<String, Object> data) {
+            String nodeId, Map<String, Object> varData, String status) {
         try {
             GraphRoute graph = (GraphRoute) element;
             GraphNode node = graph.getNode(nodeId);
@@ -78,7 +79,10 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 throw new DocumentRouteException(
                         "Cannot resume on non-suspended node: " + node);
             }
-            node.setAllVariables(data);
+            node.setAllVariables(varData);
+            if (StringUtils.isNotEmpty(status)) {
+                node.setButton(status);
+            }
             boolean done = runGraph(session, graph, node);
             if (done) {
                 element.setDone(session);

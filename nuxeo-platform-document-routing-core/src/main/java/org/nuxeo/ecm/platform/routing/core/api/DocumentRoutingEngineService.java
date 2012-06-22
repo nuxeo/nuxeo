@@ -45,9 +45,10 @@ public interface DocumentRoutingEngineService {
      * @param session the session
      * @param nodeId the node id to resume on
      * @param data the data coming from UI form
+     * @param status the name of the button clicked to submit the associated task form
      * @since 5.6
      */
     void resume(DocumentRoute routeInstance, CoreSession session,
-            String nodeId, Map<String, Object> data);
+            String nodeId, Map<String, Object> data, String status);
 
 }

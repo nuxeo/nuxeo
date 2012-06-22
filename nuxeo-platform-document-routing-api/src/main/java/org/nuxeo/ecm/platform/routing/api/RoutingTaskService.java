@@ -46,8 +46,9 @@ public interface RoutingTaskService {
      * @param session
      * @param task
      * @param data
+     * @param status name of the button clicked to submit the task form
      * @throws DocumentRouteException
      */
-    void endTask(CoreSession session, Task task, Map<String, Object> data)
-            throws DocumentRouteException;
+    void endTask(CoreSession session, Task task, Map<String, Object> data,
+            String status) throws DocumentRouteException;
 }

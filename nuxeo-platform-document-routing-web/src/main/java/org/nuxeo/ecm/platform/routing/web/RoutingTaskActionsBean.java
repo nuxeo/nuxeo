@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
@@ -87,6 +88,9 @@ public class RoutingTaskActionsBean {
 
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
+
+    @RequestParameter("button")
+    protected String button;
 
     protected RoutingTaskService routingTaskService;
 
@@ -141,18 +145,13 @@ public class RoutingTaskActionsBean {
         return node.getTaskLayout();
     }
 
-    public List<String> getTaskButtons(Task task) throws ClientException {
-        List<String> btnActions = new ArrayList<String>();
+    public List<Button> getTaskButtons(Task task) throws ClientException {
         GraphNode node = getSourceGraphNode(task);
         if (node == null) {
-            return btnActions;
+            return new ArrayList<Button>();
         }
-        for (Button btn : node.getTaskButtons()) {
-            // TODO evaluate action filter? ( btn.getFilter) to display or not
-            // this action
-            btnActions.add(btn.getLabel());
-        }
-        return btnActions;
+        // TODO evaluate action filter?
+        return node.getTaskButtons();
     }
 
     public String endTask(Task task) throws ClientException {
@@ -161,11 +160,11 @@ public class RoutingTaskActionsBean {
         if (formVariables != null) {
             data.putAll(formVariables);
         }
+        // add the button name that was clicked
         try {
-            getRoutingTaskService().endTask(documentManager, task, data);
+            getRoutingTaskService().endTask(documentManager, task, data, button);
         } catch (DocumentRouteException e) {
-            facesMessages.add(
-                    StatusMessage.Severity.ERROR,
+            facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "label.review.task.error.resume.workflow"));
         }
