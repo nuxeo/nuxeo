@@ -35,6 +35,8 @@ import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
+import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,8 +47,6 @@ import org.nuxeo.runtime.api.Framework;
 public class GraphRunner extends AbstractRunner implements ElementRunner {
 
     private static final Log log = LogFactory.getLog(GraphRunner.class);
-
-    protected RoutingTaskService routingTaskService;
 
     /**
      * Maximum number of steps we do before deciding that this graph is looping.
@@ -227,24 +227,17 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         taskVariables.put(DocumentRoutingConstants.TASK_NODE_ID_KEY,
                 node.getId());
         try {
-            getRoutingTaskService().createRoutingTask(session,
+            TaskService taskService = Framework.getLocalService(TaskService.class);
+            RoutingTaskService routingTaskService = Framework.getLocalService(RoutingTaskService.class);
+            List<Task> tasks = taskService.createTask(session,
                     (NuxeoPrincipal) session.getPrincipal(),
                     graph.getAttachedDocumentModels().get(0), node.getId(),
                     node.getTaskAssignees(), false, node.getTaskDirective(),
                     null, node.getTaskDueDate(), taskVariables, null);
+            routingTaskService.makeRoutingTasks(session, tasks);
         } catch (ClientException e) {
             throw new DocumentRouteException("Can not create task", e);
         }
     }
 
-    private RoutingTaskService getRoutingTaskService() {
-        if (routingTaskService == null) {
-            try {
-                routingTaskService = Framework.getService(RoutingTaskService.class);
-            } catch (Exception e) {
-                throw new ClientRuntimeException(e);
-            }
-        }
-        return routingTaskService;
-    }
 }

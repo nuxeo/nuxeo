@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.routing.dm.adapter.TaskStep;
 import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -86,6 +87,9 @@ public class CreateRoutingTask {
 
     @Context
     UserManager userManager;
+
+    @Context
+    protected TaskService taskService;
 
     @Context
     protected RoutingTaskService routingTaskService;
@@ -150,10 +154,11 @@ public class CreateRoutingTask {
                     mappingTaskVariables);
         }
         // TODO: call method with number of comments after NXP-8068 is merged
-        List<Task> tasks = routingTaskService.createRoutingTask(coreSession,
+        List<Task> tasks = taskService.createTask(coreSession,
                 (NuxeoPrincipal) pal, document, taskStep.getName(), actors,
                 false, taskStep.getDirective(), null, taskStep.getDueDate(),
                 taskVariables, null);
+        routingTaskService.makeRoutingTasks(coreSession, tasks);
         DocumentModelList docList = new DocumentModelListImpl(tasks.size());
         for (Task task : tasks) {
             docList.add(((mappingProperties == null) ? (task.getDocument())

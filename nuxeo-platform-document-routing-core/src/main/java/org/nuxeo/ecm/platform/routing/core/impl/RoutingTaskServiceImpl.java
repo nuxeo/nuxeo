@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -47,21 +46,10 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
 
     protected DocumentRoutingEngineService routingEngineService;
 
-    protected TaskService taskService;
-
     @Override
-    public List<Task> createRoutingTask(CoreSession coreSession,
-            NuxeoPrincipal principal, DocumentModel document, String taskName,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath)
+    public void makeRoutingTasks(CoreSession coreSession, final List<Task> tasks)
             throws ClientException {
-        final List<Task> tasks = getTaskService().createTask(coreSession,
-                principal, document, taskName, prefixedActorIds,
-                createOneTaskPerActor, directive, comment, dueDate,
-                taskVariables, parentPath);
         new UnrestrictedSessionRunner(coreSession) {
-
             @Override
             public void run() throws ClientException {
                 for (Task task : tasks) {
@@ -71,7 +59,6 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
                 }
             }
         }.runUnrestricted();
-        return tasks;
     }
 
     @Override
@@ -79,7 +66,8 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
             throws DocumentRouteException {
         String comment = (String) data.get("comment");
         try {
-            getTaskService().endTask(session,
+            TaskService taskService = Framework.getLocalService(TaskService.class);
+            taskService.endTask(session,
                     (NuxeoPrincipal) session.getPrincipal(), task, comment,
                     TaskEventNames.WORKFLOW_TASK_COMPLETED, false);
         } catch (ClientException e) {
@@ -126,14 +114,4 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
         return routingEngineService;
     }
 
-    protected TaskService getTaskService() {
-        if (taskService == null) {
-            try {
-                taskService = Framework.getService(TaskService.class);
-            } catch (Exception e) {
-                throw new ClientRuntimeException(e);
-            }
-        }
-        return taskService;
-    }
 }

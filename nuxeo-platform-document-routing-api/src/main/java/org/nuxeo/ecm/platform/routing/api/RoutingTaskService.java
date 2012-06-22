@@ -16,30 +16,33 @@
  */
 package org.nuxeo.ecm.platform.routing.api;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.task.Task;
 
 /**
+ * A small service adding Routing behavior to tasks.
  */
-public interface RoutingTaskService{
+public interface RoutingTaskService {
 
-    List<Task> createRoutingTask(CoreSession coreSession,
-            NuxeoPrincipal principal, DocumentModel document, String taskName,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath)
+    /**
+     * Marks the tasks as Routing tasks.
+     * <p>
+     * This allows the related documents to be adapted to {@link RoutingTask}.
+     *
+     * @param session the session
+     * @param tasks the tasks
+     */
+    void makeRoutingTasks(CoreSession session, List<Task> tasks)
             throws ClientException;
 
     /**
      * Ends a task
+     *
      * @param session
      * @param task
      * @param data
