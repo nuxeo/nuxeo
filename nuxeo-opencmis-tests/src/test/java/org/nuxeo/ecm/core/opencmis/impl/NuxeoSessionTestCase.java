@@ -50,11 +50,14 @@ import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
@@ -729,6 +732,82 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testVersionBasedLocking() throws Exception {
+        CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
+
+        // implicitly checked out after create - unlocked
+        assertFalse(isDocumentLocked(ob));
+
+        ((Document) ob).checkIn(true, null, null, "comment");
+
+        // checked in - unlocked
+        assertFalse(isDocumentLocked(ob));
+
+        CmisObject ci = session.getObject(ob);
+        ObjectId coid = ((Document) ci).checkOut();
+        session.clear(); // clear cache
+        CmisObject co = session.getObject(coid);
+
+        // explicitly checked out - locked
+        assertTrue(isDocumentLocked(co));
+
+        ((Document) co).cancelCheckOut();
+        session.clear(); // clear cache
+        CmisObject cco = session.getObject(ob);
+
+        // cancelled check out - unlocked
+        assertFalse(isDocumentLocked(cco));
+
+        // cannot check out a locked document
+        lockDocument(cco);
+        try {
+            ((Document) cco).checkOut();
+            fail("Cannot check out a locked document");
+        } catch (CmisInvalidArgumentException e) {
+            // ok
+        }
+    }
+
+    @Test
+    public void testDeleteObjectOrCancelCheckOut() throws Exception {
+        // test cancelCheckOut
+        CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
+
+        ((Document) ob).checkIn(true, null, null, "comment");
+        ((Document) ob).checkOut();
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("dc:title", "new title");
+        map.put("dc:subjects", Arrays.asList("a", "b", "c"));
+        ob.updateProperties(map);
+
+        ((Document) ob).cancelCheckOut();
+
+        session.clear();
+        ob = session.getObjectByPath("/testfolder1/testfile1");
+        assertFalse("new title".equals(ob.getPropertyValue("dc:title")));
+
+        //test deleteObject
+        ob = session.getObjectByPath("/testfolder1/testfile2");
+
+        map = new HashMap<String, Object>();
+        map.put("dc:title", "new title");
+        map.put("dc:subjects", Arrays.asList("a", "b", "c"));
+        ob.updateProperties(map);
+
+        ((Document) ob).cancelCheckOut();
+
+        session.clear();
+        try {
+            ob = session.getObjectByPath("/testfolder1/testfile2");
+            fail("Document should be deleted");
+        } catch (CmisObjectNotFoundException e) {
+           // ok
+        }
+
+    }
+
+    @Test
     public void testCheckInWithChanges() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
 
@@ -775,6 +854,14 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         } else {
             assertEquals(expected, value);
         }
+    }
+
+    private boolean isDocumentLocked(CmisObject ob) throws ClientException {
+        return getCoreSession().getDocument(new IdRef(ob.getId())).isLocked();
+    }
+
+    private Lock lockDocument(CmisObject ob) throws ClientException {
+        return getCoreSession().getDocument(new IdRef(ob.getId())).setLock();
     }
 
 }
