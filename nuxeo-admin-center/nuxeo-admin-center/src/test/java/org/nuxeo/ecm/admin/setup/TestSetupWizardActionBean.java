@@ -75,6 +75,8 @@ public class TestSetupWizardActionBean {
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
 
         setupWizardActionBean = new SetupWizardActionBean();
+        // simulate Seam injection of variable setupConfigGenerator
+        setupWizardActionBean.getConfigurationGenerator();
     }
 
     @Test
