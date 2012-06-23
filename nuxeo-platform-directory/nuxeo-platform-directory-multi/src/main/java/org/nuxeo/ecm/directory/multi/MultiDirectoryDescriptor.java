@@ -54,23 +54,26 @@ public class MultiDirectoryDescriptor implements Cloneable {
     protected SourceDescriptor[] sources;
 
     public void merge(MultiDirectoryDescriptor other) {
-        if (other.schemaName != null) {
+        merge(other, false);
+    }
+
+    public void merge(MultiDirectoryDescriptor other, boolean overwrite) {
+        if (other.schemaName != null || overwrite) {
             schemaName = other.schemaName;
         }
-        if (other.idField != null) {
+        if (other.idField != null || overwrite) {
             idField = other.idField;
         }
-        if (other.passwordField != null) {
+        if (other.passwordField != null || overwrite) {
             passwordField = other.passwordField;
         }
-        if (other.readOnly != null) {
+        if (other.readOnly != null || overwrite) {
             readOnly = other.readOnly;
         }
-        if (other.querySizeLimit != null) {
+        if (other.querySizeLimit != null || overwrite) {
             querySizeLimit = other.querySizeLimit;
         }
-        if (other.sources != null) {
-            // TODO allow replacement of existing sources
+        if (other.sources != null || overwrite) {
             if (sources == null) {
                 sources = other.sources;
             } else {

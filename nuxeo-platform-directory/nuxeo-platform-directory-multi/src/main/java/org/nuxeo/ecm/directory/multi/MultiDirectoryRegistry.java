@@ -73,9 +73,8 @@ public class MultiDirectoryRegistry extends
             try {
                 dir.shutdown();
             } catch (DirectoryException e) {
-                log.error(
-                        String.format("Error while shutting down directory '%s'", id),
-                        e);
+                log.error(String.format(
+                        "Error while shutting down directory '%s'", id), e);
             }
         }
         log.info("Directory removed: " + id);
@@ -88,7 +87,17 @@ public class MultiDirectoryRegistry extends
 
     @Override
     public void merge(MultiDirectoryDescriptor src, MultiDirectoryDescriptor dst) {
-        dst.merge(src);
+        boolean remove = src.remove;
+        // keep old remove info: if old contribution was removed, new one
+        // should replace the old one completely
+        boolean wasRemoved = dst.remove;
+        if (remove) {
+            dst.remove = remove;
+            // don't bother merging
+            return;
+        }
+
+        dst.merge(src, wasRemoved);
     }
 
     // API

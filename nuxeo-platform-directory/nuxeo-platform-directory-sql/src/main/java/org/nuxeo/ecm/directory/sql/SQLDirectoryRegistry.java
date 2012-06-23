@@ -87,7 +87,17 @@ public class SQLDirectoryRegistry extends
 
     @Override
     public void merge(SQLDirectoryDescriptor src, SQLDirectoryDescriptor dst) {
-        dst.merge(src);
+        boolean remove = src.getRemove();
+        // keep old remove info: if old contribution was removed, new one
+        // should replace the old one completely
+        boolean wasRemoved = dst.getRemove();
+        if (remove) {
+            dst.setRemove(remove);
+            // don't bother merging
+            return;
+        }
+
+        dst.merge(src, wasRemoved);
     }
 
     // API

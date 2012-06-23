@@ -376,83 +376,93 @@ public class SQLDirectoryDescriptor {
      * merge properties initialized by xmap)
      */
     public void merge(SQLDirectoryDescriptor other) {
-        if (other.dataSourceName != null) {
+        merge(other, false);
+    }
+
+    public void merge(SQLDirectoryDescriptor other, boolean overwite) {
+        if (other.dataSourceName != null || overwite) {
             dataSourceName = other.dataSourceName;
         }
-        if (other.dbDriver != null) {
+        if (other.dbDriver != null || overwite) {
             dbDriver = other.dbDriver;
         }
-        if (other.dbUrl != null) {
+        if (other.dbUrl != null || overwite) {
             dbUrl = other.dbUrl;
         }
-        if (other.dbUser != null) {
+        if (other.dbUser != null || overwite) {
             dbUser = other.dbUser;
         }
-        if (other.dbPassword != null) {
+        if (other.dbPassword != null || overwite) {
             dbPassword = other.dbPassword;
         }
-        if (other.tableName != null) {
+        if (other.tableName != null || overwite) {
             tableName = other.tableName;
         }
-        if (other.schemaName != null) {
+        if (other.schemaName != null || overwite) {
             schemaName = other.schemaName;
         }
-        if (other.parentDirectory != null) {
+        if (other.parentDirectory != null || overwite) {
             parentDirectory = other.parentDirectory;
         }
-        if (other.initDependencies != null
-                && other.initDependencies.size() != 0) {
+        if ((other.initDependencies != null && other.initDependencies.size() != 0)
+                || overwite) {
             initDependencies = other.initDependencies;
         }
-        if (other.idField != null) {
+        if (other.idField != null || overwite) {
             idField = other.idField;
         }
-        if (other.dataFileName != null) {
+        if (other.dataFileName != null || overwite) {
             dataFileName = other.dataFileName;
         }
-        if (other.dataFileCharacterSeparator != null) {
+        if (other.dataFileCharacterSeparator != null || overwite) {
             dataFileCharacterSeparator = other.dataFileCharacterSeparator;
         }
-        if (other.createTablePolicy != null) {
+        if (other.createTablePolicy != null || overwite) {
             createTablePolicy = other.createTablePolicy;
         }
-        if (other.substringMatchType != null) {
+        if (other.substringMatchType != null || overwite) {
             substringMatchType = other.substringMatchType;
         }
-        // autoincrementIdField = other.autoincrementIdField;
-        if (other.readOnly != null) {
+        if (overwite) {
+            autoincrementIdField = other.autoincrementIdField;
+        }
+        if (other.readOnly != null || overwite) {
             readOnly = other.readOnly;
         }
-        if (other.passwordField != null) {
+        if (other.passwordField != null || overwite) {
             passwordField = other.passwordField;
         }
-        if (other.passwordHashAlgorithm != null) {
+        if (other.passwordHashAlgorithm != null || overwite) {
             passwordHashAlgorithm = other.passwordHashAlgorithm;
         }
-        // querySizeLimit = other.querySizeLimit;
+        if (overwite) {
+            querySizeLimit = other.querySizeLimit;
+        }
 
-        // only reuse the old descriptor if no reference is set in the new one
-        if (other.inverseReferences != null
-                && other.inverseReferences.length != 0) {
+        if ((other.inverseReferences != null && other.inverseReferences.length != 0)
+                || overwite) {
             inverseReferences = other.inverseReferences;
         }
-        if (other.tableReferences != null && other.tableReferences.length != 0) {
+        if ((other.tableReferences != null && other.tableReferences.length != 0)
+                || overwite) {
             tableReferences = other.tableReferences;
         }
 
         remove = other.remove;
 
-        // cacheTimeout = other.cacheTimeout;
-        // cacheMaxSize = other.cacheMaxSize;
-        if (other.staticFilters != null && other.staticFilters.length != 0) {
+        if (overwite) {
+            cacheTimeout = other.cacheTimeout;
+            cacheMaxSize = other.cacheMaxSize;
+        }
+        if ((other.staticFilters != null && other.staticFilters.length != 0)
+                || overwite) {
             staticFilters = other.staticFilters;
         }
-        if (other.nativeCase != null) {
+        if (other.nativeCase != null || overwite) {
             nativeCase = other.nativeCase;
         }
 
         computeMultiTenantId = other.computeMultiTenantId;
-
     }
 
     public SQLDirectoryDescriptor clone() {
