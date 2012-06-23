@@ -13,7 +13,7 @@
   <h:form id="restartForm">
     <h:outputText value="#{systemInfo.uptime}" />
     <h:commandButton
-      onclick="confirmRestart(); return false;"
+      onclick="confirmRestart();"
       action="#{systemInfo.restartServer()}"
       value="#{messages['label.action.restart']}"
       styleClass="button" />
