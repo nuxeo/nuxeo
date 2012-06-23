@@ -18,6 +18,7 @@ package org.nuxeo.ecm.webapp.directory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class DirectoryTreeRegistry extends
 
     private static final Log log = LogFactory.getLog(DirectoryTreeRegistry.class);
 
-    protected Map<String, DirectoryTreeDescriptor> registry;
+    protected Map<String, DirectoryTreeDescriptor> registry = new HashMap<String, DirectoryTreeDescriptor>();
 
     @Override
     public String getContributionId(DirectoryTreeDescriptor contrib) {
