@@ -96,12 +96,7 @@ public class NavTreeService extends DefaultComponent {
         DirectoryTreeService treeService = getDirectoryTreeService();
         if (treeService != null) {
             Long other = treeService.getLastModified();
-            if (res == null && other == null) {
-                return null;
-            }
-            if (res != null && res.compareTo(other) < 0) {
-                res = other;
-            } else if (other != null) {
+            if (res == null || (other != null && other.compareTo(res) > 0)) {
                 res = other;
             }
         }
