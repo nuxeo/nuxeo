@@ -73,10 +73,28 @@ public abstract class AbstractReference implements Reference {
 
     protected DirectoryServiceImpl getDirectoryService() {
         if (directoryService == null) {
-            directoryService = (DirectoryServiceImpl) Framework.getRuntime()
-                    .getComponent(DirectoryService.NAME);
+            directoryService = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
+                    DirectoryService.NAME);
         }
         return directoryService;
     }
+
+    /**
+     * @since 5.6
+     */
+    public AbstractReference clone() {
+        AbstractReference clone = newInstance();
+        clone.sourceDirectoryName = sourceDirectoryName;
+        clone.targetDirectoryName = targetDirectoryName;
+        clone.fieldName = fieldName;
+        return clone;
+    }
+
+    /**
+     * Override to instantiate sub class, used in {@link #clone()} method
+     *
+     * @since 5.6
+     */
+    protected abstract AbstractReference newInstance();
 
 }

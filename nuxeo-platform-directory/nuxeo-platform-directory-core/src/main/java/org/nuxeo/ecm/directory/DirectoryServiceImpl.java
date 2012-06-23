@@ -21,9 +21,7 @@ package org.nuxeo.ecm.directory;
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +30,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
+import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
+import org.nuxeo.ecm.directory.registry.DirectoryFactoryMapper;
+import org.nuxeo.ecm.directory.registry.DirectoryFactoryMapperRegistry;
+import org.nuxeo.ecm.directory.registry.DirectoryFactoryRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -44,9 +46,9 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(DirectoryServiceImpl.class);
 
-    private Map<String, DirectoryFactory> factories;
+    protected DirectoryFactoryRegistry factories;
 
-    private Map<String, List<DirectoryFactory>> factoriesByDirectoryName;
+    protected DirectoryFactoryMapperRegistry factoriesByDirectoryName;
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
@@ -90,10 +92,10 @@ public class DirectoryServiceImpl extends DefaultComponent implements
     /**
      * This will return the local directory name according the local
      * configuration. If the local configuration is null or the suffix value is
-     * null or the suffix value trimmed is an empty string the returned value is
-     * the directoryName given in parameter. If not this is directoryName +
-     * DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix.
-     * if directoryName is null, return null.
+     * null or the suffix value trimmed is an empty string the returned value
+     * is the directoryName given in parameter. If not this is directoryName +
+     * DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix. if directoryName
+     * is null, return null.
      */
     protected String getWaitingLocalDirectoryName(String directoryName,
             DirectoryConfiguration configuration) {
@@ -120,19 +122,17 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         if (directoryName == null) {
             return null;
         }
-
-        List<DirectoryFactory> potentialFactories = factoriesByDirectoryName.get(directoryName);
-        if (potentialFactories == null) {
+        List<String> factoryNames = factoriesByDirectoryName.getFactoriesForDirectory(directoryName);
+        if (factoryNames == null || factoryNames.isEmpty()) {
             return null;
         }
-        Directory dir = null;
-        for (DirectoryFactory factory : potentialFactories) {
-            dir = factory.getDirectory(directoryName);
-            if (null != dir) {
-                break;
+        for (String factoryName : factoryNames) {
+            DirectoryFactory targetFactory = factories.getFactory(factoryName);
+            if (targetFactory != null) {
+                return targetFactory.getDirectory(directoryName);
             }
         }
-        return dir;
+        return null;
     }
 
     public Directory getDirectory(String name, DocumentModel documentContext)
@@ -147,8 +147,9 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         Directory directory = getDirectory(localDirectoryName);
 
         if (directory == null && !name.equals(localDirectoryName)) {
-            log.debug("The local directory name " + localDirectoryName
-                    + " not found. Look for the default one : " + name);
+            log.debug(String.format("The local directory named '%s' was"
+                    + " not found. Look for the default one named: %s",
+                    localDirectoryName, name));
             directory = getDirectory(name);
         }
 
@@ -172,7 +173,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     public List<Directory> getDirectories() throws DirectoryException {
         List<Directory> directoryList = new ArrayList<Directory>();
-        for (DirectoryFactory factory : factories.values()) {
+        for (DirectoryFactory factory : factories.getFactories()) {
             List<Directory> list = factory.getDirectories();
             directoryList.addAll(list);
         }
@@ -181,13 +182,13 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        factories = new HashMap<String, DirectoryFactory>();
-        factoriesByDirectoryName = new HashMap<String, List<DirectoryFactory>>();
+        factories = new DirectoryFactoryRegistry();
+        factoriesByDirectoryName = new DirectoryFactoryMapperRegistry();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        for (DirectoryFactory factory : factories.values()) {
+        for (DirectoryFactory factory : factories.getFactories()) {
             factory.shutdown();
         }
         factories = null;
@@ -200,7 +201,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         for (Object contrib : contribs) {
             DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contrib;
             String factoryName = factoryDescriptor.getFactoryName();
-            factories.put(factoryName, new DirectoryFactoryProxy(factoryName));
+            factories.addContribution(new DirectoryFactoryProxy(factoryName));
             log.debug("registered factory: " + factoryName);
         }
     }
@@ -211,40 +212,36 @@ public class DirectoryServiceImpl extends DefaultComponent implements
         for (Object contrib : contribs) {
             DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contrib;
             String factoryName = factoryDescriptor.getFactoryName();
-            DirectoryFactory factoryToRemove = factories.get(factoryName);
+            DirectoryFactory factoryToRemove = factories.getFactory(factoryName);
             if (factoryToRemove == null) {
-                log.warn("factory: " + factoryName + "was not registered");
+                log.warn(String.format("Factory '%s' was not registered",
+                        factoryName));
                 return;
             }
             factoryToRemove.shutdown();
-
-            for (List<DirectoryFactory> potentialFactories : factoriesByDirectoryName.values()) {
-                potentialFactories.remove(factoryToRemove);
-            }
-
-            factories.remove(factoryName);
+            // XXX: do not cleanup mappers, lookup will ignore non-registered
+            // factories anyway
+            factories.removeContribution(factoryToRemove);
             log.debug("unregistered factory: " + factoryName);
         }
     }
 
     public void registerDirectory(String directoryName, DirectoryFactory factory) {
-        List<DirectoryFactory> existingFactories = factoriesByDirectoryName.get(directoryName);
-        if (existingFactories == null) {
-            existingFactories = new ArrayList<DirectoryFactory>();
-            factoriesByDirectoryName.put(directoryName, existingFactories);
+        // compatibility code to add otherwise missing memory factory (as it's
+        // not registered via extension points)
+        if (factory instanceof MemoryDirectoryFactory) {
+            factories.addContribution(factory);
         }
-        // remove existing occurrence of the factory if any to put factory in
-        // the first position
-        existingFactories.remove(factory);
-        existingFactories.add(0, factory);
+        DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(
+                directoryName, factory.getName());
+        factoriesByDirectoryName.addContribution(contrib);
     }
 
     public void unregisterDirectory(String directoryName,
             DirectoryFactory factory) {
-        List<DirectoryFactory> existingFactories = factoriesByDirectoryName.get(directoryName);
-        if (existingFactories != null) {
-            existingFactories.remove(factory);
-        }
+        DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(
+                directoryName, factory.getName());
+        factoriesByDirectoryName.removeContribution(contrib);
     }
 
     public List<String> getDirectoryNames() throws DirectoryException {

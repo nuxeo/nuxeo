@@ -110,4 +110,14 @@ public class InverseReference extends AbstractReference {
         dualReference.setTargetIdsForSource(targetId, sourceIds);
     }
 
+    @Override
+    protected AbstractReference newInstance() {
+        return new InverseReference();
+    }
+
+    public InverseReference clone() {
+        InverseReference clone = (InverseReference) super.clone();
+        clone.dualReferenceName = dualReferenceName;
+        return clone;
+    }
 }

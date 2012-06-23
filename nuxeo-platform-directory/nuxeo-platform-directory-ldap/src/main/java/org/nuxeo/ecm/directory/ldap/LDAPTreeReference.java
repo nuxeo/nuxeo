@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.naming.*;
+import javax.naming.InvalidNameException;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
@@ -41,8 +43,8 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
- * Implementation of the directory Reference interface that makes it possible to
- * retrieve children of a node in the LDAP tree structure.
+ * Implementation of the directory Reference interface that makes it possible
+ * to retrieve children of a node in the LDAP tree structure.
  *
  * @author Anahide Tchertchian
  */
@@ -326,11 +328,13 @@ public class LDAPTreeReference extends AbstractReference {
      * @param dn the raw unnormalized dn
      * @return lowercase version without whitespace after commas
      */
-    protected static String pseudoNormalizeDn(String dn) throws InvalidNameException {
+    protected static String pseudoNormalizeDn(String dn)
+            throws InvalidNameException {
         LdapName ldapName = new LdapName(dn);
         List<String> rdns = new ArrayList<String>();
         for (Rdn rdn : ldapName.getRdns()) {
-            String value = rdn.getValue().toString().toLowerCase().replaceAll(",", "\\\\,");
+            String value = rdn.getValue().toString().toLowerCase().replaceAll(
+                    ",", "\\\\,");
             String rdnStr = rdn.getType().toLowerCase() + "=" + value;
             rdns.add(0, rdnStr);
         }
@@ -407,4 +411,20 @@ public class LDAPTreeReference extends AbstractReference {
                         + " with targetDirectory='%s'", fieldName,
                 sourceDirectoryName, targetDirectoryName);
     }
+
+    @Override
+    protected AbstractReference newInstance() {
+        return new LDAPTreeReference();
+    }
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    public LDAPTreeReference clone() {
+        LDAPTreeReference clone = (LDAPTreeReference) super.clone();
+        clone.scope = scope;
+        return clone;
+    }
+
 }

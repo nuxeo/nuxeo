@@ -28,9 +28,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 @XObject(value = "staticFilter")
 public class SQLStaticFilter implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @XNode("column")
@@ -64,6 +61,15 @@ public class SQLStaticFilter implements Serializable {
     public Column getDirectoryColumn(Table table, boolean nativeCase)
             throws DirectoryException {
         return table.getColumn(column);
+    }
+
+    public SQLStaticFilter clone() {
+        SQLStaticFilter clone = new SQLStaticFilter();
+        clone.column = column;
+        clone.operator = operator;
+        clone.value = value;
+        clone.type = type;
+        return clone;
     }
 
 }

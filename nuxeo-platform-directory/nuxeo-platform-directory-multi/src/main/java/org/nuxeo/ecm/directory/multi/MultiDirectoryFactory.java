@@ -20,9 +20,7 @@
 package org.nuxeo.ecm.directory.multi;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +35,6 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * @author Florent Guillaume
- *
  */
 public class MultiDirectoryFactory extends DefaultComponent implements
         DirectoryFactory {
@@ -48,10 +45,10 @@ public class MultiDirectoryFactory extends DefaultComponent implements
 
     private static DirectoryService directoryService;
 
-    protected Map<String, MultiDirectory> directories;
+    protected MultiDirectoryRegistry directories;
 
     public Directory getDirectory(String name) {
-        return directories.get(name);
+        return directories.getDirectory(name);
     }
 
     public String getName() {
@@ -60,7 +57,7 @@ public class MultiDirectoryFactory extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) {
-        directories = new HashMap<String, MultiDirectory>();
+        directories = new MultiDirectoryRegistry();
     }
 
     @Override
@@ -75,8 +72,7 @@ public class MultiDirectoryFactory extends DefaultComponent implements
             directoryService = Framework.getLocalService(DirectoryService.class);
             if (directoryService == null) {
                 try {
-                    directoryService = Framework.getService(
-                            DirectoryService.class);
+                    directoryService = Framework.getService(DirectoryService.class);
                 } catch (Exception e) {
                     log.error("Can't find Directory Service", e);
                 }
@@ -91,47 +87,38 @@ public class MultiDirectoryFactory extends DefaultComponent implements
         DirectoryService dirService = getDirectoryService();
         for (Object contrib : contribs) {
             MultiDirectoryDescriptor descriptor = (MultiDirectoryDescriptor) contrib;
+            directories.addContribution(descriptor);
             String name = descriptor.name;
-            if (descriptor.remove) {
-                log.info("Directory removed: " + name);
-                directories.remove(name);
-                dirService.unregisterDirectory(name, this);
-                continue;
-            }
-            if (directories.containsKey(name)) {
-                MultiDirectoryDescriptor previous = directories.get(name).getDescriptor();
-                previous.merge(descriptor);
-                log.info("Directory registration updated: " + name);
-            } else {
-                MultiDirectory directory = new MultiDirectory(descriptor);
-                directories.put(name, directory);
+            if (directories.getDirectory(name) != null) {
                 dirService.registerDirectory(name, this);
-                log.info("Directory registered: " + name);
+            } else {
+                // handle case where directory is marked with "remove"
+                dirService.unregisterDirectory(name, this);
             }
         }
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws DirectoryException {
+    public void unregisterExtension(Extension extension)
+            throws DirectoryException {
         Object[] contribs = extension.getContributions();
         DirectoryService dirService = getDirectoryService();
         for (Object contrib : contribs) {
             MultiDirectoryDescriptor descriptor = (MultiDirectoryDescriptor) contrib;
             String directoryName = descriptor.name;
             dirService.unregisterDirectory(directoryName, this);
-            directories.get(directoryName).shutdown();
-            directories.remove(directoryName);
+            directories.removeContribution(descriptor);
         }
     }
 
     public void shutdown() throws DirectoryException {
-        for (Directory directory : directories.values()) {
+        for (Directory directory : directories.getDirectories()) {
             directory.shutdown();
         }
     }
 
     public List<Directory> getDirectories() {
-        return new ArrayList<Directory>(directories.values());
+        return new ArrayList<Directory>(directories.getDirectories());
     }
 
 }

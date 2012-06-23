@@ -24,7 +24,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class DirectoryFactoryProxy implements DirectoryFactory {
 
@@ -36,9 +35,25 @@ public class DirectoryFactoryProxy implements DirectoryFactory {
         this.componentName = componentName;
     }
 
+    /**
+     * Returns the name of the component that's going to be lookup up, as it's
+     * the one knowing about its own registered directories.
+     *
+     * @since 5.6
+     */
+    public String getComponentName() {
+        return componentName;
+    }
+
     private DirectoryFactory getRealObject() {
         if (factory == null) {
-            factory = (DirectoryFactory) Framework.getRuntime().getComponent(componentName);
+            factory = (DirectoryFactory) Framework.getRuntime().getComponent(
+                    componentName);
+        }
+        if (factory == null) {
+            throw new RuntimeException(String.format(
+                    "No Runtime component found for directory "
+                            + "factory '%s'", componentName));
         }
         return factory;
     }

@@ -64,22 +64,21 @@ import com.sun.jndi.ldap.LdapURL;
 /**
  * Implementation of the directory Reference interface that leverage two common
  * ways of storing relationships in LDAP directories:
- *
  * <ul>
  * <li>the static attribute strategy where a multi-valued attribute store the
  * exhaustive list of distinguished names of the refereed entries (eg. the
  * uniqueMember attribute of the groupOfUniqueNames objectclass)</li>
- * <li>the dynamic attribute strategy where a potentially multi-valued attribute
- * stores a ldap urls intensively describing the refereed LDAP entries (eg. the
- * memberURLs attribute of the groupOfURLs objectclass)</li>
+ * <li>the dynamic attribute strategy where a potentially multi-valued
+ * attribute stores a ldap urls intensively describing the refereed LDAP
+ * entries (eg. the memberURLs attribute of the groupOfURLs objectclass)</li>
  * </ul>
- *
- * Please note that both static and dynamic references are resolved in read mode
- * whereas only the static attribute strategy is used when creating new
+ * <p>
+ * Please note that both static and dynamic references are resolved in read
+ * mode whereas only the static attribute strategy is used when creating new
  * references or when deleting existing ones (write / update mode).
- *
- * Some design considerations behind the implementation of such reference can be
- * found at: http://jira.nuxeo.org/browse/NXP-1506
+ * <p>
+ * Some design considerations behind the implementation of such reference can
+ * be found at: http://jira.nuxeo.org/browse/NXP-1506
  *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
@@ -98,10 +97,8 @@ public class LDAPReference extends AbstractReference {
 
     /**
      * Resolve staticAttributeId as distinguished names (true by default) such
-     * as in the uniqueMember field of groupOfUniqueNames.
-     *
-     * Set to false to resolve as simple id (as in memberUID of posixGroup for
-     * instance).
+     * as in the uniqueMember field of groupOfUniqueNames. Set to false to
+     * resolve as simple id (as in memberUID of posixGroup for instance).
      */
     @XNode("@staticAttributeIdIsDn")
     private boolean staticAttributeIdIsDn = true;
@@ -174,8 +171,8 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * @return true if the reference should resolve dynamically refereed entries
-     *         (identified by a LDAP url-valued attribute)
+     * @return true if the reference should resolve dynamically refereed
+     *         entries (identified by a LDAP url-valued attribute)
      */
     public boolean isDynamic() {
         return dynamicAttributeId != null;
@@ -259,7 +256,8 @@ public class LDAPReference extends AbstractReference {
         LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
         try {
-            // fetch the entry to be able to run the security policy implemented in an entry adaptor
+            // fetch the entry to be able to run the security policy
+            // implemented in an entry adaptor
             DocumentModel sourceEntry = sourceSession.getEntry(sourceId, false);
             if (sourceEntry == null) {
                 throw new DirectoryException(
@@ -278,7 +276,8 @@ public class LDAPReference extends AbstractReference {
                 for (String targetId : targetIds) {
                     if (staticAttributeIdIsDn) {
                         // TODO optim: avoid LDAP search request when targetDn
-                        // can be forged client side (rdnAttribute = idAttribute
+                        // can be forged client side (rdnAttribute =
+                        // idAttribute
                         // and scope is onelevel)
                         ldapEntry = targetSession.getLdapEntry(targetId);
                         if (ldapEntry == null) {
@@ -326,9 +325,9 @@ public class LDAPReference extends AbstractReference {
                                 log.debug(String.format(
                                         "LDAPReference.addLinks(%s, [%s]): LDAP modifyAttributes dn='%s'"
                                                 + " mod_op='REMOVE_ATTRIBUTE' attrs='%s' [%s]",
-                                        sourceId, StringUtils.join(targetIds,
-                                                ", "), sourceDn, cleanAttrs,
-                                        this));
+                                        sourceId,
+                                        StringUtils.join(targetIds, ", "),
+                                        sourceDn, cleanAttrs, this));
                             }
                             sourceSession.dirContext.modifyAttributes(sourceDn,
                                     DirContext.REMOVE_ATTRIBUTE, cleanAttrs);
@@ -394,8 +393,10 @@ public class LDAPReference extends AbstractReference {
                 }
 
                 for (String sourceId : sourceIds) {
-                    // fetch the entry to be able to run the security policy implemented in an entry adaptor
-                    DocumentModel sourceEntry = sourceSession.getEntry(sourceId, false);
+                    // fetch the entry to be able to run the security policy
+                    // implemented in an entry adaptor
+                    DocumentModel sourceEntry = sourceSession.getEntry(
+                            sourceId, false);
                     if (sourceEntry == null) {
                         log.warn(String.format(
                                 "entry %s in directory %s not found: could not add link to %s in directory %s",
@@ -587,7 +588,8 @@ public class LDAPReference extends AbstractReference {
                 // step #2.1: fetch the target entry to apply the ldap url
                 // filters of the candidate sources on it
                 if (targetLdapEntry == null) {
-                    // only fetch the entry if not already fetched by the static
+                    // only fetch the entry if not already fetched by the
+                    // static
                     // attributes references resolution
                     targetLdapEntry = targetSession.getLdapEntry(targetId, true);
                 }
@@ -621,7 +623,8 @@ public class LDAPReference extends AbstractReference {
                 try {
                     while (results.hasMore()) {
                         // step #2.3: for each sourceId and each ldapUrl test
-                        // whether the current target entry matches the collected
+                        // whether the current target entry matches the
+                        // collected
                         // URL
                         Attributes sourceAttributes = results.next().getAttributes();
 
@@ -642,23 +645,25 @@ public class LDAPReference extends AbstractReference {
                                     int targetDnSize = new LdapName(targetDn).size();
                                     int urlDnSize = new LdapName(candidateDN).size();
                                     if (targetDnSize - urlDnSize > 1) {
-                                        // target is not a direct child of the DN of the
+                                        // target is not a direct child of the
+                                        // DN of the
                                         // LDAP URL
                                         continue;
                                     }
                                 }
 
-                                // check that the target entry matches the filter
+                                // check that the target entry matches the
+                                // filter
                                 if (getFilterMatcher().match(targetAttributes,
                                         ldapUrl.getFilter())) {
-                                    // the target match the source url, add it to the
+                                    // the target match the source url, add it
+                                    // to the
                                     // collected ids
                                     sourceIds.add(sourceAttributes.get(
                                             sourceSession.idAttribute).get().toString());
                                 }
                             }
-                        }
-                        finally {
+                        } finally {
                             ldapUrls.close();
                         }
                     }
@@ -687,8 +692,8 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Fetches both statically and dynamically defined references and merges the
-     * results.
+     * Fetches both statically and dynamically defined references and merges
+     * the results.
      *
      * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
@@ -719,11 +724,13 @@ public class LDAPReference extends AbstractReference {
      * @return lowercase version without whitespace after commas
      * @throws InvalidNameException
      */
-    protected static String pseudoNormalizeDn(String dn) throws InvalidNameException {
+    protected static String pseudoNormalizeDn(String dn)
+            throws InvalidNameException {
         LdapName ldapName = new LdapName(dn);
         List<String> rdns = new ArrayList<String>();
         for (Rdn rdn : ldapName.getRdns()) {
-            String value = rdn.getValue().toString().toLowerCase().replaceAll(",", "\\\\,");
+            String value = rdn.getValue().toString().toLowerCase().replaceAll(
+                    ",", "\\\\,");
             String rdnStr = rdn.getType().toLowerCase() + "=" + value;
             rdns.add(0, rdnStr);
         }
@@ -731,11 +738,13 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Optimized method to spare a LDAP request when the caller is a LDAPSession
-     * object that has already fetched the LDAP Attribute instances.
+     * Optimized method to spare a LDAP request when the caller is a
+     * LDAPSession object that has already fetched the LDAP Attribute
+     * instances.
      * <p>
      * This method should return the same results as the sister method:
-     * org.nuxeo.ecm.directory.Reference#getTargetIdsForSource(java.lang.String)
+     * org.nuxeo
+     * .ecm.directory.Reference#getTargetIdsForSource(java.lang.String)
      *
      * @return target reference ids
      * @throws DirectoryException
@@ -792,7 +801,8 @@ public class LDAPReference extends AbstractReference {
                         String id = null;
 
                         if (targetSession.rdnMatchesIdField()) {
-                            // optim: do not fetch the entry to get its true id but
+                            // optim: do not fetch the entry to get its true id
+                            // but
                             // guess it by reading the targetDn
                             LdapName name = new LdapName(targetDn);
                             String rdn = name.get(name.size() - 1);
@@ -803,13 +813,16 @@ public class LDAPReference extends AbstractReference {
                             if (id == null) {
                                 log.warn(String.format(
                                         "ignoring target '%s' (missing attribute '%s') while resolving reference '%s'",
-                                        targetDn, targetSession.idAttribute, this));
+                                        targetDn, targetSession.idAttribute,
+                                        this));
                                 continue;
                             }
                         }
                         if (forceDnConsistencyCheck) {
-                            // check that the referenced entry is actually part of
-                            // the target directory (takes care of the filters and
+                            // check that the referenced entry is actually part
+                            // of
+                            // the target directory (takes care of the filters
+                            // and
                             // the scope)
                             // this check can be very expensive on large groups
                             // and thus not enabled by default
@@ -828,8 +841,7 @@ public class LDAPReference extends AbstractReference {
                             targetIds.add(id);
                         }
                     }
-                }
-                finally {
+                } finally {
                     targetDns.close();
                 }
             }
@@ -843,7 +855,8 @@ public class LDAPReference extends AbstractReference {
                 NamingEnumeration<?> rawldapUrls = dynamicAttribute.getAll();
                 try {
                     while (rawldapUrls.hasMore()) {
-                        LdapURL ldapUrl = new LdapURL(rawldapUrls.next().toString());
+                        LdapURL ldapUrl = new LdapURL(
+                                rawldapUrls.next().toString());
                         String linkDn = pseudoNormalizeDn(ldapUrl.getDN());
                         String directoryDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
                         int scope = SearchControls.ONELEVEL_SCOPE;
@@ -859,14 +872,16 @@ public class LDAPReference extends AbstractReference {
                         } else if (directoryDn.endsWith(linkDn)
                                 && linkDn.length() < directoryDn.length()
                                 && scope == SearchControls.ONELEVEL_SCOPE) {
-                            // optim #2: the link dn is pointing to elements that at
+                            // optim #2: the link dn is pointing to elements
+                            // that at
                             // upperlevel than directory elements
                             continue;
                         } else {
 
                             // Search for references elements
                             targetIds.addAll(getReferencedElements(attributes,
-                                    directoryDn, linkDn, ldapUrl.getFilter(), scope));
+                                    directoryDn, linkDn, ldapUrl.getFilter(),
+                                    scope));
 
                         }
                     }
@@ -919,7 +934,8 @@ public class LDAPReference extends AbstractReference {
 
                             // Search for references elements
                             targetIds.addAll(getReferencedElements(attributes,
-                                    directoryDn, linkDnValue, filterValue, scope));
+                                    directoryDn, linkDnValue, filterValue,
+                                    scope));
 
                         }
                     } finally {
@@ -954,14 +970,13 @@ public class LDAPReference extends AbstractReference {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPReference.getIdForDn(session, %s): LDAP get dn='%s'"
-                                + " attribute ids to collect='%s' [%s]",
-                        dn, dn, StringUtils.join(
-                                attributeIdsToCollect, ", "), this));
+                                + " attribute ids to collect='%s' [%s]", dn,
+                        dn, StringUtils.join(attributeIdsToCollect, ", "), this));
             }
 
             Name name = new CompositeName().add(dn);
-            entry = session.dirContext.getAttributes(
-                    name, attributeIdsToCollect);
+            entry = session.dirContext.getAttributes(name,
+                    attributeIdsToCollect);
         } catch (NamingException e) {
             return null;
         }
@@ -1055,8 +1070,8 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Remove existing statically defined links for the given source id (dynamic
-     * references remain unaltered)
+     * Remove existing statically defined links for the given source id
+     * (dynamic references remain unaltered)
      *
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(String)
      */
@@ -1102,19 +1117,20 @@ public class LDAPReference extends AbstractReference {
                         if (forceDnConsistencyCheck) {
                             String id = getIdForDn(targetSession, dn);
                             if (id != null && targetSession.hasEntry(id)) {
-                                // this is an entry managed by the current reference
+                                // this is an entry managed by the current
+                                // reference
                                 attrToRemove.add(dn);
                             }
                         } else if (dn.endsWith(targetBaseDn)) {
-                            // this is an entry managed by the current reference
+                            // this is an entry managed by the current
+                            // reference
                             attrToRemove.add(dn);
                         }
                     } else {
                         attrToRemove.add(targetKeyAttr);
                     }
                 }
-            }
-            finally {
+            } finally {
                 oldAttrs.close();
             }
             try {
@@ -1166,8 +1182,8 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Remove existing statically defined links for the given target id (dynamic
-     * references remain unaltered)
+     * Remove existing statically defined links for the given target id
+     * (dynamic references remain unaltered)
      *
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(String)
      */
@@ -1247,20 +1263,25 @@ public class LDAPReference extends AbstractReference {
                         Attribute attr = attrs.get(attributeId);
                         try {
                             if (attr.size() == 1) {
-                                // the attribute holds the last reference, put the
-                                // empty ref. marker before removing the attribute
-                                // since empty attribute are often not allowed by
+                                // the attribute holds the last reference, put
+                                // the
+                                // empty ref. marker before removing the
+                                // attribute
+                                // since empty attribute are often not allowed
+                                // by
                                 // the server schema
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format(
                                             "LDAPReference.removeLinksForTarget(%s): LDAP modifyAttributes key='%s' "
                                                     + "mod_op='ADD_ATTRIBUTE' attrs='%s' [%s]",
-                                            targetId, result.getNameInNamespace(),
-                                            attrs, this));
+                                            targetId,
+                                            result.getNameInNamespace(), attrs,
+                                            this));
                                 }
                                 sourceSession.dirContext.modifyAttributes(
                                         result.getNameInNamespace(),
-                                        DirContext.ADD_ATTRIBUTE, emptyAttribute);
+                                        DirContext.ADD_ATTRIBUTE,
+                                        emptyAttribute);
                             }
                             // remove the reference to the target key
                             attrs = new BasicAttributes();
@@ -1279,7 +1300,8 @@ public class LDAPReference extends AbstractReference {
                                     DirContext.REMOVE_ATTRIBUTE, attrs);
                         } catch (SchemaViolationException e) {
                             if (isDynamic()) {
-                                // we are editing an entry that has no static part
+                                // we are editing an entry that has no static
+                                // part
                                 log.warn(String.format(
                                         "cannot remove dynamic reference in field %s for target %s",
                                         getFieldName(), targetId));
@@ -1318,8 +1340,8 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Set the list of statically defined references for a given source (dynamic
-     * references remain unaltered)
+     * Set the list of statically defined references for a given source
+     * (dynamic references remain unaltered)
      *
      * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(String,
      *      List)
@@ -1341,4 +1363,27 @@ public class LDAPReference extends AbstractReference {
                 fieldName, sourceDirectoryName, targetDirectoryName,
                 staticAttributeId, dynamicAttributeId);
     }
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    protected AbstractReference newInstance() {
+        return new LDAPReference();
+    }
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    public LDAPReference clone() {
+        LDAPReference clone = (LDAPReference) super.clone();
+        clone.forceDnConsistencyCheck = forceDnConsistencyCheck;
+        clone.staticAttributeIdIsDn = staticAttributeIdIsDn;
+        clone.staticAttributeId = staticAttributeId;
+        clone.dynamicAttributeId = dynamicAttributeId;
+        clone.fieldName = fieldName;
+        return clone;
+    }
+
 }

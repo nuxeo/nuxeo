@@ -188,13 +188,13 @@ public class TableReference extends AbstractReference {
 
     public void addLink(String sourceId, String targetId, SQLSession session,
             boolean checkExisting) throws DirectoryException {
-        // OG: the following quesry should have avoided the round trips but does
-        // not work for some reason that might be related to a bug in the JDBC
-        // driver:
+        // OG: the following query should have avoided the round trips but
+        // does not work for some reason that might be related to a bug in the
+        // JDBC driver:
         //
         // String sql = String.format(
-        // "INSERT INTO %s (%s, %s) (SELECT ?, ? FROM %s WHERE %s = ? AND %s = ?
-        // HAVING COUNT(*) = 0)", tableName, sourceColumn, targetColumn,
+        // "INSERT INTO %s (%s, %s) (SELECT ?, ? FROM %s WHERE %s = ? AND %s =
+        // ? HAVING COUNT(*) = 0)", tableName, sourceColumn, targetColumn,
         // tableName, sourceColumn, targetColumn);
 
         // first step: check that this link does not exist yet
@@ -414,7 +414,8 @@ public class TableReference extends AbstractReference {
                 for (String unwantedId : idsToDelete) {
                     if (session.logger.isLogEnabled()) {
                         session.logger.logSQL(deleteSql,
-                                Arrays.<Serializable> asList(filterValue, unwantedId));
+                                Arrays.<Serializable> asList(filterValue,
+                                        unwantedId));
                     }
                     ps.setString(1, filterValue);
                     ps.setString(2, unwantedId);
@@ -516,8 +517,10 @@ public class TableReference extends AbstractReference {
         if (table == null) {
             boolean nativeCase = getSQLSourceDirectory().useNativeCase();
             table = SQLHelper.addTable(tableName, getDialect(), nativeCase);
-            SQLHelper.addColumn(table, sourceColumn, ColumnType.STRING, nativeCase);
-            SQLHelper.addColumn(table, targetColumn, ColumnType.STRING, nativeCase);
+            SQLHelper.addColumn(table, sourceColumn, ColumnType.STRING,
+                    nativeCase);
+            SQLHelper.addColumn(table, targetColumn, ColumnType.STRING,
+                    nativeCase);
         }
         return table;
     }
@@ -551,6 +554,27 @@ public class TableReference extends AbstractReference {
 
     public String getDataFileName() {
         return dataFileName;
+    }
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    protected AbstractReference newInstance() {
+        return new TableReference();
+    }
+
+    /**
+     * @since 5.6
+     */
+    public TableReference clone() {
+        TableReference clone = (TableReference) super.clone();
+        clone.tableName = tableName;
+        clone.sourceColumn = sourceColumn;
+        clone.targetColumn = targetColumn;
+        clone.schemaName = schemaName;
+        clone.dataFileName = dataFileName;
+        return clone;
     }
 
 }

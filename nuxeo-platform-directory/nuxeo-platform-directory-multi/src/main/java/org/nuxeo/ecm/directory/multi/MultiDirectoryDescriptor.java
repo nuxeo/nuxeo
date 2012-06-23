@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Florent Guillaume
- *
  */
 @XObject(value = "directory")
 public class MultiDirectoryDescriptor implements Cloneable {
@@ -83,6 +82,27 @@ public class MultiDirectoryDescriptor implements Cloneable {
                 sources = s;
             }
         }
+    }
+
+    /**
+     * @since 5.6
+     */
+    public MultiDirectoryDescriptor clone() {
+        MultiDirectoryDescriptor clone = new MultiDirectoryDescriptor();
+        clone.name = name;
+        clone.schemaName = schemaName;
+        clone.idField = idField;
+        clone.passwordField = passwordField;
+        clone.readOnly = readOnly;
+        clone.querySizeLimit = querySizeLimit;
+        clone.remove = remove;
+        if (sources != null) {
+            clone.sources = new SourceDescriptor[sources.length];
+            for (int i = 0; i < sources.length; i++) {
+                clone.sources[i] = sources[i].clone();
+            }
+        }
+        return clone;
     }
 
 }

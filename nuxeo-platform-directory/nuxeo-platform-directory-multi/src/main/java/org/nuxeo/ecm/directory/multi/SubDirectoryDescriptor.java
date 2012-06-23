@@ -27,7 +27,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Florent Guillaume
- *
  */
 @XObject("subDirectory")
 public class SubDirectoryDescriptor {
@@ -47,4 +46,19 @@ public class SubDirectoryDescriptor {
                 Arrays.toString(fields));
     }
 
+    /**
+     * @since 5.6
+     */
+    public SubDirectoryDescriptor clone() {
+        SubDirectoryDescriptor clone = new SubDirectoryDescriptor();
+        clone.name = name;
+        clone.isOptional = isOptional;
+        if (fields != null) {
+            clone.fields = new FieldDescriptor[fields.length];
+            for (int i = 0; i < fields.length; i++) {
+                clone.fields[i] = fields[i].clone();
+            }
+        }
+        return clone;
+    }
 }

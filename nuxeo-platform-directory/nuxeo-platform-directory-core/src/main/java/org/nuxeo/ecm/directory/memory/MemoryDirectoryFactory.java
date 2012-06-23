@@ -32,7 +32,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
- *
  */
 public class MemoryDirectoryFactory implements DirectoryFactory {
 
@@ -42,13 +41,11 @@ public class MemoryDirectoryFactory implements DirectoryFactory {
 
     public MemoryDirectoryFactory() throws DirectoryException {
         directories = new HashMap<String, MemoryDirectory>();
-        // GR now NXRuntime provides the local one by default
         try {
             directoryService = Framework.getService(DirectoryService.class);
         } catch (Exception e) {
             throw new DirectoryException("Error in Directory Service lookup", e);
         }
-//        directoryService=MultiDirectoryFactory.getDirectoryService();
     }
 
     public String getName() {

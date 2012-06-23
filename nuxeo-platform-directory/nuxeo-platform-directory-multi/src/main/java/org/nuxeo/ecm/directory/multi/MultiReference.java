@@ -54,10 +54,11 @@ public class MultiReference extends AbstractReference {
         List<String> collect(Reference dir) throws DirectoryException;
     }
 
-    protected List<String> doCollect(Collector extractor) throws DirectoryException {
+    protected List<String> doCollect(Collector extractor)
+            throws DirectoryException {
         Set<String> ids = new HashSet<String>();
-        for(SourceDescriptor src:dir.getDescriptor().sources) {
-            for (SubDirectoryDescriptor sub:src.subDirectories) {
+        for (SourceDescriptor src : dir.getDescriptor().sources) {
+            for (SubDirectoryDescriptor sub : src.subDirectories) {
                 Directory dir = MultiDirectoryFactory.getDirectoryService().getDirectory(
                         sub.name);
                 if (dir == null) {
@@ -78,7 +79,8 @@ public class MultiReference extends AbstractReference {
     public List<String> getSourceIdsForTarget(final String targetId)
             throws DirectoryException {
         return doCollect(new Collector() {
-            public List<String> collect(Reference ref) throws DirectoryException {
+            public List<String> collect(Reference ref)
+                    throws DirectoryException {
                 return ref.getSourceIdsForTarget(targetId);
             }
         });
@@ -87,7 +89,8 @@ public class MultiReference extends AbstractReference {
     public List<String> getTargetIdsForSource(final String sourceId)
             throws DirectoryException {
         return doCollect(new Collector() {
-            public List<String> collect(Reference ref) throws DirectoryException {
+            public List<String> collect(Reference ref)
+                    throws DirectoryException {
                 return ref.getSourceIdsForTarget(sourceId);
             }
         });
@@ -109,6 +112,22 @@ public class MultiReference extends AbstractReference {
     public void setTargetIdsForSource(String sourceId, List<String> targetIds)
             throws DirectoryException {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    protected AbstractReference newInstance() {
+        return new MultiReference(dir, fieldName);
+    }
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    public AbstractReference clone() {
+        return super.clone();
     }
 
 }

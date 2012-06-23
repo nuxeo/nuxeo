@@ -27,7 +27,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Florent Guillaume
- *
  */
 @XObject("source")
 public class SourceDescriptor {
@@ -43,7 +42,24 @@ public class SourceDescriptor {
 
     @Override
     public String toString() {
-        return String.format("{source name=%s subDirectories=%s", name, Arrays.toString(subDirectories));
+        return String.format("{source name=%s subDirectories=%s", name,
+                Arrays.toString(subDirectories));
+    }
+
+    /**
+     * @since 5.6
+     */
+    public SourceDescriptor clone() {
+        SourceDescriptor clone = new SourceDescriptor();
+        clone.name = name;
+        clone.creation = creation;
+        if (subDirectories != null) {
+            clone.subDirectories = new SubDirectoryDescriptor[subDirectories.length];
+            for (int i = 0; i < subDirectories.length; i++) {
+                clone.subDirectories[i] = subDirectories[i].clone();
+            }
+        }
+        return clone;
     }
 
 }

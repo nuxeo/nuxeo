@@ -24,7 +24,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author Florent Guillaume
- *
  */
 @XObject("field")
 public class FieldDescriptor {
@@ -38,6 +37,16 @@ public class FieldDescriptor {
     @Override
     public String toString() {
         return String.format("{field name=%s for=%s", name, forField);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public FieldDescriptor clone() {
+        FieldDescriptor clone = new FieldDescriptor();
+        clone.name = name;
+        clone.forField = forField;
+        return clone;
     }
 
 }

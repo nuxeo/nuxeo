@@ -20,9 +20,7 @@
 package org.nuxeo.ecm.directory.ldap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +29,8 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFactory;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.ldap.registry.LDAPDirectoryRegistry;
+import org.nuxeo.ecm.directory.ldap.registry.LDAPServerRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -43,22 +43,22 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(LDAPDirectoryFactory.class);
 
-    private final Map<String, Directory> proxies = new HashMap<String, Directory>();
+    protected LDAPDirectoryRegistry proxies;
 
-    private final Map<String, LDAPServerDescriptor> servers = new HashMap<String, LDAPServerDescriptor>();
+    protected LDAPServerRegistry servers;
 
     public Directory getDirectory(String name) {
-        return proxies.get(name);
+        return proxies.getDirectory(name);
     }
 
     public List<Directory> getDirectories() {
         List<Directory> directories = new ArrayList<Directory>();
-        directories.addAll(proxies.values());
+        directories.addAll(proxies.getDirectories());
         return directories;
     }
 
     public LDAPServerDescriptor getServer(String name) {
-        return servers.get(name);
+        return servers.getServer(name);
     }
 
     public String getName() {
@@ -68,15 +68,15 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) {
         log.info("component activated");
-        proxies.clear();
-        servers.clear();
+        proxies = new LDAPDirectoryRegistry();
+        servers = new LDAPServerRegistry();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         log.info("component deactivated");
-        proxies.clear();
-        servers.clear();
+        proxies = null;
+        servers = null;
     }
 
     protected static DirectoryServiceImpl getDirectoryService() {
@@ -94,7 +94,8 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws DirectoryException {
+    public void unregisterExtension(Extension extension)
+            throws DirectoryException {
         String xp = extension.getExtensionPoint();
         if (xp.equals("directories")) {
             unregisterDirectoryExtension(extension);
@@ -107,9 +108,7 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             LDAPServerDescriptor descriptor = (LDAPServerDescriptor) contrib;
-            String descriptorName = descriptor.getName();
-            servers.put(descriptorName, descriptor);
-            log.info("server registered: " + descriptorName);
+            servers.addContribution(descriptor);
         }
     }
 
@@ -117,9 +116,7 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             LDAPServerDescriptor descriptor = (LDAPServerDescriptor) contrib;
-            String descriptorName = descriptor.getName();
-            servers.remove(descriptorName);
-            log.info("server unregistered: " + descriptorName);
+            servers.removeContribution(descriptor);
         }
     }
 
@@ -128,11 +125,8 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
         DirectoryServiceImpl dirService = getDirectoryService();
         for (Object contrib : contribs) {
             LDAPDirectoryDescriptor descriptor = (LDAPDirectoryDescriptor) contrib;
-            String descriptorName = descriptor.getName();
-
-            proxies.put(descriptorName, new LDAPDirectoryProxy(descriptor));
-            dirService.registerDirectory(descriptorName, this);
-            log.info("directory registered: " + descriptorName);
+            proxies.addContribution(descriptor);
+            dirService.registerDirectory(descriptor.getName(), this);
         }
     }
 
@@ -142,16 +136,13 @@ public class LDAPDirectoryFactory extends DefaultComponent implements
         DirectoryServiceImpl dirService = getDirectoryService();
         for (Object contrib : contribs) {
             LDAPDirectoryDescriptor descriptor = (LDAPDirectoryDescriptor) contrib;
-            String directoryName = descriptor.getName();
-            dirService.unregisterDirectory(directoryName, this);
-            proxies.get(directoryName).shutdown();
-            proxies.remove(directoryName);
-            log.info("directory unregistered: " + directoryName);
+            proxies.removeContribution(descriptor);
+            dirService.unregisterDirectory(descriptor.getName(), this);
         }
     }
 
     public void shutdown() throws DirectoryException {
-        for (Directory directory : proxies.values()) {
+        for (Directory directory : proxies.getDirectories()) {
             directory.shutdown();
         }
     }
