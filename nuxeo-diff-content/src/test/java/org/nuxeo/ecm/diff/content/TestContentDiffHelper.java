@@ -83,12 +83,13 @@ public class TestContentDiffHelper {
         DocumentModel rightDoc = createDoc(session, "rightDoc", "File",
                 "Right doc");
         String contentDiffURL = ContentDiffHelper.getContentDiffURL(leftDoc,
-                rightDoc, "file:content", ContentDiffConversionType.html.name());
+                rightDoc, "file:content",
+                ContentDiffConversionType.html.name(), "en_GB");
         StringBuilder sb = new StringBuilder("restAPI/contentDiff/test/");
         sb.append(leftDoc.getId());
         sb.append("/");
         sb.append(rightDoc.getId());
-        sb.append("/file:content/?conversionType=html");
+        sb.append("/file:content/?conversionType=html&locale=en_GB");
         assertEquals(sb.toString(), contentDiffURL);
     }
 

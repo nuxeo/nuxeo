@@ -41,15 +41,17 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class ContentDiffHelper {
 
-    private static final String CONTENT_DIFF_FANCYBOX_VIEW = "content_diff_fancybox";
+    public static final String CONTENT_DIFF_FANCYBOX_VIEW = "content_diff_fancybox";
 
-    private static final String LABEL_URL_PARAM_NAME = "label";
+    public static final String LABEL_URL_PARAM_NAME = "label";
 
-    private static final String XPATH_URL_PARAM_NAME = "xPath";
+    public static final String XPATH_URL_PARAM_NAME = "xPath";
 
-    private static final String CONVERSION_TYPE_URL_PARAM_NAME = "conversionType";
+    public static final String CONVERSION_TYPE_URL_PARAM_NAME = "conversionType";
 
-    private static final String CONTENT_DIFF_URL_PREFIX = "restAPI/contentDiff/";
+    public static final String LOCALE_URL_PARAM_NAME = "locale";
+
+    public static final String CONTENT_DIFF_URL_PREFIX = "restAPI/contentDiff/";
 
     public static final String CONTENT_DIFF_URL_DEFAULT_XPATH = "default";
 
@@ -107,13 +109,16 @@ public final class ContentDiffHelper {
      *
      * @param leftDoc the left doc
      * @param rightDoc the right doc
+     * @param conversionType the conversion type
+     * @param locale the locale
      * @return the content diff URL
      */
     public static String getContentDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, String conversionType) {
+            DocumentModel rightDoc, String conversionType, String locale) {
 
         return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
-                rightDoc, CONTENT_DIFF_URL_DEFAULT_XPATH, conversionType);
+                rightDoc, CONTENT_DIFF_URL_DEFAULT_XPATH, conversionType,
+                locale);
     }
 
     /**
@@ -123,13 +128,15 @@ public final class ContentDiffHelper {
      * @param rightDoc the right doc
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
+     * @param locale the locale
      * @return the content diff URL
      */
     public static String getContentDiffURL(DocumentModel leftDoc,
-            DocumentModel rightDoc, String propertyXPath, String conversionType) {
+            DocumentModel rightDoc, String propertyXPath,
+            String conversionType, String locale) {
 
         return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc,
-                rightDoc, propertyXPath, conversionType);
+                rightDoc, propertyXPath, conversionType, locale);
     }
 
     /**
@@ -140,11 +147,12 @@ public final class ContentDiffHelper {
      * @param rightDoc the right doc
      * @param propertyXPath the xpath
      * @param conversionType the conversion type
+     * @param locale the locale
      * @return the content diff URL
      */
     public static String getContentDiffURL(String repositoryName,
             DocumentModel leftDoc, DocumentModel rightDoc,
-            String propertyXPath, String conversionType) {
+            String propertyXPath, String conversionType, String locale) {
 
         if (propertyXPath == null) {
             propertyXPath = CONTENT_DIFF_URL_DEFAULT_XPATH;
@@ -161,11 +169,20 @@ public final class ContentDiffHelper {
         sb.append("/");
         sb.append(propertyXPath);
         sb.append("/");
+        boolean isQueryParam = false;
         if (!StringUtils.isEmpty(conversionType)) {
             sb.append("?");
             sb.append(CONVERSION_TYPE_URL_PARAM_NAME);
             sb.append("=");
             sb.append(conversionType);
+            isQueryParam = true;
+        }
+        if (!StringUtils.isEmpty(locale)) {
+            sb.append(isQueryParam ? "&" : "?");
+            sb.append(LOCALE_URL_PARAM_NAME);
+            sb.append("=");
+            sb.append(locale);
+            isQueryParam = true;
         }
 
         return sb.toString();

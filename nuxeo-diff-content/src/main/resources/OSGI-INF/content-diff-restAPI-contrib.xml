@@ -7,7 +7,7 @@
 
     <documentation>
       GET
-      /nuxeo/restAPI/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{subPath}?conversionType=(conversionType)
+      /nuxeo/restAPI/contentDiff/{repo}/{leftDocId}/{rightDocId}/{fieldXPath}/{subPath}?conversionType=(conversionType)&amp;locale={locale}
     </documentation>
 
     <restletPlugin name="contentDiff"

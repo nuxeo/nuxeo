@@ -82,9 +82,6 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
     @Override
     public void handle(Request req, Response res) {
 
-        // Forward locale from HttpRequest to Seam context
-        localeSelector.setLocale(getHttpRequest(req).getLocale());
-
         String repo = (String) req.getAttributes().get("repo");
         String leftDocId = (String) req.getAttributes().get("leftDocId");
         String rightDocId = (String) req.getAttributes().get("rightDocId");
@@ -101,9 +98,16 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         String subPath = sb.substring(0, sb.length() - 1);
 
         // Check conversion type param, default is html.
-        String conversionTypeParam = getQueryParamValue(req, "conversionType",
+        String conversionTypeParam = getQueryParamValue(req,
+                ContentDiffHelper.CONVERSION_TYPE_URL_PARAM_NAME,
                 ContentDiffConversionType.html.name());
         ContentDiffConversionType conversionType = ContentDiffConversionType.valueOf(conversionTypeParam);
+
+        // Check locale
+        String localeParam = getQueryParamValue(req,
+                ContentDiffHelper.LOCALE_URL_PARAM_NAME,
+                localeSelector.getLocaleString());
+        localeSelector.setLocaleString(localeParam);
 
         try {
             xpath = URLDecoder.decode(xpath, "UTF-8");
