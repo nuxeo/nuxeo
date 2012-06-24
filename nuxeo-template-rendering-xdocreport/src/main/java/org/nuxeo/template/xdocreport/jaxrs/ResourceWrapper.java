@@ -1,7 +1,5 @@
 package org.nuxeo.template.xdocreport.jaxrs;
 
-import java.util.ArrayList;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
@@ -17,15 +15,36 @@ public class ResourceWrapper {
 
     public static Resource wrap(TemplateSourceDocument srcDocument) {
         Resource rs = new Resource();
-        rs.setType(ResourceType.FILE);
+        rs.setType(ResourceType.TEMPLATE);
         try {
-            rs.setName(srcDocument.getFileName());
+            rs.setName(srcDocument.getName());
             rs.setId(srcDocument.getId());
+
+            Resource fileResource = new Resource();
+            fileResource.setName(srcDocument.getFileName());
+            fileResource.setId(srcDocument.getId());
+            fileResource.setType(ResourceType.DOCUMENT);
+
+            Resource METAResource = new Resource();
+            METAResource.setName("META-INF");
+            METAResource.setId(srcDocument.getId() + "/META-INF");
+            METAResource.setType(ResourceType.CATEGORY);
+
+            Resource fieldResource = new Resource();
+            fieldResource.setName(srcDocument.getName() + ".fields.xml");
+            fieldResource.setId(srcDocument.getId() + ".fields.xml");
+            fieldResource.setType(ResourceType.DOCUMENT);
+
+            METAResource.getChildren().add(fieldResource);
+
+            rs.getChildren().add(fileResource);
+            rs.getChildren().add(METAResource);
+
         } catch (ClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        rs.getChildren().addAll(new ArrayList<Resource>());
+        // rs.getChildren().addAll(new ArrayList<Resource>());
         return rs;
     }
 }

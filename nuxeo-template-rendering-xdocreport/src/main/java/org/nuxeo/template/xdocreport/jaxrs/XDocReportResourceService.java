@@ -30,7 +30,7 @@ import fr.opensagres.xdocreport.remoting.resources.domain.LargeBinaryData;
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
 import fr.opensagres.xdocreport.remoting.resources.domain.ResourceType;
 import fr.opensagres.xdocreport.remoting.resources.services.ResourcesException;
-import fr.opensagres.xdocreport.remoting.resources.services.rest.JAXRSResourcesService;
+import fr.opensagres.xdocreport.remoting.resources.services.jaxrs.JAXRSResourcesService;
 
 /**
  * 
@@ -56,7 +56,7 @@ public class XDocReportResourceService extends AbstractResourceService
 
     public Resource getRoot() {
         Resource root = new Resource();
-        root.setType(ResourceType.FOLDER);
+        root.setType(ResourceType.CATEGORY);
         root.setName("Nuxeo");
         root.setId("nuxeo");
         List<Resource> children = new ArrayList<Resource>();
@@ -137,17 +137,28 @@ public class XDocReportResourceService extends AbstractResourceService
     public LargeBinaryData downloadLarge(String resourcePath)
             throws ResourcesException {
 
-        List<TemplateSourceDocument> templates = getTemplates();
-        for (TemplateSourceDocument template : templates) {
-            if (template.getName().equals(resourcePath)
-                    || template.getId().equals(resourcePath)) {
-                try {
-                    return BinaryDataWrapper.wrap(template);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+        CoreSession session = getCoreSession();
+        try {
+            if (resourcePath.endsWith(".fields.xml")) {
+                String uuid = resourcePath.replace(".fields.xml", "");
+                DocumentModel targetDoc = session.getDocument(new IdRef(uuid));
+                TemplateSourceDocument template = targetDoc.getAdapter(TemplateSourceDocument.class);
+
+                List<String> types = template.getApplicableTypes();
+                String targetType = "File";
+                if (types.size() > 0) {
+                    targetType = types.get(0);
                 }
+                String xml = FieldDefinitionGenerator.generate(targetType);
+                return BinaryDataWrapper.wrapXml(xml, resourcePath);
+            } else {
+                String uuid = resourcePath;
+                DocumentModel targetDoc = session.getDocument(new IdRef(uuid));
+                TemplateSourceDocument template = targetDoc.getAdapter(TemplateSourceDocument.class);
+                return BinaryDataWrapper.wrap(template);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

@@ -16,7 +16,7 @@ public class JSONHelper {
 
     public static void writeResource(Resource resource, OutputStream out)
             throws Exception {
-        String prefix = "{ \"resource\" : { \"name\" : \"resources\", \"type\" : \"FOLDER\", \"children\" : ";
+        String prefix = "{ \"resource\" : { \"name\" : \"resources\", \"type\" : \"CATEGORY\", \"children\" : ";
         String suffix = " }}";
         out.write(prefix.getBytes());
         JsonGenerator gen = JsonWriter.createGenerator(out);

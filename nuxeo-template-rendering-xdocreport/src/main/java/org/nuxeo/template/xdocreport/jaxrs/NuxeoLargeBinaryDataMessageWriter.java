@@ -13,7 +13,7 @@ import javax.ws.rs.ext.Provider;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.LargeBinaryData;
-import fr.opensagres.xdocreport.remoting.resources.services.rest.LargeBinaryDataMessageBodyWriter;
+import fr.opensagres.xdocreport.remoting.resources.services.jaxrs.LargeBinaryDataMessageBodyWriter;
 
 @Provider
 public class NuxeoLargeBinaryDataMessageWriter extends

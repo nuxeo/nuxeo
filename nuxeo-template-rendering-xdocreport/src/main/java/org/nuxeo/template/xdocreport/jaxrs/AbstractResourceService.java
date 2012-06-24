@@ -6,9 +6,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
@@ -32,9 +32,19 @@ public abstract class AbstractResourceService extends DefaultObject {
 
     protected List<TemplateSourceDocument> getTemplates() {
         try {
+            List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
             CoreSession session = getCoreSession();
-            TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-            return tps.getAvailableTemplates(session, null);
+            StringBuffer sb = new StringBuffer(
+                    "select * from Document where ecm:mixinType = 'Template' AND ecm:currentLifeCycleState != 'deleted'");
+            sb.append(" AND tmpl:templateType = 'XDocReportProcessor'");
+            DocumentModelList docs = session.query(sb.toString());
+            for (DocumentModel doc : docs) {
+                TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
+                if (tmpl != null) {
+                    result.add(tmpl);
+                }
+            }
+            return result;
         } catch (Exception e) {
             log.error("Error while getting templates", e);
             return new ArrayList<TemplateSourceDocument>();

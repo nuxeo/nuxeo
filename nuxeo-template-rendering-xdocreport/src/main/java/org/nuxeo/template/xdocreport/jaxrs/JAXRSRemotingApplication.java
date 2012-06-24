@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
-import fr.opensagres.xdocreport.remoting.resources.services.rest.LargeBinaryDataMessageBodyReader;
+import fr.opensagres.xdocreport.remoting.resources.services.jaxrs.LargeBinaryDataMessageBodyReader;
 
 /**
  * 
