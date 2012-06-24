@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
+import static org.nuxeo.ecm.multi.tenant.Constants.POWER_USERS_GROUP;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_PROPERTY;
 import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantAdministratorsGroup;
 import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantMembersGroup;
@@ -39,8 +40,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.6
  */
 public class MultiTenantGroupComputer extends AbstractGroupComputer {
-
-    public static final String POWER_USERS_GROUP = "powerusers";
 
     @Override
     public List<String> getGroupsForUser(final NuxeoPrincipalImpl nuxeoPrincipal)

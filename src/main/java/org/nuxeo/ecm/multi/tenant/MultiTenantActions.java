@@ -30,6 +30,9 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.webapp.directory.DirectoryUIActionsBean;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,6 +48,9 @@ public class MultiTenantActions implements Serializable {
 
     @In(create = true)
     protected transient CoreSession documentManager;
+
+    @In(create = true)
+    protected DirectoryUIActionsBean directoryUIActions;
 
     public List<DocumentModel> getTenants() throws ClientException {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
@@ -64,6 +70,18 @@ public class MultiTenantActions implements Serializable {
     public void disableTenantIsolation() throws ClientException {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
         multiTenantService.disableTenantIsolation(documentManager);
+    }
+
+    public boolean isReadOnlyDirectory(String directoryName)
+            throws ClientException {
+        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        if (multiTenantService.isTenantIsolationEnabled(documentManager)) {
+            if (multiTenantService.isTenantAdministrator(documentManager.getPrincipal())) {
+                DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+                return !directoryService.getDirectory(directoryName).isMultiTenant();
+            }
+        }
+        return directoryUIActions.isReadOnly(directoryName);
     }
 
 }

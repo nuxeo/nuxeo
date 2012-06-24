@@ -3,6 +3,7 @@
 
   <require>org.nuxeo.ecm.platform.actions</require>
   <require>org.nuxeo.ecm.platform.audit.web</require>
+  <require>org.nuxeo.ecm.directory.actions</require>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
@@ -108,6 +109,12 @@
       <rule grant="true">
         <condition>#{currentUser.administrator}</condition>
         <condition>#{currentUser.isMemberOf('powerusers')}</condition>
+      </rule>
+    </filter>
+
+    <filter id="readOnlyDirectory">
+      <rule grant="true">
+        <condition>#{multiTenantActions.isReadOnlyDirectory(directoryName)}</condition>
       </rule>
     </filter>
 

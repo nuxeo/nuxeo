@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -45,5 +46,7 @@ public interface MultiTenantService {
             throws ClientException;
 
     List<DocumentModel> getTenants() throws ClientException;
+
+    boolean isTenantAdministrator(Principal principal);
 
 }

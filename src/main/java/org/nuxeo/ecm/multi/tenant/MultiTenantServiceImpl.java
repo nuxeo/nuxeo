@@ -19,13 +19,14 @@ package org.nuxeo.ecm.multi.tenant;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
+import static org.nuxeo.ecm.multi.tenant.Constants.POWER_USERS_GROUP;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANTS_DIRECTORY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
 import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantAdministratorsGroup;
 import static org.nuxeo.ecm.multi.tenant.MultiTenantHelper.computeTenantMembersGroup;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,11 +41,8 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -192,11 +190,13 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
 
         // remove only the ACEs we added
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
-        int tenantAdministratorsGroupACEIndex = acl.indexOf(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
+        int tenantAdministratorsGroupACEIndex = acl.indexOf(new ACE(
+                tenantAdministratorsGroup, EVERYTHING, true));
         if (tenantAdministratorsGroupACEIndex >= 0) {
             List<ACE> newACEs = new ArrayList<ACE>();
             newACEs.addAll(acl.subList(0, tenantAdministratorsGroupACEIndex));
-            newACEs.addAll(acl.subList(tenantAdministratorsGroupACEIndex + 3, acl.size()));
+            newACEs.addAll(acl.subList(tenantAdministratorsGroupACEIndex + 3,
+                    acl.size()));
             acl.setACEs(newACEs.toArray(new ACE[newACEs.size()]));
         }
         doc.setACP(acp, true);
@@ -227,6 +227,15 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
                 session.close();
             }
         }
+    }
+
+    @Override
+    public boolean isTenantAdministrator(Principal principal) {
+        if (principal instanceof MultiTenantPrincipal) {
+            MultiTenantPrincipal p = (MultiTenantPrincipal) principal;
+            return p.getTenantId() != null && p.isMemberOf(POWER_USERS_GROUP);
+        }
+        return false;
     }
 
     @Override
