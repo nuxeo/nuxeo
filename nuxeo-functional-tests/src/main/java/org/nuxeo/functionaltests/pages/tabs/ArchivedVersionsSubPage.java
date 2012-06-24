@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
@@ -146,7 +148,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      */
     public ArchivedVersionsSubPage removeSelectedVersions() {
         return executeActionOnSelectedVersions(DELETE_ACTION_ID, true,
-                ArchivedVersionsSubPage.class, By.id("document_versions"));
+                ArchivedVersionsSubPage.class);
     }
 
     /**
@@ -161,10 +163,12 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      * @return the page displayed after the action execution
      */
     public <T> T executeActionOnSelectedVersions(String actionId,
-            boolean isConfirm, Class<T> pageClass, By pageElementToCheck) {
+            boolean isConfirm, Class<T> pageClass) {
         findElementWaitUntilEnabledAndClick(By.xpath("//span[@id=\"" + actionId
                 + "\"]/input"));
         if (isConfirm) {
+            Alert alert = driver.switchTo().alert();
+            assertEquals("Delete selected document(s)?", alert.getText());
             // Trying Thread.sleep on failing alert.accept on some machines:
             // org.openqa.selenium.WebDriverException:
             // a.document.getElementsByTagName("dialog")[0] is undefined
@@ -173,10 +177,15 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
             } catch (InterruptedException ie) {
                 // ignore
             }
-            driver.switchTo().alert().accept();
+            alert.accept();
+            // Wait to make sure that the alert has been accepted and the page
+            // reloaded before returning it
+            try {
+                Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
+            } catch (InterruptedException ie) {
+                // ignore
+            }
         }
-        // Wait for page to be loaded after action execution
-        findElementWithTimeout(pageElementToCheck);
         return asPage(pageClass);
     }
 

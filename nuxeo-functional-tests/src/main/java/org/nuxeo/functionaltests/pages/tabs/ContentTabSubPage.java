@@ -18,6 +18,7 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -103,6 +105,8 @@ public class ContentTabSubPage extends DocumentBasePage {
         }
 
         findElementWaitUntilEnabledAndClick(By.xpath(DELETE_BUTTON_XPATH));
+        Alert alert = driver.switchTo().alert();
+        assertEquals("Delete selected document(s)?", alert.getText());
         // Trying Thread.sleep on failing alert.accept on some machines:
         // org.openqa.selenium.WebDriverException:
         // a.document.getElementsByTagName("dialog")[0] is undefined
@@ -111,7 +115,7 @@ public class ContentTabSubPage extends DocumentBasePage {
         } catch (InterruptedException ie) {
             // ignore
         }
-        driver.switchTo().alert().accept();
+        alert.accept();
         return asPage(DocumentBasePage.class);
     }
 }

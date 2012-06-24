@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
@@ -33,8 +32,6 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
  */
 public class ITArchivedVersionsTest extends AbstractTest {
 
-    // TODO: fix test and uncomment!
-    @Ignore
     @Test
     public void testArchivedVersions() throws Exception {
 
