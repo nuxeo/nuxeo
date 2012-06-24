@@ -30,8 +30,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.Clock;
+import org.openqa.selenium.support.ui.SystemClock;
 
 /**
  * Representation of a Archived versions sub tab page.
@@ -147,8 +150,33 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      * @return the archived versions sub page
      */
     public ArchivedVersionsSubPage removeSelectedVersions() {
-        return executeActionOnSelectedVersions(DELETE_ACTION_ID, true,
-                ArchivedVersionsSubPage.class);
+
+        ArchivedVersionsSubPage archivedVersionsPage = null;
+        // As accepting the Delete confirm alert randomly fails to reload the
+        // page, we need to repeat the Delete action until it is really taken
+        // into account, ie. the "Delete" button is not displayed any more nor
+        // enabled.
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(AbstractTest.LOAD_TIMEOUT_SECONDS * 1000);
+        while (clock.isNowBefore(end)) {
+            try {
+                archivedVersionsPage = executeActionOnSelectedVersions(
+                        DELETE_ACTION_ID, true, ArchivedVersionsSubPage.class,
+                        AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000,
+                        AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
+            } catch (NotFoundException nfe) {
+                if (archivedVersionsPage == null) {
+                    break;
+                }
+                return archivedVersionsPage;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
+        throw new WebDriverException("Couldn't remove selected versions");
     }
 
     /**
@@ -158,14 +186,17 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      * @param actionId the action id
      * @param isConfirm true if the action needs a javascript confirm
      * @param pageClass the class of the page to return
-     * @param pageElementToCheck the page element to check before returning the
-     *            page
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in
+     *            milliseconds
      * @return the page displayed after the action execution
      */
     public <T> T executeActionOnSelectedVersions(String actionId,
-            boolean isConfirm, Class<T> pageClass) {
-        findElementWaitUntilEnabledAndClick(By.xpath("//span[@id=\"" + actionId
-                + "\"]/input"));
+            boolean isConfirm, Class<T> pageClass, int findElementTimeout,
+            int waitUntilEnabledTimeout) {
+        findElementWaitUntilEnabledAndClick(
+                By.xpath("//span[@id=\"" + actionId + "\"]/input"),
+                findElementTimeout, waitUntilEnabledTimeout);
         if (isConfirm) {
             Alert alert = driver.switchTo().alert();
             assertEquals("Delete selected document(s)?", alert.getText());
@@ -178,13 +209,6 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
                 // ignore
             }
             alert.accept();
-            // Wait to make sure that the alert has been accepted and the page
-            // reloaded before returning it
-            try {
-                Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
-            } catch (InterruptedException ie) {
-                // ignore
-            }
         }
         return asPage(pageClass);
     }
