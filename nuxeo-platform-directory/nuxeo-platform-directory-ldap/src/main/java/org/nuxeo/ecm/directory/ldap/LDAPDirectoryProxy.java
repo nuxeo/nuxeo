@@ -104,4 +104,9 @@ public class LDAPDirectoryProxy implements Directory {
     public void invalidateDirectoryCache() throws DirectoryException{
         getCache().invalidateAll();
     }
+
+    @Override
+    public boolean isMultiTenant() throws DirectoryException {
+        return getDirectory().isMultiTenant();
+    }
 }

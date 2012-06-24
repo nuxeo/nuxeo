@@ -101,4 +101,8 @@ public abstract class AbstractDirectory implements Directory {
         getCache().invalidateAll();
     }
 
+    @Override
+    public boolean isMultiTenant() {
+        return false;
+    }
 }

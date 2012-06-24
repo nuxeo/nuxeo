@@ -52,6 +52,8 @@ public class SQLDirectory extends AbstractDirectory {
 
     private static final Log log = LogFactory.getLog(SQLDirectory.class);
 
+    public static final String TENANT_ID_FIELD = "tenantId";
+
     private final SQLDirectoryDescriptor config;
 
     private final boolean nativeCase;
@@ -286,4 +288,8 @@ public class SQLDirectory extends AbstractDirectory {
         return nativeCase;
     }
 
+    @Override
+    public boolean isMultiTenant() {
+        return table.getColumn(TENANT_ID_FIELD) != null;
+    }
 }

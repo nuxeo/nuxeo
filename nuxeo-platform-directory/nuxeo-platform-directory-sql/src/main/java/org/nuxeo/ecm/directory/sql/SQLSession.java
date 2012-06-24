@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
+import static org.nuxeo.ecm.directory.sql.SQLDirectory.TENANT_ID_FIELD;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,8 +73,6 @@ public class SQLSession extends BaseSession implements EntrySource {
     private static final String READ_ONLY_VOCABULARY_WARN = "This SQLDirectory is ReadOnly, you are not allowed to modify it.";
 
     private static final Log log = LogFactory.getLog(SQLSession.class);
-
-    protected static final String TENANT_ID_FIELD = "tenantId";
 
     protected final Map<String, Field> schemaFieldMap;
 
@@ -184,7 +184,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                         "Entry with id %s already exists", id));
             }
 
-            if (hasMultiTenantSupport()) {
+            if (isMultiTenant()) {
                 String tenantId = getCurrentTenantId();
                 if (!StringUtils.isBlank(tenantId)) {
                     fieldMap.put(TENANT_ID_FIELD, tenantId);
@@ -654,7 +654,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);
 
-        if (hasMultiTenantSupport()) {
+        if (isMultiTenant()) {
             // filter entries on the tenantId field also
             String tenantId = getCurrentTenantId();
             if (!StringUtils.isBlank(tenantId)) {
@@ -1059,8 +1059,8 @@ public class SQLSession extends BaseSession implements EntrySource {
      * Returns {@code true} if this directory supports multi tenancy,
      * {@code false} otherwise.
      */
-    protected boolean hasMultiTenantSupport() {
-        return table.getColumn(TENANT_ID_FIELD) != null;
+    protected boolean isMultiTenant() {
+        return directory.isMultiTenant();
     }
 
     /**

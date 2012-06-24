@@ -119,4 +119,8 @@ public class SQLDirectoryProxy implements Directory {
         getCache().invalidateAll();
     }
 
+    @Override
+    public boolean isMultiTenant() throws DirectoryException {
+        return getDirectory().isMultiTenant();
+    }
 }

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.directory;
 
 import java.util.Collection;
 
+
 /**
  * The directory interface.
  * <p>
@@ -118,5 +119,12 @@ public interface Directory {
      */
     void invalidateDirectoryCache() throws DirectoryException;
 
+    /**
+     * Returns {@code true} if this directory is a multi tenant directory,
+     * {@code false} otherwise.
+     *
+     * @since 5.6
+     */
+    boolean isMultiTenant() throws DirectoryException;
 
 }
