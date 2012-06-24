@@ -225,7 +225,8 @@ public final class ContentDiffHelper {
      * <p>
      * For now:
      * <ul>
-     * <li>pdf</li>
+     * <li>PDF</li>
+     * <li>Office spreadsheet mime types</li>
      * <li>Office presentation mime types</li>
      * </ul>
      * </p>
@@ -234,14 +235,28 @@ public final class ContentDiffHelper {
      * @see https://jira.nuxeo.com/browse/NXP-9431
      */
     protected static List<String> getHtmlConversionBlackListedMimeTypes() {
+
         List<String> blackListedMimeTypes = new ArrayList<String>();
+
+        // PDF
         blackListedMimeTypes.add("application/pdf");
+
+        // Office spreadsheet
+        blackListedMimeTypes.add("application/vnd.ms-excel");
+        blackListedMimeTypes.add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        blackListedMimeTypes.add("application/vnd.sun.xml.calc");
+        blackListedMimeTypes.add("application/vnd.sun.xml.calc.template");
+        blackListedMimeTypes.add("application/vnd.oasis.opendocument.spreadsheet");
+        blackListedMimeTypes.add("application/vnd.oasis.opendocument.spreadsheet-template");
+
+        // Office presentation
         blackListedMimeTypes.add("application/vnd.ms-powerpoint");
+        blackListedMimeTypes.add("application/vnd.openxmlformats-officedocument.presentationml.presentation");
         blackListedMimeTypes.add("application/vnd.sun.xml.impress");
         blackListedMimeTypes.add("application/vnd.sun.xml.impress.template");
         blackListedMimeTypes.add("application/vnd.oasis.opendocument.presentation");
         blackListedMimeTypes.add("application/vnd.oasis.opendocument.presentation-template");
-        blackListedMimeTypes.add("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+
         return blackListedMimeTypes;
     }
 }
