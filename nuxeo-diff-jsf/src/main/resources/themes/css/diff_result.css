@@ -8,7 +8,7 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 #diffHeader .dataInput { margin-top: 0 }
 #diffHeader h2 { padding: 0 }
 #diffHeader a.docLink, #diffHeader a.docLink:link, #diffHeader a.docLink:hover { color: #000 }
-#diffHeader .diffSubTitle { padding-left: .5em; font-style: italic }
+#diffHeader .diffSubTitle { padding-left: .3em; font-style: italic }
 
 /* =Foldable boxes */
 .docDiffResult .foldableBox .boxBody { padding: .5em }
