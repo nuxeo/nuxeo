@@ -518,82 +518,96 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 PropertyDiff fieldDiff = schemaDiff.getFieldDiff(fieldName);
                 if (fieldDiff != null) {
 
-                    String propertyName = getPropertyName(schemaName, fieldName);
-                    List<WidgetReference> widgetReferences = new ArrayList<WidgetReference>();
-
-                    // Set property widget definition
-                    WidgetDefinition propertyWidgetDefinition = getWidgetDefinition(
-                            category, propertyName,
-                            fieldDiff.getPropertyType(), null, fieldItemDefs,
-                            false);
-                    widgetDefinitions.add(propertyWidgetDefinition);
-                    // Set property widget ref
-                    WidgetReferenceImpl propertyWidgetRef = new WidgetReferenceImpl(
-                            category, propertyName);
-                    widgetReferences.add(propertyWidgetRef);
-
-                    // Check if must display the content diff links widget
-                    if (!displayContentDiffLinks) {
-                        for (DiffFieldItemDefinition fieldItemDef : fieldItemDefs) {
-                            if (fieldItemDef.isDisplayContentDiffLinks()) {
-                                displayContentDiffLinks = true;
-                                break;
-                            }
-                        }
-                    }
-                    // Set content diff links widget definition and ref if
-                    // needed
-                    if (displayContentDiffLinks) {
-                        WidgetDefinition contentDiffLinksWidgetDefinition = getWidgetDefinition(
-                                category, propertyName,
-                                fieldDiff.getPropertyType(), null,
-                                fieldItemDefs, true);
-                        widgetDefinitions.add(contentDiffLinksWidgetDefinition);
-                        WidgetReferenceImpl contentDiffLinksWidgetRef = new WidgetReferenceImpl(
-                                category, propertyName
-                                        + CONTENT_DIFF_LINKS_WIDGET_NAME_SUFFIX);
-                        widgetReferences.add(contentDiffLinksWidgetRef);
-                    }
-
-                    // Set layout row definition
-                    LayoutRowDefinition layoutRowDefinition = new LayoutRowDefinitionImpl(
-                            propertyName, null, widgetReferences, false, true);
-                    layoutRowDefinitions.add(layoutRowDefinition);
-
-                    // Set diff display field value
-                    boolean isDisplayAllItems = isDisplayAllItems(propertyWidgetDefinition);
-                    boolean isDisplayItemIndexes = isDisplayItemIndexes(propertyWidgetDefinition);
-
                     Serializable leftProperty = (Serializable) leftDoc.getProperty(
                             schemaName, fieldName);
                     Serializable rightProperty = (Serializable) rightDoc.getProperty(
                             schemaName, fieldName);
 
-                    // Left diff display
-                    setFieldDiffDisplay(leftProperty, fieldDiff,
-                            isDisplayAllItems, isDisplayItemIndexes, leftValue,
-                            schemaName, fieldName, leftDoc,
-                            PropertyDiffDisplay.RED_BACKGROUND_STYLE_CLASS);
+                    // Only include field diff if it is significant
+                    if (isFieldDiffSignificant(leftProperty, rightProperty)) {
 
-                    // Right diff display
-                    setFieldDiffDisplay(rightProperty, fieldDiff,
-                            isDisplayAllItems, isDisplayItemIndexes,
-                            rightValue, schemaName, fieldName, rightDoc,
-                            PropertyDiffDisplay.GREEN_BACKGROUND_STYLE_CLASS);
+                        String propertyName = getPropertyName(schemaName,
+                                fieldName);
+                        List<WidgetReference> widgetReferences = new ArrayList<WidgetReference>();
 
-                    // Content diff display
-                    if (displayContentDiffLinks) {
-                        PropertyDiffDisplay contentDiffDisplay = getFieldXPaths(
-                                propertyName, fieldDiff, leftProperty,
-                                rightProperty, isDisplayAllItems,
-                                isDisplayItemIndexes, fieldItemDefs);
-                        Map<String, PropertyDiffDisplay> contentDiffSchemaMap = contentDiffValue.get(schemaName);
-                        if (contentDiffSchemaMap == null) {
-                            contentDiffSchemaMap = new HashMap<String, PropertyDiffDisplay>();
-                            contentDiffValue.put(schemaName,
-                                    contentDiffSchemaMap);
+                        // Set property widget definition
+                        WidgetDefinition propertyWidgetDefinition = getWidgetDefinition(
+                                category, propertyName,
+                                fieldDiff.getPropertyType(), null,
+                                fieldItemDefs, false);
+                        widgetDefinitions.add(propertyWidgetDefinition);
+                        // Set property widget ref
+                        WidgetReferenceImpl propertyWidgetRef = new WidgetReferenceImpl(
+                                category, propertyName);
+                        widgetReferences.add(propertyWidgetRef);
+
+                        // Check if must display the content diff links widget
+                        if (!displayContentDiffLinks) {
+                            for (DiffFieldItemDefinition fieldItemDef : fieldItemDefs) {
+                                if (fieldItemDef.isDisplayContentDiffLinks()) {
+                                    displayContentDiffLinks = true;
+                                    break;
+                                }
+                            }
                         }
-                        contentDiffSchemaMap.put(fieldName, contentDiffDisplay);
+                        // Set content diff links widget definition and ref if
+                        // needed
+                        if (displayContentDiffLinks) {
+                            WidgetDefinition contentDiffLinksWidgetDefinition = getWidgetDefinition(
+                                    category, propertyName,
+                                    fieldDiff.getPropertyType(), null,
+                                    fieldItemDefs, true);
+                            widgetDefinitions.add(contentDiffLinksWidgetDefinition);
+                            WidgetReferenceImpl contentDiffLinksWidgetRef = new WidgetReferenceImpl(
+                                    category,
+                                    propertyName
+                                            + CONTENT_DIFF_LINKS_WIDGET_NAME_SUFFIX);
+                            widgetReferences.add(contentDiffLinksWidgetRef);
+                        }
+
+                        // Set layout row definition
+                        LayoutRowDefinition layoutRowDefinition = new LayoutRowDefinitionImpl(
+                                propertyName, null, widgetReferences, false,
+                                true);
+                        layoutRowDefinitions.add(layoutRowDefinition);
+
+                        // Set diff display field value
+                        boolean isDisplayAllItems = isDisplayAllItems(propertyWidgetDefinition);
+                        boolean isDisplayItemIndexes = isDisplayItemIndexes(propertyWidgetDefinition);
+
+                        // Left diff display
+                        setFieldDiffDisplay(leftProperty, fieldDiff,
+                                isDisplayAllItems, isDisplayItemIndexes,
+                                leftValue, schemaName, fieldName, leftDoc,
+                                PropertyDiffDisplay.RED_BACKGROUND_STYLE_CLASS);
+
+                        // Right diff display
+                        setFieldDiffDisplay(
+                                rightProperty,
+                                fieldDiff,
+                                isDisplayAllItems,
+                                isDisplayItemIndexes,
+                                rightValue,
+                                schemaName,
+                                fieldName,
+                                rightDoc,
+                                PropertyDiffDisplay.GREEN_BACKGROUND_STYLE_CLASS);
+
+                        // Content diff display
+                        if (displayContentDiffLinks) {
+                            PropertyDiffDisplay contentDiffDisplay = getFieldXPaths(
+                                    propertyName, fieldDiff, leftProperty,
+                                    rightProperty, isDisplayAllItems,
+                                    isDisplayItemIndexes, fieldItemDefs);
+                            Map<String, PropertyDiffDisplay> contentDiffSchemaMap = contentDiffValue.get(schemaName);
+                            if (contentDiffSchemaMap == null) {
+                                contentDiffSchemaMap = new HashMap<String, PropertyDiffDisplay>();
+                                contentDiffValue.put(schemaName,
+                                        contentDiffSchemaMap);
+                            }
+                            contentDiffSchemaMap.put(fieldName,
+                                    contentDiffDisplay);
+                        }
                     }
                 }
             }
@@ -613,6 +627,29 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                 leftValue, rightValue, contentDiffValue, layoutDefinition);
 
         return diffDisplayBlock;
+    }
+
+    /**
+     * Checks if the difference between the two specified properties is
+     * significant.
+     * <p>
+     * For example in the case of a date property, checks if the difference is
+     * greater than 1 minute since we don't display seconds in the default date
+     * widget.
+     */
+    protected boolean isFieldDiffSignificant(Serializable leftProperty,
+            Serializable rightProperty) {
+
+        if (leftProperty instanceof Calendar
+                && rightProperty instanceof Calendar) {
+            Calendar leftDate = (Calendar) leftProperty;
+            Calendar rightDate = (Calendar) rightProperty;
+            if (Math.abs(leftDate.getTimeInMillis()
+                    - rightDate.getTimeInMillis()) <= 60000) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected final boolean isDisplayAllItems(WidgetDefinition wDef) {

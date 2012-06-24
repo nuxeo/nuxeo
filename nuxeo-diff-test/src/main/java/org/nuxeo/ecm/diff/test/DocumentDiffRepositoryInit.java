@@ -209,7 +209,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         // -----------------------
         doc.setPropertyValue("dc:title", "My second sample");
         doc.setPropertyValue("dc:created",
-                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 02));
+                getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 50));
         doc.setPropertyValue("dc:creator", "Administrator");
         doc.setPropertyValue("dc:modified",
                 getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 02));

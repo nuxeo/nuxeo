@@ -125,7 +125,7 @@ public class TestDocumentDiff extends DiffTestCase {
         // created => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
                 PropertyType.DATE, "2011-12-29T11:24:25.00Z",
-                "2011-12-30T12:05:02.00Z");
+                "2011-12-29T11:24:50.00Z");
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
@@ -385,7 +385,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 PropertyType.STRING, null, "description");
         // created => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"),
-                PropertyType.DATE, "2011-12-30T12:05:02.00Z",
+                PropertyType.DATE, "2011-12-29T11:24:50.00Z",
                 "2011-12-29T11:24:25.00Z");
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));

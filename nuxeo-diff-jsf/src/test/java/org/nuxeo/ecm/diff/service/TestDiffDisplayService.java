@@ -18,6 +18,7 @@ package org.nuxeo.ecm.diff.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
@@ -350,13 +351,9 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         subjects.add(subject);
         expectedFields.put("subjects", new PropertyDiffDisplayImpl(
                 (Serializable) subjects));
-        // created
-        Calendar cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
-                Calendar.DECEMBER, 29, 11, 24, 25);
-        expectedFields.put("created", new PropertyDiffDisplayImpl(
-                cal.getTime(), PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        // no diff display for dc:created since it is < 1 minute
         // modified
-        cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        Calendar cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
                 Calendar.DECEMBER, 29, 11, 24, 25);
         expectedFields.put("modified",
                 new PropertyDiffDisplayImpl(cal.getTime(),
@@ -394,11 +391,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         subjects.add(subject);
         expectedFields.put("subjects", new PropertyDiffDisplayImpl(
                 (Serializable) subjects));
-        // created
-        cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
-                Calendar.DECEMBER, 30, 12, 05, 02);
-        expectedFields.put("created", new PropertyDiffDisplayImpl(
-                cal.getTime(), PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
+        // no diff display for dc:created since it is < 1 minute
         // modified
         cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
                 Calendar.DECEMBER, 30, 12, 05, 02);
@@ -432,7 +425,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
 
         // Check layout row definitions
         LayoutRowDefinition[] layoutRowDefinitions = layoutDef.getRows();
-        assertEquals(5, layoutRowDefinitions.length);
+        assertEquals(4, layoutRowDefinitions.length);
 
         LayoutRowDefinition layoutRowDef = layoutRowDefinitions[0];
         assertEquals("dublincore:description", layoutRowDef.getName());
@@ -444,13 +437,13 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         assertEquals("dublincore:description", widgetRef.getName());
 
         layoutRowDef = layoutRowDefinitions[1];
-        assertEquals("dublincore:created", layoutRowDef.getName());
+        assertEquals("dublincore:modified", layoutRowDef.getName());
         assertEquals(1, layoutRowDef.getSize());
         widgetRefs = layoutRowDef.getWidgetReferences();
         assertEquals(1, widgetRefs.length);
         widgetRef = widgetRefs[0];
         assertEquals("diff", widgetRef.getCategory());
-        assertEquals("dublincore:created", widgetRef.getName());
+        assertEquals("dublincore:modified", widgetRef.getName());
 
         // Check layout widget definitions
         WidgetDefinition wDef = layoutDef.getWidgetDefinition("dublincore:description");
@@ -468,19 +461,23 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         assertEquals("dublincore:description/styleClass",
                 fieldDef.getPropertyName());
 
+        // no widget defintion for dc:created since it is < 1 minute
         wDef = layoutDef.getWidgetDefinition("dublincore:created");
+        assertNull(wDef);
+
+        wDef = layoutDef.getWidgetDefinition("dublincore:modified");
         assertNotNull(wDef);
-        assertEquals("dublincore:created", wDef.getName());
+        assertEquals("dublincore:modified", wDef.getName());
         assertEquals("datetime", wDef.getType());
-        assertEquals("label.dublincore.created",
+        assertEquals("label.dublincore.modified",
                 wDef.getLabel(BuiltinModes.ANY));
         assertTrue(wDef.isTranslated());
         fieldDefs = wDef.getFieldDefinitions();
         assertEquals(2, fieldDefs.length);
         fieldDef = fieldDefs[0];
-        assertEquals("dublincore:created/value", fieldDef.getPropertyName());
+        assertEquals("dublincore:modified/value", fieldDef.getPropertyName());
         fieldDef = fieldDefs[1];
-        assertEquals("dublincore:created/styleClass",
+        assertEquals("dublincore:modified/styleClass",
                 fieldDef.getPropertyName());
 
         // TODO: check other widget definitions
