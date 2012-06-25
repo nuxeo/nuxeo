@@ -142,18 +142,23 @@
                 <ul>
                   <c:forEach var="action" items="#{menuActions}">
                     <li>
-                      <nxh:commandLink action="#{action.getLink()}"
-                        rendered="#{fn:startsWith(action.link,'#')}"
-                        immediate="#{action.immediate}"
-                        onclick="#{action.confirm}"
-                        id="menuActionCommand_#{action.id}">
-                        <h:outputText value="#{messages[action.label]}" />
-                      </nxh:commandLink>
-                      <h:outputLink value="#{baseURL}#{action.link}"
-                        rendered="#{!(fn:startsWith(action.link,'#'))}"
-                        id="menuActionLink_#{action.id}">
-                        <h:outputText value="#{messages[action.label]}" />
-                      </h:outputLink>
+                      <c:choose>
+                        <c:when test="#{fn:startsWith(action.link,' #')}">
+                          <nxh:commandLink action="#{action.getLink()}"
+                            immediate="#{action.immediate}"
+                            onclick="#{action.confirm}"
+                            id="menuActionCommand_#{action.id}">
+                            <h:outputText value="#{messages[action.label]}" />
+                          </nxh:commandLink>
+                        </c:when>
+                        <c:otherwise>
+                          <h:outputLink value="#{baseURL}#{action.link}"
+                            onclick="#{action.confirm}"
+                            id="menuActionLink_#{action.id}">
+                            <h:outputText value="#{messages[action.label]}" />
+                          </h:outputLink>
+                        </c:otherwise>
+                      </c:choose>
                     </li>
                   </c:forEach>
                   <c:forEach var="action" items="#{oldActions}">
