@@ -230,6 +230,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 routeInstance.getDocument().getId());
         taskVariables.put(DocumentRoutingConstants.TASK_NODE_ID_KEY,
                 node.getId());
+        // evaluate task assignees from taskVar if any
+        node.evaluateTaskAssignees();
         try {
             TaskService taskService = Framework.getLocalService(TaskService.class);
             RoutingTaskService routingTaskService = Framework.getLocalService(RoutingTaskService.class);
@@ -243,5 +245,4 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             throw new DocumentRouteException("Can not create task", e);
         }
     }
-
 }

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -196,6 +197,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         return (List<String>) getProperty(PROP_TASK_ASSIGNEES);
     }
 
+    public String getTaskAssigneesVar() {
+        return (String) getProperty(PROP_TASK_ASSIGNEES_VAR);
+    }
+
     @Override
     public Date getTaskDueDate() {
         Calendar cal = (Calendar) getProperty(PROP_TASK_DUE_DATE);
@@ -278,7 +283,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         context.put("state", getState().name().toLowerCase());
         context.put("nodeStartTime", ""); // TODO
         // task context
-        context.put("assignees", ""); // TODO
         context.put("comment", ""); // TODO filled by form
         context.put("button", getProperty(PROP_NODE_BUTTON));
         // associated docs
@@ -399,6 +403,39 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
+    public void evaluateTaskAssignees() throws DocumentRouteException {
+        List<String> taskAssignees = new ArrayList<String>();
+        OperationContext context = getContext();
+        String taskAssigneesVar = getTaskAssigneesVar();
+        if (StringUtils.isEmpty(taskAssigneesVar)) {
+            return;
+        }
+        Expression expr = Scripting.newExpression(taskAssigneesVar);
+        Object res = null;
+        try {
+            res = expr.eval(context);
+        } catch (InterruptedException e) {
+            // restore interrupted state
+            Thread.currentThread().interrupt();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DocumentRouteException(
+                    "Error evaluating task assignees: " + taskAssigneesVar, e);
+        }
+        if (!((res instanceof String) || res instanceof String[])) {
+            throw new DocumentRouteException(
+                    "Can not evaluate task assignees from " + taskAssigneesVar);
+        }
+        if (res instanceof String) {
+            taskAssignees.add((String) res);
+        } else {
+            taskAssignees.addAll(Arrays.asList((String[]) res));
+        }
+        addTaskAssignees(taskAssignees);
+    }
+
+    @Override
     public boolean canMerge() {
         int n = 0;
         List<Transition> inputTransitions = getInputTransitions();
@@ -455,6 +492,19 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public void setButton(String status) {
         try {
             document.setPropertyValue(PROP_NODE_BUTTON, status);
+            CoreSession session = document.getCoreSession();
+            session.saveDocument(document);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    protected void addTaskAssignees(List<String> taskAssignees) {
+        List<String> allTasksAssignees = getTaskAssignees();
+        allTasksAssignees.addAll(taskAssignees);
+        try {
+            document.setPropertyValue(PROP_TASK_ASSIGNEES,
+                    (Serializable) allTasksAssignees);
             CoreSession session = document.getCoreSession();
             session.saveDocument(document);
         } catch (Exception e) {

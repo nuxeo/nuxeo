@@ -3,8 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
-    <!-- no prefix -->
-    <schema name="facetroute1" src="schemas/test_var_route1.xsd" />
+    <schema name="facetroute1" prefix="fctroute1" src="schemas/test_var_route1.xsd" />
     <!-- with prefix -->
     <schema name="facetnode1" prefix="fctnd1" src="schemas/test_var_node1.xsd" />
   </extension>

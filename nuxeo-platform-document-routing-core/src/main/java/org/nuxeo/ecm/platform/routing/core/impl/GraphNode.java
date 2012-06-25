@@ -77,6 +77,8 @@ public interface GraphNode {
     String PROP_TRANS_LABEL = "label";
 
     String PROP_TASK_ASSIGNEES = "rnode:taskAssignees";
+    
+    String PROP_TASK_ASSIGNEES_VAR = "rnode:taskAssigneesExpr";
 
     String PROP_TASK_DUE_DATE = "rnode:taskDueDate";
 
@@ -426,4 +428,12 @@ public interface GraphNode {
      */
     void setButton(String status);
 
+    /**
+     * Evaluates the task assignees from the taskAssigneesVar and adds them on
+     * the node if any
+     * <p>
+     * 
+     * @return
+     */
+    void evaluateTaskAssignees() throws DocumentRouteException;
 }

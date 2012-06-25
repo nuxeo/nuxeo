@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUT
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues.graph;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -555,5 +556,64 @@ public class GraphRouteTest {
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
+    }
+
+    @Test
+    public void testEvaluateTaskAssigneesFromVariable() throws Exception {
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        assertNotNull(user1);
+
+        NuxeoPrincipal user2 = userManager.getPrincipal("myuser1");
+        assertNotNull(user2);
+
+        List<String> assignees = new ArrayList<String>();
+        assignees.add(user1.getName());
+        assignees.add(user2.getName());
+
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        routeDoc.addFacet("FacetRoute1");
+        routeDoc.setPropertyValue("fctroute1:assignees",
+                (Serializable) assignees);
+
+        routeDoc = session.saveDocument(routeDoc);
+
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+
+        // add a workflow variables with name "assignees"
+        setTransitions(node1,
+                transition("trans1", "node2", "true", "testchain_title1"));
+        node1.setPropertyValue("rnode:taskAssigneesExpr",
+                "Context[\"assignees\"]");
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+
+        DocumentRoute route = instantiateAndRun();
+
+        List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        Task ts = tasks.get(0);
+        assertEquals(2, ts.getActors().size());
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        CoreSession sessionUser2 = openSession(user2);
+        routingTaskService.endTask(sessionUser2, tasks.get(0), data, "trans1");
+        closeSession(sessionUser2);
+        // end task and verify that route was done
+        NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
+        session = openSession(admin);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
+
     }
 }
