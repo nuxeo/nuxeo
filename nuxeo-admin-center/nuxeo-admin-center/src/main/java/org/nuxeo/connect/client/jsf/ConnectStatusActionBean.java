@@ -125,9 +125,7 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     public List<SelectItem> getInstanceTypes() {
-
         List<SelectItem> types = new ArrayList<SelectItem>();
-
         for (NuxeoClientInstanceType itype : NuxeoClientInstanceType.values()) {
             SelectItem item = new SelectItem(itype.getValue(),
                     "label.instancetype." + itype.getValue());
@@ -178,7 +176,6 @@ public class ConnectStatusActionBean implements Serializable {
         // A4J and Event cache don't play well ...
         Contexts.getEventContext().remove("connectLoginValidated");
         Contexts.getEventContext().remove("projectsForRegistration");
-
         Contexts.getApplicationContext().remove("registredConnectInstance");
         Contexts.getApplicationContext().remove("connectUpdateStatusInfo");
     }
@@ -314,9 +311,8 @@ public class ConnectStatusActionBean implements Serializable {
         } catch (IOException e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
                     messages.get("label.connect.registrationError"));
-            log.error("Error while registring instance locally", e);
+            log.error("Error while registering instance locally", e);
         }
-
         flushContextCache();
         return null;
     }
@@ -342,18 +338,14 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     public void uploadPackage() throws Exception {
-
         if (packageToUpload == null) {
             facesMessages.add(StatusMessage.Severity.WARN,
                     "label.connect.nofile");
             return;
         }
-
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-
         File tmpFile = File.createTempFile("upload", "nxpkg");
         packageToUpload.transferTo(tmpFile);
-
         try {
             pus.addPackage(tmpFile);
         } catch (Exception e) {

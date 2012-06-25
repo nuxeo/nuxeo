@@ -75,7 +75,7 @@
     <td> ${pkg.version} &nbsp;</td>
     <td> ${pkg.targetPlatform} &nbsp;</td>
     <td> ${pkg.type} </td>
-    <#if showCommunityInfo &&  This.canDownload(pkg)>
+    <#if showCommunityInfo && This.canDownload(pkg)>
       <td>  downloads : ${pkg.downloadsCount}
       </td>
     <#else>

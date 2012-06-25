@@ -27,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
@@ -38,6 +39,7 @@ import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -81,19 +83,16 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "list")
-    public Object doList(@QueryParam("type") String type,
+    public Object doList(@QueryParam("type") String pkgType,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
-
         List<DownloadablePackage> pkgs;
-        if (type == null || "".equals(type.trim())) {
+        if (pkgType == null || "".equals(pkgType.trim())) {
             pkgs = pm.listPackages();
         } else {
-            pkgs = pm.listPackages(PackageType.getByValue(type));
+            pkgs = pm.listPackages(PackageType.getByValue(pkgType));
         }
-
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
-
         return getView("simpleListing").arg("pkgs", pkgs).arg(
                 "showCommunityInfo", true).arg("source", "list");
     }
@@ -101,29 +100,25 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "updates")
-    public Object getUpdates(@QueryParam("type") String type,
+    public Object getUpdates(@QueryParam("type") String pkgType,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-
-        if (type == null) {
-            type = SharedPackageListingsSettings.instance().get("updates").getPackageTypeFilter();
+        if (pkgType == null) {
+            pkgType = SharedPackageListingsSettings.instance().get("updates").getPackageTypeFilter();
         }
         if (filterOnPlatform == null) {
             filterOnPlatform = SharedPackageListingsSettings.instance().get(
                     "updates").getPlatformFilter();
         }
-
         List<DownloadablePackage> pkgs;
-        if (type == null || "".equals(type.trim())) {
+        if (pkgType == null || "".equals(pkgType.trim())) {
             pkgs = pm.listUpdatePackages(null, targetPlatform);
         } else {
-            pkgs = pm.listUpdatePackages(PackageType.getByValue(type),
+            pkgs = pm.listUpdatePackages(PackageType.getByValue(pkgType),
                     targetPlatform);
         }
-
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
-
         return getView("simpleListing").arg("pkgs", pkgs).arg(
                 "showCommunityInfo", true).arg("source", "updates");
     }
@@ -131,21 +126,17 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "local")
-    public Object getLocal(@QueryParam("type") String type) {
-
+    public Object getLocal(@QueryParam("type") String pkgType) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
-
-        if (type == null) {
-            type = SharedPackageListingsSettings.instance().get("local").getPackageTypeFilter();
+        if (pkgType == null) {
+            pkgType = SharedPackageListingsSettings.instance().get("local").getPackageTypeFilter();
         }
-
         List<DownloadablePackage> pkgs;
-        if (type == null || "".equals(type.trim())) {
+        if (pkgType == null || "".equals(pkgType.trim())) {
             pkgs = pm.listLocalPackages();
         } else {
-            pkgs = pm.listLocalPackages(PackageType.getByValue(type));
+            pkgs = pm.listLocalPackages(PackageType.getByValue(pkgType));
         }
-
         return getView("simpleListing").arg("pkgs", pkgs).arg(
                 "showCommunityInfo", false).arg("source", "local");
     }
@@ -153,17 +144,13 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "remote")
-    public Object getRemote(@QueryParam("type") String type,
+    public Object getRemote(@QueryParam("type") String pkgType,
             @QueryParam("onlyRemote") Boolean onlyRemote,
             @QueryParam("searchString") String searchString,
             @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
-
         PackageManager pm = Framework.getLocalService(PackageManager.class);
-
-        boolean useSearch = true;
-
-        if (type == null) {
-            type = SharedPackageListingsSettings.instance().get("remote").getPackageTypeFilter();
+        if (pkgType == null) {
+            pkgType = SharedPackageListingsSettings.instance().get("remote").getPackageTypeFilter();
         }
         if (filterOnPlatform == null) {
             filterOnPlatform = SharedPackageListingsSettings.instance().get(
@@ -172,31 +159,25 @@ public class PackageListingProvider extends DefaultObject {
         if (onlyRemote == null) {
             onlyRemote = SharedPackageListingsSettings.instance().get("remote").isOnlyRemote();
         }
-        if (searchString == null || "".equals(searchString)) {
-            useSearch = false;
-        }
-
         List<DownloadablePackage> pkgs;
-
-        if (useSearch) {
+        if (!StringUtils.isEmpty(searchString)) { // SEARCH IS NOT IMPLEMENTED
             pkgs = pm.searchPackages(searchString);
         } else {
             if (!onlyRemote) {
-                if (type == null || "".equals(type.trim())) {
+                if (pkgType == null || "".equals(pkgType.trim())) {
                     pkgs = pm.listRemoteOrLocalPackages();
                 } else {
-                    pkgs = pm.listRemoteOrLocalPackages(PackageType.getByValue(type));
+                    pkgs = pm.listRemoteOrLocalPackages(PackageType.getByValue(pkgType));
                 }
             } else {
-                if (type == null || "".equals(type.trim())) {
+                if (pkgType == null || "".equals(pkgType.trim())) {
                     pkgs = pm.listOnlyRemotePackages();
                 } else {
-                    pkgs = pm.listOnlyRemotePackages(PackageType.getByValue(type));
+                    pkgs = pm.listOnlyRemotePackages(PackageType.getByValue(pkgType));
                 }
             }
         }
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
-
         return getView("simpleListing").arg("pkgs", pkgs).arg(
                 "showCommunityInfo", false).arg("source", "remote");
     }
@@ -208,7 +189,6 @@ public class PackageListingProvider extends DefaultObject {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         List<DownloadablePackage> pkgs = pm.listAllStudioRemoteOrLocalPackages();
         List<DownloadablePackage> pkgsWithoutSnapshot = StudioSnapshotHelper.removeSnapshot(pkgs);
-
         return getView("simpleListing").arg("pkgs", pkgsWithoutSnapshot).arg(
                 "showCommunityInfo", false).arg("source", "studio");
     }
@@ -253,7 +233,9 @@ public class PackageListingProvider extends DefaultObject {
 
     public boolean canDownload(Package pkg) {
         return PackageState.REMOTE == pkg.getState()
-                && (PackageType.STUDIO == pkg.getType() || (ConnectStatusHolder.instance().isRegistred() && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
+                && (PackageType.STUDIO == pkg.getType() || //
+                        PackageVisibility.PUBLIC.equals(pkg.getVisibility()) || //
+                (ConnectStatusHolder.instance().isRegistred() && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
     }
 
     @GET
@@ -261,9 +243,7 @@ public class PackageListingProvider extends DefaultObject {
     @Path(value = "details/{pkgId}")
     public Object getDetails(@PathParam("pkgId") String pkgId) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
-
         DownloadablePackage pkg = pm.getPackage(pkgId);
-
         if (pkg != null) {
             return getView("pkgDetails").arg("pkg", pkg);
         } else {

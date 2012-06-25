@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.connect.client.we;
@@ -68,10 +67,11 @@ public class ConnectClientRoot extends ModuleRoot {
     @Produces("text/html")
     @Path(value = "restartView")
     public Object restartServerView() {
-        if (((NuxeoPrincipal)getContext().getPrincipal()).isAdministrator()) {
-            return getView("serverRestart").arg("nuxeoctl", new NuxeoCtlManager());
+        if (((NuxeoPrincipal) getContext().getPrincipal()).isAdministrator()) {
+            return getView("serverRestart").arg("nuxeoctl",
+                    new NuxeoCtlManager());
         } else {
-            return Response.status(401).build();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
     }
 }
