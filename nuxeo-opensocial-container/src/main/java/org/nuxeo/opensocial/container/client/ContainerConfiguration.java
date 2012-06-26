@@ -61,6 +61,14 @@ public class ContainerConfiguration {
         return $wnd.nuxeo.container.parameters.generateTitle;
     }-*/;
 
+    public static native String getDocumentLinkBuilder() /*-{
+        return $wnd.nuxeo.container.parameters.documentLinkBuilder;
+    }-*/;
+
+    public static native String getActivityLinkBuilder() /*-{
+        return $wnd.nuxeo.container.parameters.activityLinkBuilder;
+    }-*/;
+
     public static native boolean isInDebugMode() /*-{
         try { return $wnd.nuxeo.container.debug; } catch(e) { return false; }
     }-*/;

@@ -351,6 +351,10 @@ public class AppModel implements HasPermissionsMapper {
                 ContainerConfiguration.getRepositoryName(),
                 ContainerConfiguration.getDocumentContextId(),
                 ContainerConfiguration.getUserLanguage());
+        tempContainerContext.setParameter("documentLinkBuilder",
+                ContainerConfiguration.getDocumentLinkBuilder());
+        tempContainerContext.setParameter("activityLinkBuilder",
+                ContainerConfiguration.getActivityLinkBuilder());
         dispatcher.execute(new InitApplication(tempContainerContext,
                 ContainerConfiguration.getSpaceProviderName(),
                 ContainerConfiguration.getSpaceName()),
@@ -365,7 +369,12 @@ public class AppModel implements HasPermissionsMapper {
                                 ContainerConfiguration.getUserLanguage());
                         containerContext.setParameter(
                                 GENERATE_TITLE_PARAMETER_NAME,
-                                Boolean.valueOf(ContainerConfiguration.generateTitle()).toString());
+                                Boolean.valueOf(
+                                        ContainerConfiguration.generateTitle()).toString());
+                        containerContext.setParameter("documentLinkBuilder",
+                                ContainerConfiguration.getDocumentLinkBuilder());
+                        containerContext.setParameter("activityLinkBuilder",
+                                ContainerConfiguration.getActivityLinkBuilder());
                         setPermissions(result.getPermissions());
                         setLayout(result.getLayout());
                         eventBus.fireEvent(new LayoutLoadedEvent());

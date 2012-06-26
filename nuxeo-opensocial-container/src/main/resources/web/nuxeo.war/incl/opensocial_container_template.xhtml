@@ -21,6 +21,8 @@
  - applicationContextPath: the application context path, could be a document
    different from the documentContext.
    This path could be use for doing query for instance.
+ - documentLinkBuilder:
+ - activityLinkBuilder:
 </c:if>
 
   <script type="text/javascript">
@@ -50,6 +52,8 @@
           showPreferencesAfterAddingGadget: false,
           userLanguage: "#{localeSelector.language}",
           generateTitle: true,
+          documentLinkBuilder: "#{documentLinkBuilder}",
+          activityLinkBuilder: "#{activityLinkBuilder}",
           applicationContextPath: "#{nxu:javaScriptEscape(applicationContextPath)}"
         }
       }

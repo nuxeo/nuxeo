@@ -6,7 +6,8 @@ var NXRequestParams = {
   operationParams: {
     providerName: 'user_deleted_documents',
     pageSize: 5,
-    queryParams: '$currentUser'
+    queryParams: '$currentUser',
+    documentLinkBuilder: prefs.getString("documentLinkBuilder")
   },
   operationContext: {},
   operationDocumentProperties: "common,dublincore",

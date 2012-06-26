@@ -7,7 +7,8 @@ var NXRequestParams = {
   operationParams: {
     providerName: 'user_workspaces',
     pageSize: 5,
-    queryParams: requestScope == '/' ? requestScope : requestScope + '/'
+    queryParams: requestScope == '/' ? requestScope : requestScope + '/',
+    documentLinkBuilder: prefs.getString("documentLinkBuilder")
   },
   operationContext: {},
   operationDocumentProperties: "common,dublincore",

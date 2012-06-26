@@ -2,7 +2,10 @@ var prefs = new gadgets.Prefs();
 
 // configure Automation REST call
 var NXRequestParams = { operationId:'Document.PageProvider',
-  operationParams:{ pageSize:10},
+  operationParams:{
+    pageSize:10,
+    documentLinkBuilder: prefs.getString("documentLinkBuilder")
+  },
   operationContext:{}, // context
   operationDocumentProperties:"common,dublincore", // schema that must be fetched from resulting documents
   entityType:'documents', // result type : only document is supported for now

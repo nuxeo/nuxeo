@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.opensocial.container.server.utils.UrlBuilder;
 import org.nuxeo.opensocial.container.shared.webcontent.abs.AbstractWebContentData;
+import org.nuxeo.opensocial.helper.OpenSocialGadgetHelper;
 
 /**
  * @author Stéphane Fourrier
@@ -20,6 +23,8 @@ public class OpenSocialData extends AbstractWebContentData {
     private static final String ICONE_SUFIX = "-icon";
 
     private static final String DEFAULT_ICON_NAME = "default-icon";
+
+    public static final String SEPARATOR = "/";
 
     public static String TYPE = "wcopensocial";
 
@@ -47,6 +52,16 @@ public class OpenSocialData extends AbstractWebContentData {
 
     public void setFrameUrl(String frameUrl) {
         this.frameUrl = frameUrl;
+    }
+
+    /**
+     * Compute and store the frame URL for this {@code OpenSocialData}.
+     *
+     * @since 5.6
+     */
+    public void computeFrameUrl() throws ClientException {
+        setFrameUrl(UrlBuilder.buildShindigUrl(this,
+                OpenSocialGadgetHelper.getGadgetsBaseUrl(true) + SEPARATOR));
     }
 
     public String getGadgetDef() {

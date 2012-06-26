@@ -28,12 +28,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.spaces.api.Space;
-import org.nuxeo.opensocial.gadgets.helper.GadgetI18nHelper;
 import org.nuxeo.opensocial.container.client.rpc.webcontent.action.CreateWebContent;
 import org.nuxeo.opensocial.container.client.rpc.webcontent.result.CreateWebContentResult;
 import org.nuxeo.opensocial.container.server.handler.AbstractActionHandler;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
+import org.nuxeo.opensocial.gadgets.helper.GadgetI18nHelper;
 
 /**
  * @author Stéphane Fourrier
@@ -49,7 +49,8 @@ public class CreateWebContentHandler extends
         String spaceId = action.getSpaceId();
         Space space = getSpaceFromId(spaceId, session);
         WebContentData data = action.getData();
-        data = generateTitle(data, action.getParameters(), action.getUserLanguage());
+        data = generateTitle(data, action.getParameters(),
+                action.getUserLanguage());
         data = updateGadgetPreferences(data, action, session);
         data = space.createWebContent(data);
         Map<String, Boolean> permissions = space.getPermissions(spaceId);
@@ -70,9 +71,12 @@ public class CreateWebContentHandler extends
         return data;
     }
 
-    protected WebContentData updateGadgetPreferences(WebContentData data, CreateWebContent action, CoreSession session) throws ClientException {
+    protected WebContentData updateGadgetPreferences(WebContentData data,
+            CreateWebContent action, CoreSession session)
+            throws ClientException {
         Map<String, String> additionalPreferences = data.getAdditionalPreferences();
-        additionalPreferences.put("nuxeoTargetRepository", action.getRepositoryName());
+        additionalPreferences.put("nuxeoTargetRepository",
+                action.getRepositoryName());
 
         String documentContextId = action.getDocumentContextId();
         DocumentModel documentContext = null;
@@ -83,9 +87,16 @@ public class CreateWebContentHandler extends
             }
         }
         if (documentContext != null) {
-            additionalPreferences.put("nuxeoTargetContextPath", documentContext.getPathAsString());
-            additionalPreferences.put("nuxeoTargetContextObject", documentContext.getType());
+            additionalPreferences.put("nuxeoTargetContextPath",
+                    documentContext.getPathAsString());
+            additionalPreferences.put("nuxeoTargetContextObject",
+                    documentContext.getType());
         }
+
+        additionalPreferences.put("documentLinkBuilder",
+                action.getParameters().get("documentLinkBuilder"));
+        additionalPreferences.put("activityLinkBuilder",
+                action.getParameters().get("activityLinkBuilder"));
 
         return data;
     }

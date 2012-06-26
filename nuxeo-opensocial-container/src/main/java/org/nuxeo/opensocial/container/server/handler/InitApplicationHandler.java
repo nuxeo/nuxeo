@@ -24,6 +24,7 @@ import java.util.Map;
 
 import net.customware.gwt.dispatch.server.ExecutionContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,8 +34,14 @@ import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.opensocial.container.client.rpc.InitApplication;
 import org.nuxeo.opensocial.container.client.rpc.InitApplicationResult;
+import org.nuxeo.opensocial.container.server.utils.UrlBuilder;
+import org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial.OpenSocialAdapter;
 import org.nuxeo.opensocial.container.shared.layout.api.YUILayout;
+import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
+import org.nuxeo.opensocial.container.shared.webcontent.UserPref;
 import org.nuxeo.opensocial.container.shared.webcontent.WebContentData;
+import org.nuxeo.opensocial.container.shared.webcontent.enume.DataType;
+import org.nuxeo.opensocial.helper.OpenSocialGadgetHelper;
 
 /**
  * @author Stéphane Fourrier
@@ -58,6 +65,7 @@ public class InitApplicationHandler extends
         Map<String, List<WebContentData>> webContents = new HashMap<String, List<WebContentData>>();
 
         for (WebContentData data : list) {
+            updateCustomUserPreferences(data, action);
             if (webContents.containsKey(data.getUnitId())) {
                 // webContents.get(data.getUnitId())
                 // .add((int) data.getPosition(), data);
@@ -91,6 +99,41 @@ public class InitApplicationHandler extends
             parameters.put("userLanguage", action.getUserLanguage());
             return spaceManager.getSpace(action.getSpaceProviderName(),
                     session, documentContext, action.getSpaceName(), parameters);
+        }
+    }
+
+    protected void updateCustomUserPreferences(WebContentData data,
+            InitApplication action) {
+        if (data instanceof OpenSocialData) {
+            OpenSocialData openSocialData = (OpenSocialData) data;
+            String documentLinkBuilder = action.getParameters().get(
+                    "documentLinkBuilder");
+            if (!StringUtils.isBlank(documentLinkBuilder)) {
+                UserPref userPref = openSocialData.getUserPrefByName("documentLinkBuilder");
+                if (userPref == null) {
+                    userPref = new UserPref("documentLinkBuilder", DataType.STRING);
+                    openSocialData.getUserPrefs().add(userPref);
+                }
+                userPref.setActualValue(documentLinkBuilder);
+            }
+
+            String activityLinkBuilder = action.getParameters().get(
+                    "activityLinkBuilder");
+            if (!StringUtils.isBlank(activityLinkBuilder)) {
+                UserPref userPref = openSocialData.getUserPrefByName("activityLinkBuilder");
+                if (userPref == null) {
+                    userPref = new UserPref("activityLinkBuilder", DataType.STRING);
+                    openSocialData.getUserPrefs().add(userPref);
+                }
+                userPref.setActualValue(activityLinkBuilder);
+            }
+
+            // recompute the frame url as the user prefs are changed
+            try {
+                openSocialData.computeFrameUrl();
+            } catch (ClientException e) {
+                // do nothing
+            }
         }
     }
 

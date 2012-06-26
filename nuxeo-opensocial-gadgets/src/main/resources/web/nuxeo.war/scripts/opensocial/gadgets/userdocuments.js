@@ -7,7 +7,8 @@ var NXRequestParams = {
   operationParams: {
     providerName: 'user_documents',
     pageSize: 5,
-    queryParams: '$currentUser,' + (requestScope == '/' ? requestScope : requestScope + '/')
+    queryParams: '$currentUser,' + (requestScope == '/' ? requestScope : requestScope + '/'),
+    documentLinkBuilder: prefs.getString("documentLinkBuilder")
   },
   operationContext: {},
   operationDocumentProperties: "common,dublincore",
