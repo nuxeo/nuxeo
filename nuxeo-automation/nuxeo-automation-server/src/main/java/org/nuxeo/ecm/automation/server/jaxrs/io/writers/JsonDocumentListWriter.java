@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -33,8 +35,15 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -76,15 +85,16 @@ public class JsonDocumentListWriter implements
         }
     }
 
-    public static void writeDocuments(OutputStream out, DocumentModelList docs, String[] schemas)
-            throws Exception {
+    public static void writeDocuments(OutputStream out, DocumentModelList docs,
+            String[] schemas) throws Exception {
         writeDocuments(JsonWriter.createGenerator(out), docs, schemas);
     }
 
-    public static void writeDocuments(JsonGenerator jg, DocumentModelList docs, String[] schemas)
-            throws Exception {
+    public static void writeDocuments(JsonGenerator jg, DocumentModelList docs,
+            String[] schemas) throws Exception {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "documents");
+
         if (docs instanceof PaginableDocumentModelList) {
             PaginableDocumentModelList provider = (PaginableDocumentModelList) docs;
             jg.writeBooleanField("isPaginable", true);
@@ -92,12 +102,34 @@ public class JsonDocumentListWriter implements
             jg.writeNumberField("pageIndex", provider.getCurrentPageIndex());
             jg.writeNumberField("pageSize", provider.getPageSize());
             jg.writeNumberField("pageCount", provider.getNumberOfPages());
+
+            DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
+            String documentLinkBuilder = provider.getDocumentLinkBuilder();
+            String codecName = documentLinkBuilder != null ? documentLinkBuilder
+                    : documentViewCodecManager.getDefaultCodecName();
+
+            jg.writeArrayFieldStart("entries");
+            for (DocumentModel doc : docs) {
+                DocumentLocation docLoc = new DocumentLocationImpl(doc);
+                DocumentView docView = new DocumentViewImpl(docLoc,
+                        doc.getAdapter(TypeInfo.class).getDefaultView());
+                String documentURL = documentViewCodecManager.getUrlFromDocumentView(
+                        codecName, docView, true, provider.getBaseURL());
+
+                Map<String, String> contextParameters = new HashMap<String, String>();
+                contextParameters.put("documentURL", documentURL);
+                JsonDocumentWriter.writeDocument(jg, doc, schemas,
+                        contextParameters);
+            }
+            jg.writeEndArray();
+        } else {
+            jg.writeArrayFieldStart("entries");
+            for (DocumentModel doc : docs) {
+                JsonDocumentWriter.writeDocument(jg, doc, schemas);
+            }
+            jg.writeEndArray();
         }
-        jg.writeArrayFieldStart("entries");
-        for (DocumentModel doc : docs) {
-            JsonDocumentWriter.writeDocument(jg, doc, schemas);
-        }
-        jg.writeEndArray();
+
         jg.writeEndObject();
         jg.flush();
     }

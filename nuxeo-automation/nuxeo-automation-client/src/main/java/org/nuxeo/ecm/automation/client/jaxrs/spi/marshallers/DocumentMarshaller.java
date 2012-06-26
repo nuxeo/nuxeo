@@ -51,6 +51,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
         String changeToken = null;
         JsonToken tok = jp.nextToken();
         PropertyMap props = new PropertyMap();
+        PropertyMap contextParameters = new PropertyMap();
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
@@ -76,8 +77,9 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
                 facets = readArrayProperty(jp);
             } else if (key.equals("changeToken")) {
                 changeToken = jp.getText();
-            }
-            else {
+            } else if (key.equals("contextParameters")) {
+                readProperties(jp, contextParameters);
+            } else {
                 // do skip unknown keys
                 jp.skipChildren();
             }

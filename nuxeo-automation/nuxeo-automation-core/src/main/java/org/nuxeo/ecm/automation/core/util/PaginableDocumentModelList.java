@@ -25,4 +25,19 @@ public interface PaginableDocumentModelList extends DocumentModelList {
 
     long getNumberOfPages();
 
+    /**
+     * Returns the name of what will be used to compute the document URLs,
+     * usually a codec name.
+     *
+     * @since 5.6
+     */
+    String getDocumentLinkBuilder();
+
+    /**
+     * Returns the base URL to use when computing document URLs.
+     *
+     * @since 5.6
+     */
+    String getBaseURL();
+
 }

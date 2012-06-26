@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -31,6 +34,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,6 +55,9 @@ public class DocumentPageProviderOperation {
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 
     public static final String CURRENT_REPO_PATTERN = "$currentRepository";
+
+    @Context
+    protected OperationContext context;
 
     @Context
     protected CoreSession session;
@@ -75,6 +82,9 @@ public class DocumentPageProviderOperation {
 
     @Param(name = "queryParams", required = false)
     protected StringList strParameters;
+
+    @Param(name = "documentLinkBuilder", required = false)
+    protected String documentLinkBuilder;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
@@ -131,18 +141,22 @@ public class DocumentPageProviderOperation {
         if (pageSize != null) {
             targetPageSize = Long.valueOf(pageSize.longValue());
         }
+
+        HttpServletRequest req = (HttpServletRequest) context.get("request");
+        String baseURL = VirtualHostHelper.getBaseURL(req);
         if (query != null) {
             CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
             desc.setPattern(query);
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
                             sortInfos, targetPageSize, targetPage, props,
-                            parameters));
+                            parameters), documentLinkBuilder, baseURL);
         } else {
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider(
                             providerName, sortInfos, targetPageSize,
-                            targetPage, props, parameters));
+                            targetPage, props, parameters),
+                    documentLinkBuilder, baseURL);
         }
 
     }

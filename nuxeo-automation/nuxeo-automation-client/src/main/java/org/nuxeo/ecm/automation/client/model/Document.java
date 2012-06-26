@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.client.model;
 
 import java.util.Date;
 
+
 /**
  * A immutable document. You cannot modify documents. Documents are as they are
  * returned by the server. To modify documents use operations.
@@ -48,6 +49,8 @@ public class Document extends DocRef {
 
     protected final PropertyMap properties;
 
+    protected final PropertyMap contextParameters;
+
     protected final String changeToken;
 
     protected final PropertyList facets;
@@ -56,17 +59,33 @@ public class Document extends DocRef {
      * Reserved to framework. Should be only called by client framework when
      * unmarshalling documents.
      */
-    public Document(String id, String type, PropertyList facets,String changeToken, String path, String state,
-            String lock, String repository, PropertyMap properties) {
+    public Document(String id, String type, PropertyList facets,
+            String changeToken, String path, String state, String lock,
+            String repository, PropertyMap properties,
+            PropertyMap contextParameters) {
         super(id);
-        this.changeToken=changeToken;
-        this.facets=facets;
+        this.changeToken = changeToken;
+        this.facets = facets;
         this.path = path;
         this.type = type;
         this.state = state;
         this.lock = lock;
         this.repository = repository;
         this.properties = properties == null ? new PropertyMap() : properties;
+        this.contextParameters = contextParameters == null ? new PropertyMap()
+                : contextParameters;
+    }
+
+    /**
+     * @deprecated since 5.6. Use
+     *             {@link #Document(String, String, PropertyList, String, String, String, String, String, PropertyMap, PropertyMap)}
+     *             .
+     */
+    public Document(String id, String type, PropertyList facets,
+            String changeToken, String path, String state, String lock,
+            String repository, PropertyMap properties) {
+        this(id, type, facets, changeToken, path, state, lock, repository,
+                properties, null);
     }
 
     public String getRepository() {
@@ -165,4 +184,9 @@ public class Document extends DocRef {
     public PropertyList getFacets() {
         return facets;
     }
+
+    public PropertyMap getContextParameters() {
+        return contextParameters;
+    }
+
 }

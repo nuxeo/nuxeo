@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -93,13 +94,31 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-
-    public static void writeDocument(OutputStream out, DocumentModel doc, String[] schemas)
-            throws Exception {
-        writeDocument(JsonWriter.createGenerator(out), doc, schemas);
+    public static void writeDocument(OutputStream out, DocumentModel doc,
+            String[] schemas) throws Exception {
+        writeDocument(out, doc, schemas, null);
     }
 
-    public static void writeDocument(JsonGenerator jg, DocumentModel doc, String[] schemas)
+    /**
+     * @since 5.6
+     */
+    public static void writeDocument(OutputStream out, DocumentModel doc,
+            String[] schemas, Map<String, String> contextParameters)
+            throws Exception {
+        writeDocument(JsonWriter.createGenerator(out), doc, schemas,
+                contextParameters);
+    }
+
+    public static void writeDocument(JsonGenerator jg, DocumentModel doc,
+            String[] schemas) throws Exception {
+        writeDocument(jg, doc, schemas, null);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public static void writeDocument(JsonGenerator jg, DocumentModel doc,
+            String[] schemas, Map<String, String> contextParameters)
             throws Exception {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "document");
@@ -129,7 +148,6 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             // ignore
         }
 
-
         if (schemas != null && schemas.length > 0) {
             jg.writeObjectFieldStart("properties");
             if (schemas.length == 1 && "*".equals(schemas[0])) {
@@ -152,13 +170,22 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         jg.writeEndArray();
         jg.writeStringField("changeToken", doc.getChangeToken());
 
+        jg.writeObjectFieldStart("contextParameters");
+        if (contextParameters != null && !contextParameters.isEmpty()) {
+            for (Map.Entry<String, String> parameter : contextParameters.entrySet()) {
+                jg.writeStringField(parameter.getKey(), parameter.getValue());
+            }
+        }
+        jg.writeEndObject();
+
         jg.writeEndObject();
         jg.flush();
     }
 
-    protected static void writeProperties(JsonGenerator jg, DocumentModel doc, String schema) throws Exception {
+    protected static void writeProperties(JsonGenerator jg, DocumentModel doc,
+            String schema) throws Exception {
         DocumentPart part = doc.getPart(schema);
-        if (part==null) {
+        if (part == null) {
             return;
         }
         String prefix = part.getSchema().getNamespace().prefix;
@@ -174,11 +201,12 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     /**
-     * Converts the value of the given core property to JSON format. The given filesBaseUrl
-     * is the baseUrl that can be used to locate blob content and is useful to
-     * generate blob urls.
+     * Converts the value of the given core property to JSON format. The given
+     * filesBaseUrl is the baseUrl that can be used to locate blob content and
+     * is useful to generate blob urls.
      */
-    protected static void writePropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl) throws Exception {
+    protected static void writePropertyValue(JsonGenerator jg, Property prop,
+            String filesBaseUrl) throws Exception {
         if (prop.isScalar()) {
             writeScalarPropertyValue(jg, prop);
         } else if (prop.isList()) {
@@ -189,12 +217,13 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             } else if (prop instanceof BlobProperty) { // a blob
                 writeBlobPropertyValue(jg, prop, filesBaseUrl);
             } else { // a complex property
-                writeMapPropertyValue(jg, (ComplexProperty)prop, filesBaseUrl);
+                writeMapPropertyValue(jg, (ComplexProperty) prop, filesBaseUrl);
             }
         }
     }
 
-    protected static void writeScalarPropertyValue(JsonGenerator jg, Property prop) throws Exception {
+    protected static void writeScalarPropertyValue(JsonGenerator jg,
+            Property prop) throws Exception {
         org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
         Object v = prop.getValue();
         if (v == null) {
@@ -204,14 +233,15 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-    protected static void writeListPropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl) throws Exception {
+    protected static void writeListPropertyValue(JsonGenerator jg,
+            Property prop, String filesBaseUrl) throws Exception {
         jg.writeStartArray();
         if (prop instanceof ArrayProperty) {
             Object[] ar = (Object[]) prop.getValue();
             if (ar == null) {
                 return;
             }
-            org.nuxeo.ecm.core.schema.types.Type type = ((ListType)prop.getType()).getFieldType();
+            org.nuxeo.ecm.core.schema.types.Type type = ((ListType) prop.getType()).getFieldType();
             for (Object o : ar) {
                 jg.writeString(type.encode(o));
             }
@@ -224,7 +254,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         jg.writeEndArray();
     }
 
-    protected static void writeMapPropertyValue(JsonGenerator jg, ComplexProperty prop, String filesBaseUrl) throws Exception {
+    protected static void writeMapPropertyValue(JsonGenerator jg,
+            ComplexProperty prop, String filesBaseUrl) throws Exception {
         jg.writeStartObject();
         for (Property p : prop.getChildren()) {
             jg.writeFieldName(p.getName());
@@ -233,7 +264,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         jg.writeEndObject();
     }
 
-    protected static void writeBlobPropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl) throws Exception {
+    protected static void writeBlobPropertyValue(JsonGenerator jg,
+            Property prop, String filesBaseUrl) throws Exception {
         Blob blob = (Blob) prop.getValue();
         if (blob == null) {
             jg.writeNull();
@@ -266,8 +298,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
         jg.writeStringField("length", Long.toString(blob.getLength()));
         jg.writeStringField("data",
-                filesBaseUrl
-                        + URLEncoder.encode(prop.getPath(), "UTF-8"));
+                filesBaseUrl + URLEncoder.encode(prop.getPath(), "UTF-8"));
         jg.writeEndObject();
     }
 
