@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -232,15 +233,23 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 node.getId());
         // evaluate task assignees from taskVar if any
         node.evaluateTaskAssignees();
+        DocumentModel doc = graph.getAttachedDocumentModels().get(0);
         try {
             TaskService taskService = Framework.getLocalService(TaskService.class);
             RoutingTaskService routingTaskService = Framework.getLocalService(RoutingTaskService.class);
             List<Task> tasks = taskService.createTask(session,
-                    (NuxeoPrincipal) session.getPrincipal(),
-                    graph.getAttachedDocumentModels().get(0), node.getId(),
+                    (NuxeoPrincipal) session.getPrincipal(), doc, node.getId(),
                     node.getTaskAssignees(), false, node.getTaskDirective(),
                     null, node.getTaskDueDate(), taskVariables, null);
             routingTaskService.makeRoutingTasks(session, tasks);
+            String taskAssigneesPermission = node.getTaskAssigneesPermission();
+            if (StringUtils.isEmpty(taskAssigneesPermission)) {
+                return;
+            }
+            for (Task task : tasks) {
+                routingTaskService.grantPermissionToTaskAssignees(session,
+                        taskAssigneesPermission, doc, task);
+            }
         } catch (ClientException e) {
             throw new DocumentRouteException("Can not create task", e);
         }

@@ -581,6 +581,8 @@ public class GraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
+                "testPermission");
 
         // add a workflow variables with name "assignees"
         setTransitions(node1,
@@ -614,6 +616,8 @@ public class GraphRouteTest {
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
+        assertTrue(session.hasPermission(user1, doc.getRef(), "testPermission"));
+        assertTrue(session.hasPermission(user2, doc.getRef(), "testPermission"));
 
     }
 }

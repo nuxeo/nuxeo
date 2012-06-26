@@ -77,8 +77,10 @@ public interface GraphNode {
     String PROP_TRANS_LABEL = "label";
 
     String PROP_TASK_ASSIGNEES = "rnode:taskAssignees";
-    
+
     String PROP_TASK_ASSIGNEES_VAR = "rnode:taskAssigneesExpr";
+
+    String PROP_TASK_ASSIGNEES_PERMISSION = "rnode:taskAssigneesPermission";
 
     String PROP_TASK_DUE_DATE = "rnode:taskDueDate";
 
@@ -344,6 +346,14 @@ public interface GraphNode {
     String getTaskDirective();
 
     /**
+     * Gets the permission to the granted to the actors on this task on the
+     * document following the workflow
+     *
+     * @return
+     */
+    String getTaskAssigneesPermission();
+
+    /**
      * Gets the task layout
      *
      * @return
@@ -432,7 +442,7 @@ public interface GraphNode {
      * Evaluates the task assignees from the taskAssigneesVar and adds them on
      * the node if any
      * <p>
-     * 
+     *
      * @return
      */
     void evaluateTaskAssignees() throws DocumentRouteException;

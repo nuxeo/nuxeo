@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
@@ -116,4 +120,36 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
         return routingEngineService;
     }
 
+    @Override
+    public void grantPermissionToTaskAssignees(CoreSession session,
+            final String permission, final DocumentModel doc, final Task task)
+            throws DocumentRouteException {
+        try {
+            new UnrestrictedSessionRunner(session) {
+
+                @Override
+                public void run() throws ClientException {
+                    List<String> actorIds = new ArrayList<String>();
+                    for (String actor : task.getActors()) {
+                        if (actor.contains(":")) {
+                            actorIds.add(actor.split(":")[1]);
+                        } else {
+                            actorIds.add(actor);
+                        }
+                    }
+                    ACP acp = doc.getACP();
+                    ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+                    for (String actorId : actorIds) {
+                        acl.add(new ACE(actorId, permission, true));
+                    }
+                    acp.addACL(acl);
+                    doc.setACP(acp, true);
+                    session.saveDocument(doc);
+                }
+
+            }.runUnrestricted();
+        } catch (ClientException e) {
+            throw new DocumentRouteException(e);
+        }
+    }
 }

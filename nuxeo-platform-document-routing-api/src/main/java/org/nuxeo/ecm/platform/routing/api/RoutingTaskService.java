@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.task.Task;
 
@@ -51,4 +52,14 @@ public interface RoutingTaskService {
      */
     void endTask(CoreSession session, Task task, Map<String, Object> data,
             String status) throws DocumentRouteException;
+
+    /**
+     * Grants the specified assignees permissions to the actors on this task
+     *
+     * @param session the session
+     * @param doc
+     * @param task
+     */
+    void grantPermissionToTaskAssignees(CoreSession session, String permission,
+            DocumentModel doc, Task task) throws DocumentRouteException;
 }

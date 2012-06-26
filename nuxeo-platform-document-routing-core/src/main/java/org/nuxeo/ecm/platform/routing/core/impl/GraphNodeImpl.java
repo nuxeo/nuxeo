@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Graph Node implementation as an adapter over a DocumentModel.
- * 
+ *
  * @since 5.6
  */
 public class GraphNodeImpl extends DocumentRouteElementImpl implements
@@ -210,6 +210,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     @Override
     public String getTaskDirective() {
         return (String) getProperty(PROP_TASK_DIRECTIVE);
+    }
+
+    @Override
+    public String getTaskAssigneesPermission() {
+        return (String) getProperty(PROP_TASK_ASSIGNEES_PERMISSION);
     }
 
     @Override
