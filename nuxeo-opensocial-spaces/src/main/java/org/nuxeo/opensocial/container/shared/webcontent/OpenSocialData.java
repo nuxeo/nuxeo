@@ -24,8 +24,6 @@ public class OpenSocialData extends AbstractWebContentData {
 
     private static final String DEFAULT_ICON_NAME = "default-icon";
 
-    public static final String SEPARATOR = "/";
-
     public static String TYPE = "wcopensocial";
 
     private String frameUrl;
@@ -52,16 +50,6 @@ public class OpenSocialData extends AbstractWebContentData {
 
     public void setFrameUrl(String frameUrl) {
         this.frameUrl = frameUrl;
-    }
-
-    /**
-     * Compute and store the frame URL for this {@code OpenSocialData}.
-     *
-     * @since 5.6
-     */
-    public void computeFrameUrl() throws ClientException {
-        setFrameUrl(UrlBuilder.buildShindigUrl(this,
-                OpenSocialGadgetHelper.getGadgetsBaseUrl(true) + SEPARATOR));
     }
 
     public String getGadgetDef() {

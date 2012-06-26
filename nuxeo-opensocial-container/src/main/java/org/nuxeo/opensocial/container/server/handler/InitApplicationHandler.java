@@ -17,6 +17,8 @@
 
 package org.nuxeo.opensocial.container.server.handler;
 
+import static org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial.OpenSocialAdapter.SEPARATOR;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,6 @@ import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.opensocial.container.client.rpc.InitApplication;
 import org.nuxeo.opensocial.container.client.rpc.InitApplicationResult;
 import org.nuxeo.opensocial.container.server.utils.UrlBuilder;
-import org.nuxeo.opensocial.container.server.webcontent.gadgets.opensocial.OpenSocialAdapter;
 import org.nuxeo.opensocial.container.shared.layout.api.YUILayout;
 import org.nuxeo.opensocial.container.shared.webcontent.OpenSocialData;
 import org.nuxeo.opensocial.container.shared.webcontent.UserPref;
@@ -111,7 +112,8 @@ public class InitApplicationHandler extends
             if (!StringUtils.isBlank(documentLinkBuilder)) {
                 UserPref userPref = openSocialData.getUserPrefByName("documentLinkBuilder");
                 if (userPref == null) {
-                    userPref = new UserPref("documentLinkBuilder", DataType.STRING);
+                    userPref = new UserPref("documentLinkBuilder",
+                            DataType.STRING);
                     openSocialData.getUserPrefs().add(userPref);
                 }
                 userPref.setActualValue(documentLinkBuilder);
@@ -122,7 +124,8 @@ public class InitApplicationHandler extends
             if (!StringUtils.isBlank(activityLinkBuilder)) {
                 UserPref userPref = openSocialData.getUserPrefByName("activityLinkBuilder");
                 if (userPref == null) {
-                    userPref = new UserPref("activityLinkBuilder", DataType.STRING);
+                    userPref = new UserPref("activityLinkBuilder",
+                            DataType.STRING);
                     openSocialData.getUserPrefs().add(userPref);
                 }
                 userPref.setActualValue(activityLinkBuilder);
@@ -130,7 +133,10 @@ public class InitApplicationHandler extends
 
             // recompute the frame url as the user prefs are changed
             try {
-                openSocialData.computeFrameUrl();
+                openSocialData.setFrameUrl(UrlBuilder.buildShindigUrl(
+                        openSocialData,
+                        OpenSocialGadgetHelper.getGadgetsBaseUrl(true)
+                                + SEPARATOR));
             } catch (ClientException e) {
                 // do nothing
             }

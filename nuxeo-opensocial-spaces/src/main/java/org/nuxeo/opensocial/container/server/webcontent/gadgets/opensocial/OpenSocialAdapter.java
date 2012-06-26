@@ -117,7 +117,8 @@ public class OpenSocialAdapter extends
     }
 
     private void setFrameUrlFor(OpenSocialData data) throws ClientException {
-        data.computeFrameUrl();
+        data.setFrameUrl(UrlBuilder.buildShindigUrl(data,
+                        OpenSocialGadgetHelper.getGadgetsBaseUrl(true) + SEPARATOR));
     }
 
     @SuppressWarnings("unchecked")
