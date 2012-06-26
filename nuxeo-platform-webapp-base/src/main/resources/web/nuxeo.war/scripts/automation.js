@@ -23,6 +23,11 @@ function AutomationWrapper(operationId,opts) {
     return this;
   }
 
+  AutomationWrapper.prototype.setTimeout = function(timeout){
+	  this.opts.timeout=timeout;
+    return this;
+  }
+
   AutomationWrapper.prototype.execute = function(successCB, failureCB, voidOp){
     var targetUrl = this.opts.url + '/' + this.operationId;
     if (!voidOp) {
@@ -120,7 +125,7 @@ function AutomationWrapper(operationId,opts) {
             xhr.setRequestHeader('X-NXVoidOperation', voidOp);
         },
         url: targetUrl,
-        timeout: 30000,
+        timeout: this.opts.timeout,
         error: function(xhr, status, e) {
           log("Failed to execute");
           if (failureCB) {
@@ -165,6 +170,7 @@ function AutomationWrapper(operationId,opts) {
 
    $.fn.automation.defaults = {
         url : nxContextPath + "/site/automation",
+        timeout : 30000,
         automationParams : {
            params : {},
            context : {}
