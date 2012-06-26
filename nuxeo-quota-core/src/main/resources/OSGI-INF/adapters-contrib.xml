@@ -8,6 +8,11 @@
       class="org.nuxeo.ecm.core.api.quota.QuotaStatsNonFolderishCount"
       factory="org.nuxeo.ecm.quota.count.QuotaStatsAdapterFactory" />
 
+    <adapter
+      class="org.nuxeo.ecm.quota.size.QuotaAware"
+      factory="org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory" />
+
+
   </extension>
 
 </component>

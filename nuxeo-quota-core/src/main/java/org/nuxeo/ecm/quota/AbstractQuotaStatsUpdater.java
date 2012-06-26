@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * Abstract class implementing {@code QuotaStatsUpdater} to handle common cases.
  * <p>
  * Provides abstract methods to override for common events.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -120,7 +120,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
             DocumentModel doc) throws ClientException;
 
     protected abstract void processDocumentUpdated(CoreSession session,
-            DocumentModel doc);
+            DocumentModel doc) throws ClientException;
 
     protected abstract void processDocumentMoved(CoreSession session,
             DocumentModel doc, DocumentModel sourceParent)

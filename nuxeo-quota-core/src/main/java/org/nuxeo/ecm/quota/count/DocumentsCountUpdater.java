@@ -24,7 +24,6 @@ import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_CHI
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_FACET;
 
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +37,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -48,7 +45,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * documents.
  * <p>
  * Store the descendant and children count on {@code Folderish} documents.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -75,7 +72,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentUpdated(CoreSession session, DocumentModel doc) {
+    protected void processDocumentUpdated(CoreSession session, DocumentModel doc)
+            throws ClientException {
     }
 
     @Override

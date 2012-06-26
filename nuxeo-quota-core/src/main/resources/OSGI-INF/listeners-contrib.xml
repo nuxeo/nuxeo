@@ -13,6 +13,21 @@
       <event>documentModified</event>
     </listener>
 
+    <listener name="quotaChecker" async="false" postCommit="false"
+      class="org.nuxeo.ecm.quota.size.QuotaSyncListenerChecker" order="100">
+      <event>documentCreated</event>
+      <event>aboutToRemove</event>
+      <event>documentCreatedByCopy</event>
+      <event>documentMoved</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener name="quotaProcessor" async="true"
+      class="org.nuxeo.ecm.quota.size.QuotaAsyncProcessor" order="100">
+      <event>quotaUpdateNeeded</event>
+    </listener>
+
+
   </extension>
 
 </component>
