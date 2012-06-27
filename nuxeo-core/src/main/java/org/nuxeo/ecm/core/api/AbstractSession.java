@@ -2739,7 +2739,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_LIFE_CYCLE);
 
-            if (!doc.isCheckedOut()) {
+            if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
                 checkOut(docRef);
                 doc = resolveReference(docRef);
             }
@@ -2764,7 +2764,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                         docModel, options,
                         DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
                         null, true, false);
-                writeModel(doc, docModel);
+                if (!docModel.isImmutable()) {
+                    writeModel(doc, docModel);
+                }
             }
 
         } catch (LifeCycleException e) {
