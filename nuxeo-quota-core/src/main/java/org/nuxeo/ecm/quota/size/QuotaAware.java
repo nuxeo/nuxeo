@@ -18,4 +18,6 @@ public interface QuotaAware {
     void save() throws ClientException;
 
     DocumentModel getDoc();
+
+    void setMaxQuota(long maxSize, boolean save) throws ClientException;
 }

@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
+import org.nuxeo.ecm.quota.size.QuotaExceededException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -599,6 +600,110 @@ public class TestDocumentsCountAndSizeUpdater {
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
+
+    }
+
+    @Test
+    public void testQuotaExceeded() throws Exception {
+
+        addContent();
+
+        // do not remove this
+        // or invalidations do not work
+        session.save();
+
+        dump();
+
+        TransactionHelper.startTransaction();
+
+        // now add quota limit
+        DocumentModel ws = session.getDocument(wsRef);
+        QuotaAware qa = ws.getAdapter(QuotaAware.class);
+        assertNotNull(qa);
+
+        assertEquals(300L, qa.getTotalSize());
+
+        assertEquals(-1L, qa.getMaxQuota());
+
+        boolean canNotSetTooSmallQuota = false;
+
+        // try to set the quota to a too small size
+        try {
+            qa.setMaxQuota(200L, false);
+        } catch (QuotaExceededException e) {
+            canNotSetTooSmallQuota = true;
+        }
+        assertTrue(canNotSetTooSmallQuota);
+
+        // set the quota to 400
+        qa.setMaxQuota(400L, true);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        session.save();
+
+        dump();
+
+        TransactionHelper.startTransaction();
+
+        boolean canNotExceedQuota = false;
+        try {
+            // now try to update one
+            DocumentModel firstFile = session.getDocument(firstFileRef);
+            firstFile.setPropertyValue("file:content",
+                    (Serializable) getFakeBlob(250));
+            firstFile = session.saveDocument(firstFile);
+        } catch (Exception e) {
+            if (QuotaExceededException.isQuotaExceededException(e)) {
+                System.out.println("raised expected Execption "
+                        + QuotaExceededException.unwrap(e).getMessage());
+                canNotExceedQuota = true;
+            }
+            TransactionHelper.setTransactionRollbackOnly();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+        assertTrue(canNotExceedQuota);
+
+        TransactionHelper.startTransaction();
+
+        // now remove the quota limit
+        ws = session.getDocument(wsRef);
+        qa = ws.getAdapter(QuotaAware.class);
+        assertNotNull(qa);
+
+        assertEquals(300L, qa.getTotalSize());
+        assertEquals(400L, qa.getMaxQuota());
+
+        // set the quota to -1 / unlimited
+        qa.setMaxQuota(-1L, true);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        session.save();
+
+        dump();
+
+        TransactionHelper.startTransaction();
+
+        canNotExceedQuota = false;
+        try {
+            // now try to update one
+            DocumentModel firstFile = session.getDocument(firstFileRef);
+            firstFile.setPropertyValue("file:content",
+                    (Serializable) getFakeBlob(250));
+            firstFile = session.saveDocument(firstFile);
+        } catch (Exception e) {
+            if (QuotaExceededException.isQuotaExceededException(e)) {
+                System.out.println("raised expected Execption "
+                        + QuotaExceededException.unwrap(e).getMessage());
+                canNotExceedQuota = true;
+            }
+            TransactionHelper.setTransactionRollbackOnly();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+        assertFalse(canNotExceedQuota);
 
     }
 

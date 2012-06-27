@@ -13,6 +13,11 @@ public class QuotaExceededException extends ClientException {
 
     protected String addedDocumentID;
 
+    public QuotaExceededException(DocumentModel targetDocument, String message) {
+        super(message + "on " + targetDocument.getPathAsString());
+        this.targetPath = targetDocument.getPathAsString();
+    }
+
     public QuotaExceededException(DocumentModel targetDocument,
             DocumentModel addedDocument, long quotaValue) {
         this(targetDocument.getPathAsString(), addedDocument.getId(),
@@ -39,4 +44,19 @@ public class QuotaExceededException extends ClientException {
         return addedDocumentID;
     }
 
+    public static QuotaExceededException unwrap(Throwable e) {
+        if (e instanceof QuotaExceededException) {
+            return (QuotaExceededException) e;
+        } else {
+            if (e.getCause() != null) {
+                return unwrap(e.getCause());
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public static boolean isQuotaExceededException(Throwable e) {
+        return unwrap(e) != null;
+    }
 }
