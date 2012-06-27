@@ -21,33 +21,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY;
-import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_FACET;
 import static org.nuxeo.ecm.quota.size.DocumentsCountAndSizeUpdater.DOCUMENTS_SIZE_STATISTICS_FACET;
-import static org.nuxeo.ecm.quota.size.DocumentsCountAndSizeUpdater.DOCUMENTS_SIZE_INNER_SIZE_PROPERTY;
-import static org.nuxeo.ecm.quota.size.DocumentsCountAndSizeUpdater.DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY;
 
 import java.io.Serializable;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.Transaction;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -55,7 +44,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.quota.QuotaStatsService;
-import org.nuxeo.ecm.quota.QuotaStatsUpdater;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -88,19 +76,21 @@ public class TestDocumentsCountAndSizeUpdater {
     @Inject
     protected FeaturesRunner featureRunner;
 
-    DocumentRef wsRef;
+    protected DocumentRef wsRef;
 
-    DocumentRef firstFolderRef;
+    protected DocumentRef firstFolderRef;
 
-    DocumentRef secondFolderRef;
+    protected DocumentRef secondFolderRef;
 
-    DocumentRef firstSubFolderRef;
+    protected DocumentRef firstSubFolderRef;
 
-    DocumentRef secondSubFolderRef;
+    protected DocumentRef secondSubFolderRef;
 
-    DocumentRef firstFileRef;
+    protected DocumentRef firstFileRef;
 
-    DocumentRef secondFileRef;
+    protected DocumentRef secondFileRef;
+
+    protected static final boolean verboseMode = false;
 
     protected Blob getFakeBlob(int size) {
         StringBuilder sb = new StringBuilder(size);
@@ -180,6 +170,17 @@ public class TestDocumentsCountAndSizeUpdater {
         eventService.waitForAsyncCompletion();
     }
 
+    protected void doMoveFolderishContent() throws Exception {
+
+        TransactionHelper.startTransaction();
+
+        session.move(firstSubFolderRef, secondFolderRef, null);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
     protected void doUpdateContent() throws Exception {
         TransactionHelper.startTransaction();
 
@@ -207,12 +208,48 @@ public class TestDocumentsCountAndSizeUpdater {
 
     }
 
+    protected void doRemoveContent() throws Exception {
+        TransactionHelper.startTransaction();
+        session.removeDocument(firstFileRef);
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void doRemoveFolderishContent() throws Exception {
+        TransactionHelper.startTransaction();
+        session.removeDocument(firstSubFolderRef);
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void doCopyContent() throws Exception {
+        TransactionHelper.startTransaction();
+        session.copy(firstFileRef, secondSubFolderRef, null);
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void doCopyFolderishContent() throws Exception {
+        TransactionHelper.startTransaction();
+        session.copy(firstSubFolderRef, secondFolderRef, null);
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    @SuppressWarnings("unused")
     protected void dump() throws Exception {
 
+        if (!verboseMode) {
+            return;
+        }
         System.out.println("\n####################################\n");
         DocumentModelList docs = session.query("select * from Document order by ecm:path");
         for (DocumentModel doc : docs) {
-            System.out.print(doc.getPathAsString());
+            System.out.print(doc.getId() + " " + doc.getPathAsString());
             if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
                 QuotaAware qa = doc.getAdapter(QuotaAware.class);
                 System.out.println(" [ quota : " + qa.getTotalSize() + "("
@@ -248,7 +285,6 @@ public class TestDocumentsCountAndSizeUpdater {
 
         DocumentModel ws = session.getDocument(wsRef);
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
         DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
         DocumentModel firstFile = session.getDocument(firstFileRef);
         DocumentModel secondFile = session.getDocument(secondFileRef);
@@ -260,7 +296,6 @@ public class TestDocumentsCountAndSizeUpdater {
         assertQuota(ws, 0L, 300L);
 
         TransactionHelper.commitOrRollbackTransaction();
-
         eventService.waitForAsyncCompletion();
 
     }
@@ -280,7 +315,6 @@ public class TestDocumentsCountAndSizeUpdater {
 
         DocumentModel ws = session.getDocument(wsRef);
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
         DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
         DocumentModel firstFile = session.getDocument(firstFileRef);
         DocumentModel secondFile = session.getDocument(secondFileRef);
@@ -305,7 +339,6 @@ public class TestDocumentsCountAndSizeUpdater {
 
         ws = session.getDocument(wsRef);
         firstFolder = session.getDocument(firstFolderRef);
-        secondFolder = session.getDocument(secondFolderRef);
         firstSubFolder = session.getDocument(firstSubFolderRef);
         firstFile = session.getDocument(firstFileRef);
         secondFile = session.getDocument(secondFileRef);
@@ -316,16 +349,21 @@ public class TestDocumentsCountAndSizeUpdater {
         assertQuota(firstFolder, 0L, 580L);
         assertQuota(ws, 50L, 630L);
 
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
     }
 
-    // @Test
-    public void testQuotaOnMove() throws Exception {
+    @Test
+    public void testQuotaOnMoveContent() throws Exception {
 
         addContent();
 
         // do not remove this
         // or invalidations do not work
         session.save();
+
+        dump();
 
         doMoveContent();
 
@@ -339,7 +377,6 @@ public class TestDocumentsCountAndSizeUpdater {
 
         DocumentModel ws = session.getDocument(wsRef);
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
         DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
         DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
         DocumentModel firstFile = session.getDocument(firstFileRef);
@@ -352,107 +389,217 @@ public class TestDocumentsCountAndSizeUpdater {
         assertQuota(firstFolder, 0L, 300L);
         assertQuota(ws, 0L, 300L);
 
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
     }
 
-    // @Test
-    public void testRemoveFile() throws Exception {
-        session.removeDocument(firstFileRef);
+    @Test
+    public void testQuotaOnRemoveContent() throws Exception {
+
+        addContent();
+
+        // do not remove this
+        // or invalidations do not work
         session.save();
 
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        assertTrue(firstSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                1L,
-                firstSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        dump();
+
+        doRemoveContent();
+
+        // do not remove this
+        // or invalidations do not work
+        session.save();
+
+        TransactionHelper.startTransaction();
+
+        dump();
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                1L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
+        DocumentModel secondFile = session.getDocument(secondFileRef);
+
+        assertFalse(session.exists(firstFileRef));
+
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(firstSubFolder, 0L, 200L);
+        assertQuota(firstFolder, 0L, 200L);
+        assertQuota(ws, 0L, 200L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
     }
 
-    // @Test
-    public void testCopyFile() throws Exception {
-        session.copy(firstFileRef, secondSubFolderRef, null);
+    @Test
+    public void testQuotaOnCopyContent() throws Exception {
+
+        addContent();
+
+        // do not remove this
+        // or invalidations do not work
         session.save();
 
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        assertTrue(firstSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                firstSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        dump();
 
+        doCopyContent();
+
+        // do not remove this
+        // or invalidations do not work
+        session.save();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        DocumentModel ws = session.getDocument(wsRef);
+        DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
         DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
-        assertTrue(secondSubFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                1L,
-                secondSubFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+        DocumentModel secondFile = session.getDocument(secondFileRef);
+        DocumentModel copiedFile = session.getChildren(secondSubFolderRef).get(
+                0);
 
-        DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                3L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertQuota(firstFile, 100L, 100L);
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(copiedFile, 100L, 100L);
+        assertQuota(firstSubFolder, 0L, 300L);
+        assertQuota(secondSubFolder, 0L, 100L);
+        assertQuota(firstFolder, 0L, 400L);
+        assertQuota(ws, 0L, 400L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
     }
 
-    // @Test
-    public void testRemoveFolder() throws Exception {
-        session.removeDocument(firstSubFolderRef);
+    @Test
+    public void testQuotaOnCopyFolderishContent() throws Exception {
+
+        addContent();
+
+        // do not remove this
+        // or invalidations do not work
         session.save();
 
+        dump();
+
+        doCopyFolderishContent();
+
+        // do not remove this
+        // or invalidations do not work
+        session.save();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        DocumentModel ws = session.getDocument(wsRef);
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        assertTrue(firstFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                0L,
-                firstFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        DocumentModel secondFolder = session.getDocument(secondFolderRef);
+        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+        DocumentModel secondFile = session.getDocument(secondFileRef);
+        DocumentModel copiedFolder = session.getChildren(secondFolderRef).get(0);
 
-        DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                0L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        DocumentModel copiedFirstFile = session.getChild(copiedFolder.getRef(),
+                "file1");
+        DocumentModel copiedSecondFile = session.getChild(
+                copiedFolder.getRef(), "file2");
+
+        assertQuota(firstFile, 100L, 100L);
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(firstSubFolder, 0L, 300L);
+        assertQuota(firstFolder, 0L, 300L);
+        assertQuota(secondFolder, 0L, 300L);
+        assertQuota(copiedFolder, 0L, 300L);
+        assertQuota(copiedFirstFile, 100L, 100L);
+        assertQuota(copiedSecondFile, 200L, 200L);
+        assertQuota(ws, 0L, 600L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
     }
 
-    // @Test
-    public void testCopyFolder() throws Exception {
-        session.copy(firstSubFolderRef, secondFolderRef, null);
+    @Test
+    public void testQuotaOnRemoveFoldishContent() throws Exception {
+        addContent();
+
+        // do not remove this
+        // or invalidations do not work
         session.save();
 
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
-        assertTrue(secondFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                secondFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        dump();
+
+        doRemoveFolderishContent();
+
+        // do not remove this
+        // or invalidations do not work
+        session.save();
+
+        TransactionHelper.startTransaction();
+
+        dump();
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                4L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
-    }
-
-    // @Test
-    public void testMoveFolder() throws Exception {
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
-        assertFalse(secondFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-
-        session.move(firstSubFolderRef, secondFolderRef, null);
-        session.save();
-
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        assertTrue(firstFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
+        assertFalse(session.exists(firstSubFolderRef));
 
-        secondFolder = session.getDocument(secondFolderRef);
-        assertTrue(secondFolder.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                secondFolder.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        assertQuota(firstFolder, 0L, 0L);
+        assertQuota(ws, 0L, 0L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
+    }
+
+    @Test
+    public void testQuotaOnMoveFoldishContent() throws Exception {
+
+        addContent();
+
+        // do not remove this
+        // or invalidations do not work
+        session.save();
+
+        dump();
+
+        doMoveFolderishContent();
+
+        // do not remove this
+        // or invalidations do not work
+        session.save();
+
+        TransactionHelper.startTransaction();
+
+        dump();
 
         DocumentModel ws = session.getDocument(wsRef);
-        assertTrue(ws.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET));
-        assertEquals(
-                2L,
-                ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
+        DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        DocumentModel secondFolder = session.getDocument(secondFolderRef);
+
+        DocumentModel firstSubFolder = session.getChildren(secondFolderRef).get(
+                0);
+        DocumentModel firstFile = session.getChild(firstSubFolder.getRef(),
+                "file1");
+        DocumentModel secondFile = session.getChild(firstSubFolder.getRef(),
+                "file2");
+
+        assertEquals(1, session.getChildren(firstFolderRef).size());
+
+        assertQuota(ws, 0L, 300L);
+        assertQuota(firstFolder, 0L, 0L);
+        assertQuota(secondFolder, 0L, 300L);
+        assertQuota(firstSubFolder, 0L, 300L);
+        assertQuota(firstFile, 100L, 100L);
+        assertQuota(secondFile, 200L, 200L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
     }
+
 }

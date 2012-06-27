@@ -98,4 +98,13 @@ public class SizeUpdateEventContext extends DocumentEventContext {
         return (String) getProperty(SOURCE_EVENT_PROPERTY_KEY);
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("CoreSession " + getCoreSession().getSessionId());
+        sb.append("\nsourceDocument " + getSourceDocument().getId() + " "
+                + getSourceDocument().getPathAsString());
+        sb.append("\nprops " + getProperties().toString());
+        return sb.toString();
+    }
+
 }

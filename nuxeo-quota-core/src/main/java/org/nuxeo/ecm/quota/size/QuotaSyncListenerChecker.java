@@ -58,6 +58,9 @@ public class QuotaSyncListenerChecker implements EventListener {
                 DocumentEventContext docCtx = (DocumentEventContext) ctx;
                 DocumentModel targetDoc = docCtx.getSourceDocument();
 
+                log.debug("Preprocess Document " + targetDoc.getPathAsString()
+                        + " on event " + event.getName());
+
                 if (targetDoc == null) {
                     return;
                 }
@@ -79,9 +82,6 @@ public class QuotaSyncListenerChecker implements EventListener {
                             BEFORE_DOC_UPDATE.equals(event.getName()));
                     // only process if Blobs where added or removed
                     if (bsi.getBlobSizeDelta() != 0) {
-                        log.debug("Preprocess Document "
-                                + targetDoc.getPathAsString() + " on event "
-                                + event.getName());
                         checkConstraints(targetDoc, targetDoc.getParentRef(),
                                 bsi);
                         SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
@@ -99,6 +99,8 @@ public class QuotaSyncListenerChecker implements EventListener {
                                     docCtx, total, event.getName());
                             asyncEventCtx.setParentUUIds(parentUUIDs);
                             quotaUpdateEvent = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
+                            log.debug("prepare event on target tree with context "
+                                    + asyncEventCtx.toString());
                         }
                     }
                 } else if (DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
@@ -116,6 +118,9 @@ public class QuotaSyncListenerChecker implements EventListener {
                             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
                                     docCtx, bsi, event.getName());
                             quotaUpdateEvent = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
+                            log.debug("prepare event on target tree with context "
+                                    + asyncEventCtx.toString());
+
                         }
                     }
                 } else if (DOCUMENT_MOVED.equals(event.getName())) {
@@ -141,16 +146,23 @@ public class QuotaSyncListenerChecker implements EventListener {
                                 docCtx, bsi, event.getName());
                         quotaUpdateEvent = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
 
+                        log.debug("prepare event on target tree with context "
+                                + asyncEventCtx.toString());
+
                         // also need to trigger update on source tree
                         BlobSizeInfo bsiRemove = new BlobSizeInfo();
                         bsiRemove.blobSize = total;
                         bsiRemove.blobSizeDelta = -total;
 
                         asyncEventCtx = new SizeUpdateEventContext(docCtx,
-                                sourceParent, bsi, event.getName());
+                                sourceParent, bsiRemove, event.getName());
                         List<String> sourceParentUUIDs = getParentUUIDS(sourceParent);
+                        sourceParentUUIDs.add(0, sourceParent.getId());
                         asyncEventCtx.setParentUUIds(sourceParentUUIDs);
                         quotaUpdateEvent2 = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
+
+                        log.debug("prepare event on source tree with context "
+                                + asyncEventCtx.toString());
                     }
                 }
             }

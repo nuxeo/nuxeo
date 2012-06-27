@@ -2,6 +2,7 @@ package org.nuxeo.ecm.quota.size;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.quota.size.DocumentsCountAndSizeUpdater.DOCUMENTS_SIZE_STATISTICS_FACET;
 
 import java.util.ArrayList;
@@ -56,12 +57,16 @@ public class QuotaAsyncProcessor implements PostCommitEventListener {
         CoreSession session = quotaCtx.getCoreSession();
         DocumentModel sourceDocument = quotaCtx.getSourceDocument();
 
-        DocumentModel doc = session.getDocument(sourceDocument.getRef());
-
-        if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
-            log.debug("Double Check Facet was added OK");
+        if (session.exists(sourceDocument.getRef())) {
+            DocumentModel doc = session.getDocument(sourceDocument.getRef());
+            if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
+                log.debug("Double Check Facet was added OK");
+            } else {
+                log.warn("No facet !!!!");
+            }
         } else {
-            log.warn("No facet !!!!");
+            log.debug("Document " + sourceDocument.getRef()
+                    + " no longer exists (" + sourceEvent + ")");
         }
 
     }
@@ -73,15 +78,17 @@ public class QuotaAsyncProcessor implements PostCommitEventListener {
         DocumentModel sourceDocument = quotaCtx.getSourceDocument();
 
         if (sourceDocument instanceof ShallowDocumentModel) {
-            log.error("Unable to reconnect Document "
-                    + sourceDocument.getPathAsString() + " on event "
-                    + sourceEvent);
-            return;
+            if (!ABOUT_TO_REMOVE.equals(sourceEvent)) {
+                log.error("Unable to reconnect Document "
+                        + sourceDocument.getPathAsString() + " on event "
+                        + sourceEvent);
+                return;
+            }
+        } else {
+            log.debug("sourceDoc SessionId:" + sourceDocument.getSessionId());
+            log.debug("sourceDoc SessionId:"
+                    + sourceDocument.getCoreSession().getSessionId());
         }
-
-        log.debug("sourceDoc SessionId:" + sourceDocument.getSessionId());
-        log.debug("sourceDoc SessionId:"
-                + sourceDocument.getCoreSession().getSessionId());
 
         List<DocumentModel> parents = new ArrayList<DocumentModel>();
 
@@ -121,17 +128,20 @@ public class QuotaAsyncProcessor implements PostCommitEventListener {
             }
 
             // process Quota on target Document
-            QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);
-            if (quotaDoc == null) {
-                log.debug("  add Quota Facet on "
-                        + sourceDocument.getPathAsString());
-                quotaDoc = QuotaAwareDocumentFactory.make(sourceDocument, false);
+            if (!DOCUMENT_CREATED_BY_COPY.equals(sourceEvent)) {
+                QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);
+                if (quotaDoc == null) {
+                    log.debug("  add Quota Facet on "
+                            + sourceDocument.getPathAsString());
+                    quotaDoc = QuotaAwareDocumentFactory.make(sourceDocument,
+                            false);
 
-            } else {
-                log.debug("  update Quota Facet on "
-                        + sourceDocument.getPathAsString());
+                } else {
+                    log.debug("  update Quota Facet on "
+                            + sourceDocument.getPathAsString());
+                }
+                quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
             }
-            quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
         }
         if (parents.size() > 0) {
             processOnParents(parents, quotaCtx.getBlobDelta());
@@ -141,6 +151,9 @@ public class QuotaAsyncProcessor implements PostCommitEventListener {
     protected void processOnParents(List<DocumentModel> parents, long delta)
             throws ClientException {
         for (DocumentModel parent : parents) {
+            if (parent.getPathAsString().equals("/")) {
+                continue;
+            }
             // process Quota on target Document
             QuotaAware quotaDoc = parent.getAdapter(QuotaAware.class);
             if (quotaDoc == null) {
