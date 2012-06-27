@@ -507,9 +507,9 @@ public class ConfigurationGenerator {
                 "false");
         boolean isDebugSet = Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
         if (isDebugSet) {
-            log.info("Nuxeo Dev mode enabled");
+            log.debug("Nuxeo Dev mode enabled");
         } else {
-            log.info("Nuxeo Dev mode is not enabled");
+            log.debug("Nuxeo Dev mode is not enabled");
         }
 
         // XXX: cannot init seam debug mode when global debug mode is set, as
@@ -520,13 +520,13 @@ public class ConfigurationGenerator {
         boolean isSeamDebugSet = Boolean.TRUE.equals(Boolean.valueOf(seamDebugPropValue))
                 || hasSeamDebugFile();
         if (isSeamDebugSet) {
-            log.info("Nuxeo Seam HotReload is enabled");
+            log.debug("Nuxeo Seam HotReload is enabled");
             // add it to the system props for compat, in case this mode was
             // detected because of presence of the file in the config dir, and
             // because it's checked there on code that relies on it
             System.setProperty(SEAM_DEBUG_SYSTEM_PROP, "true");
         } else {
-            log.info("Nuxeo Seam HotReload is not enabled");
+            log.debug("Nuxeo Seam HotReload is not enabled");
         }
 
         // Could be useful to initialize DEFAULT env...

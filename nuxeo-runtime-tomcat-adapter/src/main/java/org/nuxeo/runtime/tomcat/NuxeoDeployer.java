@@ -68,8 +68,6 @@ public class NuxeoDeployer implements LifecycleListener {
                         bundles, "nuxeo-runtime-deploy");
                 File commonJar = FrameworkBootstrap.findFileStartingWidth(
                         bundles, "nuxeo-common");
-                // File xercesJar =
-                // FrameworkBootstrap.findFileStartingWidth(lib, "xerces");
                 if (deployerJar == null || commonJar == null) {
                     System.out.println("Deployer and/or common JAR (nuxeo-runtime-deploy* | nuxeo-common*) not found in "
                             + bundles);
