@@ -717,26 +717,21 @@ public class NuxeoAuthenticationFilter implements Filter {
         String requestedUrl = httpRequest.getParameter(NXAuthConstants.REQUESTED_URL);
         if (requestedUrl != null && !"".equals(requestedUrl)) {
             try {
-                return addLanguageToUrl(
-                        URLDecoder.decode(requestedUrl, "UTF-8"), localeStr);
+                requestedPage = URLDecoder.decode(requestedUrl, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 log.error("Unable to get the requestedUrl parameter" + e);
             }
         }
-        return addLanguageToUrl(requestedPage, localeStr);
-    }
-
-    protected static String addLanguageToUrl(String url, String locale) {
-        if (url == null || "".equals(url) || url.contains("language=")) {
-            // language already set
-            return url;
+        if (requestedPage != null && !"".equals(requestedPage)
+                && localeStr != null) {
+            Map<String, String> params = new HashMap<String, String>();
+            if (!URIUtils.getRequestParameters(requestedPage).containsKey(
+                    NXAuthConstants.LANGUAGE_PARAMETER)) {
+                params.put(NXAuthConstants.LANGUAGE_PARAMETER, localeStr);
+            }
+            return URIUtils.addParametersToURIQuery(requestedPage, params);
         }
-        if (url.contains("?")) {
-            url += "&";
-        } else {
-            url += "?";
-        }
-        return url + "language=" + locale;
+        return requestedPage;
     }
 
     protected boolean isStartPageValid(String startPage) {
