@@ -75,10 +75,19 @@ public class QuotaSyncListenerChecker implements EventListener {
                     }
                 }
             }
-        } catch (QuotaExceededException e) {
-            event.markRollBack("Quota Exceeded", e);
-            throw e;
+        } catch (ClientException e) {
+            ClientException e2 = handleException(e, event);
+            if (e2 != null) {
+                throw e2;
+            }
         }
+    }
+
+    protected ClientException handleException(ClientException e, Event event) {
+        if (e instanceof QuotaExceededException) {
+            event.markRollBack("Quota Exceeded", e);
+        }
+        return e;
     }
 
     protected void processDocumentCreated(CoreSession session,
