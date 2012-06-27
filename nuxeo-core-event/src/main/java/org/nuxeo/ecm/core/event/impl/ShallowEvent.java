@@ -28,9 +28,9 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 
 /**
- * Light Event implementation.
- * Used to reduce memory footprint of {@link Event} stacked in {@link EventBundle}.
- *
+ * Light Event implementation. Used to reduce memory footprint of {@link Event}
+ * stacked in {@link EventBundle}.
+ * 
  * @author Thierry Delprat
  */
 public class ShallowEvent extends EventImpl {
@@ -46,7 +46,6 @@ public class ShallowEvent extends EventImpl {
                 DocumentModel oldDoc = (DocumentModel) arg;
                 DocumentRef ref = oldDoc.getRef();
                 if (ref != null) {
-                    //newArg = new DocumentModelImpl(null,oldDoc.getType(),oldDoc.getId(),oldDoc.getPath(), oldDoc.getRef(), oldDoc.getParentRef(), oldDoc.getDeclaredSchemas(), oldDoc.getDeclaredFacets());
                     newArg = new ShallowDocumentModel(oldDoc);
                 } else {
                     newArg = null;
@@ -59,8 +58,8 @@ public class ShallowEvent extends EventImpl {
         EventContext newCtx = null;
         if (ctx instanceof DocumentEventContext) {
             newCtx = new DocumentEventContext(null, ctx.getPrincipal(),
-                    (DocumentModel) newArgs.get(0), (DocumentRef) newArgs
-                            .get(1));
+                    (DocumentModel) newArgs.get(0),
+                    (DocumentRef) newArgs.get(1));
         } else {
             newCtx = new EventContextImpl(null, ctx.getPrincipal());
             ((EventContextImpl) newCtx).setArgs(newArgs.toArray());
@@ -72,7 +71,6 @@ public class ShallowEvent extends EventImpl {
             Serializable propValue = prop.getValue();
             if (propValue instanceof DocumentModel) {
                 DocumentModel oldDoc = (DocumentModel) propValue;
-                //propValue = new DocumentModelImpl(null,oldDoc.getType(),oldDoc.getId(),oldDoc.getPath(), oldDoc.getRef(), oldDoc.getParentRef(), oldDoc.getDeclaredSchemas(), oldDoc.getDeclaredFacets());
                 propValue = new ShallowDocumentModel(oldDoc);
             }
             // XXX treat here other cases !!!!

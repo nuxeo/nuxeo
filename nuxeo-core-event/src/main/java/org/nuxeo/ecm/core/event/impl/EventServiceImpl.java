@@ -79,8 +79,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     protected volatile AsyncEventExecutor asyncExec;
 
-    protected final List<AsyncWaitHook> asyncWaitHooks =
-            new CopyOnWriteArrayList<AsyncWaitHook>();
+    protected final List<AsyncWaitHook> asyncWaitHooks = new CopyOnWriteArrayList<AsyncWaitHook>();
 
     protected boolean blockAsyncProcessing = false;
 
@@ -101,7 +100,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
         Set<AsyncWaitHook> notTerminated = new HashSet<AsyncWaitHook>();
-        for (AsyncWaitHook hook:asyncWaitHooks) {
+        for (AsyncWaitHook hook : asyncWaitHooks) {
             if (hook.shutdown() == false) {
                 notTerminated.add(hook);
             }
@@ -139,9 +138,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     @Override
     public void waitForAsyncCompletion(long timeout) {
-        Set<AsyncWaitHook> notCompleted =
-                new HashSet<AsyncWaitHook>();
-        for (AsyncWaitHook hook:asyncWaitHooks) {
+        Set<AsyncWaitHook> notCompleted = new HashSet<AsyncWaitHook>();
+        for (AsyncWaitHook hook : asyncWaitHooks) {
             if (!hook.waitForAsyncCompletion()) {
                 notCompleted.add(hook);
             }
@@ -160,7 +158,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
             // TODO change signature
             throw new RuntimeException(e);
         }
-     }
+    }
 
     @Override
     public void addEventListener(EventListenerDescriptor listener) {
@@ -224,6 +222,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         EventStats stats = getEventStats();
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledInlineListenersDescriptors()) {
             if (desc.acceptEvent(ename)) {
+                Throwable rollbackException = null;
                 try {
                     long t0 = System.currentTimeMillis();
                     desc.asEventListener().handleEvent(event);
@@ -231,11 +230,38 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
                         stats.logSyncExec(desc, System.currentTimeMillis() - t0);
                     }
                 } catch (Throwable t) {
-                    log.error("Error during sync listener execution", t);
+                    if (event.isMarkedForRollBack()) {
+                        log.error(
+                                "Error during "
+                                        + desc.getName()
+                                        + " sync listener execution, transaction will be rolledback",
+                                t);
+                        rollbackException = t;
+                    } else {
+                        log.error("Error during "
+                                + desc.getName()
+                                + " sync listener execution, transaction won't be rolled back since event.markRollBack() was not called by the Listener");
+                    }
+
                 } finally {
                     if (event.isMarkedForRollBack()) {
-                        throw new RuntimeException(
-                                "Exception during sync listener execution, rollingback");
+
+                        String message = "Exception during " + desc.getName()
+                                + " sync listener execution, rollingback";
+                        if (event.getRollbackMessage() != null) {
+                            message = message + " ("
+                                    + event.getRollbackMessage() + ")";
+                        }
+                        if (event.getRollbackException() != null) {
+                            rollbackException = event.getRollbackException();
+                        }
+
+                        if (rollbackException != null) {
+                            throw new RuntimeException(message,
+                                    rollbackException);
+                        } else {
+                            throw new RuntimeException(message);
+                        }
                     }
                     if (event.isCanceled()) {
                         return;

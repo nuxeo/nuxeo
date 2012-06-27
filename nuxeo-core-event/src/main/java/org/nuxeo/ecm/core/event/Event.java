@@ -36,9 +36,9 @@ import java.io.Serializable;
  * <li>COMMIT - the event will simulate a commit so that the post commit event
  * bundle will be fired. TYhe COMMIT flag is ignored while in a transaction.
  * </ul>
- *
+ * 
  * More flags may be added in the future.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Event extends Serializable {
@@ -69,7 +69,7 @@ public interface Event extends Serializable {
 
     /**
      * The time stamp when the event was raised.
-     *
+     * 
      * @return the time stamp as returned by {@link System#currentTimeMillis()}
      */
     long getTime();
@@ -83,14 +83,14 @@ public interface Event extends Serializable {
      * documents and also may give access to the operation that raised the event
      * allowing thus to canceling the operation, to record time spent to set the
      * result status etc.
-     *
+     * 
      * @return the event context
      */
     EventContext getContext();
 
     /**
      * Gets the set of event flags
-     *
+     * 
      * @return the event flags
      */
     int getFlags();
@@ -106,7 +106,7 @@ public interface Event extends Serializable {
 
     /**
      * Checks whether the event was canceled.
-     *
+     * 
      * @return true if canceled, false otherwise.
      */
     boolean isCanceled();
@@ -120,16 +120,46 @@ public interface Event extends Serializable {
     void markRollBack();
 
     /**
+     * Marks transaction for RollBack
+     * <p>
+     * This will exit the event listeners loop and throw a RuntimeException In
+     * JTA container, this will make the global transaction rollback.
+     * 
+     * @param message message that explains the reason of the Rollback
+     * @param exception associated Exception that explains the Rollback if any
+     * @since 5.6
+     */
+    void markRollBack(String message, Throwable exception);
+
+    /**
      * Checks whether the event was marked for RollBack
-     *
+     * 
      * @return true if rolled back, false otherwise.
      */
     boolean isMarkedForRollBack();
 
     /**
+     * Returns the Exception associated the RollBack if any
+     * 
+     * @return the Exception associated the RollBack if any
+     * 
+     * @since 5.6
+     */
+    Throwable getRollbackException();
+
+    /**
+     * Returns the message associated to the RollBack if any
+     * 
+     * @return the message associated to the RollBack if any
+     * 
+     * @since 5.6
+     */
+    String getRollbackMessage();
+
+    /**
      * Whether this event must not be added to a bundle. An event is not inline
      * by default.
-     *
+     * 
      * @return true if the event must be omitted from event bundles, false
      *         otherwise.
      */
@@ -137,7 +167,7 @@ public interface Event extends Serializable {
 
     /**
      * Set the inline flag.
-     *
+     * 
      * @param isInline true if the event must not be recorded as part of the
      *            transaction
      * @see #isInline()
@@ -147,14 +177,14 @@ public interface Event extends Serializable {
     /**
      * Tests whether or not this is a commit event. A commit event is triggering
      * the post commit notification and then is reseting the recorded events.
-     *
+     * 
      * @return true if a commit event false otherwise
      */
     boolean isCommitEvent();
 
     /**
      * Set the commit flag.
-     *
+     * 
      * @param isCommit
      * @see #isCommitEvent()
      */
@@ -164,14 +194,14 @@ public interface Event extends Serializable {
      * Tests if this event is local.
      * <p>
      * Local events events are of interest only on the local machine.
-     *
+     * 
      * @return true if private false otherwise
      */
     boolean isLocal();
 
     /**
      * Sets the local flag.
-     *
+     * 
      * @param isLocal
      * @see #isLocal()
      */
@@ -181,14 +211,14 @@ public interface Event extends Serializable {
      * Tests if this event is public.
      * <p>
      * Public events are of interest to everyone.
-     *
+     * 
      * @return true if public, false otherwise
      */
     boolean isPublic();
 
     /**
      * Set the public flag.
-     *
+     * 
      * @param isPublic
      * @see #isPublic()
      */
@@ -198,7 +228,7 @@ public interface Event extends Serializable {
      * Tests if event is Immediate
      * <p>
      * Immediate events are sent in bundle without waiting for a commit
-     *
+     * 
      * @return true if event is immediate, false otherwise
      */
     boolean isImmediate();

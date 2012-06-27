@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 
 /**
  * Event implementation.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class EventImpl implements Event {
@@ -31,6 +31,9 @@ public class EventImpl implements Event {
 
     protected int flags;
 
+    protected Throwable rollbackException;
+
+    protected String rollbackMessage;
 
     public EventImpl(String name, EventContext ctx, int flags, long creationTime) {
         this.name = name;
@@ -46,7 +49,6 @@ public class EventImpl implements Event {
     public EventImpl(String name, EventContext ctx) {
         this(name, ctx, FLAG_NONE);
     }
-
 
     @Override
     public int getFlags() {
@@ -76,6 +78,16 @@ public class EventImpl implements Event {
     @Override
     public void markRollBack() {
         flags |= FLAG_ROLLBACK;
+    }
+
+    @Override
+    public void markRollBack(String message, Throwable exception) {
+        markRollBack();
+        if (message == null && exception != null) {
+            message = exception.getMessage();
+        }
+        this.rollbackMessage = message;
+        this.rollbackException = exception;
     }
 
     @Override
@@ -152,6 +164,16 @@ public class EventImpl implements Event {
         } else {
             flags &= ~FLAG_IMMEDIATE;
         }
+    }
+
+    @Override
+    public Throwable getRollbackException() {
+        return rollbackException;
+    }
+
+    @Override
+    public String getRollbackMessage() {
+        return rollbackMessage;
     }
 
 }
