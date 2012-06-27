@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +54,7 @@ import org.nuxeo.ecm.platform.jbpm.JbpmSecurityPolicy;
 import org.nuxeo.ecm.platform.jbpm.JbpmService;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmException;
 import org.nuxeo.ecm.platform.jbpm.NuxeoJbpmRuntimeException;
+import org.nuxeo.ecm.platform.jbpm.TaskCreateDateComparator;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -158,13 +158,8 @@ public class JbpmServiceImpl implements JbpmService {
         if (filter != null) {
             tis = filter.filter(context, null, tis, currentUser);
         }
-        // reverse chronological sorting
-        Collections.sort(tis, new Comparator<TaskInstance>() {
-            @Override
-            public int compare(TaskInstance t1, TaskInstance t2) {
-                return t2.getCreate().compareTo(t1.getCreate());
-            }
-        });
+        // sort to ensure deterministic order
+        Collections.sort(tis, new TaskCreateDateComparator());
         return tis;
     }
 
@@ -509,6 +504,7 @@ public class JbpmServiceImpl implements JbpmService {
                 }
             }
         }
+        Collections.sort(result, new TaskCreateDateComparator());
         return result;
     }
 

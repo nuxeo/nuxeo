@@ -195,12 +195,13 @@ public class JbpmServiceTest extends RepositoryOSGITestCase {
         tasks = service.getTaskInstances(dm, administrator, null);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
-
         tasks = service.getTaskInstances(dm, user1, null);
         assertEquals(2, tasks.size());
-        // assert revert order on creation date
+        // assert order on creation date
         assertTrue(
-                "Tasks sorted in a wrong order.", tasks.get(0).getCreate().compareTo((tasks.get(1).getCreate())) > 0);
+                "Tasks sorted in a wrong order: " + tasks.get(0).getCreate()
+                        + " > " + tasks.get(1).getCreate(),
+                tasks.get(0).getCreate().compareTo((tasks.get(1).getCreate())) < 0);
     }
 
     public void testTaskManagement() throws Exception {
