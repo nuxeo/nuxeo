@@ -2738,6 +2738,11 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_LIFE_CYCLE);
+
+            if (!doc.isCheckedOut()) {
+                checkOut(docRef);
+                doc = resolveReference(docRef);
+            }
             String formerStateName = doc.getLifeCycleState();
             operationResult = doc.followTransition(transition);
 
@@ -2759,7 +2764,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                         docModel, options,
                         DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
                         null, true, false);
+                writeModel(doc, docModel);
             }
+
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
                     "Unable to follow transition <" + transition
