@@ -107,7 +107,7 @@ public class DublinCoreListener implements EventListener {
         }
 
         if (eventId.equals(BEFORE_DOC_UPDATE)
-                || eventId.equals(TRANSITION_EVENT)) {
+                || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
         } else if (eventId.equals(DOCUMENT_CREATED)) {
