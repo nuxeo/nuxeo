@@ -21,9 +21,14 @@
  - applicationContextPath: the application context path, could be a document
    different from the documentContext.
    This path could be use for doing query for instance.
- - documentLinkBuilder:
- - activityLinkBuilder:
+ - documentLinkBuilder: name of the document link builder to compute
+   documents URL, usually a codec name. If not set, default to 'docid'.
+ - activityLinkBuilder: name of the activity link builder to use to compute
+   document and user links in activity message. If not set, default to 'default'.
 </c:if>
+
+  <c:set var="documentLinkBuilder" value="#{nxu:test(not empty documentLinkBuilder, documentLinkBuilder, 'docid')}" />
+  <c:set var="activityLinkBuilder" value="#{nxu:test(not empty activityLinkBuilder, activityLinkBuilder, 'default')}" />
 
   <script type="text/javascript">
     jQuery(document).ready(function() {
