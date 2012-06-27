@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -41,141 +42,36 @@ public class QuotaSyncListenerChecker implements EventListener {
     @Override
     public void handleEvent(Event event) throws ClientException {
 
-        Boolean block = (Boolean) event.getContext().getProperty(
-                DISABLE_QUOTA_CHECK_LISTENER);
-        if (block != null && block) {
-            // ignore the event - we are blocked by the caller
-            // used to avoid reentrency when the async event handler do update
-            // the docs to set the new size !
-            return;
-        }
-
         try {
-            Event quotaUpdateEvent = null;
-            Event quotaUpdateEvent2 = null;
             if (EVENTS_TO_HANDLE.contains(event.getName())) {
                 EventContext ctx = event.getContext();
                 if (ctx instanceof DocumentEventContext) {
                     DocumentEventContext docCtx = (DocumentEventContext) ctx;
                     DocumentModel targetDoc = docCtx.getSourceDocument();
+                    CoreSession session = docCtx.getCoreSession();
+
+                    if (!needToProcessEventOnDocument(event, targetDoc)) {
+                        return;
+                    }
 
                     log.debug("Preprocess Document "
                             + targetDoc.getPathAsString() + " on event "
                             + event.getName());
 
-                    if (targetDoc == null) {
-                        return;
-                    }
-
-                    block = (Boolean) targetDoc.getContextData().getScopedValue(
-                            ScopeType.REQUEST, DISABLE_QUOTA_CHECK_LISTENER);
-                    if (block != null && block) {
-                        log.debug("Escape from listener to avoid re-entrency");
-                        // ignore the event - we are blocked by the caller
-                        // used to avoid reentrency when the async event handler
-                        // do
-                        // update
-                        // the docs to set the new size !
-                        return;
-                    }
-
-                    if (DOCUMENT_CREATED.equals(event.getName())
-                            || BEFORE_DOC_UPDATE.equals(event.getName())) {
-                        BlobSizeInfo bsi = computeSizeImpact(targetDoc,
-                                BEFORE_DOC_UPDATE.equals(event.getName()));
-                        // only process if Blobs where added or removed
-                        if (bsi.getBlobSizeDelta() != 0) {
-                            checkConstraints(targetDoc,
-                                    targetDoc.getParentRef(), bsi);
-                            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                                    docCtx, bsi, event.getName());
-                            quotaUpdateEvent = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
-                        }
+                    if (DOCUMENT_CREATED.equals(event.getName())) {
+                        processDocumentCreated(session, targetDoc, docCtx);
+                    } else if (BEFORE_DOC_UPDATE.equals(event.getName())) {
+                        processDocumentBeforeUpdate(session, targetDoc, docCtx);
                     } else if (ABOUT_TO_REMOVE.equals(event.getName())) {
-
-                        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
-                        if (quotaDoc != null) {
-                            long total = quotaDoc.getTotalSize();
-                            if (total > 0) {
-                                List<String> parentUUIDs = getParentUUIDS(targetDoc);
-                                SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                                        docCtx, total, event.getName());
-                                asyncEventCtx.setParentUUIds(parentUUIDs);
-                                quotaUpdateEvent = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
-                                log.debug("prepare event on target tree with context "
-                                        + asyncEventCtx.toString());
-                            }
-                        }
+                        processDocumentAboutToBeRemoved(session, targetDoc,
+                                docCtx);
                     } else if (DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
-                        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
-                        if (quotaDoc != null) {
-                            long total = quotaDoc.getTotalSize();
-                            BlobSizeInfo bsi = new BlobSizeInfo();
-                            bsi.blobSize = total;
-                            bsi.blobSizeDelta = total;
-                            if (total > 0) {
-                                // check on parent since Session is not
-                                // committed
-                                // for now
-                                checkConstraints(targetDoc,
-                                        targetDoc.getParentRef(), bsi);
-                                SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                                        docCtx, bsi, event.getName());
-                                quotaUpdateEvent = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
-                                log.debug("prepare event on target tree with context "
-                                        + asyncEventCtx.toString());
-
-                            }
-                        }
+                        processDocumentCopied(session, targetDoc, docCtx);
                     } else if (DOCUMENT_MOVED.equals(event.getName())) {
                         DocumentRef sourceParentRef = (DocumentRef) docCtx.getProperty(CoreEventConstants.PARENT_PATH);
-                        DocumentModel sourceParent = docCtx.getCoreSession().getDocument(
-                                sourceParentRef);
-                        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
-                        long total = 0;
-                        if (quotaDoc != null) {
-                            total = quotaDoc.getTotalSize();
-                        }
-                        BlobSizeInfo bsi = new BlobSizeInfo();
-                        bsi.blobSize = total;
-                        bsi.blobSizeDelta = total;
-                        if (total > 0) {
-                            // check on destination parent since Session is not
-                            // committed
-                            // for now
-                            checkConstraints(targetDoc,
-                                    targetDoc.getParentRef(), bsi);
-                            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                                    docCtx, bsi, event.getName());
-                            quotaUpdateEvent = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
-
-                            log.debug("prepare event on target tree with context "
-                                    + asyncEventCtx.toString());
-
-                            // also need to trigger update on source tree
-                            BlobSizeInfo bsiRemove = new BlobSizeInfo();
-                            bsiRemove.blobSize = total;
-                            bsiRemove.blobSizeDelta = -total;
-
-                            asyncEventCtx = new SizeUpdateEventContext(docCtx,
-                                    sourceParent, bsiRemove, event.getName());
-                            List<String> sourceParentUUIDs = getParentUUIDS(sourceParent);
-                            sourceParentUUIDs.add(0, sourceParent.getId());
-                            asyncEventCtx.setParentUUIds(sourceParentUUIDs);
-                            quotaUpdateEvent2 = asyncEventCtx.newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
-
-                            log.debug("prepare event on source tree with context "
-                                    + asyncEventCtx.toString());
-                        }
-                    }
-                }
-
-                // if needed fire async event to trigger update on the tree
-                if (quotaUpdateEvent != null) {
-                    EventService es = Framework.getLocalService(EventService.class);
-                    es.fireEvent(quotaUpdateEvent);
-                    if (quotaUpdateEvent2 != null) {
-                        es.fireEvent(quotaUpdateEvent2);
+                        DocumentModel sourceParent = session.getDocument(sourceParentRef);
+                        processDocumentMoved(session, targetDoc, sourceParent,
+                                docCtx);
                     }
                 }
             }
@@ -183,6 +79,148 @@ public class QuotaSyncListenerChecker implements EventListener {
             event.markRollBack("Quota Exceeded", e);
             throw e;
         }
+    }
+
+    protected void processDocumentCreated(CoreSession session,
+            DocumentModel targetDoc, DocumentEventContext docCtx)
+            throws ClientException {
+        BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
+        // only process if Blobs where added or removed
+        if (bsi.getBlobSizeDelta() != 0) {
+            checkConstraints(targetDoc, targetDoc.getParentRef(), bsi);
+            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                    docCtx, bsi, DOCUMENT_CREATED);
+            sendUpdateEvents(asyncEventCtx);
+        }
+
+    }
+
+    protected void processDocumentUpdated(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException {
+        // Nothing to do !
+    }
+
+    protected void processDocumentBeforeUpdate(CoreSession session,
+            DocumentModel targetDoc, DocumentEventContext docCtx)
+            throws ClientException {
+        BlobSizeInfo bsi = computeSizeImpact(targetDoc, true);
+        // only process if Blobs where added or removed
+        if (bsi.getBlobSizeDelta() != 0) {
+            checkConstraints(targetDoc, targetDoc.getParentRef(), bsi);
+            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                    docCtx, bsi, BEFORE_DOC_UPDATE);
+            sendUpdateEvents(asyncEventCtx);
+        }
+    }
+
+    protected void processDocumentCopied(CoreSession session,
+            DocumentModel targetDoc, DocumentEventContext docCtx)
+            throws ClientException {
+        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
+        if (quotaDoc != null) {
+            long total = quotaDoc.getTotalSize();
+            BlobSizeInfo bsi = new BlobSizeInfo();
+            bsi.blobSize = total;
+            bsi.blobSizeDelta = total;
+            if (total > 0) {
+                // check on parent since Session is not
+                // committed
+                // for now
+                checkConstraints(targetDoc, targetDoc.getParentRef(), bsi);
+                SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                        docCtx, bsi, DOCUMENT_CREATED_BY_COPY);
+                sendUpdateEvents(asyncEventCtx);
+            }
+        }
+    }
+
+    protected void processDocumentMoved(CoreSession session,
+            DocumentModel targetDoc, DocumentModel sourceParent,
+            DocumentEventContext docCtx) throws ClientException {
+
+        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
+        long total = 0;
+        if (quotaDoc != null) {
+            total = quotaDoc.getTotalSize();
+        }
+        BlobSizeInfo bsi = new BlobSizeInfo();
+        bsi.blobSize = total;
+        bsi.blobSizeDelta = total;
+        if (total > 0) {
+            // check on destination parent since Session is not
+            // committed
+            // for now
+            checkConstraints(targetDoc, targetDoc.getParentRef(), bsi);
+            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                    docCtx, bsi, DOCUMENT_MOVED);
+            sendUpdateEvents(asyncEventCtx);
+
+            // also need to trigger update on source tree
+            BlobSizeInfo bsiRemove = new BlobSizeInfo();
+            bsiRemove.blobSize = total;
+            bsiRemove.blobSizeDelta = -total;
+
+            asyncEventCtx = new SizeUpdateEventContext(docCtx, sourceParent,
+                    bsiRemove, DOCUMENT_MOVED);
+            List<String> sourceParentUUIDs = getParentUUIDS(sourceParent);
+            sourceParentUUIDs.add(0, sourceParent.getId());
+            asyncEventCtx.setParentUUIds(sourceParentUUIDs);
+            sendUpdateEvents(asyncEventCtx);
+        }
+
+    }
+
+    protected void processDocumentAboutToBeRemoved(CoreSession session,
+            DocumentModel targetDoc, DocumentEventContext docCtx)
+            throws ClientException {
+
+        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
+        if (quotaDoc != null) {
+            long total = quotaDoc.getTotalSize();
+            if (total > 0) {
+                List<String> parentUUIDs = getParentUUIDS(targetDoc);
+                SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                        docCtx, total, ABOUT_TO_REMOVE);
+                asyncEventCtx.setParentUUIds(parentUUIDs);
+                sendUpdateEvents(asyncEventCtx);
+            }
+        }
+    }
+
+    protected boolean needToProcessEventOnDocument(Event event,
+            DocumentModel targetDoc) {
+
+        if (targetDoc == null) {
+            return false;
+        }
+        if (targetDoc.isVersion() || targetDoc.isProxy()) {
+            log.debug("Escape from listener : not precessing versions");
+            return false;
+        }
+
+        Boolean block = (Boolean) targetDoc.getContextData().getScopedValue(
+                ScopeType.REQUEST, DISABLE_QUOTA_CHECK_LISTENER);
+        if (block != null && block) {
+            log.debug("Escape from listener to avoid re-entrency");
+            // ignore the event - we are blocked by the caller
+            // used to avoid reentrency when the async event handler
+            // do
+            // update
+            // the docs to set the new size !
+            return false;
+        }
+        return true;
+    }
+
+    protected void sendUpdateEvents(SizeUpdateEventContext eventCtx)
+            throws ClientException {
+
+        Event quotaUpdateEvent = eventCtx.newQuotaUpdateEvent();
+        log.debug("prepared event on target tree with context "
+                + eventCtx.toString());
+        EventService es = Framework.getLocalService(EventService.class);
+        es.fireEvent(quotaUpdateEvent);
     }
 
     protected List<String> getParentUUIDS(final DocumentModel doc)

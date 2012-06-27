@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class SizeUpdateEventContext extends DocumentEventContext {
@@ -107,4 +109,7 @@ public class SizeUpdateEventContext extends DocumentEventContext {
         return sb.toString();
     }
 
+    public Event newQuotaUpdateEvent() {
+        return newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
+    }
 }
