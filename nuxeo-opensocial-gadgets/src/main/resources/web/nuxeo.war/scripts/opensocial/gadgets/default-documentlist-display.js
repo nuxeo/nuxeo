@@ -57,8 +57,12 @@ function displayDocumentList(entries, nxParams) {
 
 function displayPageNavigationControls(nxParams) {
   if (nxParams.usePagination && maxPage > 1) {
-    _gel('pageNavigationControls').style.display = 'block'
-    _gel('nxDocumentListPage').innerHTML = (currentPage + 1) + "/" + maxPage;
+     _gel('pageNavigationControls').style.display = 'block';
+     if (unknownSize) {
+        _gel('nxDocumentListPage').innerHTML = (currentPage + 1);
+     } else {
+	_gel('nxDocumentListPage').innerHTML = (currentPage + 1) + "/" + maxPage;
+     }
     _gel('navFirstPage').onclick = function(e) {
       firstPage(nxParams)
     };
@@ -68,9 +72,13 @@ function displayPageNavigationControls(nxParams) {
     _gel('navNextPage').onclick = function(e) {
         nextPage(nxParams)
     };
-    _gel('navLastPage').onclick = function(e) {
-        lastPage(nxParams)
-    };
+    if (unknownSize) {
+      _gel('navLastPage').style.display = 'none';
+    } else {
+      _gel('navLastPage').onclick = function(e) {
+          lastPage(nxParams)
+      };
+    }
   } else {
     _gel('pageNavigationControls').style.display = 'none';
   }

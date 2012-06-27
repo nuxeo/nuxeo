@@ -1,5 +1,6 @@
 var currentPage = 0;
 var maxPage = 0;
+var unknownSize = false;
 
 function showErrorMessage(message, debug) {
     _gel("errorMessage").innerHTML = message;
@@ -95,8 +96,11 @@ function requestCompleted(response, nxParams) {
         if (response.data['entity-type'] == "documents" ) { // old behavior for 'documents' output type
             if (nxParams.usePagination) {
                 maxPage = response.data['pageCount'];
+		if (response.data['totalSize'] < 0) {
+		    unknownSize = true;
+		    maxPage = currentPage + 2;
+		}
             }
-
             // set callback
             nxParams.refreshCB = doAutomationRequest;
             nxParams.displayMethod(response.data.entries, nxParams);
