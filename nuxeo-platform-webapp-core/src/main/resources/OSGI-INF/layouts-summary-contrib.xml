@@ -694,6 +694,16 @@
       </properties>
     </widget>
 
+    <widget name="summary_actions_middle_right" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">SUMMARY_MIDDLE_RIGHT</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
     <widget name="summary_left_panel" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
@@ -725,6 +735,7 @@
         <widget>summary_actions_top_right</widget>
         <widget>summary_current_document_description</widget>
         <widget>summary_current_document_states</widget>
+        <widget>summary_actions_middle_right</widget>
         <widget>summary_current_document_contributors</widget>
         <widget>summary_current_document_custom_actions</widget>
         <widget>summary_current_document_tagging</widget>
