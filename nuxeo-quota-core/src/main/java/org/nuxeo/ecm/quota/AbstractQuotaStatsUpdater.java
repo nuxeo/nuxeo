@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
@@ -81,21 +83,37 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
 
     @Override
     public void updateStatistics(CoreSession session,
-            DocumentEventContext docCtx, String eventName)
-            throws ClientException {
+            DocumentEventContext docCtx, Event event) throws ClientException {
         DocumentModel doc = docCtx.getSourceDocument();
-        if (DOCUMENT_CREATED.equals(eventName)) {
-            processDocumentCreated(session, doc);
-        } else if (ABOUT_TO_REMOVE.equals(eventName)) {
-            processDocumentAboutToBeRemoved(session, doc);
-        } else if (DOCUMENT_CREATED_BY_COPY.equals(eventName)) {
-            processDocumentCopied(session, doc);
-        } else if (DOCUMENT_MOVED.equals(eventName)) {
-            DocumentRef sourceParentRef = (DocumentRef) docCtx.getProperty(CoreEventConstants.PARENT_PATH);
-            DocumentModel sourceParent = session.getDocument(sourceParentRef);
-            processDocumentMoved(session, doc, sourceParent);
-        } else if (DOCUMENT_UPDATED.equals(eventName)) {
-            processDocumentUpdated(session, doc);
+
+        if (!needToProcessEventOnDocument(event, doc)) {
+            System.out.println("Exit Listener !!!!");
+            return;
+        }
+
+        String eventName = event.getName();
+
+        try {
+            if (DOCUMENT_CREATED.equals(eventName)) {
+                processDocumentCreated(session, doc, docCtx);
+            } else if (ABOUT_TO_REMOVE.equals(eventName)) {
+                processDocumentAboutToBeRemoved(session, doc, docCtx);
+            } else if (DOCUMENT_CREATED_BY_COPY.equals(eventName)) {
+                processDocumentCopied(session, doc, docCtx);
+            } else if (DOCUMENT_MOVED.equals(eventName)) {
+                DocumentRef sourceParentRef = (DocumentRef) docCtx.getProperty(CoreEventConstants.PARENT_PATH);
+                DocumentModel sourceParent = session.getDocument(sourceParentRef);
+                processDocumentMoved(session, doc, sourceParent, docCtx);
+            } else if (DOCUMENT_UPDATED.equals(eventName)) {
+                processDocumentUpdated(session, doc, docCtx);
+            } else if (BEFORE_DOC_UPDATE.equals(eventName)) {
+                processDocumentBeforeUpdate(session, doc, docCtx);
+            }
+        } catch (ClientException e) {
+            ClientException e2 = handleException(e, event);
+            if (e2 != null) {
+                throw e2;
+            }
         }
     }
 
@@ -113,19 +131,33 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
 
     }
 
+    protected abstract ClientException handleException(ClientException e,
+            Event event);
+
+    protected abstract boolean needToProcessEventOnDocument(Event event,
+            DocumentModel targetDoc);
+
     protected abstract void processDocumentCreated(CoreSession session,
-            DocumentModel doc) throws ClientException;
-
-    protected abstract void processDocumentCopied(CoreSession session,
-            DocumentModel doc) throws ClientException;
-
-    protected abstract void processDocumentUpdated(CoreSession session,
-            DocumentModel doc) throws ClientException;
-
-    protected abstract void processDocumentMoved(CoreSession session,
-            DocumentModel doc, DocumentModel sourceParent)
+            DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 
+    protected abstract void processDocumentCopied(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException;
+
+    protected abstract void processDocumentUpdated(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException;
+
+    protected abstract void processDocumentMoved(CoreSession session,
+            DocumentModel doc, DocumentModel sourceParent,
+            DocumentEventContext docCtx) throws ClientException;
+
     protected abstract void processDocumentAboutToBeRemoved(
-            CoreSession session, DocumentModel doc) throws ClientException;
+            CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException;
+
+    protected abstract void processDocumentBeforeUpdate(CoreSession session,
+            DocumentModel targetDoc, DocumentEventContext docCtx)
+            throws ClientException;
 }

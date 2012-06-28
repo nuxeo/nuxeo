@@ -3,7 +3,7 @@ package org.nuxeo.ecm.quota.size;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
-import static org.nuxeo.ecm.quota.size.DocumentsCountAndSizeUpdater.DOCUMENTS_SIZE_STATISTICS_FACET;
+import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +37,10 @@ public class QuotaAsyncProcessor implements PostCommitEventListener {
                     EventContext ctx = event.getContext();
 
                     if (ctx instanceof DocumentEventContext) {
-                        String sid = ((DocumentEventContext) ctx).getCoreSession().getSessionId();
-                        log.debug("Orginal SessionId:" + sid);
+                        if (log.isTraceEnabled()) {
+                            String sid = ((DocumentEventContext) ctx).getCoreSession().getSessionId();
+                            log.trace("Orginal SessionId:" + sid);
+                        }
                         SizeUpdateEventContext quotaCtx = SizeUpdateEventContext.unwrap((DocumentEventContext) ctx);
                         if (quotaCtx != null) {
                             processQuotaComputation(quotaCtx);
@@ -59,10 +61,12 @@ public class QuotaAsyncProcessor implements PostCommitEventListener {
 
         if (session.exists(sourceDocument.getRef())) {
             DocumentModel doc = session.getDocument(sourceDocument.getRef());
-            if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
-                log.debug("Double Check Facet was added OK");
-            } else {
-                log.warn("No facet !!!!");
+            if (log.isTraceEnabled()) {
+                if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
+                    log.trace("Double Check Facet was added OK");
+                } else {
+                    log.trace("No facet !!!!");
+                }
             }
         } else {
             log.debug("Document " + sourceDocument.getRef()
@@ -85,9 +89,12 @@ public class QuotaAsyncProcessor implements PostCommitEventListener {
                 return;
             }
         } else {
-            log.debug("sourceDoc SessionId:" + sourceDocument.getSessionId());
-            log.debug("sourceDoc SessionId:"
-                    + sourceDocument.getCoreSession().getSessionId());
+            if (log.isTraceEnabled()) {
+                log.trace("sourceDoc SessionId:"
+                        + sourceDocument.getSessionId());
+                log.trace("sourceDoc SessionId:"
+                        + sourceDocument.getCoreSession().getSessionId());
+            }
         }
 
         List<DocumentModel> parents = new ArrayList<DocumentModel>();

@@ -23,9 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
@@ -35,11 +34,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Default implementation of {@link org.nuxeo.ecm.quota.QuotaStatsService}.
- *
+ * 
  * @since 5.5
  */
 public class QuotaStatsServiceImpl extends DefaultComponent implements
@@ -71,17 +69,15 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
     @Override
     public void updateStatistics(final DocumentEventContext docCtx,
-            final String eventName) throws ClientException {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        if (workManager == null) {
-            throw new RuntimeException("No WorkManager available");
-        }
+            final Event event) throws ClientException {
         new UnrestrictedSessionRunner(docCtx.getRepositoryName()) {
             @Override
             public void run() throws ClientException {
                 List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
                 for (QuotaStatsUpdater updater : quotaStatsUpdaters) {
-                    updater.updateStatistics(session, docCtx, eventName);
+                    log.debug("Calling updateStatistics on "
+                            + updater.getName());
+                    updater.updateStatistics(session, docCtx, event);
                 }
             }
         }.runUnrestricted();
@@ -102,8 +98,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         if (workManager == null) {
             throw new RuntimeException("No WorkManager available");
         }
-        Work work = new QuotaStatsInitialWork(updaterName,
-                repositoryName);
+        Work work = new QuotaStatsInitialWork(updaterName, repositoryName);
         workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
     }
 

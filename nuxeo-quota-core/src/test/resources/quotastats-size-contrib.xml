@@ -7,12 +7,10 @@
 
     <quotaStatsUpdater name="documentsCountUpdater" enabled="false"/>
 
-<!--
-    <quotaStatsUpdater name="documentsCountAndSizeUpdater"
-      class="org.nuxeo.ecm.quota.size.DocumentsCountAndSizeUpdater"
+    <quotaStatsUpdater name="documentsSizeUpdater"
+      class="org.nuxeo.ecm.quota.size.QuotaSyncListenerChecker"
       label="label.quota.documentsCountSizeUpdater"
       descriptionLabel="label.quota.documentsCountAndSizeUpdater.description"/>
- -->
 
   </extension>
 

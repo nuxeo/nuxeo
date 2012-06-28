@@ -31,4 +31,8 @@ public class BlobSizeInfo {
         inverse.blobSizeDelta = -blobSize;
         return inverse;
     }
+
+    public String toString() {
+        return "total : " + blobSize + "; delta:" + blobSizeDelta;
+    }
 }

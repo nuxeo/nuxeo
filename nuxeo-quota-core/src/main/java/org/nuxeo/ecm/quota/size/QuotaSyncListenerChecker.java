@@ -1,8 +1,8 @@
 package org.nuxeo.ecm.quota.size;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 
@@ -18,18 +18,15 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
+import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.runtime.api.Framework;
 
-public class QuotaSyncListenerChecker implements EventListener {
+public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     public static final List<String> EVENTS_TO_HANDLE = Arrays.asList(
             ABOUT_TO_REMOVE, DOCUMENT_CREATED_BY_COPY, DOCUMENT_MOVED,
@@ -40,89 +37,58 @@ public class QuotaSyncListenerChecker implements EventListener {
     protected static final Log log = LogFactory.getLog(QuotaSyncListenerChecker.class);
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void computeInitialStatistics(CoreSession session) {
+        // TODO Auto-generated method stub
 
-        try {
-            if (EVENTS_TO_HANDLE.contains(event.getName())) {
-                EventContext ctx = event.getContext();
-                if (ctx instanceof DocumentEventContext) {
-                    DocumentEventContext docCtx = (DocumentEventContext) ctx;
-                    DocumentModel targetDoc = docCtx.getSourceDocument();
-                    CoreSession session = docCtx.getCoreSession();
-
-                    if (!needToProcessEventOnDocument(event, targetDoc)) {
-                        return;
-                    }
-
-                    log.debug("Preprocess Document "
-                            + targetDoc.getPathAsString() + " on event "
-                            + event.getName());
-
-                    if (DOCUMENT_CREATED.equals(event.getName())) {
-                        processDocumentCreated(session, targetDoc, docCtx);
-                    } else if (BEFORE_DOC_UPDATE.equals(event.getName())) {
-                        processDocumentBeforeUpdate(session, targetDoc, docCtx);
-                    } else if (ABOUT_TO_REMOVE.equals(event.getName())) {
-                        processDocumentAboutToBeRemoved(session, targetDoc,
-                                docCtx);
-                    } else if (DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
-                        processDocumentCopied(session, targetDoc, docCtx);
-                    } else if (DOCUMENT_MOVED.equals(event.getName())) {
-                        DocumentRef sourceParentRef = (DocumentRef) docCtx.getProperty(CoreEventConstants.PARENT_PATH);
-                        DocumentModel sourceParent = session.getDocument(sourceParentRef);
-                        processDocumentMoved(session, targetDoc, sourceParent,
-                                docCtx);
-                    }
-                }
-            }
-        } catch (ClientException e) {
-            ClientException e2 = handleException(e, event);
-            if (e2 != null) {
-                throw e2;
-            }
-        }
     }
 
+    @Override
     protected ClientException handleException(ClientException e, Event event) {
         if (e instanceof QuotaExceededException) {
+            log.info("Current event " + event.getName()
+                    + " would break Quota restriction, rolling back");
             event.markRollBack("Quota Exceeded", e);
         }
         return e;
     }
 
+    @Override
     protected void processDocumentCreated(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
         BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
         // only process if Blobs where added or removed
         if (bsi.getBlobSizeDelta() != 0) {
-            checkConstraints(targetDoc, targetDoc.getParentRef(), bsi);
+            checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                    docCtx, bsi, DOCUMENT_CREATED);
+                    session, docCtx, bsi, DOCUMENT_CREATED);
             sendUpdateEvents(asyncEventCtx);
         }
-
     }
 
+    @Override
     protected void processDocumentUpdated(CoreSession session,
             DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         // Nothing to do !
     }
 
+    @Override
     protected void processDocumentBeforeUpdate(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
         BlobSizeInfo bsi = computeSizeImpact(targetDoc, true);
-        // only process if Blobs where added or removed
+        log.debug("calling processDocumentBeforeUpdate, bsi=" + bsi.toString());
+        // only process if Blobs where added or removeds
         if (bsi.getBlobSizeDelta() != 0) {
-            checkConstraints(targetDoc, targetDoc.getParentRef(), bsi);
+            checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                    docCtx, bsi, BEFORE_DOC_UPDATE);
+                    session, docCtx, bsi, BEFORE_DOC_UPDATE);
             sendUpdateEvents(asyncEventCtx);
         }
     }
 
+    @Override
     protected void processDocumentCopied(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
@@ -136,14 +102,16 @@ public class QuotaSyncListenerChecker implements EventListener {
                 // check on parent since Session is not
                 // committed
                 // for now
-                checkConstraints(targetDoc, targetDoc.getParentRef(), bsi);
+                checkConstraints(session, targetDoc, targetDoc.getParentRef(),
+                        bsi);
                 SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                        docCtx, bsi, DOCUMENT_CREATED_BY_COPY);
+                        session, docCtx, bsi, DOCUMENT_CREATED_BY_COPY);
                 sendUpdateEvents(asyncEventCtx);
             }
         }
     }
 
+    @Override
     protected void processDocumentMoved(CoreSession session,
             DocumentModel targetDoc, DocumentModel sourceParent,
             DocumentEventContext docCtx) throws ClientException {
@@ -160,9 +128,9 @@ public class QuotaSyncListenerChecker implements EventListener {
             // check on destination parent since Session is not
             // committed
             // for now
-            checkConstraints(targetDoc, targetDoc.getParentRef(), bsi);
+            checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                    docCtx, bsi, DOCUMENT_MOVED);
+                    session, docCtx, bsi, DOCUMENT_MOVED);
             sendUpdateEvents(asyncEventCtx);
 
             // also need to trigger update on source tree
@@ -170,9 +138,10 @@ public class QuotaSyncListenerChecker implements EventListener {
             bsiRemove.blobSize = total;
             bsiRemove.blobSizeDelta = -total;
 
-            asyncEventCtx = new SizeUpdateEventContext(docCtx, sourceParent,
-                    bsiRemove, DOCUMENT_MOVED);
-            List<String> sourceParentUUIDs = getParentUUIDS(sourceParent);
+            asyncEventCtx = new SizeUpdateEventContext(session, docCtx,
+                    sourceParent, bsiRemove, DOCUMENT_MOVED);
+            List<String> sourceParentUUIDs = getParentUUIDS(session,
+                    sourceParent);
             sourceParentUUIDs.add(0, sourceParent.getId());
             asyncEventCtx.setParentUUIds(sourceParentUUIDs);
             sendUpdateEvents(asyncEventCtx);
@@ -180,6 +149,7 @@ public class QuotaSyncListenerChecker implements EventListener {
 
     }
 
+    @Override
     protected void processDocumentAboutToBeRemoved(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
@@ -188,15 +158,16 @@ public class QuotaSyncListenerChecker implements EventListener {
         if (quotaDoc != null) {
             long total = quotaDoc.getTotalSize();
             if (total > 0) {
-                List<String> parentUUIDs = getParentUUIDS(targetDoc);
+                List<String> parentUUIDs = getParentUUIDS(session, targetDoc);
                 SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                        docCtx, total, ABOUT_TO_REMOVE);
+                        session, docCtx, total, ABOUT_TO_REMOVE);
                 asyncEventCtx.setParentUUIds(parentUUIDs);
                 sendUpdateEvents(asyncEventCtx);
             }
         }
     }
 
+    @Override
     protected boolean needToProcessEventOnDocument(Event event,
             DocumentModel targetDoc) {
 
@@ -232,58 +203,37 @@ public class QuotaSyncListenerChecker implements EventListener {
         es.fireEvent(quotaUpdateEvent);
     }
 
-    protected List<String> getParentUUIDS(final DocumentModel doc)
-            throws ClientException {
+    protected List<String> getParentUUIDS(CoreSession unrestrictedSession,
+            final DocumentModel doc) throws ClientException {
 
         final List<String> result = new ArrayList<String>();
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
-                doc.getCoreSession()) {
-            @Override
-            public void run() throws ClientException {
-                DocumentRef[] parentRefs = session.getParentDocumentRefs(doc.getRef());
-                for (DocumentRef parentRef : parentRefs) {
-                    result.add(parentRef.toString());
-                }
-            }
-        };
-        runner.runUnrestricted();
+        DocumentRef[] parentRefs = unrestrictedSession.getParentDocumentRefs(doc.getRef());
+        for (DocumentRef parentRef : parentRefs) {
+            result.add(parentRef.toString());
+        }
         return result;
     }
 
-    protected void checkConstraints(final DocumentModel doc,
-            final DocumentRef parentRef, final BlobSizeInfo bsi)
-            throws ClientException {
+    protected void checkConstraints(CoreSession unrestrictedSession,
+            final DocumentModel doc, final DocumentRef parentRef,
+            final BlobSizeInfo bsi) throws ClientException {
 
         if (bsi.blobSizeDelta <= 0) {
             return;
         }
-
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
-                doc.getCoreSession()) {
-            @Override
-            public void run() throws ClientException {
-                List<DocumentModel> parents = session.getParentDocuments(parentRef);
-                parents.add(session.getDocument(parentRef));
-                for (DocumentModel parent : parents) {
-                    QuotaAware qap = parent.getAdapter(QuotaAware.class);
-                    if (qap != null && qap.getMaxQuota() > 0) {
-                        if (qap.getTotalSize() + bsi.getBlobSizeDelta() > qap.getMaxQuota()) {
-                            log.error("Raising Quota Exception on "
-                                    + doc.getPathAsString());
-                            throw new QuotaExceededException(parent, doc,
-                                    qap.getMaxQuota());
-                        }
-                    }
+        List<DocumentModel> parents = unrestrictedSession.getParentDocuments(parentRef);
+        parents.add(unrestrictedSession.getDocument(parentRef));
+        for (DocumentModel parent : parents) {
+            QuotaAware qap = parent.getAdapter(QuotaAware.class);
+            if (qap != null && qap.getMaxQuota() > 0) {
+                if (qap.getTotalSize() + bsi.getBlobSizeDelta() > qap.getMaxQuota()) {
+                    log.error("Raising Quota Exception on "
+                            + doc.getPathAsString());
+                    throw new QuotaExceededException(parent, doc,
+                            qap.getMaxQuota());
                 }
             }
-        };
-        try {
-            runner.runUnrestricted();
-        } catch (QuotaExceededException e) {
-            log.error("Quota Constraints exception", e);
-            throw e;
         }
-
     }
 
     protected BlobSizeInfo computeSizeImpact(DocumentModel doc,

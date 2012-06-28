@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.quota.size.DocumentsCountAndSizeUpdater.DOCUMENTS_SIZE_STATISTICS_FACET;
+import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -183,6 +183,9 @@ public class TestDocumentsCountAndSizeUpdater {
     }
 
     protected void doUpdateContent() throws Exception {
+        if (verboseMode) {
+            System.out.println("Update content");
+        }
         TransactionHelper.startTransaction();
 
         DocumentModel ws = session.getDocument(wsRef);
@@ -205,6 +208,7 @@ public class TestDocumentsCountAndSizeUpdater {
         session.save();
 
         TransactionHelper.commitOrRollbackTransaction();
+        Thread.sleep(1000);
         eventService.waitForAsyncCompletion();
 
     }

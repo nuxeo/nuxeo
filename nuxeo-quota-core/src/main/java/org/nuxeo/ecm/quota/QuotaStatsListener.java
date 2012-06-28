@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Listener handling default events to update statistics through the
  * {@link org.nuxeo.ecm.quota.QuotaStatsService}.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -46,7 +47,8 @@ public class QuotaStatsListener implements EventListener {
 
     public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(new HashSet<String>(
             Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY,
-                    DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE)));
+                    DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
+                    BEFORE_DOC_UPDATE)));
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -55,7 +57,7 @@ public class QuotaStatsListener implements EventListener {
             if (ctx instanceof DocumentEventContext) {
                 DocumentEventContext docCtx = (DocumentEventContext) ctx;
                 QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
-                quotaStatsService.updateStatistics(docCtx, event.getName());
+                quotaStatsService.updateStatistics(docCtx, event);
             }
         }
     }

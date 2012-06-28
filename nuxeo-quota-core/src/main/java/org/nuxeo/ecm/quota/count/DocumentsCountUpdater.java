@@ -37,6 +37,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -56,7 +58,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     public static final int BATCH_SIZE = 50;
 
     @Override
-    protected void processDocumentCreated(CoreSession session, DocumentModel doc)
+    protected void processDocumentCreated(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
@@ -64,7 +67,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentCopied(CoreSession session, DocumentModel doc)
+    protected void processDocumentCopied(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
@@ -72,13 +76,15 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentUpdated(CoreSession session, DocumentModel doc)
+    protected void processDocumentUpdated(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
     }
 
     @Override
     protected void processDocumentMoved(CoreSession session, DocumentModel doc,
-            DocumentModel sourceParent) throws ClientException {
+            DocumentModel sourceParent, DocumentEventContext docCtx)
+            throws ClientException {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         List<DocumentModel> sourceAncestors = getAncestors(session,
                 sourceParent);
@@ -90,10 +96,29 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentAboutToBeRemoved(CoreSession session,
-            DocumentModel doc) throws ClientException {
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
         updateCountStatistics(session, doc, ancestors, -docCount);
+    }
+
+    @Override
+    protected ClientException handleException(ClientException e, Event event) {
+        // never rollback on Exceptions
+        return e;
+    }
+
+    @Override
+    protected boolean needToProcessEventOnDocument(Event event,
+            DocumentModel targetDoc) {
+        return true;
+    }
+
+    @Override
+    protected void processDocumentBeforeUpdate(CoreSession session,
+            DocumentModel targetDoc, DocumentEventContext docCtx) {
+        // NOP
     }
 
     protected void updateCountStatistics(CoreSession session,

@@ -3,6 +3,7 @@ package org.nuxeo.ecm.quota.size;
 import java.io.Serializable;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
@@ -26,15 +27,17 @@ public class SizeUpdateEventContext extends DocumentEventContext {
 
     public static final String MARKER_VALUE = "SizeUpdateEventContext";
 
-    protected SizeUpdateEventContext(DocumentEventContext evtCtx) {
-        super(evtCtx.getCoreSession(), evtCtx.getPrincipal(),
-                evtCtx.getSourceDocument(), evtCtx.getDestination());
+    protected SizeUpdateEventContext(CoreSession session,
+            DocumentEventContext evtCtx) {
+        super(session, evtCtx.getPrincipal(), evtCtx.getSourceDocument(),
+                evtCtx.getDestination());
         setProperty(MARKER_KEY, MARKER_VALUE);
     }
 
-    public SizeUpdateEventContext(DocumentEventContext evtCtx,
-            DocumentModel sourceDocument, BlobSizeInfo bsi, String sourceEvent) {
-        super(evtCtx.getCoreSession(), evtCtx.getPrincipal(), sourceDocument,
+    public SizeUpdateEventContext(CoreSession session,
+            DocumentEventContext evtCtx, DocumentModel sourceDocument,
+            BlobSizeInfo bsi, String sourceEvent) {
+        super(session, evtCtx.getPrincipal(), sourceDocument,
                 evtCtx.getDestination());
         setBlobSize(bsi.getBlobSize());
         setBlobDelta(bsi.getBlobSizeDelta());
@@ -42,20 +45,20 @@ public class SizeUpdateEventContext extends DocumentEventContext {
         setProperty(MARKER_KEY, MARKER_VALUE);
     }
 
-    public SizeUpdateEventContext(DocumentEventContext evtCtx,
-            BlobSizeInfo bsi, String sourceEvent) {
-        super(evtCtx.getCoreSession(), evtCtx.getPrincipal(),
-                evtCtx.getSourceDocument(), evtCtx.getDestination());
+    public SizeUpdateEventContext(CoreSession session,
+            DocumentEventContext evtCtx, BlobSizeInfo bsi, String sourceEvent) {
+        super(session, evtCtx.getPrincipal(), evtCtx.getSourceDocument(),
+                evtCtx.getDestination());
         setBlobSize(bsi.getBlobSize());
         setBlobDelta(bsi.getBlobSizeDelta());
         setProperty(SOURCE_EVENT_PROPERTY_KEY, sourceEvent);
         setProperty(MARKER_KEY, MARKER_VALUE);
     }
 
-    public SizeUpdateEventContext(DocumentEventContext evtCtx, long totalSize,
-            String sourceEvent) {
-        super(evtCtx.getCoreSession(), evtCtx.getPrincipal(),
-                evtCtx.getSourceDocument(), evtCtx.getDestination());
+    public SizeUpdateEventContext(CoreSession session,
+            DocumentEventContext evtCtx, long totalSize, String sourceEvent) {
+        super(session, evtCtx.getPrincipal(), evtCtx.getSourceDocument(),
+                evtCtx.getDestination());
         setBlobSize(totalSize);
         setBlobDelta(-totalSize);
         setProperty(SOURCE_EVENT_PROPERTY_KEY, sourceEvent);
@@ -64,7 +67,8 @@ public class SizeUpdateEventContext extends DocumentEventContext {
 
     public static SizeUpdateEventContext unwrap(DocumentEventContext docCtx) {
         if (MARKER_VALUE.equals(docCtx.getProperty(MARKER_KEY))) {
-            SizeUpdateEventContext ctx = new SizeUpdateEventContext(docCtx);
+            SizeUpdateEventContext ctx = new SizeUpdateEventContext(
+                    docCtx.getCoreSession(), docCtx);
             ctx.setProperties(docCtx.getProperties());
             return ctx;
         }
