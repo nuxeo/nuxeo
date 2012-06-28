@@ -173,6 +173,13 @@ public abstract class NuxeoLauncher {
     private static final String OPTION_ACCEPT_DESC = "Accept, refuse or ask confirmation for all changes (default: "
             + ConnectBroker.OPTION_ACCEPT_DEFAULT + ").";
 
+    /**
+     * @since 5.6
+     */
+    protected static final String OPTION_HIDE_DEPRECATION = "hide-deprecation-warnings";
+
+    protected static final String OPTION_HIDE_DEPRECATION_DESC = "Hide deprecation warnings. Not advised on production platforms.";
+
     // Fallback to avoid an error when the log dir is not initialized
     static {
         if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
@@ -361,7 +368,7 @@ public abstract class NuxeoLauncher {
      *             thread.
      */
     protected void start(boolean logProcessOutput) throws IOException,
-            InterruptedException {
+    InterruptedException {
         List<String> startCommand = new ArrayList<String>();
         startCommand.add(getJavaExecutable().getPath());
         startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
@@ -578,6 +585,10 @@ public abstract class NuxeoLauncher {
             OptionBuilder.hasArg();
             launcherOptions.addOption(OptionBuilder.create(OPTION_DEBUG_CATEGORY));
             OptionGroup outputOptions = new OptionGroup();
+            // Hide deprecation warnings option
+            OptionBuilder.withLongOpt(OPTION_HIDE_DEPRECATION);
+            OptionBuilder.withDescription(OPTION_HIDE_DEPRECATION_DESC);
+            outputOptions.addOption(OptionBuilder.create());
             // XML option
             OptionBuilder.withLongOpt(OPTION_XML);
             OptionBuilder.withDescription(OPTION_XML_DESC);
@@ -649,7 +660,7 @@ public abstract class NuxeoLauncher {
     }
 
     public static void main(String[] args) throws ConfigurationException,
-            IOException, PackageException {
+    IOException, PackageException {
         try {
             final NuxeoLauncher launcher = createLauncher(args);
             if (launcher.useGui && launcher.getGUI() == null) {
@@ -670,7 +681,7 @@ public abstract class NuxeoLauncher {
      * @throws IOException
      */
     public static void launch(final NuxeoLauncher launcher) throws IOException,
-            PackageException {
+    PackageException {
         int exitStatus = 0;
         boolean commandSucceeded = true;
         if (launcher.command == null) {
@@ -1449,6 +1460,9 @@ public abstract class NuxeoLauncher {
         }
         NuxeoLauncher launcher;
         ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
+        if (cmdLine.hasOption(OPTION_HIDE_DEPRECATION)) {
+            cg.hideDeprecationWarnings(true);
+        }
         if (cg.isJBoss) {
             launcher = new NuxeoJBossLauncher(cg);
         } else if (cg.isJetty) {
@@ -1684,7 +1698,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected ConnectBroker getConnectBroker() throws IOException,
-            PackageException {
+    PackageException {
         if (connectBroker == null) {
             connectBroker = new ConnectBroker(configurationGenerator.getEnv());
             if (cmdLine.hasOption(OPTION_ACCEPT)) {
@@ -1726,7 +1740,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgAdd(String[] pkgNames) throws IOException,
-            PackageException {
+    PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1742,7 +1756,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgInstall(String[] pkgIDs) throws IOException,
-            PackageException {
+    PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
@@ -1762,7 +1776,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgUninstall(String[] pkgIDs) throws IOException,
-            PackageException {
+    PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1778,7 +1792,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgRemove(String[] pkgIDs) throws IOException,
-            PackageException {
+    PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1934,7 +1948,7 @@ public abstract class NuxeoLauncher {
             } else {
                 File testBase = new File(configurationGenerator.getNuxeoHome(),
                         ConfigurationGenerator.TEMPLATES + File.separator
-                                + template);
+                        + template);
                 if (testBase.exists()) {
                     nxConfig.basetemplates.add(template);
                     log.info("Base template: " + template);
