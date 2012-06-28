@@ -247,6 +247,8 @@ public class ConfigurationGenerator {
     @SuppressWarnings("unused")
     private boolean debug = false;
 
+    private boolean hideDeprecationWarnings = false;
+
     private Environment env;
 
     private static Map<String, String> parametersMigration;
@@ -332,6 +334,10 @@ public class ConfigurationGenerator {
             log.info(homeInfo);
             log.info(confInfo);
         }
+    }
+
+    public void hideDeprecationWarnings(boolean hide) {
+        hideDeprecationWarnings = hide;
     }
 
     /**
@@ -463,9 +469,11 @@ public class ConfigurationGenerator {
                     // Don't remove the deprecated key yet - more
                     // warnings but old things should keep working
                     // userConfig.remove(key);
-                    log.warn("WARNING: Parameter " + key
-                            + " is deprecated - please use "
-                            + parametersMigration.get(key) + " instead");
+                    if (!hideDeprecationWarnings) {
+                        log.warn("WARNING: Parameter " + key
+                                + " is deprecated - please use "
+                                + parametersMigration.get(key) + " instead");
+                    }
                 }
             }
 
@@ -790,9 +798,11 @@ public class ConfigurationGenerator {
                     // Don't remove the deprecated key yet - more
                     // warnings but old things should keep working
                     // defaultConfig.remove(key);
-                    log.warn("Parameter " + key
-                            + " is deprecated - please use "
-                            + parametersMigration.get(key) + " instead");
+                    if (!hideDeprecationWarnings) {
+                        log.warn("Parameter " + key
+                                + " is deprecated - please use "
+                                + parametersMigration.get(key) + " instead");
+                    }
                 }
             }
         }
