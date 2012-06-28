@@ -1042,6 +1042,15 @@ public final class ThemeManager implements Registrable {
         resetCachedStyles(themeName);
     }
 
+    /**
+     * Reset cached static resources, useful for hot reload
+     *
+     * @since 5.6
+     */
+    public void resetCachedResources() {
+        cachedResources.clear();
+    }
+
     // Registration
     public void registerTheme(final ThemeElement theme) {
         String themeName = theme.getName();

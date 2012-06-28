@@ -14,6 +14,8 @@
 
 package org.nuxeo.theme.html.ui;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -73,10 +75,11 @@ public class Resources {
         combinedStyles.deleteCharAt(combinedStyles.length() - 1);
         combinedScripts.deleteCharAt(combinedScripts.length() - 1);
 
+        long timestamp = getTimestamp(themeUrl);
         combinedStyles.append("?path=").append(path).append("&amp;basepath=").append(
-                basepath);
+                basepath).append("&amp;timestamp=").append(timestamp);
         combinedScripts.append("?path=").append(path).append("&amp;basepath=").append(
-                basepath);
+                basepath).append("&amp;timestamp=").append(timestamp);
 
         // styles
         if (hasStyles) {
@@ -103,4 +106,27 @@ public class Resources {
         return sb.toString();
     }
 
+    /**
+     * Return the timestamp to use for resources URL, useful to work-around
+     * caching when hot-reloading theme resources.
+     *
+     * @since 5.6
+     * @param themeUrl
+     */
+    protected static long getTimestamp(String themeUrl) {
+        long timestamp = 0;
+        if (themeUrl != null) {
+            try {
+                Long val = Manager.getThemeManager().getLastModified(
+                        new URL(themeUrl));
+                if (val != null) {
+                    timestamp = val.longValue();
+                }
+            } catch (MalformedURLException e) {
+                log.warn(String.format("Error while generating last modified"
+                        + " timestamp for theme url '%s'", themeUrl), e);
+            }
+        }
+        return timestamp;
+    }
 }

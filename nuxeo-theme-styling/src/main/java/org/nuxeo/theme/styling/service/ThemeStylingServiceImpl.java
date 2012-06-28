@@ -518,6 +518,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             // reset cache
             themeManager.stylesModified(themeName);
             themeManager.themeModified(themeName);
+            themeManager.resetCachedResources();
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
