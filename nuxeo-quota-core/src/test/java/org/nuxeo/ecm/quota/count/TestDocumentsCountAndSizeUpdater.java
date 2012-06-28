@@ -119,19 +119,17 @@ public class TestDocumentsCountAndSizeUpdater {
 
         DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
         ws = session.createDocument(ws);
-        session.save();
         wsRef = ws.getRef();
 
         DocumentModel firstFolder = session.createDocumentModel(
                 ws.getPathAsString(), "folder1", "Folder");
         firstFolder = session.createDocument(firstFolder);
-        session.save();
         firstFolderRef = firstFolder.getRef();
 
         DocumentModel firstSubFolder = session.createDocumentModel(
                 firstFolder.getPathAsString(), "subfolder1", "Folder");
         firstSubFolder = session.createDocument(firstSubFolder);
-        session.save();
+
         firstSubFolderRef = firstSubFolder.getRef();
 
         DocumentModel firstFile = session.createDocumentModel(
@@ -140,7 +138,6 @@ public class TestDocumentsCountAndSizeUpdater {
                 (Serializable) getFakeBlob(100));
         firstFile = session.createDocument(firstFile);
 
-        session.save();
         firstFileRef = firstFile.getRef();
 
         DocumentModel secondFile = session.createDocumentModel(
@@ -149,22 +146,20 @@ public class TestDocumentsCountAndSizeUpdater {
                 (Serializable) getFakeBlob(200));
 
         secondFile = session.createDocument(secondFile);
-        session.save();
         secondFileRef = secondFile.getRef();
 
         DocumentModel secondSubFolder = session.createDocumentModel(
                 firstFolder.getPathAsString(), "subfolder2", "Folder");
         secondSubFolder = session.createDocument(secondSubFolder);
-        session.save();
+        // session.save();
         secondSubFolderRef = secondSubFolder.getRef();
 
         DocumentModel secondFolder = session.createDocumentModel(
                 ws.getPathAsString(), "folder2", "Folder");
         secondFolder = session.createDocument(secondFolder);
-        session.save();
+        // session.save();
         secondFolderRef = secondFolder.getRef();
 
-        session.save();
         TransactionHelper.commitOrRollbackTransaction();
 
         eventService.waitForAsyncCompletion();
@@ -175,7 +170,6 @@ public class TestDocumentsCountAndSizeUpdater {
         TransactionHelper.startTransaction();
 
         session.move(firstFileRef, secondSubFolderRef, null);
-        session.save();
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -186,7 +180,6 @@ public class TestDocumentsCountAndSizeUpdater {
         TransactionHelper.startTransaction();
 
         session.move(firstSubFolderRef, secondFolderRef, null);
-        session.save();
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -215,7 +208,6 @@ public class TestDocumentsCountAndSizeUpdater {
 
         firstFile.setPropertyValue("files:files", (Serializable) files);
         firstFile = session.saveDocument(firstFile);
-        session.save();
 
         TransactionHelper.commitOrRollbackTransaction();
         Thread.sleep(1000);
@@ -226,7 +218,6 @@ public class TestDocumentsCountAndSizeUpdater {
     protected void doRemoveContent() throws Exception {
         TransactionHelper.startTransaction();
         session.removeDocument(firstFileRef);
-        session.save();
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
     }
@@ -234,7 +225,6 @@ public class TestDocumentsCountAndSizeUpdater {
     protected void doRemoveFolderishContent() throws Exception {
         TransactionHelper.startTransaction();
         session.removeDocument(firstSubFolderRef);
-        session.save();
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
     }
@@ -242,7 +232,6 @@ public class TestDocumentsCountAndSizeUpdater {
     protected void doCopyContent() throws Exception {
         TransactionHelper.startTransaction();
         session.copy(firstFileRef, secondSubFolderRef, null);
-        session.save();
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
     }
@@ -250,7 +239,6 @@ public class TestDocumentsCountAndSizeUpdater {
     protected void doCopyFolderishContent() throws Exception {
         TransactionHelper.startTransaction();
         session.copy(firstSubFolderRef, secondFolderRef, null);
-        session.save();
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
     }
@@ -285,14 +273,18 @@ public class TestDocumentsCountAndSizeUpdater {
         assertEquals(totalSize, qa.getTotalSize());
     }
 
+    protected void hackyForceFlush() throws Exception {
+        // do not remove this
+        // or invalidations do not work !?
+        session.save();
+    }
+
     @Test
     public void testQuotaOnAddContent() throws Exception {
 
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -320,9 +312,7 @@ public class TestDocumentsCountAndSizeUpdater {
 
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -344,9 +334,7 @@ public class TestDocumentsCountAndSizeUpdater {
 
         doUpdateContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -374,17 +362,13 @@ public class TestDocumentsCountAndSizeUpdater {
 
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         dump();
 
         doMoveContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -414,17 +398,13 @@ public class TestDocumentsCountAndSizeUpdater {
 
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         dump();
 
         doRemoveContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -452,17 +432,13 @@ public class TestDocumentsCountAndSizeUpdater {
 
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         dump();
 
         doCopyContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -495,17 +471,13 @@ public class TestDocumentsCountAndSizeUpdater {
 
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         dump();
 
         doCopyFolderishContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -543,17 +515,13 @@ public class TestDocumentsCountAndSizeUpdater {
     public void testQuotaOnRemoveFoldishContent() throws Exception {
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         dump();
 
         doRemoveFolderishContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -576,17 +544,13 @@ public class TestDocumentsCountAndSizeUpdater {
 
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         dump();
 
         doMoveFolderishContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -622,9 +586,7 @@ public class TestDocumentsCountAndSizeUpdater {
 
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         dump();
 
@@ -654,7 +616,7 @@ public class TestDocumentsCountAndSizeUpdater {
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        session.save();
+        hackyForceFlush();
 
         dump();
 
@@ -694,7 +656,7 @@ public class TestDocumentsCountAndSizeUpdater {
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        session.save();
+        hackyForceFlush();
 
         dump();
 
@@ -727,25 +689,15 @@ public class TestDocumentsCountAndSizeUpdater {
         EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", false);
 
-        // desactivate the quota automatic computer
-        // harness.undeployContrib("org.nuxeo.ecm.quota.core.test",
-        // "quotastats-size-contrib.xml");
-
         addContent();
 
-        // do not remove this
-        // or invalidations do not work
-        session.save();
+        hackyForceFlush();
 
         dump();
 
         TransactionHelper.startTransaction();
         DocumentModel ws = session.getDocument(wsRef);
         assertFalse(ws.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET));
-
-        // activate the quota computer
-        // harness.deployContrib("org.nuxeo.ecm.quota.core.test",
-        // "quotastats-size-contrib.xml");
 
         String updaterName = "documentsSizeUpdater";
         quotaStatsService.launchInitialStatisticsComputation(updaterName,

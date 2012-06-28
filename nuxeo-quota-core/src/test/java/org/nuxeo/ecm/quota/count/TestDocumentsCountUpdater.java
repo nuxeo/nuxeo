@@ -83,37 +83,31 @@ public class TestDocumentsCountUpdater {
         session.save();
         DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
         ws = session.createDocument(ws);
-        session.save();
         wsRef = ws.getRef();
 
         DocumentModel firstFolder = session.createDocumentModel(
                 ws.getPathAsString(), "folder1", "Folder");
         firstFolder = session.createDocument(firstFolder);
-        session.save();
         firstFolderRef = firstFolder.getRef();
 
         DocumentModel firstSubFolder = session.createDocumentModel(
                 firstFolder.getPathAsString(), "subfolder1", "Folder");
         firstSubFolder = session.createDocument(firstSubFolder);
-        session.save();
         firstSubFolderRef = firstSubFolder.getRef();
 
         DocumentModel firstFile = session.createDocumentModel(
                 firstSubFolder.getPathAsString(), "file1", "File");
         firstFile = session.createDocument(firstFile);
-        session.save();
         firstFileRef = firstFile.getRef();
 
         DocumentModel secondFile = session.createDocumentModel(
                 firstSubFolder.getPathAsString(), "file2", "File");
         secondFile = session.createDocument(secondFile);
-        session.save();
         secondFileRef = secondFile.getRef();
 
         DocumentModel secondSubFolder = session.createDocumentModel(
                 firstFolder.getPathAsString(), "subfolder2", "Folder");
         secondSubFolder = session.createDocument(secondSubFolder);
-        session.save();
         secondSubFolderRef = secondSubFolder.getRef();
 
         DocumentModel secondFolder = session.createDocumentModel(
@@ -266,7 +260,6 @@ public class TestDocumentsCountUpdater {
                 2L,
                 ws.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY));
     }
-
 
     @Test
     public void testComputeInitialStatistics() throws Exception {

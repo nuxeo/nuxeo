@@ -70,7 +70,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     @Override
     public void updateStatistics(final DocumentEventContext docCtx,
             final Event event) throws ClientException {
-        new UnrestrictedSessionRunner(docCtx.getRepositoryName()) {
+        // Open via session rather than repo name so that session.save and sync
+        // is done automatically
+        new UnrestrictedSessionRunner(docCtx.getCoreSession()) {
             @Override
             public void run() throws ClientException {
                 List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
