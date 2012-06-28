@@ -75,9 +75,6 @@ public class QuotaAwareDocument implements QuotaAware {
         doc.getContextData().putScopedValue(ScopeType.REQUEST,
                 QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER, true);
         doc = doc.getCoreSession().saveDocument(doc);
-        log.debug("Saving quota doc on session "
-                + doc.getCoreSession().getSessionId());
-        doc.getCoreSession().save();
     }
 
     @Override

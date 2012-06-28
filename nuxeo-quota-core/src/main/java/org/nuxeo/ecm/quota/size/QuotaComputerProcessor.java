@@ -153,6 +153,8 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         if (parents.size() > 0) {
             processOnParents(parents, quotaCtx.getBlobDelta());
         }
+        // XXX force sync !!!
+        session.save();
     }
 
     protected void processOnParents(List<DocumentModel> parents, long delta)
