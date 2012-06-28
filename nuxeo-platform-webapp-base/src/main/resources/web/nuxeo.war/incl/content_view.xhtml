@@ -85,7 +85,7 @@
     #{provider.setSelectedEntries(documentsListsManager.getWorkingList(contentView.selectionListName))}
   <c:if test="#{not hideEmpty or not empty provider.currentPage}">
 
-    <div class="#{nxu:test(foldable, 'foldableBox #{foldableBoxStyleClass}', '#{foldableBoxStyleClass}')}">
+    <div class="#{nxu:test(foldable, 'foldableBox', '')} #{foldableBoxStyleClass}">
 
       <ui:insert name="content_view_title">
         <nxu:set var="translateTitle"
@@ -156,7 +156,7 @@
         <a4j:outputPanel id="#{contentViewRenderId}_resultsPanel">
           <script>
             jQuery(document).ready(function() {
-            	initNXDrapAndDropOnPage(jQuery('##{contentViewRenderId}_panel'));
+              initNXDrapAndDropOnPage(jQuery('##{contentViewRenderId}_panel'));
             });
           </script>
 
