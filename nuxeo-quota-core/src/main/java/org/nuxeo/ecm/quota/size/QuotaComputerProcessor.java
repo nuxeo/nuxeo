@@ -22,9 +22,9 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 
-public class QuotaAsyncProcessor implements PostCommitEventListener {
+public class QuotaComputerProcessor implements PostCommitEventListener {
 
-    protected static final Log log = LogFactory.getLog(QuotaAsyncProcessor.class);
+    protected static final Log log = LogFactory.getLog(QuotaComputerProcessor.class);
 
     @Override
     public void handleEvent(EventBundle eventBundle) throws ClientException {
@@ -75,7 +75,7 @@ public class QuotaAsyncProcessor implements PostCommitEventListener {
 
     }
 
-    protected void processQuotaComputation(SizeUpdateEventContext quotaCtx)
+    public void processQuotaComputation(SizeUpdateEventContext quotaCtx)
             throws ClientException {
         String sourceEvent = quotaCtx.getSourceEvent();
         CoreSession session = quotaCtx.getCoreSession();

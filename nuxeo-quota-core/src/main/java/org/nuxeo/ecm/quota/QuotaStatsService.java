@@ -45,7 +45,8 @@ public interface QuotaStatsService {
     /**
      * Compute the initial statistics for the given @{code updaterName}.
      */
-    void computeInitialStatistics(String updaterName, CoreSession session);
+    void computeInitialStatistics(String updaterName, CoreSession session,
+            QuotaStatsInitialWork currentWorker);
 
     /**
      * Launch an asynchronously initial computation for the given

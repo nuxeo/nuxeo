@@ -6,7 +6,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 public class SizeUpdateEventContext extends DocumentEventContext {
@@ -39,6 +38,15 @@ public class SizeUpdateEventContext extends DocumentEventContext {
             BlobSizeInfo bsi, String sourceEvent) {
         super(session, evtCtx.getPrincipal(), sourceDocument,
                 evtCtx.getDestination());
+        setBlobSize(bsi.getBlobSize());
+        setBlobDelta(bsi.getBlobSizeDelta());
+        setProperty(SOURCE_EVENT_PROPERTY_KEY, sourceEvent);
+        setProperty(MARKER_KEY, MARKER_VALUE);
+    }
+
+    public SizeUpdateEventContext(CoreSession session, BlobSizeInfo bsi,
+            String sourceEvent, DocumentModel sourceDocument) {
+        super(session, session.getPrincipal(), sourceDocument, null);
         setBlobSize(bsi.getBlobSize());
         setBlobDelta(bsi.getBlobSizeDelta());
         setProperty(SOURCE_EVENT_PROPERTY_KEY, sourceEvent);

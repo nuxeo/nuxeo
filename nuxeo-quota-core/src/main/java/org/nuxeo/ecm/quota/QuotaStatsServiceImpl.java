@@ -84,10 +84,11 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void computeInitialStatistics(String updaterName, CoreSession session) {
+    public void computeInitialStatistics(String updaterName,
+            CoreSession session, QuotaStatsInitialWork currentWorker) {
         QuotaStatsUpdater updater = quotaStatsUpdaterRegistry.getQuotaStatsUpdater(updaterName);
         if (updater != null) {
-            updater.computeInitialStatistics(session);
+            updater.computeInitialStatistics(session, currentWorker);
         }
     }
 

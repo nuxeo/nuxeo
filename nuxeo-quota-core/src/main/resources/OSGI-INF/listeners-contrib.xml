@@ -26,7 +26,7 @@
  -->
 
     <listener name="quotaProcessor" async="true"
-      class="org.nuxeo.ecm.quota.size.QuotaAsyncProcessor" order="100">
+      class="org.nuxeo.ecm.quota.size.QuotaComputerProcessor" order="100">
       <event>quotaUpdateNeeded</event>
     </listener>
 

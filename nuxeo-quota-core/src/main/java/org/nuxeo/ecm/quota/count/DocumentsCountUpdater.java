@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
+import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -193,7 +194,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    public void computeInitialStatistics(CoreSession session) {
+    public void computeInitialStatistics(CoreSession session,
+            QuotaStatsInitialWork currentWorker) {
         try {
             Map<String, String> folders = getFolders(session);
             Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(

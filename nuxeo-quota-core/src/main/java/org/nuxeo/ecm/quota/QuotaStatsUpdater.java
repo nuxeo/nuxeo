@@ -49,7 +49,8 @@ public interface QuotaStatsUpdater {
      * 
      * @param session an unrestricted {@link CoreSession} to be used
      */
-    void computeInitialStatistics(CoreSession session);
+    void computeInitialStatistics(CoreSession session,
+            final QuotaStatsInitialWork currentWorker);
 
     public void setName(String name);
 

@@ -6,9 +6,11 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,12 +20,15 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
+import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.runtime.api.Framework;
 
 public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
@@ -37,9 +42,71 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected static final Log log = LogFactory.getLog(QuotaSyncListenerChecker.class);
 
     @Override
-    public void computeInitialStatistics(CoreSession session) {
-        // TODO Auto-generated method stub
+    public void computeInitialStatistics(CoreSession unrestrictedSession,
+            QuotaStatsInitialWork currentWorker) {
 
+        QuotaComputerProcessor processor = new QuotaComputerProcessor();
+        try {
+            IterableQueryResult res = unrestrictedSession.queryAndFetch(
+                    "SELECT ecm:uuid FROM Document where ecm:isCheckedInVersion=0 and ecm:isProxy=0 order by dc:created desc",
+                    "NXQL");
+
+            log.debug("Starting initial Quota computation");
+            long total = res.size();
+            log.debug("Start iteration on " + total + " items");
+            try {
+                long idx = 0;
+                for (Map<String, Serializable> r : res) {
+                    String uuid = (String) r.get("ecm:uuid");
+                    computeSizeOnDocument(unrestrictedSession, uuid, processor);
+                    idx++;
+                    currentWorker.notifyProgress(idx++, total);
+                }
+            } finally {
+                if (res != null) {
+                    res.close();
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("Error during initial Quota Size computation", e);
+        }
+
+    }
+
+    protected void computeSizeOnDocument(CoreSession unrestrictedSession,
+            String uuid, QuotaComputerProcessor processor)
+            throws ClientException {
+
+        IdRef ref = new IdRef(uuid);
+        if (log.isTraceEnabled()) {
+            log.trace("process Quota initial computation on uuid " + uuid);
+        }
+        if (unrestrictedSession.exists(ref)) {
+            DocumentModel target = unrestrictedSession.getDocument(ref);
+            if (target.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)
+                    || target.getPathAsString().equals("/")) {
+                if (log.isTraceEnabled()) {
+                    log.trace("doc with uuid " + uuid + " already up to date");
+                }
+                return;
+            }
+            BlobSizeInfo bsi = computeSizeImpact(target, false);
+            SizeUpdateEventContext quotaCtx = new SizeUpdateEventContext(
+                    unrestrictedSession, bsi, DOCUMENT_CREATED, target);
+            if (log.isTraceEnabled()) {
+                log.trace("doc with uuid " + uuid + " started update");
+            }
+            processor.processQuotaComputation(quotaCtx);
+            if (log.isTraceEnabled()) {
+                log.trace("doc with uuid " + uuid + " update completed");
+            }
+
+        } else {
+            if (log.isTraceEnabled()) {
+                log.trace("doc with uuid " + uuid + " does not exist");
+            }
+        }
     }
 
     @Override

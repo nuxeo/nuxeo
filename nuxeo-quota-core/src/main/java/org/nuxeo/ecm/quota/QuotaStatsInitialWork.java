@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Work doing an initial statistics computation for a defined
  * {@link QuotaStatsUpdater}.
- *
+ * 
  * @since 5.6
  */
 public class QuotaStatsInitialWork extends AbstractWork {
@@ -40,8 +40,7 @@ public class QuotaStatsInitialWork extends AbstractWork {
 
     private final String repositoryName;
 
-    public QuotaStatsInitialWork(String updaterName,
-            String repositoryName) {
+    public QuotaStatsInitialWork(String updaterName, String repositoryName) {
         this.updaterName = updaterName;
         this.repositoryName = repositoryName;
     }
@@ -56,13 +55,23 @@ public class QuotaStatsInitialWork extends AbstractWork {
         return "Quota Statistics " + updaterName;
     }
 
+    public void notifyProgress(float percent) {
+        setProgress(new Progress(percent));
+    }
+
+    public void notifyProgress(long current, long total) {
+        setProgress(new Progress(current, total));
+    }
+
     @Override
     public void work() throws ClientException {
+        final QuotaStatsInitialWork currentWorker = this;
         new UnrestrictedSessionRunner(repositoryName) {
             @Override
             public void run() throws ClientException {
                 QuotaStatsService service = Framework.getLocalService(QuotaStatsService.class);
-                service.computeInitialStatistics(updaterName, session);
+                service.computeInitialStatistics(updaterName, session,
+                        currentWorker);
             }
         }.runUnrestricted();
     }

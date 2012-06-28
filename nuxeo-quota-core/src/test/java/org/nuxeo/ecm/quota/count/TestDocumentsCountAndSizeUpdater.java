@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,18 +39,24 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
+import org.nuxeo.ecm.quota.size.QuotaAwareDocument;
 import org.nuxeo.ecm.quota.size.QuotaExceededException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -76,6 +83,9 @@ public class TestDocumentsCountAndSizeUpdater {
 
     @Inject
     protected FeaturesRunner featureRunner;
+
+    @Inject
+    protected RuntimeHarness harness;
 
     protected DocumentRef wsRef;
 
@@ -709,6 +719,68 @@ public class TestDocumentsCountAndSizeUpdater {
         }
         assertFalse(canNotExceedQuota);
 
+    }
+
+    @Test
+    public void testComputeInitialStatistics() throws Exception {
+
+        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        eventAdmin.setListenerEnabledFlag("quotaStatsListener", false);
+
+        // desactivate the quota automatic computer
+        // harness.undeployContrib("org.nuxeo.ecm.quota.core.test",
+        // "quotastats-size-contrib.xml");
+
+        addContent();
+
+        // do not remove this
+        // or invalidations do not work
+        session.save();
+
+        dump();
+
+        TransactionHelper.startTransaction();
+        DocumentModel ws = session.getDocument(wsRef);
+        assertFalse(ws.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET));
+
+        // activate the quota computer
+        // harness.deployContrib("org.nuxeo.ecm.quota.core.test",
+        // "quotastats-size-contrib.xml");
+
+        String updaterName = "documentsSizeUpdater";
+        quotaStatsService.launchInitialStatisticsComputation(updaterName,
+                session.getRepositoryName());
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
+
+        workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
+
+        session.save(); // process invalidations
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        session.save();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        ws = session.getDocument(wsRef);
+        DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+        DocumentModel secondFile = session.getDocument(secondFileRef);
+
+        assertQuota(firstFile, 100L, 100L);
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(firstSubFolder, 0L, 300L);
+        assertQuota(firstFolder, 0L, 300L);
+        assertQuota(ws, 0L, 300L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        session.save();
+
+        eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
     }
 
 }
