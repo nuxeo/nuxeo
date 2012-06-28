@@ -70,7 +70,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.quota.core")
 @LocalDeploy("org.nuxeo.ecm.quota.core:quotastats-size-contrib.xml")
-public class TestDocumentsCountAndSizeUpdater {
+public class TestDocumentsSizeUpdater {
 
     @Inject
     protected QuotaStatsService quotaStatsService;
@@ -151,13 +151,11 @@ public class TestDocumentsCountAndSizeUpdater {
         DocumentModel secondSubFolder = session.createDocumentModel(
                 firstFolder.getPathAsString(), "subfolder2", "Folder");
         secondSubFolder = session.createDocument(secondSubFolder);
-        // session.save();
         secondSubFolderRef = secondSubFolder.getRef();
 
         DocumentModel secondFolder = session.createDocumentModel(
                 ws.getPathAsString(), "folder2", "Folder");
         secondFolder = session.createDocument(secondFolder);
-        // session.save();
         secondFolderRef = secondFolder.getRef();
 
         TransactionHelper.commitOrRollbackTransaction();
