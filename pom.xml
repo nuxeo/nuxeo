@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.4.2.1-SNAPSHOT</version>
+    <version>5.4.2-HF25</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -14,10 +14,10 @@
   <description>Build package distributions of nuxeo applications</description>
 
   <properties>
-    <nuxeo.dm.version>5.4.2.1-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.opencmis.version>5.4.2.1-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.distribution.version>5.4.2.1-SNAPSHOT</nuxeo.distribution.version>
-    <nuxeo.addons.version>5.4.2.1-SNAPSHOT</nuxeo.addons.version>
+    <nuxeo.dm.version>5.4.2-HF25</nuxeo.dm.version>
+    <nuxeo.opencmis.version>5.4.2-HF25</nuxeo.opencmis.version>
+    <nuxeo.distribution.version>5.4.2-HF25</nuxeo.distribution.version>
+    <nuxeo.addons.version>5.4.2-HF25</nuxeo.addons.version>
   </properties>
 
   <modules>
