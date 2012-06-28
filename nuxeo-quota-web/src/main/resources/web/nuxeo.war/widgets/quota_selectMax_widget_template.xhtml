@@ -1,0 +1,44 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  id="#{widget.id}">
+
+  <table>
+  <tr>
+    <td>
+      <input type="checkbox" id="unlimitedChk" onchange="changeUnlimited(this)" /> Unlimited
+    </td>
+  </tr><tr>
+  <td>
+
+    <table id="sliderTable">
+    <tr>
+    <td></td><td style="text-align:center;font-weight:bold"><span id="sliderDisplay"></span>
+    </td><td></td></tr>
+    <tr>
+    <td>
+    100 KB
+    </td><td>
+    <rich:inputNumberSlider id="slider" width="450px"
+            showBoundaryValues="false"
+            onchange="displayQuotaSize(this.value);"
+            onslide="displayQuotaSize(this.value);"
+            showToolTip="false"
+            showInput="true"
+            maxValue="27.701"
+            minValue="11.528" step="0.001"></rich:inputNumberSlider>
+    </td>
+    <td>
+    999 MB
+    <h:inputText id="maxValue" value="#{field}"/>
+    </td>
+    </tr>
+    </table>
+</td></tr>
+</table>
+
+</div>

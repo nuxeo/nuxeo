@@ -48,7 +48,7 @@
 
     <layout name="edit_quota">
       <templates>
-        <template mode="any">/layouts/layout_div_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
       <rows>
         <row>
@@ -83,7 +83,24 @@
           <mode value="any">view</mode>
         </widgetModes>
       </widget>
-      <widget name="maxSize" type="text">
+
+      <widget name="maxSize" type="template">
+        <labels>
+          <label mode="any">label.quota.maxSize</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="documents_size_statistics">maxSize</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_selectMax_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+
+
+      <widget name="maxSize2" type="text">
         <labels>
           <label mode="any">label.quota.maxSize</label>
         </labels>
