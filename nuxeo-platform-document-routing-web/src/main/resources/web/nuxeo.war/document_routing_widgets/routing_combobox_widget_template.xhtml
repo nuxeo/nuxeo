@@ -2,7 +2,6 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:rich="http://richfaces.org/rich">
 
@@ -10,37 +9,38 @@
     var elementDefined = false;
     var element;
     function openSuggestionBox() {
-        if (!elementDefined) {
-            window.element = document.getElementById("suggestionBoxContainer").firstChild;
-            window.elementDefined = true;
-        }
-        document.getElementById(window.element.id).component.callSuggestion(true);
+      if (!elementDefined) {
+        window.element = document.getElementById("suggestionBoxContainer").firstChild;
+        window.elementDefined = true;
+      }
+      document.getElementById(window.element.id).component.callSuggestion(true);
     }
   </script>
   <h:outputText value="#{messages['label.start.workflow']}"/>
   <c:set var="minChars"
-    value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '1')}" />
+    value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '1')}"/>
   <c:set var="frequency"
-    value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
+    value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}"/>
   <c:set var="requestDelay"
-    value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
+    value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}"/>
   <a4j:region renderRegionOnly="true" id="a4j_route_region">
     <h:panelGrid id="#{widget.id}_route_panel" columns="1">
       <h:panelGroup>
-        <span id="#{widget.id}_route_suggestDiv"> <h:panelGrid
-            columns="3">
+        <span id="#{widget.id}_route_suggestDiv">
+          <h:panelGrid columns="3">
             <h:inputText id="#{widget.id}_route_suggest"
-              onkeydown="if (event.keyCode == 13) {return false;}" />
+              onkeydown="if (event.keyCode == 13) {return false;}"/>
             <h:graphicImage value="/icons/arrow.png"
-              onclick="openSuggestionBox();" alt="" />
+              onclick="openSuggestionBox();" alt=""/>
             <a4j:status>
               <f:facet name="start">
-                <h:graphicImage value="/img/standart_waiter.gif" />
+                <h:graphicImage value="/img/standart_waiter.gif"/>
               </f:facet>
             </a4j:status>
           </h:panelGrid>
         </span>
-        <span id="suggestionBoxContainer"> <rich:suggestionbox
+        <span id="suggestionBoxContainer">
+          <rich:suggestionbox
             id="#{widget.id}_route_suggestionBox"
             for="#{widget.id}_route_suggest" tokens=""
             suggestionAction="#{docRoutingSuggestionActions.getRouteModelSuggestions}"
@@ -49,32 +49,31 @@
             minChars="#{minChars}" frequency="#{frequency}"
             requestDelay="#{requestDelay}">
             <f:param name="mailboxSuggestionSearchType"
-              value="#{widget.properties['mailboxSuggestionSearchType']}" />
+              value="#{widget.properties['mailboxSuggestionSearchType']}"/>
             <a4j:support event="onselect"
               focus="#{widget.id}_route_suggest" bypassUpdates="true"
               reRender="#{widget.id}_route_region"
               id="#{widget.id}_a4jSupport">
               <f:param name="mailboxSuggestionSearchType"
-                value="#{widget.properties['mailboxSuggestionSearchType']}" />
+                value="#{widget.properties['mailboxSuggestionSearchType']}"/>
               <f:setPropertyActionListener value="#{result.id}"
-                target="#{suggestionActions.selectedValue}" />
+                target="#{suggestionActions.selectedValue}"/>
               <nxu:actionListenerMethod
-                value="#{suggestionActions.addSingleBoundSelection}" />
+                value="#{suggestionActions.addSingleBoundSelection}"/>
               <f:param name="suggestionSelectionHiddenId"
-                value="#{widget.id}_routeId" />
+                value="#{widget.id}_routeId"/>
               <f:param name="suggestionSelectionOutputId"
-                value="#{widget.id}_route" />
+                value="#{widget.id}_route"/>
               <f:param name="suggestionSelectionDeleteId"
-                value="#{widget.id}_selection_reset" />
+                value="#{widget.id}_selection_reset"/>
             </a4j:support>
             <h:column>
-              <h:outputText value="#{result.title}" />
+              <h:outputText value="#{result.title}"/>
             </h:column>
           </rich:suggestionbox>
         </span>
-        <br />
         <h:outputText
-          value="#{messages['label.suggestion.help.combo']} " />
+          value="#{messages['label.suggestion.help.combo']} "/>
       </h:panelGroup>
       <h:panelGroup>
         <a4j:outputPanel ajaxRendered="false"
@@ -86,19 +85,19 @@
             bypassUpdates="true" reRender="#{widget.id}_route_region"
             rendered="#{!empty field_0}">
             <h:graphicImage id="#{widget.id}_delete"
-              value="/icons/action_delete.gif" rendered="false" />
+              value="/icons/action_delete.gif" rendered="false"/>
             <f:param name="suggestionSelectionOutputId"
-              value="#{widget.id}_route" />
+              value="#{widget.id}_route"/>
             <f:param name="suggestionSelectionHiddenId"
-              value="#{widget.id}_routeId" />
+              value="#{widget.id}_routeId"/>
             <f:param name="suggestionSelectionDeleteId"
-              value="#{widget.id}_selection_reset" />
+              value="#{widget.id}_selection_reset"/>
           </a4j:commandLink>
-          <h:inputHidden id="#{widget.id}_routeId" value="#{field_0}" />
-          <h:outputText id="#{widget.id}_route" value="#{field_0}"
-            converter="#{routingActions.documentModelConverter}" />
+          <h:inputHidden id="#{widget.id}_routeId" value="#{field_0}"/>
           <h:message for="#{widget.id}_routeId"
-            styleClass="errorMessage" />
+            styleClass="errorMessage"/>
+          <h:outputText id="#{widget.id}_route" value="#{field_0}"
+            converter="#{routingActions.documentModelConverter}"/>
         </a4j:outputPanel>
       </h:panelGroup>
     </h:panelGrid>
