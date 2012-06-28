@@ -4,4 +4,5 @@ Bundle-Name: Nuxeo Quota Web
 Bundle-SymbolicName: org.nuxeo.ecm.quota.web;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
-Nuxeo-component: OSGI-INF/actions-contrib.xml
+Nuxeo-component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/layouts-contrib.xml

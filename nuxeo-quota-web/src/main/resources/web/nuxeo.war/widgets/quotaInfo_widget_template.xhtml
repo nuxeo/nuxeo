@@ -1,0 +1,14 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{widget.id}">
+
+  <c:if test="#{currentQuotaDoc!=null}">
+
+    #{currentQuotaDoc.quotaInfo.innerSize.valueInUnit} #{currentQuotaDoc.quotaInfo.innerSize.unit} <br/>
+    #{currentQuotaDoc.quotaInfo.totalSize.valueInUnit} #{currentQuotaDoc.quotaInfo.totalSize.unit} <br/>
+    #{currentQuotaDoc.quotaInfo.maxQuota.valueInUnit} #{currentQuotaDoc.quotaInfo.maxQuota.unit} <br/>
+
+  </c:if>
+
+</div>

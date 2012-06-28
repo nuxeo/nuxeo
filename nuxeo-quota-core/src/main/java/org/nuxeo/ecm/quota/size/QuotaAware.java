@@ -9,15 +9,17 @@ public interface QuotaAware {
 
     long getTotalSize();
 
+    long getMaxQuota();
+
     void addInnerSize(long additionalSize, boolean save) throws ClientException;
 
     void addTotalSize(long additionalSize, boolean save) throws ClientException;
-
-    long getMaxQuota();
 
     void save() throws ClientException;
 
     DocumentModel getDoc();
 
     void setMaxQuota(long maxSize, boolean save) throws ClientException;
+
+    QuotaInfo getQuotaInfo();
 }

@@ -99,4 +99,7 @@ public class QuotaAwareDocument implements QuotaAware {
         }
     }
 
+    public QuotaInfo getQuotaInfo() {
+        return new QuotaInfo(getInnerSize(), getTotalSize(), getMaxQuota());
+    }
 }

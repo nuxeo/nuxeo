@@ -23,13 +23,27 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
+
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.QuotaStatsUpdater;
+import org.nuxeo.ecm.quota.size.QuotaAware;
+import org.nuxeo.ecm.quota.size.QuotaAwareDocument;
+import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,6 +59,9 @@ public class QuotaStatsActions implements Serializable {
 
     @In(create = true)
     protected transient CoreSession documentManager;
+
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
 
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
@@ -66,6 +83,39 @@ public class QuotaStatsActions implements Serializable {
     public String getStatus(String updaterName) {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
         return quotaStatsService.getProgressStatus(updaterName);
+    }
+
+    @Factory(value = "currentQuotaDoc", scope = ScopeType.EVENT)
+    public QuotaAware getQuotaDoc() {
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        return doc.getAdapter(QuotaAware.class);
+    }
+
+    public void activateQuota() throws ClientException {
+        if (getQuotaDoc() == null) {
+            DocumentModel doc = navigationContext.getCurrentDocument();
+            QuotaAwareDocument qa = QuotaAwareDocumentFactory.make(doc, true);
+            navigationContext.resetCurrentContext();
+            navigationContext.navigateToDocument(qa.getDoc());
+        }
+    }
+
+    public void validateQuotaSize(FacesContext context, UIComponent component,
+            Object value) {
+
+        String strValue = value.toString();
+
+        try {
+            Long quotaValue = Long.parseLong(strValue);
+        } catch (NumberFormatException e) {
+            FacesMessage message = new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, "wrong format"), null);
+            // also add global message
+            context.addMessage(null, message);
+            throw new ValidatorException(message);
+        }
+
     }
 
 }
