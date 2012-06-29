@@ -59,29 +59,41 @@
           <widget>maxSize</widget>
         </row>
       </rows>
-       <widget name="innerSize" type="text">
+       <widget name="innerSize" type="template">
         <labels>
           <label mode="any">label.quota.innerSize</label>
         </labels>
         <translated>true</translated>
         <fields>
           <field schema="documents_size_statistics">innerSize</field>
+          <field schema="documents_size_statistics">maxSize</field>
         </fields>
         <widgetModes>
           <mode value="any">view</mode>
         </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_singleValue_widget_template.xhtml
+          </property>
+        </properties>
       </widget>
-       <widget name="totalSize" type="text">
+       <widget name="totalSize" type="template">
         <labels>
           <label mode="any">label.quota.totalSize</label>
         </labels>
         <translated>true</translated>
         <fields>
           <field schema="documents_size_statistics">totalSize</field>
+          <field schema="documents_size_statistics">maxSize</field>
         </fields>
         <widgetModes>
           <mode value="any">view</mode>
         </widgetModes>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_singleValue_widget_template.xhtml
+          </property>
+        </properties>
       </widget>
 
       <widget name="maxSize" type="template">
@@ -91,6 +103,7 @@
         <translated>true</translated>
         <fields>
           <field schema="documents_size_statistics">maxSize</field>
+          <field schema="documents_size_statistics">totalSize</field>
         </fields>
         <properties mode="any">
           <property name="template">

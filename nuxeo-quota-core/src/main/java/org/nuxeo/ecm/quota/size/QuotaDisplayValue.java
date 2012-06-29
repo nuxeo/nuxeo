@@ -1,5 +1,8 @@
 package org.nuxeo.ecm.quota.size;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class QuotaDisplayValue {
 
     protected static final long KB_LIMIT = 1024L;
@@ -10,7 +13,7 @@ public class QuotaDisplayValue {
 
     public static final String GB_UNIT = "label.unit.GB";
 
-    public static final String MB_UNIT = "label.unit.GM";
+    public static final String MB_UNIT = "label.unit.MB";
 
     public static final String KB_UNIT = "label.unit.KB";
 
@@ -22,9 +25,16 @@ public class QuotaDisplayValue {
 
     protected String unit;
 
+    protected long max;
+
     public QuotaDisplayValue(long value) {
         this.value = value;
         init();
+    }
+
+    public QuotaDisplayValue(long value, long max) {
+        this(value);
+        this.max = max;
     }
 
     protected void init() {
@@ -55,4 +65,12 @@ public class QuotaDisplayValue {
         return unit;
     }
 
+    public String getPercent() {
+        if (max > 0) {
+            NumberFormat formatter = new DecimalFormat("0.0");
+            return formatter.format((new Float(value) / max) * 100) + "%";
+        } else {
+            return "";
+        }
+    }
 }

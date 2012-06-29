@@ -1,14 +1,19 @@
-<div xmlns:c="http://java.sun.com/jstl/core"
+<span xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
   id="#{widget.id}">
 
   <c:if test="#{currentQuotaDoc!=null}">
 
-    #{currentQuotaDoc.quotaInfo.innerSize.valueInUnit} #{currentQuotaDoc.quotaInfo.innerSize.unit} <br/>
-    #{currentQuotaDoc.quotaInfo.totalSize.valueInUnit} #{currentQuotaDoc.quotaInfo.totalSize.unit} <br/>
-    #{currentQuotaDoc.quotaInfo.maxQuota.valueInUnit} #{currentQuotaDoc.quotaInfo.maxQuota.unit} <br/>
+  <nxu:set var="formatedSize" value="#{currentQuotaDoc.quotaInfo.totalSize}">
+     <h:outputText value="#{formatedSize.valueInUnit}">
+       <f:convertNumber maxFractionDigits="2" />
+     </h:outputText>
+     <h:outputText value=" #{messages[formatedSize.unit]} #{formatedSize.percent}"/>
+  </nxu:set>
 
   </c:if>
 
-</div>
+</span>

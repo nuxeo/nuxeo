@@ -12,10 +12,10 @@
 
   <script>
 
-  var GB_label = "GB";
-  var MB_label = "MB";
-  var KB_label = "KB";
-  var B_label = "B";
+  var GB_label = "#{messages['label.unit.GB']}";
+  var MB_label = "#{messages['label.unit.MB']}";
+  var KB_label = "#{messages['label.unit.KB']}";
+  var B_label = "#{messages['label.unit.B']}";
 
   jQuery(document).ready(function() {
     setInitialValue(#{currentQuotaDoc.quotaInfo.maxQuota.value});

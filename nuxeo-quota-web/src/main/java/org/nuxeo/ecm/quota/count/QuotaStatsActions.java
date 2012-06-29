@@ -44,6 +44,7 @@ import org.nuxeo.ecm.quota.QuotaStatsUpdater;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaAwareDocument;
 import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
+import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -118,4 +119,18 @@ public class QuotaStatsActions implements Serializable {
 
     }
 
+    public QuotaDisplayValue formatQuota(long value, long max) {
+        QuotaDisplayValue qdv = new QuotaDisplayValue(value, max);
+        return qdv;
+    }
+
+    public double getMinQuotaSliderValue(long totalSize) throws Exception {
+        long minSize = 100 * 1024;
+        // 11.528
+        if (totalSize > minSize) {
+            return Math.log(totalSize + minSize);
+        } else {
+            return Math.log(minSize);
+        }
+    }
 }

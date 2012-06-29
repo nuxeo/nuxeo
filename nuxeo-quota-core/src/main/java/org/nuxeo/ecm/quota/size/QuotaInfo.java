@@ -2,41 +2,28 @@ package org.nuxeo.ecm.quota.size;
 
 public class QuotaInfo {
 
-    protected final long innerSize;
+    protected final QuotaDisplayValue innerSize;
 
-    protected final long totalSize;
+    protected final QuotaDisplayValue totalSize;
 
-    protected final long maxQuota;
+    protected final QuotaDisplayValue maxQuota;
 
     public QuotaInfo(long innerSize, long totalSize, long maxQuota) {
-        this.innerSize = innerSize;
-        this.totalSize = totalSize;
-        this.maxQuota = maxQuota;
+        this.innerSize = new QuotaDisplayValue(innerSize);
+        this.totalSize = new QuotaDisplayValue(totalSize);
+        this.maxQuota = new QuotaDisplayValue(maxQuota);
     }
 
     public QuotaDisplayValue getInnerSize() {
-        return new QuotaDisplayValue(innerSize);
+        return innerSize;
     }
 
     public QuotaDisplayValue getTotalSize() {
-        return new QuotaDisplayValue(totalSize);
+        return totalSize;
     }
 
     public QuotaDisplayValue getMaxQuota() {
-        return new QuotaDisplayValue(maxQuota);
+        return maxQuota;
     }
 
-    public float getTotalPercent() {
-        if (totalSize == 0 || maxQuota <= 0) {
-            return 0;
-        }
-        return (new Float(totalSize) / maxQuota) * 100;
-    }
-
-    public float getInnerPercent() {
-        if (innerSize == 0 || maxQuota <= 0) {
-            return 0;
-        }
-        return (new Float(innerSize) / maxQuota) * 100;
-    }
 }

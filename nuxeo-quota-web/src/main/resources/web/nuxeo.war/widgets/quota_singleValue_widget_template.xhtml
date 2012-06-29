@@ -1,0 +1,18 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  id="#{widget.id}">
+
+  <nxu:set var="formatedSize" value="#{quotaStatsActions.formatQuota(field_0, field_1)}">
+     <h:outputText value="#{formatedSize.valueInUnit}">
+       <f:convertNumber maxFractionDigits="2" />
+     </h:outputText>
+     <h:outputText value=" #{messages[formatedSize.unit]}  #{formatedSize.percent}"/>
+  </nxu:set>
+
+</div>
