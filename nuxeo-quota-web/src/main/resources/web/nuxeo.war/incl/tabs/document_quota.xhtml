@@ -80,15 +80,8 @@
   </script>
 
   <nxu:set var="canEditQuota" cache="true" value="#{webActions.checkFilter('editQuota')}">
-
-  <c:if test="#{canEditQuota}">
-    <nxl:layout mode="edit" name="edit_quota" value="#{currentDocument}" />
-  </c:if>
-  <c:if test="#{!canEditQuota}">
-    <nxl:layout mode="view" name="edit_quota" value="#{currentDocument}" />
-  </c:if>
+    <nxl:layout mode="#{nxu:test(canEditQuota, 'edit', 'view')}" name="edit_quota" value="#{currentDocument}" />
   </nxu:set>
-
 
   <p class="buttonsGadget">
     <nxu:set var="actions"

@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ */
+
 package org.nuxeo.ecm.quota.size;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
@@ -31,6 +48,14 @@ import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
+ * document. This default implementation does not track the space used by
+ * versions, or the space used by non-Blob properties
+ * 
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * @since 5.6
+ */
 public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     public static final List<String> EVENTS_TO_HANDLE = Arrays.asList(
