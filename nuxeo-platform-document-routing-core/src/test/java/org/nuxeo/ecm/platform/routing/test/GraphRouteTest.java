@@ -135,6 +135,7 @@ public class GraphRouteTest {
             throws ClientException {
         CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
+        ctx.put("principal", principal);
         return coreFeature.getRepository().getRepositoryHandler().openSession(
                 ctx);
     }
@@ -528,6 +529,9 @@ public class GraphRouteTest {
                         "Context[\"button\"] == \"trans1\"", "testchain_title1"));
 
         // task properties
+        node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
+                "Write");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
@@ -536,7 +540,7 @@ public class GraphRouteTest {
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
-        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node2 = session.saveDocument(node2);
 
@@ -548,6 +552,8 @@ public class GraphRouteTest {
 
         Map<String, Object> data = new HashMap<String, Object>();
         CoreSession sessionUser1 = openSession(user1);
+        // task assignees have READ on the route instance
+        assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
         routingTaskService.endTask(sessionUser1, tasks.get(0), data, "trans1");
         closeSession(sessionUser1);
         // end task and verify that route was done
@@ -581,8 +587,9 @@ public class GraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
-                "testPermission");
+                "Write");
 
         // add a workflow variables with name "assignees"
         setTransitions(node1,
@@ -594,7 +601,6 @@ public class GraphRouteTest {
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
-        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node2 = session.saveDocument(node2);
 
@@ -616,8 +622,8 @@ public class GraphRouteTest {
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
-        assertTrue(session.hasPermission(user1, doc.getRef(), "testPermission"));
-        assertTrue(session.hasPermission(user2, doc.getRef(), "testPermission"));
+        assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
+        assertTrue(session.hasPermission(user2, doc.getRef(), "Write"));
 
     }
 }

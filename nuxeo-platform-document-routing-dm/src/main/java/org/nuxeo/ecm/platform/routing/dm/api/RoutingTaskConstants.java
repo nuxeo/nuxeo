@@ -30,8 +30,6 @@ public class RoutingTaskConstants {
 
     public static final String TASK_STEP_COMMENTS_PROPERTY_NAME = "tkst:comments";
 
-    public static final String ROUTE_TASK_LOCAL_ACL = "routingTask";
-
     public static final String ROUTING_TASK_ACTORS_KEY = "document.routing.task.actors";
 
     public enum EvaluationOperators {

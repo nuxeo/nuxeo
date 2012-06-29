@@ -14,7 +14,7 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-package org.nuxeo.ecm.platform.routing.dm.listener;
+package org.nuxeo.ecm.platform.routing.core.listener;
 
 import java.util.List;
 
@@ -30,18 +30,15 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Grants the READ permission on the route instance to all task actors. This is
- * needed beacuse an user having a task assigned should be able to see the
- * relatedRoute
+ * Grants the READ/WRITE permissions on the route instance to all task actors.
+ * This is needed beacuse an user having a task assigned should be able to see
+ * the relatedRoute and to set global workflow variables.
  *
  * @author mcedica
  *
@@ -67,23 +64,20 @@ public class RoutingTaskSecurityUpdaterListener implements EventListener {
             return;
         }
 
-        String stepId = task.getVariables().get(
-                DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
-        if (stepId == null) {
+        String routeDocId = task.getVariables().get(
+                DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
+        if (routeDocId == null) {
             return;
         }
-        DocumentModel stepDoc = session.getDocument(new IdRef(stepId));
-        DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
-        DocumentRoute route = stepElement.getDocumentRoute(session);
-
+        DocumentModel routeDoc = session.getDocument(new IdRef(routeDocId));
         for (String userName : actors) {
-            DocumentModel routeDoc = route.getDocument();
             ACP acp = routeDoc.getACP();
-            ACL routeACL = acp.getOrCreateACL(RoutingTaskConstants.ROUTE_TASK_LOCAL_ACL);
-            routeACL.add(new ACE(userName, SecurityConstants.READ, true));
+            ACL routeACL = acp.getOrCreateACL(DocumentRoutingConstants.ROUTE_TASK_LOCAL_ACL);
+            routeACL.add(new ACE(userName, SecurityConstants.READ_WRITE, true));
             acp.addACL(routeACL);
             session.setACP(routeDoc.getRef(), acp, true);
         }
+        session.saveDocument(routeDoc);
     }
 
     protected DocumentRoutingService getDocumentRoutingService() {

@@ -104,9 +104,12 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
                             + routeInstanceId);
         }
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
-        getDocumentRoutingEngineService().resume(route, session, nodeId, data,
-                status);
-
+        // unrestricted , the graph runner can create new tasks
+        try {
+            new RouteResumer(session, route, nodeId, data, status).runUnrestricted();
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Can not resume workflow", e);
+        }
     }
 
     protected DocumentRoutingEngineService getDocumentRoutingEngineService() {
@@ -150,6 +153,33 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
             }.runUnrestricted();
         } catch (ClientException e) {
             throw new DocumentRouteException(e);
+        }
+    }
+
+    class RouteResumer extends UnrestrictedSessionRunner {
+
+        DocumentRoute routeInstance;
+
+        String nodeId;
+
+        Map<String, Object> data;
+
+        String status;
+
+        protected RouteResumer(CoreSession session,
+                DocumentRoute routeInstance, String nodeId,
+                Map<String, Object> data, String status) {
+            super(session);
+            this.routeInstance = routeInstance;
+            this.nodeId = nodeId;
+            this.data = data;
+            this.status = status;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            getDocumentRoutingEngineService().resume(routeInstance, session,
+                    nodeId, data, status);
         }
     }
 }

@@ -435,6 +435,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         } else {
             taskAssignees.addAll(Arrays.asList((String[]) res));
         }
+        if (taskAssignees.isEmpty()) {
+            return;
+        }
         addTaskAssignees(taskAssignees);
     }
 

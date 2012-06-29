@@ -231,6 +231,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 routeInstance.getDocument().getId());
         taskVariables.put(DocumentRoutingConstants.TASK_NODE_ID_KEY,
                 node.getId());
+        taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
+                node.getDocument().getId());
         // evaluate task assignees from taskVar if any
         node.evaluateTaskAssignees();
         DocumentModel doc = graph.getAttachedDocumentModels().get(0);

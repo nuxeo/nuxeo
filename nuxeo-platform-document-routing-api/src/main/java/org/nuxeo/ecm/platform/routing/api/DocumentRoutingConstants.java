@@ -165,7 +165,6 @@ public interface DocumentRoutingConstants {
 
     String ROUTING_CATEGORY = "Routing";
 
-
     public static final String TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY = "routeInstanceDocId";
 
     public static final String TASK_NODE_ID_KEY = "nodeId";
@@ -173,4 +172,6 @@ public interface DocumentRoutingConstants {
     public static final String TASK_BUTTONS_KEY = "taskButtons";
 
     public static final String ROUTING_TASK_FACET_NAME = "RoutingTask";
+
+    public static final String ROUTE_TASK_LOCAL_ACL = "routingTask";
 }
