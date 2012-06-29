@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.dam</groupId>
     <artifactId>nuxeo-dam-importer-parent</artifactId>
-    <version>5.5.0-HF10-SNAPSHOT</version>
+    <version>5.5.0-HF10</version>
   </parent>
 
   <artifactId>nuxeo-dam-importer-jaxrs</artifactId>
