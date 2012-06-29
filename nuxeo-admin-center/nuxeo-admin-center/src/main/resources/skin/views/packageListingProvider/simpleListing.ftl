@@ -86,6 +86,10 @@
          <#if This.canDownload(pkg)>
            <a class="button download" href="${Root.path}/download/start/${pkg.id}?source=${source}"> Download </a>
          </#if>
+         <#if This.registrationRequired(pkg)> Registration required </#if>
+         <#if This.canCancel(pkg)>
+           <a class="button cancel" href="${Root.path}/download/cancel/${pkg.id}?source=${source}"> Cancel </a>
+         </#if>
          <#if This.canInstall(pkg)>
            <a class="button install" href="${Root.path}/install/start/${pkg.id}?source=${source}"> Install </a>
            <#if This.canRemove(pkg)>
@@ -96,7 +100,7 @@
            <a class="button uninstall" href="${Root.path}/uninstall/start/${pkg.id}?source=${source}"> Uninstall </a>
          </#if>
          <#if This.needsRestart(pkg)>
-           <a class="button restartNeeded" onclick="return confirmRestart()" href="${Root.path}/restartView" target="_top" title="Installation will be completed on next restart">Restart&nbsp;required</a>
+           <a class="button restartNeeded" onclick="return confirmRestart()" href="${Root.path}/restartView" target="_top" title="Installation will be completed on next restart"> Restart&nbsp;required </a>
          </#if>
     </td>
   </tr>

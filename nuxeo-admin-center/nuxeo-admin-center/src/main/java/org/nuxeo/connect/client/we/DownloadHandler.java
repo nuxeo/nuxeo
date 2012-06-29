@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 package org.nuxeo.connect.client.we;
 
@@ -53,7 +52,7 @@ public class DownloadHandler extends DefaultObject {
     @Path(value = "progress/{pkgId}")
     public String getDownloadProgress(@PathParam("pkgId") String pkgId) {
         DownloadingPackage pkg = getDownloadingPackage(pkgId);
-        if (pkg==null) {
+        if (pkg == null) {
             return null;
         }
         return pkg.getDownloadProgress() + "";
@@ -63,20 +62,18 @@ public class DownloadHandler extends DefaultObject {
     @Produces("application/json")
     @Path(value = "progressAsJSON")
     public String getDownloadsProgress() {
-
         ConnectDownloadManager cdm = Framework.getLocalService(ConnectDownloadManager.class);
         List<DownloadingPackage> pkgs = cdm.listDownloadingPackages();
-
         StringBuffer sb = new StringBuffer();
         sb.append("[");
-        for (int i= 0; i < pkgs.size(); i++) {
-            if (i>0) {
+        for (int i = 0; i < pkgs.size(); i++) {
+            if (i > 0) {
                 sb.append(",");
             }
             sb.append("{ \"pkgid\" : ");
             sb.append("\"" + pkgs.get(i).getId() + "\",");
             sb.append(" \"progress\" : ");
-            sb.append( pkgs.get(i).getDownloadProgress() + "}");
+            sb.append(pkgs.get(i).getDownloadProgress() + "}");
         }
         sb.append("]");
         return sb.toString();
@@ -85,8 +82,10 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "progressPage/{pkgId}")
-    public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
-            @QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck) {
+    public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId,
+            @QueryParam("source") String source,
+            @QueryParam("install") Boolean install,
+            @QueryParam("depCheck") Boolean depCheck) {
         DownloadablePackage pkg = getDownloadingPackage(pkgId);
         boolean downloadOver = false;
         // flag to start install after download
@@ -96,7 +95,6 @@ public class DownloadHandler extends DefaultObject {
         if (depCheck == null) {
             depCheck = true;
         }
-
         if (pkg == null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             pkg = pm.getPackage(pkgId);
@@ -104,15 +102,14 @@ public class DownloadHandler extends DefaultObject {
                 downloadOver = true;
             }
         }
-        return getView("downloadStarted").arg("pkg", pkg).arg("source", source)
-                .arg("over", downloadOver).arg("install", install).arg("depCheck", depCheck);
+        return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg(
+                "over", downloadOver).arg("install", install).arg("depCheck",
+                depCheck);
     }
 
     protected DownloadingPackage getDownloadingPackage(String pkgId) {
         ConnectDownloadManager cdm = Framework.getLocalService(ConnectDownloadManager.class);
-
         List<DownloadingPackage> pkgs = cdm.listDownloadingPackages();
-
         for (DownloadingPackage pkg : pkgs) {
             if (pkg.getId().equals(pkgId)) {
                 return pkg;
@@ -124,38 +121,39 @@ public class DownloadHandler extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "start/{pkgId}")
-    public Object startDownload(@PathParam("pkgId") String pkgId, @QueryParam("source") String source,
-            @QueryParam("install") Boolean install, @QueryParam("depCheck") Boolean depCheck) {
+    public Object startDownload(@PathParam("pkgId") String pkgId,
+            @QueryParam("source") String source,
+            @QueryParam("install") Boolean install,
+            @QueryParam("depCheck") Boolean depCheck) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
-
         // flag to start install after download
-        if (install==null) {
-            install=false;
+        if (install == null) {
+            install = false;
         }
-        if (depCheck==null) {
-            depCheck=true;
+        if (depCheck == null) {
+            depCheck = true;
         }
-
         if (!RequestHelper.isInternalLink(getContext())) {
             DownloadablePackage pkg = pm.getPackage(pkgId);
-            return getView("confirmDownload").arg("pkg", pkg).arg("source", source);
+            return getView("confirmDownload").arg("pkg", pkg).arg("source",
+                    source);
         }
-
         try {
             pm.download(pkgId);
         } catch (Exception e) {
             return getView("downloadError").arg("e", e);
         }
-        return getView("downloadStarted").arg("pkg", getDownloadingPackage(pkgId)).arg("source", source).arg("over",false).arg("install", install).arg("depCheck", depCheck);
+        return getView("downloadStarted").arg("pkg",
+                getDownloadingPackage(pkgId)).arg("source", source).arg("over",
+                false).arg("install", install).arg("depCheck", depCheck);
     }
-
 
     @GET
     @Produces("application/json")
     @Path(value = "startDownloads")
     public String startDownloads(@QueryParam("pkgList") String pkgList) {
         if (RequestHelper.isInternalLink(getContext())) {
-            if (pkgList!=null) {
+            if (pkgList != null) {
                 String[] pkgs = pkgList.split("/");
                 PackageManager pm = Framework.getLocalService(PackageManager.class);
                 for (String pkg : pkgs) {
@@ -163,20 +161,22 @@ public class DownloadHandler extends DefaultObject {
                         log.info("Starting download for package " + pkg);
                         pm.download(pkg);
                     } catch (Exception e) {
-                        log.error("Unable to start download for package " + pkg, e);
+                        log.error(
+                                "Unable to start download for package " + pkg,
+                                e);
                     }
                 }
-                // here we generate a fake progress report
-                // so that if some download are very fast,
-                // they will still be visible on the client side
+                // here we generate a fake progress report so that if some
+                // download are very fast, they will still be visible on the
+                // client side
                 StringBuffer sb = new StringBuffer();
                 sb.append("[");
-                for (int i= 0; i < pkgs.length; i++) {
-                    if (i>0) {
+                for (int i = 0; i < pkgs.length; i++) {
+                    if (i > 0) {
                         sb.append(",");
                     }
                     sb.append("{ \"pkgid\" : ");
-                    sb.append("\"" + pkgs[i]+ "\",");
+                    sb.append("\"" + pkgs[i] + "\",");
                     sb.append(" \"progress\" : 0}");
                 }
                 sb.append("]");
@@ -184,6 +184,18 @@ public class DownloadHandler extends DefaultObject {
             }
         }
         return "[]";
+    }
+
+    /**
+     * @since 5.6
+     */
+    @GET
+    @Path(value = "cancel/{pkgId}")
+    public Object cancelDownload(@PathParam("pkgId") String pkgId,
+            @QueryParam("source") String source) {
+        PackageManager pm = Framework.getLocalService(PackageManager.class);
+        pm.cancelDownload(pkgId);
+        return redirect(getPrevious().getPath());
     }
 
 }

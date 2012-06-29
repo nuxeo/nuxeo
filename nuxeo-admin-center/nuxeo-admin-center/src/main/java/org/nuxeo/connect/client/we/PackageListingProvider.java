@@ -93,7 +93,7 @@ public class PackageListingProvider extends DefaultObject {
             pkgs = pm.listPackages(PackageType.getByValue(pkgType));
         }
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
-        return getView("simpleListing").arg("pkgs", pkgs).arg(
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
                 "showCommunityInfo", true).arg("source", "list");
     }
 
@@ -119,7 +119,7 @@ public class PackageListingProvider extends DefaultObject {
                     targetPlatform);
         }
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
-        return getView("simpleListing").arg("pkgs", pkgs).arg(
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
                 "showCommunityInfo", true).arg("source", "updates");
     }
 
@@ -137,7 +137,7 @@ public class PackageListingProvider extends DefaultObject {
         } else {
             pkgs = pm.listLocalPackages(PackageType.getByValue(pkgType));
         }
-        return getView("simpleListing").arg("pkgs", pkgs).arg(
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
                 "showCommunityInfo", false).arg("source", "local");
     }
 
@@ -178,7 +178,7 @@ public class PackageListingProvider extends DefaultObject {
             }
         }
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
-        return getView("simpleListing").arg("pkgs", pkgs).arg(
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
                 "showCommunityInfo", false).arg("source", "remote");
     }
 
@@ -189,8 +189,9 @@ public class PackageListingProvider extends DefaultObject {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         List<DownloadablePackage> pkgs = pm.listAllStudioRemoteOrLocalPackages();
         List<DownloadablePackage> pkgsWithoutSnapshot = StudioSnapshotHelper.removeSnapshot(pkgs);
-        return getView("simpleListing").arg("pkgs", pkgsWithoutSnapshot).arg(
-                "showCommunityInfo", false).arg("source", "studio");
+        return getView("simpleListing").arg("pkgs",
+                pm.sort(pkgsWithoutSnapshot)).arg("showCommunityInfo", false).arg(
+                "source", "studio");
     }
 
     public String getStateLabel(Package pkg) {
@@ -231,11 +232,19 @@ public class PackageListingProvider extends DefaultObject {
         return pkg.isLocal();
     }
 
+    /**
+     * @since 5.6
+     */
+    public boolean canCancel(Package pkg) {
+        return PackageState.DOWNLOADING == pkg.getState();
+    }
+
     public boolean canDownload(Package pkg) {
-        return PackageState.REMOTE == pkg.getState()
-                && (PackageType.STUDIO == pkg.getType() || //
-                        PackageVisibility.PUBLIC.equals(pkg.getVisibility()) || //
-                (ConnectStatusHolder.instance().isRegistred() && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
+        return pkg.getState() == PackageState.REMOTE
+                && (pkg.getType() == PackageType.STUDIO
+                        || pkg.getVisibility() == PackageVisibility.PUBLIC //
+                || (ConnectStatusHolder.instance().isRegistred() //
+                && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
     }
 
     @GET
@@ -249,6 +258,18 @@ public class PackageListingProvider extends DefaultObject {
         } else {
             return getView("pkgNotFound").arg("pkgId", pkgId);
         }
+    }
+
+    /**
+     * @since 5.6
+     * @return true if registration is required for download
+     */
+    public boolean registrationRequired(Package pkg) {
+        return pkg.getState() == PackageState.REMOTE
+                && pkg.getType() != PackageType.STUDIO
+                && pkg.getVisibility() != PackageVisibility.PUBLIC
+                && (!ConnectStatusHolder.instance().isRegistred() //
+                || ConnectStatusHolder.instance().getStatus().status() != SubscriptionStatusType.OK);
     }
 
 }

@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
 package org.nuxeo.connect.client.we;
 
 import javax.ws.rs.GET;
@@ -29,13 +46,11 @@ public class RemoveHandler extends DefaultObject {
     @Path(value = "start/{pkgId}")
     public Object startInstall(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source) {
-
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             pus.removePackage(pkgId);
-
-            return getView("removeDone").arg("pkgId", pkgId).arg(
-                    "source", source);
+            return getView("removeDone").arg("pkgId", pkgId).arg("source",
+                    source);
         } catch (Exception e) {
             log.error("Error during first step of installation", e);
             return getView("removeError").arg("e", e);
