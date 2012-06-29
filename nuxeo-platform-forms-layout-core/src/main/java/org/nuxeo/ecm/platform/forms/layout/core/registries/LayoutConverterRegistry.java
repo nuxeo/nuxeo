@@ -17,27 +17,27 @@
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutConverterDescriptor;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * @since 5.5
  */
 public class LayoutConverterRegistry extends
-        ContributionFragmentRegistry<LayoutConverterDescriptor> {
+        SimpleContributionRegistry<LayoutConverterDescriptor> {
 
     protected final String category;
-
-    protected final Map<String, LayoutConverterDescriptor> converters;
 
     public LayoutConverterRegistry(String category) {
         super();
         this.category = category;
-        this.converters = new HashMap<String, LayoutConverterDescriptor>();
+    }
+
+    @Override
+    public String getContributionId(LayoutConverterDescriptor contrib) {
+        return contrib.getName();
     }
 
     public String getCategory() {
@@ -46,47 +46,13 @@ public class LayoutConverterRegistry extends
 
     public List<String> getLayoutNames() {
         List<String> res = new ArrayList<String>();
-        res.addAll(converters.keySet());
+        res.addAll(currentContribs.keySet());
         return res;
-    }
-
-    @Override
-    public String getContributionId(LayoutConverterDescriptor contrib) {
-        return contrib.getName();
-    }
-
-    @Override
-    public void contributionUpdated(String id,
-            LayoutConverterDescriptor contrib,
-            LayoutConverterDescriptor newOrigContrib) {
-        converters.put(id, contrib);
-    }
-
-    @Override
-    public void contributionRemoved(String id,
-            LayoutConverterDescriptor origContrib) {
-        converters.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public LayoutConverterDescriptor clone(LayoutConverterDescriptor orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(LayoutConverterDescriptor src,
-            LayoutConverterDescriptor dst) {
-        throw new UnsupportedOperationException();
     }
 
     public List<LayoutConverterDescriptor> getConverters() {
         List<LayoutConverterDescriptor> res = new ArrayList<LayoutConverterDescriptor>();
-        for (LayoutConverterDescriptor item : converters.values()) {
+        for (LayoutConverterDescriptor item : currentContribs.values()) {
             if (item != null) {
                 res.add(item);
             }
@@ -95,7 +61,7 @@ public class LayoutConverterRegistry extends
     }
 
     public LayoutConverterDescriptor getConverter(String id) {
-        return converters.get(id);
+        return getCurrentContribution(id);
     }
 
 }

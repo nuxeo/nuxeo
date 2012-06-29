@@ -17,27 +17,22 @@
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetConverterDescriptor;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * @since 5.5
  */
 public class WidgetConverterRegistry extends
-        ContributionFragmentRegistry<WidgetConverterDescriptor> {
+        SimpleContributionRegistry<WidgetConverterDescriptor> {
 
     protected final String category;
-
-    protected final Map<String, WidgetConverterDescriptor> converters;
 
     public WidgetConverterRegistry(String category) {
         super();
         this.category = category;
-        this.converters = new HashMap<String, WidgetConverterDescriptor>();
     }
 
     public String getCategory() {
@@ -46,7 +41,7 @@ public class WidgetConverterRegistry extends
 
     public List<String> getLayoutNames() {
         List<String> res = new ArrayList<String>();
-        res.addAll(converters.keySet());
+        res.addAll(currentContribs.keySet());
         return res;
     }
 
@@ -55,38 +50,9 @@ public class WidgetConverterRegistry extends
         return contrib.getName();
     }
 
-    @Override
-    public void contributionUpdated(String id,
-            WidgetConverterDescriptor contrib,
-            WidgetConverterDescriptor newOrigContrib) {
-        converters.put(id, contrib);
-    }
-
-    @Override
-    public void contributionRemoved(String id,
-            WidgetConverterDescriptor origContrib) {
-        converters.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public WidgetConverterDescriptor clone(WidgetConverterDescriptor orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(WidgetConverterDescriptor src,
-            WidgetConverterDescriptor dst) {
-        throw new UnsupportedOperationException();
-    }
-
     public List<WidgetConverterDescriptor> getConverters() {
         List<WidgetConverterDescriptor> res = new ArrayList<WidgetConverterDescriptor>();
-        for (WidgetConverterDescriptor item : converters.values()) {
+        for (WidgetConverterDescriptor item : currentContribs.values()) {
             if (item != null) {
                 res.add(item);
             }
@@ -95,7 +61,7 @@ public class WidgetConverterRegistry extends
     }
 
     public WidgetConverterDescriptor getConverter(String id) {
-        return converters.get(id);
+        return getCurrentContribution(id);
     }
 
 }

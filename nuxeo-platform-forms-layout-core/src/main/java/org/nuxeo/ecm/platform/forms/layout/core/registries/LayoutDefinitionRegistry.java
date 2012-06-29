@@ -17,12 +17,10 @@
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry holding layout definitions for a given category
@@ -30,16 +28,13 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @since 5.5
  */
 public class LayoutDefinitionRegistry extends
-        ContributionFragmentRegistry<LayoutDefinition> {
+        SimpleContributionRegistry<LayoutDefinition> {
 
     protected final String category;
-
-    protected final Map<String, LayoutDefinition> layoutDefs;
 
     public LayoutDefinitionRegistry(String category) {
         super();
         this.category = category;
-        this.layoutDefs = new HashMap<String, LayoutDefinition>();
     }
 
     public String getCategory() {
@@ -48,7 +43,7 @@ public class LayoutDefinitionRegistry extends
 
     public List<String> getLayoutNames() {
         List<String> res = new ArrayList<String>();
-        res.addAll(layoutDefs.keySet());
+        res.addAll(currentContribs.keySet());
         return res;
     }
 
@@ -57,34 +52,8 @@ public class LayoutDefinitionRegistry extends
         return contrib.getName();
     }
 
-    @Override
-    public void contributionUpdated(String id, LayoutDefinition contrib,
-            LayoutDefinition newOrigContrib) {
-        layoutDefs.put(id, contrib);
-    }
-
-    @Override
-    public void contributionRemoved(String id, LayoutDefinition origContrib) {
-        layoutDefs.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public LayoutDefinition clone(LayoutDefinition orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(LayoutDefinition src, LayoutDefinition dst) {
-        throw new UnsupportedOperationException();
-    }
-
     public LayoutDefinition getLayoutDefinition(String id) {
-        return layoutDefs.get(id);
+        return getCurrentContribution(id);
     }
 
 }

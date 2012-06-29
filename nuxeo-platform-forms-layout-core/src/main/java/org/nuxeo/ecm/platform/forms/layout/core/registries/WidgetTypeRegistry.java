@@ -16,28 +16,21 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry holding widget type instances for a given category.
  *
  * @since 5.5
  */
-public class WidgetTypeRegistry extends
-        ContributionFragmentRegistry<WidgetType> {
+public class WidgetTypeRegistry extends SimpleContributionRegistry<WidgetType> {
 
     protected final String category;
-
-    protected final Map<String, WidgetType> widgetTypes;
 
     public WidgetTypeRegistry(String category) {
         super();
         this.category = category;
-        widgetTypes = new HashMap<String, WidgetType>();
     }
 
     public String getCategory() {
@@ -49,34 +42,8 @@ public class WidgetTypeRegistry extends
         return contrib.getName();
     }
 
-    @Override
-    public void contributionUpdated(String id, WidgetType contrib,
-            WidgetType newOrigContrib) {
-        widgetTypes.put(id, contrib);
-    }
-
-    @Override
-    public void contributionRemoved(String id, WidgetType origContrib) {
-        widgetTypes.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public WidgetType clone(WidgetType orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(WidgetType src, WidgetType dst) {
-        throw new UnsupportedOperationException();
-    }
-
     public WidgetType getWidgetType(String id) {
-        return widgetTypes.get(id);
+        return getCurrentContribution(id);
     }
 
 }

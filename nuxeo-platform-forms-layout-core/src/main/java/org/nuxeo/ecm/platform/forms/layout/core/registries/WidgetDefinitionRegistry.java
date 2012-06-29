@@ -16,11 +16,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry holding widget definitions (global widgets) for a given category
@@ -28,16 +25,13 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @since 5.5
  */
 public class WidgetDefinitionRegistry extends
-        ContributionFragmentRegistry<WidgetDefinition> {
+        SimpleContributionRegistry<WidgetDefinition> {
 
     protected final String category;
-
-    protected final Map<String, WidgetDefinition> widgetDefs;
 
     public WidgetDefinitionRegistry(String category) {
         super();
         this.category = category;
-        this.widgetDefs = new HashMap<String, WidgetDefinition>();
     }
 
     public String getCategory() {
@@ -49,34 +43,8 @@ public class WidgetDefinitionRegistry extends
         return contrib.getName();
     }
 
-    @Override
-    public void contributionUpdated(String id, WidgetDefinition contrib,
-            WidgetDefinition newOrigContrib) {
-        widgetDefs.put(id, contrib);
-    }
-
-    @Override
-    public void contributionRemoved(String id, WidgetDefinition origContrib) {
-        widgetDefs.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public WidgetDefinition clone(WidgetDefinition orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(WidgetDefinition src, WidgetDefinition dst) {
-        throw new UnsupportedOperationException();
-    }
-
     public WidgetDefinition getWidgetDefinition(String id) {
-        return widgetDefs.get(id);
+        return getCurrentContribution(id);
     }
 
 }
