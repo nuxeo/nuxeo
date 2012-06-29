@@ -17,8 +17,8 @@
 ##
 MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
 
-NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0); cd ../nuxeo-distribution-tomcat/target/nuxeo-dm-5.5.0-HF10-SNAPSHOT-tomcat\ with\ space; pwd -P)}
+NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0); cd ../nuxeo-distribution-tomcat/target/nuxeo-dm-5.5.0-HF11-SNAPSHOT-tomcat\ with\ space; pwd -P)}
 
-cp target/nuxeo-launcher-5.5.0-HF10-SNAPSHOT-jar-with-dependencies.jar "$NUXEO_HOME"/bin/nuxeo-launcher.jar
+cp target/nuxeo-launcher-5.5.0-HF11-SNAPSHOT-jar-with-dependencies.jar "$NUXEO_HOME"/bin/nuxeo-launcher.jar
 cp ../nuxeo-distribution-resources/src/main/resources/bin/nuxeoctl "$NUXEO_HOME"/bin/
 "$NUXEO_HOME"/bin/nuxeoctl $@
