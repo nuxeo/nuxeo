@@ -263,6 +263,9 @@
     <priority value="INFO" />
   </category>
   -->
+  <category name="org.nuxeo.runtime.reload">
+    <priority value="INFO" />
+  </category>
   <category name="org.nuxeo.ecm.platform.ui.web.auth">
     <priority value="INFO" />
   </category>
