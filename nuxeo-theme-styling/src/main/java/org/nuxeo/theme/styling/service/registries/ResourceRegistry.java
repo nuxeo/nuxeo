@@ -16,10 +16,7 @@
  */
 package org.nuxeo.theme.styling.service.registries;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.nuxeo.theme.resources.ResourceType;
 
 /**
@@ -27,43 +24,15 @@ import org.nuxeo.theme.resources.ResourceType;
  *
  * @since 5.5
  */
-public class ResourceRegistry extends
-        ContributionFragmentRegistry<ResourceType> {
-
-    protected Map<String, ResourceType> resources = new HashMap<String, ResourceType>();
+public class ResourceRegistry extends SimpleContributionRegistry<ResourceType> {
 
     @Override
     public String getContributionId(ResourceType contrib) {
         return contrib.getName();
     }
 
-    @Override
-    public void contributionUpdated(String id, ResourceType contrib,
-            ResourceType newOrigContrib) {
-        resources.put(id, contrib);
-    }
-
-    @Override
-    public void contributionRemoved(String id, ResourceType origContrib) {
-        resources.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public ResourceType clone(ResourceType orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(ResourceType src, ResourceType dst) {
-        throw new UnsupportedOperationException();
-    }
-
     public ResourceType getResource(String id) {
-        return resources.get(id);
+        return getCurrentContribution(id);
     }
+
 }
