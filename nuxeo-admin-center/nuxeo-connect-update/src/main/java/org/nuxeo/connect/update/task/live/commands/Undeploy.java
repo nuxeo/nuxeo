@@ -29,8 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 
 /**
- * Undeploy a runtime bundle, or a directory containing runtime bundles, and
- * calls {@link ReloadService#reloadRepository()}
+ * Undeploy a runtime bundle, or a directory containing runtime bundles.
  * <p>
  * The inverse of this command is Deploy.
  *
@@ -86,7 +85,6 @@ public class Undeploy extends UndeployPlaceholder {
             } else {
                 undeployFile(file, srv);
             }
-            srv.reloadRepository();
         } catch (Exception e) {
             // ignore uninstall -> this may break the entire chain. Usually
             // uninstall is done only when rollbacking or uninstalling => force
