@@ -247,7 +247,7 @@ public class ConfigurationGenerator {
     @SuppressWarnings("unused")
     private boolean debug = false;
 
-    private boolean hideDeprecationWarnings = false;
+    private static boolean hideDeprecationWarnings = false;
 
     private Environment env;
 
