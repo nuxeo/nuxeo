@@ -24,12 +24,16 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -37,13 +41,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
@@ -67,7 +71,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @TransactionalConfig(autoStart = false)
-@RepositoryConfig(cleanup = Granularity.METHOD)
+// @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.quota.core")
 @LocalDeploy("org.nuxeo.ecm.quota.core:quotastats-size-contrib.xml")
 public class TestDocumentsSizeUpdater {
@@ -101,7 +105,30 @@ public class TestDocumentsSizeUpdater {
 
     protected DocumentRef secondFileRef;
 
-    protected static final boolean verboseMode = false;
+    protected static final boolean verboseMode = true;
+
+    @Before
+    public void cleanupSessionAssociationBeforeTest() throws Exception {
+        // temp fix to be sure the session tx
+        // will be correctly handled in the test
+        dispose(session);
+    }
+
+    protected void dispose(CoreSession session) throws Exception {
+        if (Proxy.isProxyClass(session.getClass())) {
+            InvocationHandler handler = Proxy.getInvocationHandler(session);
+            if (handler instanceof TransactionalCoreSessionWrapper) {
+                Field field = TransactionalCoreSessionWrapper.class.getDeclaredField("session");
+                field.setAccessible(true);
+                session = (CoreSession) field.get(handler);
+            }
+        }
+        if (!(session instanceof LocalSession)) {
+            throw new UnsupportedOperationException(
+                    "Cannot dispose session of class " + session.getClass());
+        }
+        ((LocalSession) session).getSession().dispose();
+    }
 
     protected Blob getFakeBlob(int size) {
         StringBuilder sb = new StringBuilder(size);
@@ -271,18 +298,10 @@ public class TestDocumentsSizeUpdater {
         assertEquals(totalSize, qa.getTotalSize());
     }
 
-    protected void hackyForceFlush() throws Exception {
-        // do not remove this
-        // or invalidations do not work !?
-        session.save();
-    }
-
     @Test
     public void testQuotaOnAddContent() throws Exception {
 
         addContent();
-
-        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -310,8 +329,6 @@ public class TestDocumentsSizeUpdater {
 
         addContent();
 
-        hackyForceFlush();
-
         TransactionHelper.startTransaction();
 
         dump();
@@ -331,8 +348,6 @@ public class TestDocumentsSizeUpdater {
         TransactionHelper.commitOrRollbackTransaction();
 
         doUpdateContent();
-
-        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -360,13 +375,9 @@ public class TestDocumentsSizeUpdater {
 
         addContent();
 
-        hackyForceFlush();
-
         dump();
 
         doMoveContent();
-
-        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -396,13 +407,9 @@ public class TestDocumentsSizeUpdater {
 
         addContent();
 
-        hackyForceFlush();
-
         dump();
 
         doRemoveContent();
-
-        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -430,13 +437,9 @@ public class TestDocumentsSizeUpdater {
 
         addContent();
 
-        hackyForceFlush();
-
         dump();
 
         doCopyContent();
-
-        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -469,13 +472,9 @@ public class TestDocumentsSizeUpdater {
 
         addContent();
 
-        hackyForceFlush();
-
         dump();
 
         doCopyFolderishContent();
-
-        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -513,13 +512,9 @@ public class TestDocumentsSizeUpdater {
     public void testQuotaOnRemoveFoldishContent() throws Exception {
         addContent();
 
-        hackyForceFlush();
-
         dump();
 
         doRemoveFolderishContent();
-
-        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -542,13 +537,9 @@ public class TestDocumentsSizeUpdater {
 
         addContent();
 
-        hackyForceFlush();
-
         dump();
 
         doMoveFolderishContent();
-
-        hackyForceFlush();
 
         TransactionHelper.startTransaction();
 
@@ -584,8 +575,6 @@ public class TestDocumentsSizeUpdater {
 
         addContent();
 
-        hackyForceFlush();
-
         dump();
 
         TransactionHelper.startTransaction();
@@ -613,8 +602,6 @@ public class TestDocumentsSizeUpdater {
         qa.setMaxQuota(400L, true);
 
         TransactionHelper.commitOrRollbackTransaction();
-
-        hackyForceFlush();
 
         dump();
 
@@ -654,8 +641,6 @@ public class TestDocumentsSizeUpdater {
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        hackyForceFlush();
-
         dump();
 
         TransactionHelper.startTransaction();
@@ -688,8 +673,6 @@ public class TestDocumentsSizeUpdater {
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", false);
 
         addContent();
-
-        hackyForceFlush();
 
         dump();
 
