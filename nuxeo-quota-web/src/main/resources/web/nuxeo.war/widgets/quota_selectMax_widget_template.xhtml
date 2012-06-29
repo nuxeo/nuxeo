@@ -61,7 +61,10 @@
 <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
 
   <nxu:set var="formatedSize" value="#{quotaStatsActions.formatQuota(field, 0)}">
-    <h:outputText value="#{formatedSize.valueInUnit} #{messages[formatedSize.unit]}"/>
+    <h:outputText value="#{formatedSize.valueInUnit}">
+      <f:convertNumber maxFractionDigits="2" />
+    </h:outputText>
+    <h:outputText value=" #{messages[formatedSize.unit]}"/>
   </nxu:set>
 
 

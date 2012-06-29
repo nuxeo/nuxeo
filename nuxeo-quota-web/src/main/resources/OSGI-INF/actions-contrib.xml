@@ -29,5 +29,11 @@
       </rule>
     </filter>
 
+    <filter id="editQuota">
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+    </filter>
+
   </extension>
 </component>
