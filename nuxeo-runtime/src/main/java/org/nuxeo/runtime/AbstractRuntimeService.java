@@ -18,9 +18,12 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.logging.Log;
@@ -333,4 +336,35 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public Bundle getBundle(String symbolicName) {
         throw new UnsupportedOperationException("Not implemented");
     }
+
+    /**
+     * @since 5.5
+     * @param msg summary message about all components loading status
+     * @return true if there was no detected error, else return false
+     */
+    public boolean getStatusMessage(StringBuilder msg) {
+        String hr = "======================================================================";
+        if (!warnings.isEmpty()) {
+            msg.append(hr).append("\n= Component Loading Errors:\n");
+            for (String warning : warnings) {
+                msg.append("  * ").append(warning).append('\n');
+            }
+        }
+        Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
+        Collection<ComponentName> activatingRegistrations = manager.getActivatingRegistrations();
+        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(
+                pendingRegistrations.size()).append(" / Unstarted: ").append(
+                activatingRegistrations.size()).append(" / Total: ").append(
+                manager.getRegistrations().size()).append('\n');
+        for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
+            msg.append("  * ").append(e.getKey()).append(" requires ").append(
+                    e.getValue()).append('\n');
+        }
+        for (ComponentName componentName : activatingRegistrations) {
+            msg.append("  - ").append(componentName).append('\n');
+        }
+        msg.append(hr);
+        return (warnings.isEmpty() && pendingRegistrations.isEmpty() && activatingRegistrations.isEmpty());
+    }
+
 }
