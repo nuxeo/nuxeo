@@ -27,12 +27,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryManager;
+import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RepositoryReloader implements EventListener {
 
@@ -46,7 +46,8 @@ public class RepositoryReloader implements EventListener {
     @Override
     public void handleEvent(Event event) {
         final String id = event.getId();
-        if ("reloadRepositories".equals(id) || "flush".equals(id)) {
+        if (ReloadService.RELOAD_REPOSITORIES_ID.equals(id)
+                || ReloadService.FLUSH_EVENT_ID.equals(id)) {
             try {
                 reloadRepositories();
             } catch (Exception e) {
