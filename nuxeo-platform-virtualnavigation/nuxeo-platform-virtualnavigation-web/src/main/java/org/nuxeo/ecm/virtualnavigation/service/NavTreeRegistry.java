@@ -18,14 +18,12 @@ package org.nuxeo.ecm.virtualnavigation.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.virtualnavigation.action.NavTreeDescriptor;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor;
 import org.nuxeo.ecm.webapp.directory.DirectoryTreeService;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry for nav trees
@@ -33,9 +31,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @since 5.6
  */
 public class NavTreeRegistry extends
-        ContributionFragmentRegistry<NavTreeDescriptor> {
-
-    protected Map<String, NavTreeDescriptor> registry = new HashMap<String, NavTreeDescriptor>();
+        SimpleContributionRegistry<NavTreeDescriptor> {
 
     @Override
     public String getContributionId(NavTreeDescriptor contrib) {
@@ -45,32 +41,12 @@ public class NavTreeRegistry extends
     @Override
     public void contributionUpdated(String id, NavTreeDescriptor contrib,
             NavTreeDescriptor newOrigContrib) {
-        if (registry.containsKey(id)) {
-            registry.remove(id);
+        if (currentContribs.containsKey(id)) {
+            currentContribs.remove(id);
         }
         if (contrib.isEnabled()) {
-            registry.put(id, contrib);
+            currentContribs.put(id, contrib);
         }
-    }
-
-    @Override
-    public void contributionRemoved(String id, NavTreeDescriptor origContrib) {
-        registry.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public NavTreeDescriptor clone(NavTreeDescriptor orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(NavTreeDescriptor src, NavTreeDescriptor dst) {
-        throw new UnsupportedOperationException();
     }
 
     // API
@@ -78,7 +54,7 @@ public class NavTreeRegistry extends
     public List<NavTreeDescriptor> getTreeDescriptors(
             DirectoryTreeService directoryTreeService) {
         List<NavTreeDescriptor> allTrees = new ArrayList<NavTreeDescriptor>();
-        allTrees.addAll(registry.values());
+        allTrees.addAll(currentContribs.values());
         List<NavTreeDescriptor> directoryTrees = getDirectoryTrees(directoryTreeService);
         if (directoryTrees != null) {
             allTrees.addAll(directoryTrees);
