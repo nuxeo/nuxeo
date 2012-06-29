@@ -17,6 +17,26 @@
         <h:outputText value="#{messages['label.route.started']} " />
         <h:outputText value="#{relatedRoute.document.dc.creator}"/>
       </nxu:set>
+
+      <script type="text/javascript">
+        <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}'" />
+        function showGraph() {
+          loadGraph(routeDocId);
+          showFancyBox('#graphView_box');
+          return false;
+        }
+      </script>
+
+      <a href="#" onclick="showGraph();return false;" class="button">#{messages['label.document.routing.show.graph']}</a>
+
+      <div style="display:none">
+        <div id="graphView_box">
+          <!-- div container for the graph -->
+          <div id="target" class="targetDiv" style="width:500px; height: 600px"></div>
+        </div>
+      </div>
+
+
     </c:when>
     <c:otherwise>
       <nxl:layout value="#{routingActions}" mode="edit" name="start_route" />
