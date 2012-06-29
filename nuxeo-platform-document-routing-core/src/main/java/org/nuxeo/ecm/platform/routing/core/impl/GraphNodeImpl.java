@@ -278,10 +278,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         // element);
         context.putAll(graph.getVariables());
         context.putAll(getVariables());
-        // workflow context
-        // context.put("workflowId", graph.get);
         context.put("initiator", "");
-        context.put("documents", "");
+        context.put("documents", graph.getAttachedDocumentModels());
         context.put("workflowStartTime", "");
         // node context
         context.put("nodeId", getId());
