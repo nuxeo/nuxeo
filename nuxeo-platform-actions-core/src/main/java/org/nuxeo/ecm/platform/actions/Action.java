@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Descriptor for action.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("action")
@@ -40,37 +40,37 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     public static final String[] EMPTY_CATEGORIES = new String[0];
 
-    private static final long serialVersionUID = 742479401240977268L;
+    private static final long serialVersionUID = 1L;
 
     @XNode("@id")
-    private String id = "";
+    protected String id = "";
 
-    private String link = null;
+    protected String link = null;
 
-    // XXX AT: param types still buggy, to fix eventually for optim
+    @Deprecated
     @XNodeList(value = "link-params/param", type = Class[].class, componentType = Class.class)
     private Class<?>[] linkParams;
 
     @XNode("@enabled")
-    private boolean enabled = true;
+    protected boolean enabled = true;
 
     @XNode("@label")
-    private String label;
+    protected String label;
 
     @XNode("@icon")
-    private String icon;
+    protected String icon;
 
     @XNode("@confirm")
-    private String confirm;
+    protected String confirm;
 
     @XNode("@help")
-    private String help;
+    protected String help;
 
     @XNode("@immediate")
     protected boolean immediate = false;
 
     @XNode("@accessKey")
-    private String accessKey;
+    protected String accessKey;
 
     /**
      * @since 5.6
@@ -84,9 +84,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     @XNode("properties")
     protected ActionPropertiesDescriptor properties;
 
-    // TODO: add merging logics on properties
-
-    private boolean available = true;
+    protected boolean available = true;
 
     /**
      * Attribute that provides a hint for action ordering.
@@ -96,18 +94,18 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      * registration and order of definition.
      */
     @XNode("@order")
-    private int order = 0;
+    protected int order = 0;
 
     @XNodeList(value = "category", type = String[].class, componentType = String.class)
-    private String[] categories = EMPTY_CATEGORIES;
+    protected String[] categories = EMPTY_CATEGORIES;
 
     // 'action -> filter(s)' association
 
     @XNodeList(value = "filter-id", type = ArrayList.class, componentType = String.class)
-    private List<String> filterIds;
+    protected List<String> filterIds;
 
     @XNodeList(value = "filter", type = ActionFilter[].class, componentType = DefaultActionFilter.class)
-    private ActionFilter[] filters;
+    protected ActionFilter[] filters;
 
     public Action() {
     }
@@ -167,7 +165,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     /**
      * Returns the action order.
-     * 
+     *
      * @return the action order as an integer value
      */
     public int getOrder() {
@@ -176,7 +174,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     /**
      * Sets the order of the action.
-     * 
+     *
      * @param order order of the action
      */
     public void setOrder(int order) {
@@ -212,10 +210,21 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         this.categories = categories;
     }
 
+    /**
+     * @deprecated since 5.6: useless now that EL expressions support
+     *             parameters
+     */
+    @Deprecated
+    @SuppressWarnings("rawtypes")
     public Class[] getLinkParams() {
         return linkParams;
     }
 
+    /**
+     * @deprecated since 5.6: useless now that EL expressions support
+     *             parameters
+     */
+    @Deprecated
     public void setLinkParams(Class<?>[] linkParams) {
         this.linkParams = linkParams;
     }
@@ -280,10 +289,40 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         this.immediate = immediate;
     }
 
-    // overridden to be public
     @Override
-    public Action clone() throws CloneNotSupportedException {
-        return (Action) super.clone();
+    public Action clone() {
+        Action clone = new Action();
+        clone.id = id;
+        clone.link = link;
+        if (linkParams != null) {
+            clone.linkParams = linkParams.clone();
+        }
+        clone.enabled = enabled;
+        clone.label = label;
+        clone.icon = icon;
+        clone.confirm = confirm;
+        clone.help = help;
+        clone.immediate = immediate;
+        clone.accessKey = accessKey;
+        clone.type = type;
+        if (properties != null) {
+            clone.properties = properties.clone();
+        }
+        clone.available = available;
+        clone.order = order;
+        if (categories != null) {
+            clone.categories = categories.clone();
+        }
+        if (filterIds != null) {
+            clone.filterIds = new ArrayList<String>(filterIds);
+        }
+        if (filters != null) {
+            clone.filters = new ActionFilter[filters.length];
+            for (int i = 0; i < filters.length; i++) {
+                clone.filters[i] = filters[i].clone();
+            }
+        }
+        return clone;
     }
 
     /**
@@ -303,9 +342,23 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     /**
      * @since 5.6
      */
+    public ActionPropertiesDescriptor getPropertiesDescriptor() {
+        return properties;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setPropertiesDescriptor(ActionPropertiesDescriptor properties) {
+        this.properties = properties;
+    }
+
+    /**
+     * @since 5.6
+     */
     public Map<String, Serializable> getProperties() {
         if (properties != null) {
-            return properties.getProperties();
+            return properties.getAllProperties();
         }
         return Collections.emptyMap();
     }

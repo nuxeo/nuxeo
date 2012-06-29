@@ -41,4 +41,12 @@ public class ActionPropertyListDescriptor implements Serializable {
         return values;
     }
 
+    public ActionPropertyListDescriptor clone() {
+        ActionPropertyListDescriptor clone = new ActionPropertyListDescriptor();
+        if (values != null) {
+            clone.values = values.clone();
+        }
+        return clone;
+    }
+
 }

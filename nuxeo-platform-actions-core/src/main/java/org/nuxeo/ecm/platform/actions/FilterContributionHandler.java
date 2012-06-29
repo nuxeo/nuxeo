@@ -40,11 +40,7 @@ public class FilterContributionHandler extends
 
     @Override
     public DefaultActionFilter clone(DefaultActionFilter object) {
-        try {
-            return object.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new Error(e); // cannot happens.
-        }
+        return object.clone();
     }
 
     @Override

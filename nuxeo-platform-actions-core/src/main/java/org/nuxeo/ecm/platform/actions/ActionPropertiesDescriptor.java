@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -36,6 +37,9 @@ public class ActionPropertiesDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@append")
+    boolean append;
+
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> properties = new HashMap<String, String>();
 
@@ -45,16 +49,96 @@ public class ActionPropertiesDescriptor implements Serializable {
     @XNodeMap(value = "propertyMap", key = "@name", type = HashMap.class, componentType = ActionPropertiesDescriptor.class)
     Map<String, ActionPropertiesDescriptor> mapProperties = new HashMap<String, ActionPropertiesDescriptor>();
 
-    public HashMap<String, Serializable> getProperties() {
+    public HashMap<String, Serializable> getAllProperties() {
         HashMap<String, Serializable> map = new HashMap<String, Serializable>();
         map.putAll(properties);
         for (Map.Entry<String, ActionPropertyListDescriptor> prop : listProperties.entrySet()) {
             map.put(prop.getKey(), prop.getValue().getValues());
         }
         for (Map.Entry<String, ActionPropertiesDescriptor> prop : mapProperties.entrySet()) {
-            map.put(prop.getKey(), prop.getValue().getProperties());
+            map.put(prop.getKey(), prop.getValue().getAllProperties());
         }
         return map;
+    }
+
+    public boolean isAppend() {
+        return append;
+    }
+
+    public void setAppend(boolean append) {
+        this.append = append;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public Map<String, ActionPropertyListDescriptor> getListProperties() {
+        return listProperties;
+    }
+
+    public void setListProperties(
+            Map<String, ActionPropertyListDescriptor> listProperties) {
+        this.listProperties = listProperties;
+    }
+
+    public Map<String, ActionPropertiesDescriptor> getMapProperties() {
+        return mapProperties;
+    }
+
+    public void setMapProperties(
+            Map<String, ActionPropertiesDescriptor> mapProperties) {
+        this.mapProperties = mapProperties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public void merge(ActionPropertiesDescriptor other) {
+        if (other != null) {
+            if (other.getProperties() != null) {
+                if (properties == null) {
+                    properties = other.getProperties();
+                } else {
+                    properties.putAll(other.getProperties());
+                }
+            }
+            if (other.getListProperties() != null) {
+                if (listProperties == null) {
+                    listProperties = other.getListProperties();
+                } else {
+                    listProperties.putAll(other.getListProperties());
+                }
+            }
+            if (other.getMapProperties() != null) {
+                if (mapProperties == null) {
+                    mapProperties = other.getMapProperties();
+                } else {
+                    mapProperties.putAll(other.getMapProperties());
+                }
+            }
+        }
+    }
+
+    public ActionPropertiesDescriptor clone() {
+        ActionPropertiesDescriptor clone = new ActionPropertiesDescriptor();
+        if (properties != null) {
+            clone.properties = new HashMap<String, String>(properties);
+        }
+        if (listProperties != null) {
+            clone.listProperties = new HashMap<String, ActionPropertyListDescriptor>();
+            for (Map.Entry<String, ActionPropertyListDescriptor> item : listProperties.entrySet()) {
+                clone.listProperties.put(item.getKey(), item.getValue().clone());
+            }
+        }
+        if (mapProperties != null) {
+            clone.mapProperties = new HashMap<String, ActionPropertiesDescriptor>();
+            for (Map.Entry<String, ActionPropertiesDescriptor> item : mapProperties.entrySet()) {
+                clone.mapProperties.put(item.getKey(), item.getValue().clone());
+            }
+        }
+        return clone;
     }
 
 }

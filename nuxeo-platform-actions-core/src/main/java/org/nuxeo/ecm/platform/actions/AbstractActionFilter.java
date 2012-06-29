@@ -20,17 +20,17 @@
 package org.nuxeo.ecm.platform.actions;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 5.6: not used expect in tests
  */
-// Is this used for real?
+@Deprecated
 public abstract class AbstractActionFilter implements ActionFilter {
 
     private static final long serialVersionUID = 6863014001035976681L;
 
     protected String id;
-    protected String[] actions;
 
+    protected String[] actions;
 
     protected AbstractActionFilter(String id, String[] actions) {
         this.id = id;
@@ -52,6 +52,10 @@ public abstract class AbstractActionFilter implements ActionFilter {
     @Override
     public String toString() {
         return id;
+    }
+
+    public AbstractActionFilter clone() {
+        throw new UnsupportedOperationException();
     }
 
 }

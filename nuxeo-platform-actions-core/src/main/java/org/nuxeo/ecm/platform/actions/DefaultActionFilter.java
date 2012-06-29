@@ -251,7 +251,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
                 if (eval == null) {
                     log.error("evaluation of condition " + condition
                             + " failed: returning false");
-                } else if(Boolean.TRUE.equals(eval)) {
+                } else if (Boolean.TRUE.equals(eval)) {
                     return true;
                 }
             } catch (Exception e) {
@@ -315,10 +315,18 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         this.append = append;
     }
 
-    // overridden to be public
     @Override
-    public DefaultActionFilter clone() throws CloneNotSupportedException {
-        return (DefaultActionFilter) super.clone();
+    public DefaultActionFilter clone() {
+        DefaultActionFilter clone = new DefaultActionFilter();
+        clone.id = id;
+        clone.append = append;
+        if (rules != null) {
+            clone.rules = new FilterRule[rules.length];
+            for (int i = 0; i < rules.length; i++) {
+                clone.rules[i] = rules[i].clone();
+            }
+        }
+        return clone;
     }
 
 }

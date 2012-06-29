@@ -39,6 +39,14 @@
       </filter>
     </action>
 
+    <action id="actionTestProperties">
+      <properties append="true">
+        <property name="newProperty">
+          newProperty
+        </property>
+      </properties>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

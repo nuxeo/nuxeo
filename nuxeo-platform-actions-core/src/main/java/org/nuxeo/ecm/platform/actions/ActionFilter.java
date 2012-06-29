@@ -49,4 +49,11 @@ public interface ActionFilter extends Serializable {
      */
     boolean accept(Action action, ActionContext context);
 
+    /**
+     * Returns a clone, useful for hot reload.
+     *
+     * @since 5.6
+     */
+    ActionFilter clone();
+
 }

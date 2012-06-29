@@ -30,7 +30,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("rule")
 public class FilterRule {
 
-    // These instance variables are package-private because there are no accessors (for now?).
+    // These instance variables are package-private because there are no
+    // accessors (for now?).
 
     @XNode(value = "@grant")
     boolean grant = false; // DENY
@@ -75,7 +76,8 @@ public class FilterRule {
     }
 
     /**
-     * Preprocess conditions to add the necessary EL to have variables resolved via SeamContext.
+     * Preprocess conditions to add the necessary EL to have variables resolved
+     * via SeamContext.
      */
     private static void preprocessConditions(String[] conditions) {
         for (int i = 0; i < conditions.length; i++) {
@@ -83,8 +85,8 @@ public class FilterRule {
             condition = condition.trim();
             if ((condition.startsWith("${") || condition.startsWith("#{"))
                     && condition.endsWith("}")) {
-                String parsedCondition = condition.substring(2, condition
-                        .length() - 1);
+                String parsedCondition = condition.substring(2,
+                        condition.length() - 1);
                 int idx = parsedCondition.indexOf('.');
                 if (idx == -1) {
                     // simple context variable lookup (may be Factory call)
@@ -92,8 +94,7 @@ public class FilterRule {
                             + "\")";
                 } else {
                     // Seam component call
-                    String seamComponentName = parsedCondition
-                            .substring(0, idx);
+                    String seamComponentName = parsedCondition.substring(0, idx);
                     String resolutionAccessor = "SeamContext.get(\""
                             + seamComponentName + "\")";
                     conditions[i] = resolutionAccessor
@@ -104,41 +105,41 @@ public class FilterRule {
     }
 
     public String getCacheKey() {
-        if (cacheKey==null) {
+        if (cacheKey == null) {
             StringBuffer sb = new StringBuffer();
             sb.append("grant:");
             sb.append(grant);
-            if (permissions!=null && permissions.length>0) {
+            if (permissions != null && permissions.length > 0) {
                 sb.append(":permissions:");
-                for (String perm : permissions){
+                for (String perm : permissions) {
                     sb.append(perm);
                     sb.append(",");
                 }
             }
-            if (facets!=null && facets.length>0 ) {
+            if (facets != null && facets.length > 0) {
                 sb.append(":facets:");
-                for (String facet : facets){
+                for (String facet : facets) {
                     sb.append(facet);
                     sb.append(",");
                 }
             }
-            if (conditions!=null && conditions.length>0) {
+            if (conditions != null && conditions.length > 0) {
                 sb.append(":conditions:");
-                for (String cond : conditions){
+                for (String cond : conditions) {
                     sb.append(cond);
                     sb.append(",");
                 }
             }
-            if (types!=null && types.length>0) {
+            if (types != null && types.length > 0) {
                 sb.append(":types:");
-                for (String typ : types){
+                for (String typ : types) {
                     sb.append(typ);
                     sb.append(",");
                 }
             }
-            if (schemas!=null && schemas.length>0) {
+            if (schemas != null && schemas.length > 0) {
                 sb.append(":schemas:");
-                for (String schem : schemas){
+                for (String schem : schemas) {
                     sb.append(schem);
                     sb.append(",");
                 }
@@ -175,6 +176,31 @@ public class FilterRule {
     @Override
     public int hashCode() {
         return getCacheKey().hashCode();
+    }
+
+    public FilterRule clone() {
+        FilterRule clone = new FilterRule();
+        clone.grant = grant;
+        if (permissions != null) {
+            clone.permissions = permissions.clone();
+        }
+        if (facets != null) {
+            clone.facets = facets.clone();
+        }
+        if (types != null) {
+            clone.types = types.clone();
+        }
+        if (schemas != null) {
+            clone.schemas = schemas.clone();
+        }
+        if (groups != null) {
+            clone.groups = groups.clone();
+        }
+        if (conditions != null) {
+            clone.conditions = conditions.clone();
+        }
+        clone.cacheKey = cacheKey;
+        return clone;
     }
 
 }
