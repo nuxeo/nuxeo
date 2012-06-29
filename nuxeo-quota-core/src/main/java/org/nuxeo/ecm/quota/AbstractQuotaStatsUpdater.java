@@ -27,6 +27,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,6 +52,8 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
     protected String label;
 
     protected String descriptionLabel;
+
+    protected static Log log = LogFactory.getLog(AbstractQuotaStatsUpdater.class);
 
     @Override
     public void setName(String name) {
@@ -87,7 +91,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         DocumentModel doc = docCtx.getSourceDocument();
 
         if (!needToProcessEventOnDocument(event, doc)) {
-            System.out.println("Exit Listener !!!!");
+            log.debug("Exit Listener !!!!");
             return;
         }
 

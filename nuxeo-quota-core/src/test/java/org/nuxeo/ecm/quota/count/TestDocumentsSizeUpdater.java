@@ -59,7 +59,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -71,9 +70,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @TransactionalConfig(autoStart = false)
-// @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.quota.core")
-@LocalDeploy("org.nuxeo.ecm.quota.core:quotastats-size-contrib.xml")
 public class TestDocumentsSizeUpdater {
 
     @Inject
@@ -105,7 +102,7 @@ public class TestDocumentsSizeUpdater {
 
     protected DocumentRef secondFileRef;
 
-    protected static final boolean verboseMode = true;
+    protected static final boolean verboseMode = false;
 
     @Before
     public void cleanupSessionAssociationBeforeTest() throws Exception {

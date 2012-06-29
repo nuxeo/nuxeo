@@ -22,15 +22,14 @@
     </layout>
   </appender>
 
-
   <category name="org.nuxeo.ecm.quota">
-    <priority value="DEBUG" />
+    <priority value="WARN" />
   </category>
   <category name="org.nuxeo.runtime.transaction">
-    <priority value="DEBUG" />
+    <priority value="WARN" />
   </category>
   <category name="org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl">
-    <priority value="DEBUG" />
+    <priority value="WARN" />
   </category>
    <category name="org.nuxeo">
     <priority value="WARN" />
