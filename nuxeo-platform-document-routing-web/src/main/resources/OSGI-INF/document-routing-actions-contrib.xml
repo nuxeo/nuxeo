@@ -37,12 +37,6 @@
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
-    <action id="TAB_CASE_MANAGEMENT_VIEW_RELATED_ROUTE" link="/incl/tabs/related_document_route_preview.xhtml"
-      order="250" label="label.document.routing.related.route">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>isRoutable</filter-id>
-    </action>
-
     <action id="CANCEL_RELATED_ROUTE" link="#{routingActions.cancelRoute()}"
       order="10" label="label.document.routing.cancel.route">
       <category>ATTACHED_ROUTE_LIST</category>
@@ -169,7 +163,7 @@
       label="label.document.routing.route.graph.view">
       <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
     </action>
-    
+
     <!-- 'Workflow' sub tab: current route -->
     <action id="TAB_CURRENT_ROUTE" enabled="true"
       link="/incl/tabs/current_route.xhtml" order="20"

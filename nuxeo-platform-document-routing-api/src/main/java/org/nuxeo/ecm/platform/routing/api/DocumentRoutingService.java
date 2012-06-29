@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.routing.api;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -71,7 +72,7 @@ public interface DocumentRoutingService {
 
     /**
      * Resumes a route instance.
-     * <p>
+     * <p/>
      * Called by the UI action corresponding to a task button.
      *
      * @param routeRef the reference to the route instance document
@@ -85,7 +86,7 @@ public interface DocumentRoutingService {
 
     /**
      * Save a route instance as a new model of route.
-     *
+     * <p/>
      * The place in which the new instance is persisted and its name depends on
      * {@link DocumentRoutingPersister}. The route instance should be in either
      * running, done or ready state. The new route model will be in draft state
@@ -140,7 +141,7 @@ public interface DocumentRoutingService {
      * state and setting it and all its children in ReadOnly.
      *
      * @return The validated route.
-     * */
+     */
     DocumentRoute validateRouteModel(DocumentRoute routeModel,
             CoreSession session) throws DocumentRouteNotLockedException,
             ClientException;
@@ -181,11 +182,11 @@ public interface DocumentRoutingService {
             List<DocumentRouteElement.ElementLifeCycleState> states);
 
     /**
-     * @see #getDocumentRoutesForAttachedDocument(CoreSession, String, List) for
-     *      route running or ready.
      * @param session
      * @param attachedDocId
      * @return
+     * @see #getDocumentRoutesForAttachedDocument(CoreSession, String, List) for
+     *      route running or ready.
      */
     List<DocumentRoute> getDocumentRoutesForAttachedDocument(
             CoreSession session, String attachedDocId);
@@ -206,7 +207,6 @@ public interface DocumentRoutingService {
      * @param documentRoute
      * @param coreSession
      * @throws ClientException
-     *
      */
     boolean canValidateRoute(DocumentModel documentRoute,
             CoreSession coreSession) throws ClientException;
@@ -226,7 +226,7 @@ public interface DocumentRoutingService {
 
     /**
      * Add a route element in another route element.
-     *
+     * <p/>
      * If the parent element is in draft state, the routeElement is kept in
      * draft state. Otherwise, the element is set to 'ready' state.
      *
@@ -325,18 +325,17 @@ public interface DocumentRoutingService {
      * @param overwrite
      * @param session
      * @throws ClientException
-     *
      * @since 5.6
      */
     DocumentRoute importRouteModel(URL templateResource, boolean overwrite,
             CoreSession session) throws ClientException;
 
     /**
-     * Registers a new route model template to be imported at application startup.
+     * Registers a new route model template to be imported at application
+     * startup.
      *
      * @param id the id
      * @param resource the resource
-     *
      * @since 5.6
      */
     void registerRouteModelTemplateResource(String id, URL resource);
@@ -349,5 +348,13 @@ public interface DocumentRoutingService {
      * @since 5.6
      */
     List<URL> getRouteModelTemplateResources() throws ClientException;
+
+    /**
+     * Returns the route models matching the {@code searchString}.
+     *
+     * @since 5.6
+     */
+    List<DocumentModel> searchRouteModels(CoreSession session,
+            String searchString) throws ClientException;
 
 }

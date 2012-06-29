@@ -25,6 +25,11 @@ public interface DocumentRoutingConstants {
     // web
     String SEARCH_ROUTE_BY_ATTACHED_DOC_QUERY = "SEARCH_ROUTE_BY_ATTACHED_DOC";
 
+    /**
+     * @since 5.6
+     */
+    String DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME = "DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS";
+
     String ROUTE_MANAGERS_GROUP_NAME = "routeManagers";
 
     // document constant

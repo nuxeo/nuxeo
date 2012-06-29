@@ -855,4 +855,11 @@ public class DocumentRoutingActionsBean implements Serializable {
     public void resetCache() {
         webActions.resetTabList();
     }
+
+    /**
+     * @since 5.6
+     */
+    public DocumentModel getRouteModel(String routeId) throws ClientException {
+        return documentManager.getDocument(new IdRef(routeId));
+    }
 }

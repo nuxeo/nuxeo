@@ -20,10 +20,14 @@
 package org.nuxeo.ecm.platform.routing.web;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MAX_RESULTS_PROPERTY;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -32,9 +36,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
-import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.runtime.api.Framework;
@@ -54,8 +58,6 @@ public class DocumentRoutingSuggestionActionsBean extends
 
     public static final String CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC = "CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC";
 
-    public static final String DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_QUERYMODEL = "DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS";
-
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
@@ -65,50 +67,22 @@ public class DocumentRoutingSuggestionActionsBean extends
 
     public List<DocumentModel> getDocumentSuggestions(Object input)
             throws ClientException {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        try {
-            QueryModelService qms = Framework.getService(QueryModelService.class);
-            if (qms == null) {
-                return docs;
-            }
-
-            QueryModelDescriptor qmDescriptor = qms.getQueryModelDescriptor(CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC);
-            if (qmDescriptor == null) {
-                return docs;
-            }
-
-            List<Object> queryParams = new ArrayList<Object>();
-            queryParams.add(0, String.format("%s%%", input));
-            QueryModel qm = new QueryModel(qmDescriptor);
-            docs = qm.getDocuments(documentManager, queryParams.toArray());
-        } catch (Exception e) {
-            throw new ClientException("error searching for documents", e);
-        }
-        return docs;
+        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
+        props.put(CORE_SESSION_PROPERTY, (Serializable) documentManager);
+        @SuppressWarnings("unchecked")
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC, null, null, 0L, props,
+                String.format("%s%%", input));
+        return pageProvider.getCurrentPage();
     }
 
     public List<DocumentModel> getRouteModelSuggestions(Object input)
             throws ClientException {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        try {
-            QueryModelService qms = Framework.getService(QueryModelService.class);
-            if (qms == null) {
-                return docs;
-            }
-
-            QueryModelDescriptor qmDescriptor = qms.getQueryModelDescriptor(DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_QUERYMODEL);
-            if (qmDescriptor == null) {
-                return docs;
-            }
-
-            List<Object> queryParams = new ArrayList<Object>();
-            queryParams.add(0, String.format("%s%%", input));
-            QueryModel qm = new QueryModel(qmDescriptor);
-            docs = qm.getDocuments(documentManager, queryParams.toArray());
-        } catch (Exception e) {
-            throw new ClientException("error searching for documents", e);
-        }
-        return docs;
+        DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
+        return documentRoutingService.searchRouteModels(documentManager,
+                (String) input);
     }
 
     @Override

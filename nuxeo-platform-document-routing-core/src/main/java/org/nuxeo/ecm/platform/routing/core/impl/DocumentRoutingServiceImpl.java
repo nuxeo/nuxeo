@@ -17,7 +17,13 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MAX_RESULTS_PROPERTY;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME;
+
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +47,8 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
@@ -602,6 +610,20 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             urls.add(url);
         }
         return urls;
+    }
+
+    @Override
+    public List<DocumentModel> searchRouteModels(CoreSession session,
+            String searchString) throws ClientException {
+        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
+        props.put(CORE_SESSION_PROPERTY, (Serializable) session);
+        @SuppressWarnings("unchecked")
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null,
+                0L, props, String.format("%s%%", searchString));
+        return pageProvider.getCurrentPage();
     }
 
 }
