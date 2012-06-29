@@ -63,6 +63,7 @@ import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.connect.update.model.PackageDefinition;
@@ -436,19 +437,20 @@ public class ConnectBroker {
             if (packagesList.isEmpty()) {
                 log.info("None");
             } else {
-                // TODO JC: Collections.sort(packagesList);
+                NuxeoConnectClient.getPackageManager().sort(packagesList);
+                StringBuilder sb = new StringBuilder();
                 for (Package pkg : packagesList) {
                     cmdInfo.packages.add(new PackageInfo(pkg));
                     String packageDescription;
                     switch (pkg.getState()) {
                     case PackageState.DOWNLOADING:
-                        packageDescription = "downloading...";
+                        packageDescription = "downloading";
                         break;
                     case PackageState.DOWNLOADED:
                         packageDescription = "downloaded";
                         break;
                     case PackageState.INSTALLING:
-                        packageDescription = "installing...";
+                        packageDescription = "installing";
                         break;
                     case PackageState.INSTALLED:
                         packageDescription = "installed";
@@ -463,10 +465,19 @@ public class ConnectBroker {
                         packageDescription = "unknown";
                         break;
                     }
-                    packageDescription += "\t" + pkg.getName() + " (id: "
-                            + pkg.getId() + ")";
-                    log.info(packageDescription);
+                    packageDescription = String.format("%6s %11s\t",
+                            pkg.getType(), packageDescription);
+                    if (pkg.getState() == PackageState.REMOTE
+                            && pkg.getType() != PackageType.STUDIO
+                            && pkg.getVisibility() != PackageVisibility.PUBLIC
+                            && !LogicalInstanceIdentifier.isRegistered()) {
+                        packageDescription += "Registration required for ";
+                    }
+                    packageDescription += String.format("%s (id: %s)\n",
+                            pkg.getName(), pkg.getId());
+                    sb.append(packageDescription);
                 }
+                log.info(sb.toString());
             }
             cmdInfo.exitCode = 0;
         } catch (Exception e) {
