@@ -233,6 +233,14 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
 
+    private static final String[] COMMANDS_NO_GUI = {"mp-init", "mp-purge", "mp-add", "mp-install",
+        "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list",
+        "mp-listall", "mp-update", "status", "showconf"};
+
+    private static final String[] COMMANDS_NO_RUNNING_SERVER = {"mp-init", "mp-purge", "mp-add",
+        "mp-install", "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade",
+        "mp-reset", "mp-update"};
+
     protected ConfigurationGenerator configurationGenerator;
 
     public final ConfigurationGenerator getConfigurationGenerator() {
@@ -663,6 +671,9 @@ public abstract class NuxeoLauncher {
     IOException, PackageException {
         try {
             final NuxeoLauncher launcher = createLauncher(args);
+            if (Arrays.asList(COMMANDS_NO_GUI).contains(launcher.command)) {
+                launcher.useGui = false;
+            }
             if (launcher.useGui && launcher.getGUI() == null) {
                 launcher.setGUI(new NuxeoLauncherGUI(launcher));
             }
@@ -687,16 +698,7 @@ public abstract class NuxeoLauncher {
         if (launcher.command == null) {
             return;
         }
-        if ("mp-init".equalsIgnoreCase(launcher.command)
-                || "mp-purge".equalsIgnoreCase(launcher.command)
-                || "mp-add".equalsIgnoreCase(launcher.command)
-                || "mp-install".equalsIgnoreCase(launcher.command)
-                || "mp-uninstall".equalsIgnoreCase(launcher.command)
-                || "mp-request".equalsIgnoreCase(launcher.command)
-                || "mp-remove".equalsIgnoreCase(launcher.command)
-                || "mp-hotfix".equalsIgnoreCase(launcher.command)
-                || "mp-upgrade".equalsIgnoreCase(launcher.command)
-                || "mp-reset".equalsIgnoreCase(launcher.command)) {
+        if (Arrays.asList(COMMANDS_NO_RUNNING_SERVER).contains(launcher.command)) {
             launcher.checkNoRunningServer();
         }
         if ("status".equalsIgnoreCase(launcher.command)) {
