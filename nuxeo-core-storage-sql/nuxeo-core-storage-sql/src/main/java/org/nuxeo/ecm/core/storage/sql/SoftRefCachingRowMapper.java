@@ -109,11 +109,11 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * Cache statistics
      */
     // JavaSimpon Counter Names
-    private static final String CN_ACCESS = "org.nuxeo.ecm.core.storage.sql.cache.access";
+    private static final String CN_ACCESS = "org.nuxeo.ecm.core.storage.sql.row.cache.access";
 
-    private static final String CN_HITS = "org.nuxeo.ecm.core.storage.sql.cache.hits";
+    private static final String CN_HITS = "org.nuxeo.ecm.core.storage.sql.row.cache.hits";
 
-    private static final String CN_SIZE = "org.nuxeo.ecm.core.storage.sql.cache.size";
+    private static final String CN_SIZE = "org.nuxeo.ecm.core.storage.sql.row.cache.size";
 
     // Stop watch for cache access
     private static final String SW_CACHE = "org.nuxeo.ecm.core.storage.sql.cache.get";
@@ -231,7 +231,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
         if (row != null) {
             hitsCount++;
         }
-        if (accessCount++ % 200 == 0) {
+        if ((++accessCount % 200) == 0) {
             Counter accessCounter = SimonManager.getCounter(CN_ACCESS);
             accessCounter.increase(accessCount);
             accessCount = 0;

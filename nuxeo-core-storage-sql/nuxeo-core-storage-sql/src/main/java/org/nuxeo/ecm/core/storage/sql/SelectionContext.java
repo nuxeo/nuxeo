@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.javasimon.Counter;
+import org.javasimon.SimonManager;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -51,6 +53,19 @@ public class SelectionContext {
      */
     private final Set<Serializable> modifiedInTransaction;
 
+    // cache statistics
+    private static final String CN_ACCESS = "org.nuxeo.ecm.core.storage.sql.selection.cache.access";
+
+    private static final String CN_HITS = "org.nuxeo.ecm.core.storage.sql.selection.cache.hits";
+
+    private static final String CN_SIZE = "org.nuxeo.ecm.core.storage.sql.selection.cache.size";
+
+    private long accessCount;
+
+    private long hitsCount;
+
+    private long cacheSize;
+
     @SuppressWarnings("unchecked")
     public SelectionContext(SelectionType selType, Serializable criterion,
             RowMapper mapper, PersistenceContext context) {
@@ -74,6 +89,7 @@ public class SelectionContext {
     /** Gets the proper selection cache. Creates one if missing. */
     private Selection getSelection(Serializable selId) {
         Selection selection = softMap.get(selId);
+        updateCacheStat(selection);
         if (selection != null) {
             return selection;
         }
@@ -271,6 +287,28 @@ public class SelectionContext {
                 softMap.remove(id);
                 hardMap.remove(id);
             }
+        }
+    }
+
+    private void updateCacheStat(Selection selection) {
+        if (selection != null) {
+            hitsCount++;
+        }
+        if ((++accessCount % 200) == 0) {
+            Counter accessCounter = SimonManager.getCounter(CN_ACCESS);
+            accessCounter.increase(accessCount);
+            accessCount = 0;
+            Counter hitsCounter = SimonManager.getCounter(CN_HITS);
+            hitsCounter.increase(hitsCount);
+            hitsCount = 0;
+            Counter sizeCounter = SimonManager.getCounter(CN_SIZE);
+            long delta = softMap.size() - cacheSize;
+            if (delta > 0) {
+                sizeCounter.increase(delta);
+            } else if (delta < 0) {
+                sizeCounter.decrease(-1 * delta);
+            }
+            cacheSize = softMap.size();
         }
     }
 
