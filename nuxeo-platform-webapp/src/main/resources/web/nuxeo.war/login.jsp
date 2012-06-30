@@ -23,6 +23,11 @@ String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 <head>
 <title><%=productName%></title>
 <link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
+<script type="text/javascript" src="<%=context%>/scripts/detect_timezone.js"></script>
+<script type="text/javascript" src="<%=context%>/scripts/nxtimezone.js" />
+<script language="javascript">
+  nxtz.resetTimeZoneCookieIfNotSet();
+</script>
 <style type="text/css">
 <!--
 body {
