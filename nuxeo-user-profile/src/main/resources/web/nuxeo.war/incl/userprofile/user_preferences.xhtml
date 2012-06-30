@@ -2,6 +2,8 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:a4j="http://richfaces.org/a4j">
+<script type="text/javascript" src="#{baseURL}scripts/detect_timezone.js" />
+<script type="text/javascript" src="#{baseURL}scripts/nxtimezone.js" />
 
   <a4j:region>
     <a4j:outputPanel id="preferencesPanel">
@@ -22,6 +24,16 @@
                         rendered="#{userPreferencesActions.mode == 'view'}"
                         reRender="preferencesPanel">
                         <h:outputText value="#{messages['label.userManager.editUser']}" />
+                   </a4j:commandLink>
+                 </li>
+                 <li>
+                   <a4j:commandLink id="resetTimezone"
+                        onclick="nxtz.resetTimeZoneCookie()"
+                        action="#{userPreferencesActions.resetTimezone()}"
+                        immediate="#{action.immediate}"
+                        rendered="#{userPreferencesActions.mode == 'view'}"
+                        reRender="preferencesPanel">
+                        <h:outputText value="#{messages['label.userPreferences.resetTimeZone']}" />
                    </a4j:commandLink>
                  </li>
                </ul>

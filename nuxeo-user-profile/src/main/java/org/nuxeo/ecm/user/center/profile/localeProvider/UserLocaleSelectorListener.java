@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.user.center.profile.localeProvider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -30,6 +32,8 @@ import org.nuxeo.runtime.api.Framework;
  * updated (and created).
  */
 public class UserLocaleSelectorListener implements EventListener {
+
+    public static final Log log = LogFactory.getLog(UserLocaleSelectorListener.class);
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -46,9 +50,14 @@ public class UserLocaleSelectorListener implements EventListener {
             return;
         }
 
-        // performing the timezone and locale update
-        LocaleStartup.setupLocale(ctx.getCoreSession());
-        LocaleStartup.setupTimeZone(ctx.getCoreSession());
+        // performing the locale update
+        LocaleStartup localeStartup = LocaleStartup.instance();
+        if (localeStartup == null) {
+            log.warn("Locale Startup not available. Can't set locale");
+            return;
+        }
+        localeStartup.setupLocale(ctx.getCoreSession());
+
 
     }
 

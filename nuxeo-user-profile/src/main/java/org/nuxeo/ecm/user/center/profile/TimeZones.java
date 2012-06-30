@@ -24,17 +24,22 @@ import java.util.TimeZone;
 import javax.faces.model.SelectItem;
 
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.international.TimeZoneSelector;
 
 /**
  * Provide from the system available timezones to be displayed in UI.
  *
  * @since 5.6
  */
-@Scope(ScopeType.APPLICATION)
+@Scope(ScopeType.SESSION)
 @Name("timeZones")
 public class TimeZones {
+
+    @In LocaleSelector localeSelector;
 
     private List<SelectItem> timeZoneSelectItems = null;
 
@@ -45,11 +50,16 @@ public class TimeZones {
         return timeZoneSelectItems;
     }
 
+    public String displayCurrentTimeZone() {
+        TimeZoneSelector tzs = TimeZoneSelector.instance();
+        return displayTimeZone(tzs.getTimeZoneId());
+    }
+
     public String displayTimeZone(String id) {
         if (id == null || id.trim().length() == 0 || "none".equals(id)) {
             return "";
         }
-        return id + " - " + TimeZone.getTimeZone(id).getDisplayName();
+        return id + " - " + TimeZone.getTimeZone(id).getDisplayName(localeSelector.getLocale());
     }
 
     private void initTimeZones() {

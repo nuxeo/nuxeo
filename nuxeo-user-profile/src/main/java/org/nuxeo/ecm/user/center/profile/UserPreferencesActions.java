@@ -15,11 +15,14 @@
  */
 package org.nuxeo.ecm.user.center.profile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.webapp.action.WebActionsBean;
+import org.nuxeo.ecm.webapp.locale.LocaleStartup;
 
 /**
  * Seam component to manage user preferences editing. UI is showing user
@@ -32,6 +35,8 @@ import org.nuxeo.ecm.webapp.action.WebActionsBean;
 @Scope(ScopeType.CONVERSATION)
 public class UserPreferencesActions extends UserProfileActions {
 
+    public static final Log log = LogFactory.getLog(UserPreferencesActions.class);
+
     private static final long serialVersionUID = 1L;
 
     @In
@@ -40,6 +45,20 @@ public class UserPreferencesActions extends UserProfileActions {
     public String navigateToPreferencesPage() {
         webActions.setCurrentTabIds("MAIN_TABS:home,USER_CENTER:Preferences");
         return "view_home";
+    }
+
+    /**
+     * Reset timezone from the cookie. The cookie need to be setted/reset
+     * before. (done in javascript)
+     */
+    public void resetTimezone() {
+        // performing the locale update
+        LocaleStartup localeStartup = LocaleStartup.instance();
+        if (localeStartup == null) {
+            log.warn("Locale Startup not available. Can't set locale");
+            return;
+        }
+        localeStartup.setupLocale(documentManager);
     }
 
 }

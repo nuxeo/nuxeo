@@ -10,5 +10,4 @@
   <xs:element name="phonenumber" type="xs:string" />
   <xs:element name="gender" type="xs:boolean" default="false" />
   <xs:element name="locale" type="xs:string" />
-  <xs:element name="timezone" type="xs:string" />
 </xs:schema>

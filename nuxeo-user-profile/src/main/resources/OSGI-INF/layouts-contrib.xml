@@ -166,9 +166,10 @@
         <label mode="any">label.userpreferences.timezone</label>
       </labels>
       <translated>true</translated>
-      <fields>
-        <field>userprofile:timezone</field>
-      </fields>
+      <widgetModes>
+        <mode value="view">view</mode>
+        <mode value="any">hidden</mode>
+      </widgetModes>
       <properties mode="any">
         <property name="template">/widgets/timezone_widget_template.xhtml
         </property>

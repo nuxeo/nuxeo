@@ -54,14 +54,9 @@ public class UserLocaleProvider implements LocaleProvider {
 
     @Override
     public TimeZone getTimeZone(CoreSession repo) throws ClientException {
-        UserProfileService userProfileService = Framework.getLocalService(UserProfileService.class);
-        DocumentModel userProfileDoc = userProfileService.getUserProfileDocument(repo);
-        String timezone = (String) userProfileDoc.getPropertyValue("userprofile:timezone");
-        if (timezone == null || timezone.trim().length() == 0) {
-            // undefied if not set
-            return null;
-        }
-        return TimeZone.getTimeZone(timezone);
+        // the timezone is not retrieved from the user profile (cookie and Seam
+        // TimezoneSelector)
+        return null;
     }
 
 }

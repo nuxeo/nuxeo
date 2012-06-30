@@ -2,18 +2,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <c:if test="#{widget.mode == 'edit' }">
-    <h:selectOneMenu value="#{field}" id="#{widget.id}">
-      <f:selectItem itemValue="none"
-        itemLabel="#{messages['label.vocabulary.selectValue']}" />
-      <f:selectItems value="#{timeZones.timeZones}" />
-    </h:selectOneMenu>
-    <h:message styleClass="errorMessage" for="#{widget.id}"
-      id="#{widget.id}_message" />
-  </c:if>
-
   <c:if test="#{widget.mode == 'view' }">
-    <h:outputText value="#{timeZones.displayTimeZone(field)}"
+    <h:outputText value="#{timeZones.displayCurrentTimeZone()}"
       id="#{widget.id}" />
   </c:if>
 
