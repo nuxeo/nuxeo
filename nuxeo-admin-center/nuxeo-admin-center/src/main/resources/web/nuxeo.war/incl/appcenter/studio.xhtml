@@ -59,6 +59,9 @@
                   <h:outputText value="#{messages['label.studio.update']}"/>
                 </a4j:form>
               </c:if>
+              <c:if test="#{not connectServerReachable or not registredConnectInstance}">
+                <h:outputText value="#{messages['label.studio.cannotUpdate']}"/>
+              </c:if>
             </td>
             <td style="text-align:center;vertical-align:middle">
               <c:if test="#{connectServerReachable and registredConnectInstance}">

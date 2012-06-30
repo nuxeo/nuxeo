@@ -25,7 +25,9 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for {@link org.nuxeo.ecm.platform.ec.notification.service.NotificationListenerVetoDescriptor}s, elements
+ * Registry for
+ * {@link org.nuxeo.ecm.platform.ec.notification.service.NotificationListenerVetoDescriptor}
+ * elements
  *
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  * @since 5.6
@@ -62,9 +64,7 @@ public class NotificationListenerVetoRegistry extends
             contributionRemoved(id, contrib);
         } else {
             try {
-                vetos.put(
-                        id,
-                        (NotificationListenerVeto) contrib.getNotificationVeto().newInstance());
+                vetos.put(id, contrib.getNotificationVeto().newInstance());
             } catch (Exception e) {
                 log.error(e);
             }
@@ -97,6 +97,7 @@ public class NotificationListenerVetoRegistry extends
 
     public void clear() {
         vetos.clear();
+        contribs.clear();
     }
 
 }

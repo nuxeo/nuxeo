@@ -24,6 +24,8 @@ import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl.ChainEntry;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
+ * Registry for chain entries
+ *
  * @since 5.6
  */
 public class ChainEntryRegistry extends
