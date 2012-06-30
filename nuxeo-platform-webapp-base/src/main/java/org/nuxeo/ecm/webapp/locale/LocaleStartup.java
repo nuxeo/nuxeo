@@ -87,26 +87,21 @@ public class LocaleStartup {
         setupLocale(session);
     }
 
-    public static void setupTimeZone(CoreSession session) {
-        TimeZone tz = null;
-        try {
-            tz = Framework.getLocalService(LocaleProvider.class).getTimeZone(
-                    session);
-        } catch (ClientException e) {
-            log.warn(
-                    "Couldn't get timezone from LocaleProvider, trying default timezone",
-                    e);
-        }
-        if (tz == null) {
-            log.debug("Timezone not set, falling back to default timezone");
-            tz = TimeZone.getDefault();
-        }
+    /**
+     * Getting the timezone from the cookies and initialize Seam timezone. The
+     * nxtimezone.js contains methods to set the cookie with the browser
+     * timezone.
+     */
+    public void setupTimeZone(CoreSession session) {
+        // Not using LocaleProvider to get persisted timezone because it is too
+        // hard to make it works with OpenSocialGadgets.
+        // and changing a timezone for a Date in javascript is not trivial.
         TimeZoneSelector tzSelector = TimeZoneSelector.instance();
-        tzSelector.setCookieEnabled(false);
-        tzSelector.selectTimeZone(tz.getID());
+        tzSelector.setCookieEnabled(true);
+        tzSelector.initTimeZone();
     }
 
-    public static void setupLocale(CoreSession session) {
+    public void setupLocale(CoreSession session) {
         Locale locale = null;
         try {
             locale = Framework.getLocalService(LocaleProvider.class).getLocale(
