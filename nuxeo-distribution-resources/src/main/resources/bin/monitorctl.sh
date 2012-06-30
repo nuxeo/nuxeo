@@ -36,7 +36,7 @@ The script generate the following reports and logs:
 Usage
 ======
    
-    monitorctl.sh (start|stop|status|archive [TAG])
+    monitorctl.sh  OPTIONS
 
 Options
 --------
@@ -50,21 +50,36 @@ stop
 status
     Is the monitoring running or not.
 
+
 heapdump
     Create a heap dump, that can be read by jhat.
 
 info
     Display some jvm info.
 
+heap-histo
+    Java heap histo
+
+clear-vcs-cache
+    Clear vcs row cache
+
+invoke-fgc
+    Perform a full GC
+
 vacuumdb
     Vacuum PostgreSQL db and gets the vacuum report.
     Perform a reindex after to keep indexes consistant.
+
+pgstat-get-reset
+    Get postgresql stats and reset
+
+
 
 Requirement
 ============
 
 packages: 
-  sysstat atop logtail postgresql-client
+  sysstat atop logtail postgresql-client jmxstat bc
 EOF
 }
 
@@ -183,10 +198,14 @@ JMXSTAT_PID="$PID_DIR"/jmxstat.pid
 JMXSTAT_INTERVAL=$SAR_INTERVAL
 JMXSTAT_COUNT=$SAR_COUNT
 JMXSTAT_OPTS="$JMXHOST --contention Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"[numActive,numIdle]"
-JMXSTAT_VCS_RESET="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!reset]"
-# org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!reset]"
-JMXSTAT_VCS="org.nuxeo:name=ecm.core.storage.sql.cache.access,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.hits,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.cache.size,type=Counter,management=metric[!sampleAsMap]"
-# org.nuxeo:name=ecm.core.storage.sql.cache.get,type=Stopwatch,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!sampleAsMap]"
+JMXSTAT_VCS_ROW_RESET="org.nuxeo:name=ecm.core.storage.sql.row.cache.access,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.row.cache.hits,type=Counter,management=metric[!reset]"
+# org.nuxeo:name=ecm.core.storage.sql.row.cache.get,type=Stopwatch,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!reset]"
+JMXSTAT_VCS_ROW="org.nuxeo:name=ecm.core.storage.sql.row.cache.access,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.row.cache.hits,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.row.cache.size,type=Counter,management=metric[!sampleAsMap]"
+# org.nuxeo:name=ecm.core.storage.sql.row.cache.get,type=Stopwatch,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!sampleAsMap]"
+JMXSTAT_VCS_SEL_RESET=`echo $JMXSTAT_VCS_ROW_RESET | sed 's/row/selection/g'`
+JMXSTAT_VCS_SEL=`echo $JMXSTAT_VCS_ROW | sed 's/row/selection/g'`
+
+
 [ -z $JMXSTAT ] && echo "You can install jmxstat from https://github.com/bdelbosc/jmxstat"
 
 JMX_LISTENING=`netstat -ltn | grep 1089`
@@ -289,26 +308,36 @@ log_misc() {
             echo "## twiddle.sh get 'jboss.system:type=ServerInfo'" >> $file
             $HERE/twiddle.sh get "jboss.system:type=ServerInfo" >> $file
         fi
-	if [ ! -z $JMXSTAT ]; then
-            echo "## VCS row cache stats: access, hits, size, cache_get, db_gets" >> $file
-            out=`$JMXSTAT $JMXHOST $JMXSTAT_VCS 1 1`
-	    echo $out >> $file
-	    echo "## VCS cache STATS" >> $file
-	    s_access=`echo $out |  cut -d{ -f2 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
-	    s_hits=`echo $out |  cut -d{ -f3 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
-	    s_size=`echo $out |  cut -d{ -f4 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
-	    s_get=`echo $out |cut -d{ -f5 | sed 's/^.*total=\([^,]*\),.*$/\1/g'`
-	    s_db=`echo $out |cut -d{ -f6 | sed 's/^.*total=\([^,]*\),.*$/\1/g'`
-	    echo -e "Access: $s_access\nHits: $s_hits\nSize: $s_size" >> $file
-	    s_miss=`echo "$s_access - $s_hits" | bc`
-	    s_ratio=`echo "scale=3;$s_hits/$s_access" | bc`
-	    s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc`
-	    s_getdb=`echo "scale=3;$s_db / $s_miss" | bc`
-	    s_getcache=`echo "scale=3;$s_get / $s_access" | bc`
+        if [ ! -z $JMXSTAT ]; then
+            echo "## VCS cache row stats: access, hits, size (,cache_get, db_gets)" >> $file
+            out=`$JMXSTAT $JMXHOST $JMXSTAT_VCS_ROW 1 1`
+            echo $out >> $file
+	    echo "## VCS cache row stats" >> $file
+            s_access=`echo $out |  cut -d{ -f2 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+            s_hits=`echo $out |  cut -d{ -f3 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+            s_size=`echo $out |  cut -d{ -f4 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+            s_get=`echo $out |cut -d{ -f5 | sed 's/^.*total=\([^,]*\),.*$/\1/g'`
+            s_db=`echo $out |cut -d{ -f6 | sed 's/^.*total=\([^,]*\),.*$/\1/g'`
+            echo -e "Access: $s_access\nHits: $s_hits\nSize: $s_size" >> $file
+            s_miss=`echo "$s_access - $s_hits" | bc`
+            s_ratio=`echo "scale=3;$s_hits/$s_access" | bc`
+            s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc`
+            s_getdb=`echo "scale=3;$s_db / $s_miss" | bc`
+            s_getcache=`echo "scale=3;$s_get / $s_access" | bc`
             s_speedup=`echo "scale=2;$s_getdb/$s_getcache" | bc`
             s_sys_speedup=`echo "scale=2; 1 / ((1 - $s_ratio) + $s_ratio/$s_speedup)" | bc`
-	    echo -e "HitRatio: $s_ratio_pc%\nSpeedup: $s_speedup\nSystemSpeedup: $s_sys_speedup" >> $file
-	fi
+            echo -e "HitRatio: $s_ratio_pc%\nSpeedup: $s_speedup\nSystemSpeedup: $s_sys_speedup" >> $file
+            echo "## VCS cache selection stats: access, hits, size" >> $file
+            out=`$JMXSTAT $JMXHOST $JMXSTAT_VCS_SEL 1 1`
+            echo $out >> $file
+	    echo "## VCS cache selection stats" >> $file
+            s_access=`echo $out |  cut -d{ -f2 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+            s_hits=`echo $out |  cut -d{ -f3 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+            s_size=`echo $out |  cut -d{ -f4 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
+            s_ratio=`echo "scale=3;$s_hits/$s_access" | bc`
+            s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc`
+            echo -e "Access: $s_access\nHits: $s_hits\nSize: $s_size\nHitRatio: $s_ratio_pc%" >> $file
+        fi
     fi
 }
 
@@ -419,6 +448,19 @@ WHERE pg_relation_size(c.oid) != 0
 GROUP BY c.oid,c.relname
 ORDER BY 3 DESC
 LIMIT 20;
+SELECT relname, seq_scan, n_live_tup AS rows, idx_scan FROM pg_stat_user_tables ORDER BY seq_scan * n_live_tup DESC LIMIT 20;
+SELECT
+ schemaname as nspname,
+ relname,
+ indexrelname AS useless_indexrelname,
+ idx_scan,
+ pg_size_pretty(pg_relation_size(i.indexrelid)) AS index_size
+FROM
+ pg_stat_user_indexes i
+ JOIN pg_index USING (indexrelid)
+WHERE
+ indisunique IS false
+ORDER BY idx_scan,pg_relation_size(i.indexrelid) DESC LIMIT 10;
 \di+
 SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
 EXPLAIN ANALYZE SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
@@ -482,7 +524,8 @@ start() {
 
     # Reset VCS stats
     if [ ! -z $JMXSTAT ]; then
-	$JMXSTAT $JMXHOST $JMXSTAT_VCS_RESET 1 1 >/dev/null 2>&1 &
+        $JMXSTAT $JMXHOST $JMXSTAT_VCS_ROW_RESET 1 1 >/dev/null 2>&1 &
+        $JMXSTAT $JMXHOST $JMXSTAT_VCS_SEL_RESET 1 1 >/dev/null 2>&1 &
     fi
 
     # get a copy of nuxeo.conf
@@ -633,7 +676,6 @@ case "$1" in
         # NXP-6636
         #NXPID=`cat "$PID"`
         NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
-        set -x
         $JAVA_HOME/bin/jps -v | grep $NXPID
         $JAVA_HOME/bin/jmap -heap $NXPID
         $JAVA_HOME/bin/jstat -gc $NXPID
@@ -646,6 +688,17 @@ case "$1" in
         #NXPID=`cat "$PID"`
         NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
         $JAVA_HOME/bin/jmap -histo $NXPID
+        ;;
+    pgstat-get-reset)
+        file=$2
+        log_pgstat_collect $file
+        log_pgstat_reset
+        ;;
+    clear-vcs-cache)
+        if [ ! -z $JMXSTAT ]; then
+            $JMXSTAT $JMXHOST org.nuxeo:name=SQLStorage,type=service[!clearCaches] 1 1
+            #$JMXSTAT $JMXHOST org.nuxeo.ecm.core.storage.sql.management.RepositoryStatusMBean[!clearCaches] 1 1
+        fi
         ;;
     invoke-fgc)
         invoke_fgc
@@ -674,6 +727,6 @@ EOF
         help
         ;;
     *)
-        echo "Usage: monitorctl.sh (start|stop|status|archive [TAG]|heapdump [TAG]|info|vacuumdb|help)"
+        echo "Usage: monitorctl.sh (start|stop|status|archive [TAG]|heapdump [TAG]|info|vacuumdb|heap-histo|pgstat-get-reset OUTPUT_FILE|clear-vcs-cache|invoke-fgc|help)"
         ;;
 esac
