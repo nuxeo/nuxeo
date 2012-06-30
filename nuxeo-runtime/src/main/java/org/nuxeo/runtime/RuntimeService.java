@@ -233,4 +233,14 @@ public interface RuntimeService {
      */
     Bundle getBundle(String symbolicName);
 
+    /**
+     * Computes the runtime status, adds it to the given string builder, and
+     * return true if some problems have been detected.
+     *
+     * @since 5.6
+     * @param msg
+     * @return true if there are warnings/errors on current runtime.
+     */
+    boolean getStatusMessage(StringBuilder msg);
+
 }

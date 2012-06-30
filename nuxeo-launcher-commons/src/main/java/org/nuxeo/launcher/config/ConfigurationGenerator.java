@@ -247,6 +247,8 @@ public class ConfigurationGenerator {
     @SuppressWarnings("unused")
     private boolean debug = false;
 
+    private static boolean hideDeprecationWarnings = false;
+
     private Environment env;
 
     private static Map<String, String> parametersMigration;
@@ -332,6 +334,10 @@ public class ConfigurationGenerator {
             log.info(homeInfo);
             log.info(confInfo);
         }
+    }
+
+    public void hideDeprecationWarnings(boolean hide) {
+        hideDeprecationWarnings = hide;
     }
 
     /**
@@ -463,9 +469,11 @@ public class ConfigurationGenerator {
                     // Don't remove the deprecated key yet - more
                     // warnings but old things should keep working
                     // userConfig.remove(key);
-                    log.warn("WARNING: Parameter " + key
-                            + " is deprecated - please use "
-                            + parametersMigration.get(key) + " instead");
+                    if (!hideDeprecationWarnings) {
+                        log.warn("WARNING: Parameter " + key
+                                + " is deprecated - please use "
+                                + parametersMigration.get(key) + " instead");
+                    }
                 }
             }
 
@@ -507,9 +515,9 @@ public class ConfigurationGenerator {
                 "false");
         boolean isDebugSet = Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
         if (isDebugSet) {
-            log.info("Nuxeo Dev mode enabled");
+            log.debug("Nuxeo Dev mode enabled");
         } else {
-            log.info("Nuxeo Dev mode is not enabled");
+            log.debug("Nuxeo Dev mode is not enabled");
         }
 
         // XXX: cannot init seam debug mode when global debug mode is set, as
@@ -520,13 +528,13 @@ public class ConfigurationGenerator {
         boolean isSeamDebugSet = Boolean.TRUE.equals(Boolean.valueOf(seamDebugPropValue))
                 || hasSeamDebugFile();
         if (isSeamDebugSet) {
-            log.info("Nuxeo Seam HotReload is enabled");
+            log.debug("Nuxeo Seam HotReload is enabled");
             // add it to the system props for compat, in case this mode was
             // detected because of presence of the file in the config dir, and
             // because it's checked there on code that relies on it
             System.setProperty(SEAM_DEBUG_SYSTEM_PROP, "true");
         } else {
-            log.info("Nuxeo Seam HotReload is not enabled");
+            log.debug("Nuxeo Seam HotReload is not enabled");
         }
 
         // Could be useful to initialize DEFAULT env...
@@ -790,9 +798,11 @@ public class ConfigurationGenerator {
                     // Don't remove the deprecated key yet - more
                     // warnings but old things should keep working
                     // defaultConfig.remove(key);
-                    log.warn("Parameter " + key
-                            + " is deprecated - please use "
-                            + parametersMigration.get(key) + " instead");
+                    if (!hideDeprecationWarnings) {
+                        log.warn("Parameter " + key
+                                + " is deprecated - please use "
+                                + parametersMigration.get(key) + " instead");
+                    }
                 }
             }
         }

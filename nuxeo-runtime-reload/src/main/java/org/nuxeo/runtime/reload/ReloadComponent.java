@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.SharedResourceLoader;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
@@ -74,40 +75,56 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void reload() throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("Starting reload");
+        }
         reloadProperties();
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this,
                 null));
+        if (log.isDebugEnabled()) {
+            log.debug("Reload done");
+        }
     }
 
     @Override
     public void reloadProperties() throws Exception {
+        log.info("Reload runtime properties");
         Framework.getRuntime().reloadProperties();
     }
 
     @Override
     public void reloadRepository() throws Exception {
+        log.info("Reload repository");
         Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, "reloadRepositories", this, null));
+                new Event(RELOAD_TOPIC, RELOAD_REPOSITORIES_ID, this, null));
     }
 
     @Override
     public void reloadSeamComponents() throws Exception {
+        log.info("Reload Seam components");
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
     }
 
     @Override
     public void flush() throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("Starting flush");
+        }
         flushJaasCache();
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this,
                 null));
         setFlushedNow();
+        if (log.isDebugEnabled()) {
+            log.debug("Flush done");
+        }
     }
 
     @Override
     public void flushJaasCache() throws Exception {
+        log.info("Flush the JAAS cache");
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event("usermanager", "user_changed", this,
                 "Deployer")); // the data argument is optional
@@ -116,6 +133,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void flushSeamComponents() throws Exception {
+        log.info("Flush Seam components");
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
         setFlushedNow();
@@ -137,19 +155,28 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
 
         String path = file.getAbsolutePath();
+
+        log.info(String.format(
+                "Before deploy bundle for file at '%s'\n" + "%s", path,
+                getRuntimeStatus()));
+
         if (reloadResourceClasspath) {
             URL url = new File(path).toURI().toURL();
             Framework.reloadResourceLoader(Arrays.asList(url), null);
         }
 
-        // check if this is a bundle
-
+        // check if this is a bundle first
         Bundle newBundle = getBundleContext().installBundle(path);
         if (newBundle == null) {
             throw new IllegalArgumentException(
                     "Could not find a valid bundle at path: " + path);
         }
         newBundle.start();
+
+        log.info(String.format("Deploy done for bundle with name '%s'.\n"
+                + "%s", newBundle == null ? null : newBundle.getSymbolicName(),
+                getRuntimeStatus()));
+
         return newBundle.getSymbolicName();
     }
 
@@ -164,6 +191,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                     path));
             return;
         }
+
         undeployBundle(name);
 
         if (reloadResources) {
@@ -178,6 +206,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             // ignore
             return;
         }
+        log.info(String.format("Before undeploy bundle with name '%s'.\n"
+                + "%s", bundleName, getRuntimeStatus()));
         BundleContext ctx = getBundleContext();
         ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
         PackageAdmin srv = (PackageAdmin) ctx.getService(ref);
@@ -191,6 +221,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         } finally {
             ctx.ungetService(ref);
         }
+        log.info(String.format("Undeploy done.\n" + "%s", getRuntimeStatus()));
     }
 
     @Override
@@ -207,11 +238,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         lastFlushed = Long.valueOf(System.currentTimeMillis());
     }
 
+    /**
+     * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead
+     */
+    @Deprecated
     public void installWebResources(File file) throws Exception {
-        log.info("running fragment processor");
-        // we cannot use DeploymentPreprocessor since the initial preprocessing
-        // will be overridden
-        // FIXME: handle other resources (message bundles for instance)
+        log.info("Install web resources");
         if (file.isDirectory()) {
             File war = new File(file, "web");
             war = new File(war, "nuxeo.war");
@@ -252,6 +284,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     public void runDeploymentPreprocessor() throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("Start running deployment preprocessor");
+        }
         String rootPath = Environment.getDefault().getHome().getAbsolutePath();
         File root = new File(rootPath);
         DeploymentPreprocessor processor = new DeploymentPreprocessor(root);
@@ -259,6 +294,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         processor.init();
         // and predeploy
         processor.predeploy();
+        if (log.isDebugEnabled()) {
+            log.debug("Deployment preprocessing done");
+        }
     }
 
     protected static File getAppDir() {
@@ -285,6 +323,13 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             return null;
         }
         return null;
+    }
+
+    protected String getRuntimeStatus() {
+        StringBuilder msg = new StringBuilder();
+        RuntimeService runtime = Framework.getRuntime();
+        runtime.getStatusMessage(msg);
+        return msg.toString();
     }
 
 }

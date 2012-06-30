@@ -38,6 +38,8 @@ public interface ReloadService extends TimestampedService {
 
     public static final String RELOAD_SEAM_EVENT_ID = "reloadSeamComponents";
 
+    public static final String RELOAD_REPOSITORIES_ID = "reloadRepositories";
+
     /**
      * Sends a runtime event with id {@link #RELOAD_EVENT_ID} so that listeners
      * can be notified that a reload has been done.
@@ -105,12 +107,13 @@ public interface ReloadService extends TimestampedService {
      * Deploys bundle to the runtime, without reloading resources
      *
      * @since 5.5
+     * @see #deployBundle(File, boolean)
      */
     String deployBundle(File file) throws Exception;
 
     /**
      * Deploys bundle to the runtime, gives possibility to control resources
-     * reloading
+     * reloading.
      *
      * @since 5.5
      */

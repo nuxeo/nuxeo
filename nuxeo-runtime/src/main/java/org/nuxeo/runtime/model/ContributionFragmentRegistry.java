@@ -69,6 +69,7 @@ import java.util.Map;
  * that {@link #merge(Object, Object)} and {@link #clone()} are never called.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @see SimpleContributionRegistry<T>
  */
 public abstract class ContributionFragmentRegistry<T> {
 
