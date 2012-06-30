@@ -182,7 +182,12 @@ public class UpdateManager {
             return null;
         }
         Match<File> m = findInstalledJar(entryKey);
-        return m.object;
+        try {
+            return m.object;
+        } catch (NullPointerException e) {
+            log.error("Error on key: " + entryKey);
+            throw e;
+        }
     }
 
     /**
