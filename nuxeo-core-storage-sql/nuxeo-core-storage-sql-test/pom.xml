@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-storage-sql-parent</artifactId>
-    <version>5.6-SNAPSHOT</version>
+    <version>5.6-I20120630_1609</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -219,31 +218,23 @@
                 <phase>pre-integration-test</phase>
                 <configuration>
                   <tasks>
-                    <echo message="Starting Nuxeo Server" />
+                    <echo message="Starting Nuxeo Server"></echo>
                     <!-- Set server log4j.properties -->
-                    <move overwrite="true"
-                      file="${project.build.testOutputDirectory}/log4j.properties"
-                      tofile="${project.build.testOutputDirectory}/log4j.properties.bak" />
-                    <copy
-                      file="${project.build.testOutputDirectory}/server.log4j.properties"
-                      tofile="${project.build.testOutputDirectory}/log4j.properties" />
-                    <java classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner"
-                      classpathref="maven.test.classpath" fork="true" spawn="true">
-                      <arg value="-p" />
-                      <arg value="${server.shutdown.port}" />
-                      <jvmarg value="-Xdebug" />
-                      <jvmarg
-                        value="-Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=n" />
+                    <move file="${project.build.testOutputDirectory}/log4j.properties" overwrite="true" tofile="${project.build.testOutputDirectory}/log4j.properties.bak"></move>
+                    <copy file="${project.build.testOutputDirectory}/server.log4j.properties" tofile="${project.build.testOutputDirectory}/log4j.properties"></copy>
+                    <java classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner" classpathref="maven.test.classpath" fork="true" spawn="true">
+                      <arg value="-p"></arg>
+                      <arg value="${server.shutdown.port}"></arg>
+                      <jvmarg value="-Xdebug"></jvmarg>
+                      <jvmarg value="-Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=n"></jvmarg>
                     </java>
                     <!-- Wait for log4j init -->
-                    <sleep seconds="1" />
+                    <sleep seconds="1"></sleep>
                     <!-- Restore normal log4j.properties for the integration tests -->
-                    <move overwrite="true"
-                      file="${project.build.testOutputDirectory}/log4j.properties.bak"
-                      tofile="${project.build.testOutputDirectory}/log4j.properties" />
+                    <move file="${project.build.testOutputDirectory}/log4j.properties.bak" overwrite="true" tofile="${project.build.testOutputDirectory}/log4j.properties"></move>
                     <!-- Wait for server to start -->
                     <waitfor maxwait="30" maxwaitunit="second">
-                      <socket server="localhost" port="8181" />
+                      <socket port="8181" server="localhost"></socket>
                     </waitfor>
                   </tasks>
                 </configuration>
@@ -275,12 +266,10 @@
                 <phase>post-integration-test</phase>
                 <configuration>
                   <tasks>
-                    <echo message="Stopping Nuxeo Server" />
-                    <java
-                      classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner$Stopper"
-                      classpathref="maven.test.classpath">
-                      <arg value="-p" />
-                      <arg value="${server.shutdown.port}" />
+                    <echo message="Stopping Nuxeo Server"></echo>
+                    <java classname="org.nuxeo.ecm.core.storage.sql.NuxeoServerRunner$Stopper" classpathref="maven.test.classpath">
+                      <arg value="-p"></arg>
+                      <arg value="${server.shutdown.port}"></arg>
                     </java>
                   </tasks>
                 </configuration>
