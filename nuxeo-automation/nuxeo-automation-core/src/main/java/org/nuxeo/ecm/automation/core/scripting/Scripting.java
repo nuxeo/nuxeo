@@ -82,6 +82,12 @@ public class Scripting {
         Map<String, Object> map = new HashMap<String, Object>(ctx);
         map.put("CurrentDate", new DateWrapper());
         map.put("Context", ctx);
+        if (ctx.get("WorkflowVariables") != null) {
+            map.put("WorkflowVariables", ctx.get("WorkflowVariables"));
+        }
+        if (ctx.get("NodeVariables") != null) {
+            map.put("NodeVariables", ctx.get("NodeVariables"));
+        }
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
         map.put("CurrentUser",
