@@ -276,8 +276,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         context.setCommit(false); // no session save at end
         // context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
         // element);
-        context.putAll(graph.getVariables());
-        context.putAll(getVariables());
+        context.put("WorkflowVariables", graph.getVariables());
+        context.put("NodeVariables", getVariables());
         context.put("initiator", "");
         context.put("documents", graph.getAttachedDocumentModels());
         context.put("workflowStartTime", "");
@@ -286,8 +286,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         context.put("state", getState().name().toLowerCase());
         context.put("nodeStartTime", ""); // TODO
         // task context
-        context.put("comment", ""); // TODO filled by form
-        context.put("button", getProperty(PROP_NODE_BUTTON));
+        context.put("comment", "");
+        ((Map<String, Serializable>) context.get("NodeVariables")).put(
+                "button", (String) getProperty(PROP_NODE_BUTTON));
         // associated docs
         context.setInput(graph.getAttachedDocumentModels());
         return context;

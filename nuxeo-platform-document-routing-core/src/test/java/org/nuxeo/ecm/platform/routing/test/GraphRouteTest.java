@@ -526,7 +526,7 @@ public class GraphRouteTest {
         setTransitions(
                 node1,
                 transition("trans1", "node2",
-                        "Context[\"button\"] == \"trans1\"", "testchain_title1"));
+                        "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"));
 
         // task properties
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
@@ -595,7 +595,7 @@ public class GraphRouteTest {
         setTransitions(node1,
                 transition("trans1", "node2", "true", "testchain_title1"));
         node1.setPropertyValue("rnode:taskAssigneesExpr",
-                "Context[\"assignees\"]");
+                "WorkflowVariables[\"assignees\"]");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1 = session.saveDocument(node1);
 
@@ -624,6 +624,5 @@ public class GraphRouteTest {
         assertTrue(route.isDone());
         assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
         assertTrue(session.hasPermission(user2, doc.getRef(), "Write"));
-
     }
 }
