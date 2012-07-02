@@ -63,5 +63,8 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         assertFalse(vars.contains("doc['dc:nature']"));
         assertFalse(vars.contains("doc.dublincore.created"));
 
+        assertFalse(vars.contains("(doc"));
+        assertFalse(vars.contains("1..(doc"));
+
     }
 }
