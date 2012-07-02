@@ -41,10 +41,12 @@
                 </c:if>
 
                 <c:if test="#{layoutWidgetsDisplay != 'label_top'}">
-                  <c:if test="#{not widget.handlingLabels}">
-                    <td class="labelColumn">
-                      <ui:include src="/widgets/incl/widget_label_template.xhtml" />
-                    </td>
+                  <c:if test="#{layoutWidgetsDisplay != 'no_label'}">
+                    <c:if test="#{not widget.handlingLabels}">
+                      <td class="labelColumn">
+                        <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+                      </td>
+                    </c:if>
                   </c:if>
                   <nxu:set var="fieldColspan"
                     value="#{2*layout.columns/layoutRow.size -1 + nxu:test(widget.handlingLabels, 1, 0)}">

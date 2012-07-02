@@ -395,7 +395,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Display</label>
+        <label mode="any">Actions Display</label>
       </labels>
       <helpLabels>
         <label mode="any">
@@ -414,7 +414,7 @@
         <field>actionsDisplay</field>
       </fields>
       <selectOptions>
-        <option itemLabel="Icons and links" itemValue="" />
+        <option itemLabel="Icons and links (default)" itemValue="icons_links" />
         <option itemLabel="Icons" itemValue="icons" />
         <option itemLabel="Buttons" itemValue="buttons" />
         <option itemLabel="Links" itemValue="links" />
@@ -1682,8 +1682,7 @@
           </p>
         </description>
         <categories>
-          <category>summary</category>
-          <category>tab_designer</category>
+          <category>hidden</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
