@@ -20,17 +20,17 @@ public class ResourceWrapper {
             rs.setName(srcDocument.getName());
             rs.setId(srcDocument.getId());
 
-            Resource fileResource = new Resource();
+            Resource fileResource = new NonRecursiveResource();
             fileResource.setName(srcDocument.getFileName());
             fileResource.setId(srcDocument.getId());
             fileResource.setType(ResourceType.DOCUMENT);
 
-            Resource METAResource = new Resource();
+            Resource METAResource = new NonRecursiveResource();
             METAResource.setName("META-INF");
             METAResource.setId(srcDocument.getId() + "/META-INF");
             METAResource.setType(ResourceType.CATEGORY);
 
-            Resource fieldResource = new Resource();
+            Resource fieldResource = new NonRecursiveResource();
             fieldResource.setName(srcDocument.getName() + ".fields.xml");
             fieldResource.setId(srcDocument.getId() + ".fields.xml");
             fieldResource.setType(ResourceType.DOCUMENT);

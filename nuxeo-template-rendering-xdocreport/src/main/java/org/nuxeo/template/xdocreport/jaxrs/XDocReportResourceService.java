@@ -55,7 +55,7 @@ public class XDocReportResourceService extends AbstractResourceService
     }
 
     public Resource getRoot() {
-        Resource root = new Resource();
+        Resource root = new NonRecursiveResource();
         root.setType(ResourceType.CATEGORY);
         root.setName("Nuxeo");
         root.setId("nuxeo");
