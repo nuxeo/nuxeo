@@ -94,11 +94,11 @@ public class WebEngine implements ResourceLocator {
     public static WebContext getActiveContext() {
         RequestContext ctx = RequestContext.getActiveContext();
         if (ctx != null) {
-            return (WebContext)ctx.getRequest().getAttribute(WebContext.class.getName());
+            return (WebContext) ctx.getRequest().getAttribute(
+                    WebContext.class.getName());
         }
         return null;
     }
-
 
     protected final File root;
 
@@ -116,7 +116,7 @@ public class WebEngine implements ResourceLocator {
 
     protected final Map<String, Object> env;
 
-    protected String devMode;
+    protected boolean devMode;
 
     protected final GlobalTypes globalTypes;
 
@@ -141,8 +141,8 @@ public class WebEngine implements ResourceLocator {
     public WebEngine(ResourceRegistry registry, File root) {
         this.registry = registry;
         this.root = root;
-        devMode = Framework.getProperty("org.nuxeo.dev", System.getProperty("org.nuxeo.dev"));
-        if (devMode != null) {
+        devMode = Framework.isDevModeSet();
+        if (devMode) {
             reloadMgr = new ReloadManager(this);
         }
         webLoader = new WebLoader(this);
@@ -177,7 +177,6 @@ public class WebEngine implements ResourceLocator {
     public RequestConfiguration getRequestConfiguration() {
         return requestConfig;
     }
-
 
     /**
      * JSP taglib support
@@ -266,15 +265,15 @@ public class WebEngine implements ResourceLocator {
     }
 
     public final boolean isDevMode() {
-        return devMode != null;
-    }
-
-    public String getDevMode() {
         return devMode;
     }
 
-    public void setDevMode(String devModeId) {
-        this.devMode = devModeId;
+    public boolean getDevMode() {
+        return devMode;
+    }
+
+    public void setDevMode(boolean devMode) {
+        this.devMode = devMode;
     }
 
     public void registerRenderingExtension(String id, Object obj) {
@@ -330,8 +329,9 @@ public class WebEngine implements ResourceLocator {
                             ModuleConfiguration mc = app.getConfiguration();
                             moduleMgr.loadModule(mc);
                         } catch (Exception e) {
-                            log.error("Failed to load WebEngine module: "
-                                    + app.getId(), e);
+                            log.error(
+                                    "Failed to load WebEngine module: "
+                                            + app.getId(), e);
                         }
                     }
                     // set member at the end to be sure moduleMgr is completely
@@ -373,7 +373,7 @@ public class WebEngine implements ResourceLocator {
 
     /**
      * Manage jax-rs root resource bindings
-     *
+     * 
      * @deprecated resources are deprecated - you should use a jax-rs
      *             application to declare more resources.
      */
