@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 package org.nuxeo.connect.client.we;
 
@@ -115,14 +114,12 @@ public class InstallHandler extends DefaultObject {
             @QueryParam("tacAccepted") Boolean acceptedTAC,
             @QueryParam("depCheck") Boolean depCheck,
             @QueryParam("autoMode") Boolean autoMode) {
-
         try {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             LocalPackage pkg = pus.getPackage(pkgId);
             if (pkg == null) {
                 throw new ClientException("Can not find package " + pkgId);
             }
-
             if (pkg.requireTermsAndConditionsAcceptance()
                     && !Boolean.TRUE.equals(acceptedTAC)) {
                 return showTermsAndConditions(pkgId, source, depCheck);
@@ -145,33 +142,29 @@ public class InstallHandler extends DefaultObject {
                                 source);
                     } else {
                         if (resolution.requireChanges()) {
-                            if (autoMode==null) {
+                            if (autoMode == null) {
                                 autoMode = true;
                             }
                             return getView("displayDependencies").arg(
                                     "resolution", resolution).arg("pkg", pkg).arg(
-                                    "source", source).arg("autoMode",autoMode);
+                                    "source", source).arg("autoMode", autoMode);
                         }
                         // no dep changes => can continue standard install
                         // process
                     }
                 }
             }
-
             Task installTask = pkg.getInstallTask();
             ValidationStatus status = installTask.validate();
-
             if (!PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
                 status.addWarning("This package is not validated for you current platform");
             }
-
             if (status.hasErrors()) {
                 return getView("canNotInstall").arg("status", status).arg(
                         "pkg", pkg).arg("source", source);
             }
 
             boolean needWizard = false;
-
             Form[] forms = installTask.getPackage().getInstallForms();
             if (forms != null && forms.length > 0) {
                 needWizard = true;
@@ -190,14 +183,11 @@ public class InstallHandler extends DefaultObject {
     @Path(value = "form/{pkgId}/{formId}")
     public Object showInstallForm(@PathParam("pkgId") String pkgId,
             @PathParam("formId") int formId, @QueryParam("source") String source) {
-
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
             Task installTask = pkg.getInstallTask();
             Form[] forms = installTask.getPackage().getInstallForms();
-
             if (forms == null || forms.length < formId - 1) {
                 return getView("installError").arg(
                         "e",
@@ -205,11 +195,9 @@ public class InstallHandler extends DefaultObject {
                                 + " for package " + pkgId)).arg("source",
                         source);
             }
-
             return getView("showInstallForm").arg("form", forms[formId]).arg(
                     "pkg", pkg).arg("source", source).arg("step", formId + 1).arg(
                     "steps", forms.length);
-
         } catch (Exception e) {
             log.error("Error during displaying Form nb " + formId, e);
             return getView("installError").arg("e", e).arg("source", source);
@@ -221,14 +209,11 @@ public class InstallHandler extends DefaultObject {
     @Path(value = "form/{pkgId}/{formId}")
     public Object processInstallForm(@PathParam("pkgId") String pkgId,
             @PathParam("formId") int formId, @QueryParam("source") String source) {
-
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
             Task installTask = pkg.getInstallTask();
             Form[] forms = installTask.getPackage().getInstallForms();
-
             if (forms == null || forms.length < formId - 1) {
                 return getView("installError").arg(
                         "e",
@@ -240,7 +225,6 @@ public class InstallHandler extends DefaultObject {
             Form form = forms[formId];
             FormData fdata = getContext().getForm();
             Map<String, String> params = getInstallParameters(pkgId);
-
             for (Field field : form.getFields()) {
                 String data = fdata.getString(field.getName());
                 if (data != null) {
@@ -249,7 +233,6 @@ public class InstallHandler extends DefaultObject {
                 // XXX validation, and type checking ...
             }
             storeInstallParameters(pkgId, params);
-
             if (formId + 1 == forms.length) {
                 // this was the last form screen : start the install
                 return doInstall(pkgId, source);
@@ -268,7 +251,6 @@ public class InstallHandler extends DefaultObject {
     public Object doBulkInstall(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source,
             @QueryParam("confirm") Boolean confirm) {
-
         if (!RequestHelper.isInternalLink(getContext())) {
             return getView("installError").arg(
                     "e",
@@ -286,7 +268,6 @@ public class InstallHandler extends DefaultObject {
                 // retry without PF filter ...
                 resolution = pm.resolveDependencies(pkgId, null);
             }
-
             List<String> downloadPackagesIds = resolution.getDownloadPackageIds();
             if (downloadPackagesIds.size() > 0) {
                 return getView("installError").arg(
@@ -304,10 +285,10 @@ public class InstallHandler extends DefaultObject {
             }
             List<String> rmPkgIds = new ArrayList<String>();
             for (Entry<String, Version> rmEntry : resolution.getLocalPackagesToRemove().entrySet()) {
-                String id = rmEntry.getKey() + "-" + rmEntry.getValue().toString();
+                String id = rmEntry.getKey() + "-"
+                        + rmEntry.getValue().toString();
                 rmPkgIds.add(id);
             }
-
             for (String id : pkgIds) {
                 Package pkg = pus.getPackage(id);
                 if (pkg == null) {
@@ -322,7 +303,6 @@ public class InstallHandler extends DefaultObject {
                 }
                 descs.add(pkg.getDescription());
             }
-
             if (confirm != null && true == confirm) {
                 for (String id : rmPkgIds) {
                     InstallAfterRestart.addPackageForUnInstallation(id);
@@ -330,14 +310,14 @@ public class InstallHandler extends DefaultObject {
                 for (String id : pkgIds) {
                     InstallAfterRestart.addPackageForInstallation(id);
                 }
-                return getView("bulkInstallOnRestart").arg("pkgIds", pkgIds).arg("rmPkgIds", rmPkgIds).arg(
-                        "source", source);
+                return getView("bulkInstallOnRestart").arg("pkgIds", pkgIds).arg(
+                        "rmPkgIds", rmPkgIds).arg("source", source);
             } else {
                 return getView("bulkInstallOnRestartConfirm").arg("pkgIds",
-                        pkgIds).arg("rmPkgIds", rmPkgIds).arg("warns", warns).arg("descs", descs).arg(
-                        "source", source).arg("pkgId", pkgId);
+                        pkgIds).arg("rmPkgIds", rmPkgIds).arg("warns", warns).arg(
+                        "descs", descs).arg("source", source).arg("pkgId",
+                        pkgId);
             }
-
         } catch (Exception e) {
             log.error("Error during installation of " + pkgId, e);
             return getView("installError").arg("e", e).arg("source", source);
@@ -349,7 +329,6 @@ public class InstallHandler extends DefaultObject {
     @Path(value = "run/{pkgId}")
     public Object doInstall(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source) {
-
         if (!RequestHelper.isInternalLink(getContext())) {
             return getView("installError").arg(
                     "e",
@@ -358,16 +337,13 @@ public class InstallHandler extends DefaultObject {
                     "source", source);
         }
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-
         try {
             LocalPackage pkg = pus.getPackage(pkgId);
-
             if (InstallAfterRestart.isNeededForPackage(pkg)) {
                 InstallAfterRestart.addPackageForInstallation(pkg.getId());
                 return getView("installOnRestart").arg("pkg", pkg).arg(
                         "source", source);
             }
-
             Task installTask = pkg.getInstallTask();
             Map<String, String> params = getInstallParameters(pkgId);
             try {
@@ -380,7 +356,6 @@ public class InstallHandler extends DefaultObject {
             clearInstallParameters(pkgId);
             return getView("installedOK").arg("installTask", installTask).arg(
                     "pkg", pkg).arg("source", source);
-
         } catch (Exception e) {
             log.error("Error during installation of " + pkgId, e);
             return getView("installError").arg("e", e).arg("source", source);

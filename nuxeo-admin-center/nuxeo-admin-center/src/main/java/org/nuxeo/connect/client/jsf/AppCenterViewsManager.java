@@ -266,6 +266,7 @@ public class AppCenterViewsManager implements Serializable {
     // the admin center
     // TODO: run DM connect test against a test connect server
     // TODO: plug a notifier for status to be shown to the user
+    // FIXME JC: must be transient or Serializable
     protected class StudioAutoInstaller implements Runnable {
 
         protected final String packageId;

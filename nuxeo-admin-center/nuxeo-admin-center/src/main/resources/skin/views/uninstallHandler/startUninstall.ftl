@@ -8,30 +8,29 @@
 
  <div class="genericBox">
 
- 		<h1> Uninstall of ${pkg.title} (${pkg.id}) </h1>
+    <h1> Uninstall of ${pkg.title} (${pkg.id}) </h1>
 
- 		<#if status.hasWarnings()>
-   		 <div class="installWarningsTitle">
-    	   <p>Some warnings were found when checking the package:</p>
-   		 	 <ul class="installWarnings">
-   	  	 		<#list status.getWarnings() as warning>
-      	 		 <li> ${warning} </li>
-     			  </#list>
-   		 	 </ul>
-   		 </div>
- 		</#if>
+    <#if status.hasWarnings()>
+        <div class="installWarningsTitle">
+        <p>Some warnings were found when checking the package:</p>
+          <ul class="installWarnings">
+              <#list status.getWarnings() as warning>
+              <li> ${warning} </li>
+            </#list>
+          </ul>
+        </div>
+    </#if>
 
- 		<#if uninstallTask.isRestartRequired()>
-   		<div>
+    <#if uninstallTask.isRestartRequired()>
+      <div>
        After installation, you will need to restart your server.
-   		</div>
- 		</#if>
+      </div>
+    </#if>
 
- 		<br/>
+    <br/>
     Click the start link to start the uninstall process. <br/><br/><br/>
     <a href="${This.path}/run/${pkg.id}?source=${source}" class="installButton"> Start </a>
-
- 		 &nbsp; <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
+      &nbsp; <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
   </div>
 
 </@block>

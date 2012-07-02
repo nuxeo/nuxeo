@@ -60,9 +60,9 @@ $(document).ready(function() {
      <h2>The package you want to uninstall requires some dependencies changes:</h2>
 
       <br/>
-      <input type="checkbox" id="manualModeCheckBox" onClick="switchMode()"> Manual Uninstallation mode</input>
+      <input type="checkbox" id="manualModeCheckBox" onClick="switchMode()"> Manual Uninstallation mode </input>
       <br/>
-      <h3>Packages that need to be removed from your instance :</h3>
+      <h3>Packages that need to be removed from your instance: </h3>
       <table>
         <#list pkgToRemove as pkgR>
           <tr>

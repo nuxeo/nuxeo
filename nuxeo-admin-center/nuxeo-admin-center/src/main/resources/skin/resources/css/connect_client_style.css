@@ -6,7 +6,7 @@ html, body {
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td
   {
   border: 0 none;
-  font: normal 12px "Lucida Grande",  Verdana,  sans-serif;
+  font: normal 12px "Lucida Grande", Verdana, sans-serif;
   margin: 0;
   padding: 0;
   color: #333;
@@ -16,7 +16,7 @@ p {
   margin: 3px 0px 10px;
 }
 
-a, a:link, a:active, a:visited {
+a,a:link, a:active, a:visited {
   color: #0066CC;
   text-decoration: none;
 }
@@ -258,8 +258,9 @@ ul.installInfo li {
 .installButton {
   background-color: #fff;
   border: 1px solid #f1f1f1;
-  margin: 0 10px;
+  margin: 5px 10px;
   padding: 5px 5px 5px 9px;
+  display: inline-block;
 }
 
 .installButton:hover {

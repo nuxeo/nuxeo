@@ -97,7 +97,7 @@
            </#if>
          </#if>
          <#if This.canUnInstall(pkg)>
-           <a class="button uninstall" href="${Root.path}/uninstall/start/${pkg.id}?source=${source}"> Uninstall </a>
+           <a class="button uninstall" href="${Root.path}/uninstall/start/${pkg.id}?source=${source}&amp;filterOnPlatform=${filterOnPlatform}"> Uninstall </a>
          </#if>
          <#if This.needsRestart(pkg)>
            <a class="button restartNeeded" onclick="return confirmRestart()" href="${Root.path}/restartView" target="_top" title="Installation will be completed on next restart"> Restart&nbsp;required </a>

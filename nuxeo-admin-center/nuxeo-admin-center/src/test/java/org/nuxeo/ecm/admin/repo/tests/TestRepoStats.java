@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.admin.repo.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.collections.ScopeType;
@@ -35,9 +38,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -129,7 +129,7 @@ public class TestRepoStats {
         assertEquals(2, stat4.getTotalBlobNumber());
         assertEquals(14, stat4.getTotalBlobSize());
         assertEquals(9, stat4.getMaxBlobSize());
-        assertEquals(new Long(2), stat4.getDocTypeCount("File"));
+        assertEquals(Long.valueOf(2), stat4.getDocTypeCount("File"));
     }
 
     @Test

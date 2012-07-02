@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageType;
@@ -33,9 +34,9 @@ import org.nuxeo.runtime.api.Framework;
  * Helper class used to manage packages installation issue under windows
  * systems.
  * <p>
- * Because the Vindoz OS locks all the jar files loaded by the JVM, we can not
+ * Because the Windows OS locks all the jar files loaded by the JVM, we can not
  * do proper installation. So installation is delayed until next restart where
- * installation is done before nuxeo starts (and loads the jars).
+ * installation is done before Nuxeo starts (and loads the jars).
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
@@ -45,9 +46,9 @@ public class InstallAfterRestart {
 
     public static final String FAKE_VIDOZ = "org.nuxeo.fake.vindoz";
 
-    protected static final List<String> pkgIds = new ArrayList<String>();
+    protected static final List<String> pkgNameOrIds = new ArrayList<String>();
 
-    protected static final List<String> uninstallpkgIds = new ArrayList<String>();
+    protected static final List<String> uninstallpkgNameOrIds = new ArrayList<String>();
 
     protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
@@ -83,36 +84,34 @@ public class InstallAfterRestart {
         return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
     }
 
-    public static void addPackageForInstallation(String pkgId) {
-        if (!pkgIds.contains(pkgId)) {
-            pkgIds.add(pkgId);
+    public static void addPackageForInstallation(String pkgNameOrId) {
+        if (!pkgNameOrIds.contains(pkgNameOrId)) {
+            pkgNameOrIds.add(pkgNameOrId);
             savePkgList();
         }
     }
 
-    public static void addPackageForUnInstallation(String pkgId) {
-        if (!pkgIds.contains(pkgId) && !(uninstallpkgIds.contains(pkgId))) {
-            pkgIds.add(pkgId);
-            uninstallpkgIds.add(pkgId);
+    public static void addPackageForUnInstallation(String pkgNameOrId) {
+        if (!pkgNameOrIds.contains(pkgNameOrId)
+                && !(uninstallpkgNameOrIds.contains(pkgNameOrId))) {
+            pkgNameOrIds.add(pkgNameOrId);
+            uninstallpkgNameOrIds.add(pkgNameOrId);
             savePkgList();
         }
     }
 
-    public static boolean isMarkedForInstallAfterRestart(String pkgId) {
-        return pkgIds.contains(pkgId);
+    public static boolean isMarkedForInstallAfterRestart(String pkgNameOrId) {
+        return pkgNameOrIds.contains(pkgNameOrId);
     }
 
     protected static void savePkgList() {
-        String path = Framework.getProperty("nuxeo.data.dir");
-        if (!path.endsWith(File.separator)) {
-            path += File.separator;
-        }
-        File installFile = new File(path + FILE_NAME);
+        String path = Framework.getProperty(Environment.NUXEO_DATA_DIR);
+        File installFile = new File(path, FILE_NAME);
         List<String> cmds = new ArrayList<String>();
-        for (String pkgId : pkgIds) {
-            String cmd = pkgId;
-            if (uninstallpkgIds.contains(pkgId)) {
-                cmd = "uninstall " + pkgId;
+        for (String pkgNameOrId : pkgNameOrIds) {
+            String cmd = pkgNameOrId;
+            if (uninstallpkgNameOrIds.contains(pkgNameOrId)) {
+                cmd = "uninstall " + pkgNameOrId;
             }
             cmds.add(cmd);
         }

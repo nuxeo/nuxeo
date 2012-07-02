@@ -63,7 +63,7 @@ public class PackageListingProvider extends DefaultObject {
 
     protected List<DownloadablePackage> filterOnPlatform(
             List<DownloadablePackage> pkgs, Boolean filterOnPlatform) {
-        if (filterOnPlatform == null || !filterOnPlatform) {
+        if (filterOnPlatform != Boolean.TRUE) {
             return pkgs;
         }
         String targetPF = PlatformVersionHelper.getPlatformFilter();
@@ -94,7 +94,8 @@ public class PackageListingProvider extends DefaultObject {
         }
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
-                "showCommunityInfo", true).arg("source", "list");
+                "showCommunityInfo", true).arg("source", "list").arg(
+                "filterOnPlatform", filterOnPlatform);
     }
 
     @GET
@@ -120,7 +121,8 @@ public class PackageListingProvider extends DefaultObject {
         }
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
-                "showCommunityInfo", true).arg("source", "updates");
+                "showCommunityInfo", true).arg("source", "updates").arg(
+                "filterOnPlatform", filterOnPlatform);
     }
 
     @GET
@@ -179,7 +181,8 @@ public class PackageListingProvider extends DefaultObject {
         }
         pkgs = filterOnPlatform(pkgs, filterOnPlatform);
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
-                "showCommunityInfo", false).arg("source", "remote");
+                "showCommunityInfo", false).arg("source", "remote").arg(
+                "filterOnPlatform", filterOnPlatform);
     }
 
     @GET
