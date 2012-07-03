@@ -24,6 +24,7 @@ import org.mvel2.MVEL;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
@@ -82,6 +83,13 @@ public class Scripting {
         Map<String, Object> map = new HashMap<String, Object>(ctx);
         map.put("CurrentDate", new DateWrapper());
         map.put("Context", ctx);
+        if (ctx.get(Constants.VAR_WORKFLOW) != null) {
+            map.put(Constants.VAR_WORKFLOW, ctx.get(Constants.VAR_WORKFLOW));
+        }
+        if (ctx.get(Constants.VAR_WORKFLOW_NODE) != null) {
+            map.put(Constants.VAR_WORKFLOW_NODE,
+                    ctx.get(Constants.VAR_WORKFLOW_NODE));
+        }
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
         map.put("CurrentUser",
