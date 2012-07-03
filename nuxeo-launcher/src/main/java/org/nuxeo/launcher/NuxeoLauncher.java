@@ -233,13 +233,14 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
 
-    private static final String[] COMMANDS_NO_GUI = {"mp-init", "mp-purge", "mp-add", "mp-install",
-        "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list",
-        "mp-listall", "mp-update", "status", "showconf"};
+    private static final String[] COMMANDS_NO_GUI = { "mp-init", "mp-purge",
+            "mp-add", "mp-install", "mp-uninstall", "mp-request", "mp-remove",
+            "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall",
+            "mp-update", "status", "showconf" };
 
-    private static final String[] COMMANDS_NO_RUNNING_SERVER = {"mp-init", "mp-purge", "mp-add",
-        "mp-install", "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade",
-        "mp-reset", "mp-update"};
+    private static final String[] COMMANDS_NO_RUNNING_SERVER = { "mp-init",
+            "mp-purge", "mp-add", "mp-install", "mp-uninstall", "mp-request",
+            "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update" };
 
     protected ConfigurationGenerator configurationGenerator;
 
@@ -376,7 +377,7 @@ public abstract class NuxeoLauncher {
      *             thread.
      */
     protected void start(boolean logProcessOutput) throws IOException,
-    InterruptedException {
+            InterruptedException {
         List<String> startCommand = new ArrayList<String>();
         startCommand.add(getJavaExecutable().getPath());
         startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
@@ -668,7 +669,7 @@ public abstract class NuxeoLauncher {
     }
 
     public static void main(String[] args) throws ConfigurationException,
-    IOException, PackageException {
+            IOException, PackageException {
         try {
             final NuxeoLauncher launcher = createLauncher(args);
             if (Arrays.asList(COMMANDS_NO_GUI).contains(launcher.command)) {
@@ -692,7 +693,7 @@ public abstract class NuxeoLauncher {
      * @throws IOException
      */
     public static void launch(final NuxeoLauncher launcher) throws IOException,
-    PackageException {
+            PackageException {
         int exitStatus = 0;
         boolean commandSucceeded = true;
         if (launcher.command == null) {
@@ -776,7 +777,6 @@ public abstract class NuxeoLauncher {
             if (launcher.hasOption(OPTION_NODEPS)) {
                 commandSucceeded = launcher.pkgInstall(params);
             } else {
-
                 commandSucceeded = launcher.pkgRequest(null,
                         Arrays.asList(params), null, null);
             }
@@ -1700,7 +1700,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected ConnectBroker getConnectBroker() throws IOException,
-    PackageException {
+            PackageException {
         if (connectBroker == null) {
             connectBroker = new ConnectBroker(configurationGenerator.getEnv());
             if (cmdLine.hasOption(OPTION_ACCEPT)) {
@@ -1742,7 +1742,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgAdd(String[] pkgNames) throws IOException,
-    PackageException {
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1758,7 +1758,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgInstall(String[] pkgIDs) throws IOException,
-    PackageException {
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
@@ -1778,7 +1778,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgUninstall(String[] pkgIDs) throws IOException,
-    PackageException {
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1794,7 +1794,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgRemove(String[] pkgIDs) throws IOException,
-    PackageException {
+            PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         LocalPackage pkg;
@@ -1950,7 +1950,7 @@ public abstract class NuxeoLauncher {
             } else {
                 File testBase = new File(configurationGenerator.getNuxeoHome(),
                         ConfigurationGenerator.TEMPLATES + File.separator
-                        + template);
+                                + template);
                 if (testBase.exists()) {
                     nxConfig.basetemplates.add(template);
                     log.info("Base template: " + template);

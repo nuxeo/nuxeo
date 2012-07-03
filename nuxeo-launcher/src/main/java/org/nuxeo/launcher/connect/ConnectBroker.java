@@ -208,36 +208,6 @@ public class ConnectBroker {
 
     }
 
-    protected boolean matchesPlatform(String requestPkgStr,
-            List<DownloadablePackage> allPackages,
-            Map<String, DownloadablePackage> allPackagesByID,
-            Map<String, List<DownloadablePackage>> allPackagesByName)
-            throws PackageException {
-        // Try ID match first
-        if (allPackagesByID.containsKey(requestPkgStr)) {
-            return allPackagesByID.get(requestPkgStr).getTargetPlatforms().length == 0
-                    || Arrays.asList(
-                            allPackagesByID.get(requestPkgStr).getTargetPlatforms()).contains(
-                            targetPlatform);
-        }
-        // Fallback on name match
-        List<DownloadablePackage> allPackagesForName = allPackagesByName.get(requestPkgStr);
-        if (allPackagesForName == null) {
-            throw new PackageException("Package not found: " + requestPkgStr);
-        }
-        for (DownloadablePackage pkg : allPackagesForName) {
-            if (requestPkgStr.equals(pkg.getName())) {
-                if (pkg.getTargetPlatforms().length == 0
-                        || Arrays.asList(pkg.getTargetPlatforms()).contains(
-                                targetPlatform)) {
-                    return true;
-                }
-            }
-        }
-        // No match or not compatible
-        return false;
-    }
-
     protected String getLocalPackageIdFromName(String pkgName) {
         return getBestIdForNameInList(pkgName, getPkgList());
     }
@@ -1080,39 +1050,33 @@ public class ConnectBroker {
             requestPackages.addAll(solverInstall);
             requestPackages.addAll(solverRemove);
             requestPackages.addAll(solverUpgrade);
-            List<DownloadablePackage> allPackages = NuxeoConnectClient.getPackageManager().listAllPackages();
-            Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
-            Map<String, List<DownloadablePackage>> allPackagesByName = NuxeoConnectClient.getPackageManager().getAllPackagesByName();
             try {
-                for (String requestPackage : requestPackages) {
-                    if (!matchesPlatform(requestPackage, allPackages,
-                            allPackagesByID, allPackagesByName)) {
-                        requestPlatform = null;
-                        if ("ask".equalsIgnoreCase(relax)) {
-                            relax = readConsole(
-                                    "Package %s is not available on platform version %s.\n"
-                                            + "Do you want to relax the constraint (yes/no)? [no] ",
-                                    "no", requestPackage, targetPlatform);
-                        }
+                String nonCompliantPkg = getPackageManager().getNonCompliant(
+                        requestPackages, targetPlatform);
+                if (nonCompliantPkg != null) {
+                    requestPlatform = null;
+                    if ("ask".equalsIgnoreCase(relax)) {
+                        relax = readConsole(
+                                "Package %s is not available on platform version %s.\n"
+                                        + "Do you want to relax the constraint (yes/no)? [no] ",
+                                "no", nonCompliantPkg, targetPlatform);
+                    }
 
-                        if (Boolean.parseBoolean(relax)) {
-                            log.warn(String.format(
-                                    "Relax restriction to target platform %s because of package %s",
-                                    targetPlatform, requestPackage));
-                        } else {
-                            throw new PackageException(
-                                    String.format(
-                                            "Package %s is not available on platform version %s (relax is not allowed)",
-                                            requestPackage, targetPlatform));
-                        }
-                        break;
+                    if (Boolean.parseBoolean(relax)) {
+                        log.warn(String.format(
+                                "Relax restriction to target platform %s because of package %s",
+                                targetPlatform, nonCompliantPkg));
+                    } else {
+                        throw new PackageException(
+                                String.format(
+                                        "Package %s is not available on platform version %s (relax is not allowed)",
+                                        nonCompliantPkg, targetPlatform));
                     }
                 }
             } catch (PackageException e) {
                 log.error(e);
                 return false;
             }
-
             DependencyResolution resolution = getPackageManager().resolveDependencies(
                     solverInstall, solverRemove, solverUpgrade, requestPlatform);
             log.info(resolution);
