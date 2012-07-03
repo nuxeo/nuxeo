@@ -100,6 +100,8 @@ public class Constants {
     public static final String CAT_UI = "User Interface";
 
     public static final String CAT_LOCAL_CONFIGURATION = "Local Configuration";
+    
+    public static final String CAT_WORKFLOW = "Workflow Context";
 
     public static final String SEAM_CONTEXT = "Seam";
 
@@ -141,6 +143,12 @@ public class Constants {
     public static final String W_NUMBER = "Number";
 
     public static final String W_AUDIT_EVENT = "AuditEvent";
+
+    // key for setting workflow variables on the operation context
+    public static final String VAR_WORKFLOW = "WorkflowVariables";
+
+    // key for setting workflow node variables on the operation context
+    public static final String VAR_WORKFLOW_NODE = "NodeVariables";
 
     private Constants() {
     }
