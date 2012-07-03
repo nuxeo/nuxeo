@@ -93,7 +93,7 @@
                   <widget>moreMenuLabel</widget>
                 </row>
               </rows>
-              <widget name="category" type="text">
+              <widget name="category" type="selectOneResource">
                 <labels>
                   <label mode="any">Category</label>
                 </labels>
@@ -106,6 +106,12 @@
                 <fields>
                   <field>category</field>
                 </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+                <properties mode="any">
+                  <property name="resourceName">actionCategories</property>
+                </properties>
               </widget>
               <widget name="headerStyleClass" type="text">
                 <labels>
@@ -144,7 +150,8 @@
                   <field>display</field>
                 </fields>
                 <selectOptions>
-                  <option itemLabel="Icons and links" itemValue="" />
+                  <option itemLabel="Icons and links (default)"
+                    itemValue="icons_links" />
                   <option itemLabel="Icons" itemValue="icons" />
                   <option itemLabel="Buttons" itemValue="buttons" />
                   <option itemLabel="Links" itemValue="links" />
@@ -159,7 +166,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Overall display of actions, available since 5.6.
+                    Overall display of actions, available since
+                    5.6.
                   </label>
                 </helpLabels>
                 <fields>
