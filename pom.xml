@@ -3913,7 +3913,6 @@
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
                   <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
-                  <exclude>org.eclipse.equinox:org.eclipse.equinox.p2.cudf</exclude>
                 </excludes>
               </requireReleaseDeps>
               <requireMavenVersion>
