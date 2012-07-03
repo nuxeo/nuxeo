@@ -177,6 +177,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
     public Object getValue() {
         Object value = super.getValue();
         if (value == null
+                || ((value instanceof Object[]) && ((Object[]) value).length == 0)
                 || ((value instanceof Collection) && ((Collection) value).size() == 0)) {
             // check defaultValue attribute
             Object defaultValue = getDefaultValue();
