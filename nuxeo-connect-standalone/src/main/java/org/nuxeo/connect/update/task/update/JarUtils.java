@@ -68,7 +68,7 @@ public class JarUtils {
         File[] files = dir.listFiles();
         if (files != null) {
             FileMatcher fm = FileMatcher.getMatcher(filePattern.getName().concat(
-                    "-{v:[0-9]+.*}\\.jar"));
+                    "-{v:r?[0-9]+.*}\\.jar"));
             String studioSnapshotName = filePattern.getName().concat(".jar");
             for (File f : files) {
                 if (fm.match(f.getName())) {
