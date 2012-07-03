@@ -42,16 +42,24 @@
       </operation>
     </chain>
     <chain id="testchain_stringfield">
-      <operation id="Document.Routing.Test.SetVariable">
-        <param type="string" name="variable">stringfield</param>
+     <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">stringfield</param>
         <param type="string" name="value">foo</param>
       </operation>
     </chain>
     <chain id="testchain_stringfield2">
-      <operation id="Document.Routing.Test.SetVariable">
-        <param type="string" name="variable">stringfield2</param>
+      <operation id="Context.SetWorkflowNodeVar">
+        <param type="string" name="name">stringfield2</param>
         <param type="string" name="value">bar</param>
       </operation>
     </chain>
+    <chain id="test_setGlobalvariable">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">globalVariable</param>
+        <param type="object" name="value">test</param>
+      </operation>
+    </chain>
+    
   </extension>
 </component>

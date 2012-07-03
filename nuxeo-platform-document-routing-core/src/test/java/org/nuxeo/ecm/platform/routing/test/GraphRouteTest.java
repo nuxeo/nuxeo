@@ -317,7 +317,7 @@ public class GraphRouteTest {
 
         // check route instance var
         DocumentModel r = route.getDocument();
-        String s = (String) r.getPropertyValue("stringfield");
+        String s = (String) r.getPropertyValue("fctroute1:stringfield");
         assertEquals("foo", s);
         // Calendar d = (Calendar) r.getPropertyValue("datefield");
         // assertEquals("XXX", d);
@@ -520,18 +520,26 @@ public class GraphRouteTest {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
 
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        routeDoc.addFacet("FacetRoute1");
+        routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
                 node1,
                 transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"", "testchain_title1"));
+                        "NodeVariables[\"button\"] == \"trans1\"",
+                        "testchain_title1"));
 
         // task properties
+
         node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
                 "Write");
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
+                "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
@@ -562,6 +570,10 @@ public class GraphRouteTest {
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
+        assertEquals(
+                "test",
+                route.getDocument().getPropertyValue(
+                        "fctroute1:globalVariable"));
     }
 
     @Test

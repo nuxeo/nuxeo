@@ -13,7 +13,13 @@
     <operation
       class="org.nuxeo.ecm.platform.routing.api.operation.SetNextStepOnConditionalFolderOperation" />   
     <operation
-      class="org.nuxeo.ecm.platform.routing.core.impl.GetGraphOperation" />     
+      class="org.nuxeo.ecm.platform.routing.core.impl.GetGraphOperation" />
+     <operation
+      class="org.nuxeo.ecm.platform.routing.api.operation.SetWorkflowNodeVar" /> 
+    <operation
+      class="org.nuxeo.ecm.platform.routing.api.operation.SetWorkflowVar" />   
+     
+        
   </extension>
 
 </component>

@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -236,9 +237,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setAllVariables(Map<String, Object> map) {
-
         // get variables from node and graph
         Map<String, Serializable> graphVariables = graph.getVariables();
         Map<String, Serializable> nodeVariables = getVariables();
@@ -246,20 +247,29 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         // set variables back into node and graph
         boolean changedNodeVariables = false;
         boolean changedGraphVariables = false;
-        for (Entry<String, Object> es : map.entrySet()) {
-            String key = es.getKey();
-            Serializable value = (Serializable) es.getValue();
-            if (nodeVariables.containsKey(key)) {
-                Serializable oldValue = nodeVariables.get(key);
-                if (!ObjectUtils.equals(value, oldValue)) {
-                    changedNodeVariables = true;
-                    nodeVariables.put(key, value);
+        if (map.get(Constants.VAR_WORKFLOW_NODE) != null) {
+            for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(Constants.VAR_WORKFLOW_NODE)).entrySet()) {
+                String key = es.getKey();
+                Serializable value = es.getValue();
+                if (nodeVariables.containsKey(key)) {
+                    Serializable oldValue = nodeVariables.get(key);
+                    if (!ObjectUtils.equals(value, oldValue)) {
+                        changedNodeVariables = true;
+                        nodeVariables.put(key, value);
+                    }
                 }
-            } else if (graphVariables.containsKey(key)) {
-                Serializable oldValue = graphVariables.get(key);
-                if (!ObjectUtils.equals(value, oldValue)) {
-                    changedGraphVariables = true;
-                    graphVariables.put(key, value);
+            }
+        }
+        if (map.get(Constants.VAR_WORKFLOW) != null) {
+            for (Entry<String, Serializable> es : ((Map<String, Serializable>) map.get(Constants.VAR_WORKFLOW)).entrySet()) {
+                String key = es.getKey();
+                Serializable value = es.getValue();
+                if (graphVariables.containsKey(key)) {
+                    Serializable oldValue = graphVariables.get(key);
+                    if (!ObjectUtils.equals(value, oldValue)) {
+                        changedGraphVariables = true;
+                        graphVariables.put(key, value);
+                    }
                 }
             }
         }
