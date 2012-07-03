@@ -120,9 +120,7 @@ public class PackageBuilder {
      */
     public PackageBuilder visibility(PackageVisibility visibility) {
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.setVisibility",
-                    PackageVisibility.class);
+            def.getClass().getMethod("setVisibility", PackageVisibility.class);
             def.setVisibility(visibility);
         } catch (NoSuchMethodException e) {
             // Ignore visibility with old Connect Client versions
@@ -177,33 +175,29 @@ public class PackageBuilder {
 
     public PackageBuilder validationState(NuxeoValidationState validationState) {
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.validationState",
+            def.getClass().getMethod("setValidationState",
                     NuxeoValidationState.class);
             def.setValidationState(validationState);
         } catch (NoSuchMethodException e) {
-            // Ignore visibility with old Connect Client versions
+            // Ignore setValidationState with old Connect Client versions
         }
         return this;
     }
 
     public PackageBuilder productionState(ProductionState productionState) {
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.productionState",
+            def.getClass().getMethod("setProductionState",
                     ProductionState.class);
             def.setProductionState(productionState);
         } catch (NoSuchMethodException e) {
-            // Ignore visibility with old Connect Client versions
+            // Ignore setProductionState with old Connect Client versions
         }
         return this;
     }
 
     public PackageBuilder supported(boolean supported) {
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.setSupported",
-                    boolean.class);
+            def.getClass().getMethod("setSupported", boolean.class);
             def.setSupported(supported);
         } catch (NoSuchMethodException e) {
             // Ignore setSupported with old Connect Client versions
@@ -213,9 +207,7 @@ public class PackageBuilder {
 
     public PackageBuilder hotReloadSupport(boolean hotReloadSupport) {
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.setHotReloadSupport",
-                    boolean.class);
+            def.getClass().getMethod("setHotReloadSupport", boolean.class);
             def.setHotReloadSupport(hotReloadSupport);
         } catch (NoSuchMethodException e) {
             // Ignore setHotReloadSupport with old Connect Client versions
@@ -226,8 +218,7 @@ public class PackageBuilder {
     public PackageBuilder requireTermsAndConditionsAcceptance(
             boolean requireTermsAndConditionsAcceptance) {
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.requireTermsAndConditionsAcceptance",
+            def.getClass().getMethod("setRequireTermsAndConditionsAcceptance",
                     boolean.class);
             def.setRequireTermsAndConditionsAcceptance(requireTermsAndConditionsAcceptance);
         } catch (NoSuchMethodException e) {
