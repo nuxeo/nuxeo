@@ -401,7 +401,7 @@ public class SessionImpl implements Session, XAResource {
         log.debug("Queued documents for asynchronous fulltext extraction: "
                 + dirtyBinaries.size());
         EventContext eventContext = new EventContextImpl(dirtyBinaries,
-                model.getFulltextInfo());
+                model.getFulltextInfo(), repository.fulltextParserClass);
         eventContext.setRepositoryName(getRepositoryName());
         Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
         try {

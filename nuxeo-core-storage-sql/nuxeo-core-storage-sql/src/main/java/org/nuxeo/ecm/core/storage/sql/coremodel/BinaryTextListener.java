@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.storage.sql.FulltextParser;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
@@ -81,6 +83,7 @@ public class BinaryTextListener implements PostCommitEventListener {
         }
         CoreSession session = null;
         ModelFulltext fulltextInfo = null;
+        FulltextParser fulltextParser = null;
         Set<Serializable> ids = new HashSet<Serializable>();
         for (Event event : eventBundle) {
             if (!event.getName().equals(EVENT_NAME)) {
@@ -89,6 +92,7 @@ public class BinaryTextListener implements PostCommitEventListener {
             EventContext eventContext = event.getContext();
             fulltextInfo = getFulltextInfoFromEventContext(eventContext);
             ids.addAll(getIdsFromEventContext(eventContext));
+            fulltextParser = getFulltextParserFromEventContext(eventContext);
             CoreSession s = eventContext.getCoreSession();
             if (session == null) {
                 session = s;
@@ -144,6 +148,9 @@ public class BinaryTextListener implements PostCommitEventListener {
                         fulltextInfo.indexesAllBinary.contains(indexName));
                 List<Blob> blobs = extractor.getBlobs(indexedDoc);
                 String text = blobsToText(blobs, (String) id);
+                fulltextParser.setStrings(new ArrayList<String>());
+                fulltextParser.parse(text, null);
+                text = StringUtils.join(fulltextParser.getStrings(), " ");
                 String impactedQuery =
                     String.format("SELECT * from Document where ecm:fulltextJobId = '%s'",
                             indexedDoc.getId());
@@ -179,6 +186,23 @@ public class BinaryTextListener implements PostCommitEventListener {
     protected ModelFulltext getFulltextInfoFromEventContext(
             EventContext eventContext) {
         return (ModelFulltext) eventContext.getArguments()[1];
+    }
+
+    protected FulltextParser getFulltextParserFromEventContext(
+            EventContext eventContext) {
+        // test length for compat
+        if (eventContext.getArguments().length > 2) {
+            @SuppressWarnings("unchecked")
+            Class<? extends FulltextParser> fulltextParserClass = (Class<? extends FulltextParser>) eventContext.getArguments()[2];
+            try {
+                return fulltextParserClass.newInstance();
+            } catch (InstantiationException e) {
+                log.error("Failed to instanciate " + fulltextParserClass.getCanonicalName(), e);
+            } catch (IllegalAccessException e) {
+                log.error(e);
+            }
+        }
+        return new FulltextParser();
     }
 
     protected String blobsToText(List<Blob> blobs, String docId) {

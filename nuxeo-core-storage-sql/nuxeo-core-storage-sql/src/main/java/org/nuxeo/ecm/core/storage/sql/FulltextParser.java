@@ -58,6 +58,14 @@ public class FulltextParser {
 
     protected ArrayList<String> strings;
 
+    public ArrayList<String> getStrings() {
+        return strings;
+    }
+
+    public void setStrings(ArrayList<String> strings) {
+        this.strings = strings;
+    }
+
     /**
      * Prepares parsing for one document.
      */
