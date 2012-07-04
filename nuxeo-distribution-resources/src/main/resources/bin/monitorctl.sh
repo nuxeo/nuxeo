@@ -294,6 +294,8 @@ log_misc() {
     $JAVA_HOME/bin/jps -v >> $file
     echo "## ps aux | grep java" >> $file
     ps aux | grep java >> $file
+    echo "## netstat -s" >> $file
+    netstat -s >> $file
     if checkalive; then
         # NXP-6636
         #NXPID=`cat "$PID"`
