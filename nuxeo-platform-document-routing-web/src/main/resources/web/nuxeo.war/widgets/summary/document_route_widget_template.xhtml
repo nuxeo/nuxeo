@@ -22,7 +22,17 @@
         <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}'" />
         function showGraph() {
           loadGraph(routeDocId);
-          showFancyBox('#graphView_box');
+          jQuery('&lt;a href="#graphView_box"&gt;&lt;/a&gt;').fancybox({
+            'autoScale': true,
+            'autoDimensions': false,
+            'type': 'inline',
+            'width': '90%',
+            'height': '90%',
+            'transitionIn': 'none',
+            'transitionOut': 'none',
+            'enableEscapeButton': true,
+            'centerOnScroll': true
+          }).click();
           return false;
         }
       </script>
@@ -32,7 +42,7 @@
       <div style="display:none">
         <div id="graphView_box">
           <!-- div container for the graph -->
-          <div id="target" class="targetDiv" style="width:500px; height: 600px"></div>
+          <div id="target" class="targetDiv"></div>
         </div>
       </div>
 

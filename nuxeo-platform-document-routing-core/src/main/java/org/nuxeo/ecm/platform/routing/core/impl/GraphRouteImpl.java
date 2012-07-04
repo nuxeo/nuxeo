@@ -151,4 +151,13 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         }
     }
 
+    @Override
+    public String getAvailabilityFilter() {
+        try {
+            return (String) document.getPropertyValue(PROP_AVAILABILITY_FILTER);
+        } catch (ClientException e) {
+            return null;
+        }
+    }
+
 }

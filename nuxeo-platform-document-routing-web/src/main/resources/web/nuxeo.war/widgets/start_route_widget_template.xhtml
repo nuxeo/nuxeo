@@ -8,35 +8,36 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
   <nxu:set var="routeModels"
-    value="#{docRoutingSuggestionActions.getRouteModelSuggestions('')}"
+    value="#{routingActions.filteredRouteModels}"
     cache="true">
 
   <a4j:region renderRegionOnly="true">
     <h:panelGrid columns="3">
-
-      <h:panelGroup>
-        <h:selectOneListbox id="#{widget.id}" value="#{field}" size="1">
-          <nxu:selectItems
-            var="routeModel" value="#{routeModels}"
-            itemValue="#{routeModel.id}" itemLabel="#{routeModel.title}" />
-          <a4j:support event="onchange"
-            bypassUpdates="true"
-            actionListener="#{selectionActions.onSelection}"
-            reRender="#{widget.id}_preview"
-            id="#{widget.id}_ajax_select">
-            <f:param name="selectorId" value="#{widget.id}" />
-            <f:param name="valueHolderId" value="#{widget.id}_valueHolder" />
-          </a4j:support>
-        </h:selectOneListbox>
-        <h:message for="#{widget.id}" id="#{widget.id}_message"
-          styleClass="errorStyleClass" />
-      </h:panelGroup>
 
       <c:choose>
         <c:when test="#{empty routeModels}">
           <h:outputText value="#{messages['label.document.routing.no.workflow']}" />
         </c:when>
         <c:otherwise>
+
+          <h:panelGroup>
+            <h:selectOneListbox id="#{widget.id}" value="#{field}" size="1">
+              <nxu:selectItems
+                var="routeModel" value="#{routeModels}"
+                itemValue="#{routeModel.id}" itemLabel="#{routeModel.title}" />
+              <a4j:support event="onchange"
+                bypassUpdates="true"
+                actionListener="#{selectionActions.onSelection}"
+                reRender="#{widget.id}_preview"
+                id="#{widget.id}_ajax_select">
+                <f:param name="selectorId" value="#{widget.id}" />
+                <f:param name="valueHolderId" value="#{widget.id}_valueHolder" />
+              </a4j:support>
+            </h:selectOneListbox>
+            <h:message for="#{widget.id}" id="#{widget.id}_message"
+              styleClass="errorStyleClass" />
+          </h:panelGroup>
+
           <nxu:valueHolder id="#{widget.id}_valueHolder"
             var="selectedRouteModelId"
             defaultValue="#{routeModels.get(0).id}"

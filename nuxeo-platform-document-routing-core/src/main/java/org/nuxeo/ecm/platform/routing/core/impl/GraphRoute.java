@@ -33,6 +33,8 @@ public interface GraphRoute {
 
     String PROP_VARIABLES_FACET = "docri:variablesFacet";
 
+    String PROP_AVAILABILITY_FILTER = "docri:availabilityFilter";
+
     /**
      * Gets the start node for this graph.
      *
@@ -76,5 +78,10 @@ public interface GraphRoute {
      * @return
      */
     Collection<GraphNode> getNodes();
+
+    /**
+     * Returns the availability filter name for this graph.
+     */
+    String getAvailabilityFilter();
 
 }

@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -59,11 +60,13 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -76,7 +79,6 @@ import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ecm.platform.task.TaskEventNames;
 
 /**
  * Actions for current document route
@@ -164,7 +166,8 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public boolean isRoutable() {
-        return getDocumentRoutingService().isRoutable(navigationContext.getCurrentDocument());
+        return getDocumentRoutingService().isRoutable(
+                navigationContext.getCurrentDocument());
     }
 
     public String startRoute() throws ClientException {
@@ -706,8 +709,8 @@ public class DocumentRoutingActionsBean implements Serializable {
                                 "feedback.casemanagement.document.route.cant.move.step.after.already.running.step"));
                 return null;
             }
-            documentManager.orderBefore(parentDoc.getRef(), orderedChilds.get(
-                    selectedDocumentIndex + 1).getName(),
+            documentManager.orderBefore(parentDoc.getRef(),
+                    orderedChilds.get(selectedDocumentIndex + 1).getName(),
                     routeElementDocToMove.getName());
         }
         if (docWithAttachedRouteId == null) {
@@ -862,4 +865,22 @@ public class DocumentRoutingActionsBean implements Serializable {
     public DocumentModel getRouteModel(String routeId) throws ClientException {
         return documentManager.getDocument(new IdRef(routeId));
     }
+
+    public List<DocumentModel> getFilteredRouteModels() throws ClientException {
+        DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
+        List<DocumentModel> routeModels = documentRoutingService.searchRouteModels(
+                documentManager, "");
+        for (Iterator<DocumentModel> it = routeModels.iterator(); it.hasNext();) {
+            DocumentModel route = it.next();
+            GraphRoute graphRoute = route.getAdapter(GraphRoute.class);
+            String filter = graphRoute.getAvailabilityFilter();
+            if (!StringUtils.isBlank(filter)) {
+                if (!webActions.checkFilter(filter)) {
+                    it.remove();
+                }
+            }
+        }
+        return routeModels;
+    }
+
 }
