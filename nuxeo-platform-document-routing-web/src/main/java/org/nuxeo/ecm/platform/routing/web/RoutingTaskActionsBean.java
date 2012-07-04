@@ -170,8 +170,7 @@ public class RoutingTaskActionsBean {
         }
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         clear();
-        // TODO : not sure where to navigate after task is ended
-        return navigationContext.goHome();
+        return null;
     }
 
     private void clear() {
@@ -231,5 +230,12 @@ public class RoutingTaskActionsBean {
 
     public void setFormVariables(Map<String, Serializable> formVariables) {
         this.formVariables = formVariables;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public boolean isRoutingTask(Task task) {
+       return task.getDocument().hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME);
     }
 }

@@ -66,6 +66,7 @@ import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -864,6 +865,11 @@ public class DocumentRoutingActionsBean implements Serializable {
      */
     public DocumentModel getRouteModel(String routeId) throws ClientException {
         return documentManager.getDocument(new IdRef(routeId));
+    }
+
+    public DocumentModel getRouteInstanceFor(Task task) throws ClientException {
+        String id = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
+        return id != null ? documentManager.getDocument(new IdRef(id)) : null;
     }
 
     public List<DocumentModel> getFilteredRouteModels() throws ClientException {

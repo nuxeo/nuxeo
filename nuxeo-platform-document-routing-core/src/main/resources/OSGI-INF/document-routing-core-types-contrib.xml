@@ -20,8 +20,7 @@
     <facet name="DocumentRoute" />
     <facet name="RouteStep" />
     <facet name="StepFolder" />
-    
-    <!--  TODO remove this with the code cleanup-->
+
     <facet name="RoutingTask" />
 
     <facet name="CommentsInfoHolder">
