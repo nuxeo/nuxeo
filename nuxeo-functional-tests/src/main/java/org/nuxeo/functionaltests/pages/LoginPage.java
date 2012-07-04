@@ -66,9 +66,9 @@ public class LoginPage extends AbstractPage {
         usernameInputTextBox.sendKeys(username);
         passwordInputTextBox.sendKeys(password);
 
-        Select languageSelect = new Select(languageSelectBox);
-
         if (language != null) {
+            Select languageSelect = new Select(languageSelectBox);
+
             List<WebElement> list = languageSelect.getOptions();
             for (WebElement webElement : list) {
                 if (language.trim().equals(webElement.getText().trim())) {
