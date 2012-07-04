@@ -42,7 +42,10 @@ public class LoginPage extends AbstractPage {
     @FindBy(name = "Submit")
     WebElement submitButton;
 
-    @Required
+    /**
+     * removed from login page since 5.6
+     */
+    @Deprecated
     @FindBy(id = "language")
     WebElement languageSelectBox;
 
