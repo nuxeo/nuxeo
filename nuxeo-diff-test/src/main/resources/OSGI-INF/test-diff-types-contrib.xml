@@ -36,6 +36,7 @@
       <schema name="complextypes" />
       <schema name="listoflists" />
       <schema name="note" />
+      <schema name="files" />
     </doctype>
 
     <doctype name="ExtendedNote" extends="Note">

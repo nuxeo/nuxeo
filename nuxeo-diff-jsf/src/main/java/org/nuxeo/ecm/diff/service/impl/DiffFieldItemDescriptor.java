@@ -12,17 +12,19 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.service.impl;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.diff.model.DiffFieldItemDefinition;
+import org.nuxeo.ecm.diff.model.impl.DiffFieldItemDefinitionImpl;
 
 /**
  * Diff field item descriptor.
  *
- * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.6
  */
 @XObject("item")
@@ -48,5 +50,10 @@ public class DiffFieldItemDescriptor {
 
     public void setDisplayContentDiffLinks(boolean displayContentDiffLinks) {
         this.displayContentDiffLinks = displayContentDiffLinks;
+    }
+
+    public DiffFieldItemDefinition getDiffFieldItemDefinition() {
+        return new DiffFieldItemDefinitionImpl(getName(),
+                isDisplayContentDiffLinks());
     }
 }

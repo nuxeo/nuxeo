@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
+import org.nuxeo.ecm.diff.model.DiffComplexFieldDefinition;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
 import org.nuxeo.ecm.diff.model.DiffFieldItemDefinition;
 import org.nuxeo.ecm.diff.model.impl.DiffBlockDefinitionImpl;
@@ -84,6 +85,35 @@ public class TestDiffDisplayContribOverride {
         expectedDiffExcludedFields.add("subjects");
         expectedDiffExcludedFields.add("modified");
         assertEquals(expectedDiffExcludedFields, diffExcludedFields);
+
+        // Check diffComplexField contribs
+        List<DiffComplexFieldDefinition> diffComplexFields = diffDisplayService.getDiffComplexFields();
+        assertNotNull(diffComplexFields);
+        assertEquals(2, diffComplexFields.size());
+
+        // Check "complextypes:complex" diffComplexField contrib
+        DiffComplexFieldDefinition diffComplexField = diffDisplayService.getDiffComplexField(
+                "complextypes", "complex");
+        assertNotNull(diffComplexField);
+
+        List<DiffFieldItemDefinition> expectedIncludedItems = new ArrayList<DiffFieldItemDefinition>();
+        expectedIncludedItems.add(new DiffFieldItemDefinitionImpl("dateItem"));
+        expectedIncludedItems.add(new DiffFieldItemDefinitionImpl("stringItem"));
+        assertEquals(expectedIncludedItems, diffComplexField.getIncludedItems());
+
+        assertTrue(diffComplexField.getExcludedItems().isEmpty());
+
+        // Check "complextypes:complexList" diffComplexField contrib
+        diffComplexField = diffDisplayService.getDiffComplexField(
+                "complextypes", "complexList");
+        assertNotNull(diffComplexField);
+
+        List<DiffFieldItemDefinition> expectedExcludedItems = new ArrayList<DiffFieldItemDefinition>();
+        expectedExcludedItems.add(new DiffFieldItemDefinitionImpl("stringItem"));
+        expectedExcludedItems.add(new DiffFieldItemDefinitionImpl("dateItem"));
+        assertEquals(expectedExcludedItems, diffComplexField.getExcludedItems());
+
+        assertTrue(diffComplexField.getIncludedItems().isEmpty());
     }
 
     /**

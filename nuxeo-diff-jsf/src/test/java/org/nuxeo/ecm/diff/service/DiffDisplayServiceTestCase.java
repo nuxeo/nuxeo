@@ -69,7 +69,7 @@ public class DiffDisplayServiceTestCase {
      * @param fieldCount the field count
      * @param fieldNames the field names
      */
-    protected boolean checkDiffDisplayBlockSchema(
+    protected void checkDiffDisplayBlockSchema(
             DiffDisplayBlock diffDisplayBlock, String schemaName,
             int fieldCount, List<String> fieldNames) {
 
@@ -91,8 +91,6 @@ public class DiffDisplayServiceTestCase {
         }
 
         // TODO: manage contentDiff
-
-        return true;
     }
 
 }

@@ -17,8 +17,8 @@
   </service>
 
   <extension-point name="diffDefaultDisplay">
-    <documentation>
 
+    <documentation>
       <pre>
         The diffDefaultDisplay extension point allows you to
         contribute a diffExcludedFields contribution to define a set of
@@ -31,7 +31,6 @@
         If no
         fields are specified, the whole schema is excluded.
       </pre>
-
       <code>
         <diffExcludedFields schema="common" />
         <diffExcludedFields schema="dublincore">
@@ -41,10 +40,38 @@
           </fields>
         </diffExcludedFields>
       </code>
-
     </documentation>
     <object
       class="org.nuxeo.ecm.diff.service.impl.DiffExcludedFieldsDescriptor" />
+
+    <documentation>
+      <pre>
+        The diffDefaultDisplay extension point also allows you to
+        contribute a diffComplexField contribution to define a set of
+        items from a given complex property that will be
+        included or
+        excluded from the default
+        diff display in the document diff view.
+        Order matters for included items.
+      </pre>
+      <code>
+        <diffComplexField schema="complextypes" name="complex">
+          <includedItems>
+            <item name="dateItem" />
+            <item name="stringItem" />
+          </includedItems>
+        </diffComplexField>
+
+        <diffComplexField schema="complextypes" name="complexList">
+          <excludedItems>
+            <item name="stringItem" />
+            <item name="dateItem" />
+          </excludedItems>
+        </diffComplexField>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.diff.service.impl.DiffComplexFieldDescriptor" />
+
   </extension-point>
 
 

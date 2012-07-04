@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     ataillefer
+ *     Antoine Taillefer
  */
 package org.nuxeo.ecm.diff.service;
 
@@ -23,13 +23,14 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
+import org.nuxeo.ecm.diff.model.DiffComplexFieldDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 
 /**
  * Handles the configuration of a document diff display.
  *
- * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.6
  */
 public interface DiffDisplayService extends Serializable {
@@ -37,6 +38,11 @@ public interface DiffDisplayService extends Serializable {
     Map<String, List<String>> getDiffExcludedSchemas();
 
     List<String> getDiffExcludedFields(String schemaName);
+
+    List<DiffComplexFieldDefinition> getDiffComplexFields();
+
+    DiffComplexFieldDefinition getDiffComplexField(String schemaName,
+            String fieldName);
 
     Map<String, List<String>> getDiffDisplays();
 

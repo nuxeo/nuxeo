@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.model.DiffBlockDefinition;
+import org.nuxeo.ecm.diff.model.DiffComplexFieldDefinition;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
 import org.nuxeo.ecm.diff.model.DiffFieldDefinition;
 import org.nuxeo.ecm.diff.model.DiffFieldItemDefinition;
@@ -80,7 +81,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Default implementation of the {@link DiffDisplayService}.
  *
- * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
+ * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.6
  */
 public class DiffDisplayServiceImpl extends DefaultComponent implements
@@ -138,6 +139,9 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     /** Diff excluded fields contributions. */
     protected Map<String, List<String>> diffExcludedFieldsContribs = new HashMap<String, List<String>>();
 
+    /** Diff complex fields contributions. */
+    protected Map<String, Map<String, DiffComplexFieldDefinition>> diffComplexFieldsContribs = new HashMap<String, Map<String, DiffComplexFieldDefinition>>();
+
     /** Diff display contributions. */
     protected Map<String, List<String>> diffDisplayContribs = new HashMap<String, List<String>>();
 
@@ -152,6 +156,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         if (DIFF_DEFAULT_DISPLAY_EXTENSION_POINT.equals(extensionPoint)) {
             if (contribution instanceof DiffExcludedFieldsDescriptor) {
                 registerDiffExcludedFields((DiffExcludedFieldsDescriptor) contribution);
+            } else if (contribution instanceof DiffComplexFieldDescriptor) {
+                registerDiffComplexField((DiffComplexFieldDescriptor) contribution);
             }
         } else if (DIFF_DISPLAY_EXTENSION_POINT.equals(extensionPoint)) {
             if (contribution instanceof DiffDisplayDescriptor) {
@@ -171,6 +177,25 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     public List<String> getDiffExcludedFields(String schemaName) {
         return diffExcludedFieldsContribs.get(schemaName);
+    }
+
+    public List<DiffComplexFieldDefinition> getDiffComplexFields() {
+        List<DiffComplexFieldDefinition> diffComplexFields = new ArrayList<DiffComplexFieldDefinition>();
+        for (Map<String, DiffComplexFieldDefinition> diffComplexFieldsBySchema : diffComplexFieldsContribs.values()) {
+            for (DiffComplexFieldDefinition diffComplexField : diffComplexFieldsBySchema.values()) {
+                diffComplexFields.add(diffComplexField);
+            }
+        }
+        return diffComplexFields;
+    }
+
+    public DiffComplexFieldDefinition getDiffComplexField(String schemaName,
+            String fieldName) {
+        Map<String, DiffComplexFieldDefinition> diffComplexFieldsBySchema = diffComplexFieldsContribs.get(schemaName);
+        if (diffComplexFieldsBySchema != null) {
+            return diffComplexFieldsBySchema.get(fieldName);
+        }
+        return null;
     }
 
     public Map<String, List<String>> getDiffDisplays() {
@@ -293,8 +318,6 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     /**
      * Registers a diff excluded fields contrib.
-     *
-     * @param contribution the contribution
      */
     protected final void registerDiffExcludedFields(
             DiffExcludedFieldsDescriptor descriptor) {
@@ -321,6 +344,39 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             else if (enabled) {
                 diffExcludedFieldsContribs.put(schemaName,
                         getDiffExcludedFieldRefs(descriptor.getFields()));
+            }
+        }
+    }
+
+    /**
+     * Registers a diff complex field contrib.
+     */
+    protected final void registerDiffComplexField(
+            DiffComplexFieldDescriptor descriptor) {
+
+        String schemaName = descriptor.getSchema();
+        String fieldName = descriptor.getName();
+        if (!StringUtils.isEmpty(schemaName) && !StringUtils.isEmpty(fieldName)) {
+            // Check existing diffComplexField contrib for this schema/field
+            DiffComplexFieldDefinition diffComplexField = getDiffComplexField(
+                    schemaName, fieldName);
+            if (diffComplexField != null) {
+                // Override contrib (no merge)
+                // TODO: implement merge
+                diffComplexFieldsContribs.get(schemaName).put(fieldName,
+                        descriptor.getDiffComplexFieldDefinition());
+            }
+            // No existing diffComplexField contrib for this
+            // schema/field => add contrib
+            else {
+                Map<String, DiffComplexFieldDefinition> diffComplexFieldsBySchema = diffComplexFieldsContribs.get(schemaName);
+                if (diffComplexFieldsBySchema == null) {
+                    diffComplexFieldsBySchema = new HashMap<String, DiffComplexFieldDefinition>();
+                    diffComplexFieldsContribs.put(schemaName,
+                            diffComplexFieldsBySchema);
+                }
+                diffComplexFieldsBySchema.put(fieldName,
+                        descriptor.getDiffComplexFieldDefinition());
             }
         }
     }
@@ -421,7 +477,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
     }
 
     protected final List<DiffBlockDefinition> getDefaultDiffBlockDefinitions(
-            DocumentDiff docDiff) {
+            DocumentDiff docDiff) throws ClientException {
 
         List<DiffBlockDefinition> diffBlockDefs = new ArrayList<DiffBlockDefinition>();
 
@@ -435,8 +491,50 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
                     // Only add the field if it is not excluded
                     if (diffExcludedFields == null
                             || !diffExcludedFields.contains(fieldName)) {
+                        List<DiffFieldItemDefinition> fieldItems = new ArrayList<DiffFieldItemDefinition>();
+                        DiffComplexFieldDefinition complexFieldDef = getDiffComplexField(
+                                schemaName, fieldName);
+                        if (complexFieldDef != null) {
+                            List<DiffFieldItemDefinition> includedItems = complexFieldDef.getIncludedItems();
+                            List<DiffFieldItemDefinition> excludedItems = complexFieldDef.getExcludedItems();
+                            // Check included field items
+                            if (!CollectionUtils.isEmpty(includedItems)) {
+                                fieldItems.addAll(includedItems);
+                            }
+                            // Check excluded field items
+                            else if (!CollectionUtils.isEmpty(excludedItems)) {
+                                Field complexField = ComplexPropertyHelper.getField(
+                                        schemaName, fieldName);
+                                if (complexField.getType().isListType()) {
+                                    complexField = ComplexPropertyHelper.getListFieldItem(complexField);
+                                }
+                                if (!complexField.getType().isComplexType()) {
+                                    throw new ClientException(
+                                            String.format(
+                                                    "Cannot compute field items for [%s:%s] since it is not a complex nor a complex list property.",
+                                                    schemaName, fieldName));
+                                }
+                                List<Field> complexFieldItems = ComplexPropertyHelper.getComplexFieldItems(complexField);
+                                for (Field complexFieldItem : complexFieldItems) {
+                                    String complexFieldItemName = complexFieldItem.getName().getLocalName();
+                                    boolean isFieldItem = true;
+                                    for (DiffFieldItemDefinition fieldItemDef : excludedItems) {
+                                        if (fieldItemDef.getName().equals(
+                                                complexFieldItemName)) {
+                                            isFieldItem = false;
+                                            break;
+                                        }
+                                    }
+                                    if (isFieldItem) {
+                                        fieldItems.add(new DiffFieldItemDefinitionImpl(
+                                                complexFieldItemName));
+                                    }
+                                }
+                            }
+                        }
                         fieldDefs.add(new DiffFieldDefinitionImpl(
-                                DIFF_WIDGET_CATEGORY, schemaName, fieldName));
+                                DIFF_WIDGET_CATEGORY, schemaName, fieldName,
+                                fieldItems));
                     }
                 }
 

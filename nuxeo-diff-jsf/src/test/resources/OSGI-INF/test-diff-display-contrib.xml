@@ -15,6 +15,20 @@
       </fields>
     </diffExcludedFields>
 
+    <diffComplexField schema="complextypes" name="complex">
+      <includedItems>
+        <item name="dateItem" />
+        <item name="stringItem" />
+      </includedItems>
+    </diffComplexField>
+
+    <diffComplexField schema="complextypes" name="complexList">
+      <excludedItems>
+        <item name="stringItem" />
+        <item name="dateItem" />
+      </excludedItems>
+    </diffComplexField>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
