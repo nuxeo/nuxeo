@@ -83,6 +83,7 @@ public class BinaryTextListener implements PostCommitEventListener {
         }
         CoreSession session = null;
         ModelFulltext fulltextInfo = null;
+        FulltextParser fulltextParser = null;
         Set<Serializable> ids = new HashSet<Serializable>();
         for (Event event : eventBundle) {
             if (!event.getName().equals(EVENT_NAME)) {
@@ -91,6 +92,7 @@ public class BinaryTextListener implements PostCommitEventListener {
             EventContext eventContext = event.getContext();
             fulltextInfo = getFulltextInfoFromEventContext(eventContext);
             ids.addAll(getIdsFromEventContext(eventContext));
+            fulltextParser = getFulltextParserFromEventContext(eventContext);
             CoreSession s = eventContext.getCoreSession();
             if (session == null) {
                 session = s;
@@ -146,9 +148,9 @@ public class BinaryTextListener implements PostCommitEventListener {
                         fulltextInfo.indexesAllBinary.contains(indexName));
                 List<Blob> blobs = extractor.getBlobs(indexedDoc);
                 String text = blobsToText(blobs, (String) id);
-                FulltextParser ftp = new FulltextParser();
-                ftp.setStrings(new ArrayList<String>());
-                ftp.parse(text, null);
+                fulltextParser.setStrings(new ArrayList<String>());
+                fulltextParser.parse(text, null);
+                text = StringUtils.join(fulltextParser.getStrings(), " ");
                 String impactedQuery =
                     String.format("SELECT * from Document where ecm:fulltextJobId = '%s'",
                             indexedDoc.getId());
@@ -161,7 +163,7 @@ public class BinaryTextListener implements PostCommitEventListener {
                                 null);
                         session.setDocumentSystemProp(ref,
                                 SQLDocument.BINARY_TEXT_SYS_PROP + getFulltextIndexSuffix(indexName),
-                                StringUtils.join(ftp.getStrings(), " "));
+                                text);
                     } catch (DocumentException e) {
                         log.error("Couldn't set fulltext on: " + id, e);
                         continue;
@@ -184,6 +186,15 @@ public class BinaryTextListener implements PostCommitEventListener {
     protected ModelFulltext getFulltextInfoFromEventContext(
             EventContext eventContext) {
         return (ModelFulltext) eventContext.getArguments()[1];
+    }
+
+    protected FulltextParser getFulltextParserFromEventContext(
+            EventContext eventContext) {
+        // test length for compat
+        if (eventContext.getArguments().length >= 2) {
+            return (FulltextParser) eventContext.getArguments()[2];
+        }
+        return new FulltextParser();
     }
 
     protected String blobsToText(List<Blob> blobs, String docId) {
