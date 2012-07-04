@@ -65,7 +65,7 @@ a.diffpage-html-a:hover { text-decoration: none }
 
 ul.changelist { padding-left: 1em }
 
-body { margin-top: 0 }
+body { margin: 0 }
 
 .button { background-color: #efefef;
     border: 1px solid #c9c9c9;

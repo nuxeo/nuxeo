@@ -123,7 +123,7 @@ balloon.OnCreateContentString = function()
 				// Bottom border
 				+ '<td valign="top" style="position:relative;padding:0px;margin:0px;overflow:hidden;">'
 				+ '<div style="position:relative;left:0px;top:0px;padding:0px;margin:0px;overflow:hidden;width:auto;height:' + tt_aV[BALLOONEDGESIZE] + 'px;background-image:url(' + aImg[6].src + ');"></div>'
-				+ '<img id="bALlOOnB" style="position:relative;top:-1px;left:2px;z-index:1;display:none;' + sCssImg + '" src="' + aImg[10].src + '" width="' + tt_aV[BALLOONSTEMWIDTH] + '" height="' + tt_aV[BALLOONSTEMHEIGHT] + '" />'
+				+ '<img id="bALlOOnB" style="position:relative;top:-2px;left:2px;z-index:1;display:none;' + sCssImg + '" src="' + aImg[10].src + '" width="' + tt_aV[BALLOONSTEMWIDTH] + '" height="' + tt_aV[BALLOONSTEMHEIGHT] + '" />'
 				+ '</td>'
 				// Right-bottom corner
 				+ '<td valign="top"' + sCssCrn + '>'
