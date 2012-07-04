@@ -192,7 +192,15 @@ public class BinaryTextListener implements PostCommitEventListener {
             EventContext eventContext) {
         // test length for compat
         if (eventContext.getArguments().length >= 2) {
-            return (FulltextParser) eventContext.getArguments()[2];
+            @SuppressWarnings("unchecked")
+            Class<? extends FulltextParser> fulltextParserClass = (Class<? extends FulltextParser>) eventContext.getArguments()[2];
+            try {
+                return fulltextParserClass.newInstance();
+            } catch (InstantiationException e) {
+                log.error("Failed to instanciate " + fulltextParserClass.getCanonicalName(), e);
+            } catch (IllegalAccessException e) {
+                log.error(e);
+            }
         }
         return new FulltextParser();
     }
