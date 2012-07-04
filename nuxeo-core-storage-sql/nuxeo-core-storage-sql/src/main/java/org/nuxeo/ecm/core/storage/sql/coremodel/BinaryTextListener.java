@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.storage.sql.FulltextParser;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
@@ -144,6 +146,9 @@ public class BinaryTextListener implements PostCommitEventListener {
                         fulltextInfo.indexesAllBinary.contains(indexName));
                 List<Blob> blobs = extractor.getBlobs(indexedDoc);
                 String text = blobsToText(blobs, (String) id);
+                FulltextParser ftp = new FulltextParser();
+                ftp.setStrings(new ArrayList<String>());
+                ftp.parse(text, null);
                 String impactedQuery =
                     String.format("SELECT * from Document where ecm:fulltextJobId = '%s'",
                             indexedDoc.getId());
@@ -156,7 +161,7 @@ public class BinaryTextListener implements PostCommitEventListener {
                                 null);
                         session.setDocumentSystemProp(ref,
                                 SQLDocument.BINARY_TEXT_SYS_PROP + getFulltextIndexSuffix(indexName),
-                                text);
+                                StringUtils.join(ftp.getStrings(), " "));
                     } catch (DocumentException e) {
                         log.error("Couldn't set fulltext on: " + id, e);
                         continue;
