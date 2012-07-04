@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
@@ -2204,6 +2205,35 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.reinitLifeCycleState(childFile.getRef());
         assertEquals("project",
                 session.getCurrentLifeCycleState(childFile.getRef()));
+    }
+
+    @Test
+    public void testLifeCycleVersioning() throws Exception {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
+                "file#" + generateUnique(), "File");
+        childFile = createChildDocument(childFile);
+
+        assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
+        assertEquals("project",
+                session.getCurrentLifeCycleState(childFile.getRef()));
+        assertTrue("Document should be checkout after creation",
+                childFile.isCheckedOut());
+
+        session.checkIn(childFile.getRef(), VersioningOption.MAJOR,
+                "Increment major version");
+        childFile = session.getDocument(childFile.getRef());
+        assertEquals("1.0", childFile.getVersionLabel());
+        assertFalse("Document should be checkin after version ",
+                childFile.isCheckedOut());
+
+        boolean success = session.followTransition(childFile.getRef(),
+                "approve");
+        assertTrue(success);
+        childFile = session.getDocument(childFile.getRef());
+        assertEquals("1.0+", childFile.getVersionLabel());
+        assertTrue("Document should be checkout after following a transition",
+                childFile.isCheckedOut());
     }
 
     @Test
