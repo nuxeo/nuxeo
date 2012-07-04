@@ -411,7 +411,7 @@ public class NXQLQueryBuilder {
      * @return the serialized statement
      */
 
-    public static final String DEFAULT_SPECIAL_CHARACTERS_REGEXP = "!\"#$%&'()*+,-./\\\\:-@{|}`^~";
+    public static final String DEFAULT_SPECIAL_CHARACTERS_REGEXP = "!#$%&'()*+,./\\\\:-@{|}`^~";
 
     public static final String IGNORED_CHARS_KEY = "org.nuxeo.query.builder.ignored.chars";
 
@@ -436,13 +436,18 @@ public class NXQLQueryBuilder {
         String res = "";
         value = value.replaceAll("[" + ignoredChars + "]", " ");
         value = value.trim();
-        String[] tokens = value.split(" ");
+        String[] tokens = value.split("[\\s]+");
         for (int i = 0; i < tokens.length; i++) {
-            if (tokens[i].length() > 0) {
-                if (res.length() > 0) {
-                    res += " ";
-                }
-                res += "+" + tokens[i];
+            if ("-".equals(tokens[i])){
+                continue;
+            }
+            if (res.length() > 0) {
+                res += " ";
+            }
+            if (tokens[i].startsWith("-")) {
+                res += tokens[i];
+            } else {
+                res += tokens[i].replace("-", " ");
             }
         }
         return res;
