@@ -42,11 +42,12 @@ div.diff-conflict-image { background-color: #f781be;
   background-image: url("../../img/diff/diffconflict.gif");
   background-repeat: no-repeat }
 
-img.diff-icon { background-color: #f80;
-  background-image: url("../../img/diff/bg_rounded.gif");
-  width: 16px;
+img.diff-icon { background: #efefef none;
+  border: 1px solid #c9c9c9;
+  border-radius: 3px;
+  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset, 1px 1px 0 #efefef;
   height: 16px;
-  border: 0 none }
+  width: 16px }
 
 table.diff-tooltip-link, table.diff-tooltip-link-changed { width: 100%; text-align: center; vertical-align: middle }
 

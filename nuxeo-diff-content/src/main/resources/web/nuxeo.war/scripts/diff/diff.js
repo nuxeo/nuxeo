@@ -64,13 +64,13 @@ function constructToolTipC(elem){
    return "<table class='diff-tooltip-link-changed'>"+
           "  <tr>"+
           "    <td class='diff-tooltip-prev'>"+
-          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'>&lt; "+previousLinkLabel()+"</a>"+
+          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'><img class='diff-icon' src='"+imagePath+"diff-previous.png' title='"+previousLinkLabel()+"'/></a>"+
           "    </td>"+
           "    <td>"+
           "      <span class='diffType'>"+translateDiffId(change_id)+"</span>"+
           "    </td>"+
           "    <td class='diff-tooltip-next'>"+
-          "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'>"+nextLinkLabel()+"&gt;</a>"+
+          "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'><img class='diff-icon' src='"+imagePath+"diff-next.png' title='"+nextLinkLabel()+"'/></a>"+
           "    </td>"+
           "  </tr>"+
           "</table>";
@@ -87,13 +87,13 @@ function constructToolTipA(elem){
    return "<table class='diff-tooltip-link'>"+
           "  <tr>"+
           "    <td class='diff-tooltip-prev'>"+
-          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'>&lt;"+previousLinkLabel()+"</a>"+
+          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'><img class='diff-icon' src='"+imagePath+"diff-previous.png' title='"+previousLinkLabel()+"'/></a>"+
           "    </td>"+
           "    <td>"+
           "      <span class='diffType'>"+translateDiffId(change_id)+"</span>"+
           "    </td>"+
           "    <td class='diff-tooltip-next'>"+
-          "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'>"+nextLinkLabel()+"&gt;</a>"+
+           "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'><img class='diff-icon' src='"+imagePath+"diff-next.png' title='"+nextLinkLabel()+"'/></a>"+
           "    </td>"+
           "  </tr>"+
           "</table>";
@@ -110,13 +110,13 @@ function constructToolTipR(elem){
    return "<table class='diff-tooltip-link'>"+
           "  <tr>"+
           "    <td class='diff-tooltip-prev'>"+
-          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'>&lt;"+previousLinkLabel()+"</a>"+
+          "      <a class='diffpage-html-a' href=#"+previous_id+" onClick='scrollToEvent(event)'><img class='diff-icon' src='"+imagePath+"diff-previous.png' title='"+previousLinkLabel()+"'/></a>"+
           "    </td>"+
           "    <td>"+
           "      <span class='diffType'>"+translateDiffId(change_id)+"</span>"+
           "    </td>"+
           "    <td class='diff-tooltip-next'>"+
-          "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'>"+nextLinkLabel()+"&gt;</a>"+
+           "      <a class='diffpage-html-a' href='#"+next_id+"' onClick='scrollToEvent(event)'><img class='diff-icon' src='"+imagePath+"diff-next.png' title='"+nextLinkLabel()+"'/></a>"+
           "    </td>"+
           "  </tr>"+
           "</table>";
