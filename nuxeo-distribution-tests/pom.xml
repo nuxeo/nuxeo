@@ -61,11 +61,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-jbpm-test</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-mail-test</artifactId>
       <scope>compile</scope>
     </dependency>
