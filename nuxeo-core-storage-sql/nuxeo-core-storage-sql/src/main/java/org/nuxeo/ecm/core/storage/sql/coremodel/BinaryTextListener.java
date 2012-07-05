@@ -191,7 +191,7 @@ public class BinaryTextListener implements PostCommitEventListener {
     protected FulltextParser getFulltextParserFromEventContext(
             EventContext eventContext) {
         // test length for compat
-        if (eventContext.getArguments().length >= 2) {
+        if (eventContext.getArguments().length > 2) {
             @SuppressWarnings("unchecked")
             Class<? extends FulltextParser> fulltextParserClass = (Class<? extends FulltextParser>) eventContext.getArguments()[2];
             try {
