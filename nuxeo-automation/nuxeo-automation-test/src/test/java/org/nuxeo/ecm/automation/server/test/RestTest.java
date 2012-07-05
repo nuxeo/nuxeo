@@ -75,6 +75,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -86,8 +87,12 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
+@Deploy({"org.nuxeo.ecm.platform.url.api",
+"org.nuxeo.ecm.platform.url.core",
+"org.nuxeo.ecm.platform.types.api",
+"org.nuxeo.ecm.platform.types.core"})
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
-"org.nuxeo.ecm.automation.server:test-mvalues.xml" })
+"org.nuxeo.ecm.automation.server:test-mvalues.xml"})
 @Features(RestFeature.class)
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup=Granularity.METHOD)
