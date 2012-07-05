@@ -80,6 +80,8 @@ public class LockActionsBean implements LockActions {
 
     private static final String EDIT_ACTIONS = "EDIT_ACTIONS";
 
+    public static final String DEFAULT_VIEW_ID = "view_documents";
+
     @In
     private transient NavigationContext navigationContext;
 
@@ -201,7 +203,7 @@ public class LockActionsBean implements LockActions {
                 resourcesAccessor.getMessages().get(message));
         resetLockState();
         webActions.resetTabList();
-        return "document_view";
+        return DEFAULT_VIEW_ID;
     }
 
     public String unlockCurrentDocument() throws ClientException {
@@ -277,7 +279,7 @@ public class LockActionsBean implements LockActions {
                 resourcesAccessor.getMessages().get(message));
         resetLockState();
         webActions.resetTabList();
-        return "document_view";
+        return DEFAULT_VIEW_ID;
     }
 
     public void lockDocuments(List<DocumentModel> documents) {
