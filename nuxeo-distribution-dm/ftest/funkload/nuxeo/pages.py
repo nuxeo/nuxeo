@@ -463,13 +463,6 @@ class BasePage:
                         or 'No incoming or outgoing relation' in self.fl.getBody())
         return ret
 
-    def workflow(self):
-        ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_CONTENT_JBPM',
-                                   description="View workflow tab")
-        self.fl.assert_('startWorkflow' in self.fl.getBody() or
-                        'No workflows are currently active' in self.fl.getBody())
-        return ret
-
     def mySubscriptions(self):
         ret = self.viewDocumentUid(self.getDocUid(),
                                    tab='TAB_MY_SUBSCRIPTIONS',

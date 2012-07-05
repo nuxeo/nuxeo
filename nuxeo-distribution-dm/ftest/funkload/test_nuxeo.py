@@ -115,7 +115,6 @@ class Nuxeo(NuxeoTestCase):
                  .files()
                  .publish()
                  .relations()
-                 .workflow()
                  .mySubscriptions()
                  .comments()
                  .history())

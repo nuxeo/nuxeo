@@ -98,7 +98,6 @@ class Navigation(NuxeoTestCase):
             p = (p.viewDocumentUid(uid)
                  .publish()
                  .relations()
-                 .workflow()
                  .mySubscriptions()
                  .comments()
                  .history())

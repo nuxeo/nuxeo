@@ -141,7 +141,6 @@ class Pages(NuxeoTestCase):
              .files()
              .publish()
              .relations()
-             .workflow()
              .mySubscriptions()
              .comments()
              .history())
