@@ -244,6 +244,10 @@ public interface GraphNode {
             return label;
         }
 
+        public String getName() {
+            return name;
+        }
+
     }
 
     /**
