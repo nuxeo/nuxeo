@@ -158,7 +158,8 @@ public class RoutingTaskActionsBean {
         // collect form data
         Map<String, Object> data = new HashMap<String, Object>();
         if (formVariables != null) {
-            data.putAll(formVariables);
+            data.put("WorkflowVariables", formVariables);
+            data.put("NodeVariables", formVariables);
         }
         // add the button name that was clicked
         try {

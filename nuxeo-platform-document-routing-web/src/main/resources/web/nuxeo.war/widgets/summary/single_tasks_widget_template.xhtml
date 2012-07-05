@@ -34,7 +34,6 @@
                 <a4j:commandLink id="#{idPrefix}_link"
                   ajaxSingle="true"
                   ignoreDupResponses="true" requestDelay="100"
-                  oncomplete="showFancyBox('##{idPrefix}_box');return false;"
                   styleClass="#{actionStyleClass} #{action.properties.styleClass}"
                   reRender="#{idPrefix}_ajax_panel">
                   <f:setPropertyActionListener value="true"
@@ -82,7 +81,7 @@
 
               <a4j:outputPanel id="#{idPrefix}_ajax_panel">
                 <c:if test="#{actionClicked}">
-                  <div style="display:none">
+                  <div>
                     <div id="#{idPrefix}_box">
                       <nxu:set var="isRoutingTask" value="#{routingTaskActions.isRoutingTask(task)}">
                         <c:if test="#{isRoutingTask}">
