@@ -38,6 +38,8 @@ import org.nuxeo.wss.servlet.config.FilterBindingResolver;
 
 public abstract class BaseWSSFilter implements Filter {
 
+    private static final String DEFAULT_CONTEXT_PATH = "/nuxeo";
+
     protected FilterConfig filterConfig;
 
     protected ServletContext ctx;
@@ -56,9 +58,9 @@ public abstract class BaseWSSFilter implements Filter {
 
     public static final String DEFAULT_WEBDAV_URL = "/site/dav";
 
-    public static final String NUXEO_ROOT_URL = "/nuxeo";
+    public final String nuxeoRootUrl = System.getProperty("org.nuxeo.ecm.contextPath", DEFAULT_CONTEXT_PATH);
 
-    public static final int NUXEO_ROOT_URL_LEN = NUXEO_ROOT_URL.length();
+    public final int nuxeoRootUrlLength = nuxeoRootUrl.length();
 
     private static final Log log = LogFactory.getLog(WSSFrontFilter.class);
 
@@ -82,7 +84,7 @@ public abstract class BaseWSSFilter implements Filter {
             // check WebDAV calls
             try {
                 if (isWebDavRequest(httpRequest)
-                        && !uri.startsWith(NUXEO_ROOT_URL + webDavUrl)) {
+                        && !uri.startsWith(nuxeoRootUrl + webDavUrl)) {
                     handleWebDavCall(httpRequest, httpResponse);
                     return;
                 }
@@ -194,11 +196,11 @@ public abstract class BaseWSSFilter implements Filter {
     }
 
     private String createPathToWebDav(String basePath) {
-        if (basePath.contains(NUXEO_ROOT_URL + webDavUrl)) {
+        if (basePath.contains(nuxeoRootUrl + webDavUrl)) {
             return basePath;
         } else {
-            if (basePath.startsWith(NUXEO_ROOT_URL)) {
-                return webDavUrl + basePath.substring(NUXEO_ROOT_URL_LEN);
+            if (basePath.startsWith(nuxeoRootUrl)) {
+                return webDavUrl + basePath.substring(nuxeoRootUrlLength);
             } else {
                 return webDavUrl;
             }
@@ -219,9 +221,9 @@ public abstract class BaseWSSFilter implements Filter {
 
     // resolve destination path for WebDAV requests
     private String resolveDestinationPath(String destination) {
-        int index = destination.indexOf(NUXEO_ROOT_URL);
-        String prefix = destination.substring(0, index + NUXEO_ROOT_URL_LEN);
-        String suffix = destination.substring(index + NUXEO_ROOT_URL_LEN);
+        int index = destination.indexOf(nuxeoRootUrl);
+        String prefix = destination.substring(0, index + nuxeoRootUrlLength);
+        String suffix = destination.substring(index + nuxeoRootUrlLength);
         return prefix + webDavUrl + suffix;
     }
 
