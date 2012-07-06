@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
@@ -309,20 +310,20 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public String getOSGIBundleName(File file) {
-        if (!file.exists() || file.isDirectory()) {
+        Manifest mf = JarUtils.getManifest(file);
+        if (mf == null) {
             return null;
         }
-        try {
-            JarFile jar = new JarFile(file);
-            Manifest mf = jar.getManifest();
-            if (mf != null) {
-                return mf.getMainAttributes().getValue("Bundle-SymbolicName");
-            }
-        } catch (IOException e) {
-            // maybe not even a jar
+        String bundleName = mf.getMainAttributes().getValue(
+                "Bundle-SymbolicName");
+        if (bundleName == null) {
             return null;
         }
-        return null;
+        int index = bundleName.indexOf(';');
+        if (index > -1) {
+            bundleName = bundleName.substring(0, index);
+        }
+        return bundleName;
     }
 
     protected String getRuntimeStatus() {
