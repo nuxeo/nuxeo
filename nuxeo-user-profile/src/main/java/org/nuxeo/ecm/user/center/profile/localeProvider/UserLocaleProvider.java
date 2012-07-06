@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
+import org.nuxeo.ecm.user.center.profile.UserProfileConstants;
 import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -39,7 +40,7 @@ public class UserLocaleProvider implements LocaleProvider {
     public Locale getLocale(CoreSession repo) throws ClientException {
         UserProfileService userProfileService = Framework.getLocalService(UserProfileService.class);
         DocumentModel userProfileDoc = userProfileService.getUserProfileDocument(repo);
-        String locale = (String) userProfileDoc.getPropertyValue("userprofile:locale");
+        String locale = (String) userProfileDoc.getPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE);
         if (locale == null || locale.trim().length() == 0) {
             // undefined if not set
             return null;

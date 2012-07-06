@@ -23,6 +23,7 @@ import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -39,7 +40,8 @@ import org.jboss.seam.international.TimeZoneSelector;
 @Name("timeZones")
 public class TimeZones {
 
-    @In LocaleSelector localeSelector;
+    @In
+    LocaleSelector localeSelector;
 
     private List<SelectItem> timeZoneSelectItems = null;
 
@@ -52,14 +54,24 @@ public class TimeZones {
 
     public String displayCurrentTimeZone() {
         TimeZoneSelector tzs = TimeZoneSelector.instance();
-        return displayTimeZone(tzs.getTimeZoneId());
+        String timeZoneId = tzs.getTimeZoneId();
+        if (StringUtils.isEmpty(timeZoneId)) {
+            TimeZone timeZone = tzs.getTimeZone();
+            if (timeZone != null) {
+                timeZoneId = timeZone.getID();
+            }
+        }
+        return displayTimeZone(timeZoneId);
     }
 
     public String displayTimeZone(String id) {
         if (id == null || id.trim().length() == 0 || "none".equals(id)) {
             return "";
         }
-        return id + " - " + TimeZone.getTimeZone(id).getDisplayName(localeSelector.getLocale());
+        return id
+                + " - "
+                + TimeZone.getTimeZone(id).getDisplayName(
+                        localeSelector.getLocale());
     }
 
     private void initTimeZones() {

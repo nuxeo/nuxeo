@@ -19,10 +19,12 @@ package org.nuxeo.ecm.user.center.profile;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -63,6 +65,9 @@ public class UserProfileActions implements Serializable {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
+    @In(create = true)
+    protected transient LocaleSelector localeSelector;
+
     protected String mode = PROFILE_VIEW_MODE;
 
     protected DocumentModel userProfileDocument;
@@ -99,6 +104,12 @@ public class UserProfileActions implements Serializable {
         if (userProfileDocument == null) {
             userProfileDocument = getUserProfileService().getUserProfileDocument(
                     documentManager);
+            String locale = (String) userProfileDocument.getPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE);
+            if (StringUtils.isEmpty(locale)) {
+                userProfileDocument.setPropertyValue(
+                        UserProfileConstants.USER_PROFILE_LOCALE,
+                        localeSelector.getLocaleString());
+            }
         }
         return userProfileDocument;
     }
