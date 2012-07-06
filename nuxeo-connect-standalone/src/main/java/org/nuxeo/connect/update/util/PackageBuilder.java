@@ -31,15 +31,15 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Version;
+import org.nuxeo.connect.update.model.PackageDefinition;
 import org.nuxeo.connect.update.model.TaskDefinition;
-import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
 import org.nuxeo.connect.update.xml.FormDefinition;
 import org.nuxeo.connect.update.xml.FormsDefinition;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
@@ -53,7 +53,7 @@ import org.nuxeo.connect.update.xml.XmlSerializer;
  */
 public class PackageBuilder {
 
-    protected final PackageDefinitionImpl def;
+    protected final PackageDefinition def;
 
     protected final List<FormDefinition> installForms;
 
@@ -108,6 +108,26 @@ public class PackageBuilder {
         return this;
     }
 
+    /**
+     * @since 5.6
+     */
+    public PackageBuilder visibility(String visibility) {
+        return visibility(PackageVisibility.valueOf(visibility));
+    }
+
+    /**
+     * @since 5.6
+     */
+    public PackageBuilder visibility(PackageVisibility visibility) {
+        try {
+            def.getClass().getMethod("setVisibility", PackageVisibility.class);
+            def.setVisibility(visibility);
+        } catch (NoSuchMethodException e) {
+            // Ignore visibility with old Connect Client versions
+        }
+        return this;
+    }
+
     public PackageBuilder title(String title) {
         def.setTitle(title);
         return this;
@@ -154,28 +174,57 @@ public class PackageBuilder {
     }
 
     public PackageBuilder validationState(NuxeoValidationState validationState) {
-        def.setValidationState(validationState);
+        try {
+            def.getClass().getMethod("setValidationState",
+                    NuxeoValidationState.class);
+            def.setValidationState(validationState);
+        } catch (NoSuchMethodException e) {
+            // Ignore setValidationState with old Connect Client versions
+        }
         return this;
     }
 
     public PackageBuilder productionState(ProductionState productionState) {
-        def.setProductionState(productionState);
+        try {
+            def.getClass().getMethod("setProductionState",
+                    ProductionState.class);
+            def.setProductionState(productionState);
+        } catch (NoSuchMethodException e) {
+            // Ignore setProductionState with old Connect Client versions
+        }
         return this;
     }
 
     public PackageBuilder supported(boolean supported) {
-        def.setSupported(supported);
+        try {
+            def.getClass().getMethod("setSupported", boolean.class);
+            def.setSupported(supported);
+        } catch (NoSuchMethodException e) {
+            // Ignore setSupported with old Connect Client versions
+        }
         return this;
     }
 
     public PackageBuilder hotReloadSupport(boolean hotReloadSupport) {
-        def.setHotReloadSupport(hotReloadSupport);
+        try {
+            def.getClass().getMethod("setHotReloadSupport", boolean.class);
+            def.setHotReloadSupport(hotReloadSupport);
+        } catch (NoSuchMethodException e) {
+            // Ignore setHotReloadSupport with old Connect Client versions
+        }
         return this;
     }
 
     public PackageBuilder requireTermsAndConditionsAcceptance(
             boolean requireTermsAndConditionsAcceptance) {
-        def.setRequireTermsAndConditionsAcceptance(requireTermsAndConditionsAcceptance);
+        try {
+            def.getClass().getMethod("setRequireTermsAndConditionsAcceptance",
+                    boolean.class);
+            def.setRequireTermsAndConditionsAcceptance(requireTermsAndConditionsAcceptance);
+        } catch (NoSuchMethodException e) {
+            // Ignore setRequireTermsAndConditionsAcceptance with old Connect
+            // Client versions
+        }
         return this;
     }
 

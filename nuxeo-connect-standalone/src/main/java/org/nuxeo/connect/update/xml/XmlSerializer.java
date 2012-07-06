@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, mguillaume, jcarsique
  */
 package org.nuxeo.connect.update.xml;
 
@@ -38,6 +38,15 @@ public class XmlSerializer extends XmlWriter {
         if (def.getType() != null) {
             attr("type", def.getType().getValue());
         }
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.getVisibility");
+            if (def.getVisibility() != null) {
+                attr("visibility", def.getVisibility().toString());
+            }
+        } catch (NoSuchMethodException e) {
+            // Ignore visibility with old Connect Client versions
+        }
         attr("name", def.getName());
         if (def.getVersion() != null) {
             attr("version", def.getVersion().toString());
@@ -50,9 +59,11 @@ public class XmlSerializer extends XmlWriter {
         element("classifier", def.getClassifier());
         element("home-page", def.getHomePage());
 
-        element("hotreload-support", Boolean.valueOf(def.supportsHotReload()).toString());
+        element("hotreload-support",
+                Boolean.valueOf(def.supportsHotReload()).toString());
         element("supported", Boolean.valueOf(def.isSupported()).toString());
-        element("require-terms-and-conditions-acceptance", Boolean.valueOf(def.requireTermsAndConditionsAcceptance()).toString());
+        element("require-terms-and-conditions-acceptance",
+                Boolean.valueOf(def.requireTermsAndConditionsAcceptance()).toString());
         element("production-state", def.getProductionState().toString());
         element("nuxeo-validation", def.getValidationState().toString());
 
@@ -90,22 +101,34 @@ public class XmlSerializer extends XmlWriter {
             end("dependencies");
         }
 
-        if (def.getConflicts() != null && def.getConflicts().length > 0) {
-            start("conflicts");
-            startContent();
-            for (PackageDependency conflict : def.getConflicts()) {
-                element("package", conflict.toString());
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.getConflicts");
+            if (def.getConflicts() != null && def.getConflicts().length > 0) {
+                start("conflicts");
+                startContent();
+                for (PackageDependency conflict : def.getConflicts()) {
+                    element("package", conflict.toString());
+                }
+                end("conflicts");
             }
-            end("conflicts");
+        } catch (NoSuchMethodException e) {
+            // Ignore conflicts with old Connect Client versions
         }
 
-        if (def.getProvides() != null && def.getProvides().length > 0) {
-            start("provides");
-            startContent();
-            for (PackageDependency provide : def.getProvides()) {
-                element("package", provide.toString());
+        try {
+            def.getClass().getMethod(
+                    "org.nuxeo.connect.update.model.PackageDefinition.getProvides");
+            if (def.getProvides() != null && def.getProvides().length > 0) {
+                start("provides");
+                startContent();
+                for (PackageDependency provide : def.getProvides()) {
+                    element("package", provide.toString());
+                }
+                end("provides");
             }
-            end("provides");
+        } catch (NoSuchMethodException e) {
+            // Ignore provides with old Connect Client versions
         }
 
         end("package");

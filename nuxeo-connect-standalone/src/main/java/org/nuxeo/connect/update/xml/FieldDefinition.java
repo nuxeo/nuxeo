@@ -48,30 +48,37 @@ public class FieldDefinition implements Field {
     @XNode("value")
     protected String value;
 
+    @Override
     public String getLabel() {
         return label;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public boolean isRequired() {
         return isRequired;
     }
 
+    @Override
     public boolean isVertical() {
         return isVertical;
     }
 
+    @Override
     public boolean isReadOnly() {
         return isReadOnly;
     }
 
+    @Override
     public String getValue() {
         return value;
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.xml;
 
@@ -22,6 +22,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.Validator;
 import org.nuxeo.connect.update.Version;
@@ -45,6 +46,9 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @XNode("@type")
     protected PackageType type;
 
+    @XNode("@visibility")
+    protected PackageVisibility visibility;
+
     @XNode("title")
     protected String title;
 
@@ -61,13 +65,13 @@ public class PackageDefinitionImpl implements PackageDefinition {
     protected String homePage;
 
     @XNode("supported")
-    protected boolean supported=false;
+    protected boolean supported = false;
 
     @XNode("hotreload-support")
-    protected boolean hotReloadSupport=false;
+    protected boolean hotReloadSupport = false;
 
     @XNode("require-terms-and-conditions-acceptance")
-    protected boolean requireTermsAndConditionsAcceptance=false;
+    protected boolean requireTermsAndConditionsAcceptance = false;
 
     protected NuxeoValidationState validationState = NuxeoValidationState.NONE;
 
@@ -140,7 +144,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @XNode("nuxeo-validation")
     protected void initNuxeoValidationState(String value) {
         NuxeoValidationState targetState = NuxeoValidationState.getByValue(value);
-        if (targetState!=null) {
+        if (targetState != null) {
             validationState = targetState;
         }
     }
@@ -148,12 +152,12 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @XNode("production-state")
     protected void initProductionState(String value) {
         ProductionState targetState = ProductionState.getByValue(value);
-        if (targetState!=null) {
+        if (targetState != null) {
             productionState = targetState;
         }
     }
 
-
+    @Override
     public String getId() {
         if (version == null) {
             return name;
@@ -162,122 +166,152 @@ public class PackageDefinitionImpl implements PackageDefinition {
         }
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public Version getVersion() {
         return version;
     }
 
+    @Override
     public void setVersion(Version version) {
         this.version = version;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public PackageType getType() {
         return type;
     }
 
+    @Override
     public void setType(PackageType type) {
         this.type = type;
     }
 
+    @Override
     public String getClassifier() {
         return classifier;
     }
 
+    @Override
     public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
 
+    @Override
     public String getHomePage() {
         return homePage;
     }
 
+    @Override
     public void setHomePage(String homePage) {
         this.homePage = homePage;
     }
 
+    @Override
     public String getLicense() {
         return license;
     }
 
+    @Override
     public void setLicense(String license) {
         this.license = license;
     }
 
+    @Override
     public String getLicenseUrl() {
         return licenseUrl;
     }
 
+    @Override
     public void setLicenseUrl(String licenseUrl) {
         this.licenseUrl = licenseUrl;
     }
 
+    @Override
     public String[] getPlatforms() {
         return platforms;
     }
 
+    @Override
     public void setPlatforms(String[] platforms) {
         this.platforms = platforms;
     }
 
+    @Override
     public PackageDependency[] getDependencies() {
         return dependencies;
     }
 
+    @Override
     public void setDependencies(PackageDependency[] dependencies) {
         this.dependencies = dependencies;
     }
 
+    @Override
     public PackageDependency[] getConflicts() {
         return conflicts;
     }
 
+    @Override
     public void setConflicts(PackageDependency[] conflicts) {
         this.conflicts = conflicts;
     }
 
+    @Override
     public PackageDependency[] getProvides() {
         return provides;
     }
 
+    @Override
     public void setProvides(PackageDependency[] provides) {
         this.provides = provides;
     }
 
+    @Override
     public String getVendor() {
         return vendor;
     }
 
+    @Override
     public void setVendor(String vendor) {
         this.vendor = vendor;
     }
 
+    @Override
     public TaskDefinition getInstaller() {
         return installer;
     }
 
+    @Override
     public void setInstaller(TaskDefinition installer) {
         if (installer instanceof TaskDefinitionImpl) {
             this.installer = (TaskDefinitionImpl) installer;
@@ -287,10 +321,12 @@ public class PackageDefinitionImpl implements PackageDefinition {
         }
     }
 
+    @Override
     public TaskDefinition getUninstaller() {
         return uninstaller;
     }
 
+    @Override
     public void setUninstaller(TaskDefinition uninstaller) {
         if (uninstaller instanceof TaskDefinitionImpl) {
             this.uninstaller = (TaskDefinitionImpl) uninstaller;
@@ -300,26 +336,32 @@ public class PackageDefinitionImpl implements PackageDefinition {
         }
     }
 
+    @Override
     public String getValidator() {
         return validator;
     }
 
+    @Override
     public void setValidator(String validator) {
         this.validator = validator;
     }
 
+    @Override
     public void setSupported(boolean supported) {
         this.supported = supported;
     }
 
+    @Override
     public void setHotReloadSupport(boolean hotReloadSupport) {
         this.hotReloadSupport = hotReloadSupport;
     }
 
+    @Override
     public void setValidationState(NuxeoValidationState validationState) {
         this.validationState = validationState;
     }
 
+    @Override
     public void setProductionState(ProductionState productionState) {
         this.productionState = productionState;
     }
@@ -336,8 +378,10 @@ public class PackageDefinitionImpl implements PackageDefinition {
         if (type != null) {
             writer.attr("type", type.getValue());
         }
+        if (visibility != null) {
+            writer.attr("visibility", visibility.toString());
+        }
         writer.startContent();
-
         writer.element("title", title);
         writer.element("description", description);
         writer.element("classifier", classifier);
@@ -345,12 +389,13 @@ public class PackageDefinitionImpl implements PackageDefinition {
         writer.element("home-page", homePage);
         writer.element("license", license);
         writer.element("license-url", licenseUrl);
-        writer.element("hotreload-support", Boolean.valueOf(hotReloadSupport).toString());
+        writer.element("hotreload-support",
+                Boolean.valueOf(hotReloadSupport).toString());
         writer.element("supported", Boolean.valueOf(supported).toString());
-        writer.element("require-terms-and-conditions-acceptance", Boolean.valueOf(requireTermsAndConditionsAcceptance).toString());
+        writer.element("require-terms-and-conditions-acceptance",
+                Boolean.valueOf(requireTermsAndConditionsAcceptance).toString());
         writer.element("production-state", productionState.toString());
         writer.element("nuxeo-validation", validationState.toString());
-
         if (platforms != null) {
             writer.start("platforms");
             writer.startContent();
@@ -377,16 +422,14 @@ public class PackageDefinitionImpl implements PackageDefinition {
         }
         if (uninstaller != null) {
             writer.start("uninstaller");
-            // FIXME: I think this should be 'uninstaller' below, not 'installer'
-            writer.attr("class", installer.getType());
+            writer.attr("class", uninstaller.getType());
             writer.attr("restart",
-                    String.valueOf(installer.getRequireRestart()));
+                    String.valueOf(uninstaller.getRequireRestart()));
             writer.end();
         }
         writer.element("validator", validator);
         writer.end("package");
     }
-
 
     @Override
     public ProductionState getProductionState() {
@@ -408,6 +451,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
         return hotReloadSupport;
     }
 
+    @Override
     public void setRequireTermsAndConditionsAcceptance(
             boolean requireTermsAndConditionsAcceptance) {
         this.requireTermsAndConditionsAcceptance = requireTermsAndConditionsAcceptance;
@@ -418,9 +462,39 @@ public class PackageDefinitionImpl implements PackageDefinition {
         return requireTermsAndConditionsAcceptance;
     }
 
+    @Override
     public String toXML() {
         return new XmlSerializer().toXML(this);
     }
 
+    @Override
+    public String[] getTargetPlatforms() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getState() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getLicenseType() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isLocal() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PackageVisibility getVisibility() {
+        return visibility;
+    }
+
+    @Override
+    public void setVisibility(PackageVisibility visibility) {
+        this.visibility = visibility;
+    }
 
 }
