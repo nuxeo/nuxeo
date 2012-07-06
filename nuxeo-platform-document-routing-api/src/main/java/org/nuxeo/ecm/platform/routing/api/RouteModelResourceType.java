@@ -14,7 +14,9 @@
  * Contributors:
  *    Mariana Cedica
  */
-package org.nuxeo.ecm.platform.routing.core.impl;
+package org.nuxeo.ecm.platform.routing.api;
+
+import java.net.URL;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -23,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.6
  */
 @XObject("template-resource")
-public class RouteModelsImporterDescriptor {
+public class RouteModelResourceType {
 
     @XNode("@id")
     protected String id;
@@ -31,12 +33,30 @@ public class RouteModelsImporterDescriptor {
     @XNode("@path")
     protected String path;
 
+    protected URL url;
+
     public String getPath() {
         return path;
     }
 
     public String getId() {
         return id;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public void setUrl(URL url) {
+        this.url = url;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

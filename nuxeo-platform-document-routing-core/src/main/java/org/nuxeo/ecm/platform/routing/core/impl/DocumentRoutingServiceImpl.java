@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_RO
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,16 +58,19 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.RouteFolderElement;
+import org.nuxeo.ecm.platform.routing.api.RouteModelResourceType;
 import org.nuxeo.ecm.platform.routing.api.RouteTable;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
+import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegistry;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * The implementation of the routing service.
@@ -102,7 +106,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     protected DocumentRoutingPersister persister;
 
-    protected Map<String, URL> routeModelTemplateResouces = new HashMap<String, URL>();
+    protected RouteTemplateResourceRegistry routeResourcesRegistry = new RouteTemplateResourceRegistry();
 
     protected DocumentRoutingEngineService getEngineService() {
         try {
@@ -127,12 +131,19 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             PersisterDescriptor des = (PersisterDescriptor) contribution;
             persister = des.getKlass().newInstance();
         } else if (ROUTE_MODELS_IMPORTER_XP.equals(extensionPoint)) {
-            RouteModelsImporterDescriptor des = (RouteModelsImporterDescriptor) contribution;
-            if (des.getPath() != null && des.getId() != null) {
-                registerRouteModelTemplateResource(des.getId(),
-                        contribution.getClass().getResource(des.getPath()));
-            }
+            RouteModelResourceType res = (RouteModelResourceType) contribution;
+            registerRouteResource(res, contributor.getRuntimeContext());
         }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (contribution instanceof RouteModelResourceType) {
+            routeResourcesRegistry.removeContribution((RouteModelResourceType) contribution);
+        }
+        super.unregisterContribution(contribution, extensionPoint, contributor);
     }
 
     @Override
@@ -572,6 +583,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                     fb,
                     persister.getParentFolderForDocumentRouteModels(session).getPathAsString(),
                     true, modelToImport.getFile());
+            // TODO clean up old steps that don't exist any more
             return doc.getAdapter(DocumentRoute.class);
         } catch (Exception e) {
             throw new ClientException(e);
@@ -599,15 +611,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerRouteModelTemplateResource(String id, URL resource) {
-        routeModelTemplateResouces.put(id, resource);
-    }
-
-    @Override
     public List<URL> getRouteModelTemplateResources() throws ClientException {
         List<URL> urls = new ArrayList<URL>();
-        for (URL url : routeModelTemplateResouces.values()) {
-            urls.add(url);
+        for (URL url : routeResourcesRegistry.getRouteModelTemplateResources()) {
+            urls.add(url); // test contrib parsing and deployment
         }
         return urls;
     }
@@ -626,4 +633,38 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return pageProvider.getCurrentPage();
     }
 
+    @Override
+    public void registerRouteResource(RouteModelResourceType res,
+            RuntimeContext context) {
+        if (res.getPath() != null && res.getId() != null) {
+            if (routeResourcesRegistry.getResource(res.getId()) != null) {
+                routeResourcesRegistry.removeContribution(res);
+            }
+            if (res.getUrl() == null) {
+                res.setUrl(getUrlFromPath(res, context));
+            }
+            routeResourcesRegistry.addContribution(res);
+        }
+    }
+
+    protected URL getUrlFromPath(RouteModelResourceType res,
+            RuntimeContext extensionContext) {
+        String path = res.getPath();
+        if (path == null) {
+            return null;
+        }
+        URL url = null;
+        try {
+            url = new URL(path);
+        } catch (MalformedURLException e) {
+            url = extensionContext.getLocalResource(path);
+            if (url == null) {
+                url = extensionContext.getResource(path);
+            }
+            if (url == null) {
+                url = res.getClass().getResource(path);
+            }
+        }
+        return url;
+    }
 }

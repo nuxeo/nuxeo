@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
+import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * The DocumentRoutingService allows manipulation of {@link DocumentRoute
@@ -334,11 +335,11 @@ public interface DocumentRoutingService {
      * Registers a new route model template to be imported at application
      * startup.
      *
-     * @param id the id
      * @param resource the resource
      * @since 5.6
      */
-    void registerRouteModelTemplateResource(String id, URL resource);
+    void registerRouteResource(RouteModelResourceType resource,
+            RuntimeContext extensionContext);
 
     /**
      * Returns all the route models resource templates. Use the

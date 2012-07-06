@@ -37,7 +37,11 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-query-api</artifactId>
     </dependency>
-
+        <!-- hot reload -->
+    <dependency>
+     <groupId>org.nuxeo.runtime</groupId>
+     <artifactId>nuxeo-runtime-reload</artifactId>
+    </dependency>
     <!-- test deps -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

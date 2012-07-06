@@ -54,6 +54,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.RouteModelResourceType;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.runtime.api.Framework;
@@ -844,7 +845,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         deployBundle(TEST_BUNDLE);
 
         // test contrib parsing and deployment
-        deployTestContrib(TEST_BUNDLE, "OSGI-INF/test-document-routing-route-models-template-resource-contrib.xml");
+        deployTestContrib(TEST_BUNDLE,
+                "OSGI-INF/test-document-routing-route-models-template-resource-contrib.xml");
         List<URL> urls = service.getRouteModelTemplateResources();
         assertEquals(1, urls.size());
 
@@ -857,12 +859,11 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         zout.finish();
         zout.close();
 
-        // deploy computed contrib directly
-        service.registerRouteModelTemplateResource("resource1",tmp.toURI().toURL());
-
-        // check overrode previous one
-        urls = service.getRouteModelTemplateResources();
-        assertEquals(1, urls.size());
+        RouteModelResourceType resource = new RouteModelResourceType();
+        resource.setId("test");
+        resource.setPath(tmp.getPath());
+        resource.setUrl(tmp.toURI().toURL());
+        service.registerRouteResource(resource, null);
 
         // trigger model creation (calls service.importRouteModel)
         fireFrameworkStarted();
@@ -871,13 +872,16 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentModel modelsRoot = session.getDocument(new PathRef(
                 "/default-domain/document-route-models-root/"));
         assertNotNull(modelsRoot);
-        DocumentModel route =session.getDocument(new PathRef("/default-domain/document-route-models-root/myRoute"));
+        DocumentModel route = session.getDocument(new PathRef(
+                "/default-domain/document-route-models-root/myRoute"));
         assertNotNull(route);
         assertEquals("DocumentRoute", route.getType());
-        DocumentModel step1 =session.getDocument(new PathRef("/default-domain/document-route-models-root/myRoute/Step1"));
+        DocumentModel step1 = session.getDocument(new PathRef(
+                "/default-domain/document-route-models-root/myRoute/Step1"));
         assertNotNull(step1);
         assertEquals("RouteNode", step1.getType());
-        DocumentModel step2 =session.getDocument(new PathRef("/default-domain/document-route-models-root/myRoute/Step2"));
+        DocumentModel step2 = session.getDocument(new PathRef(
+                "/default-domain/document-route-models-root/myRoute/Step2"));
         assertNotNull(step2);
         assertEquals("RouteNode", step2.getType());
     }
