@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.webapp.locale;
 
 import java.util.Locale;
-import java.util.TimeZone;
 
 import javax.faces.context.FacesContext;
 
@@ -74,11 +73,6 @@ public class LocaleStartup {
 
     public void setTzId(String id) {
         tzId = id;
-    }
-
-    public void saveUserTimeZone() throws ClientException {
-        TimeZone tz = TimeZone.getTimeZone(tzId);
-        TimeZoneSelector.instance().selectTimeZone(tz.getID());
     }
 
     @Observer(EventNames.USER_SESSION_STARTED)
