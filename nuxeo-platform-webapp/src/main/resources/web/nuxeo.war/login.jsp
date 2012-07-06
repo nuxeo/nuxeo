@@ -13,6 +13,23 @@ String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
 String context = request.getContextPath();
 
+// Read Seam locale cookie
+String localeCookieName = "org.jboss.seam.core.Locale";
+Cookie localeCookie = null;
+Cookie cookies[] = request.getCookies();
+if (cookies != null) {
+  for (int i = 0; i < cookies.length; i++) {
+    if (localeCookieName.equals(cookies[i].getName())) {
+      localeCookie = cookies[i];
+      break;
+    }
+  }
+}
+String selectedLanguage = null;
+if (localeCookie != null) {
+    selectedLanguage = localeCookie.getValue();
+}
+
 boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
 String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 %>
@@ -291,14 +308,16 @@ body {
                 <td></td>
                 <td>
                   <% // label.login.logIn %>
+                  <input type="hidden" name="language"
+                      id="language" value="<%= selectedLanguage %>" />
                   <input type="hidden" name="requestedUrl"
-                      id="requestedUrl" value="${param.requestedUrl}">
+                      id="requestedUrl" value="${param.requestedUrl}" />
                   <input type="hidden" name="forceAnonymousLogin"
-                      id="true">
+                      id="true" />
                   <input type="hidden" name="form_submitted_marker"
-                      id="form_submitted_marker">
+                      id="form_submitted_marker" />
                   <input class="login_button" type="submit" name="Submit"
-                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />">
+                    value="<fmt:message bundle="${messages}" key="label.login.logIn" />" />
                 </td>
               </tr>
               <tr>
