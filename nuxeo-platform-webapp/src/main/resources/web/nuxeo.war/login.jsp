@@ -313,8 +313,10 @@ body {
                 <td></td>
                 <td>
                   <% // label.login.logIn %>
+                  <% if (selectedLanguage != null) { %>
                   <input type="hidden" name="language"
                       id="language" value="<%= selectedLanguage %>" />
+                  <% } %>
                   <input type="hidden" name="requestedUrl"
                       id="requestedUrl" value="${param.requestedUrl}" />
                   <input type="hidden" name="forceAnonymousLogin"
