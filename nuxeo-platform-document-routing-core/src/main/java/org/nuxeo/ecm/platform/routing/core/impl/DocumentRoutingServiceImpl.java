@@ -583,7 +583,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                     fb,
                     persister.getParentFolderForDocumentRouteModels(session).getPathAsString(),
                     true, modelToImport.getFile());
-            // TODO clean up old steps that don't exist any more
+            if (doc == null) {
+                throw new ClientException("Can not import document");
+            }
             return doc.getAdapter(DocumentRoute.class);
         } catch (Exception e) {
             throw new ClientException(e);

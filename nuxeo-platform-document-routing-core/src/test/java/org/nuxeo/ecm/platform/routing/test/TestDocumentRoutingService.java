@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.routing.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -850,6 +851,24 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         List<URL> urls = service.getRouteModelTemplateResources();
         assertEquals(1, urls.size());
 
+        // create an initial route to test that is override at import
+        DocumentModel root = createDocumentModel(session,
+                "document-route-models-root", "DocumentRouteModelsRoot",
+                "/default-domain/");
+        assertNotNull(root);
+        DocumentModel route = createDocumentModel(session, "myRoute",
+                "DocumentRoute", "/default-domain/document-route-models-root/");
+        route.setPropertyValue("dc:coverage", "test");
+        route = session.saveDocument(route);
+        assertNotNull(route);
+        assertEquals("test", route.getPropertyValue("dc:coverage"));
+
+        DocumentModel node = createDocumentModel(session, "myNode",
+                "RouteNode",
+                "/default-domain/document-route-models-root/myRoute");
+
+        assertNotNull(node);
+
         // create a ZIP for the contrib
         tmp = File.createTempFile("nuxeoRoutingTest", ".zip");
         ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(tmp));
@@ -872,9 +891,18 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentModel modelsRoot = session.getDocument(new PathRef(
                 "/default-domain/document-route-models-root/"));
         assertNotNull(modelsRoot);
-        DocumentModel route = session.getDocument(new PathRef(
+        route = session.getDocument(new PathRef(
                 "/default-domain/document-route-models-root/myRoute"));
         assertNotNull(route);
+        // test that document was overriden
+        assertEquals("", route.getPropertyValue("dc:coverage"));
+        try {
+            node = session.getDocument(new PathRef(
+                    "/default-domain/document-route-models-root/myRoute/myNode"));
+        } catch (ClientException e) {
+            node = null;
+        }
+        assertNull(node);
         assertEquals("DocumentRoute", route.getType());
         DocumentModel step1 = session.getDocument(new PathRef(
                 "/default-domain/document-route-models-root/myRoute/Step1"));

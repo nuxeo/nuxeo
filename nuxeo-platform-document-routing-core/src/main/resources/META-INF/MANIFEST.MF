@@ -19,4 +19,5 @@ Nuxeo-Component: OSGI-INF/document-routing-core-types-contrib.xml,
  OSGI-INF/document-routing-conditional-content-template-contrib.xml,
  OSGI-INF/routing-audit-contrib.xml,
  OSGI-INF/document-routing-task-service.xml,
- OSGI-INF/pageproviders-contrib.xml
+ OSGI-INF/pageproviders-contrib.xml,
+ OSGI-INF/document-routing-nxfilemanager-plugins-contrib.xml
