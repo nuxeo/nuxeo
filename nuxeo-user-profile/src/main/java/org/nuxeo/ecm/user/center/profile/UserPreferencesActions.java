@@ -52,13 +52,15 @@ public class UserPreferencesActions extends UserProfileActions {
      * before. (done in javascript)
      */
     public void resetTimezone() {
-        // performing the locale update
         LocaleStartup localeStartup = LocaleStartup.instance();
         if (localeStartup == null) {
-            log.warn("Locale Startup not available. Can't set locale");
+            log.warn("Locale Startup not available. Can't reset time zone");
             return;
         }
+        // performing the locale update
         localeStartup.setupLocale(documentManager);
+        // performing time zone update form cookie
+        localeStartup.setupTimeZone(documentManager);
     }
 
 }
