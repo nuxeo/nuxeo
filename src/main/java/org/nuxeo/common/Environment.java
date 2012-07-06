@@ -70,6 +70,11 @@ public class Environment {
     public static final String NUXEO_WEB_DIR = "nuxeo.web.dir";
 
     /**
+     * @since 5.6
+     */
+    public static final String NUXEO_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
+
+    /**
      * The home directory.
      *
      * @deprecated never defined; use {@link #NUXEO_HOME_DIR}
