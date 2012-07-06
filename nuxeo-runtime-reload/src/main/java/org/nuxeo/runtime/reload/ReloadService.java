@@ -156,7 +156,7 @@ public interface ReloadService extends TimestampedService {
 
     /***
      * Returns the OSGI bundle name if given file can be identified as an OSGI
-     * bundle, or null.
+     * bundle, or null. the OSGI bundle can be a jar or an exploded jar on FS.
      *
      * @since 5.6
      */
