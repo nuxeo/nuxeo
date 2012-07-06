@@ -35,6 +35,11 @@ String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 %>
 
 <html>
+<%
+if (selectedLanguage != null) { %>
+<fmt:setLocale value="<%= selectedLanguage %>"/>
+<%
+}%>
 <fmt:setBundle basename="messages" var="messages"/>
 
 <head>
@@ -224,7 +229,7 @@ body {
 </head>
 
 <body>
-
+<!-- Locale: <%= selectedLanguage %> -->
 <table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
   <tbody>
     <tr class="topBar">
