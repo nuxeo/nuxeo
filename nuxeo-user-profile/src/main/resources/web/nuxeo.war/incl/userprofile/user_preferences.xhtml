@@ -20,17 +20,15 @@
                  <li>
                    <a4j:commandLink id="editUserButton"
                         action="#{userPreferencesActions.setMode('edit')}"
-                        immediate="#{action.immediate}"
                         rendered="#{userPreferencesActions.mode == 'view'}"
                         reRender="preferencesPanel">
-                        <h:outputText value="#{messages['label.userManager.editUser']}" />
+                        <h:outputText value="#{messages['label.userPreferences.updateLocale']}" />
                    </a4j:commandLink>
                  </li>
                  <li>
                    <a4j:commandLink id="resetTimezone"
                         onclick="nxtz.resetTimeZoneCookie()"
                         action="#{userPreferencesActions.resetTimezone()}"
-                        immediate="#{action.immediate}"
                         rendered="#{userPreferencesActions.mode == 'view'}"
                         reRender="preferencesPanel">
                         <h:outputText value="#{messages['label.userPreferences.resetTimeZone']}" />
