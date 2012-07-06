@@ -114,8 +114,9 @@ public class LocaleStartup {
             locale = Locale.getDefault();
         }
         LocaleSelector localeSelector = LocaleSelector.instance();
-        localeSelector.setCookieEnabled(false);
         localeSelector.setLocale(locale);
+        localeSelector.setCookieEnabled(true);
+        localeSelector.select();
     }
 
 }
