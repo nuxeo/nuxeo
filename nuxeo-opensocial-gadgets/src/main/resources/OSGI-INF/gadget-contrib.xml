@@ -16,12 +16,6 @@
       <category>Nuxeo</category>
       <icon>my_tasks.png</icon>
     </internalGadget>
-    <internalGadget name="waitingfor">
-      <mountPoint>/waitingfor</mountPoint>
-      <entryPoint>waitingfor.xml</entryPoint>
-      <category>Nuxeo</category>
-      <icon>waiting_for.png</icon>
-    </internalGadget>
     <internalGadget name="userworkspaces">
       <mountPoint>/userworkspaces</mountPoint>
       <entryPoint>userworkspaces.xml</entryPoint>

@@ -37,9 +37,6 @@
     <resource name="gadget-userworkspaces.css">
       <path>css/opensocial/gadgets/userworkspaces.css</path>
     </resource>
-    <resource name="gadget-waitingfor.css">
-      <path>css/opensocial/gadgets/waitingfor.css</path>
-    </resource>
 
     <!-- JS -->
     <!-- Common JS -->
@@ -76,9 +73,6 @@
     </resource>
     <resource name="gadget-userworkspaces.js">
       <path>scripts/opensocial/gadgets/userworkspaces.js</path>
-    </resource>
-    <resource name="gadget-waitingfor.js">
-      <path>scripts/opensocial/gadgets/waitingfor.js</path>
     </resource>
   </extension>
 
