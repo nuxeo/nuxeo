@@ -101,6 +101,10 @@ public class UserProfileActions implements Serializable {
     }
 
     public DocumentModel getUserProfileDocument() throws ClientException {
+        // Need to set selectedUser in UserManagementActions to avoid an NPE
+        // when calling updateUser() if UserManagementActions#selectedUser has
+        // been set to null meanwhile (by opening a new tab for instance).
+        getCurrentUserModel();
         if (userProfileDocument == null) {
             userProfileDocument = getUserProfileService().getUserProfileDocument(
                     documentManager);
