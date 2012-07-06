@@ -106,9 +106,12 @@ public class UserProfileActions implements Serializable {
                     documentManager);
             String locale = (String) userProfileDocument.getPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE);
             if (StringUtils.isEmpty(locale)) {
-                userProfileDocument.setPropertyValue(
-                        UserProfileConstants.USER_PROFILE_LOCALE,
-                        localeSelector.getLocaleString());
+                String currentLocale = localeSelector.getLocaleString();
+                if (!StringUtils.isEmpty(currentLocale)) {
+                    userProfileDocument.setPropertyValue(
+                            UserProfileConstants.USER_PROFILE_LOCALE,
+                            currentLocale);
+                }
             }
         }
         return userProfileDocument;
