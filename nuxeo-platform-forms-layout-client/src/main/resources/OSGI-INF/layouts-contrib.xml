@@ -1616,7 +1616,7 @@
                   <field>template</field>
                 </fields>
                 <properties mode="any">
-                  <property name="resourceName">xhtml_templates</property>
+                  <property name="resourceName">widget_templates</property>
                 </properties>
                 <properties widgetMode="any">
                   <property name="required">true</property>
@@ -2637,7 +2637,7 @@
                   <field>template</field>
                 </fields>
                 <properties mode="any">
-                  <property name="resourceName">xhtml_templates</property>
+                  <property name="resourceName">layout_templates</property>
                 </properties>
                 <widgetModes>
                   <mode value="any">hidden</mode>

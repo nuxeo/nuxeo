@@ -1529,7 +1529,7 @@
                   <field>template</field>
                 </fields>
                 <properties mode="any">
-                  <property name="resourceName">xhtml_templates</property>
+                  <property name="resourceName">layout_templates</property>
                 </properties>
               </widget>
               <widget name="styleClass" type="text">
