@@ -34,6 +34,22 @@ public class ReloadServiceInvoker {
 
     protected Method undeployBundle;
 
+    /**
+     * Method to run the deployment preprocessor, previously handled by the
+     * deployBundle method
+     *
+     * @since 5.6
+     */
+    protected Method runDeploymentPreprocessor;
+
+    /**
+     * Method to install local web resources, as the deployment preprocessor
+     * won't see dev bundles as defined by Nuxeo IDE
+     *
+     * @since 5.6
+     */
+    protected Method installWebResources;
+
     protected Method flush;
 
     protected Method reload;
@@ -53,6 +69,10 @@ public class ReloadServiceInvoker {
                 new Class<?>[] { File.class });
         undeployBundle = reloadServiceClass.getDeclaredMethod("undeployBundle",
                 new Class<?>[] { String.class });
+        runDeploymentPreprocessor = reloadServiceClass.getDeclaredMethod(
+                "runDeploymentPreprocessor", new Class<?>[0]);
+        installWebResources = reloadServiceClass.getDeclaredMethod(
+                "installWebResources", new Class<?>[] { File.class });
         flush = reloadServiceClass.getDeclaredMethod("flush", new Class<?>[0]);
         reload = reloadServiceClass.getDeclaredMethod("reload", new Class<?>[0]);
         flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents",
@@ -63,11 +83,16 @@ public class ReloadServiceInvoker {
 
     protected void hotDeployBundles(DevBundle[] bundles) throws Exception {
         boolean hasSeam = false;
+        // rebuild existing war, this will remove previously copied web
+        // resources
+        runDeploymentPreprocessor();
         for (DevBundle bundle : bundles) {
             if (bundle.devBundleType == DevBundleType.Bundle) {
-                // TODO: use other existing method to be able to reload the
-                // resources classpath?
                 bundle.name = (String) deployBundle.invoke(reloadService,
+                        new Object[] { bundle.file() });
+                // install its web resources
+                // FIXME: this does not handle translation files correctly
+                installWebResources.invoke(reloadService,
                         new Object[] { bundle.file() });
             } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
                 hasSeam = true;
@@ -84,14 +109,15 @@ public class ReloadServiceInvoker {
         for (DevBundle bundle : bundles) {
             if (bundle.devBundleType.equals(DevBundleType.Bundle)
                     && bundle.name != null) {
-                // TODO: use other API to reload file instead, to be able to
-                // reload resources (?)
                 undeployBundle.invoke(reloadService,
                         new Object[] { bundle.name });
             } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
                 hasSeam = true;
             }
         }
+        // run deployment preprocessor again: this will remove potential
+        // resources that were copied in the war at deploy
+        runDeploymentPreprocessor();
         if (hasSeam) {
             flushSeam.invoke(reloadService);
         }
@@ -109,4 +135,9 @@ public class ReloadServiceInvoker {
     protected void reloadSeam() throws Exception {
         reloadSeam.invoke(reloadService);
     }
+
+    protected void runDeploymentPreprocessor() throws Exception {
+        runDeploymentPreprocessor.invoke(reloadService);
+    }
+
 }
