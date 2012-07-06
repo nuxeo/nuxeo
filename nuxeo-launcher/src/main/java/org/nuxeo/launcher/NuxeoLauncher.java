@@ -549,7 +549,8 @@ public abstract class NuxeoLauncher {
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_LOG_DIR));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_DATA_DIR));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_TMP_DIR));
-        if (!DEFAULT_NUXEO_CONTEXT_PATH.equals(getNuxeoProperty(Environment.NUXEO_CONTEXT_PATH))) {
+        if (!DEFAULT_NUXEO_CONTEXT_PATH.equals(configurationGenerator.getUserConfig().getProperty(
+                Environment.NUXEO_CONTEXT_PATH))) {
             nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_CONTEXT_PATH));
         }
         if (overrideJavaTmpDir) {
