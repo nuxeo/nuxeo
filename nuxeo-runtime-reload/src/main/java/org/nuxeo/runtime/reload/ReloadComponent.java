@@ -17,11 +17,9 @@
 package org.nuxeo.runtime.reload;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.commons.logging.Log;
