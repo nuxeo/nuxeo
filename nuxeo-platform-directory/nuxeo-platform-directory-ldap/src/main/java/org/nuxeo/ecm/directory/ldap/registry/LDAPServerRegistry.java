@@ -17,23 +17,20 @@
 
 package org.nuxeo.ecm.directory.ldap.registry;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
+ * Registry for LDAP servers
+ *
  * @since 5.6
  */
 public class LDAPServerRegistry extends
-        ContributionFragmentRegistry<LDAPServerDescriptor> {
+        SimpleContributionRegistry<LDAPServerDescriptor> {
 
     public static final Log log = LogFactory.getLog(LDAPServerRegistry.class);
-
-    private final Map<String, LDAPServerDescriptor> servers = new HashMap<String, LDAPServerDescriptor>();
 
     @Override
     public String getContributionId(LDAPServerDescriptor contrib) {
@@ -41,39 +38,22 @@ public class LDAPServerRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id, LDAPServerDescriptor descriptor,
+    public void contributionUpdated(String id, LDAPServerDescriptor contrib,
             LDAPServerDescriptor newOrigContrib) {
-        String descriptorName = descriptor.getName();
-        servers.put(descriptorName, descriptor);
-        log.info("server registered: " + descriptorName);
+        super.contributionUpdated(id, contrib, newOrigContrib);
+        log.info("server registered: " + contrib.getName());
     }
 
     @Override
-    public void contributionRemoved(String id, LDAPServerDescriptor descriptor) {
-        String descriptorName = descriptor.getName();
-        servers.remove(descriptorName);
-        log.info("server unregistered: " + descriptorName);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public LDAPServerDescriptor clone(LDAPServerDescriptor orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(LDAPServerDescriptor src, LDAPServerDescriptor dst) {
-        throw new UnsupportedOperationException();
+    public void contributionRemoved(String id, LDAPServerDescriptor origContrib) {
+        super.contributionRemoved(id, origContrib);
+        log.info("server unregistered: " + origContrib.getName());
     }
 
     // API
 
     public LDAPServerDescriptor getServer(String name) {
-        return servers.get(name);
+        return getCurrentContribution(name);
     }
 
 }

@@ -138,11 +138,7 @@ public class ActionRegistry implements Serializable {
         if (action == null) {
             return null;
         }
-        try {
-            return action.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new Error(e); // should never happen
-        }
+        return action.clone();
     }
 
     protected static List<Action> sortActions(Collection<Action> actions) {

@@ -17,12 +17,10 @@
 package org.nuxeo.ecm.platform.forms.layout.core.registries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry holding widget type definitions for a given category.
@@ -30,16 +28,13 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @since 5.5
  */
 public class WidgetTypeDefinitionRegistry extends
-        ContributionFragmentRegistry<WidgetTypeDefinition> {
+        SimpleContributionRegistry<WidgetTypeDefinition> {
 
     protected final String category;
-
-    protected final Map<String, WidgetTypeDefinition> widgetTypeDefs;
 
     public WidgetTypeDefinitionRegistry(String category) {
         super();
         this.category = category;
-        this.widgetTypeDefs = new HashMap<String, WidgetTypeDefinition>();
     }
 
     public String getCategory() {
@@ -51,35 +46,9 @@ public class WidgetTypeDefinitionRegistry extends
         return contrib.getName();
     }
 
-    @Override
-    public void contributionUpdated(String id, WidgetTypeDefinition contrib,
-            WidgetTypeDefinition newOrigContrib) {
-        widgetTypeDefs.put(id, contrib);
-    }
-
-    @Override
-    public void contributionRemoved(String id, WidgetTypeDefinition origContrib) {
-        widgetTypeDefs.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public WidgetTypeDefinition clone(WidgetTypeDefinition orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(WidgetTypeDefinition src, WidgetTypeDefinition dst) {
-        throw new UnsupportedOperationException();
-    }
-
     public List<WidgetTypeDefinition> getDefinitions() {
         List<WidgetTypeDefinition> res = new ArrayList<WidgetTypeDefinition>();
-        for (WidgetTypeDefinition item : widgetTypeDefs.values()) {
+        for (WidgetTypeDefinition item : currentContribs.values()) {
             if (item != null) {
                 res.add(item);
             }
@@ -88,7 +57,7 @@ public class WidgetTypeDefinitionRegistry extends
     }
 
     public WidgetTypeDefinition getDefinition(String id) {
-        return widgetTypeDefs.get(id);
+        return getCurrentContribution(id);
     }
 
 }

@@ -388,10 +388,11 @@ public class TestAction extends NXRuntimeTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testActionProperties() {
+    public void testActionProperties() throws Exception {
         Action action = as.getAction("actionTestProperties");
         assertTrue(action.getAvailable());
         Map<String, Serializable> properties = action.getProperties();
+        assertEquals(3, properties.size());
         // Test single property
         assertEquals("property", properties.get("property"));
         // Test property list
@@ -408,6 +409,16 @@ public class TestAction extends NXRuntimeTestCase {
         // Test sub property map
         Map<String, Serializable> subMapProperties = (Map<String, Serializable>) mapProperties.get("subMap");
         assertEquals("subMapProperty", subMapProperties.get("subMapProperty"));
+
+        // deploy override
+        deployContrib("org.nuxeo.ecm.actions.tests",
+                "test-actions-override-contrib.xml");
+
+        action = as.getAction("actionTestProperties");
+        properties = action.getProperties();
+        assertEquals(4, properties.size());
+        // Test added single property
+        assertEquals("newProperty", properties.get("newProperty"));
     }
 
 }

@@ -17,13 +17,11 @@
 package org.nuxeo.ecm.directory.registry;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.directory.DirectoryFactory;
 import org.nuxeo.ecm.directory.DirectoryFactoryProxy;
-import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Tracks available factories.
@@ -31,9 +29,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @since 5.6
  */
 public class DirectoryFactoryRegistry extends
-        ContributionFragmentRegistry<DirectoryFactory> {
-
-    private Map<String, DirectoryFactory> factories = new HashMap<String, DirectoryFactory>();
+        SimpleContributionRegistry<DirectoryFactory> {
 
     @Override
     public String getContributionId(DirectoryFactory contrib) {
@@ -43,44 +39,18 @@ public class DirectoryFactoryRegistry extends
         return contrib.getName();
     }
 
-    @Override
-    public void contributionUpdated(String id, DirectoryFactory contrib,
-            DirectoryFactory newOrigContrib) {
-        factories.put(id, contrib);
-    }
-
-    @Override
-    public void contributionRemoved(String id, DirectoryFactory origContrib) {
-        factories.remove(id);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
-    }
-
-    @Override
-    public DirectoryFactory clone(DirectoryFactory orig) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void merge(DirectoryFactory src, DirectoryFactory dst) {
-        throw new UnsupportedOperationException();
-    }
-
     // API
 
     public List<DirectoryFactory> getFactories() {
         List<DirectoryFactory> facts = new ArrayList<DirectoryFactory>();
-        if (factories != null) {
-            facts.addAll(factories.values());
+        if (currentContribs != null) {
+            facts.addAll(currentContribs.values());
         }
         return facts;
     }
 
     public DirectoryFactory getFactory(String name) {
-        return factories.get(name);
+        return getCurrentContribution(name);
     }
 
 }

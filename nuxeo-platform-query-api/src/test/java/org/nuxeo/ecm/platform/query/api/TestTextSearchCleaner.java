@@ -29,33 +29,48 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:ei@nuxeo.com">Eugen Ionica</a>
+ * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  *
  */
 public class TestTextSearchCleaner extends NXRuntimeTestCase {
 
     @Test
     public void testCleaner() throws Exception {
-        assertEquals("= '+a'", NXQLQueryBuilder.serializeFullText("a"));
-        assertEquals("= '+a +b'", NXQLQueryBuilder.serializeFullText("a b"));
-        assertEquals("= '+a +b'", NXQLQueryBuilder.serializeFullText(" a b "));
-        assertEquals("= '+a +b'", NXQLQueryBuilder.serializeFullText("a  b"));
-        assertEquals("= '+a +b'", NXQLQueryBuilder.serializeFullText("a & b"));
-        assertEquals("= '+a +b'", NXQLQueryBuilder.serializeFullText("a : b"));
-        assertEquals("= '+a +b'", NXQLQueryBuilder.serializeFullText("a | b"));
+        assertEquals("= 'a'", NXQLQueryBuilder.serializeFullText("a"));
+        assertEquals("= 'a b'", NXQLQueryBuilder.serializeFullText("a b"));
+        assertEquals("= 'a b'", NXQLQueryBuilder.serializeFullText(" a b "));
+        assertEquals("= 'a b'", NXQLQueryBuilder.serializeFullText("a  b"));
+        assertEquals("= 'a b'", NXQLQueryBuilder.serializeFullText("a & b"));
+        assertEquals("= 'a b'", NXQLQueryBuilder.serializeFullText("a : b"));
+        assertEquals("= 'a b'", NXQLQueryBuilder.serializeFullText("a | b"));
 
-        assertEquals("= '+a +b'", NXQLQueryBuilder.serializeFullText("a { b"));
+        assertEquals("= 'a b'", NXQLQueryBuilder.serializeFullText("a { b"));
 
-        assertEquals("= '+a +b +c +d +e +f'",
+        assertEquals("= 'a b c d e f'",
                 NXQLQueryBuilder.serializeFullText("a#b|c  d+e*f"));
+        assertEquals(
+                "= '\"a b\"'",
+                NXQLQueryBuilder.serializeFullText("\"a b\""));
+        assertEquals(
+                "= '\"a b\"'",
+                NXQLQueryBuilder.serializeFullText("\"a-b\""));
+        assertEquals(
+                "= '\"a -b \"'",
+                NXQLQueryBuilder.serializeFullText("\"a -b \""));
 
         assertEquals(
-                "= '+a +b'",
+                "= 'a b'",
                 NXQLQueryBuilder.serializeFullText("a !#$%&()*+,-./:;<=>?@^`{|}~ b"));
 
         // raw sanitizeFulltextInput API that does not wrap the input with the
         // quote and the predicate operator
-        assertEquals("+some +stuff",
+        assertEquals("some stuff",
                 NXQLQueryBuilder.sanitizeFulltextInput("some & stuff\\"));
+
+        // test negative queries
+        assertEquals(
+                "= 'a -b'",
+                NXQLQueryBuilder.serializeFullText("a !#$%&()*+,-./:;<=>?@^`{|}~ -b"));
     }
 
     @Test
@@ -69,10 +84,10 @@ public class TestTextSearchCleaner extends NXRuntimeTestCase {
         String s = Framework.getProperty(NXQLQueryBuilder.IGNORED_CHARS_KEY);
         assertEquals("&/{}()", s);
         assertNotNull(s);
-        assertEquals("= '+a +$ +b'",
+        assertEquals("= 'a $ b'",
                 NXQLQueryBuilder.serializeFullText("a $ b"));
 
-        assertEquals("= '+10.3'", NXQLQueryBuilder.serializeFullText("10.3"));
+        assertEquals("= '10.3'", NXQLQueryBuilder.serializeFullText("10.3"));
         myProps.delete();
         Framework.getRuntime().reloadProperties();
 

@@ -18,6 +18,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -68,6 +69,7 @@ public class DublinCoreListener implements EventListener {
         if (!eventId.equals(DOCUMENT_UPDATED)
                 && !eventId.equals(DOCUMENT_CREATED)
                 && !eventId.equals(BEFORE_DOC_UPDATE)
+                && !eventId.equals(TRANSITION_EVENT)
                 && !eventId.equals(DOCUMENT_PUBLISHED)) {
             return;
         }
@@ -104,7 +106,8 @@ public class DublinCoreListener implements EventListener {
             }
         }
 
-        if (eventId.equals(BEFORE_DOC_UPDATE)) {
+        if (eventId.equals(BEFORE_DOC_UPDATE)
+                || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
         } else if (eventId.equals(DOCUMENT_CREATED)) {

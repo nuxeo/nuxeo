@@ -45,11 +45,7 @@ public class ActionContributionHandler extends
 
     @Override
     public Action clone(Action object) {
-        try {
-            return object.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new Error(e); // never happens
-        }
+        return object.clone();
     }
 
     @Override
@@ -175,5 +171,23 @@ public class ActionContributionHandler extends
         if (newAccessKey != null && !newAccessKey.isEmpty()) {
             dest.setAccessKey(newAccessKey);
         }
+
+        // properties
+        ActionPropertiesDescriptor newProps = source.getPropertiesDescriptor();
+        if (newProps != null) {
+            boolean append = newProps.isAppend();
+            if (!append) {
+                dest.setPropertiesDescriptor(newProps);
+            } else {
+                ActionPropertiesDescriptor oldProps = dest.getPropertiesDescriptor();
+                if (oldProps != null) {
+                    oldProps.merge(newProps);
+                    dest.setPropertiesDescriptor(oldProps);
+                } else {
+                    dest.setPropertiesDescriptor(newProps);
+                }
+            }
+        }
+
     }
 }

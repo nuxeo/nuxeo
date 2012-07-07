@@ -41,8 +41,7 @@ public class LDAPDirectoryRegistry extends
 
     @Override
     public String getContributionId(LDAPDirectoryDescriptor contrib) {
-        // TODO Auto-generated method stub
-        return null;
+        return contrib.getName();
     }
 
     @Override
@@ -63,9 +62,8 @@ public class LDAPDirectoryRegistry extends
             try {
                 dir.shutdown();
             } catch (DirectoryException e) {
-                log.error(
-                        String.format("Error while shutting down directory '%s'", id),
-                        e);
+                log.error(String.format(
+                        "Error while shutting down directory '%s'", id), e);
             }
         }
         log.info("directory unregistered: " + directoryName);
