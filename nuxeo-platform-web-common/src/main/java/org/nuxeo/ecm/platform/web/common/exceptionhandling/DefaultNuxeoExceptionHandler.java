@@ -52,7 +52,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     /**
      * Puts a marker in request to avoid looping over the exception handling
      * mechanism
-     *
+     * 
      * @throws ServletException if request has already been marked as handled.
      *             The initial exception is then wrapped.
      */
@@ -99,8 +99,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                     unwrappedException, request, response);
             request.setAttribute("exception_message",
                     unwrappedException.getLocalizedMessage());
-            request.setAttribute("user_message", getUserMessage(
-                    handler.getMessage(), request.getLocale()));
+            request.setAttribute("user_message",
+                    getUserMessage(handler.getMessage(), request.getLocale()));
             request.setAttribute("stackTrace", stackTrace);
             request.setAttribute("securityError",
                     ExceptionHelper.isSecurityError(unwrappedException));

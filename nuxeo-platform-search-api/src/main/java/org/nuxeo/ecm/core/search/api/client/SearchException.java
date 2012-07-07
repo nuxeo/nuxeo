@@ -19,13 +19,11 @@
 
 package org.nuxeo.ecm.core.search.api.client;
 
-import org.nuxeo.ecm.core.api.WrappedException;
-
 /**
  * Searching related exception.
- *
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
+ * 
  */
 public class SearchException extends Exception {
 
@@ -39,11 +37,11 @@ public class SearchException extends Exception {
     }
 
     public SearchException(String message, Throwable cause) {
-        super(message, WrappedException.wrap(cause));
+        super(message, cause);
     }
 
     public SearchException(Throwable cause) {
-        super(WrappedException.wrap(cause));
+        super(cause);
     }
 
 }
