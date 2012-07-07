@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 
 /**
  * Handles selected action tabs and raised events on current tab change.
- *
+ * 
  * @see WebActions#CURRENT_TAB_CHANGED_EVENT
  * @since 5.4.2
  */
@@ -44,8 +44,8 @@ public class TabActionsSelection implements Serializable {
     private static final Log log = LogFactory.getLog(TabActionsSelection.class);
 
     /**
-     * Map of current tab actions, with category as key and corresponding
-     * action as value.
+     * Map of current tab actions, with category as key and corresponding action
+     * as value.
      * <p>
      * Use a linked has map to preserve order when using several selections as
      * sub tabs management needs order to be preserved.
@@ -80,8 +80,12 @@ public class TabActionsSelection implements Serializable {
                         categoryFound = true;
                         Action oldAction = currentTabActions.get(category);
                         currentTabActions.put(category, tabAction);
-                        raiseEventOnCurrentTabChange(category,
-                                tabAction.getId());
+                        if (oldAction == null
+                                || !oldAction.getId().equals(tabAction.getId())) {
+                            // only raise the event if action actually changed
+                            raiseEventOnCurrentTabChange(category,
+                                    tabAction.getId());
+                        }
                         if (oldAction != null) {
                             // additional cleanup of possible sub tabs
                             resetCurrentTabs(getSubTabCategory(oldAction.getId()));
@@ -147,7 +151,7 @@ public class TabActionsSelection implements Serializable {
     /**
      * Returns current tab ids as a string, encoded as is:
      * CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2:SUBTAB_ACTION_ID_2,...
-     *
+     * 
      * @since 5.4.2
      */
     public String getCurrentTabIds() {
@@ -200,7 +204,7 @@ public class TabActionsSelection implements Serializable {
      * <p>
      * The resulting string looks like:
      * CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
-     *
+     * 
      * @since 5.4.2
      */
     public void setCurrentTabIds(ActionManager actionManager,
@@ -256,7 +260,7 @@ public class TabActionsSelection implements Serializable {
 
     /**
      * Resets all current tabs information.
-     *
+     * 
      * @since 5.4.2
      */
     public void resetCurrentTabs() {
@@ -313,7 +317,7 @@ public class TabActionsSelection implements Serializable {
      * <p>
      * The event is always sent with 2 parameters: the category and tab id (the
      * tab id can be null when resetting current tab for given category).
-     *
+     * 
      * @see WebActions#CURRENT_TAB_CHANGED_EVENT
      */
     protected void raiseEventOnCurrentTabChange(String category, String tabId) {
