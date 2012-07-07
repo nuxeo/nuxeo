@@ -17,7 +17,7 @@
 
 package org.nuxeo.ecm.quota.size;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
-public class QuotaExceededException extends ClientException {
+public class QuotaExceededException extends RecoverableClientException {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,7 +38,8 @@ public class QuotaExceededException extends ClientException {
     protected String addedDocumentID;
 
     public QuotaExceededException(DocumentModel targetDocument, String message) {
-        super(message + "on " + targetDocument.getPathAsString());
+        super(message, "label.quotaException." + message,
+                new String[] { targetDocument.getPathAsString() });
         this.targetPath = targetDocument.getPathAsString();
     }
 
@@ -50,10 +51,12 @@ public class QuotaExceededException extends ClientException {
 
     public QuotaExceededException(String targetDocumentPath,
             String addedDocumentID, long quotaValue) {
-        super("Quota Exceeded on " + targetDocumentPath);
+        super("QuotaExceeded", "label.quotaException.QuotaExceeded",
+                new String[] { targetDocumentPath, addedDocumentID,
+                        new Long(quotaValue).toString() });
         this.quotaValue = quotaValue;
-        this.targetPath = targetDocumentPath;
         this.addedDocumentID = addedDocumentID;
+        this.targetPath = targetDocumentPath;
     }
 
     public long getQuotaValue() {

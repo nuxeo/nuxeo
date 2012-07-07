@@ -114,7 +114,7 @@ public class QuotaAwareDocument implements QuotaAware {
         long existingTotal = getTotalSize();
         if (existingTotal > maxSize && maxSize > 0) {
             throw new QuotaExceededException(doc,
-                    "Can not set the quota to a lower value that the current size");
+                    "canNotSetQuotaToALowerValueThanCurrentSize");
         }
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, maxSize);
         if (save) {
