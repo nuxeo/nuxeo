@@ -947,7 +947,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Display</label>
+        <label mode="any">Widgets Display</label>
       </labels>
       <helpLabels>
         <label mode="any">
@@ -961,6 +961,7 @@
       <selectOptions>
         <option itemLabel="Label on the left (default)" itemValue="label_left" />
         <option itemLabel="Label on top" itemValue="label_top" />
+        <option itemLabel="No Label" itemValue="no_label" />
       </selectOptions>
     </widget>
 
@@ -1615,7 +1616,7 @@
                   <field>template</field>
                 </fields>
                 <properties mode="any">
-                  <property name="resourceName">xhtml_templates</property>
+                  <property name="resourceName">widget_templates</property>
                 </properties>
                 <properties widgetMode="any">
                   <property name="required">true</property>
@@ -2636,7 +2637,7 @@
                   <field>template</field>
                 </fields>
                 <properties mode="any">
-                  <property name="resourceName">xhtml_templates</property>
+                  <property name="resourceName">layout_templates</property>
                 </properties>
                 <widgetModes>
                   <mode value="any">hidden</mode>
