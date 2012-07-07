@@ -119,7 +119,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
                 dueDate != null ? DateParser.formatW3CDateTime(dueDate) : "");
         obj.put("documentTitle", getDocument().getTitle());
         obj.put("documentLink",
-                getDocumentLink(!createdFromCreateTaskOperation));
+                getDocumentLink(false));
         Date startDate = getStartDate();
         obj.put("startDate",
                 startDate != null ? DateParser.formatW3CDateTime(startDate)
