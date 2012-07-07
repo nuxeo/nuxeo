@@ -23,6 +23,7 @@
 
       <!-- NXP-5988: patch bijection interceptor -->
       <!-- <value>org.jboss.seam.core.BijectionInterceptor</value> -->
+      <value>org.nuxeo.ecm.platform.ui.web.util.NuxeoExceptionInterceptor</value>
       <value>org.nuxeo.ecm.platform.ui.web.util.NuxeoBijectionInterceptor</value>
 
       <value>org.jboss.seam.transaction.RollbackInterceptor</value>
