@@ -14,10 +14,9 @@
 
 package org.nuxeo.ecm.core.api;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class WrappedException extends Exception {
 
@@ -35,11 +34,18 @@ public class WrappedException extends Exception {
     }
 
     public boolean sameAs(String className) {
-        return this.className == null
-            ?  className == null : this.className.equals(className);
+        return this.className == null ? className == null
+                : this.className.equals(className);
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    /**
+     * "No need to wrap Exception since RMI is not supported anymore"
+     * 
+     * @param t
+     * @return
+     */
+    @Deprecated
+    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     public static WrappedException wrap(Throwable t) {
         if (t == null) {
             return null;
@@ -50,7 +56,7 @@ public class WrappedException extends Exception {
         String exceptionClass = t.getClass().getName();
         String message = "Exception: " + exceptionClass + ". message: "
                 + t.getMessage();
-        WrappedException cause =  wrap(t.getCause());
+        WrappedException cause = wrap(t.getCause());
         WrappedException we = new WrappedException(message, cause);
         we.className = exceptionClass;
         we.setStackTrace(t.getStackTrace());

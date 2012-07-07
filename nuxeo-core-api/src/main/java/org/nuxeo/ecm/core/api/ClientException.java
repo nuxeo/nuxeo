@@ -16,7 +16,7 @@ package org.nuxeo.ecm.core.api;
 
 /**
  * The most generic exception thrown by the Nuxeo Core.
- *
+ * 
  * @author bstefanescu
  */
 public class ClientException extends Exception {
@@ -35,11 +35,11 @@ public class ClientException extends Exception {
     }
 
     public ClientException(String message, Throwable cause) {
-        super(message, WrappedException.wrap(cause));
+        super(message, cause);
     }
 
     public ClientException(Throwable cause) {
-        super(WrappedException.wrap(cause));
+        super(cause);
     }
 
     public ClientException(ClientException cause) {

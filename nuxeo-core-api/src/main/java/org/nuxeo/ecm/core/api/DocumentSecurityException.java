@@ -16,9 +16,9 @@ package org.nuxeo.ecm.core.api;
 
 /**
  * Class for Security Exceptions
- *
+ * 
  * @author tiry
- *
+ * 
  */
 public class DocumentSecurityException extends ClientException {
 
@@ -29,8 +29,7 @@ public class DocumentSecurityException extends ClientException {
     }
 
     public DocumentSecurityException(String message, Throwable cause) {
-        super(message, WrappedException.wrap(cause));
+        super(message, cause);
     }
-
 
 }
