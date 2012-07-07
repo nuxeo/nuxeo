@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -80,6 +81,8 @@ public class ExceptionHandler {
                 || (cause instanceof SecurityException)
                 || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
             return 401;
+        } else if (cause instanceof NoSuchDocumentException) {
+            return 404;
         } else if (cause instanceof ClientException) {
             Throwable ccause = cause.getCause();
             if (ccause != null && ccause.getMessage() != null) {
@@ -134,7 +137,6 @@ public class ExceptionHandler {
         pw.flush();
         return writer.toString();
     }
-
 
     public Throwable getCause() {
         return cause;
