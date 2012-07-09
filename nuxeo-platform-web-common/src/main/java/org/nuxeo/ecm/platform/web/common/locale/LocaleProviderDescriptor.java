@@ -20,9 +20,6 @@ package org.nuxeo.ecm.platform.web.common.locale;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-/**
- * @since 5.6
- */
 @XObject("provider")
 public class LocaleProviderDescriptor {
 

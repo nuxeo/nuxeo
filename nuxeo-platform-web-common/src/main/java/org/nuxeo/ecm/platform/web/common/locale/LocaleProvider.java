@@ -24,8 +24,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * Provides locale and timezone.
- *
- * @since 5.6
  */
 public interface LocaleProvider {
 

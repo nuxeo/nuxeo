@@ -23,8 +23,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Allow external components to provide locale and timezone to be used in the
  * application.
- *
- * @since 5.6
  */
 public class LocaleComponent extends DefaultComponent {
 
