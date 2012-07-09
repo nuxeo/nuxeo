@@ -1,21 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
- <parent>
+  <parent>
     <groupId>org.nuxeo.template.rendering</groupId>
     <artifactId>nuxeo-template-rendering-parent</artifactId>
     <version>5.6-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-package</artifactId>
   <name>Template Rendering Package</name>
   <packaging>zip</packaging>
 
   <dependencies>
-   <dependency>
+    <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-api</artifactId>
     </dependency>
@@ -43,9 +43,7 @@
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-samples</artifactId>
     </dependency>
-
   </dependencies>
-
 
   <build>
     <plugins>

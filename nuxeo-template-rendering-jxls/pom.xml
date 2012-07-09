@@ -1,18 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.template.rendering</groupId>
     <artifactId>nuxeo-template-rendering-parent</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
 
-  <properties>
-    <jxls.version>1.0</jxls.version>
-  </properties>
-
-
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-jxls</artifactId>
   <name>Template Rendering JXLS plugin</name>
@@ -72,12 +66,10 @@
     <dependency>
       <groupId>net.sf.jxls</groupId>
       <artifactId>jxls-core</artifactId>
-      <version>${jxls.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jxls</groupId>
       <artifactId>jxls-reader</artifactId>
-      <version>${jxls.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -111,13 +103,9 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>
-                nuxeo-platform-content-template-manager
-            </artifactId>
+      <artifactId>nuxeo-platform-content-template-manager</artifactId>
       <scope>test</scope>
     </dependency>
-
-
   </dependencies>
 
 </project>

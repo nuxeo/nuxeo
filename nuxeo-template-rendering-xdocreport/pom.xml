@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo.template.rendering</groupId>
@@ -7,12 +8,6 @@
     <version>5.6-SNAPSHOT</version>
   </parent>
 
-  <properties>
-    <xdocreport.version>0.9.8-SNAPSHOT</xdocreport.version>
-  </properties>
-
-
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-xdocreport</artifactId>
   <name>Template Rendering XDocReport plugin </name>
@@ -72,49 +67,40 @@
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.converter</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.core</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.document</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.document.ods</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.template</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
     <dependency>
       <groupId>fr.opensagres.xdocreport</groupId>
       <artifactId>fr.opensagres.xdocreport.remoting.resources</artifactId>
-      <version>${xdocreport.version}</version>
     </dependency>
-    <!-- end docx report -->
+
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
@@ -195,9 +181,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>
-                nuxeo-platform-content-template-manager
-            </artifactId>
+      <artifactId>nuxeo-platform-content-template-manager</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -205,22 +189,6 @@
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>XDocReport Snapshots</id>
-      <url>
-            https://oss.sonatype.org/content/repositories/snapshots/
-          </url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
 </project>

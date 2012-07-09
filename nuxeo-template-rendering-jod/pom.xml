@@ -1,18 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.template.rendering</groupId>
     <artifactId>nuxeo-template-rendering-parent</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
 
-  <properties>
-    <jodreport.version>2.4.0</jodreport.version>
-  </properties>
-
-
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-jod</artifactId>
   <name>Template Rendering JODReport plugin</name>
@@ -22,7 +16,7 @@
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-api</artifactId>
     </dependency>
-      <dependency>
+    <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-core</artifactId>
     </dependency>
@@ -72,14 +66,12 @@
     <dependency>
       <groupId>net.sf.jodreports</groupId>
       <artifactId>jodreports</artifactId>
-      <version>${jodreport.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
       <scope>compile</scope>
     </dependency>
-
 
     <dependency>
       <groupId>javax.transaction</groupId>
@@ -110,9 +102,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>
-                nuxeo-platform-content-template-manager
-            </artifactId>
+      <artifactId>nuxeo-platform-content-template-manager</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

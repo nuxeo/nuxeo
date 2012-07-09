@@ -11,7 +11,9 @@
     <artifact:print output="${maven.project.build.directory}/dependency-tree.log" />
   </target>
 
-  <target name="build" depends="expand" description="Build Fico CM Nuxeo plugins">
+  <target name="build"
+          depends="expand"
+          description="Build Fico CM Nuxeo plugins">
     <tstamp />
     <delete failonerror="false"
             dir="${maven.project.build.directory}/marketplace" />
@@ -35,23 +37,24 @@
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-core::jar" />
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-web::jar" />
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-rendition-publisher::jar" />
-    </copy> 
-
+    </copy>
 
     <copy todir="${maven.project.build.directory}/marketplace/install/libs">
       <artifact:set>
         <includes>
-          <artifact groupId="fr.opensagres.xdocreport" scope="!test" type="!pom" />
+          <artifact groupId="fr.opensagres.xdocreport"
+                    scope="!test"
+                    type="!pom" />
           <artifact groupId="net.sf.jodreports" scope="!test" type="!pom" />
           <artifact groupId="net.sf.jxls" scope="!test" type="!pom" />
           <artifact groupId="org.apache.commons" scope="!test" type="!pom" />
         </includes>
       </artifact:set>
-    </copy> 
+    </copy>
 
     <!-- rename jexl2 so that update system does not remplace jexl 1 lib that is already part of Nuxeo -->
-    <nx:rename from="${maven.project.build.directory}/marketplace/install/libs/commons-jexl-*" to="${maven.project.build.directory}/marketplace/install/libs/commons-jexl2-do-not-remove-2.jar"/>
-
+    <nx:rename from="${maven.project.build.directory}/marketplace/install/libs/commons-jexl-*"
+               to="${maven.project.build.directory}/marketplace/install/libs/commons-jexl2-do-not-remove-2.jar" />
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${maven.project.build.directory}/marketplace" />

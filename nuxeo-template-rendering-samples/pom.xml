@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo.template.rendering</groupId>
@@ -7,11 +8,6 @@
     <version>5.6-SNAPSHOT</version>
   </parent>
 
-  <properties>
-  </properties>
-
-
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-samples</artifactId>
   <name>Template Rendering Samples package</name>
@@ -136,9 +132,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>
-                nuxeo-platform-content-template-manager
-            </artifactId>
+      <artifactId>nuxeo-platform-content-template-manager</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
