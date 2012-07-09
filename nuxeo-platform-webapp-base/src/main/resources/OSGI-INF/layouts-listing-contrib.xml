@@ -963,7 +963,7 @@
       <fields>
         <field>data.currentLifeCycleState</field>
       </fields>
-      <properties mode="view">
+      <properties mode="any">
         <property name="localize">true</property>
       </properties>
     </widget>
