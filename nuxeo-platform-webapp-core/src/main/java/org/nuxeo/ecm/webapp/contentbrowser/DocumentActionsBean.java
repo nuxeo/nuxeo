@@ -130,6 +130,18 @@ public class DocumentActionsBean extends InputController implements
     @In(create = true)
     protected transient DeleteActions deleteActions;
 
+    /**
+     * Boolean request parameter used to restore current tabs (current tab and
+     * subtab) after edition.
+     * <p>
+     * This is useful when editing the document from a layout toggled to edit
+     * mode from summary-like page.
+     *
+     * @since 5.6
+     */
+    @RequestParameter
+    protected Boolean restoreCurrentTabs;
+
     @In(create = true)
     protected transient WebActions webActions;
 
@@ -286,6 +298,14 @@ public class DocumentActionsBean extends InputController implements
 
     protected String updateDocument(DocumentModel doc) throws ClientException {
         try {
+            String tabId = null;
+            String subTabId = null;
+            boolean restoreTabs = Boolean.TRUE.equals(restoreCurrentTabs);
+            if (restoreTabs) {
+                // save current tabs
+                tabId = webActions.getCurrentTabId();
+                subTabId = webActions.getCurrentSubTabId();
+            }
             Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED,
                     doc);
             doc = documentManager.saveDocument(doc);
@@ -297,7 +317,13 @@ public class DocumentActionsBean extends InputController implements
                     resourcesAccessor.getMessages().get("document_modified"),
                     resourcesAccessor.getMessages().get(doc.getType()));
             EventManager.raiseEventsOnDocumentChange(doc);
-            return navigationContext.navigateToDocument(doc, "after-edit");
+            String res = navigationContext.navigateToDocument(doc, "after-edit");
+            if (restoreTabs) {
+                // restore previously stored tabs;
+                webActions.setCurrentTabId(tabId);
+                webActions.setCurrentSubTabId(subTabId);
+            }
+            return res;
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
