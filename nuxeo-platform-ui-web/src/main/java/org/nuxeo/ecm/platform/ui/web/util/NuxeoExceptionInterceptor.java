@@ -32,11 +32,11 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 
 /**
  * Intercepts Seam Bean call during the INVOKE_APPLICATION phase to see if a
- * {@link RecoverableClientException} is raised. If this is the case, the INVOKE
- * call returns null and the associated FacesMessage is generated.
- * 
+ * {@link RecoverableClientException} is raised. If this is the case, the
+ * INVOKE call returns null and the associated FacesMessage is generated.
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ * @since 5.6
  */
 @Interceptor
 public class NuxeoExceptionInterceptor extends AbstractInterceptor {
