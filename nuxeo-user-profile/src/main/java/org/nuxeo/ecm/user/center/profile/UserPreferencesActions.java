@@ -26,8 +26,8 @@ import org.nuxeo.ecm.webapp.locale.LocaleStartup;
 
 /**
  * Seam component to manage user preferences editing. UI is showing user
- * preferences in a separate screen than user profile, but storing data the same
- * way it is stored with user profile.
+ * preferences in a separate screen than user profile, but storing data the
+ * same way it is stored with user profile.
  *
  * @since 5.6
  */
@@ -40,7 +40,7 @@ public class UserPreferencesActions extends UserProfileActions {
     private static final long serialVersionUID = 1L;
 
     @In
-    WebActionsBean webActions;
+    protected transient WebActionsBean webActions;
 
     public String navigateToPreferencesPage() {
         webActions.setCurrentTabIds("MAIN_TABS:home,USER_CENTER:Preferences");
@@ -50,6 +50,8 @@ public class UserPreferencesActions extends UserProfileActions {
     /**
      * Reset timezone from the cookie. The cookie need to be setted/reset
      * before. (done in javascript)
+     *
+     * @since 5.6
      */
     public void resetTimezone() {
         LocaleStartup localeStartup = LocaleStartup.instance();

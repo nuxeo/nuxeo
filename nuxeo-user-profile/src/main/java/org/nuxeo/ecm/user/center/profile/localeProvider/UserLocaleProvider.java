@@ -32,6 +32,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Provides user local stored in profile doc model
+ *
+ * @since 5.6
  */
 public class UserLocaleProvider implements LocaleProvider {
     public static final Log log = LogFactory.getLog(UserLocaleProvider.class);

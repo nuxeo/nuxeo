@@ -38,7 +38,13 @@ public class UserProfileConstants {
 
     public static final String USER_PROFILE_GENDER_FIELD = "userprofile:gender";
 
+    /**
+     * @since 5.6
+     */
     public static final String USER_PROFILE_TIMEZONE = "userprofile:timezone";
 
+    /**
+     * @since 5.6
+     */
     public static final String USER_PROFILE_LOCALE = "userprofile:locale";
 }
