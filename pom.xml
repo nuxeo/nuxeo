@@ -59,6 +59,7 @@
     <nuxeo.user.registration.version>5.6-SNAPSHOT</nuxeo.user.registration.version>
     <nuxeo.rating.version>5.6-SNAPSHOT</nuxeo.rating.version>
     <nuxeo.agenda.version>5.6-SNAPSHOT</nuxeo.agenda.version>
+    <nuxeo.templates.version>5.6-SNAPSHOT</nuxeo.templates.version>
   </properties>
 
   <modules>
@@ -111,6 +112,7 @@
     <module>nuxeo-multi-tenant</module>
     <module>nuxeo-core-binarymanager-s3</module>
     <module>nuxeo-diff</module>
+    <module>nuxeo-template-rendering</module>
   </modules>
 
   <dependencyManagement>
@@ -584,6 +586,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-rendition-web</artifactId>
+        <version>${nuxeo.rendition.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-rendition-core</artifactId>
         <version>${nuxeo.rendition.version}</version>
       </dependency>
@@ -944,6 +951,43 @@
         <groupId>nuxeo-sample-project</groupId>
         <artifactId>nuxeo-sample-project</artifactId>
         <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Template rendering -->
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-api</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-core</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-xdocreport</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jxls</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jaxrs</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-web</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-samples</artifactId>
+        <version>${nuxeo.templates.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
