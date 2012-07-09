@@ -42,6 +42,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Initialize the locale when the user session is entered. Enables client to
  * send their timezone id through AJAX (not yet implemented).
+ *
+ * @since 5.6
  */
 @Name("clientLocaleInitializer")
 @Scope(ScopeType.SESSION)
@@ -60,10 +62,6 @@ public class LocaleStartup {
 
     @In(create = true)
     protected CoreSession documentManager;
-
-    // {
-    // LogFactory.getLog(ClientLocaleInitializer.class).debug("Time Zone Session Initializer created");
-    // }
 
     protected String tzId;
 
