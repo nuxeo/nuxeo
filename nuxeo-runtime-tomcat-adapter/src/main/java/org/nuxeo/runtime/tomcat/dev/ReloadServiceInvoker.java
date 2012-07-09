@@ -85,13 +85,13 @@ public class ReloadServiceInvoker {
         boolean hasSeam = false;
         // rebuild existing war, this will remove previously copied web
         // resources
-        runDeploymentPreprocessor();
+        // commented out for now, see NXP-9642
+        // runDeploymentPreprocessor();
         for (DevBundle bundle : bundles) {
             if (bundle.devBundleType == DevBundleType.Bundle) {
                 bundle.name = (String) deployBundle.invoke(reloadService,
                         new Object[] { bundle.file() });
                 // install its web resources
-                // FIXME: this does not handle translation files correctly
                 installWebResources.invoke(reloadService,
                         new Object[] { bundle.file() });
             } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
@@ -117,7 +117,8 @@ public class ReloadServiceInvoker {
         }
         // run deployment preprocessor again: this will remove potential
         // resources that were copied in the war at deploy
-        runDeploymentPreprocessor();
+        // commented out for now, see NXP-9642
+        // runDeploymentPreprocessor();
         if (hasSeam) {
             flushSeam.invoke(reloadService);
         }
