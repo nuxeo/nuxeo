@@ -18,8 +18,6 @@
 
 package org.nuxeo.connect.client.jsf;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -69,7 +67,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @Name("connectStatus")
-@Scope(CONVERSATION)
+@Scope(ScopeType.CONVERSATION)
 public class ConnectStatusActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -352,7 +350,7 @@ public class ConnectStatusActionBean implements Serializable {
             facesMessages.add(
                     StatusMessage.Severity.ERROR,
                     messages.get("label.connect.wrong.package" + ":"
-                                    + e.getMessage()));
+                            + e.getMessage()));
             return;
         } finally {
             tmpFile.delete();
@@ -376,31 +374,31 @@ public class ConnectStatusActionBean implements Serializable {
         return getConnectUpdateStatusInfo();
     }
 
-    @Factory(scope = ScopeType.CONVERSATION, value = "connectUpdateStatusInfo")
+    @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
     public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
         if (connectionStatusCache == null) {
             try {
-        if (!isRegistred()) {
+                if (!isRegistred()) {
                     connectionStatusCache = ConnectUpdateStatusInfo.unregistered();
-        } else {
-            if (isConnectServerReachable()) {
-                if (getStatus().isError()) {
-                            connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
                 } else {
-                    if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
+                    if (isConnectServerReachable()) {
+                        if (getStatus().isError()) {
+                            connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
+                        } else {
+                            if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
                                 connectionStatusCache = ConnectUpdateStatusInfo.ok();
-                    } else {
+                            } else {
                                 connectionStatusCache = ConnectUpdateStatusInfo.notValid();
+                            }
+                        }
+                    } else {
+                        connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
                     }
                 }
-            } else {
-                        connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
-            }
-        }
             } catch (Exception e) {
                 log.error(e);
                 connectionStatusCache = null;
-    }
+            }
         }
         return connectionStatusCache;
     }
@@ -408,6 +406,6 @@ public class ConnectStatusActionBean implements Serializable {
     @Factory("nuxeoConnectUrl")
     public String getConnectServerUrl() {
         return ConnectUrlConfig.getBaseUrl();
-}
+    }
 
 }
