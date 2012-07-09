@@ -48,9 +48,9 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
  * <p>
  * We want to keep this dirty state as long as we stay on the same Tab, but as
  * soon as we navigate somewhere else, we must reset the state.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ * @since 5.6
  */
 @Name("transientStateCleaner")
 @Scope(ScopeType.EVENT)
