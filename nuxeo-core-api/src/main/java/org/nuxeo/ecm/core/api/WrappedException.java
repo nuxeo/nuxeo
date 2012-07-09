@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.api;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class WrappedException extends Exception {
 
@@ -39,10 +38,9 @@ public class WrappedException extends Exception {
     }
 
     /**
-     * "No need to wrap Exception since RMI is not supported anymore"
-     * 
-     * @param t
-     * @return
+     * No need to wrap Exception since RMI is not supported anymore
+     *
+     * @deprecated since 5.6
      */
     @Deprecated
     @SuppressWarnings({ "ThrowableInstanceNeverThrown" })

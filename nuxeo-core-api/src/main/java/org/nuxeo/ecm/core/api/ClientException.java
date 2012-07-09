@@ -16,7 +16,7 @@ package org.nuxeo.ecm.core.api;
 
 /**
  * The most generic exception thrown by the Nuxeo Core.
- * 
+ *
  * @author bstefanescu
  */
 public class ClientException extends Exception {

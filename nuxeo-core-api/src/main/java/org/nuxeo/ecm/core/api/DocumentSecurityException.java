@@ -16,9 +16,9 @@ package org.nuxeo.ecm.core.api;
 
 /**
  * Class for Security Exceptions
- * 
+ *
  * @author tiry
- * 
+ * @since 5.6
  */
 public class DocumentSecurityException extends ClientException {
 
