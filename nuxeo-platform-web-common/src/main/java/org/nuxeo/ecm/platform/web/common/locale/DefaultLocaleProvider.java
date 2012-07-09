@@ -25,6 +25,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 /**
  * Provide the default local and timezone: undefined and let the caller to set
  * them
+ *
+ * @since 5.6
  */
 public class DefaultLocaleProvider implements LocaleProvider {
 
