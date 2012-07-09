@@ -64,11 +64,16 @@ public class NuxeoSeamHotReloadContextKeeper implements Serializable {
         } else {
             if (seamReload.shouldResetCache(lastCacheKey)) {
                 doLog(String.format("Before reset, cache key=%s", lastCacheKey));
-                // trigger reset on Seam layer by raising the flush event
-                Events.instance().raiseEvent(EventNames.FLUSH_EVENT);
-                Long currentTimestamp = seamReload.getCurrentCacheTimestamp();
-                if (currentTimestamp != null) {
-                    lastCacheKey = seamReload.getCurrentCacheTimestamp();
+                try {
+                    // trigger reset on Seam layer by raising the flush event
+                    Events.instance().raiseEvent(EventNames.FLUSH_EVENT);
+                } finally {
+                    // update cache key even if an error is triggered, to avoid
+                    // triggering cache reset over and over
+                    Long currentTimestamp = seamReload.getCurrentCacheTimestamp();
+                    if (currentTimestamp != null) {
+                        lastCacheKey = seamReload.getCurrentCacheTimestamp();
+                    }
                 }
                 doLog(String.format("After reset, cache key=%s", lastCacheKey));
             } else {
