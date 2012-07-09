@@ -33,11 +33,8 @@ import org.jboss.seam.annotations.Startup;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.TimeZoneSelector;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Initialize the locale when the user session is entered. Enables client to
@@ -95,14 +92,6 @@ public class LocaleStartup {
 
     public void setupLocale(CoreSession session) {
         Locale locale = null;
-        try {
-            locale = Framework.getLocalService(LocaleProvider.class).getLocale(
-                    session);
-        } catch (ClientException e) {
-            log.warn(
-                    "Couldn't get locale from LocaleProvider, trying request locale and default locale",
-                    e);
-        }
         if (locale == null) {
             log.debug("Locale not set, falling back to request locale");
             locale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
