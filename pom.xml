@@ -126,6 +126,8 @@
     <chemistry.opencmis.version>0.7.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcomponents.version>4.1</apache.httpcomponents.version>
+    <jodreport.version>2.4.0</jodreport.version>
+    <jxls.version>1.0</jxls.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -1632,7 +1634,7 @@
         </exclusions>
       </dependency>
 
-      <!-- Guessed versions of code included in JBoss 5.1.0.GA or at least 
+      <!-- Guessed versions of code included in JBoss 5.1.0.GA or at least
         compliant -->
       <dependency>
         <groupId>org.jboss.aop</groupId>
@@ -2053,6 +2055,24 @@
         <artifactId>jodconverter-core</artifactId>
         <version>3.0-NX5</version>
       </dependency>
+      <dependency>
+        <groupId>net.sf.jodreports</groupId>
+        <artifactId>jodreports</artifactId>
+        <version>${jodreport.version}</version>
+      </dependency>
+
+      <!-- jxls -->
+      <dependency>
+        <groupId>net.sf.jxls</groupId>
+        <artifactId>jxls-core</artifactId>
+        <version>${jxls.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.jxls</groupId>
+        <artifactId>jxls-reader</artifactId>
+        <version>${jxls.version}</version>
+      </dependency>
+
       <!-- others -->
       <dependency>
         <groupId>com.h2database</groupId>
@@ -2267,7 +2287,7 @@
         <artifactId>osgi-core</artifactId>
         <version>4.1</version>
       </dependency>
-      <!-- OSGI compendium - do not change to org.osgi group since it is 
+      <!-- OSGI compendium - do not change to org.osgi group since it is
         not containing all needed classes -->
       <dependency>
         <groupId>org.osgi</groupId>
@@ -3978,7 +3998,7 @@
           <artifactId>properties-maven-plugin</artifactId>
           <version>1.0-alpha-2</version>
         </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings 
+        <!--This plugin's configuration is used to store Eclipse m2e settings
           only. It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -4206,7 +4226,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
               <maxmemory>768m</maxmemory>
-              <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css 
+              <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css
                 </stylesheetfile -->
               <windowtitle>
                 ${project.name} ${project.version} API
