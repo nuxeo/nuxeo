@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.web.common.exceptionhandling;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,8 +36,6 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
-
 /**
  * @author arussel
  */
@@ -52,10 +52,11 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     /**
      * Puts a marker in request to avoid looping over the exception handling
      * mechanism
-     * 
+     *
      * @throws ServletException if request has already been marked as handled.
      *             The initial exception is then wrapped.
      */
+
     protected void startHandlingException(HttpServletRequest request,
             HttpServletResponse response, Throwable t) throws ServletException {
         if (request.getAttribute(EXCEPTION_HANDLER_MARKER) == null) {
@@ -135,8 +136,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                     log.error("Cannot set response complete: faces context is null");
                 }
             } else {
-                // do not throw an error, just log it: afterDispatch needs to be
-                // called, and sometimes the initial error is a
+                // do not throw an error, just log it: afterDispatch needs to
+                // be called, and sometimes the initial error is a
                 // ClientAbortException
                 log.error("Cannot forward to error page: "
                         + "response is already committed");

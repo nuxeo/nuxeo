@@ -21,9 +21,8 @@ package org.nuxeo.ecm.core.search.api.client;
 
 /**
  * Searching related exception.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
  */
 public class SearchException extends Exception {
 
