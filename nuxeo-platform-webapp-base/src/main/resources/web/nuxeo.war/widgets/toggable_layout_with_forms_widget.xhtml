@@ -139,6 +139,9 @@
                       <ui:decorate template="/incl/action/action_template.xhtml">
                         <ui:param name="idPrefix" value="#{widget.id}_" />
                         <ui:param name="useAjaxForm" value="true" />
+                        <ui:define name="before_action_trigger">
+                          <f:param name="restoreCurrentTabs" value="true" />
+                        </ui:define>
                         <ui:define name="after_action_trigger">
                           <f:setPropertyActionListener
                             value="#{widget.id}_modeValueHolder"
@@ -161,6 +164,9 @@
                       <ui:decorate template="/incl/action/action_template.xhtml">
                         <ui:param name="idPrefix" value="#{widget.id}_" />
                         <ui:param name="useAjaxForm" value="true" />
+                        <ui:define name="before_action_trigger">
+                          <f:param name="restoreCurrentTabs" value="true" />
+                        </ui:define>
                         <ui:define name="after_action_trigger">
                           <f:setPropertyActionListener
                             value="#{widget.id}_modeValueHolder"
@@ -256,6 +262,9 @@
                     <c:forEach var="action" items="#{actions}">
                       <ui:decorate template="/incl/action/action_template.xhtml">
                         <ui:param name="idPrefix" value="#{widget.id}_" />
+                        <ui:define name="inside_action">
+                          <f:param name="restoreCurrentTabs" value="true" />
+                        </ui:define>
                       </ui:decorate>
                     </c:forEach>
                   </nxu:set>
@@ -267,6 +276,9 @@
                     <c:forEach var="action" items="#{actions}">
                       <ui:decorate template="/incl/action/action_template.xhtml">
                         <ui:param name="idPrefix" value="#{widget.id}_" />
+                        <ui:define name="inside_action">
+                          <f:param name="restoreCurrentTabs" value="true" />
+                        </ui:define>
                       </ui:decorate>
                     </c:forEach>
                   </nxu:set>
