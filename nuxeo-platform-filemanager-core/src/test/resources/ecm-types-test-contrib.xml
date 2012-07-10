@@ -228,7 +228,7 @@
 
     <type id="User">
       <label>User</label>
-      <icon>/icons/user.gif</icon>
+      <icon>/icons/user.png</icon>
       <default-view>view_user</default-view>
       <!-- new layout config -->
       <layouts mode="any">
@@ -251,7 +251,7 @@
 
     <type id="UserCreate">
       <label>UserCreate</label>
-      <icon>/icons/user.gif</icon>
+      <icon>/icons/user.png</icon>
       <default-view>create_user</default-view>
       <!-- old layout config, to remove so that layout "user" is used -->
       <layout>
