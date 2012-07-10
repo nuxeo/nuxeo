@@ -19,6 +19,7 @@
 package org.nuxeo.wizard.context;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,10 @@ public class ParamCollector {
 
     public static final String Key = "collector";
 
+    private static final String SKIP_SECTIONS_KEY = "nuxeo.wizard.skippedsections";
+
+    private List<String> sectionsToSkip;
+
     private ConfigurationGenerator configurationGenerator;
 
     public ConfigurationGenerator getConfigurationGenerator() {
@@ -51,6 +56,12 @@ public class ParamCollector {
     public ParamCollector() {
         configurationGenerator = new ConfigurationGenerator();
         configurationGenerator.init();
+        String skipSections = configurationGenerator.getUserConfig().getProperty(SKIP_SECTIONS_KEY, "");
+        sectionsToSkip = Arrays.asList(skipSections.split(","));
+    }
+
+    public boolean isSectionSkipped(String section) {
+        return sectionsToSkip.contains(section);
     }
 
     public void addConfigurationParam(String name, String value) {

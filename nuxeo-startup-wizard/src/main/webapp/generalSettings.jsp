@@ -13,6 +13,7 @@
 
 <%@ include file="includes/feedback.jsp" %>
   <table>
+	<%if (!collector.isSectionSkipped("IP")) { %>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.bind.address"/></td>
       <td><input type="text" name="nuxeo.bind.address" value="<%=collector.getConfigurationParam("nuxeo.bind.address") %>" size="15"/></td>
@@ -20,7 +21,9 @@
     <tr>
       <td colspan="2" class="helpCell"><fmt:message key="label.nuxeo.bind.address.help"/></td>
     </tr>
+    <% } %>
 
+    <%if (!collector.isSectionSkipped("Paths")) { %>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.log.dir"/></td>
       <td><input type="text" name="nuxeo.log.dir" value="<%=collector.getConfigurationParam("nuxeo.log.dir") %>" size="35"/></td>
@@ -33,6 +36,7 @@
     </tr><tr>
       <td colspan="2" class="helpCell"><fmt:message key="label.nuxeo.data.dir.help"/></td>
     </tr>
+    <% } %>
   </table>
 
   <%@ include file="includes/prevnext.jsp" %>
