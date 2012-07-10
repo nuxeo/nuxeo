@@ -813,7 +813,7 @@
       </selector>
       <selector path=".commentInfos">
         <border-bottom>1px solid #dedede</border-bottom>
-        <background>transparent url(${org.nuxeo.ecm.contextPath}/icons/user.gif) no-repeat scroll 4px 4px</background>
+        <background>transparent url(${org.nuxeo.ecm.contextPath}/icons/user.png) no-repeat scroll 4px 4px</background>
         <margin-bottom>5px</margin-bottom>
         <padding>5px 3px 3px 24px</padding>
       </selector>
