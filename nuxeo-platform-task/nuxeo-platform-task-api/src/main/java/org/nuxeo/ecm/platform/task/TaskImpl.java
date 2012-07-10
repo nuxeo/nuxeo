@@ -96,6 +96,11 @@ public class TaskImpl implements Task {
     }
 
     @Override
+    public String getType() throws ClientException {
+        return getPropertyValue(TaskConstants.TASK_TYPE_PROPERTY_NAME);
+    }
+
+    @Override
     public Date getCreated() throws ClientException {
         return getDatePropertyValue(TaskConstants.TASK_CREATED_PROPERTY_NAME);
     }
@@ -169,6 +174,11 @@ public class TaskImpl implements Task {
     @Override
     public void setName(String name) throws ClientException {
         setPropertyValue(TaskConstants.TASK_NAME_PROPERTY_NAME, name);
+    }
+
+    @Override
+    public void setType(String type) throws ClientException {
+        setPropertyValue(TaskConstants.TASK_TYPE_PROPERTY_NAME, type);
     }
 
     @Override

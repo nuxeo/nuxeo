@@ -48,6 +48,11 @@ public class TaskConstants {
 
     public static final String TASK_NAME_PROPERTY_NAME = "task:name";
 
+    /**
+     * @since 5.6
+     */
+    public static final String TASK_TYPE_PROPERTY_NAME = "task:type";
+
     public static final String TASK_ACCEPTED_PROPERTY_NAME = "task:accepted";
 
     public static final String TASK_CANCELLED_LIFE_CYCLE_STATE = "cancelled";

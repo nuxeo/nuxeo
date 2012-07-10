@@ -118,7 +118,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
         // create one task for all actors
         taskService.createTask(session, user3, document, "Test Task Name",
-                actors, false, "test directive", "test comment",
+                "test type", actors, false, "test directive", "test comment",
                 calendar.getTime(), null, null);
 
         List<Task> tasks = taskService.getTaskInstances(document,
@@ -128,6 +128,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
         Task task = tasks.get(0);
         assertEquals("Test Task Name", task.getName());
+        assertEquals("test type", task.getType());
 
         List<String> pooledActorIds = task.getActors();
         assertEquals(2, pooledActorIds.size());

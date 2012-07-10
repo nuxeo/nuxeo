@@ -49,6 +49,11 @@ public interface Task extends Serializable {
 
     String getName() throws ClientException;
 
+    /**
+     * @since 5.6
+     */
+    String getType() throws ClientException;
+
     String getDescription() throws ClientException;
 
     String getDirective() throws ClientException;
@@ -78,6 +83,11 @@ public interface Task extends Serializable {
     void setTargetDocumentId(String targetDocumentId) throws ClientException;
 
     void setName(String name) throws ClientException;
+
+    /**
+     * @since 5.6
+     */
+    void setType(String type) throws ClientException;
 
     void setDescription(String description) throws ClientException;
 

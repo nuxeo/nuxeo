@@ -4,13 +4,14 @@
   xmlns:nxt="http://nuxeo.com/schemas/task"
   xmlns:nxs="http://nuxeo.com/schemas/base/">
 
-  <xs:include schemaLocation="base.xsd" />            
-            
+  <xs:include schemaLocation="base.xsd" />
+
   <xs:element name="actors" type="nxt:stringList" />
   <xs:element name="initiator" type="xs:string" />
   <xs:element name="targetDocumentId" type="xs:string" />
   <xs:element name="directive" type="xs:string" />
   <xs:element name="name" type="xs:string" />
+  <xs:element name="type" type="xs:string" /> <!-- since 5.6 -->
   <xs:element name="accepted" type="xs:boolean" />
   <xs:element name="dueDate" type="xs:date" />
   <xs:element name="task_variables" type="nxt:task_variables" />

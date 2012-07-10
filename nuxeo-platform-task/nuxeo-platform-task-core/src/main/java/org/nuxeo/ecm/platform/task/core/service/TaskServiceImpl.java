@@ -130,11 +130,26 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath)
             throws ClientException {
+        return createTask(coreSession, principal, document, taskName, null, actorIds,
+                createOneTaskPerActor, directive, comment, dueDate,
+                taskVariables, parentPath);
+    }
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    public List<Task> createTask(CoreSession coreSession,
+            NuxeoPrincipal principal, DocumentModel document, String taskName,
+            String taskType, List<String> actorIds,
+            boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath)
+            throws ClientException {
         if (StringUtils.isBlank(parentPath)) {
             parentPath = getTaskRootParentPath(coreSession);
         }
         CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession,
-                principal, document, taskName, actorIds, createOneTaskPerActor,
+                principal, document, taskName, taskType, actorIds, createOneTaskPerActor,
                 directive, comment, dueDate, taskVariables, parentPath);
         runner.runUnrestricted();
 
@@ -300,7 +315,6 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
      * list or to its pool.
      *
      * @param actors a list used as actorId to retrieve the tasks.
-     * @param filter
      * @return
      * @throws ClientException
      */
