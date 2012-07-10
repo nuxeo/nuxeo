@@ -182,43 +182,9 @@
                   </nxu:set>
                 </c:if>
 
-                <c:choose>
-                  <c:when test="#{display == 'buttons'}">
-                    <a4j:commandButton
-                      id="#{widget.id}_cancelToggleAction"
-                      immediate="true"
-                      reRender="#{widget.id}_regionPanel"
-                      value="#{cancelActionLabel}"
-                      styleClass="button #{widgetProperty_actionStyleClass}">
-                      <f:setPropertyActionListener
-                        value="#{widget.id}_modeValueHolder"
-                        target="#{selectionActions.selectedValueHolder}" />
-                      <f:setPropertyActionListener
-                        value="#{initialMode}"
-                        target="#{selectionActions.selectedValue}" />
-                      <nxu:actionListenerMethod
-                        value="#{selectionActions.onClick}" />
-                    </a4j:commandButton>
-                  </c:when>
-                  <c:otherwise>
-                    <a4j:commandLink
-                      id="#{widget.id}_cancelToggleAction"
-                      immediate="true"
-                      reRender="#{widget.id}_regionPanel"
-                      value="#{cancelActionLabel}"
-                      styleClass="#{widgetProperty_actionStyleClass}">
-                      <f:param name="valueHolderId"
-                        value="#{widget.id}_modeValueHolder" />
-                      <f:setPropertyActionListener
-                        value="#{initialMode}"
-                        target="#{selectionActions.selectedValue}" />
-                      <nxu:actionListenerMethod
-                        value="#{selectionActions.onClick}" />
-                    </a4j:commandLink>
-                  </c:otherwise>
-                </c:choose>
-
+                <ui:include src="toggable_layout_with_forms_cancel_button.xhtml" />
               </nxu:set>
+
               <a4j:status>
                 <f:facet name="start">
                   <h:graphicImage value="/img/standart_waiter.gif" />
@@ -284,41 +250,14 @@
                   </nxu:set>
                 </c:if>
 
-                <c:choose>
-                  <c:when test="#{display == 'buttons'}">
-                    <a4j:commandButton
-                      id="#{widget.id}_cancelToggleAction"
-                      immediate="true"
-                      reRender="#{widget.id}_regionPanel"
-                      value="#{cancelActionLabel}"
-                      styleClass="button #{widgetProperty_actionStyleClass}">
-                      <f:setPropertyActionListener
-                        value="#{initialMode}"
-                        target="#{selectionActions.selectedValue}" />
-                      <f:param name="valueHolderId"
-                        value="#{widget.id}_modeValueHolder" />
-                      <nxu:actionListenerMethod
-                        value="#{selectionActions.onClick}" />
-                    </a4j:commandButton>
-                  </c:when>
-                  <c:otherwise>
-                    <a4j:commandLink
-                      id="#{widget.id}_cancelToggleAction"
-                      immediate="true"
-                      reRender="#{widget.id}_regionPanel"
-                      value="#{cancelActionLabel}"
-                      styleClass="#{widgetProperty_actionStyleClass}">
-                      <f:setPropertyActionListener
-                        value="#{initialMode}"
-                        target="#{selectionActions.selectedValue}" />
-                      <f:param name="valueHolderId"
-                        value="#{widget.id}_modeValueHolder" />
-                      <nxu:actionListenerMethod
-                        value="#{selectionActions.onClick}" />
-                    </a4j:commandLink>
-                  </c:otherwise>
-                </c:choose>
+                <ui:include src="toggable_layout_with_forms_cancel_button.xhtml" />
               </nxu:set>
+
+              <a4j:status>
+                <f:facet name="start">
+                  <h:graphicImage value="/img/standart_waiter.gif" />
+                </f:facet>
+              </a4j:status>
 
             </p>
 
