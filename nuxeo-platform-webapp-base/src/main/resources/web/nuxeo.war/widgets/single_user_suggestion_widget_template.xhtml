@@ -147,7 +147,7 @@
           <h:column>
             <f:subview rendered="#{result.type == 'USER_TYPE'}"
               id="#{widget.id}_user_result">
-              <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+              <h:graphicImage value="/icons/user.png" alt="user" />
                 <c:choose>
                   <c:when test="#{suggestionWithEmail}">
                     <h:outputText value="#{nxu:userDisplayNameAndEmail(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName, result.entry[userSchema].email)}" />
@@ -159,7 +159,7 @@
             </f:subview>
             <f:subview rendered="#{result.type == 'GROUP_TYPE'}"
               id="#{widget.id}_group_result">
-              <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+              <h:graphicImage value="/icons/group.png" alt="group" />
               <h:outputText value="#{result.id}" />
             </f:subview>
             <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">

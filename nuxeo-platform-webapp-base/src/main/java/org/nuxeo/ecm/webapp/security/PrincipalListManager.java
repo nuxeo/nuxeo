@@ -61,10 +61,10 @@ public class PrincipalListManager implements Serializable {
     public static final String USER_TYPE = "USER_TYPE";
     public static final String GROUP_TYPE = "GROUP_TYPE";
     public static final String USER_GROUP_TYPE = "USER_GROUP_TYPE";
-    public static final String USER_ICON = "/icons/user.gif";
-    public static final String GROUP_ICON = "/icons/group.gif";
-    public static final String USER_ICON_ALT = "user.gif";
-    public static final String GROUP_ICON_ALT = "group.gif";
+    public static final String USER_ICON = "/icons/user.png";
+    public static final String GROUP_ICON = "/icons/group.png";
+    public static final String USER_ICON_ALT = "user.png";
+    public static final String GROUP_ICON_ALT = "group.png";
 
     public static final int MAX_SEARCH_RESULTS = 20;
 
@@ -260,7 +260,7 @@ public class PrincipalListManager implements Serializable {
                 Map<String, Object> entry = new HashMap<String, Object>();
                 entry.put("label", label.toString());
                 entry.put("id", name);
-                entry.put("icon", "icons/user.gif");
+                entry.put("icon", "icons/user.png");
                 result.add(entry);
             } catch (ClientException e) {
                 log.info("Unable to get Principal from " + user.getId());
@@ -279,7 +279,7 @@ public class PrincipalListManager implements Serializable {
                 entry.put("label", group.getId());
             }
             entry.put("id", group.getId());
-            entry.put("icon", "icons/group.gif");
+            entry.put("icon", "icons/group.png");
             result.add(entry);
         }
 

@@ -27,7 +27,7 @@
       <h:column>
         <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(item)}">
           <f:subview rendered="#{info.type == 'USER_TYPE'}">
-            <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+            <h:graphicImage value="/icons/user.png" alt="user" />
                 <c:set var="firstNameField" value="${nxu:test(hideFirstLabel,null , firstLabelField)}" />
                 <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
                 <c:set var="emailField" value="#{nxu:test(hideThirdLabel, null, thirdLabelField)}" />
@@ -51,7 +51,7 @@
             </h:outputLink>
           </f:subview>
           <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
-            <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+            <h:graphicImage value="/icons/group.png" alt="group" />
             <h:commandLink value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}"
                 action="#{groupManagementActions.viewGroup(info.id)}" />
           </f:subview>
@@ -129,7 +129,7 @@
             </a4j:support>
             <h:column>
               <f:subview rendered="#{result.type == 'USER_TYPE'}" id="#{widget.id}_user_result">
-                <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+                <h:graphicImage value="/icons/user.png" alt="user" />
                 <c:choose>
                   <c:when test="#{suggestionWithEmail}">
                     <h:outputText value="#{nxu:userDisplayNameAndEmail(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName, result.entry[userSchema].email)}" />
@@ -140,7 +140,7 @@
                 </c:choose>
               </f:subview>
               <f:subview rendered="#{result.type == 'GROUP_TYPE'}" id="#{widget.id}_group_result">
-                <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+                <h:graphicImage value="/icons/group.png" alt="group" />
                 <h:outputText value="#{nxu:groupDisplayName(result.id, result.entry[groupSchema].grouplabel)}" />
               </f:subview>
               <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
@@ -173,7 +173,7 @@
                   </a4j:commandLink>
                   <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(model.rowData)}">
                     <f:subview rendered="#{info.type == 'USER_TYPE'}">
-                      <h:graphicImage value="/icons/user.gif" alt="user.gif" />
+                      <h:graphicImage value="/icons/user.png" alt="user" />
                     <c:choose>
                         <c:when test="#{suggestionWithEmail}">
                             <h:outputText value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema].firstName, info.entry[userSchema].lastName,info.entry[userSchema].email)}" />
@@ -184,7 +184,7 @@
                     </c:choose>
                     </f:subview>
                     <f:subview rendered="#{info.type == 'GROUP_TYPE'}">
-                      <h:graphicImage value="/icons/group.gif" alt="group.gif" />
+                      <h:graphicImage value="/icons/group.png" alt="group" />
                       <h:outputText value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}" />
                     </f:subview>
                     <f:subview rendered="#{empty info.type}">
