@@ -232,7 +232,6 @@
       <translated>false</translated>
       <properties widgetMode="any">
         <property name="contentViewName">route_past_steps</property>
-        <property name="foldable">true</property>
       </properties>
     </widget>
 
