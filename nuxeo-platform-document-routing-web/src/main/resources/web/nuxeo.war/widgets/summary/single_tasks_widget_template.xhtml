@@ -12,6 +12,7 @@
 
     <nxu:set var="currentDashBoardItemsExceptPublishingTasks" value="#{taskActions.getCurrentDashBoardItemsExceptPublishingTasks()}"
       cache="true">
+    <nxu:set var="showFirstForm" value="#{currentDashBoardItemsExceptPublishingTasks.size() == 1}" cache="true">
 
       <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
         <h3 class="summaryTitle">
@@ -23,6 +24,7 @@
 
           <nxu:set var="task" value="#{routingTaskActions.setCurrentTask(dashboardItem.task)}" cache="true">
           <nxu:set var="idPrefix" value="#{task.name}#{status.index}" cache="true">
+
             <div>
 
             <nxu:valueHolder
@@ -86,7 +88,7 @@
               </f:subview>
 
               <a4j:outputPanel id="#{idPrefix}_ajax_panel">
-                <c:if test="#{actionClicked}">
+                <c:if test="#{actionClicked or showFirstForm}">
                   <div>
                     <div id="#{idPrefix}_box">
                       <nxu:set var="isRoutingTask" value="#{routingTaskActions.isRoutingTask(task)}">
@@ -157,6 +159,7 @@
 
       </c:if>
 
+    </nxu:set>
     </nxu:set>
 
   </a4j:outputPanel>
