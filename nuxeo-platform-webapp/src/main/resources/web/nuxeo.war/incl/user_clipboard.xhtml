@@ -94,7 +94,7 @@
 
 <h:panelGroup id="ClipboardDroppable">
   <script type="text/javascript">
-    <h:outputText value="Droppables.add('clipboardCopy', {accept:'cell', onDrop:function(element){copyElement(element)}, hoverclass:'dropIntoClipboardCopy'});"/>
+    <h:outputText value="Droppables.add('clipboardCopy', {accept:'cell', onDrop:function(element){copyElementIfIdNotStartsWith(element, 'docClipboardRef:')}, hoverclass:'dropIntoClipboardCopy'});"/>
   </script>
 </h:panelGroup>
 
