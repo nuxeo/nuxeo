@@ -20,9 +20,10 @@
 
         <nxu:set var="task" value="#{routingTaskActions.setCurrentTask(dashboardItem.task)}" cache="true">
           <div>
-            <h:outputText value="#{messages['label.route.task']} " />
-            <h:outputText value="#{task.name}" />
-            <h:outputText value=" #{messages['label.route.task.assigned.to']} " />
+            <h:outputFormat value="#{messages['label.route.task.type']} ">
+              <f:param value="#{messages[task.type]}" />
+            </h:outputFormat>
+            <h:outputText value="#{messages['label.route.task.assigned.to']} " />
             <c:forEach var="actor" items="#{task.actors}">
               <c:choose>
                 <c:when test="#{fn:startsWith(actor,'group:')}">
@@ -53,6 +54,9 @@
             <span class="dueDate">
               <h:outputText value=" #{messages['label.route.task.due.date']} " />
               <h:outputText value="#{task.dueDate}" />
+            </span>
+            <span class="directive">
+              <h:outputText value="#{messages[task.directive]}" />
             </span>
           </div>
         </nxu:set>

@@ -4,38 +4,6 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
     point="contentViews">
 
-    <contentView name="route_pending_task">
-      <title>label.document.routing.pending.tasks</title>
-      <translateTitle>true</translateTitle>
-      <showTitle>true</showTitle>
-      <coreQueryPageProvider>
-        <property name="coreSession">#{documentManager}</property>
-        <parameter>#{currentDocument.id}</parameter>
-        <whereClause docType="TaskDoc">
-          <fixedPart>
-            nt:targetDocumentId = ? AND
-            ecm:currentLifeCycleState = 'opened'
-          </fixedPart>
-        </whereClause>
-        <pageSize>20</pageSize>
-      </coreQueryPageProvider>
-      <showFilterForm>false</showFilterForm>
-      <showPageSizeSelector>true</showPageSizeSelector>
-      <useGlobalPageSize>true</useGlobalPageSize>
-      <refresh>
-        <event>documentChanged</event>
-        <event>documentCreated</event>
-      </refresh>
-      <cacheSize>10</cacheSize>
-      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
-      </cacheKey>
-      <resultLayouts>
-        <layout name="route_content_view_layout" title=""
-          translateTitle="" iconPath="" showCSVExport="false"
-          showPDFExport="false" />
-      </resultLayouts>
-    </contentView>
-
     <contentView name="route_past_steps">
       <title>label.document.routing.past.steps</title>
       <translateTitle>true</translateTitle>
@@ -49,11 +17,11 @@
             ecm:currentLifeCycleState = 'ended'
           </fixedPart>
         </whereClause>
-        <pageSize>20</pageSize>
+        <pageSize>0</pageSize>
       </coreQueryPageProvider>
       <showFilterForm>false</showFilterForm>
-      <showPageSizeSelector>true</showPageSizeSelector>
-      <useGlobalPageSize>true</useGlobalPageSize>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
         <event>documentCreated</event>

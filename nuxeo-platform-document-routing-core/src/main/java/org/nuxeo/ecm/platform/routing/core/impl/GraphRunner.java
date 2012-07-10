@@ -241,8 +241,9 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             RoutingTaskService routingTaskService = Framework.getLocalService(RoutingTaskService.class);
             List<Task> tasks = taskService.createTask(session,
                     (NuxeoPrincipal) session.getPrincipal(), doc, node.getId(),
-                    node.getTaskAssignees(), false, node.getTaskDirective(),
-                    null, node.getTaskDueDate(), taskVariables, null);
+                    node.getDocument().getTitle(), node.getTaskAssignees(),
+                    false, node.getTaskDirective(), null,
+                    node.getTaskDueDate(), taskVariables, null);
             routingTaskService.makeRoutingTasks(session, tasks);
             String taskAssigneesPermission = node.getTaskAssigneesPermission();
             if (StringUtils.isEmpty(taskAssigneesPermission)) {
