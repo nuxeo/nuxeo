@@ -29,9 +29,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class UserGroupLookupSuggester implements Suggester {
 
-    protected String userIconURL = "/icons/user.gif";
+    protected String userIconURL = "/icons/user.png";
 
-    protected String groupIconURL = "/icons/group.gif";
+    protected String groupIconURL = "/icons/group.png";
 
     protected String searchIconURL = "/img/facetedSearch.png";
 

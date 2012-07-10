@@ -314,7 +314,7 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         Suggestion sugg2 = suggestions.get(1);
         assertEquals("user", sugg2.getType());
         assertEquals("Bob Marley", sugg2.getLabel());
-        assertEquals("/icons/user.gif", sugg2.getIconURL());
+        assertEquals("/icons/user.png", sugg2.getIconURL());
 
         Suggestion sugg3 = suggestions.get(2);
         assertEquals("searchDocuments", sugg3.getType());
