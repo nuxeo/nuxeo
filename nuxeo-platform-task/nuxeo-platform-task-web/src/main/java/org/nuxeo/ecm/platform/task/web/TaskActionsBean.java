@@ -129,6 +129,41 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
         return items;
     }
 
+    /**
+     * @since 5.6
+     */
+    public List<Task> getCurrentDocumentAllTasks() throws ClientException {
+        if (tasks == null) {
+            tasks = new ArrayList<Task>();
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            if (currentDocument != null) {
+                tasks = taskService.getTaskInstances(currentDocument,
+                        (NuxeoPrincipal) null, documentManager);
+            }
+        }
+        return tasks;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public List<DashBoardItem> getCurrentAllDashBoardItemsExceptPublishingTasks()
+            throws ClientException {
+        if (items == null) {
+            items = new ArrayList<DashBoardItem>();
+            for (Task task : getCurrentDocumentAllTasks()) {
+                String taskType = task.getVariable(Task.TaskVariableName.taskType.name());
+                if (!"publish_moderate".equals(taskType)) {
+                    DashBoardItem item = new DashBoardItemImpl(task,
+                            navigationContext.getCurrentDocument(),
+                            localeSelector.getLocale());
+                    items.add(item);
+                }
+            }
+        }
+        return items;
+    }
+
     public String getComment() {
         return comment;
     }
