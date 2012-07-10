@@ -421,6 +421,37 @@
       </selectOptions>
     </widget>
 
+    <widget name="formActionsDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Actions Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to 'buttons', actions will be displayed as
+          command
+          buttons. If set to 'links', actions will be displayed as
+          command links. If set to 'icons', actions will be displayed
+          as icons.
+          Else (default behaviour), actions will be
+          displayed as command links
+          and display their icons when
+          defined.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionsDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Buttons (default)" itemValue="buttons" />
+        <option itemLabel="Icons and links" itemValue="icons_links" />
+        <option itemLabel="Icons" itemValue="icons" />
+        <option itemLabel="Links" itemValue="links" />
+      </selectOptions>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -1455,7 +1486,7 @@
                   <widget>additionalActionsCategory</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                  <widget category="widgetTypeConf">formActionsDisplay</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">widgetsDisplay</widget>

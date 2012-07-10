@@ -33,7 +33,7 @@
       value="#{nxu:test(widgetProperty_hideDefaultActions, null, 'EDIT_DOCUMENT_FORM')}"
       cache="true">
     <nxu:set var="actionsDisplay"
-      value="#{nxu:test(empty widgetProperty_actionsDisplay, null, widgetProperty_actionsDisplay)}"
+      value="#{nxu:test(empty widgetProperty_actionsDisplay, 'buttons', widgetProperty_actionsDisplay)}"
       cache="true">
     <nxu:set var="useAjaxForm"
       value="#{nxu:test(empty widgetProperty_useAjaxForm, false, widgetProperty_useAjaxForm)}"
