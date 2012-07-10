@@ -6,19 +6,15 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
+  <script type="text/javascript">
+    function confirmAbandonWorkflow() {
+       return confirm("#{messages['label.document.routing.confirmAbandon']}");
+    }
+  </script>
 
-
-
-
-
-  <a href="#" onclick="showFancyBox('##{widget.id}_abandonRoute_box');return false;"
-    class="button">
-    #{messages['label.document.routing.abandon']}
-  </a>
-
-  <div style="display:none">
-    <div id="#{widget.id}_abandonRoute_box">
-    </div>
-  </div>
+  <h:commandButton action="#{routingActions.abandonCurrentRoute()}"
+    value="#{messages['label.document.routing.abandon']}"
+    styleClass="button"
+    onclick="if( !confirmAbandonWorkflow() ) return false;" />
 
 </c:if>

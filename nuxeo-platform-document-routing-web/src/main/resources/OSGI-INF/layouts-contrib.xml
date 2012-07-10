@@ -154,7 +154,9 @@
       <translated>false</translated>
       <properties widgetMode="any">
         <property name="hideSubLabels">true</property>
+        <property name="nxw_addForm_0">true</property>
         <property name="nxw_addForm_1">true</property>
+        <property name="nxw_addForm_4">true</property>
       </properties>
       <subWidgetRefs>
         <widget>current_route_actions_top_left</widget>
@@ -173,6 +175,7 @@
       <translated>false</translated>
       <properties widgetMode="any">
         <property name="hideSubLabels">true</property>
+        <property name="nxw_addForm_0">true</property>
         <property name="nxw_addForm_2">true</property>
       </properties>
       <subWidgetRefs>
@@ -454,10 +457,11 @@
       </properties>
     </action>
 
-    <action id="current_route_abandon" link="#{routingActions.abandonCurrentRoute()}"
-      label="label.document.routing.abandon" order="20"
-      type="button" confirm="if( !confirmDeleteDocumentsForever() ) return false;">
+    <action id="current_route_abandon" type="widget" order="20">
       <category>CURRENT_ROUTE_BOTTOM_RIGHT</category>
+      <properties>
+        <property name="widgetName">current_route_abandon</property>
+      </properties>
     </action>
 
   </extension>
