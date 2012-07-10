@@ -394,7 +394,7 @@
     </action>
 
     <action id="POPUP_RIGHTS" link="javascript:doAccessRights" order="10"
-      label="action.view.rights" icon="/icons/group.gif">
+      label="action.view.rights" icon="/icons/group.png">
       <category>POPUP</category>
       <filter-id>rights</filter-id>
     </action>

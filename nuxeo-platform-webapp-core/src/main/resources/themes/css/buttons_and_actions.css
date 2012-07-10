@@ -143,7 +143,7 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 .tagLink a:hover { opacity: 1 }
 .tagLink img { border-left: 1px dotted rgba(255,255,255,0.4); display: inline; margin: 0 -0.1em -0.3em .2em }
 
-.user, span.user { background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; box-shadow: -1px -2px 2px rgba(140, 140, 140, 0.2) inset, 1px 1px 1px #fff inset; display: inline-block; opacity: 1; padding: .1em .3em .1em 2.1em }
+.user, span.user { background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; box-shadow: -1px -2px 2px rgba(140, 140, 140, 0.2) inset, 1px 1px 1px #fff inset; display: inline-block; opacity: 1; padding: .1em .3em .1em 1.8em }
 .user a { color: "link (__FLAVOR__ color)" }
 span.user:hover { background-color: "color.major.light (__FLAVOR__ background)" ; border-color: "color.major.stronger (__FLAVOR__ border)" }
 .user a:hover { text-decoration: none }
