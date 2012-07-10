@@ -867,11 +867,17 @@ public class DocumentRoutingActionsBean implements Serializable {
         return documentManager.getDocument(new IdRef(routeId));
     }
 
+    /**
+     * @since 5.6
+     */
     public DocumentModel getRouteInstanceFor(Task task) throws ClientException {
         String id = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         return id != null ? documentManager.getDocument(new IdRef(id)) : null;
     }
 
+    /**
+     * @since 5.6
+     */
     public List<DocumentModel> getFilteredRouteModels() throws ClientException {
         DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
         List<DocumentModel> routeModels = documentRoutingService.searchRouteModels(
@@ -887,6 +893,11 @@ public class DocumentRoutingActionsBean implements Serializable {
             }
         }
         return routeModels;
+    }
+
+    public String abandonCurrentRoute() {
+        getRelatedRoute().cancel(documentManager);
+        return null;
     }
 
 }

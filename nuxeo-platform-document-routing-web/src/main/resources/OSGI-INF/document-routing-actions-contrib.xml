@@ -143,6 +143,7 @@
     </action>
 
     <!-- 'Workflow' tab when a document route is running -->
+    <!--
     <action id="TAB_ROUTE_WORKFLOW" enabled="true"
       link="/incl/tabs/route_workflow.xhtml" label="action.view.review"
       icon="/icons/file.gif" order="60">
@@ -155,29 +156,31 @@
           </condition>
         </rule>
       </filter>
-    </action>
+    </action> -->
 
    <!-- 'Workflow' sub tab: graph view -->
+    <!--
     <action id="TAB_ROUTE_GRAPH_VIEW" enabled="true"
       link="/incl/tabs/route_graph_view.xhtml" order="10"
       label="label.document.routing.route.graph.view">
       <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
-    </action>
+    </action>-->
 
     <!-- 'Workflow' sub tab: current route -->
-    <action id="TAB_CURRENT_ROUTE" enabled="true"
-      link="/incl/tabs/current_route.xhtml" order="20"
-      label="label.document.routing.current.route">
-      <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
+    <action id="TAB_ROUTE_WORKFLOW" enabled="true"
+      link="/incl/tabs/current_route.xhtml" order="60"
+      label="action.view.review">
+      <category>VIEW_ACTION_LIST</category>
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
     <!-- 'Workflow' sub tab: previous routes -->
-    <action id="TAB_PREVIOUS_ROUTE" enabled="true"
+    <!--<action id="TAB_PREVIOUS_ROUTE" enabled="true"
       link="/incl/tabs/previous_routes.xhtml" order="30"
       label="label.document.routing.previous.routes">
       <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
     </action>
+    -->
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

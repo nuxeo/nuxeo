@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+       point="widgettypes">
+
+    <widgetType name="current_route_description">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Description</title>
+        <description>
+          <p>This widget displays the name, description, author and creation
+            date of a route.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>currentDocumentVersionInfo: the current document version
+                information</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/route/current_route_description_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="current_route_show_graph">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Description</title>
+        <description>
+          <p>This widget displays the name, description, author and creation
+            date of a route.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>currentDocumentVersionInfo: the current document version
+                information</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/route/current_route_show_graph_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="current_route_abandon">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Description</title>
+        <description>
+          <p>This widget displays the name, description, author and creation
+            date of a route.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>currentDocumentVersionInfo: the current document version
+                information</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/route/current_route_abandon_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="current_route_open_tasks">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Description</title>
+        <description>
+          <p>This widget displays the name, description, author and creation
+            date of a route.
+          </p>
+          <p>
+            It requires the following variables to be present in the EL context:
+            <ul>
+              <li>currentDocument: the current document</li>
+              <li>currentDocumentVersionInfo: the current document version
+                information</li>
+            </ul>
+          </p>
+        </description>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/route/current_route_open_tasks_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+      point="widgets">
+
+    <widget name="current_route_description" type="current_route_description" />
+    <widget name="current_route_show_graph" type="current_route_show_graph" />
+    <widget name="current_route_abandon" type="current_route_abandon" />
+    <widget name="current_route_open_tasks" type="current_route_open_tasks" />
+
+    <widget name="current_route_left_panel" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="nxw_addForm_1">true</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>current_route_actions_top_left</widget>
+        <widget>summary_current_document_single_tasks</widget>
+        <widget>current_route_open_tasks</widget>
+        <widget>current_route_previous_tasks</widget>
+        <widget>current_route_actions_bottom_left</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="current_route_right_panel" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="nxw_addForm_2">true</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>current_route_actions_top_right</widget>
+        <widget>current_route_description</widget>
+        <widget>current_route_actions_bottom_right</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="current_route_actions_top_left" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">CURRENT_ROUTE_TOP_LEFT</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <widget name="current_route_actions_bottom_left" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">CURRENT_ROUTE_BOTTOM_LEFT</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <widget name="current_route_actions_top_right" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">CURRENT_ROUTE_TOP_RIGHT</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <widget name="current_route_actions_bottom_right" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">CURRENT_ROUTE_BOTTOM_RIGHT</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <widget name="current_route_previous_tasks" type="contentViewWithForms">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <properties widgetMode="any">
+        <property name="contentViewName">route_past_steps</property>
+        <property name="foldable">true</property>
+      </properties>
+    </widget>
+
+    <widget name="task_title" type="text">
+      <labels>
+        <label mode="any">Name</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.task.name</field>
+      </fields>
+    </widget>
+    <widget name="task_directive" type="text">
+      <labels>
+        <label mode="any">Directive</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.task.directive</field>
+      </fields>
+    </widget>
+    <widget name="task_assignee" type="template">
+      <labels>
+        <label mode="any">Assignee</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.task.actors</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/user_suggestion_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+    <widget name="task_comments" type="template">
+      <labels>
+        <label mode="any">Comments</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.task.taskComments</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/user_suggestion_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+    <widget name="task_start_date" type="datetime">
+      <labels>
+        <label mode="any">Start date</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dublincore.created</field>
+      </fields>
+    </widget>
+    <widget name="task_due_date" type="datetime">
+      <labels>
+        <label mode="any">Due date</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.task.dueDate</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="current_route_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle7</property>
+            <property name="nxl_gridStyleClass_1">gridStyle5</property>
+          </properties>
+          <widget>current_route_left_panel</widget>
+          <widget>current_route_right_panel</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <!-- Route tasks content view layout -->
+    <layout name="route_content_view_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>task_title</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>task_assignee</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>task_directive</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>task_comments</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>task_start_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>task_due_date</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <!-- Past routes layout -->
+    <layout name="previousRoutesLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>previousRoutesContentView</widget>
+        </row>
+      </rows>
+      <widget name="previousRoutesContentView" type="contentViewWithForms">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <properties widgetMode="any">
+          <property name="contentViewName">previous_routes</property>
+          <property name="foldable">false</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <!-- Previous routes layout -->
+    <layout name="previous_routes_content_view_layout">
+      <templates>
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">/layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">/layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>workflow_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>workflow_description</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>workflow_initiator</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>workflow_start_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>workflow_end_date</widget>
+        </column>
+      </columns>
+    </layout>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="current_route_show_graph" type="widget" order="10">
+      <category>CURRENT_ROUTE_BOTTOM_RIGHT</category>
+      <properties>
+        <property name="widgetName">current_route_show_graph</property>
+      </properties>
+    </action>
+
+    <action id="current_route_abandon" link="#{routingActions.abandonCurrentRoute()}"
+      label="label.document.routing.abandon" order="20"
+      type="button" confirm="if( !confirmDeleteDocumentsForever() ) return false;">
+      <category>CURRENT_ROUTE_BOTTOM_RIGHT</category>
+    </action>
+
+  </extension>
+
+
+</component>

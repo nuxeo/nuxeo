@@ -10,11 +10,12 @@
 
   <a4j:outputPanel id="#{widget.id}_panel">
 
-    <nxu:set var="currentDashBoardItemsExceptPublishingTasks" value="#{taskActions.getCurrentDashBoardItemsExceptPublishingTasks()}" cache="true">
+    <nxu:set var="currentDashBoardItemsExceptPublishingTasks" value="#{taskActions.getCurrentDashBoardItemsExceptPublishingTasks()}"
+      cache="true">
 
       <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
         <h3 class="summaryTitle">
-          <h:outputText value="#{messages['action.view.associatedTasks']}" />
+          <h:outputText value="#{messages['label.document.routing.your.tasks']}" />
         </h3>
 
         <c:forEach var="dashboardItem" items="#{currentDashBoardItemsExceptPublishingTasks}"
