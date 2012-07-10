@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
@@ -38,7 +39,9 @@ public class WebException extends WebApplicationException {
     private static final long serialVersionUID = 176876876786L;
 
     protected String message;
+
     protected boolean byPassAppResponse = false;
+
     protected int status = 500;
 
     public WebException() {
@@ -123,12 +126,13 @@ public class WebException extends WebApplicationException {
             WebContext ctx = WebEngine.getActiveContext();
             if (ctx != null) {
                 if (ctx.head() instanceof ModuleResource) {
-                    ModuleResource mr = (ModuleResource)ctx.head();
+                    ModuleResource mr = (ModuleResource) ctx.head();
                     Object result = mr.handleError(this);
                     if (result instanceof Response) {
-                        response  = (Response)result;
+                        response = (Response) result;
                     } else if (result != null) {
-                        response = Response.fromResponse(response).entity(result).build();
+                        response = Response.fromResponse(response).entity(
+                                result).build();
                     }
                     return response;
                 }
@@ -162,7 +166,7 @@ public class WebException extends WebApplicationException {
     }
 
     public static WebException wrap(String message, Throwable e) {
-        //TODO add EJBAccessException dependency
+        // TODO add EJBAccessException dependency
         if (e instanceof DocumentSecurityException
                 || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) {
             return new WebSecurityException(message, e);
@@ -170,12 +174,21 @@ public class WebException extends WebApplicationException {
             return (WebException) e;
         } else if (e instanceof ClientException) {
             Throwable cause = e.getCause();
-            if (cause != null && cause.getMessage() != null) {
-                if (cause.getMessage().contains("org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
-                    return new WebResourceNotFoundException(cause.getMessage(), e);
+            boolean notFound = false;
+            if (cause instanceof NoSuchDocumentException) {
+                notFound = true;
+            } else if (cause != null && cause.getMessage() != null) {
+                // not sure if this is still needed (?) see NXP-9636
+                if (cause.getMessage().contains(
+                        "org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
+                    notFound = true;
                 }
             }
-            return new WebDocumentException(message, (ClientException)e);
+            if (notFound) {
+                return new WebResourceNotFoundException(cause.getMessage(), e);
+            } else {
+                return new WebDocumentException(message, (ClientException) e);
+            }
         } else {
             return new WebException(message, e);
         }
