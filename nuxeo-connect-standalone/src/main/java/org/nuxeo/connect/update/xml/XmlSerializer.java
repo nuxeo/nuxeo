@@ -39,8 +39,7 @@ public class XmlSerializer extends XmlWriter {
             attr("type", def.getType().getValue());
         }
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.getVisibility");
+            def.getClass().getMethod("getVisibility");
             if (def.getVisibility() != null) {
                 attr("visibility", def.getVisibility().toString());
             }
@@ -102,8 +101,7 @@ public class XmlSerializer extends XmlWriter {
         }
 
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.getConflicts");
+            def.getClass().getMethod("getConflicts");
             if (def.getConflicts() != null && def.getConflicts().length > 0) {
                 start("conflicts");
                 startContent();
@@ -117,8 +115,7 @@ public class XmlSerializer extends XmlWriter {
         }
 
         try {
-            def.getClass().getMethod(
-                    "org.nuxeo.connect.update.model.PackageDefinition.getProvides");
+            def.getClass().getMethod("getProvides");
             if (def.getProvides() != null && def.getProvides().length > 0) {
                 start("provides");
                 startContent();
