@@ -23,8 +23,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Provide the default local and timezone: undefined and let the caller to set
- * them
+ * Provides the default locale and timezone from the server.
  *
  * @since 5.6
  */
@@ -32,12 +31,12 @@ public class DefaultLocaleProvider implements LocaleProvider {
 
     @Override
     public Locale getLocale(CoreSession repo) throws ClientException {
-        return null;
+        return Locale.getDefault();
     }
 
     @Override
     public TimeZone getTimeZone(CoreSession repo) throws ClientException {
-        return null;
+        return TimeZone.getDefault();
     }
 
 }
