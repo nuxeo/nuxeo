@@ -196,12 +196,6 @@
         <field>data.document.ref</field>
         <field>data.document.dc.description</field>
       </fields>
-      <properties widgetMode="any">
-        <property name="tab">
-          #{nxu:test(layoutValue.data.task.getVariable('createdFromCreateTaskOperation')
-          == 'true', '', 'TAB_CONTENT_JBPM')}
-        </property>
-      </properties>
     </widget>
 
     <widget name="listing_task_directive" type="text">
