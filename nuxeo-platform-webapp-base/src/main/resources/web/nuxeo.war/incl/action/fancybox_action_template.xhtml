@@ -28,7 +28,7 @@
                   ajaxSingle="true"
                   ignoreDupResponses="true" requestDelay="100"
                   oncomplete="showFancyBox('##{idPrefix}#{action.id}_box');#{action.properties.onclick};return false;"
-                  styleClass="#{actionStyleClass} #{action.properties.styleClass}"
+                  styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
                   reRender="#{idPrefix}#{action.id}_ajax_panel">
                   <f:setPropertyActionListener value="true"
                     target="#{selectionActions.selectedValue}" />
@@ -98,7 +98,7 @@
               ajaxSingle="true"
               ignoreDupResponses="true" requestDelay="100"
               onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
-              styleClass="#{actionStyleClass} #{action.properties.styleClass}">
+              styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
               <ui:include src="/incl/action/action_icon_label_template.xhtml" />
               <ui:insert name="inside_action" />
             </a4j:commandLink>
