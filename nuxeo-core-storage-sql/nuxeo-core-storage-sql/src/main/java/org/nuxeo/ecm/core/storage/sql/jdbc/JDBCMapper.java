@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +105,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     private boolean limitedResults;
 
     private long maxResults;
+
+    protected final Set<IterableQueryResult> returnedQueryResults =
+            new HashSet<IterableQueryResult>();
 
     /**
      * Creates a new Mapper.
@@ -813,8 +817,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     + queryType + ": " + query);
         }
         try {
-            return new ResultSetQueryResult(queryMaker, query, queryFilter,
+            ResultSetQueryResult results = new ResultSetQueryResult(queryMaker, query, queryFilter,
                     pathResolver, this, params);
+            returnedQueryResults.add(results);
+            return results;
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException("Invalid query: " + queryType + ": "
@@ -1144,6 +1150,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void end(Xid xid, int flags) throws XAException {
+        closeQueries();
         try {
             xaresource.end(xid, flags);
             if (logger.isLogEnabled()) {
@@ -1156,6 +1163,15 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } catch (XAException e) {
             logger.error("XA end error on " + systemToString(xid), e);
             throw e;
+        }
+    }
+
+    @Override
+    public void closeQueries() {
+        Iterator<IterableQueryResult> it = returnedQueryResults.iterator();
+        while (it.hasNext()) {
+            it.next().close();
+            it.remove();
         }
     }
 
@@ -1206,4 +1222,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void close() {
+        closeQueries();
+        super.close();
+    }
 }

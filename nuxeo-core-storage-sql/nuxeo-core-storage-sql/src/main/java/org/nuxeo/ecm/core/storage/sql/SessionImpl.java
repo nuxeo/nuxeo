@@ -1311,4 +1311,8 @@ public class SessionImpl implements Session, XAResource {
         return mapper.getTransactionTimeout();
     }
 
+    public void closeQueries() {
+        mapper.closeQueries();
+    }
+
 }
