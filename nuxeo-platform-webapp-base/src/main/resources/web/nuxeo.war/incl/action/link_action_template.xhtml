@@ -50,7 +50,7 @@
       onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
       target="#{action.properties.target}"
-      styleClass="#{actionStyleClass} #{action.properties.styleClass}">
+      styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
     </nxh:commandLink>
@@ -61,7 +61,7 @@
       id="#{idPrefix}#{action.id}"
       onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
-      styleClass="#{actionStyleClass} #{action.properties.styleClass}">
+      styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="before_action_trigger" />
       <nxu:actionListenerMethod
