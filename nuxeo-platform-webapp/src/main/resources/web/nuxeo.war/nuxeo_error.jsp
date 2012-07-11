@@ -1,16 +1,33 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page language="java" %>
+<%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
-String context = request.getContextPath();
+  String context = request.getContextPath();
+  String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
+  String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+
+  String user_message = (String) request.getAttribute("user_message");
+  String exception_message = (String) request.getAttribute("exception_message");
+  String stackTrace = (String) request.getAttribute("stackTrace");
+  Boolean securityError = (Boolean) request.getAttribute("securityError");
+  String request_dump = (String) request.getAttribute("request_dump");
+
+  String pageTitle = "An error occurred";
+  if ((securityError!=null) && (securityError.booleanValue()==true))
+  {
+    pageTitle = "You don't have the necessary permission to do the requested action";
+  }
+  boolean isAnonymous = AnonymousAuthenticator.isAnonymousRequest(request);
 %>
+
 <html>
 <fmt:setBundle basename="messages" var="messages"/>
 <head>
-  <title>Nuxeo Error Page</title>
+  <title><%=productName%> - Error Page</title>
   <style type="text/css">
 <!--
 body {
@@ -21,7 +38,7 @@ body {
 H1 {
   color: #0080ff;
   font: bold 20px Verdana, sans-serif;
-  margin: 70px 0 40px 0;
+  margin: 50px 0 40px 0;
 }
 
 H2 {
@@ -31,6 +48,12 @@ H2 {
   padding: 5px;
   background: #EBF5FF;
   border: 1px solid #3299ff;
+}
+
+H3 {
+  color: #000;
+  font: normal 16px Verdana, sans-serif;
+  margin: 20px 0 0 0;
 }
 
 a {
@@ -107,77 +130,64 @@ a:hover {
   </script>
 </head>
 <body>
-<%
-  String user_message = (String) request.getAttribute("user_message");
-  String exception_message = (String) request.getAttribute("exception_message");
-  String stackTrace = (String) request.getAttribute("stackTrace");
-  Boolean securityError = (Boolean) request.getAttribute("securityError");
-  String request_dump = (String) request.getAttribute("request_dump");
 
-  String pageTitle="An error occurred";
-  if ((securityError!=null) && (securityError.booleanValue()==true))
-  {
-    pageTitle = "You don't have the necessary permission to do the requested action";
-  }
-  boolean isAnonymous = AnonymousAuthenticator.isAnonymousRequest(request);
+<table border="0" width="50%" cellpadding="0" cellspacing="0" align="center"
+  valign="center">
 
-%>
-
-<table border="0" width="75%" cellpadding="0" cellspacing="0" align="center">
   <tr>
-    <td width="280" align="right" valign="top">
-      <div class="logo">
-        <img src="<%=context%>/img/logo_error.gif" alt="">
-      </div>
+    <td>
+      <h3><%=productName%> - <%=productVersion%></h3>
     </td>
+  </tr>
+  <tr>
     <td>
 
       <h1><%=pageTitle%></h1>
 
-  <% if (!isAnonymous) { %>
-      <h2><%=user_message%></h2>
+      <% if (!isAnonymous) { %>
+        <h2><%=user_message%></h2>
+        <div class="links">
+          <div class="back">
+            <a href="<%=context %>/">back</a>
+          </div>
+          <div class="change">
+            <a href="<%=context%>/logout">change username</a>
+          </div>
+          <div class="stacktrace">
+            <a href="#"
+               onclick="javascript:toggleError('stackTrace'); return false;">
+             show stacktrace
+            </a>
+          </div>
+          <div id="stackTrace" style="display: none;">
+            <h2><%=exception_message %></h2>
+            <inputTextarea rows="20" cols="300" readonly="true">
+              <pre>
+              <%=stackTrace%>
+              </pre>
+            </inputTextarea>
+          </div>
+          <div class="stacktrace">
+            <a href="#"
+               onclick="javascript:toggleError('requestDump'); return false;">
+              show context dump
+            </a>
+          </div>
+          <div id="requestDump" style="display: none;">
+            <h2>Context</h2>
+            <inputTextarea rows="20" cols="300" readonly="true">
+              <pre>
+              <%=request_dump%>
+              </pre>
+            </inputTextarea>
+          </div>
+        </div>
 
-
-      <div class="links">
-        <div class="back"><a href="<%=context %>/">back</a>
-        </div>
-        <div class="change"><a href="<%=context%>/logout">change username</a>
-        </div>
-        <div class="stacktrace">
-          <a href="#"
-             onclick="javascript:toggleError('stackTrace'); return false;">
-           show stacktrace
-          </a>
-        </div>
-        <div id="stackTrace" style="display: none;">
-          <h2><%=exception_message %>
-          </h2>
-          <inputTextarea rows="20" cols="100" readonly="true">
-            <pre>
-            <%=stackTrace%>
-            </pre>
-          </inputTextarea>
-        </div>
-      <div class="stacktrace">
-          <a href="#"
-             onclick="javascript:toggleError('requestDump'); return false;">
-            show context dump
-          </a>
-        </div>
-        <div id="requestDump" style="display: none;">
-          <h2>Context</h2>
-          <inputTextarea rows="20" cols="100" readonly="true">
-            <pre>
-            <%=request_dump%>
-            </pre>
-          </inputTextarea>
-        </div>
-      </div>
-      </div>
       <%} else { %>
-      <h2> You must be authenticated to perform this operation </h2>
-      <div class="change"><a href="<%=context%>/logout">Login</a>
-
+        <h2> You must be authenticated to perform this operation </h2>
+        <div class="change">
+          <a href="<%=context%>/logout">Login</a>
+        </div>
       <%} %>
 
     </td>
