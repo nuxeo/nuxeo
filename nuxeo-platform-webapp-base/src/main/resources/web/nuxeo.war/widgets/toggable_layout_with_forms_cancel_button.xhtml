@@ -31,7 +31,7 @@
         id="#{widget.id}_cancelToggleAction"
         immediate="true"
         reRender="#{widget.id}_regionPanel"
-        styleClass="#{widgetProperty_actionStyleClass}">
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
         <nxh:graphicImage value="/icons/action_delete_mini.png"
           title="#{cancelActionLabel}"
           alt="#{cancelActionLabel}" />
@@ -51,7 +51,7 @@
         immediate="true"
         reRender="#{widget.id}_regionPanel"
         value="#{cancelActionLabel}"
-        styleClass="#{widgetProperty_actionStyleClass}">
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
         <f:param name="valueHolderId"
           value="#{widget.id}_modeValueHolder" />
         <f:setPropertyActionListener
@@ -67,7 +67,7 @@
         id="#{widget.id}_cancelToggleAction"
         immediate="true"
         reRender="#{widget.id}_regionPanel"
-        styleClass="#{widgetProperty_actionStyleClass}">
+        styleClass="actionLink #{widgetProperty_actionStyleClass}">
         <nxh:graphicImage value="/icons/action_delete_mini.png"
           title="#{cancelActionLabel}"
           alt="#{cancelActionLabel}" />
