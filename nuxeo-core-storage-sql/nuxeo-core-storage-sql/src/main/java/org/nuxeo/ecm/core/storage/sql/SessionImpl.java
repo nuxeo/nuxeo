@@ -1320,4 +1320,12 @@ public class SessionImpl implements Session, XAResource {
         return mapper.getTransactionTimeout();
     }
 
+    public void closeQueries() {
+        try {
+          mapper.closeQueries();
+        } catch (StorageException e) {
+            throw new RuntimeException("Unable to close queries", e);
+        }
+    }
+
 }
