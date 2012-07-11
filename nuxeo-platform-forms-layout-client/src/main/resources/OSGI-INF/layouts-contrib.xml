@@ -2326,7 +2326,7 @@
               </widget>
               <widget name="subLabelStyleClass" type="text">
                 <labels>
-                  <label mode="any">Sub Header style class</label>
+                  <label mode="any">Sub Label style class</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">

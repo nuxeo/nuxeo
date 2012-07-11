@@ -81,7 +81,7 @@
       <c:choose>
 
         <c:when test="#{widgetProperty_display == 'table'}">
-          <table class="dataOutput widgetTable containerWidgetTable #{widgetProperty_subStyleClass}">
+          <table class="dataTable widgetTable containerWidgetTable #{widgetProperty_subStyleClass}">
             <thead>
               <c:if test="#{displaySubLabels}">
                 <tr>
@@ -175,7 +175,7 @@
         </c:when>
 
         <c:otherwise>
-          <table class="dataInput widgetTable containerWidgetTable #{widgetProperty_subStyleClass}">
+          <table class="dataTableNoBorder widgetTable containerWidgetTable #{widgetProperty_subStyleClass}">
             <tbody>
               <nxl:subWidget>
                 <tr>

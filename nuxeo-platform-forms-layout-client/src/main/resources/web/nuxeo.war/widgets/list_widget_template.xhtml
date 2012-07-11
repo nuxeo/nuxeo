@@ -55,7 +55,7 @@
       <c:choose>
 
         <c:when test="#{widgetProperty_display == 'table'}">
-          <table class="dataOutput widgetTable listWidgetTable #{widgetProperty_styleClass}">
+          <table class="dataTable widgetTable listWidgetTable #{widgetProperty_styleClass}">
             <thead>
               <c:if test="#{displaySubLabels and (isEditMode or not empty fieldOrValue)}">
                 <tr>
@@ -98,7 +98,7 @@
         </c:when>
 
         <c:when test="#{widgetProperty_display == 'inline'}">
-          <table class="dataInput widgetTable listWidgetTable #{widgetProperty_styleClass}">
+          <table class="dataTableNoBorder widgetTable listWidgetTable #{widgetProperty_styleClass}">
             <tbody>
               <nxu:inputList value="#{fieldOrValue}"
                 id="#{widget.id}_input" model="model"

@@ -20,7 +20,7 @@
   <c:choose>
 
     <c:when test="#{widgetProperty_display == 'table'}">
-      <table class="dataOutput widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+      <table class="dataTable widgetTable complexWidgetTable #{widgetProperty_styleClass}">
         <thead>
           <c:if test="#{displaySubLabels}">
             <tr>
@@ -50,7 +50,7 @@
     </c:when>
 
     <c:when test="#{widgetProperty_display == 'inline'}">
-      <table class="dataInput widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+      <table class="dataTableNoBorder widgetTable complexWidgetTable #{widgetProperty_styleClass}">
         <tbody>
           <tr>
             <nxl:subWidget>
@@ -69,7 +69,7 @@
     </c:when>
 
     <c:when test="#{widgetProperty_display == 'block_top'}">
-      <table class="dataInput widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+      <table class="dataTableNoBorder widgetTable complexWidgetTable #{widgetProperty_styleClass}">
         <tbody>
           <nxl:subWidget>
             <c:if test="#{displaySubLabels and not widget.handlingLabels}">
@@ -90,7 +90,7 @@
     </c:when>
 
     <c:otherwise>
-      <table class="dataInput widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+      <table class="dataTableNoBorder widgetTable complexWidgetTable #{widgetProperty_styleClass}">
         <tbody>
           <nxl:subWidget>
             <tr>
