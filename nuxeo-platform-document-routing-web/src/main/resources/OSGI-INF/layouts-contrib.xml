@@ -10,15 +10,7 @@
         <title>Description</title>
         <description>
           <p>This widget displays the name, description, author and creation
-            date of a route.
-          </p>
-          <p>
-            It requires the following variables to be present in the EL context:
-            <ul>
-              <li>currentDocument: the current document</li>
-              <li>currentDocumentVersionInfo: the current document version
-                information</li>
-            </ul>
+            date of the current route started on the current document.
           </p>
         </description>
         <categories>
@@ -42,16 +34,9 @@
         <sinceVersion>5.6</sinceVersion>
         <title>Description</title>
         <description>
-          <p>This widget displays the name, description, author and creation
-            date of a route.
-          </p>
           <p>
-            It requires the following variables to be present in the EL context:
-            <ul>
-              <li>currentDocument: the current document</li>
-              <li>currentDocumentVersionInfo: the current document version
-                information</li>
-            </ul>
+            This widget displays the graph of the current route in a
+            Fancybox popup.
           </p>
         </description>
         <categories>
@@ -75,16 +60,9 @@
         <sinceVersion>5.6</sinceVersion>
         <title>Description</title>
         <description>
-          <p>This widget displays the name, description, author and creation
-            date of a route.
-          </p>
           <p>
-            It requires the following variables to be present in the EL context:
-            <ul>
-              <li>currentDocument: the current document</li>
-              <li>currentDocumentVersionInfo: the current document version
-                information</li>
-            </ul>
+            This widget displays an 'Abandon' action to cancel the current route
+            started on the current document.
           </p>
         </description>
         <categories>
@@ -108,16 +86,9 @@
         <sinceVersion>5.6</sinceVersion>
         <title>Description</title>
         <description>
-          <p>This widget displays the name, description, author and creation
-            date of a route.
-          </p>
           <p>
-            It requires the following variables to be present in the EL context:
-            <ul>
-              <li>currentDocument: the current document</li>
-              <li>currentDocumentVersionInfo: the current document version
-                information</li>
-            </ul>
+            This widget displays all the open tasks, except the publication ones,
+            on the current document.
           </p>
         </description>
         <categories>
