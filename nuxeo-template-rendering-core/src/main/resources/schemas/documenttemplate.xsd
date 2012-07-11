@@ -9,6 +9,12 @@
     <xs:list itemType="xs:string" />
   </xs:simpleType>
 
+  <xs:simpleType name="longString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="65536" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:element name="templateName" type="xs:string"/>
 
   <xs:element name="applicableTypes" type="nxs:typesList"/>
@@ -17,7 +23,7 @@
 
   <xs:element name="templateType" type="xs:string"/>
 
-  <xs:element name="templateData" type="xs:string"/>
+  <xs:element name="templateData" type="nxs:longString"/>
 
   <xs:element name="allowOverride" type="xs:boolean"/>
 
