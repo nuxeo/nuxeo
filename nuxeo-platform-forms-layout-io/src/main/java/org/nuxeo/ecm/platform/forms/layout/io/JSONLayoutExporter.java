@@ -32,6 +32,7 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -156,7 +157,10 @@ public class JSONLayoutExporter {
             json.element("demo", demoInfo);
         }
         json.element("sinceVersion", conf.getSinceVersion());
-        json.element("deprecatedVersion", conf.getDeprecatedVersion());
+        String deprVersion = conf.getDeprecatedVersion();
+        if (!StringUtils.isBlank(deprVersion)) {
+            json.element("deprecatedVersion", deprVersion);
+        }
         JSONObject confProps = exportPropsToJson(conf.getConfProperties());
         if (!confProps.isEmpty()) {
             json.element("confProperties", confProps);
@@ -171,7 +175,12 @@ public class JSONLayoutExporter {
             json.element("supportedModes", supportedModes);
         }
 
-        json.element("acceptingSubWidgets", conf.isAcceptingSubWidgets());
+        if (conf.isAcceptingSubWidgets()) {
+            json.element("acceptingSubWidgets", conf.isAcceptingSubWidgets());
+        }
+        if (conf.isHandlingLabels()) {
+            json.element("handlingLabels", conf.isHandlingLabels());
+        }
         if (conf.isContainingForm()) {
             json.element("containingForm", true);
         }
@@ -247,17 +256,14 @@ public class JSONLayoutExporter {
     @SuppressWarnings("unchecked")
     public static WidgetTypeConfiguration importWidgetTypeConfiguration(
             JSONObject conf) {
+        WidgetTypeConfigurationImpl res = new WidgetTypeConfigurationImpl();
         if (conf == null) {
-            return new WidgetTypeConfigurationImpl(null, null, null, null,
-                    false, Collections.EMPTY_MAP, Collections.EMPTY_LIST,
-                    false, false, false, false, Collections.EMPTY_LIST,
-                    Collections.EMPTY_LIST, Collections.EMPTY_LIST,
-                    Collections.EMPTY_LIST, Collections.EMPTY_MAP);
+            return res;
         }
-        String title = conf.getString("title");
-        String description = conf.optString("description");
-        String sinceVersion = conf.optString("sinceVersion");
-        String deprecatedVersion = conf.optString("deprecatedVersion");
+        res.setTitle(conf.getString("title"));
+        res.setDescription(conf.optString("description"));
+        res.setSinceVersion(conf.optString("sinceVersion"));
+        res.setDeprecatedVersion(conf.optString("deprecatedVersion"));
 
         JSONObject demoInfo = conf.optJSONObject("demo");
         String demoId = null;
@@ -266,20 +272,21 @@ public class JSONLayoutExporter {
             demoId = demoInfo.optString("id");
             demoPreviewEnabled = demoInfo.optBoolean("previewEnabled");
         }
+        res.setDemoId(demoId);
+        res.setDemoPreviewEnabled(demoPreviewEnabled);
 
-        // String demoId = conf.getString(key)
-
-        Map<String, Serializable> confProps = importProps(conf.optJSONObject("confProperties"));
+        res.setProperties(importProps(conf.optJSONObject("confProperties")));
 
         List<String> confSupportedModes = new ArrayList<String>();
         JSONArray supportedModes = conf.optJSONArray("supportedModes");
         if (supportedModes != null) {
             confSupportedModes.addAll(supportedModes);
         }
+        res.setSupportedModes(confSupportedModes);
 
-        boolean acceptingSubWidgets = conf.optBoolean("acceptingSubWidgets",
-                false);
-        boolean containingForm = conf.optBoolean("containingForm", false);
+        res.setAcceptingSubWidgets(conf.optBoolean("acceptingSubWidgets", false));
+        res.setHandlingLabels(conf.optBoolean("handlingLabels", false));
+        res.setContainingForm(conf.optBoolean("containingForm", false));
 
         JSONObject fields = conf.optJSONObject("fields");
         boolean list = false;
@@ -305,12 +312,18 @@ public class JSONLayoutExporter {
                 }
             }
         }
+        res.setList(list);
+        res.setComplex(complex);
+        res.setSupportedFieldTypes(confSupportedTypes);
+        res.setDefaultFieldTypes(confDefaultTypes);
+        res.setDefaultFieldDefinitions(defaultFieldDefinitions);
 
         JSONArray cats = conf.optJSONArray("categories");
         List<String> confCats = new ArrayList<String>();
         if (cats != null) {
             confCats.addAll(cats);
         }
+        res.setCategories(confCats);
 
         JSONObject props = conf.optJSONObject("properties");
         Map<String, List<LayoutDefinition>> confLayouts = new HashMap<String, List<LayoutDefinition>>();
@@ -330,13 +343,7 @@ public class JSONLayoutExporter {
                 }
             }
         }
-
-        WidgetTypeConfiguration res = new WidgetTypeConfigurationImpl(
-                sinceVersion, deprecatedVersion, title, description, demoId,
-                demoPreviewEnabled, confProps, confSupportedModes,
-                acceptingSubWidgets, list, complex, containingForm,
-                confSupportedTypes, confDefaultTypes, defaultFieldDefinitions,
-                confCats, confLayouts);
+        res.setPropertyLayouts(confLayouts);
 
         return res;
     }
