@@ -31,7 +31,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm.social</groupId>
       <artifactId>nuxeo-social-workspace-gadgets</artifactId>
-    </dependency>
+    </dependency
+    <dependency>
+      <groupId>org.nuxeo.ecm.social</groupId>
+      <artifactId>nuxeo-social-workspace-gadgets-library</artifactId>
+    </dependency>>
     <dependency>
       <groupId>org.nuxeo.ecm.social</groupId>
       <artifactId>nuxeo-relationship</artifactId>
