@@ -28,6 +28,7 @@ import javax.xml.ws.WebServiceException;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.junit.Ignore;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.ecm.core.opencmis.bindings.LoginProvider;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
@@ -44,6 +45,7 @@ import com.sun.xml.ws.transport.http.servlet.WSServletDelegate;
 /**
  * Test the high-level session using a WebServices connection.
  */
+@Ignore
 public class TestNuxeoSessionWebServices extends
         NuxeoSessionClientServerTestCase {
 

@@ -17,6 +17,8 @@ import java.util.Map;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
+import org.junit.Ignore;
+
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
@@ -25,6 +27,7 @@ import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 /**
  * Test the high-level session using an AtomPub connection.
  */
+@Ignore
 public class TestNuxeoSessionAtomPub extends NuxeoSessionClientServerTestCase {
 
     @Override
