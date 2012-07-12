@@ -67,6 +67,15 @@ public interface WidgetTypeConfiguration extends Serializable {
 
     boolean isAcceptingSubWidgets();
 
+    /**
+     * Returns true if widget knows how to display its label (some widget types
+     * might delegate this to their containing widget or layout, usually when
+     * defining form layouts).
+     *
+     * @since 5.6
+     */
+    boolean isHandlingLabels();
+
     boolean isList();
 
     boolean isComplex();

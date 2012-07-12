@@ -10,6 +10,7 @@ package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected boolean acceptingSubWidgets = false;
 
+    protected boolean handlingLabels = false;
+
     protected boolean list = false;
 
     protected boolean complex = false;
@@ -55,12 +58,19 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected Map<String, List<LayoutDefinition>> propertyLayouts;
 
-    // needed by GWT serialization
+    @SuppressWarnings({ "unchecked" })
     public WidgetTypeConfigurationImpl() {
-        super();
+        this(null, null, null, null, false, Collections.EMPTY_MAP,
+                Collections.EMPTY_LIST, false, false, false, false,
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+                Collections.EMPTY_LIST, Collections.EMPTY_LIST,
+                Collections.EMPTY_MAP);
     }
 
-    // BBB
+    /**
+     * @deprecated since 5.6: use setters instead
+     */
+    @Deprecated
     public WidgetTypeConfigurationImpl(String sinceVersion, String title,
             String description, String demoId, boolean demoPreviewEnabled,
             Map<String, Serializable> properties, List<String> supportedModes,
@@ -75,7 +85,10 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
                 defaultFieldDefinitions, categories, propertyLayouts);
     }
 
-    // BBB
+    /**
+     * @deprecated since 5.6: use setters instead
+     */
+    @Deprecated
     public WidgetTypeConfigurationImpl(String sinceVersion, String title,
             String description, String demoId, boolean demoPreviewEnabled,
             Map<String, Serializable> properties, List<String> supportedModes,
@@ -85,26 +98,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
             List<FieldDefinition> defaultFieldDefinitions,
             List<String> categories,
             Map<String, List<LayoutDefinition>> propertyLayouts) {
-        this(sinceVersion, null, title, description, demoId,
-                demoPreviewEnabled, properties, supportedModes,
-                acceptingSubWidgets, list, complex, containingForm,
-                supportedFieldTypes, defaultFieldTypes,
-                defaultFieldDefinitions, categories, propertyLayouts);
-    }
-
-    public WidgetTypeConfigurationImpl(String sinceVersion,
-            String deprecatedVersion, String title, String description,
-            String demoId, boolean demoPreviewEnabled,
-            Map<String, Serializable> properties, List<String> supportedModes,
-            boolean acceptingSubWidgets, boolean list, boolean complex,
-            boolean containingForm, List<String> supportedFieldTypes,
-            List<String> defaultFieldTypes,
-            List<FieldDefinition> defaultFieldDefinitions,
-            List<String> categories,
-            Map<String, List<LayoutDefinition>> propertyLayouts) {
         super();
         this.sinceVersion = sinceVersion;
-        this.deprecatedVersion = deprecatedVersion;
         this.title = title;
         this.description = description;
         this.demoId = demoId;
@@ -222,6 +217,141 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
             return res;
         }
         return null;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setSinceVersion(String sinceVersion) {
+        this.sinceVersion = sinceVersion;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setDeprecatedVersion(String deprecatedVersion) {
+        this.deprecatedVersion = deprecatedVersion;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setDemoId(String demoId) {
+        this.demoId = demoId;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setDemoPreviewEnabled(boolean demoPreviewEnabled) {
+        this.demoPreviewEnabled = demoPreviewEnabled;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setProperties(Map<String, Serializable> properties) {
+        this.properties = properties;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setSupportedModes(List<String> supportedModes) {
+        this.supportedModes = supportedModes;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setAcceptingSubWidgets(boolean acceptingSubWidgets) {
+        this.acceptingSubWidgets = acceptingSubWidgets;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setList(boolean list) {
+        this.list = list;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setComplex(boolean complex) {
+        this.complex = complex;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setContainingForm(boolean containingForm) {
+        this.containingForm = containingForm;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setSupportedFieldTypes(List<String> supportedFieldTypes) {
+        this.supportedFieldTypes = supportedFieldTypes;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setDefaultFieldTypes(List<String> defaultFieldTypes) {
+        this.defaultFieldTypes = defaultFieldTypes;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setDefaultFieldDefinitions(
+            List<FieldDefinition> defaultFieldDefinitions) {
+        this.defaultFieldDefinitions = defaultFieldDefinitions;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setPropertyLayouts(
+            Map<String, List<LayoutDefinition>> propertyLayouts) {
+        this.propertyLayouts = propertyLayouts;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public boolean isHandlingLabels() {
+        return handlingLabels;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setHandlingLabels(boolean handlingLabels) {
+        this.handlingLabels = handlingLabels;
     }
 
 }

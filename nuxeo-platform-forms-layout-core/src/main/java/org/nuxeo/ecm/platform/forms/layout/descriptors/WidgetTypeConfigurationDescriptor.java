@@ -53,6 +53,12 @@ public class WidgetTypeConfigurationDescriptor {
     @XNode("sinceVersion")
     String sinceVersion;
 
+    /**
+     * @since 5.6
+     */
+    @XNode("deprecatedVersion")
+    String deprecatedVersion;
+
     @XNode("title")
     String title;
 
@@ -70,6 +76,12 @@ public class WidgetTypeConfigurationDescriptor {
 
     @XNode("acceptingSubWidgets")
     boolean acceptingSubWidgets = false;
+
+    /**
+     * @since 5.6
+     */
+    @XNode("handlingLabels")
+    boolean handlingLabels = false;
 
     @XNode("fields/list")
     boolean list = false;
@@ -130,6 +142,13 @@ public class WidgetTypeConfigurationDescriptor {
 
     public boolean isAcceptingSubWidgets() {
         return acceptingSubWidgets;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public boolean isHandlingLabels() {
+        return handlingLabels;
     }
 
     public boolean isComplex() {
@@ -219,17 +238,37 @@ public class WidgetTypeConfigurationDescriptor {
         return sinceVersion;
     }
 
+    /**
+     * @since 5.6
+     */
+    public String getDeprecatedVersion() {
+        return deprecatedVersion;
+    }
+
     public List<String> getSupportedModes() {
         return supportedModes;
     }
 
     public WidgetTypeConfiguration getWidgetTypeConfiguration() {
-        return new WidgetTypeConfigurationImpl(getSinceVersion(), getTitle(),
-                getDescription(), getDemoId(), isDemoPreviewEnabled(),
-                getConfProperties(), getSupportedModes(),
-                isAcceptingSubWidgets(), isList(), isComplex(),
-                isContainingForm(), getSupportedFieldTypes(),
-                getDefaultFieldTypes(), getDefaultFieldDefinitions(),
-                getCategories(), getPropertyLayouts());
+        WidgetTypeConfigurationImpl res = new WidgetTypeConfigurationImpl();
+        res.setSinceVersion(getSinceVersion());
+        res.setDeprecatedVersion(getDeprecatedVersion());
+        res.setTitle(getTitle());
+        res.setDescription(getDescription());
+        res.setDemoId(getDemoId());
+        res.setDemoPreviewEnabled(isDemoPreviewEnabled());
+        res.setProperties(getConfProperties());
+        res.setSupportedModes(getSupportedModes());
+        res.setAcceptingSubWidgets(isAcceptingSubWidgets());
+        res.setHandlingLabels(isHandlingLabels());
+        res.setList(isList());
+        res.setComplex(isComplex());
+        res.setContainingForm(isContainingForm());
+        res.setSupportedFieldTypes(getSupportedFieldTypes());
+        res.setDefaultFieldTypes(getDefaultFieldTypes());
+        res.setDefaultFieldDefinitions(getDefaultFieldDefinitions());
+        res.setCategories(getCategories());
+        res.setPropertyLayouts(getPropertyLayouts());
+        return res;
     }
 }
