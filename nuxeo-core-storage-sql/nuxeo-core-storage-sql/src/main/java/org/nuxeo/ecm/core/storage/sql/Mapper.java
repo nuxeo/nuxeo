@@ -69,14 +69,6 @@ public interface Mapper extends RowMapper, XAResource {
 
     void close() throws StorageException;
 
-    /**
-     * Close opened queries.
-     *
-     * @since 5.6
-     */
-    void closeQueries() throws StorageException;
-
-
     // used for reflection
     String CLOSE = "close";
 

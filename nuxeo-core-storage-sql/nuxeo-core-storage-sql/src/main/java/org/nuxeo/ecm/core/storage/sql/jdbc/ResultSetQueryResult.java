@@ -102,43 +102,31 @@ public class ResultSetQueryResult implements IterableQueryResult,
 
     @Override
     public void close() {
-        if (rs == null) {
-            return;
-        }
-        try {
-            rs.close();
-            closePreparedStatement(ps);
-        } catch (SQLException e) {
-            logger.error("Error closing statement: " + e.getMessage(), e);
-        } finally {
-            pos = -1;
-            rs = null;
-            ps = null;
-        }
-    }
-
-    public static class ClosedIteratorException extends IllegalStateException {
-
-        private static final long serialVersionUID = 1L;
-
-        public final QueryMaker.Query query;
-
-        protected ClosedIteratorException(QueryMaker.Query q) {
-            super("Query results iterator closed (" + q.selectInfo.sql + ")");
-            this.query = q;
-        }
-
-    }
-
-    protected void checkLife() {
-        if (rs == null) {
-            throw new ClosedIteratorException(q);
+        if (rs != null) {
+            try {
+                rs.close();
+                closePreparedStatement(ps);
+            } catch (SQLException e) {
+                logger.error("Error closing statement: " + e.getMessage(), e);
+            } finally {
+                pos = -1;
+                rs = null;
+                ps = null;
+                q = null;
+            }
         }
     }
 
     @Override
+    protected void finalize() {
+        if (rs != null) {
+            logger.warn("Closing an IterableQueryResult for you. Please close them yourself.");
+        }
+        close();
+    }
+
+    @Override
     public long size() {
-        checkLife();
         if (size != -1) {
             return size;
         }
@@ -165,13 +153,15 @@ public class ResultSetQueryResult implements IterableQueryResult,
 
     @Override
     public long pos() {
-        checkLife();
         return pos;
     }
 
     @Override
     public void skipTo(long pos) {
-        checkLife();
+        if (rs == null || pos < 0) {
+            this.pos = -1;
+            return;
+        }
         try {
             boolean available = rs.absolute((int) pos + 1);
             if (available) {
@@ -191,13 +181,14 @@ public class ResultSetQueryResult implements IterableQueryResult,
 
     @Override
     public Iterator<Map<String, Serializable>> iterator() {
-        checkLife();
         return this;
     }
 
     protected Map<String, Serializable> fetchNext() throws StorageException,
             SQLException {
-        checkLife();
+        if (rs == null) {
+            return null;
+        }
         if (!rs.next()) {
             if (logger.isLogEnabled()) {
                 logger.log("  -> END");
@@ -208,7 +199,6 @@ public class ResultSetQueryResult implements IterableQueryResult,
     }
 
     protected Map<String, Serializable> fetchCurrent() throws SQLException {
-        checkLife();
         Map<String, Serializable> map = q.selectInfo.mapMaker.makeMap(rs);
         if (logger.isLogEnabled()) {
             logger.logMap(map);
@@ -218,7 +208,6 @@ public class ResultSetQueryResult implements IterableQueryResult,
 
     @Override
     public boolean hasNext() {
-        checkLife();
         if (next != null) {
             return true;
         }
@@ -236,7 +225,6 @@ public class ResultSetQueryResult implements IterableQueryResult,
 
     @Override
     public Map<String, Serializable> next() {
-        checkLife();
         if (!hasNext()) {
             pos = -1;
             throw new NoSuchElementException();

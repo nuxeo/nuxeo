@@ -281,7 +281,6 @@ public class ManagedConnectionImpl implements ManagedConnection,
      */
     protected void close(ConnectionImpl connection) {
         log.debug("close: " + this);
-        session.closeQueries();
         removeConnection(connection);
         sendClosedEvent(connection);
     }

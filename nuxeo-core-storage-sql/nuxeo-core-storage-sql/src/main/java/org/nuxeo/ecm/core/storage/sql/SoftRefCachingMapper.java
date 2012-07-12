@@ -63,11 +63,6 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public void closeQueries() throws StorageException {
-        mapper.closeQueries();
-    }
-
-    @Override
     public int getTableSize(String tableName) throws StorageException {
         return mapper.getTableSize(tableName);
     }
