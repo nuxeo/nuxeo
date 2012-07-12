@@ -61,6 +61,7 @@
               <ui:include src="/widgets/incl/widget_label_template.xhtml">
                 <ui:param name="labelStyleClass"
                   value="#{widgetProperty_headerStyleClass}" />
+                <ui:param name="hideHelp" value="true" />
               </ui:include>
             </a>
           </h3>
@@ -68,7 +69,9 @@
         <c:otherwise>
           <c:if test="#{not empty widget.label}">
             <h3 class="widgetHeader summaryTitle #{widgetProperty_headerStyleClass}">
-              <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+              <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                <ui:param name="hideHelp" value="true" />
+              </ui:include>
             </h3>
           </c:if>
         </c:otherwise>
@@ -77,6 +80,14 @@
 
     <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}"
       style="#{nxu:test(widgetProperty_foldedByDefault, 'display: none;', '')}">
+
+      <c:if test="#{showHeader and not empty widget.helpLabel}">
+        <nxu:set var="widgetHelpLabel"
+          value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
+          cache="true">
+          <h:outputText value="#{widgetHelpLabel}" class="infoMessage" />
+        </nxu:set>
+      </c:if>
 
       <c:choose>
 

@@ -2217,6 +2217,7 @@
           <mode>view</mode>
         </supportedModes>
         <acceptingSubWidgets>true</acceptingSubWidgets>
+        <handlingLabels>true</handlingLabels>
         <properties>
           <layouts mode="any">
             <layout name="container_widget_type_properties_any">

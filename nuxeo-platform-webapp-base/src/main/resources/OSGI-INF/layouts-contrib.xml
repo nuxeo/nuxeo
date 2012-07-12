@@ -1070,6 +1070,7 @@
           <category>tab_designer</category>
         </categories>
         <containingForm>true</containingForm>
+        <handlingLabels>true</handlingLabels>
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
@@ -1121,14 +1122,23 @@
                   <widget>foldableBoxStyleClass</widget>
                 </row>
                 <row>
-                  <widget>contentViewTitle</widget>
+                  <widget>foldedByDefault</widget>
                 </row>
                 <row>
-                  <widget>showTitle</widget>
+                  <widget>foldedIfEmpty</widget>
+                </row>
+                <row>
+                  <widget>hideEmpty</widget>
                 </row>
                 <row>
                   <widget>contentViewIconPath</widget>
                 </row>
+                <!-- not sure this is a good idea: there are other forms in the template -->
+                <!--
+                  <row>
+                  <widget>removeForm</widget>
+                  </row>
+                -->
               </rows>
               <widget name="contentViewName" type="selectOneResource">
                 <labels>
@@ -1353,9 +1363,9 @@
                   <mode value="view_reference">view</mode>
                 </widgetModes>
               </widget>
-              <widget name="removeForm" type="checkbox">
+              <widget name="foldedByDefault" type="checkbox">
                 <labels>
-                  <label mode="any">Remove form on content listing</label>
+                  <label mode="any">Folded by default</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
@@ -1363,44 +1373,42 @@
                   </label>
                 </helpLabels>
                 <fields>
-                  <field>removeForm</field>
+                  <field>foldedByDefault</field>
                 </fields>
                 <widgetModes>
                   <mode value="any">hidden</mode>
                   <mode value="view_reference">view</mode>
                 </widgetModes>
               </widget>
-              <widget name="contentViewTitle" type="text">
+              <widget name="foldedIfEmpty" type="checkbox">
                 <labels>
-                  <label mode="any">Content View title</label>
+                  <label mode="any">Folded if empty</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The title to display instead of the one set
-                    on the content view definition. If not empty, if will be
-                    translated if the widget is translated.
+                    Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
-                  <field>contentViewTitle</field>
+                  <field>foldedIfEmpty</field>
                 </fields>
                 <widgetModes>
                   <mode value="any">hidden</mode>
                   <mode value="view_reference">view</mode>
                 </widgetModes>
               </widget>
-              <widget name="showTitle" type="checkbox">
+              <widget name="hideEmpty" type="checkbox">
                 <labels>
-                  <label mode="any">Show title</label>
+                  <label mode="any">Hide if empty</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Boolean to show or hide the title,
-                    overriding the value set on the content view definition.
+                    Boolean to hide the complete rendering when
+                    content view is empty
                   </label>
                 </helpLabels>
                 <fields>
-                  <field>showTitle</field>
+                  <field>hideEmpty</field>
                 </fields>
                 <widgetModes>
                   <mode value="any">hidden</mode>
@@ -1419,6 +1427,23 @@
                 </helpLabels>
                 <fields>
                   <field>contentViewIconPath</field>
+                </fields>
+                <widgetModes>
+                  <mode value="any">hidden</mode>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="removeForm" type="checkbox">
+                <labels>
+                  <label mode="any">Remove form on content listing</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>removeForm</field>
                 </fields>
                 <widgetModes>
                   <mode value="any">hidden</mode>
@@ -1638,7 +1663,7 @@
                   </label>
                 </helpLabels>
                 <fields>
-                  <field>hideDefaultActions</field>
+                  <field>showEditOptions</field>
                 </fields>
               </widget>
               <widget name="useAjaxForm" type="checkbox">
