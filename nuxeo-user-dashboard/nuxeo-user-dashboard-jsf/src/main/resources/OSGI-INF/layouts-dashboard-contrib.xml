@@ -65,7 +65,6 @@
       <properties widgetMode="any">
         <property name="contentViewName">user_tasks</property>
         <property name="foldable">true</property>
-        <property name="foldedIfEmpty">true</property>
         <property name="useAjaxPagination">true</property>
       </properties>
     </widget>
