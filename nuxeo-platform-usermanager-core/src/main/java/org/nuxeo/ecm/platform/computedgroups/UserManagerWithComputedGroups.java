@@ -147,6 +147,12 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     @Override
     public DocumentModelList searchGroups(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
+        return searchGroups(filter, fulltext, null);
+    }
+
+    @Override
+    public DocumentModelList searchGroups(Map<String, Serializable> filter,
+            Set<String> fulltext, DocumentModel context) throws ClientException {
 
         boolean searchInVirtualGroups = activateComputedGroup();
         if (Boolean.FALSE.equals(filter.get(VIRTUAL_GROUP_MARKER))) {
@@ -154,7 +160,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
         }
 
         removeVirtualFilters(filter);
-        DocumentModelList groups = super.searchGroups(filter, fulltext);
+        DocumentModelList groups = super.searchGroups(filter, fulltext, context);
 
         if (searchInVirtualGroups) {
             for (String vGroupName : getService().searchComputedGroups(filter,

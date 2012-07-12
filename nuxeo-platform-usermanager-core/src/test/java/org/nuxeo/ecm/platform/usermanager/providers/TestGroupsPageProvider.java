@@ -1,21 +1,23 @@
 package org.nuxeo.ecm.platform.usermanager.providers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.usermanager.UserManager;import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -49,7 +51,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/directory-config.xml");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/userservice-config.xml");
+                "computedgroups-contrib.xml");
 
         ppService = Framework.getService(PageProviderService.class);
         assertNotNull(ppService);
@@ -71,13 +73,15 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         userManager.createGroup(createGroup("group2"));
     }
 
-    protected DocumentModel createGroup(String groupName) throws ClientException {
+    protected DocumentModel createGroup(String groupName)
+            throws ClientException {
         DocumentModel newGroup = userManager.getBareGroupModel();
         newGroup.setProperty("group", "groupname", groupName);
         return newGroup;
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGroupsPageProviderAllMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(GroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
@@ -101,6 +105,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testGroupsPageProviderSearchMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(GroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
@@ -114,6 +119,17 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         assertEquals("group1", group.getId());
         group = groups.get(1);
         assertEquals("group2", group.getId());
+
+        // check computed groups
+        groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                PROVIDER_NAME, null, null, null, properties, "Grp");
+        groups = groupsProvider.getCurrentPage();
+        assertNotNull(groups);
+        assertEquals(2, groups.size());
+        group = groups.get(0);
+        assertEquals("Grp1", group.getId());
+        group = groups.get(1);
+        assertEquals("Grp2", group.getId());
     }
 
 }
