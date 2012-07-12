@@ -130,9 +130,9 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath)
             throws ClientException {
-        return createTask(coreSession, principal, document, taskName, null, actorIds,
-                createOneTaskPerActor, directive, comment, dueDate,
-                taskVariables, parentPath);
+        return createTask(coreSession, principal, document, taskName, null,
+                null, actorIds, createOneTaskPerActor, directive, comment,
+                dueDate, taskVariables, parentPath);
     }
 
     /**
@@ -141,7 +141,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     @Override
     public List<Task> createTask(CoreSession coreSession,
             NuxeoPrincipal principal, DocumentModel document, String taskName,
-            String taskType, List<String> actorIds,
+            String taskType, String processId, List<String> actorIds,
             boolean createOneTaskPerActor, String directive, String comment,
             Date dueDate, Map<String, String> taskVariables, String parentPath)
             throws ClientException {
@@ -149,8 +149,9 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             parentPath = getTaskRootParentPath(coreSession);
         }
         CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession,
-                principal, document, taskName, taskType, actorIds, createOneTaskPerActor,
-                directive, comment, dueDate, taskVariables, parentPath);
+                principal, document, taskName, taskType, processId, actorIds,
+                createOneTaskPerActor, directive, comment, dueDate,
+                taskVariables, parentPath);
         runner.runUnrestricted();
 
         List<Task> tasks = runner.getTasks();
@@ -360,6 +361,54 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         return tasks;
     }
 
+    @Override
+    public List<Task> getAllTaskInstances(String processId, CoreSession session)
+            throws ClientException {
+        List<Task> tasks = new ArrayList<Task>();
+        List<Task> newTasks;
+        for (TaskProvider taskProvider : tasksProviders.values()) {
+            newTasks = taskProvider.getAllTaskInstances(processId, session);
+            if (newTasks != null) {
+                tasks.addAll(newTasks);
+            }
+        }
+        return tasks;
+    }
+
+    @Override
+    public List<Task> getAllTaskInstances(String processId,
+            NuxeoPrincipal user, CoreSession session) throws ClientException {
+        List<Task> tasks = new ArrayList<Task>();
+        List<Task> newTasks;
+        for (TaskProvider taskProvider : tasksProviders.values()) {
+            newTasks = taskProvider.getAllTaskInstances(processId, user,
+                    session);
+            if (newTasks != null) {
+                tasks.addAll(newTasks);
+            }
+        }
+        return tasks;
+    }
+
+    @Override
+    public List<Task> getAllTaskInstances(String processId,
+            List<String> actors, CoreSession session) throws ClientException {
+        List<Task> tasks = new ArrayList<Task>();
+        List<Task> newTasks;
+        for (TaskProvider taskProvider : tasksProviders.values()) {
+            newTasks = taskProvider.getAllTaskInstances(processId, actors,
+                    session);
+            if (newTasks != null) {
+                tasks.addAll(newTasks);
+            }
+        }
+        return tasks;
+    }
+
+    /**
+     * @deprecated since 5.6
+     */
+    @Deprecated
     protected List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) {
         List<Task> tasks = new ArrayList<Task>();
         for (DocumentModel doc : taskDocuments) {

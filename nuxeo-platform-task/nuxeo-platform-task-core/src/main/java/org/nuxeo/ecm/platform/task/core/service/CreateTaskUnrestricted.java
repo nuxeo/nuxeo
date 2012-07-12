@@ -53,6 +53,11 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      */
     private String taskType;
 
+    /**
+     * @since 5.6
+     */
+    private String processId;
+
     private List<String> prefixedActorIds;
 
     private boolean createOneTaskPerActor;
@@ -74,7 +79,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             List<String> prefixedActorIds, boolean createOneTaskPerActor,
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath) {
-        this(session, principal, document, taskName, null, prefixedActorIds,
+        this(session, principal, document, taskName, null, null, prefixedActorIds,
                 createOneTaskPerActor, directive, comment, dueDate,
                 taskVariables, parentPath);
     }
@@ -84,7 +89,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      */
     public CreateTaskUnrestricted(CoreSession session,
             NuxeoPrincipal principal, DocumentModel document, String taskName,
-            String taskType, List<String> prefixedActorIds,
+            String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment,
             Date dueDate, Map<String, String> taskVariables, String parentPath) {
         super(session);
@@ -92,6 +97,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         this.document = document;
         this.taskName = taskName;
         this.taskType = taskType;
+        this.processId = processId;
         this.prefixedActorIds = prefixedActorIds;
         this.createOneTaskPerActor = createOneTaskPerActor;
         this.directive = directive;
@@ -103,7 +109,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
 
     @Override
     public void run() throws ClientException {
-        createTask(session, principal, document, taskName, taskType,
+        createTask(session, principal, document, taskName, taskType, processId,
                 prefixedActorIds, createOneTaskPerActor, directive, comment,
                 dueDate, taskVariables, parentPath);
     }
@@ -112,7 +118,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      * @since 5.6
      */
     public void createTask(CoreSession coreSession, NuxeoPrincipal principal,
-            DocumentModel document, String taskName, String taskType,
+            DocumentModel document, String taskName, String taskType, String processId,
             List<String> prefixedActorIds, boolean createOneTaskPerActor,
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath)
@@ -131,6 +137,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 Task task = taskDocument.getAdapter(Task.class);
                 task.setName(taskName);
                 task.setType(taskType);
+                task.setProcessId(processId);
                 task.setCreated(new Date());
                 if (principal != null) {
                     task.setInitiator(principal.getName());
@@ -200,7 +207,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath)
             throws ClientException {
-        createTask(coreSession, principal, document, taskName, null,
+        createTask(coreSession, principal, document, taskName, null, null,
                 prefixedActorIds, createOneTaskPerActor, directive, comment,
                 dueDate, taskVariables, parentPath);
     }

@@ -80,6 +80,41 @@ public interface TaskProvider extends Serializable {
             CoreSession coreSession) throws ClientException;
 
     /**
+     * Returns all the tasks instances for the given {@code processId}.
+     * <p>
+     * The query is done in unrestricted mode and so the documents linked to the
+     * tasks are detached.
+     *
+     * @since 5.6
+     */
+    List<Task> getAllTaskInstances(String processId, CoreSession session)
+            throws ClientException;
+
+    /**
+     * Returns all the tasks instances for the given {@code processId} and where
+     * the user is the actor or belongs to the pooled actor list.
+     * <p>
+     * The query is done in unrestricted mode and so the documents linked to the
+     * tasks are detached.
+     *
+     * @since 5.6
+     */
+    List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user,
+            CoreSession session) throws ClientException;
+
+    /**
+     * Returns all the tasks instances for the given {@code processId} which
+     * assigned to one of the actor in the list or its pool.
+     * <p>
+     * The query is done in unrestricted mode and so the documents linked to the
+     * tasks are detached.
+     *
+     * @since 5.6
+     */
+    List<Task> getAllTaskInstances(String processId, List<String> actors,
+            CoreSession session) throws ClientException;
+
+    /**
      * Ends the task
      *
      * @since 5.6

@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
@@ -117,9 +118,70 @@ public class DocumentTaskProvider implements TaskProvider {
         return wrapDocModelInTask(taskDocuments);
     }
 
+    @Override
+    public List<Task> getAllTaskInstances(final String processId,
+            CoreSession session) throws ClientException {
+        final List<Task> tasks = new ArrayList<Task>();
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                String query = String.format(
+                        TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_QUERY,
+                        processId);
+                DocumentModelList taskDocuments = session.query(query);
+                tasks.addAll(wrapDocModelInTask(taskDocuments, true));
+            }
+        }.runUnrestricted();
+        return tasks;
+    }
+
+    @Override
+    public List<Task> getAllTaskInstances(String processId,
+            NuxeoPrincipal user, CoreSession session) throws ClientException {
+        List<String> actors = TaskActorsHelper.getTaskActors(user);
+        return getAllTaskInstances(processId, actors, session);
+    }
+
+    @Override
+    public List<Task> getAllTaskInstances(final String processId,
+            final List<String> actors, CoreSession session)
+            throws ClientException {
+        final List<Task> tasks = new ArrayList<Task>();
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                String query = String.format(
+                        TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_AND_ACTORS_QUERY,
+                        processId, actors);
+                DocumentModelList taskDocuments = session.query(query);
+                tasks.addAll(wrapDocModelInTask(taskDocuments, true));
+            }
+        }.runUnrestricted();
+        return tasks;
+    }
+
     public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) {
         List<Task> tasks = new ArrayList<Task>();
         for (DocumentModel doc : taskDocuments) {
+            tasks.add(doc.getAdapter(Task.class));
+        }
+        return tasks;
+    }
+
+    /**
+     * Converts a {@link DocumentModelList} to a list of {@link Task}s.
+     *
+     * @param detach if {@code true}, detach each document before converting it
+     *            to a {@code Task}.
+     */
+    public static List<Task> wrapDocModelInTask(
+            DocumentModelList taskDocuments, boolean detach)
+            throws ClientException {
+        List<Task> tasks = new ArrayList<Task>();
+        for (DocumentModel doc : taskDocuments) {
+            if (detach) {
+                doc.detach(true);
+            }
             tasks.add(doc.getAdapter(Task.class));
         }
         return tasks;

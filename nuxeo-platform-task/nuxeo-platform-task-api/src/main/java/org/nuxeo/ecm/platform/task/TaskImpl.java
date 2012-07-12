@@ -101,6 +101,11 @@ public class TaskImpl implements Task {
     }
 
     @Override
+    public String getProcessId() throws ClientException {
+        return getPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME);
+    }
+
+    @Override
     public Date getCreated() throws ClientException {
         return getDatePropertyValue(TaskConstants.TASK_CREATED_PROPERTY_NAME);
     }
@@ -174,6 +179,11 @@ public class TaskImpl implements Task {
     @Override
     public void setName(String name) throws ClientException {
         setPropertyValue(TaskConstants.TASK_NAME_PROPERTY_NAME, name);
+    }
+
+    @Override
+    public void setProcessId(String processId) throws ClientException {
+        setPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME, processId);
     }
 
     @Override
