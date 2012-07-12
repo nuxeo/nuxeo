@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.ecm.quota.QuotaStatsService;
@@ -237,6 +239,71 @@ public class TestDocumentsSizeUpdater {
 
     }
 
+    protected void doUpdateAndVersionContent() throws Exception {
+        if (verboseMode) {
+            System.out.println("Update content and create version ");
+        }
+        TransactionHelper.startTransaction();
+
+        DocumentModel ws = session.getDocument(wsRef);
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+
+        ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
+        ws = session.saveDocument(ws);
+
+        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+
+        for (int i = 1; i < 5; i++) {
+            Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+            files_entry.put("filename", "fakefile" + i);
+            files_entry.put("file", (Serializable) getFakeBlob(70));
+            files.add(files_entry);
+        }
+
+        firstFile.setPropertyValue("files:files", (Serializable) files);
+        // create minor version
+        firstFile.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.MINOR);
+        firstFile = session.saveDocument(firstFile);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        Thread.sleep(1000);
+        eventService.waitForAsyncCompletion();
+
+    }
+
+    protected void doSimpleVersion() throws Exception {
+        if (verboseMode) {
+            System.out.println("simply create a version ");
+        }
+        TransactionHelper.startTransaction();
+
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+
+        firstFile.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.MINOR);
+        firstFile = session.saveDocument(firstFile);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        Thread.sleep(1000);
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void doRemoveFirstVersion() throws Exception {
+        if (verboseMode) {
+            System.out.println("remove first created version ");
+        }
+        TransactionHelper.startTransaction();
+
+        List<DocumentModel> versions = session.getVersions(firstFileRef);
+
+        session.removeDocument(versions.get(0).getRef());
+
+        TransactionHelper.commitOrRollbackTransaction();
+        Thread.sleep(1000);
+        eventService.waitForAsyncCompletion();
+    }
+
     protected void doRemoveContent() throws Exception {
         TransactionHelper.startTransaction();
         session.removeDocument(firstFileRef);
@@ -274,7 +341,16 @@ public class TestDocumentsSizeUpdater {
         System.out.println("\n####################################\n");
         DocumentModelList docs = session.query("select * from Document order by ecm:path");
         for (DocumentModel doc : docs) {
+            if (doc.isVersion()) {
+                System.out.print(" --version ");
+            }
             System.out.print(doc.getId() + " " + doc.getPathAsString());
+            if (doc.hasSchema("uid")) {
+                System.out.print(" ("
+                        + doc.getPropertyValue("uid:major_version") + "."
+                        + doc.getPropertyValue("uid:minor_version") + ")");
+            }
+
             if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
                 QuotaAware qa = doc.getAdapter(QuotaAware.class);
                 System.out.println(" [ quota : " + qa.getTotalSize() + "("
@@ -364,6 +440,126 @@ public class TestDocumentsSizeUpdater {
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
+
+    }
+
+    @Test
+    public void testQuotaOnVersions() throws Exception {
+
+        addContent();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        DocumentModel ws = session.getDocument(wsRef);
+        DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+        DocumentModel secondFile = session.getDocument(secondFileRef);
+
+        assertQuota(firstFile, 100L, 100L);
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(firstSubFolder, 0L, 300L);
+        assertQuota(firstFolder, 0L, 300L);
+        assertQuota(ws, 0L, 300L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        // update and create a version
+        doUpdateAndVersionContent();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
+        firstFile = session.getDocument(firstFileRef);
+        assertEquals("0.1+", firstFile.getVersionLabel());
+
+        secondFile = session.getDocument(secondFileRef);
+
+        assertQuota(firstFile, 380L, 760L);
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(firstSubFolder, 0L, 960L);
+        assertQuota(firstFolder, 0L, 960L);
+        assertQuota(ws, 50L, 1010L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
+        // create a version
+        doSimpleVersion();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
+        firstFile = session.getDocument(firstFileRef);
+        assertEquals("0.2+", firstFile.getVersionLabel());
+
+        secondFile = session.getDocument(secondFileRef);
+
+        assertQuota(firstFile, 380L, 1140L);
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(firstSubFolder, 0L, 1340L);
+        assertQuota(firstFolder, 0L, 1340L);
+        assertQuota(ws, 50L, 1390L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
+        // remove a version
+        doRemoveFirstVersion();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
+        firstFile = session.getDocument(firstFileRef);
+        assertEquals("0.2+", firstFile.getVersionLabel());
+
+        secondFile = session.getDocument(secondFileRef);
+
+        assertQuota(firstFile, 380L, 1140L);
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(firstSubFolder, 0L, 1340L);
+        assertQuota(firstFolder, 0L, 1340L);
+        assertQuota(ws, 50L, 1390L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
+        // remove doc and associated version
+
+        doRemoveContent();
+        eventService.waitForAsyncCompletion();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
+        secondFile = session.getDocument(secondFileRef);
+
+        assertFalse(session.exists(firstFileRef));
+
+        assertQuota(secondFile, 200L, 200L);
+        assertQuota(firstSubFolder, 0L, 200L);
+        assertQuota(firstFolder, 0L, 200L);
+        assertQuota(ws, 50L, 250L);
+
+        TransactionHelper.commitOrRollbackTransaction();
 
     }
 
@@ -660,6 +856,57 @@ public class TestDocumentsSizeUpdater {
             TransactionHelper.commitOrRollbackTransaction();
         }
         assertFalse(canNotExceedQuota);
+
+    }
+
+    @Test
+    public void testQuotaExceededOnVersion() throws Exception {
+
+        addContent();
+
+        dump();
+
+        TransactionHelper.startTransaction();
+
+        // now add quota limit
+        DocumentModel ws = session.getDocument(wsRef);
+        QuotaAware qa = ws.getAdapter(QuotaAware.class);
+        assertNotNull(qa);
+
+        assertEquals(300L, qa.getTotalSize());
+
+        assertEquals(-1L, qa.getMaxQuota());
+
+        // set the quota to 350
+        qa.setMaxQuota(350L, true);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        dump();
+
+        TransactionHelper.startTransaction();
+
+        boolean canNotExceedQuota = false;
+        try {
+            // now try to create a version
+            DocumentModel firstFile = session.getDocument(firstFileRef);
+            firstFile.putContextData(VersioningService.VERSIONING_OPTION,
+                    VersioningOption.MINOR);
+            firstFile = session.saveDocument(firstFile);
+        } catch (Exception e) {
+            if (QuotaExceededException.isQuotaExceededException(e)) {
+                System.out.println("raised expected Execption "
+                        + QuotaExceededException.unwrap(e).getMessage());
+                canNotExceedQuota = true;
+            }
+            TransactionHelper.setTransactionRollbackOnly();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+
+        dump();
+
+        assertTrue(canNotExceedQuota);
 
     }
 

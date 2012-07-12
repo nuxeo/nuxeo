@@ -20,6 +20,7 @@ package org.nuxeo.ecm.quota.size;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 
 import java.util.ArrayList;
@@ -171,11 +172,19 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     log.debug("  update Quota Facet on "
                             + sourceDocument.getPathAsString());
                 }
-                quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
+                if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
+                    quotaDoc.addTotalSize(quotaCtx.getBlobSize(), true);
+                } else {
+                    quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
+                }
             }
         }
         if (parents.size() > 0) {
-            processOnParents(parents, quotaCtx.getBlobDelta());
+            if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
+                processOnParents(parents, quotaCtx.getBlobSize());
+            } else {
+                processOnParents(parents, quotaCtx.getBlobDelta());
+            }
         }
     }
 

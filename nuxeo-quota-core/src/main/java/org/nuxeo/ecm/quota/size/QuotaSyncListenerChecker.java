@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -149,11 +150,28 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
         BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
+
+        DocumentModel targetDocumentToCheck = targetDoc;
+        DocumentEventContext targetDocCtx = docCtx;
+        String sourceEvent = DOCUMENT_CREATED;
+
+        if (targetDoc.isVersion()) {
+            targetDocumentToCheck = session.getDocument(new IdRef(
+                    targetDoc.getSourceId()));
+            targetDocCtx = new DocumentEventContext(docCtx.getCoreSession(),
+                    docCtx.getPrincipal(), targetDocumentToCheck);
+            targetDocCtx.setCategory(docCtx.getCategory());
+            targetDocCtx.setProperties(docCtx.getProperties());
+            sourceEvent = DOCUMENT_CHECKEDIN;
+        }
+
         // only process if Blobs where added or removed
-        if (bsi.getBlobSizeDelta() != 0) {
-            checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
+        if (bsi.getBlobSizeDelta() != 0 || targetDoc.isVersion()) {
+            checkConstraints(session, targetDocumentToCheck,
+                    targetDocumentToCheck.getParentRef(), bsi,
+                    targetDoc.isVersion());
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                    session, docCtx, bsi, DOCUMENT_CREATED);
+                    session, targetDocCtx, bsi, sourceEvent);
             sendUpdateEvents(asyncEventCtx);
         }
     }
@@ -266,8 +284,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         if (targetDoc == null) {
             return false;
         }
-        if (targetDoc.isVersion() || targetDoc.isProxy()) {
-            log.debug("Escape from listener : not precessing versions");
+        if (targetDoc.isProxy()) {
+            log.debug("Escape from listener : not precessing proxies");
             return false;
         }
 
@@ -309,8 +327,20 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected void checkConstraints(CoreSession unrestrictedSession,
             final DocumentModel doc, final DocumentRef parentRef,
             final BlobSizeInfo bsi) throws ClientException {
+        checkConstraints(unrestrictedSession, doc, parentRef, bsi, false);
+    }
 
-        if (bsi.blobSizeDelta <= 0) {
+    protected void checkConstraints(CoreSession unrestrictedSession,
+            final DocumentModel doc, final DocumentRef parentRef,
+            final BlobSizeInfo bsi, final boolean checkWithTotalSize)
+            throws ClientException {
+
+        long addition = bsi.blobSizeDelta;
+        if (checkWithTotalSize) {
+            addition = bsi.getBlobSize();
+        }
+
+        if (addition <= 0) {
             return;
         }
         List<DocumentModel> parents = unrestrictedSession.getParentDocuments(parentRef);
@@ -318,7 +348,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         for (DocumentModel parent : parents) {
             QuotaAware qap = parent.getAdapter(QuotaAware.class);
             if (qap != null && qap.getMaxQuota() > 0) {
-                if (qap.getTotalSize() + bsi.getBlobSizeDelta() > qap.getMaxQuota()) {
+                if (qap.getTotalSize() + addition > qap.getMaxQuota()) {
                     log.error("Raising Quota Exception on "
                             + doc.getPathAsString());
                     throw new QuotaExceededException(parent, doc,
