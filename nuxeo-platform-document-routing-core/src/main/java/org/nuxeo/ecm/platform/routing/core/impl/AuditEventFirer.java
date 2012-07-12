@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -38,19 +39,20 @@ public class AuditEventFirer {
     static public void fireEvent(CoreSession coreSession,
             DocumentRouteElement element,
             Map<String, Serializable> eventProperties, String eventName,
-            String attachDocumentID) {
+            DocumentModel doc) {
         if (eventProperties == null) {
             eventProperties = new HashMap<String, Serializable>();
         }
+        eventProperties.put(
+                DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY,
+                element.getDocumentRoute(coreSession).getDocument().getId());
         eventProperties.put(
                 DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
                 element);
         eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
                 DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
-        // Add attach document id
-        eventProperties.put("attachDocumentID", attachDocumentID);
         DocumentEventContext envContext = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), element.getDocument());
+                coreSession.getPrincipal(), doc);
         envContext.setProperties(eventProperties);
         try {
             getEventProducer().fireEvent(envContext.newEvent(eventName));
