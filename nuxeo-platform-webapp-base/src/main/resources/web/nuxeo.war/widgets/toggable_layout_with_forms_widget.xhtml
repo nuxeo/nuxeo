@@ -9,7 +9,7 @@
   xmlns:nxa4j="http://nuxeo.org/nxweb/a4j"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   id="#{widget.id}"
-  class="#{widgetProperty_styleClass}">
+  class="widgetPanel #{nxu:test(widgetProperty_foldable and widget.handlingLabels, 'foldableBox ', '')} #{widgetProperty_styleClass}">
 
 <a4j:region id="#{widget.id}_region">
   <a4j:outputPanel id="#{widget.id}_regionPanel">
@@ -56,6 +56,42 @@
     <nxu:set var="toggledLayoutName"
       value="#{nxu:test(empty widgetProperty_toggledLayoutName, widgetProperty_initialLayoutName, widgetProperty_toggledLayoutName)}"
       cache="false">
+
+    <c:if test="#{showHeader}">
+      <c:choose>
+        <c:when test="#{widgetProperty_foldable}">
+          <h3 class="widgetHeader #{nxu:test(widgetProperty_foldedByDefault, 'folded', 'unfolded')}">
+            <a href="#nogo" onclick="return toggleBox(this)">
+              <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                <ui:param name="labelStyleClass"
+                  value="#{widgetProperty_headerStyleClass}" />
+                <ui:param name="hideHelp" value="true" />
+              </ui:include>
+            </a>
+          </h3>
+        </c:when>
+        <c:otherwise>
+          <c:if test="#{not empty widget.label}">
+            <h3 class="widgetHeader summaryTitle #{widgetProperty_headerStyleClass}">
+              <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                <ui:param name="hideHelp" value="true" />
+              </ui:include>
+            </h3>
+          </c:if>
+        </c:otherwise>
+      </c:choose>
+    </c:if>
+
+    <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}"
+      style="#{nxu:test(widgetProperty_foldedByDefault, 'display: none;', '')}">
+
+      <c:if test="#{showHeader and not empty widget.helpLabel}">
+        <nxu:set var="widgetHelpLabel"
+          value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
+          cache="true">
+          <h:outputText value="#{widgetHelpLabel}" class="infoMessage" />
+        </nxu:set>
+      </c:if>
 
       <c:if test="#{layoutWidgetMode == initialMode}">
 
@@ -266,6 +302,7 @@
 
       </c:if>
 
+    </div>
     </nxu:set>
     </nxu:valueHolder>
 

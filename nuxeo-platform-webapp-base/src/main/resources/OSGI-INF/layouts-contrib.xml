@@ -14,7 +14,11 @@
       <fields>
         <field>userSuggestionSearchType</field>
       </fields>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+      </properties>
       <selectOptions>
+        <option itemLabel="Users and Groups" itemValue="" />
         <option itemLabel="Users" itemValue="USER_TYPE" />
         <option itemLabel="Groups" itemValue="GROUP_TYPE" />
       </selectOptions>
@@ -452,6 +456,24 @@
       </selectOptions>
     </widget>
 
+    <widget name="suggestion_orderable" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Orderable</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the possibility to order the
+          selected items. Available since 5.6.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>orderable</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -649,6 +671,9 @@
                   <widget category="widgetTypeConf">userSuggestion_width</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
                 </row>
               </rows>
@@ -707,6 +732,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
                 </row>
               </rows>
             </layout>
@@ -778,6 +806,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
                 </row>
               </rows>
             </layout>

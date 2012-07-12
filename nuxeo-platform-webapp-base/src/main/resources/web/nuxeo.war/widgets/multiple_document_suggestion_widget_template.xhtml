@@ -44,9 +44,9 @@
 
   <c:if test="#{widget.mode == 'edit'}">
 
-    <c:set var="minChars" value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '3')}" />
-    <c:set var="frequency" value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
-    <c:set var="requestDelay" value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
+    <c:set var="minChars" value="#{nxu:test(!empty widgetProperty_minChars, widgetProperty_minChars, '3')}" />
+    <c:set var="frequency" value="#{nxu:test(!empty widgetProperty_frequency, widgetProperty_frequency, '0')}" />
+    <c:set var="requestDelay" value="#{nxu:test(!empty widgetProperty_requestDelay, widgetProperty_requestDelay, '100')}" />
 
     <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
       <h:panelGrid id="#{widget.id}_panel" columns="2">
@@ -103,7 +103,8 @@
         <h:panelGroup>
           <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion">
             <nxu:inputList id="#{widget.id}_list" value="#{field_0}" model="model"
-              required="#{widget.required}">
+              required="#{widget.required}"
+              orderable="#{widgetProperty_orderable}">
               <h:panelGroup id="#{widget.id}_listItem">
                 <h:panelGrid columns="3">
                   <a4j:commandLink immediate="true"
