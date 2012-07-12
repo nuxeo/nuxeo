@@ -68,6 +68,10 @@
     <!-- <artifactId>ezmorph</artifactId> -->
     <!-- </dependency> -->
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
     </dependency>
