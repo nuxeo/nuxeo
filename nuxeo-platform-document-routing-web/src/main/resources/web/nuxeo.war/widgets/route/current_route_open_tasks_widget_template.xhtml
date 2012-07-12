@@ -7,60 +7,55 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
-  <nxu:set var="currentAllDashBoardItemsExceptPublishingTasks" value="#{taskActions.getCurrentAllDashBoardItemsExceptPublishingTasks()}"
+  <nxu:set var="tasks" value="#{routingActions.getCurrentRouteAllTasks()}"
     cache="true">
 
-    <c:if test="#{!empty currentAllDashBoardItemsExceptPublishingTasks}">
+    <c:if test="#{!empty tasks}">
       <h3 class="summaryTitle">
         <h:outputText value="#{messages['label.document.routing.open.tasks']}" />
       </h3>
 
-      <c:forEach var="dashboardItem" items="#{currentAllDashBoardItemsExceptPublishingTasks}"
-        varStatus="status">
-
-        <nxu:set var="task" value="#{routingTaskActions.setCurrentTask(dashboardItem.task)}" cache="true">
-          <div>
-            <h:outputFormat value="#{messages['label.route.task.type']} ">
-              <f:param value="#{messages[task.type]}" />
-            </h:outputFormat>
-            <h:outputText value="#{messages['label.route.task.assigned.to']} " />
-            <c:forEach var="actor" items="#{task.actors}">
-              <c:choose>
-                <c:when test="#{fn:startsWith(actor,'group:')}">
-                  <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
-                  <span class="tag group creator">
-                    <a href="#{baseURL}group/#{group}">
-                      #{group}
-                    </a>
-                  </span>
-                  </nxu:set>
-                </c:when>
-                <c:when test="#{fn:startsWith(actor, 'user:')}">
-                  <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
-                  <span class="tag user creator">
-                    <a href="#{baseURL}user/#{user}">
-                      #{nxu:userFullName(user)}
-                    </a>
-                  </span>
-                  </nxu:set>
-                </c:when>
-                <c:otherwise>
-                  <span class="tag user creator">
-                    #{actor}
-                  </span>
-                </c:otherwise>
-              </c:choose>
-            </c:forEach>
-            <span class="dueDate">
-              <h:outputText value=" #{messages['label.route.task.due.date']} " />
-              <h:outputText value="#{task.dueDate}" />
-            </span>
-            <span class="directive">
-              <h:outputText value="#{messages[task.directive]}" />
-            </span>
-          </div>
-        </nxu:set>
-
+      <c:forEach var="task" items="#{tasks}" varStatus="status">
+        <div>
+          <h:outputFormat value="#{messages['label.route.task.type']} ">
+            <f:param value="#{messages[task.type]}" />
+          </h:outputFormat>
+          <h:outputText value="#{messages['label.route.task.assigned.to']} " />
+          <c:forEach var="actor" items="#{task.actors}">
+            <c:choose>
+              <c:when test="#{fn:startsWith(actor,'group:')}">
+                <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
+                <span class="tag group creator">
+                  <a href="#{baseURL}group/#{group}">
+                    #{group}
+                  </a>
+                </span>
+                </nxu:set>
+              </c:when>
+              <c:when test="#{fn:startsWith(actor, 'user:')}">
+                <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
+                <span class="tag user creator">
+                  <a href="#{baseURL}user/#{user}">
+                    #{nxu:userFullName(user)}
+                  </a>
+                </span>
+                </nxu:set>
+              </c:when>
+              <c:otherwise>
+                <span class="tag user creator">
+                  #{actor}
+                </span>
+              </c:otherwise>
+            </c:choose>
+          </c:forEach>
+          <span class="dueDate">
+            <h:outputText value=" #{messages['label.route.task.due.date']} " />
+            <h:outputText value="#{task.dueDate}" />
+          </span>
+          <span class="directive">
+            <h:outputText value="#{messages[task.directive]}" />
+          </span>
+        </div>
       </c:forEach>
 
     </c:if>

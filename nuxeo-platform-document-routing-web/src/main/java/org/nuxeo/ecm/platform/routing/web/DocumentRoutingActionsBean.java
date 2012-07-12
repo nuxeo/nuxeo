@@ -68,6 +68,7 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedExcept
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -893,6 +894,28 @@ public class DocumentRoutingActionsBean implements Serializable {
             }
         }
         return routeModels;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public List<Task> getCurrentRouteAllTasks() throws ClientException {
+        TaskService taskService = Framework.getLocalService(TaskService.class);
+        DocumentRoute currentRoute = getRelatedRoute();
+        return taskService.getAllTaskInstances(
+                currentRoute.getDocument().getId(), documentManager);
+    }
+
+    /**
+     * @since 5.6
+     */
+    public List<Task> getCurrentRouteCurrentUserTasks() throws ClientException {
+        TaskService taskService = Framework.getLocalService(TaskService.class);
+        DocumentRoute currentRoute = getRelatedRoute();
+        return taskService.getAllTaskInstances(
+                currentRoute.getDocument().getId(),
+                (NuxeoPrincipal) documentManager.getPrincipal(),
+                documentManager);
     }
 
     public String abandonCurrentRoute() {

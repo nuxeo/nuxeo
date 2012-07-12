@@ -81,13 +81,39 @@
       </property>
     </widgetType>
 
+    <widgetType name="current_route_user_tasks">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Description</title>
+        <description>
+          <p>
+            This widget displays the user tasks of the current route on
+            the current document.
+          </p>
+        </description>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/route/current_route_user_tasks_widget_template.xhtml
+      </property>
+    </widgetType>
+
     <widgetType name="current_route_open_tasks">
       <configuration>
         <sinceVersion>5.6</sinceVersion>
         <title>Description</title>
         <description>
           <p>
-            This widget displays all the open tasks, except the publication ones,
+            This widget displays all the open tasks of the current route
             on the current document.
           </p>
         </description>
@@ -115,6 +141,7 @@
     <widget name="current_route_description" type="current_route_description" />
     <widget name="current_route_show_graph" type="current_route_show_graph" />
     <widget name="current_route_abandon" type="current_route_abandon" />
+    <widget name="current_route_user_tasks" type="current_route_user_tasks" />
     <widget name="current_route_open_tasks" type="current_route_open_tasks" />
 
     <widget name="current_route_left_panel" type="container">
@@ -131,7 +158,7 @@
       </properties>
       <subWidgetRefs>
         <widget>current_route_actions_top_left</widget>
-        <widget>summary_current_document_single_tasks</widget>
+        <widget>current_route_user_tasks</widget>
         <widget>current_route_open_tasks</widget>
         <widget>current_route_previous_tasks</widget>
         <widget>current_route_actions_bottom_left</widget>
