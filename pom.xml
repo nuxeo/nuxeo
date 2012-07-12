@@ -659,6 +659,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.social</groupId>
+        <artifactId>nuxeo-social-workspace-gadgets-library</artifactId>
+        <version>${nuxeo.sc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.social</groupId>
         <artifactId>nuxeo-relationship</artifactId>
         <version>${nuxeo.sc.version}</version>
       </dependency>
