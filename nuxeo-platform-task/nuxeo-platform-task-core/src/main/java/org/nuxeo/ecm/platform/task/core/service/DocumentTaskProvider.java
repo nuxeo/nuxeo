@@ -150,9 +150,10 @@ public class DocumentTaskProvider implements TaskProvider {
         new UnrestrictedSessionRunner(session) {
             @Override
             public void run() throws ClientException {
+                String userNames = TaskQueryConstant.formatStringList(actors);
                 String query = String.format(
                         TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_AND_ACTORS_QUERY,
-                        processId, actors);
+                        processId, userNames);
                 DocumentModelList taskDocuments = session.query(query);
                 tasks.addAll(wrapDocModelInTask(taskDocuments, true));
             }
