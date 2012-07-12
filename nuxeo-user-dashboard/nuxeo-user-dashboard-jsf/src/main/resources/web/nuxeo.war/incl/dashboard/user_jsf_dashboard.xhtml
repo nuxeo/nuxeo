@@ -3,10 +3,11 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <c:if test="#{userDomains.size() > 1}">
-  
+
     <h:panelGrid columns="1">
       <div class="dashboardDomainSelection">
         <h:form id="selectDashboardDomain">
@@ -25,121 +26,10 @@
 
       <div style="clear:both"></div>
     </h:panelGrid>
-  
+
   </c:if>
 
-  <table cellspacing="20">
-    <tbody>
-      <tr>
-        <td width="50%">
-
-          <h:panelGroup>
-            <ui:decorate template="/incl/content_view.xhtml">
-              <ui:param name="contentViewId" value="user_tasks" />
-              <ui:param name="contentViewName" value="user_tasks" />
-              <ui:param name="foldable" value="true" />
-              <ui:param name="hideEmpty" value="false" />
-              <ui:define name="content_view_header">
-                <h:outputText value="#{messages['label.workflow.tasks']}"
-                  class="infoMessage" />          
-              </ui:define>
-              <ui:define name="content_view_syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
-      
-          <h:panelGroup>
-            <ui:decorate template="/incl/content_view.xhtml">
-              <ui:param name="contentViewId" value="user_processes" />
-              <ui:param name="contentViewName" value="user_processes" />
-              <ui:param name="foldable" value="true" />
-              <ui:param name="hideEmpty" value="false" />
-              <ui:define name="content_view_header">
-                <h:outputText value="#{messages['label.user.processes']}"
-                  class="infoMessage" />
-              </ui:define>
-              <ui:define name="content_view_syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
-      
-          <h:panelGroup>
-            <ui:decorate template="/incl/content_view.xhtml">
-              <ui:param name="contentViewId" value="user_workspaces" />
-              <ui:param name="contentViewName" value="user_workspaces" />
-              <ui:param name="foldable" value="true" />
-              <ui:param name="hideEmpty" value="true" />
-              <ui:define name="content_view_syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
-      
-          <h:panelGroup>
-            <ui:decorate template="/incl/content_view.xhtml">
-              <ui:param name="contentViewId" value="user_sections" />
-              <ui:param name="contentViewName" value="user_sections" />
-              <ui:param name="foldable" value="true" />
-              <ui:param name="hideEmpty" value="true" />
-              <ui:define name="content_view_syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
-          
-        </td>
-        <td width="50%">
-
-          <h:panelGroup>
-            <ui:decorate template="/incl/content_view.xhtml">
-              <ui:param name="contentViewId" value="user_documents" />
-              <ui:param name="contentViewName" value="user_documents" />
-              <ui:param name="foldable" value="true" />
-              <ui:param name="hideEmpty" value="true" />
-              <ui:define name="content_view_syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
-      
-          <h:panelGroup>
-            <ui:decorate template="/incl/content_view.xhtml">
-              <ui:param name="contentViewId" value="domain_documents" />
-              <ui:param name="contentViewName" value="domain_documents" />
-              <ui:param name="foldable" value="true" />
-              <ui:param name="hideEmpty" value="true" />
-              <ui:define name="content_view_syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
-      
-          <h:panelGroup>
-            <ui:decorate template="/incl/content_view.xhtml">
-              <ui:param name="contentViewId" value="domain_published_documents" />
-              <ui:param name="contentViewName" value="domain_published_documents" />
-              <ui:param name="foldable" value="true" />
-              <ui:param name="hideEmpty" value="true" />
-              <ui:define name="content_view_syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
-      
-          <h:panelGroup>
-            <ui:decorate template="/incl/content_view.xhtml">
-              <ui:param name="contentViewId" value="user_sites" />
-              <ui:param name="contentViewName" value="user_sites" />
-              <ui:param name="foldable" value="true" />
-              <ui:param name="hideEmpty" value="true" />
-              <ui:define name="content_view_syndication_buttons" />
-            </ui:decorate>
-          </h:panelGroup>
-      
-          <c:if test="false">
-            Not shown by default
-            <h:panelGroup>
-              <ui:decorate template="/incl/content_view.xhtml">
-                <ui:param name="contentViewId" value="user_deleted_documents" />
-                <ui:param name="contentViewName" value="user_deleted_documents" />
-                <ui:param name="foldable" value="true" />
-                <ui:param name="hideEmpty" value="true" />
-                <ui:define name="content_view_syndication_buttons" />
-              </ui:decorate>
-            </h:panelGroup>
-          </c:if>
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <nxl:layout name="grid_dashboard_layout" mode="view"
+    value="#{jsfDashboardActions.selectedDomain}" />
 
 </div>
