@@ -83,21 +83,21 @@
 
       <table class="dataOutput">
         <tbody>
-          <nxu:repeat var="entry" value="#{directoryUIActions.currentDirectoryEntries}"
-            index="index">
-            <c:if test="#{index%2 == 0}">
+          <c:forEach var="entry" items="#{directoryUIActions.currentDirectoryEntries}"
+            varStatus="status">
+            <c:if test="#{status.index%2 == 0}">
               <c:set var="directoryEntryClass" value="dataRowOdd" />
             </c:if>
-            <c:if test="#{index%2 != 0}">
+            <c:if test="#{status.index%2 != 0}">
               <c:set var="directoryEntryClass" value="dataRowEven" />
             </c:if>
-            <c:if test="#{index == 0}">
+            <c:if test="#{status.index == 0}">
               <nxl:layout name="#{currentVoc.layout}" mode="view_list_and_header" value="#{entry}" />
             </c:if>
-            <c:if test="#{index != 0}">
+            <c:if test="#{status.index != 0}">
               <nxl:layout name="#{currentVoc.layout}" mode="view_list" value="#{entry}" />
             </c:if>
-          </nxu:repeat>
+          </c:forEach>
         </tbody>
       </table>
 
