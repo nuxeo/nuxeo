@@ -1493,10 +1493,10 @@
       </property>
     </widgetType>
 
-    <widgetType name="toggableLayoutWithForms">
+    <widgetType name="toggleableLayoutWithForms">
       <configuration>
         <sinceVersion>5.6</sinceVersion>
-        <title>Toggable layout</title>
+        <title>Toggleable layout</title>
         <description>
           This widget displays a layout which mode can be toggled,
           with forms inside it.
@@ -1521,7 +1521,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout name="toggableLayoutViewWithForms_widget_type_properties_any">
+            <layout name="toggleableLayoutViewWithForms_widget_type_properties_any">
               <rows>
                 <row>
                   <widget>initialLayoutName</widget>
@@ -1752,7 +1752,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/toggable_layout_with_forms_widget.xhtml
+        /widgets/toggleable_layout_with_forms_widget.xhtml
       </property>
     </widgetType>
 
