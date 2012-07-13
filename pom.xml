@@ -113,6 +113,7 @@
     <module>nuxeo-core-binarymanager-s3</module>
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
+    <module>nuxeo-web-mobile</module>
   </modules>
 
   <dependencyManagement>
@@ -845,6 +846,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.mobile</groupId>
         <artifactId>nuxeo-web-mobile</artifactId>
+        <version>${nuxeo.web.mobile.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mobile</groupId>
+        <artifactId>nuxeo-application-definition</artifactId>
         <version>${nuxeo.web.mobile.version}</version>
       </dependency>
 

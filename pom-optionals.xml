@@ -21,7 +21,6 @@
     <module>nuxeo-sample-project</module>
     <module>nuxeo-web-embedded</module>
     <module>nuxeo-platform-intuition</module>
-    <module>nuxeo-web-mobile</module>
   </modules>
 
 </project>
