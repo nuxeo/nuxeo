@@ -32,6 +32,7 @@
     </facet>
 
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
+      <facet name="HiddenInNavigation" />
       <subtypes>
         <type>Folder</type>
       </subtypes>
