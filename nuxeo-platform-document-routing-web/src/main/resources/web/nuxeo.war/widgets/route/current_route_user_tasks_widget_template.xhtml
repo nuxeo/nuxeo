@@ -7,6 +7,8 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
+  <a4j:outputPanel id="#{widget.id}_panel">
+
   <nxu:set var="tasks" value="#{routingActions.getCurrentRouteCurrentUserTasks()}"
     cache="true">
   <nxu:set var="showFirstForm" value="#{currentDashBoardItemsExceptPublishingTasks.size() == 1}" cache="true">
@@ -118,5 +120,7 @@
 
   </nxu:set>
   </nxu:set>
+
+  </a4j:outputPanel>
 
 </c:if>
