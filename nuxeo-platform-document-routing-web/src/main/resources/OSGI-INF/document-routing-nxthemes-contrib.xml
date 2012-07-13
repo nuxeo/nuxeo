@@ -12,36 +12,12 @@
  <!-- views -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
-
     <view name="nuxeo5 includes" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/includes.xhtml</template>
-      <resource>dragdrop.js</resource>
-      <resource>seam-remote.js</resource>
-      <resource>bsn.AutoSuggest_2.1.3.js</resource>
-      <resource>foldable-box.js</resource>
-      <resource>window.js</resource>
-      <resource>window_effects.js</resource>
-      <resource>waitdlg.js</resource>
-      <!-- include JS used for D&D and tableSelection -->
-      <resource>utils.js</resource>
-      <!-- include JS for contextual menu -->
-      <resource>jquery.js</resource>
-      <resource>jquery.fancybox.js</resource>
-      <resource>jquery.fancybox.style.css</resource>
-      <resource>fancybox-popup-utils.js</resource>
-      <resource>contextmenu.js</resource>
-      <resource>jquery.tools.tooltip.min.js</resource>
-      <resource>jquery.tools.focusfirst.js</resource>
-      <resource>jquery.hotkeys.js</resource>
-      <resource>sarissa-ie-workaround.js</resource>
-      <resource>static-styles.css</resource>
       <resource>automation.js</resource>
       <resource>jquery.jsPlumb-1.3.9-all-min.js</resource>
       <resource>documentRoutingGraph.js</resource>
       <resource>documentRoutingGraph.css</resource>
     </view>
-
 
   </extension>
 
