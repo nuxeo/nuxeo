@@ -20,6 +20,7 @@ import static org.jboss.seam.ScopeType.APPLICATION;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_EVENT;
+import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_SELECTED_EVENT;
 
 import java.io.Serializable;
 import java.util.List;
@@ -55,7 +56,6 @@ import org.nuxeo.runtime.api.Framework;
  * Handles users management related web actions.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  * @since 5.4.2
  */
 @Name("userManagementActions")
@@ -101,8 +101,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     /**
-     * @deprecated since version 5.5, use {@link #setSelectedUserName}
-     *             instead.
+     * @deprecated since version 5.5, use {@link #setSelectedUserName} instead.
      */
     @Deprecated
     public void setSelectedUser(String userName) throws ClientException {
@@ -383,7 +382,12 @@ public class UserManagementActions extends AbstractUserGroupManagement
             CURRENT_TAB_CHANGED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
             CURRENT_TAB_CHANGED_EVENT + "_" + USER_CENTER_CATEGORY,
             CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
-            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB })
+            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB,
+            CURRENT_TAB_SELECTED_EVENT + "_" + MAIN_TABS_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USER_CENTER_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB })
     public void resetState() {
         if (shouldResetStateOnTabChange) {
             newUser = null;

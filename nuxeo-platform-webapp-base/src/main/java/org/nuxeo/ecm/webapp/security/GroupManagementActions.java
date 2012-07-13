@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_EVENT;
+import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_SELECTED_EVENT;
 
 import java.io.Serializable;
 
@@ -47,7 +48,6 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException
  * /** Handles users management related web actions.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  * @since 5.4.2
  */
 @Name("groupManagementActions")
@@ -224,7 +224,12 @@ public class GroupManagementActions extends AbstractUserGroupManagement
             CURRENT_TAB_CHANGED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
             CURRENT_TAB_CHANGED_EVENT + "_" + USER_CENTER_CATEGORY,
             CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
-            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB })
+            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB,
+            CURRENT_TAB_SELECTED_EVENT + "_" + MAIN_TABS_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USER_CENTER_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB })
     public void resetState() {
         if (shouldResetStateOnTabChange) {
             newGroup = null;

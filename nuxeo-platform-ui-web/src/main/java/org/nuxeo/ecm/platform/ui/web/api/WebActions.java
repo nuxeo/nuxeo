@@ -82,6 +82,18 @@ public interface WebActions {
     public static final String CURRENT_TAB_CHANGED_EVENT = "currentTabChanged";
 
     /**
+     * Event raised when the current tab is selected, with 2 parameters: first
+     * parameter is a String representing the tab category, and second
+     * parameter is a String representing the new tab id (or null if current
+     * tab is reset for this category).
+     * <p>
+     * This event is sent also when current tab did not change.
+     *
+     * @since 5.6
+     */
+    public static final String CURRENT_TAB_SELECTED_EVENT = "currentTabSelected";
+
+    /**
      * Returns all filtered actions for a given category and given resolution
      * context.
      * <p>

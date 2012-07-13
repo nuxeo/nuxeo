@@ -80,6 +80,8 @@ public class TabActionsSelection implements Serializable {
                         categoryFound = true;
                         Action oldAction = currentTabActions.get(category);
                         currentTabActions.put(category, tabAction);
+                        raiseEventOnCurrentTabSelected(category,
+                                tabAction.getId());
                         if (oldAction == null
                                 || !oldAction.getId().equals(tabAction.getId())) {
                             // only raise the event if action actually changed
@@ -268,6 +270,7 @@ public class TabActionsSelection implements Serializable {
         Set<String> categories = currentTabActions.keySet();
         currentTabActions.clear();
         for (String category : categories) {
+            raiseEventOnCurrentTabSelected(category, null);
             raiseEventOnCurrentTabChange(category, null);
         }
     }
@@ -281,6 +284,7 @@ public class TabActionsSelection implements Serializable {
         if (currentTabActions.containsKey(category)) {
             Action action = currentTabActions.get(category);
             currentTabActions.remove(category);
+            raiseEventOnCurrentTabSelected(category, null);
             raiseEventOnCurrentTabChange(category, null);
             if (action != null) {
                 resetCurrentTabs(getSubTabCategory(action.getId()));
@@ -320,6 +324,7 @@ public class TabActionsSelection implements Serializable {
      * tab id can be null when resetting current tab for given category).
      *
      * @see WebActions#CURRENT_TAB_CHANGED_EVENT
+     * @since 5.4.2
      */
     protected void raiseEventOnCurrentTabChange(String category, String tabId) {
         if (Events.exists()) {
@@ -327,6 +332,31 @@ public class TabActionsSelection implements Serializable {
                     category, tabId);
             Events.instance().raiseEvent(
                     WebActions.CURRENT_TAB_CHANGED_EVENT + "_" + category,
+                    category, tabId);
+        }
+    }
+
+    /**
+     * Raises a seam event when current tab is selected for a given category.
+     * Fired also when current tab did not change.
+     * <p>
+     * Actually raises 2 events: one with name
+     * WebActions#CURRENT_TAB_SELECTED_EVENT and another with name
+     * WebActions#CURRENT_TAB_SELECTED_EVENT + '_' + category to optimize
+     * observers declarations.
+     * <p>
+     * The event is always sent with 2 parameters: the category and tab id (the
+     * tab id can be null when resetting current tab for given category).
+     *
+     * @see WebActions#CURRENT_TAB_SELECTED_EVENT
+     * @since 5.6
+     */
+    protected void raiseEventOnCurrentTabSelected(String category, String tabId) {
+        if (Events.exists()) {
+            Events.instance().raiseEvent(WebActions.CURRENT_TAB_SELECTED_EVENT,
+                    category, tabId);
+            Events.instance().raiseEvent(
+                    WebActions.CURRENT_TAB_SELECTED_EVENT + "_" + category,
                     category, tabId);
         }
     }
