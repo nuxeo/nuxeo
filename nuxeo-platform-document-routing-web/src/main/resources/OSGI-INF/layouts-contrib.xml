@@ -144,85 +144,6 @@
     <widget name="current_route_user_tasks" type="current_route_user_tasks" />
     <widget name="current_route_open_tasks" type="current_route_open_tasks" />
 
-    <widget name="current_route_left_panel" type="container">
-      <handlingLabels>true</handlingLabels>
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <translated>false</translated>
-      <properties widgetMode="any">
-        <property name="hideSubLabels">true</property>
-        <property name="nxw_addForm_0">true</property>
-        <property name="nxw_addForm_1">true</property>
-        <property name="nxw_addForm_4">true</property>
-      </properties>
-      <subWidgetRefs>
-        <widget>current_route_actions_top_left</widget>
-        <widget>current_route_user_tasks</widget>
-        <widget>current_route_open_tasks</widget>
-        <widget>current_route_previous_tasks</widget>
-        <widget>current_route_actions_bottom_left</widget>
-      </subWidgetRefs>
-    </widget>
-
-    <widget name="current_route_right_panel" type="container">
-      <handlingLabels>true</handlingLabels>
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <translated>false</translated>
-      <properties widgetMode="any">
-        <property name="hideSubLabels">true</property>
-        <property name="nxw_addForm_0">true</property>
-        <property name="nxw_addForm_2">true</property>
-      </properties>
-      <subWidgetRefs>
-        <widget>current_route_actions_top_right</widget>
-        <widget>current_route_description</widget>
-        <widget>current_route_actions_bottom_right</widget>
-      </subWidgetRefs>
-    </widget>
-
-    <widget name="current_route_actions_top_left" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">CURRENT_ROUTE_TOP_LEFT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
-    <widget name="current_route_actions_bottom_left" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">CURRENT_ROUTE_BOTTOM_LEFT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
-    <widget name="current_route_actions_top_right" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">CURRENT_ROUTE_TOP_RIGHT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
-    <widget name="current_route_actions_bottom_right" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">CURRENT_ROUTE_BOTTOM_RIGHT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
     <widget name="current_route_previous_tasks" type="contentViewWithForms">
       <labels>
         <label mode="any"></label>
@@ -233,6 +154,47 @@
       </properties>
     </widget>
 
+    <widget name="current_route_panel_top" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">CURRENT_ROUTE_PANEL_TOP</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <widget name="current_route_panel_left" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">CURRENT_ROUTE_PANEL_LEFT</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <widget name="current_route_panel_right" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">CURRENT_ROUTE_PANEL_RIGHT</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <widget name="current_route_panel_bottom" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">CURRENT_ROUTE_PANEL_BOTTOM</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <!-- for previous tasks layout -->
     <widget name="task_title" type="text">
       <labels>
         <label mode="any">Name</label>
@@ -312,11 +274,15 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle7</property>
-            <property name="nxl_gridStyleClass_1">gridStyle5</property>
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+            <property name="nxl_gridStyleClass_1">gridStyle7</property>
+            <property name="nxl_gridStyleClass_2">gridStyle5</property>
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
           </properties>
-          <widget>current_route_left_panel</widget>
-          <widget>current_route_right_panel</widget>
+          <widget>current_route_panel_top</widget>
+          <widget>current_route_panel_left</widget>
+          <widget>current_route_panel_right</widget>
+          <widget>current_route_panel_bottom</widget>
         </row>
       </rows>
     </layout>
@@ -447,17 +413,47 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="current_route_show_graph" type="widget" order="10">
-      <category>CURRENT_ROUTE_BOTTOM_RIGHT</category>
+    <action id="current_route_user_tasks" type="widget" order="100">
+      <category>CURRENT_ROUTE_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">current_route_user_tasks</property>
+        <property name="addForm">true</property>
+      </properties>
+    </action>
+
+    <action id="current_route_open_tasks" type="widget" order="200">
+      <category>CURRENT_ROUTE_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">current_route_open_tasks</property>
+      </properties>
+    </action>
+
+    <action id="current_route_previous_tasks" type="widget" order="300">
+      <category>CURRENT_ROUTE_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">current_route_previous_tasks</property>
+      </properties>
+    </action>
+
+    <action id="current_route_description" type="widget" order="100">
+      <category>CURRENT_ROUTE_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">current_route_description</property>
+      </properties>
+    </action>
+
+    <action id="current_route_show_graph" type="widget" order="200">
+      <category>CURRENT_ROUTE_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">current_route_show_graph</property>
       </properties>
     </action>
 
-    <action id="current_route_abandon" type="widget" order="20">
-      <category>CURRENT_ROUTE_BOTTOM_RIGHT</category>
+    <action id="current_route_abandon" type="widget" order="300">
+      <category>CURRENT_ROUTE_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">current_route_abandon</property>
+        <property name="addForm">true</property>
       </properties>
     </action>
 
