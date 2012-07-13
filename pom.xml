@@ -26,7 +26,7 @@
   </modules>
 
   <properties>
-    <xdocreport.version>0.9.8-SNAPSHOT</xdocreport.version>
+    <xdocreport.version>0.9.8</xdocreport.version>
   </properties>
 
   <dependencyManagement>
