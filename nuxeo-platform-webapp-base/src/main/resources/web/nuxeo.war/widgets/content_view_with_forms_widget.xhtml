@@ -21,8 +21,9 @@
       <ui:param name="translateContentViewTitle" value="false" />
       <ui:define name="content_view_header">
         <c:if test="#{widget.handlingLabels and not empty widget.helpLabel}">
-          <h:outputText value="#{widgetHelpLabel}"
-            class="infoMessage" />
+          <div class="tips">
+            <h:outputText value="#{widgetHelpLabel}" />
+          </div>
         </c:if>
       </ui:define>
 

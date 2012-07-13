@@ -85,7 +85,9 @@
         <nxu:set var="widgetHelpLabel"
           value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
           cache="true">
-          <h:outputText value="#{widgetHelpLabel}" class="infoMessage" />
+          <div class="tips">
+            <h:outputText value="#{widgetHelpLabel}" />
+          </div>
         </nxu:set>
       </c:if>
 
@@ -134,7 +136,7 @@
 
         <c:when test="#{widgetProperty_display == 'inline'}">
           <nxl:subWidget>
-            <span class="#{widgetProperty_subStyleClass}">
+            <span class="containerSubWidget #{widgetProperty_subStyleClass}">
               <c:if test="#{displaySubLabels and not widget.handlingLabels}">
                 <ui:include src="/widgets/incl/widget_label_template.xhtml">
                   <ui:param name="labelStyleClass"
@@ -160,27 +162,29 @@
 
         <c:when test="#{widgetProperty_display == 'block_top'}">
           <nxl:subWidget>
-            <c:if test="#{displaySubLabels and not widget.handlingLabels}">
-              <div class="#{widgetProperty_subStyleClass}">
-                <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                  <ui:param name="labelStyleClass"
-                    value="boldLabel #{widgetProperty_subLabelStyleClass}" />
-                </ui:include>
-              </div>
-            </c:if>
-            <div class="#{widgetProperty_subStyleClass}">
-              <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-              <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-              <c:if test="#{addForm}">
-                <h:form id="#{layout.id}_#{widget.id}_form"
-                  enctype="multipart/form-data"
-                  styleClass="subWidgetForm">
+            <div class="containerSubWidget #{widgetProperty_subStyleClass}">
+              <c:if test="#{displaySubLabels and not widget.handlingLabels}">
+                <div>
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                    <ui:param name="labelStyleClass"
+                      value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                  </ui:include>
+                </div>
+              </c:if>
+              <div>
+                <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
+                <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
+                <c:if test="#{addForm}">
+                  <h:form id="#{layout.id}_#{widget.id}_form"
+                    enctype="multipart/form-data"
+                    styleClass="subWidgetForm">
+                    <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                  </h:form>
+                </c:if>
+                <c:if test="#{not addForm}">
                   <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                </h:form>
-              </c:if>
-              <c:if test="#{not addForm}">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-              </c:if>
+                </c:if>
+              </div>
             </div>
           </nxl:subWidget>
         </c:when>
