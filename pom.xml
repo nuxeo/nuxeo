@@ -25,61 +25,6 @@
     <module>nuxeo-template-rendering-package</module>
   </modules>
 
-  <properties>
-    <xdocreport.version>0.9.8</xdocreport.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <!-- docx report - move to org.nuxeo:nuxeo-ecm when released -->
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.converter</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.core</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.document</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.document.ods</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.template</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.opensagres.xdocreport</groupId>
-        <artifactId>fr.opensagres.xdocreport.remoting.resources</artifactId>
-        <version>${xdocreport.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <repositories>
     <repository>
       <id>public</id>
@@ -110,29 +55,5 @@
     <url>https://github.com/nuxeo/nuxeo-template-rendering</url>
   </scm>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <!-- Remove when using released versions of fr.opensagres.xdocreport -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <configuration>
-            <rules>
-              <requireReleaseDeps>
-                <message>No Snapshots Allowed!</message>
-                <onlyWhenRelease>true</onlyWhenRelease>
-                <excludes>
-                  <exclude>fr.opensagres.xdocreport:*</exclude>
-                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
-                  <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
-                </excludes>
-              </requireReleaseDeps>
-            </rules>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 </project>
 
