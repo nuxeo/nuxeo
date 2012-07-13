@@ -116,7 +116,11 @@ public class Rollback extends AbstractCommand {
         String entryKey = task.getPackage().getId();
         RollbackOptions opt = mgr.createRollbackOptions(entryKey, key, version);
 
-        Command undeploy = getUndeployCommand(mgr.getRollbackTarget(opt));
+        Command undeploy = null;
+        File rollbackTarget = mgr.getRollbackTarget(opt);
+        if (rollbackTarget != null) {
+            undeploy = getUndeployCommand(rollbackTarget);
+        }
         if (undeploy != null) {
             undeploy.run(task, prefs);
         }

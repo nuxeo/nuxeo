@@ -182,11 +182,11 @@ public class UpdateManager {
             return null;
         }
         Match<File> m = findInstalledJar(entryKey);
-        try {
+        if (m != null) {
             return m.object;
-        } catch (NullPointerException e) {
-            log.error("Error on key: " + entryKey);
-            throw e;
+        } else {
+            log.error("Could not find jar with key: " + entryKey);
+            return null;
         }
     }
 
