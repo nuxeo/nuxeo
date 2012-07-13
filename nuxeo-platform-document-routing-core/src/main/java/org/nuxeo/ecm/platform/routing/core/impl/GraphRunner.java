@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -234,7 +235,10 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
                 node.getDocument().getId());
         // evaluate task assignees from taskVar if any
-        node.evaluateTaskAssignees();
+        HashSet<String> actors = new HashSet<String>();
+        actors.addAll(node.evaluateTaskAssignees());
+        actors.addAll(node.getTaskAssignees());
+
         DocumentModel doc = graph.getAttachedDocumentModels().get(0);
         try {
             TaskService taskService = Framework.getLocalService(TaskService.class);
@@ -242,9 +246,9 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             List<Task> tasks = taskService.createTask(session,
                     (NuxeoPrincipal) session.getPrincipal(), doc, node.getId(),
                     node.getDocument().getTitle(),
-                    routeInstance.getDocument().getId(),
-                    node.getTaskAssignees(), false, node.getTaskDirective(),
-                    null, node.getTaskDueDate(), taskVariables, null);
+                    routeInstance.getDocument().getId(), new ArrayList<String>(
+                            actors), false, node.getTaskDirective(), null,
+                    node.getTaskDueDate(), taskVariables, null);
             routingTaskService.makeRoutingTasks(session, tasks);
             String taskAssigneesPermission = node.getTaskAssigneesPermission();
             if (StringUtils.isEmpty(taskAssigneesPermission)) {

@@ -443,11 +443,10 @@ public interface GraphNode {
     void setButton(String status);
 
     /**
-     * Evaluates the task assignees from the taskAssigneesVar and adds them on
-     * the node if any
+     * Evaluates the task assignees from the taskAssigneesVar
      * <p>
      *
      * @return
      */
-    void evaluateTaskAssignees() throws DocumentRouteException;
+    List<String> evaluateTaskAssignees() throws DocumentRouteException;
 }

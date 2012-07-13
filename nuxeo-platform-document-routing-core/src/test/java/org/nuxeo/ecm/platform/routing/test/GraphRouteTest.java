@@ -622,7 +622,7 @@ public class GraphRouteTest {
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
         Task ts = tasks.get(0);
-        assertEquals(2, ts.getActors().size());
+        assertEquals(1, ts.getActors().size());
 
         Map<String, Object> data = new HashMap<String, Object>();
         CoreSession sessionUser2 = openSession(user2);

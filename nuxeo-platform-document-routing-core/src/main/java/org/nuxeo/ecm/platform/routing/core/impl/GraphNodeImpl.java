@@ -417,12 +417,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public void evaluateTaskAssignees() throws DocumentRouteException {
+    public List<String> evaluateTaskAssignees() throws DocumentRouteException {
         List<String> taskAssignees = new ArrayList<String>();
         OperationContext context = getContext();
         String taskAssigneesVar = getTaskAssigneesVar();
         if (StringUtils.isEmpty(taskAssigneesVar)) {
-            return;
+            return taskAssignees;
         }
         Expression expr = Scripting.newExpression(taskAssigneesVar);
         Object res = null;
@@ -446,10 +446,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         } else {
             taskAssignees.addAll(Arrays.asList((String[]) res));
         }
-        if (taskAssignees.isEmpty()) {
-            return;
-        }
-        addTaskAssignees(taskAssignees);
+        return taskAssignees;
     }
 
     @Override
