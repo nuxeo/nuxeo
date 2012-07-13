@@ -117,14 +117,24 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Admin Center</td>
-	<td></td>
+        <td>waitForA4jRequest</td>
+        <td>3000</td>
+        <td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Users &amp; groups</td>
-	<td></td>
+        <td>verifyTextPresent</td>
+        <td>User created</td>
+        <td></td>
+</tr>
+<tr>
+        <td>click</td>
+        <td>//a[starts-with(.,'Back to the list')]</td>
+        <td></td>
+</tr>
+<tr>
+        <td>waitForA4jRequest</td>
+        <td>3000</td>
+        <td></td>
 </tr>
 <tr>
 	<td>click</td>
