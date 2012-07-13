@@ -49,7 +49,12 @@ public class UpdateAndDeploy extends Update {
             // command
             Rollback rollback = (Rollback) rollbackCommand;
             RollbackOptions opt = rollback.getRollbackOptions();
-            return new Deploy(updateManager.getRollbackTarget(opt));
+            File rollbackTarget = updateManager.getRollbackTarget(opt);
+            if (rollbackTarget != null) {
+                return new Deploy(rollbackTarget);
+            } else {
+                return null;
+            }
         }
         return new Deploy(file);
     }
