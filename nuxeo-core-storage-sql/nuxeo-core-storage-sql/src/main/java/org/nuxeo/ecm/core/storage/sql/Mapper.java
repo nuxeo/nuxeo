@@ -237,11 +237,4 @@ public interface Mapper extends RowMapper, XAResource {
     void markReferencedBinaries(BinaryGarbageCollector gc)
             throws StorageException;
 
-    /**
-     * Close opened queries.
-     *
-     * @since 5.6
-     */
-    void closeQueries();
-
 }

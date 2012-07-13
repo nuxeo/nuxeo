@@ -57,11 +57,6 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     }
 
     @Override
-    public void closeQueries() {
-        mapper.closeQueries();
-    }
-
-    @Override
     public int getTableSize(String tableName) throws StorageException {
         return mapper.getTableSize(tableName);
     }

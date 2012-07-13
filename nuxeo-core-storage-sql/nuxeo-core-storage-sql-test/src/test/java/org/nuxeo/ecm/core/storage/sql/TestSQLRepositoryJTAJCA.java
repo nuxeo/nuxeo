@@ -23,14 +23,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.storage.sql.jdbc.ResultSetQueryResult.ClosedIteratorException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
@@ -187,7 +185,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
         /*
          * (non-Javadoc)
-         *
+         * 
          * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.
          * LoggingEvent)
          */
@@ -263,70 +261,6 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
             fail("expected TransactionRuntimeException");
         } catch (TransactionRuntimeException e) {
             // expected
-        }
-    }
-
-    protected void assertIterableIsClosed(IterableQueryResult results)
-            throws ClientException {
-        boolean closed = false;
-        try {
-            results.size();
-        } catch (ClosedIteratorException e) {
-            closed = true;
-            assertTrue(e.getMessage().contains("SELECT"));
-        }
-        assertTrue(closed);
-    }
-
-    public void testIterableQueryResultsClosing() throws ClientException {
-        // prepare test
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
-        doc = session.createDocument(doc);
-        session.saveDocument(doc);
-        assertTrue(session.exists(new PathRef("/doc")));
-        closeSession();
-        TransactionHelper.commitOrRollbackTransaction();
-
-        // test auto commit
-        try {
-            openSession();
-            IterableQueryResult results = session.queryAndFetch(
-                    "SELECT * from Document", "NXQL");
-            closeSession();
-            assertIterableIsClosed(results);
-        } finally {
-            if (session == null) {
-                openSession();
-            }
-        }
-
-        // test tx commit
-        try {
-            TransactionHelper.startTransaction();
-            IterableQueryResult results = session.queryAndFetch(
-                    "SELECT * from Document", "NXQL");
-            closeSession();
-            TransactionHelper.commitOrRollbackTransaction();
-            assertIterableIsClosed(results);
-        } finally {
-            if (session == null) {
-                openSession();
-            }
-        }
-
-        // test rollback
-        try {
-            TransactionHelper.startTransaction();
-            IterableQueryResult results = session.queryAndFetch(
-                    "SELECT * from Document", "NXQL");
-            closeSession();
-            TransactionHelper.setTransactionRollbackOnly();
-            TransactionHelper.commitOrRollbackTransaction();
-            assertIterableIsClosed(results);
-        } finally {
-            if (session == null) {
-                openSession();
-            }
         }
     }
 }
