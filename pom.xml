@@ -128,6 +128,7 @@
     <apache.httpcomponents.version>4.1</apache.httpcomponents.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0</jxls.version>
+    <xdocreport.version>0.9.8</xdocreport.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -2071,6 +2072,53 @@
         <groupId>net.sf.jxls</groupId>
         <artifactId>jxls-reader</artifactId>
         <version>${jxls.version}</version>
+      </dependency>
+
+      <!-- docx report -->
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.converter</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.core</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.document</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.document.odt</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.document.ods</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.document.docx</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.template</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.template.freemarker</artifactId>
+        <version>${xdocreport.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.xdocreport.remoting.resources</artifactId>
+        <version>${xdocreport.version}</version>
       </dependency>
 
       <!-- others -->
