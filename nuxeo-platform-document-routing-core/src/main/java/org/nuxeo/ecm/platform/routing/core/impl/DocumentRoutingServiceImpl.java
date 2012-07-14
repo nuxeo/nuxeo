@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,16 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Alexandre Russel
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MAX_RESULTS_PROPERTY;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,8 +44,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
@@ -41,20 +58,27 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.RouteFolderElement;
+import org.nuxeo.ecm.platform.routing.api.RouteModelResourceType;
 import org.nuxeo.ecm.platform.routing.api.RouteTable;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
+import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
+import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegistry;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * @author arussel
+ * The implementation of the routing service.
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
+
+    private static final Log log = LogFactory.getLog(DocumentRoutingServiceImpl.class);
 
     private static final String AVAILABLE_ROUTES_QUERY = String.format(
             "Select * from %s",
@@ -69,6 +93,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     public static final String PERSISTER_XP = "persister";
 
+    // FIXME: use ContributionFragmentRegistry instances instead to handle hot
+    // reload
+
+    public static final String ROUTE_MODELS_IMPORTER_XP = "routeModelImporter";
+
     protected Map<String, String> typeToChain = new HashMap<String, String>();
 
     protected Map<String, String> undoChainIdFromRunning = new HashMap<String, String>();
@@ -76,6 +105,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     protected Map<String, String> undoChainIdFromDone = new HashMap<String, String>();
 
     protected DocumentRoutingPersister persister;
+
+    protected RouteTemplateResourceRegistry routeResourcesRegistry = new RouteTemplateResourceRegistry();
 
     protected DocumentRoutingEngineService getEngineService() {
         try {
@@ -99,7 +130,20 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         } else if (PERSISTER_XP.equals(extensionPoint)) {
             PersisterDescriptor des = (PersisterDescriptor) contribution;
             persister = des.getKlass().newInstance();
+        } else if (ROUTE_MODELS_IMPORTER_XP.equals(extensionPoint)) {
+            RouteModelResourceType res = (RouteModelResourceType) contribution;
+            registerRouteResource(res, contributor.getRuntimeContext());
         }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (contribution instanceof RouteModelResourceType) {
+            routeResourcesRegistry.removeContribution((RouteModelResourceType) contribution);
+        }
+        super.unregisterContribution(contribution, extensionPoint, contributor);
     }
 
     @Override
@@ -134,6 +178,42 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             String documentId, CoreSession session) {
         return createNewInstance(model, Collections.singletonList(documentId),
                 session, true);
+    }
+
+    @Override
+    public void resumeInstance(DocumentRef routeRef, CoreSession session,
+            String nodeId, Map<String, Object> data) {
+        try {
+            new ResumeRouteInstanceRunner(routeRef, session, nodeId, data).runUnrestricted();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public static class ResumeRouteInstanceRunner extends
+            UnrestrictedSessionRunner {
+
+        protected DocumentRef routeRef;
+
+        protected String nodeId;
+
+        protected Map<String, Object> data;
+
+        public ResumeRouteInstanceRunner(DocumentRef routeRef,
+                CoreSession session, String nodeId, Map<String, Object> data) {
+            super(session);
+            this.routeRef = routeRef;
+            this.nodeId = nodeId;
+            this.data = data;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentRoutingEngineService engineService = Framework.getLocalService(DocumentRoutingEngineService.class);
+            DocumentModel routeDoc = session.getDocument(routeRef);
+            DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+            engineService.resume(routeInstance, session, nodeId, data, null);
+        }
     }
 
     @Override
@@ -472,5 +552,121 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean isRoutable(DocumentModel doc) {
+        if (doc == null) {
+            return false;
+        }
+        String type = doc.getType();
+        // TODO make configurable
+        return type.equals("File") || type.equals("Note");
+    }
+
+    @Override
+    public DocumentRoute importRouteModel(URL modelToImport, boolean overwrite,
+            CoreSession session) throws ClientException {
+        if (modelToImport == null) {
+            throw new ClientException(
+                    ("No resource containing route templates found"));
+        }
+        StreamingBlob fb;
+        try {
+            fb = StreamingBlob.createFromStream(modelToImport.openStream());
+        } catch (IOException e) {
+            throw new ClientRuntimeException(e);
+        }
+        try {
+            DocumentModel doc = getFileManager().createDocumentFromBlob(
+                    session,
+                    fb,
+                    persister.getParentFolderForDocumentRouteModels(session).getPathAsString(),
+                    true, modelToImport.getFile());
+            if (doc == null) {
+                throw new ClientException("Can not import document");
+            }
+            return doc.getAdapter(DocumentRoute.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        } finally {
+            try {
+                FileUtils.close(fb.getStream());
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+        }
+    }
+
+    protected FileManager getFileManager() {
+        try {
+            return Framework.getService(FileManager.class);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        RouteModelsInitializator routeInializator = new RouteModelsInitializator();
+        routeInializator.install();
+    }
+
+    @Override
+    public List<URL> getRouteModelTemplateResources() throws ClientException {
+        List<URL> urls = new ArrayList<URL>();
+        for (URL url : routeResourcesRegistry.getRouteModelTemplateResources()) {
+            urls.add(url); // test contrib parsing and deployment
+        }
+        return urls;
+    }
+
+    @Override
+    public List<DocumentModel> searchRouteModels(CoreSession session,
+            String searchString) throws ClientException {
+        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
+        props.put(CORE_SESSION_PROPERTY, (Serializable) session);
+        @SuppressWarnings("unchecked")
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null,
+                0L, props, String.format("%s%%", searchString));
+        return pageProvider.getCurrentPage();
+    }
+
+    @Override
+    public void registerRouteResource(RouteModelResourceType res,
+            RuntimeContext context) {
+        if (res.getPath() != null && res.getId() != null) {
+            if (routeResourcesRegistry.getResource(res.getId()) != null) {
+                routeResourcesRegistry.removeContribution(res);
+            }
+            if (res.getUrl() == null) {
+                res.setUrl(getUrlFromPath(res, context));
+            }
+            routeResourcesRegistry.addContribution(res);
+        }
+    }
+
+    protected URL getUrlFromPath(RouteModelResourceType res,
+            RuntimeContext extensionContext) {
+        String path = res.getPath();
+        if (path == null) {
+            return null;
+        }
+        URL url = null;
+        try {
+            url = new URL(path);
+        } catch (MalformedURLException e) {
+            url = extensionContext.getLocalResource(path);
+            if (url == null) {
+                url = extensionContext.getResource(path);
+            }
+            if (url == null) {
+                url = res.getClass().getResource(path);
+            }
+        }
+        return url;
     }
 }

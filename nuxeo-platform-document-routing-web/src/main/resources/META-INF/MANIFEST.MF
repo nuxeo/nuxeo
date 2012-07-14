@@ -9,4 +9,8 @@ Nuxeo-Component: OSGI-INF/document-routing-ecm-types-contrib.xml,
  OSGI-INF/document-routing-layouts-contrib.xml,
  OSGI-INF/document-routing-actions-contrib.xml,
  OSGI-INF/document-routing-table-widgets-contrib.xml,
- OSGI-INF/document-routing-table-layouts-contrib.xml
+ OSGI-INF/document-routing-table-layouts-contrib.xml,
+ OSGI-INF/routing-content-view-contrib.xml,
+ OSGI-INF/document-routing-nxthemes-contrib.xml,
+ OSGI-INF/layouts-summary-contrib.xml,
+ OSGI-INF/layouts-contrib.xml

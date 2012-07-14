@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Alexandre Russel
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
+
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -22,16 +25,22 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
 /**
  * Runner responsible to run or undo an element of a route.
- *
- * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 public interface ElementRunner {
+
     /**
      * Run this element. If an exception is thrown while doing, it cancels the
      * route.
      */
     void run(CoreSession session, DocumentRouteElement element);
+
+    /**
+     * Resumes this graph route on a given node.
+     *
+     * @since 5.6
+     */
+    void resume(CoreSession session, DocumentRouteElement element,
+            String nodeId, Map<String, Object> data, String status);
 
     /**
      * Run the undo chain on this element. If this element is not a step, then

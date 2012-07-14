@@ -95,4 +95,15 @@ public interface DocumentRoutingPersister {
      * @return the new name
      */
     String getNewModelName(DocumentModel instance);
+
+    /**
+     * Gets or creates the parent folder for a {@link DocumentRoute} route
+     * instance.
+     *
+     * @return The parent folder in which the {@link DocumentRoute} will be
+     *         persisted.
+     *
+     * @since 5.6
+     */
+    DocumentModel getParentFolderForDocumentRouteModels(CoreSession session);
 }

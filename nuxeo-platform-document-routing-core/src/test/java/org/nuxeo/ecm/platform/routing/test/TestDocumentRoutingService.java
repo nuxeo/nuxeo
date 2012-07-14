@@ -16,12 +16,25 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,6 +55,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.RouteModelResourceType;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.runtime.api.Framework;
@@ -51,6 +65,17 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class TestDocumentRoutingService extends DocumentRoutingTestCase {
+
+    protected File tmp;
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        if (tmp != null) {
+            tmp.delete();
+        }
+        super.tearDown();
+    }
 
     @Test
     public void testAddStepToDraftRoute() throws Exception {
@@ -251,7 +276,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 managersSession);
         assertNotNull(newModel);
         assertEquals("(COPY) route1",
-                (String) newModel.getDocument().getPropertyValue("dc:title"));
+                newModel.getDocument().getPropertyValue("dc:title"));
         closeSession(managersSession);
     }
 
@@ -812,6 +837,123 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         acp.setRules("test", new UserEntry[] { userEntry });
         doc.setACP(acp, true);
         session.save();
+    }
+
+    @Test
+    public void testImportRouteModel() throws Exception {
+        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle(TEST_BUNDLE);
+
+        // test contrib parsing and deployment
+        deployTestContrib(TEST_BUNDLE,
+                "OSGI-INF/test-document-routing-route-models-template-resource-contrib.xml");
+        List<URL> urls = service.getRouteModelTemplateResources();
+        assertEquals(1, urls.size());
+
+        // create an initial route to test that is override at import
+        DocumentModel root = createDocumentModel(session,
+                "document-route-models-root", "DocumentRouteModelsRoot",
+                "/default-domain/");
+        assertNotNull(root);
+        DocumentModel route = createDocumentModel(session, "myRoute",
+                "DocumentRoute", "/default-domain/document-route-models-root/");
+        route.setPropertyValue("dc:coverage", "test");
+        route = session.saveDocument(route);
+        assertNotNull(route);
+        assertEquals("test", route.getPropertyValue("dc:coverage"));
+
+        DocumentModel node = createDocumentModel(session, "myNode",
+                "RouteNode",
+                "/default-domain/document-route-models-root/myRoute");
+
+        assertNotNull(node);
+
+        // create a ZIP for the contrib
+        tmp = File.createTempFile("nuxeoRoutingTest", ".zip");
+        ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(tmp));
+        URL url = getClass().getResource("/routes/myRoute");
+        File dir = new File(url.toURI().getPath());
+        zipTree("", dir, false, zout);
+        zout.finish();
+        zout.close();
+
+        RouteModelResourceType resource = new RouteModelResourceType();
+        resource.setId("test");
+        resource.setPath(tmp.getPath());
+        resource.setUrl(tmp.toURI().toURL());
+        service.registerRouteResource(resource, null);
+
+        // trigger model creation (calls service.importRouteModel)
+        fireFrameworkStarted();
+        session.save(); // process invalidations
+
+        DocumentModel modelsRoot = session.getDocument(new PathRef(
+                "/default-domain/document-route-models-root/"));
+        assertNotNull(modelsRoot);
+        route = session.getDocument(new PathRef(
+                "/default-domain/document-route-models-root/myRoute"));
+        assertNotNull(route);
+        // test that document was overriden
+        assertEquals("", route.getPropertyValue("dc:coverage"));
+        try {
+            node = session.getDocument(new PathRef(
+                    "/default-domain/document-route-models-root/myRoute/myNode"));
+        } catch (ClientException e) {
+            node = null;
+        }
+        assertNull(node);
+        assertEquals("DocumentRoute", route.getType());
+        DocumentModel step1 = session.getDocument(new PathRef(
+                "/default-domain/document-route-models-root/myRoute/Step1"));
+        assertNotNull(step1);
+        assertEquals("RouteNode", step1.getType());
+        DocumentModel step2 = session.getDocument(new PathRef(
+                "/default-domain/document-route-models-root/myRoute/Step2"));
+        assertNotNull(step2);
+        assertEquals("RouteNode", step2.getType());
+    }
+
+    protected void zipTree(String prefix, File root, boolean includeRoot,
+            ZipOutputStream zout) throws IOException {
+        if (includeRoot) {
+            prefix += root.getName() + '/';
+            zipDirectory(prefix, zout);
+        }
+        for (String name : root.list()) {
+            File file = new File(root, name);
+            if (file.isDirectory()) {
+                zipTree(prefix, file, true, zout);
+            } else {
+                if (name.endsWith("~") || name.endsWith("#")
+                        || name.endsWith(".bak")) {
+                    continue;
+                }
+                name = prefix + name;
+                zipFile(name, file, zout);
+            }
+        }
+    }
+
+    protected void zipDirectory(String entryName, ZipOutputStream zout)
+            throws IOException {
+        ZipEntry zentry = new ZipEntry(entryName);
+        zout.putNextEntry(zentry);
+        zout.closeEntry();
+    }
+
+    protected void zipFile(String entryName, File file, ZipOutputStream zout)
+            throws IOException {
+        ZipEntry zentry = new ZipEntry(entryName);
+        zentry.setTime(file.lastModified());
+        zout.putNextEntry(zentry);
+        FileInputStream in = new FileInputStream(file);
+        try {
+            IOUtils.copy(in, zout);
+        } finally {
+            in.close();
+        }
+        zout.closeEntry();
     }
 
     protected void waitForAsyncExec() {

@@ -18,6 +18,12 @@
         <transition name="toDone" destinationState="done">
           <description>the element finishes</description>
         </transition>
+        <transition name="toWaiting" destinationState="waiting">
+          <description>the element waits for a join</description>
+        </transition>
+        <transition name="toSuspended" destinationState="suspended">
+          <description>the element waits for a task</description>
+        </transition>
         <transition name="backToReady" destinationState="ready">
           <description>the element finishes</description>
         </transition>
@@ -46,6 +52,8 @@
         <state name="ready" description="The element is ready" initial="true">
           <transitions>
             <transition>toRunning</transition>
+            <transition>toWaiting</transition>
+            <transition>toSuspended</transition>
             <transition>toCanceled</transition>
             <transition>toDraft</transition>
           </transitions>
@@ -65,7 +73,28 @@
             <transition>toDraft</transition>
           </transitions>
         </state>
-        <state name="canceled"></state>
+        <state name="waiting" description="The element waits for a join">
+          <transitions>
+            <transition>toReady</transition>
+            <transition>toSuspended</transition>
+            <transition>toCanceled</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+        <state name="suspended" description="The element waits for a task">
+          <transitions>
+            <transition>toReady</transition>
+            <transition>toWaiting</transition>
+            <transition>toCanceled</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
+        <state name="canceled" description="The element is cancelled">
+          <transitions>
+            <transition>backToReady</transition>
+            <transition>toDraft</transition>
+          </transitions>
+        </state>
       </states>
     </lifecycle>
   </extension>
@@ -86,6 +115,7 @@
         documentRouteElement
       </type>
       <type name="DocumentRouteStep">documentRouteElement</type>
+      <type name="RouteNode">documentRouteElement</type>
     </types>
   </extension>
 

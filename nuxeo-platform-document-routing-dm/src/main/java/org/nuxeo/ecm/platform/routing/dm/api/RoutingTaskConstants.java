@@ -18,8 +18,6 @@ package org.nuxeo.ecm.platform.routing.dm.api;
 
 public class RoutingTaskConstants {
 
-    public static final String ROUTING_TASK_FACET_NAME = "RoutingTask";
-
     public static final String TASK_STEP_FACET_NAME = "TaskStep";
 
     public static final String TASK_STEP_ACTORS_PROPERTY_NAME = "tkst:actors";
@@ -31,8 +29,6 @@ public class RoutingTaskConstants {
     public static final String TASK_STEP_DIRECTIVE_PROPERTY_NAME = "tkst:directive";
 
     public static final String TASK_STEP_COMMENTS_PROPERTY_NAME = "tkst:comments";
-
-    public static final String ROUTE_TASK_LOCAL_ACL = "routingTask";
 
     public static final String ROUTING_TASK_ACTORS_KEY = "document.routing.task.actors";
 

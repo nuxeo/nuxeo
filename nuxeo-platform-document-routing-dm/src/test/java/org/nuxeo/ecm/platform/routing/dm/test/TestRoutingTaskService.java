@@ -29,9 +29,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask;
-import org.nuxeo.ecm.platform.routing.dm.task.RoutingTaskService;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -41,8 +42,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class TestRoutingTaskService extends SQLRepositoryTestCase {
-
-    protected RoutingTaskService rts;
 
     protected UserManager userManager;
 
@@ -58,6 +57,7 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
     protected DocumentModel targetDoc;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -67,10 +67,11 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
-
+        deployBundle("org.nuxeo.ecm.platform.task.core");
+        deployBundle("org.nuxeo.ecm.platform.routing.core");
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
-        deployBundle("org.nuxeo.ecm.platform.routing.core");
+
 
         deployBundle(TestConstants.DM_BUNDLE);
 
@@ -98,6 +99,7 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         targetDoc = session.createDocument(targetDoc);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
@@ -105,13 +107,15 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
     @Test
     public void testService() throws Exception {
-        rts = Framework.getService(RoutingTaskService.class);
-        assertNotNull(rts);
+        TaskService taskService = Framework.getLocalService(TaskService.class);
+        RoutingTaskService routingTaskService = Framework.getLocalService(RoutingTaskService.class);
         List<String> actorIds = new ArrayList<String>();
-        List<Task> tasks = rts.createRoutingTask(session, administrator, targetDoc, "RoutingTask", actorIds,
-                false, null, null, null, null, "/");
+        List<Task> tasks = taskService.createTask(session, administrator,
+                targetDoc, "MyRoutingTask", actorIds, false, null, null, null,
+                null, "/");
+        routingTaskService.makeRoutingTasks(session, tasks);
         session.save();
-        DocumentModel taskDoc = session.getDocument(new PathRef("/RoutingTask"));
+        DocumentModel taskDoc = session.getDocument(new PathRef("/MyRoutingTask"));
         RoutingTask routingTask = taskDoc.getAdapter(RoutingTask.class);
         assertNotNull(routingTask);
         closeSession(session);

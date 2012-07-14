@@ -5,13 +5,14 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
   
   	 <h3 class="summaryTitle">
-       <h:outputText value="#{messages['label.document.routing.related.route']}" />
+       <h:outputText value="#{messages['label.document.routing.associated.workflow']}" />
      </h3>
   <c:choose>
     <c:when test="#{routingActions.hasRelatedRoute()}">
       <h:outputText value="#{messages['label.route.info']} " />
       <h:outputText value="#{routingActions.getRelatedRoute().getName()} " /> 
       <h:outputText value="#{messages['label.route.started']} " />
+      <h:outputText value="#{routingActions.getRelatedRoute().document.dc.creator}"/>
     </c:when>
     <c:otherwise>
 	  <nxl:layout value="#{routingActions}" mode="edit" name="document_related_route" />

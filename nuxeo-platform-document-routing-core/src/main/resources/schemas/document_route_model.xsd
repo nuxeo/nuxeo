@@ -5,5 +5,4 @@
 
    <xs:include schemaLocation="base.xsd" />
 
-
 </xs:schema>

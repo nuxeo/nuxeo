@@ -18,19 +18,28 @@ package org.nuxeo.ecm.platform.routing.api;
 
 /**
  * @author arussel
- * 
+ *
  */
 public interface DocumentRoutingConstants {
 
     // web
     String SEARCH_ROUTE_BY_ATTACHED_DOC_QUERY = "SEARCH_ROUTE_BY_ATTACHED_DOC";
 
+    /**
+     * @since 5.6
+     */
+    String DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME = "DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS";
+
     String ROUTE_MANAGERS_GROUP_NAME = "routeManagers";
 
     // document constant
     String DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE = "DocumentRouteInstancesRoot";
 
+    String DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE = "DocumentRouteModelsRoot";
+
     String DOCUMENT_ROUTE_INSTANCES_ROOT_ID = "document-route-instances-root";
+
+    String DOCUMENT_ROUTE_MODELS_ROOT_ID = "document-route-models-root";
 
     String DOCUMENT_ROUTE_DOCUMENT_TYPE = "DocumentRoute";
 
@@ -70,7 +79,12 @@ public interface DocumentRoutingConstants {
     String DOCUMENT_ROUTING_ACL = "routing";
 
     enum ExecutionTypeValues {
-        serial, parallel
+        /** Serial running of children nodes. */
+        serial,
+        /** Parallel running of children nodes. */
+        parallel,
+        /** Running of the nodes decided by the graph state. */
+        graph
     }
 
     // event
@@ -150,4 +164,14 @@ public interface DocumentRoutingConstants {
     String INITIATOR_EVENT_CONTEXT_KEY = "initiator";
 
     String ROUTING_CATEGORY = "Routing";
+
+    public static final String TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY = "routeInstanceDocId";
+
+    public static final String TASK_NODE_ID_KEY = "nodeId";
+
+    public static final String TASK_BUTTONS_KEY = "taskButtons";
+
+    public static final String ROUTING_TASK_FACET_NAME = "RoutingTask";
+
+    public static final String ROUTE_TASK_LOCAL_ACL = "routingTask";
 }

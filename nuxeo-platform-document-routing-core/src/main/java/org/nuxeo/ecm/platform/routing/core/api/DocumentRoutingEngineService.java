@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,12 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     arussel
+ *     Alexandre Russel
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.routing.core.api;
+
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -24,18 +27,28 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
  * The DocumentRoutingEngineService is responsible for managing the lifecycle of
  * the DocumentRoute. This is an internal service, you should use method on the
  * {@link DocumentRoutingService} to start a route.
- *
- * @author arussel
- *
  */
 public interface DocumentRoutingEngineService {
 
     /**
-     * Start or resume a the route.
+     * Starts a route.
      *
-     * @param routeInstance
-     * @param session
+     * @param routeInstance the route instance
+     * @param session the session
      */
     void start(DocumentRoute routeInstance, CoreSession session);
+
+    /**
+     * Resumes a route.
+     *
+     * @param routeInstance the route instance
+     * @param session the session
+     * @param nodeId the node id to resume on
+     * @param data the data coming from UI form
+     * @param status the name of the button clicked to submit the associated task form
+     * @since 5.6
+     */
+    void resume(DocumentRoute routeInstance, CoreSession session,
+            String nodeId, Map<String, Object> data, String status);
 
 }

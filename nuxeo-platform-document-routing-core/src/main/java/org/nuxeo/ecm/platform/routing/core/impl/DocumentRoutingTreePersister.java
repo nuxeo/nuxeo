@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -114,9 +113,14 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             CoreSession session) {
         DocumentModel root;
         try {
-            root = getDocumentRouteInstancesStructure(session);
+            root = getDocumentRoutesStructure(
+                    DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
+                    session);
             if (root == null) {
-                root = createDocumentRouteInstancesStructure(session);
+                root = createDocumentRoutesStructure(
+                        DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
+                        DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_ID,
+                        session);
             }
             return root;
         } catch (ClientException e) {
@@ -124,8 +128,9 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         }
     }
 
-    protected DocumentModel createDocumentRouteInstancesStructure(
-            CoreSession session) throws ClientException {
+    protected DocumentModel createDocumentRoutesStructure(
+            String routeStructureDocType, String id, CoreSession session)
+            throws ClientException {
         String query = "SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID
                 + " = '%s' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
                 + LifeCycleConstants.DELETED_STATE + "' AND "
@@ -135,12 +140,8 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         DocumentModelList docs = session.query(query, 1);
         DocumentModel defaultDomain = docs.get(0);
         DocumentModel root = session.createDocumentModel(
-                defaultDomain.getPathAsString(),
-                DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_ID,
-                DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE);
-        root.setPropertyValue(
-                DC_TITLE,
-                DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE);
+                defaultDomain.getPathAsString(), id, routeStructureDocType);
+        root.setPropertyValue(DC_TITLE, routeStructureDocType);
         root = session.createDocument(root);
         ACP acp = session.getACP(root.getRef());
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
@@ -172,11 +173,10 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         }
     }
 
-    protected DocumentModel getDocumentRouteInstancesStructure(
+    protected DocumentModel getDocumentRoutesStructure(String type,
             CoreSession session) throws ClientException {
-        DocumentModelList res = session.query(String.format(
-                "SELECT * from %s",
-                DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE));
+        DocumentModelList res = session.query(String.format("SELECT * from %s",
+                type));
         if (res == null || res.isEmpty()) {
             return null;
         }
@@ -236,16 +236,12 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             if (instance == null) {
                 return;
             }
-            ACP acp = new ACPImpl();
+            ACP acp = instance.getACP();
             // remove READ for everyone
             ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
             routingACL.remove(new ACE(SecurityConstants.EVERYONE,
                     SecurityConstants.READ, true));
             // unblock rights inheritance
-            ACL inheritedACL = acp.getOrCreateACL(ACL.INHERITED_ACL);
-            inheritedACL.remove(new ACE(SecurityConstants.EVERYONE,
-                    SecurityConstants.EVERYTHING, false));
-
             ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
             localACL.remove(new ACE(SecurityConstants.EVERYONE,
                     SecurityConstants.EVERYTHING, false));
@@ -255,5 +251,26 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         DocumentRef getInstanceRef() {
             return documentRef;
         }
+    }
+
+    @Override
+    public DocumentModel getParentFolderForDocumentRouteModels(
+            CoreSession session) {
+        DocumentModel root;
+        try {
+            root = getDocumentRoutesStructure(
+                    DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
+                    session);
+            if (root == null) {
+                root = createDocumentRoutesStructure(
+                        DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
+                        DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_ID,
+                        session);
+            }
+            return root;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+
     }
 }

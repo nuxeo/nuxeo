@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- *
+ * 
  */
 public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROOT_PATH = "/";
@@ -54,6 +54,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
 
     public static final String ROUTE1 = "route1";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -67,7 +68,9 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.userworkspace.core");
         deployBundle("org.nuxeo.ecm.platform.userworkspace.types");
+        deployBundle("org.nuxeo.ecm.platform.types.api");
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
+        deployContrib(TEST_BUNDLE, "OSGI-INF/test-graph-types-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);
         CounterListener.resetCouner();
 
@@ -75,8 +78,10 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
         ContentTemplateService ctService = Framework.getService(ContentTemplateService.class);
         ctService.executeFactoryForType(root);
-        assertEquals(3, session.getChildren(
-                session.getChildren(root.getRef()).get(0).getRef()).size());
+        assertEquals(
+                3,
+                session.getChildren(
+                        session.getChildren(root.getRef()).get(0).getRef()).size());
         DocumentModel workspaces = session.getDocument(new PathRef(
                 WORKSPACES_PATH));
         assertNotNull(workspaces);
@@ -91,6 +96,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         service = Framework.getService(DocumentRoutingService.class);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

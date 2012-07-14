@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -63,6 +65,12 @@ public class StepElementRunner implements ElementRunner {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void resume(CoreSession session, DocumentRouteElement element,
+            String nodeId, Map<String, Object> data, String status) {
+        throw new UnsupportedOperationException();
     }
 
     public AutomationService getAutomationService() {

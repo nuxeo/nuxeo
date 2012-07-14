@@ -11,7 +11,7 @@
     <schema name="step_folder" prefix="stepf" src="schemas/step_folder.xsd" />
     <schema name="info_comments" src="schemas/info_comments.xsd" prefix="infocom" />
     <schema name="conditional_step_folder" prefix="condstepf" src="schemas/conditional_step_folder.xsd" />
-
+    <schema name="route_node" prefix="rnode" src="schemas/route_node.xsd" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
@@ -21,6 +21,8 @@
     <facet name="RouteStep" />
     <facet name="StepFolder" />
 
+    <facet name="RoutingTask" />
+
     <facet name="CommentsInfoHolder">
       <schema name="info_comments" />
     </facet>
@@ -29,8 +31,14 @@
       <schema name="conditional_step_folder" />
     </facet>
 
-
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
+      <facet name="HiddenInNavigation" />
+      <subtypes>
+        <type>Folder</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="DocumentRouteModelsRoot" extends="Folder">
       <subtypes>
         <type>Folder</type>
       </subtypes>
@@ -59,6 +67,7 @@
       <subtypes>
         <type>StepFolder</type>
         <type>DocumentRouteStep</type>
+        <type>RouteNode</type>
       </subtypes>
     </doctype>
 
@@ -77,6 +86,10 @@
       </subtypes>
     </doctype>
 
+    <doctype name="RouteNode" extends="Document">
+      <schema name="dublincore" />
+      <schema name="route_node" />
+    </doctype>
 
   </extension>
 

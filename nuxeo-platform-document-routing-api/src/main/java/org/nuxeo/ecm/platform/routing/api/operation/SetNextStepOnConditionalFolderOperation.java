@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.routing.api.helper.ConditionalFolderUpdateRunner;
 /***
  * Set the position of the child to be run once the step with the given id it's
  * finished.
- * 
+ *
  * @since 5.5
  */
 @Operation(id = SetNextStepOnConditionalFolderOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Choose branch", description = "Update branch to be executed ")

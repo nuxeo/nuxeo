@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,12 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     Alexandre Russel
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -26,10 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 
-/**
- * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
- */
 public abstract class AbstractRunner implements ElementRunner {
 
     protected List<DocumentRouteElement> getChildrenElement(
@@ -44,6 +42,12 @@ public abstract class AbstractRunner implements ElementRunner {
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+    }
+
+    @Override
+    public void resume(CoreSession session, DocumentRouteElement element,
+            String nodeId, Map<String, Object> data, String status) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

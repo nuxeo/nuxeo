@@ -8,6 +8,9 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+  <c:choose>
+
+  <c:when test="#{routingActions.hasRelatedRoute()}">
   <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
     <ui:decorate template="/incl/actions_fragment.xhtml">
       <ui:param name="category" value="ATTACHED_ROUTE_LIST" />
@@ -24,14 +27,21 @@
           <ui:param name="listName" value="CURRENT_SELECTION" />
           <ui:param name="layoutName" value="document_routing_route_content" />
         </ui:decorate>
-      </nxu:set>	
+      </nxu:set>
     </nxu:set>
   </c:if>
-  
   <c:if test="#{currentDocument.currentLifeCycleState == 'deleted'}">
-
     <ui:include src="/incl/tabs/document_trash_content.xhtml" />
-
   </c:if>
-  
+  </c:when>
+
+  <c:otherwise>
+    <h:form>
+    <nxl:layout name="summary_document_route_action" mode="edit"
+      value="#{currentDocument}" />
+    </h:form>
+  </c:otherwise>
+
+  </c:choose>
+
 </div>

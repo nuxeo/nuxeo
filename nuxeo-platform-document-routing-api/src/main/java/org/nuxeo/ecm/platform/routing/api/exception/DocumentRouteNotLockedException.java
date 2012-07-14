@@ -16,22 +16,16 @@
  */
 package org.nuxeo.ecm.platform.routing.api.exception;
 
-import org.nuxeo.ecm.core.api.ClientException;
-
 /**
 *
 * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
 *
 */
-public class DocumentRouteNotLockedException extends ClientException {
+public class DocumentRouteNotLockedException extends DocumentRouteException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public DocumentRouteNotLockedException() {
-
     }
 
     public DocumentRouteNotLockedException(String message) {

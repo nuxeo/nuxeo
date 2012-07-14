@@ -10,16 +10,14 @@
       <filter-id>isNotRoute</filter-id>
     </action>
 
-    <action id="TAB_DOCUMENT_ROUTE_CONTENT"
-      link="/incl/tabs/document_route_content.xhtml" order="10"
-      label="action.view.content" icon="/icons/file.gif">
+    <action id="TAB_DOCUMENT_ROUTE_CONTENT" link="/incl/tabs/document_route_content.xhtml"
+      order="10" label="action.view.content" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>isRoute</filter-id>
     </action>
 
-    <action id="TAB_DOCUMENT_ROUTE_ELEMENTS"
-      link="/incl/tabs/document_route_content_elements.xhtml" order="10"
-      label="action.view.document.routing.elements" icon="/icons/file.gif">
+    <action id="TAB_DOCUMENT_ROUTE_ELEMENTS" link="/incl/tabs/document_route_content_elements.xhtml"
+      order="10" label="action.view.document.routing.elements" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>isRoute</filter-id>
     </action>
@@ -39,14 +37,6 @@
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
-    <action id="TAB_CASE_MANAGEMENT_VIEW_RELATED_ROUTE"
-      link="/incl/tabs/related_document_route_preview.xhtml" order="250"
-      label="label.document.routing.related.route">
-      <category>VIEW_ACTION_LIST</category>
-      <filter-id>isRoutable</filter-id>
-      <filter-id>hasRelatedRouteStarted</filter-id>
-    </action>
-
     <action id="CANCEL_RELATED_ROUTE" link="#{routingActions.cancelRoute()}"
       order="10" label="label.document.routing.cancel.route">
       <category>ATTACHED_ROUTE_LIST</category>
@@ -54,9 +44,8 @@
       <filter-id>isEditableRoute</filter-id>
     </action>
 
-    <action id="SAVE_ATTACHED_ROUTE_AS_NEW_INSTANCE"
-      link="#{routingActions.saveRouteAsNewInstance()}" order="10"
-      label="label.document.routing.saveAsNew">
+    <action id="SAVE_ATTACHED_ROUTE_AS_NEW_INSTANCE" link="#{routingActions.saveRouteAsNewInstance()}"
+      order="10" label="label.document.routing.saveAsNew">
       <category>ATTACHED_ROUTE_LIST</category>
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
@@ -67,27 +56,27 @@
       <category>CURRENT_SELECTION_LIST</category>
       <filter id="canDuplicateRouteInstance">
         <rule grant="true">
-          <condition>#{routingActions.getCanDuplicateRouteInstance()}</condition>
+          <condition>#{routingActions.getCanDuplicateRouteInstance()}
+          </condition>
         </rule>
       </filter>
     </action>
 
-    <action id="SAVE_ROUTE_AS_NEW_INSTANCE"
-      link="#{routingActions.saveRouteAsNewInstance()}" order="20"
-      label="label.document.routing.saveAsNew">
+    <action id="SAVE_ROUTE_AS_NEW_INSTANCE" link="#{routingActions.saveRouteAsNewInstance()}"
+      order="20" label="label.document.routing.saveAsNew">
       <category>SUBVIEW_UPPER_LIST</category>
       <category>ROUTE_LIST</category>
       <filter-id>isRoute</filter-id>
     </action>
 
-    <action id="VALIDATE_ROUTE"
-      link="#{routingActions.validateRouteModel()}" order="10"
-      label="action.validate.document.routing.model">
+    <action id="VALIDATE_ROUTE" link="#{routingActions.validateRouteModel()}"
+      order="10" label="action.validate.document.routing.model">
       <category>ROUTE_LIST</category>
       <filter-id>isDraftRouteModel</filter-id>
       <filter id="canValidateRoute">
         <rule grant="true">
-          <condition>#{routeSecurityChecker.canValidateRoute(currentDocument)}</condition>
+          <condition>#{routeSecurityChecker.canValidateRoute(currentDocument)}
+          </condition>
         </rule>
       </filter>
     </action>
@@ -117,24 +106,23 @@
       <filter-id>isEditableRoute</filter-id>
     </action>
 
-    <action id="REMOVE_STEP" label="command.delete"
-      link="#{routingActions.removeStep}" icon="/icons/delete.png">
+    <action id="REMOVE_STEP" label="command.delete" link="#{routingActions.removeStep}"
+      icon="/icons/delete.png">
       <category>REMOVE_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
 
-    <action id="UPDATE_STEP" label="command.edit"
-      link="#{routingActions.editStep}" icon="/icons/modify.png">
+    <action id="UPDATE_STEP" label="command.edit" link="#{routingActions.editStep}"
+      icon="/icons/modify.png">
       <category>EDIT_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
     </action>
 
     <action id="MOVE_STEP_UP" label="command.selection.moveUp"
-      link="#{routingActions.moveRouteElement('up')}"
-      icon="/icons/routing_move_up.png">
+      link="#{routingActions.moveRouteElement('up')}" icon="/icons/routing_move_up.png">
       <category>EDIT_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
@@ -142,19 +130,57 @@
     </action>
 
     <action id="MOVE_STEP_DOWN" label="command.selection.moveDown"
-      link="#{routingActions.moveRouteElement('down')}"
-      icon="/icons/routing_move_down.png">
+      link="#{routingActions.moveRouteElement('down')}" icon="/icons/routing_move_down.png">
       <category>EDIT_STEP_ACTIONS_LIST</category>
       <filter-id>isNotRunning</filter-id>
       <filter-id>isEditableRoute</filter-id>
       <filter-id>isNotImutableConditionalStructure</filter-id>
     </action>
-    
+
     <action id="newDocument">
       <filter-id>create</filter-id>
       <filter-id>isNotDraftRouteModel</filter-id>
     </action>
 
+    <!-- 'Workflow' tab when a document route is running -->
+    <!--
+    <action id="TAB_ROUTE_WORKFLOW" enabled="true"
+      link="/incl/tabs/route_workflow.xhtml" label="action.view.review"
+      icon="/icons/file.gif" order="60">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>isRoutable</filter-id>
+      <filter id="TAB_ROUTE_WORKFLOW_has_subtabs">
+        <rule grant="false">
+          <condition>
+            #{webActions.getActionsList('TAB_ROUTE_WORKFLOW_sub_tab').isEmpty()}
+          </condition>
+        </rule>
+      </filter>
+    </action> -->
+
+   <!-- 'Workflow' sub tab: graph view -->
+    <!--
+    <action id="TAB_ROUTE_GRAPH_VIEW" enabled="true"
+      link="/incl/tabs/route_graph_view.xhtml" order="10"
+      label="label.document.routing.route.graph.view">
+      <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
+    </action>-->
+
+    <!-- 'Workflow' sub tab: current route -->
+    <action id="TAB_ROUTE_WORKFLOW" enabled="true"
+      link="/incl/tabs/current_route.xhtml" order="60"
+      label="action.view.review">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>hasRelatedRouteStarted</filter-id>
+    </action>
+
+    <!-- 'Workflow' sub tab: previous routes -->
+    <!--<action id="TAB_PREVIOUS_ROUTE" enabled="true"
+      link="/incl/tabs/previous_routes.xhtml" order="30"
+      label="label.document.routing.previous.routes">
+      <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
+    </action>
+    -->
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -170,7 +196,7 @@
 
     <filter id="isRoutable">
       <rule grant="true">
-        <facet>Routable</facet>
+        <condition>#{routingActions.isRoutable()}</condition>
       </rule>
     </filter>
 
@@ -204,7 +230,7 @@
       </rule>
       <rule grant="true">
         <permission>Manage everything</permission>
-      </rule>      
+      </rule>
     </filter>
 
 
@@ -244,7 +270,7 @@
         </condition>
       </rule>
     </filter>
-    
+
     <filter id="isNotDraftRouteModel">
       <rule grant="false">
         <condition>

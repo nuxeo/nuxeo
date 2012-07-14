@@ -41,4 +41,24 @@
     <object
       class="org.nuxeo.ecm.platform.routing.core.impl.PersisterDescriptor" />
   </extension-point>
+  
+   <extension-point name="routeModelImporter">
+    <documentation>
+      Use to provide a resource path to import route models
+     <code>
+        <template-resource
+          path="the path of the zip containing an xml export of the models to import "/>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.routing.api.RouteModelResourceType" />
+  </extension-point>
+  
+  <extension target="org.nuxeo.runtime.EventService" point="listeners">
+    <listener class="org.nuxeo.ecm.platform.routing.core.listener.RouteModelsReloader">
+      <topic>org.nuxeo.runtime.reload</topic>
+    </listener>
+  </extension>
+  
+  
 </component>

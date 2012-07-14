@@ -34,12 +34,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.dm.operation.CreateRoutingTask.OperationTaskVariableName;
-import org.nuxeo.ecm.platform.routing.dm.task.RoutingTaskService;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskService;
 
 /**
  * This operation removes all the tasks created when a given step is run
- * 
+ *
  * @author mcedica
  * @since 5.6
  */
@@ -57,13 +57,13 @@ public class RemoveRoutingTask {
     protected CoreSession coreSession;
 
     @Context
-    protected RoutingTaskService routingTaskService;
+    protected TaskService taskService;
 
     @OperationMethod
     public void removeTasks() throws Exception {
         List<Task> tasks = fetchTasks();
         for (Task task : tasks) {
-            routingTaskService.deleteTask(coreSession, task.getId());
+            taskService.deleteTask(coreSession, task.getId());
         }
     }
 
