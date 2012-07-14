@@ -349,6 +349,24 @@
       <artifactId>nuxeo-user-profile</artifactId>
     </dependency>
 
+    <!-- Document Routing -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-document-routing-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-document-routing-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-document-routing-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-document-routing-dm</artifactId>
+    </dependency>
+
     <!-- Scope test -->
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
