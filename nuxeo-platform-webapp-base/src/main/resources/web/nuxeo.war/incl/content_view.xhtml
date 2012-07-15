@@ -142,7 +142,7 @@
         </ui:insert>
 
         <div class="#{nxu:test(foldable, 'boxBody', '')}"
-          style="#{nxu:test(finalFolded, 'display: none;', '')}">
+          style="#{nxu:test(foldable and finalFolded, 'display: none;', '')}">
 
           <ui:insert name="content_view_header" />
 

@@ -79,7 +79,7 @@
     </c:if>
 
     <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}"
-      style="#{nxu:test(widgetProperty_foldedByDefault, 'display: none;', '')}">
+      style="#{nxu:test(widgetProperty_foldable and widgetProperty_foldedByDefault, 'display: none;', '')}">
 
       <c:if test="#{showHeader and not empty widget.helpLabel}">
         <nxu:set var="widgetHelpLabel"

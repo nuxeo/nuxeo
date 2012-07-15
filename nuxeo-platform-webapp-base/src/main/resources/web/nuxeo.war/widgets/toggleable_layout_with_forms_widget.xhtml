@@ -57,10 +57,12 @@
       value="#{nxu:test(empty widgetProperty_toggledLayoutName, widgetProperty_initialLayoutName, widgetProperty_toggledLayoutName)}"
       cache="false">
 
+    <div class="widgetPanel layoutWidgetPanel #{nxu:test(widgetProperty_foldable and showHeader, 'foldableBox ', '')}">
+
     <c:if test="#{showHeader}">
       <c:choose>
         <c:when test="#{widgetProperty_foldable}">
-          <h3 class="widgetHeader #{nxu:test(widgetProperty_foldedByDefault, 'folded', 'unfolded')}">
+          <h3 class="widgetHeader #{nxu:test(widgetProperty_foldedByDefault and layoutWidgetMode == initialMode, 'folded', 'unfolded')}">
             <a href="#nogo" onclick="return toggleBox(this)">
               <ui:include src="/widgets/incl/widget_label_template.xhtml">
                 <ui:param name="labelStyleClass"
@@ -83,7 +85,7 @@
     </c:if>
 
     <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}"
-      style="#{nxu:test(widgetProperty_foldedByDefault, 'display: none;', '')}">
+      style="#{nxu:test(widgetProperty_foldable and widgetProperty_foldedByDefault and layoutWidgetMode == initialMode, 'display: none;', '')}">
 
       <c:if test="#{showHeader and not empty widget.helpLabel}">
         <nxu:set var="widgetHelpLabel"
@@ -302,6 +304,7 @@
 
       </c:if>
 
+    </div>
     </div>
     </nxu:set>
     </nxu:valueHolder>
