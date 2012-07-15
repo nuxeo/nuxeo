@@ -16,9 +16,6 @@
         <layout>heading</layout>
         <layout>file</layout>
       </layouts>
-      <layouts mode="summary">
-        <layout>audio_summary_layout</layout>
-      </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>file</layout>
