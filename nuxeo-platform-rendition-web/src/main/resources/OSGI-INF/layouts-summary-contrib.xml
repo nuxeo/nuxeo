@@ -59,8 +59,8 @@
       Contribute the "Renditions" widget to the summary
     </documentation>
 
-    <action id="summary_current_document_renditions" type="widget" order="20">
-      <category>SUMMARY_BOTTOM_RIGHT</category>
+    <action id="summary_current_document_renditions" type="widget" order="900">
+      <category>SUMMARY_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">summary_current_document_renditions</property>
       </properties>
