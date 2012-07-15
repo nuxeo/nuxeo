@@ -721,22 +721,6 @@
     <!-- default widgets on left panel -->
 
     <action id="summary_note_text" type="widget" order="100">
-      <category>SUMMARY_PANEL_TOP</category>
-      <properties>
-        <property name="widgetName">summary_note_text</property>
-      </properties>
-      <filter-id>hasNote</filter-id>
-    </action>
-
-    <action id="summary_note_text" type="widget" order="100">
-      <category>SUMMARY_PANEL_BOTTOM</category>
-      <properties>
-        <property name="widgetName">summary_note_text</property>
-      </properties>
-      <filter-id>hasNote</filter-id>
-    </action>
-
-    <action id="summary_note_text" type="widget" order="100">
       <category>SUMMARY_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">summary_note_text</property>
