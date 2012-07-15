@@ -77,8 +77,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="summary_document_route" type="widget" order="20">
-      <category>SUMMARY_MIDDLE_RIGHT</category>
+    <action id="summary_document_route" type="widget" order="250">
+      <category>SUMMARY_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">summary_document_route</property>
       </properties>
