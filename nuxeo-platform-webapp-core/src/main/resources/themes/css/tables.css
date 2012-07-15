@@ -20,7 +20,7 @@ table thead th { padding: .3em; text-align: left }
 
 .dataInput { margin-top: .4em }
 .dataInput td, .rightsAddManager .dataInput td { border: 0 solid; padding: .6em .3em }
-.dataInput td td, .dataInput td td td { padding: .3em .4em }
+.dataInput td td, .dataInput td td td { padding: .3em .4em; vertical-align: top }
 .dataInput .button { margin: 0 1em 0 0 }
 .archiveTabContent .dataInput { border: none; margin-bottom: 1.4em }
 .dataInputGroup { margin: 0; padding: 0; vertical-align: top }
@@ -82,6 +82,45 @@ table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background
 .listShuttleTable { margin-left: 3em }
 
 .dataRowOdd:hover, .dataRowEven:hover {	background-color: "color.major.medium (__FLAVOR__ background)" }
+
+/* =Generic table styles for Widgets in Layouts */
+.dataTableNoBorder { border-collapse: collapse;
+    border-spacing: 0;
+    margin: .4em 0 .7em;
+    width: 100% }
+.dataTableNoBorder .dataTableNoBorder { margin: 0 }
+.dataTableNoBorder td, .fieldColumn .dataTableNoBorder td,
+.dataInput .dataTableNoBorder td, .dataOutput .dataTableNoBorder td,  { padding: 0 .3em .5em; vertical-align: top }
+
+.dataTable { border-collapse: separate;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-style: solid none none solid;
+  border-spacing: 0;
+  border-width: 1px;
+  margin: 0 0 .5em;
+  width: 100% }
+.dataTable th { background-color: "neutral.lighter (__FLAVOR__ background)";
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-style: none solid solid none;
+  border-width: 1px;
+  color: "gray.dark (__FLAVOR__ color)";
+  padding: .2em .3em;
+  text-align: left }
+.dataTable td { border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-style: none solid solid none;
+  border-spacing: 0;
+  border-width: 1px;
+  text-align: left;
+  vertical-align: top }
+.dataTable td, .fieldColumn .dataTable td,
+.dataInput .dataTable td, .dataOutput .dataTable td,  { padding: .1em .3em .2em; vertical-align: top }
+
+.fieldColumn table, .fieldColumn td { vertical-align: top }
+.fieldColumn table td { }
+
+.containerSubWidget { margin: 0 .6em .6em 0 }
+
+.dataTableNoHeader th { background-color: transparent }
 
 /* Local configuration table styles */
 .palettePreviewLogo { float: left ;width: 100px }

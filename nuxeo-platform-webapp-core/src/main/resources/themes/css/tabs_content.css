@@ -98,7 +98,7 @@ h3.summaryTitle {
 .lcAndVersion { border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; padding: .3em }
 .versionNumber { float: right; font-weight: bold; text-transform: uppercase }
 
-.actions_block { border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; margin: 1em 0; padding: 1em .6em .2em }
+.actions_block { margin: 1em 0; padding: 1em .6em .2em }
 
 .comments_block .commentBlock { border: none }
 .comments_block .commentQuote { margin: .4em 0 .4em 2em }
@@ -162,9 +162,8 @@ h3.summaryTitle {
 .commentBlock { margin: .7em 0 .8em; padding: .2em 1em .2em 0 }
 .commentActions { float: right; font-size: .8em; margin-right: .4em; padding: 2em }
 .commentCreationDate { font-weight: normal }
-.commentQuote { margin: .4em 0 }
-.commentAuthor {
-  background: transparent url("${basePath}/icons/comment.gif") no-repeat 4px 4px;
+.commentQuote { margin: .4em 0; white-space: pre-line }
+.commentAuthor { background: transparent url("${basePath}/icons/comment.gif") no-repeat 4px 4px;
   color: "gray.dark (__FLAVOR__ color)";
   font-weight: bold;
   padding: .4em .3em .3em 2.1em }
