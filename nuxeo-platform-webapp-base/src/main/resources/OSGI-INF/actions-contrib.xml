@@ -109,6 +109,9 @@
     <action id="print" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
       order="70" label="label.print" icon="/icons/printer.gif">
       <category>DOCUMENT_UPPER_ACTION</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
     </action>
 
     <action id="restoreVersion" link="#{deleteActions.restoreCurrentDocument}"
