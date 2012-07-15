@@ -41,8 +41,8 @@ h5, h6 { color: "title.minor (__FLAVOR__ color)"; font-size: .8em; margin: .2em 
 .clear { clear:both }
 
 .displayN { display: none }
-.displayI { display:  inline }
-.displayIB { display:  inline-block }
+.displayI { display: inline }
+.displayIB { display: inline-block }
 .displayB { display: block }
 .visibilityH { visibility: hidden }
 .visibilityV { visibility: visible }
@@ -50,12 +50,25 @@ h5, h6 { color: "title.minor (__FLAVOR__ color)"; font-size: .8em; margin: .2em 
 .left { float: left } /* used in relationship, to be replaced by floatL*/
 .right { float: right } /* used in relationship, to be replaced by floatR*/
 
+/* width for divs */
 .fullWidth { width:100% }
 .threeQuarterWidth{ margin: 0 auto; width: 70% }
 .half { width:45% } /* used in relationship, to be replaced by halfWidth*/
 .halfWidth { width:45% }
 .quarterWidth { width: 22% }
 
-.detail { font-size: .9em; color: "gray.medium (__FLAVOR__ color)" }
+/* width for tables & columns */
+.10percent { width: 10% }
+.20percent { width: 20% }
+.30percent { width: 30% }
+.40percent { width: 40% }
+.50percent { width: 50% }
+.60percent { width: 60% }
+.70percent { width: 70% }
+.80percent { width: 80% }
+.90percent { width: 90% }
+
+/* reset width class */
+.autoWidth { width: auto }
 
 .quote { background: url("${basePath}/icons/quote.png") no-repeat scroll 0 1px transparent; text-indent: 23px }
