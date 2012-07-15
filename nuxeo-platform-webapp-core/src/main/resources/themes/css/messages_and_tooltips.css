@@ -1,6 +1,7 @@
 /*
 For all status messages, tooltips and tips paragraphs.
 =Messages -> feedback, info, warning and error messages
+=Small help messages -> for small help words, e.g. in forms
 =Tips -> tooltips on rollovers, and tips paragraphs
 author: lkemen@nuxeo.com
 */
@@ -31,18 +32,16 @@ author: lkemen@nuxeo.com
 .successLink { color: "normal.status (__FLAVOR__ color)" }
 .errorLink, .warningLink { color: "warning.status (__FLAVOR__ color)" }
 
-
-/* Help messages in forms */
-.help { color: "gray.medium (__FLAVOR__ color)" }
+/* =Small help messages */
+.detail, .help { color: "gray.medium (__FLAVOR__ color)"; font-size: .9em }
+div.detail, p.detail { margin: .1em 0 .7em }
 
 /* =Tips */
-.widgetHelpLabel {
-  border-bottom: 1px dashed #FFCC1D;
+.widgetHelpLabel { border-bottom: 1px dashed #FFCC1D;
   cursor: help;
   display: inline;
   padding-bottom: 0.2em }
-.tooltip {
-  background-color: #FFE179;
+.tooltip { background-color: #FFE179;
   border-radius: 0 4px;
   box-shadow: 2px 2px 0 #DCB632;
   color: #000;
@@ -53,9 +52,17 @@ author: lkemen@nuxeo.com
   padding: .6em .8em .8em;
   white-space: normal;
   z-index: 2000 }
-.tips {
-  border: 1px dashed;  border-color: "neutral.light (__FLAVOR__ border)";
+.dropArea { border: 1px dashed;  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 3px;
   box-shadow: none;
-	color: "gray.medium (__FLAVOR__ color)";
-	padding: .8em;
-	text-align: center }
+  color: "gray.medium (__FLAVOR__ color)";
+  padding: .8em;
+  text-align: center }
+.tips { border: 1px solid;  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: none;
+  color: "gray.medium (__FLAVOR__ color)";
+  display: block;
+  margin: .1em 0 .5em;
+  padding: .8em;
+  text-align: center }
