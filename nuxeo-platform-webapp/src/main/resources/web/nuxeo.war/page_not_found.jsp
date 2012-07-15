@@ -1,16 +1,19 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page language="java" %>
+<%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
-String context = request.getContextPath();
+  String context = request.getContextPath();
+  String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
+  String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 %>
 <html>
 <fmt:setBundle basename="messages" var="messages"/>
 <head>
-  <title>Nuxeo Error Page</title>
+  <title><%=productName%> - Error Page</title>
   <style type="text/css">
 <!--
 body {
@@ -21,7 +24,7 @@ body {
 H1 {
   color: #0080ff;
   font: bold 20px Verdana, sans-serif;
-  margin: 70px 0 40px 0;
+  margin: 50px 0 40px 0;
 }
 
 H2 {
@@ -31,6 +34,12 @@ H2 {
   padding: 5px;
   background: #EBF5FF;
   border: 1px solid #3299ff;
+}
+
+H3 {
+  color: #000;
+  font: normal 16px Verdana, sans-serif;
+  margin: 20px 0 0 0;
 }
 
 a {
@@ -107,21 +116,24 @@ a:hover {
   </script>
 </head>
 <body>
-<table border="0" width="75%" cellpadding="0" cellspacing="0" align="center">
+
+<table border="0" width="50%" cellpadding="0" cellspacing="0" align="center">
   <tr>
-    <td width="280" align="right" valign="top">
-      <div class="logo">
-        <img src="<%=context%>/img/logo_error.gif" alt="">
-      </div>
+    <td>
+      <h3><%=productName%> - <%=productVersion%></h3>
     </td>
+  </tr>
+  <tr>
     <td>
 
       <h1>Page Not Found</h1>
 
       <div class="links">
-        <div class="back"><a href="<%=context%>/">back</a>
+        <div class="back">
+          <a href="<%=context%>/">back</a>
         </div>
-        <div class="change"><a href="<%=context%>/logout">change username</a>
+        <div class="change">
+          <a href="<%=context%>/logout">change username</a>
         </div>
       </div>
     </td>
