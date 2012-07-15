@@ -33,9 +33,6 @@
         <layout>picture</layout>
         <layout>dublincore</layout>
       </layouts>
-      <layouts mode="summary">
-        <layout>picture_summary_layout</layout>
-      </layouts>
     </type>
 
     <type id="Folder" coretype="Folder">

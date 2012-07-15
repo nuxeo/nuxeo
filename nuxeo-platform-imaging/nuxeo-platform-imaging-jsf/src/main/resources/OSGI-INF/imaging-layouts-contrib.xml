@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.picture.jsf.layouts">
 
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-      point="widgettypes">
+    point="widgettypes">
 
     <widgetType name="picture_view">
       <configuration>
@@ -16,7 +18,8 @@
             It accepts the following properties:
             <ul>
               <li>
-                pictureView: the name of the view. Defaults to the 'Medium' view.
+                pictureView: the name of the view. Defaults to the 'Medium'
+                view.
               </li>
               <li>
                 width: the width of the img tag.
@@ -43,7 +46,7 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-      point="widgets">
+    point="widgets">
 
     <widget name="imageFile" type="image">
       <labels>
@@ -71,9 +74,44 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_picture_view" type="widget" order="50">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_picture_view</property>
+      </properties>
+      <filter-id>hasPicture</filter-id>
+    </action>
+
+    <action id="summary_current_document_view">
+      <filter-id>notHasPicture</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="notHasPicture">
+      <rule grant="false">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+    <filter id="hasPicture">
+      <rule grant="true">
+        <facet>Picture</facet>
+      </rule>
+    </filter>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
+    <!-- deprecated since 5.6 -->
     <layout name="picture_summary_layout">
       <templates>
         <template mode="any">/layouts/layout_summary_template.xhtml</template>
