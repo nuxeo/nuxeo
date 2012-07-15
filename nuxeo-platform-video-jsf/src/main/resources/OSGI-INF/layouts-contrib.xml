@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.video.layouts">
 
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.summary</require>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
     <widgetType name="video_player">
@@ -63,7 +65,7 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-      point="widgets">
+    point="widgets">
     <widget name="summary_video_player" type="video_player">
       <properties widgetMode="any">
         <property name="width">550</property>
@@ -76,10 +78,8 @@
       </labels>
       <translated>true</translated>
     </widget>
-    <widget name="summary_video_conversions"
-          type="video_conversions" />
-    <widget name="summary_video_info"
-          type="video_info" />
+    <widget name="summary_video_conversions" type="video_conversions" />
+    <widget name="summary_video_info" type="video_info" />
 
     <widget name="video_info_duration" type="text">
       <labels>
@@ -173,8 +173,68 @@
     </widget>
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="summary_video_player" type="widget" order="50">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_video_player</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+    <action id="summary_current_document_view">
+      <filter-id>notHasVideo</filter-id>
+    </action>
+
+    <action id="summary_video_conversions" type="widget" order="300">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_video_conversions</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+    <action id="summary_video_storyboard" type="widget" order="340">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_video_storyboard</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+    <action id="summary_video_info" type="widget" order="350">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_video_info</property>
+      </properties>
+      <filter-id>hasVideo</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="hasVideo">
+      <rule grant="true">
+        <schema>video</schema>
+      </rule>
+    </filter>
+
+    <filter id="notHasVideo">
+      <rule grant="false">
+        <schema>video</schema>
+      </rule>
+    </filter>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
+
+    <!-- deprecated since 5.6, here for comat -->
     <layout name="video_summary_layout">
       <templates>
         <template mode="any">/layouts/layout_summary_template.xhtml</template>
@@ -202,8 +262,6 @@
           <widget>summary_current_document_single_tasks</widget>
         </row>
       </rows>
-      <widget name="summary_current_document_entities"
-       type="summary_current_document_entities"/>
     </layout>
 
     <layout name="video_info">
