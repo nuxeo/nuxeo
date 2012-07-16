@@ -94,13 +94,11 @@ public class VirtualHostHelper {
                 int serverPort = httpRequest.getServerPort();
                 if (!local) {
                     // Detect virtual hosting based in standard header
-                    String forwardedHost = httpRequest
-                            .getHeader(X_FORWARDED_HOST);
+                    String forwardedHost = httpRequest.getHeader(X_FORWARDED_HOST);
                     if (forwardedHost != null) {
                         if (forwardedHost.contains(":")) {
                             serverName = forwardedHost.split(":")[0];
-                            serverPort = Integer.valueOf(forwardedHost
-                                    .split(":")[1]);
+                            serverPort = Integer.valueOf(forwardedHost.split(":")[1]);
                         } else {
                             serverName = forwardedHost;
                             serverPort = 80; // fallback
@@ -113,6 +111,7 @@ public class VirtualHostHelper {
         }
         if (baseURL == null) {
             log.error("Could not retrieve base url correctly");
+            log.debug("Could not retrieve base url correctly", new Throwable());
         }
         return baseURL;
     }
@@ -126,15 +125,13 @@ public class VirtualHostHelper {
         if (serverUrl != null) {
             baseURL = serverUrl + getWebAppName(request) + '/';
         }
-        if (baseURL == null) {
-            log.error("Could not retrieve base url correctly");
-        }
         return baseURL;
     }
 
     /**
-     * Returns the context path of the application. Try to get it from the {@code ServletRequest}
-     * and then from the {@code org.nuxeo.ecm.contextPath} system property.
+     * Returns the context path of the application. Try to get it from the
+     * {@code ServletRequest} and then from the
+     * {@code org.nuxeo.ecm.contextPath} system property.
      * Fallback on default context path {@code /nuxeo}.
      */
     public static String getContextPath(ServletRequest request) {
