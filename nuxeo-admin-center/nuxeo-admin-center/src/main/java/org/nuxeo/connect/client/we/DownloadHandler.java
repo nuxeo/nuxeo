@@ -195,7 +195,7 @@ public class DownloadHandler extends DefaultObject {
             @QueryParam("source") String source) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         pm.cancelDownload(pkgId);
-        return redirect(getPrevious().getPath());
+        return redirect(getPrevious().getPath() + "/" + source);
     }
 
 }
