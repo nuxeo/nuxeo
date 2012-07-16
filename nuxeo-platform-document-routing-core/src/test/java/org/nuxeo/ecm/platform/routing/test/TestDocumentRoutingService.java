@@ -33,6 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -895,7 +896,9 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 "/default-domain/document-route-models-root/myRoute"));
         assertNotNull(route);
         // test that document was overriden
-        assertEquals("", route.getPropertyValue("dc:coverage"));
+
+        // Oracle makes no difference between null and blank
+        assertTrue(StringUtils.isBlank(route.getPropertyValue("dc:coverage").toString()));
         try {
             node = session.getDocument(new PathRef(
                     "/default-domain/document-route-models-root/myRoute/myNode"));
