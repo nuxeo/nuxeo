@@ -642,10 +642,10 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     /**
-     * Moves the step in the parent container in the specified direction. If the
-     * step is in a parallel container, it can't be moved. A step can't be moved
-     * before a step already done or running. Assumed that the route is already
-     * locked to have this action availabe , so no check is done
+     * Moves the step in the parent container in the specified direction. If
+     * the step is in a parallel container, it can't be moved. A step can't be
+     * moved before a step already done or running. Assumed that the route is
+     * already locked to have this action availabe , so no check is done
      */
     public String moveRouteElement(String direction) throws ClientException {
         if (StringUtils.isEmpty(stepId)) {
@@ -885,12 +885,17 @@ public class DocumentRoutingActionsBean implements Serializable {
                 documentManager, "");
         for (Iterator<DocumentModel> it = routeModels.iterator(); it.hasNext();) {
             DocumentModel route = it.next();
-            GraphRoute graphRoute = route.getAdapter(GraphRoute.class);
-            String filter = graphRoute.getAvailabilityFilter();
-            if (!StringUtils.isBlank(filter)) {
-                if (!webActions.checkFilter(filter)) {
-                    it.remove();
+            Object graphRouteObj = route.getAdapter(GraphRoute.class);
+            if (graphRouteObj instanceof GraphRoute) {
+                String filter = ((GraphRoute) graphRouteObj).getAvailabilityFilter();
+                if (!StringUtils.isBlank(filter)) {
+                    if (!webActions.checkFilter(filter)) {
+                        it.remove();
+                    }
                 }
+            } else {
+                // old workflow document => ignore
+                it.remove();
             }
         }
         return routeModels;
