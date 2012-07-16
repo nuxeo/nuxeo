@@ -1,6 +1,6 @@
-# Nuxeo platform 5.6-RC1 Release Notes
+# Nuxeo platform 5.6-SNAPSHOT Release Notes
 
-Welcome to the Nuxeo Platform 5.6-RC1.
+Welcome to the Nuxeo Platform 5.6-SNAPSHOT.
 
 You can always download the latest releases of Nuxeo modules
 on the Nuxeo Platform from
