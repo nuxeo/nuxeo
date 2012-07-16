@@ -14,6 +14,7 @@
     <widgetType name="summary_current_document_actions">
       <configuration>
         <sinceVersion>5.3.1</sinceVersion>
+        <deprecatedVersion>5.6</deprecatedVersion>
         <title>Actions (lock, restore version)</title>
         <description>
           <p>
@@ -622,7 +623,6 @@
 
     <widget name="summary_current_document_custom_actions" type="summary_current_document_custom_actions">
       <labels>
-        <!-- <label mode="any">label.summary.customActions</label> -->
         <label mode="any"></label>
       </labels>
     </widget>
@@ -662,94 +662,48 @@
       </properties>
     </widget>
 
-    <widget name="summary_actions_top_left" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">SUMMARY_TOP_LEFT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
-    <widget name="summary_actions_top_right" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">SUMMARY_TOP_RIGHT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
-    <widget name="summary_actions_bottom_left" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">SUMMARY_BOTTOM_LEFT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
-    <widget name="summary_actions_bottom_right" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">SUMMARY_BOTTOM_RIGHT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
-    <widget name="summary_actions_middle_right" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">SUMMARY_MIDDLE_RIGHT</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
-    <widget name="summary_left_panel" type="container">
+    <widget name="summary_panel_top" type="summary_current_document_custom_actions">
       <handlingLabels>true</handlingLabels>
       <labels>
         <label mode="any"></label>
       </labels>
-      <translated>false</translated>
       <properties widgetMode="any">
-        <property name="hideSubLabels">true</property>
+        <property name="category">SUMMARY_PANEL_TOP</property>
+        <property name="subStyleClass">summaryActions</property>
       </properties>
-      <subWidgetRefs>
-        <widget>summary_actions_top_left</widget>
-        <widget>summary_current_document_comments</widget>
-        <widget>summary_current_document_publications</widget>
-        <widget>summary_current_document_single_tasks</widget>
-        <widget>summary_actions_bottom_left</widget>
-      </subWidgetRefs>
     </widget>
 
-    <widget name="summary_right_panel" type="container">
+    <widget name="summary_panel_left" type="summary_current_document_custom_actions">
       <handlingLabels>true</handlingLabels>
       <labels>
         <label mode="any"></label>
       </labels>
-      <translated>false</translated>
       <properties widgetMode="any">
-        <property name="hideSubLabels">true</property>
+        <property name="category">SUMMARY_PANEL_LEFT</property>
+        <property name="subStyleClass">summaryActions</property>
       </properties>
-      <subWidgetRefs>
-        <widget>summary_actions_top_right</widget>
-        <widget>summary_current_document_description</widget>
-        <widget>summary_current_document_states</widget>
-        <widget>summary_actions_middle_right</widget>
-        <widget>summary_current_document_contributors</widget>
-        <widget>summary_current_document_custom_actions</widget>
-        <widget>summary_current_document_tagging</widget>
-        <widget>summary_current_document_relations</widget>
-        <widget>summary_actions_bottom_right</widget>
-      </subWidgetRefs>
+    </widget>
+
+    <widget name="summary_panel_right" type="summary_current_document_custom_actions">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">SUMMARY_PANEL_RIGHT</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
+
+    <widget name="summary_panel_bottom" type="summary_current_document_custom_actions">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">SUMMARY_PANEL_BOTTOM</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
     </widget>
 
   </extension>
@@ -764,28 +718,104 @@
       @since 5.6
     </documentation>
 
-    <action id="summary_note_text" type="widget" order="20">
-      <category>SUMMARY_TOP_LEFT</category>
+    <!-- default widgets on left panel -->
+
+    <action id="summary_note_text" type="widget" order="100">
+      <category>SUMMARY_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">summary_note_text</property>
       </properties>
       <filter-id>hasNote</filter-id>
     </action>
 
-    <action id="summary_current_document_files" type="widget" order="40">
-      <category>SUMMARY_TOP_LEFT</category>
+    <action id="summary_current_document_files" type="widget" order="200">
+      <category>SUMMARY_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">summary_current_document_files</property>
       </properties>
     </action>
 
-    <action id="summary_current_document_view" type="widget" order="60">
-      <category>SUMMARY_TOP_LEFT</category>
+    <action id="summary_current_document_view" type="widget" order="300">
+      <category>SUMMARY_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">summary_current_document_view</property>
       </properties>
       <filter-id>notHasNote</filter-id>
     </action>
+
+    <action id="summary_current_document_comments" type="widget" order="400">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_comments</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_publications" type="widget"
+      order="500">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_publications</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_single_tasks" type="widget"
+      order="600">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_single_tasks</property>
+      </properties>
+    </action>
+
+    <!-- end of default widgets on left panel -->
+
+    <!-- default widgets on right panel -->
+
+    <action id="summary_current_document_description" type="widget"
+      order="100">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_description</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_states" type="widget" order="200">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_states</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_contributors" type="widget"
+      order="300">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_contributors</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_custom_actions" type="widget"
+      order="400">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_custom_actions</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_tagging" type="widget" order="500">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_tagging</property>
+      </properties>
+    </action>
+
+    <action id="summary_current_document_relations" type="widget" order="600">
+      <category>SUMMARY_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_relations</property>
+      </properties>
+    </action>
+
+    <!-- end of default widgets on right panel -->
 
   </extension>
 
@@ -805,11 +835,23 @@
       <rows>
         <row>
           <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
+          <widget>summary_panel_top</widget>
+        </row>
+        <row>
+          <properties mode="any">
             <property name="nxl_gridStyleClass_0">gridStyle7</property>
             <property name="nxl_gridStyleClass_1">gridStyle5</property>
           </properties>
-          <widget>summary_left_panel</widget>
-          <widget>summary_right_panel</widget>
+          <widget>summary_panel_left</widget>
+          <widget>summary_panel_right</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
+          <widget>summary_panel_bottom</widget>
         </row>
       </rows>
     </layout>
