@@ -97,9 +97,16 @@ public class ContextFunctions {
                 String schema = dir.getSchema();
                 if ("vocabulary".equals(schema) || "xvocabulary".equals(schema)) {
                     Session session = dir.getSession();
-                    DocumentModel entry = session.getEntry(keyValue);
-                    if (entry != null) {
-                        values.add((String) entry.getProperty(schema, "label"));
+                    try {
+                        DocumentModel entry = session.getEntry(keyValue);
+                        if (entry != null) {
+                            values.add((String) entry.getProperty(schema,
+                                    "label"));
+                        }
+                    } finally {
+                        if (session != null) {
+                            session.close();
+                        }
                     }
                 }
             }
