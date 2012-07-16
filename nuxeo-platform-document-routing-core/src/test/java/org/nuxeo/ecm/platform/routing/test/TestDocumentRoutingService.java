@@ -898,7 +898,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         // test that document was overriden
 
         // Oracle makes no difference between null and blank
-        assertTrue(StringUtils.isBlank(route.getPropertyValue("dc:coverage").toString()));
+        assertTrue(StringUtils.isBlank((String) route.getPropertyValue("dc:coverage")));
         try {
             node = session.getDocument(new PathRef(
                     "/default-domain/document-route-models-root/myRoute/myNode"));
