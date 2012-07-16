@@ -853,6 +853,16 @@
         <artifactId>nuxeo-application-definition</artifactId>
         <version>${nuxeo.web.mobile.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mobile</groupId>
+        <artifactId>nuxeo-web-mobile-dm</artifactId>
+        <version>${nuxeo.web.mobile.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mobile</groupId>
+        <artifactId>nuxeo-web-mobile-sc</artifactId>
+        <version>${nuxeo.web.mobile.version}</version>
+      </dependency>
 
       <!-- External Indexer WS Gateway -->
       <dependency>
