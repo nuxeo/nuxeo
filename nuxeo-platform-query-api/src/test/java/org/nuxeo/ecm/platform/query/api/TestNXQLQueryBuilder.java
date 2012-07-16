@@ -1,5 +1,8 @@
 package org.nuxeo.ecm.platform.query.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;

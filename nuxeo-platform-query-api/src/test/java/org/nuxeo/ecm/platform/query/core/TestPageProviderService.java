@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
