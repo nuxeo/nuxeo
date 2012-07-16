@@ -267,12 +267,13 @@ public class PackageListingProvider extends DefaultObject {
 
     public boolean needsRestart(Package pkg) {
         return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId())
-                || PackageState.INSTALLED == pkg.getState();
+                || PackageState.INSTALLED == pkg.getState()
+                || InstallAfterRestart.isMarkedForUninstallAfterRestart(pkg.getName());
     }
 
     public boolean canUnInstall(Package pkg) {
-        return PackageState.INSTALLED == pkg.getState()
-                || PackageState.STARTED == pkg.getState();
+        return (PackageState.INSTALLED == pkg.getState() || PackageState.STARTED == pkg.getState())
+                && !InstallAfterRestart.isMarkedForUninstallAfterRestart(pkg.getName());
     }
 
     public boolean canRemove(Package pkg) {

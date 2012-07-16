@@ -125,4 +125,11 @@ public class InstallAfterRestart {
         }
     }
 
+    /**
+     * @since 5.6
+     */
+    public static boolean isMarkedForUninstallAfterRestart(String pkgName) {
+        return uninstallpkgNameOrIds.contains(pkgName);
+    }
+
 }
