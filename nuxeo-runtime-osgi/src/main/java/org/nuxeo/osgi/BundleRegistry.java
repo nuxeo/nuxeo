@@ -114,16 +114,10 @@ public class BundleRegistry {
     }
 
     private void register(BundleRegistration reg) throws BundleException {
-        String hostBundleId = (String)reg.bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        String hostBundleId = getFragmentHost(reg);
         if (hostBundleId != null) {
-            int p = hostBundleId.indexOf(';');
-            if (p > -1) { // remove version or other extra information if any
-                hostBundleId = hostBundleId.substring(0, p);
-            }
             BundleRegistration host = bundles.get(hostBundleId);
-            if (host != null) {
-                host.addFragment(reg.bundle.getSymbolicName());
-            } else {
+            if (host == null) {
                 reg.addUnresolvedDependency(hostBundleId);
             }
         }
@@ -135,7 +129,10 @@ public class BundleRegistry {
     }
 
     protected void unregister(BundleRegistration reg) throws BundleException {
-        reg.bundle.stop();
+        if (getFragmentHost(reg) == null) {
+            reg.bundle.stop();
+        }
+        
         reg.bundle.setUnResolved();
         bundles.remove(reg.bundle.getSymbolicName());
         bundlesById.remove(reg.bundle.getBundleId());
@@ -171,8 +168,16 @@ public class BundleRegistry {
         bundles.put(name, reg);
         bundlesById.put(reg.bundle.getBundleId(), reg);
         reg.bundle.setResolved();
-        // TODO how to lazy start the bundle?
-        reg.bundle.start();
+        
+        String hostBundleId = getFragmentHost(reg);
+        if (hostBundleId != null) {
+            BundleRegistration host = bundles.get(hostBundleId);
+            host.addFragment(reg.bundle.getSymbolicName());
+        } else {
+            // TODO how to lazy start the bundle?
+            reg.bundle.start();
+        }
+        
         // check if there are objects waiting for me
         Set<BundleRegistration> regs = pendings.remove(name);
         if (regs != null) {
@@ -183,6 +188,18 @@ public class BundleRegistry {
                 }
             }
         }
+    }
+
+    private String getFragmentHost(BundleRegistration reg) {
+        String hostBundleId = reg.bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        if (hostBundleId == null) {
+            return null;
+        }
+        int p = hostBundleId.indexOf(';');
+        if (p > -1) { // remove version or other extra information if any
+            hostBundleId = hostBundleId.substring(0, p);
+        }
+        return hostBundleId;
     }
 
     public void shutdown() {
