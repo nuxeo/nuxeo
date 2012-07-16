@@ -89,6 +89,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param document the document to attach to the task.
      * @param taskName the task name.
      * @param taskType the task type.
+     * @param processId the process ID linked to this task if any.
      * @param prefixedActorIds the list of actor ids, prefixed with 'user:' or
      *            'group:'.
      * @param createOneTaskPerActor if true, one task will be created per actor,
@@ -103,7 +104,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * @since 5.6
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal,
-            DocumentModel document, String taskName, String taskType,
+            DocumentModel document, String taskName, String taskType, String processId,
             List<String> prefixedActorIds, boolean createOneTaskPerActor,
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath)

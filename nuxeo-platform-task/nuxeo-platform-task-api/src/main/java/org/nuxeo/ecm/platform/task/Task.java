@@ -54,6 +54,11 @@ public interface Task extends Serializable {
      */
     String getType() throws ClientException;
 
+    /**
+     * @since 5.6
+     */
+    String getProcessId() throws ClientException;
+
     String getDescription() throws ClientException;
 
     String getDirective() throws ClientException;
@@ -88,6 +93,11 @@ public interface Task extends Serializable {
      * @since 5.6
      */
     void setType(String type) throws ClientException;
+
+    /**
+     * @since 5.6
+     */
+    void setProcessId(String processId) throws ClientException;
 
     void setDescription(String description) throws ClientException;
 

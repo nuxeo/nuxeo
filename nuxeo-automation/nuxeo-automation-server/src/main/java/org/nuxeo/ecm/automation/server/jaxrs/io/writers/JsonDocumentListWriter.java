@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.io.writers;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -105,8 +107,8 @@ public class JsonDocumentListWriter implements
 
             DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
             String documentLinkBuilder = provider.getDocumentLinkBuilder();
-            String codecName = documentLinkBuilder != null ? documentLinkBuilder
-                    : documentViewCodecManager.getDefaultCodecName();
+            String codecName = isBlank(documentLinkBuilder) ? documentViewCodecManager.getDefaultCodecName()
+                    : documentLinkBuilder;
 
             jg.writeArrayFieldStart("entries");
             for (DocumentModel doc : docs) {

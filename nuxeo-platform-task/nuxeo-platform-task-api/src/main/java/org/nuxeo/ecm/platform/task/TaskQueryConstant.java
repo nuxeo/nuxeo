@@ -41,6 +41,18 @@ public class TaskQueryConstant {
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY = GET_TASKS_QUERY
             + " AND nt:targetDocumentId = '%s' AND nt:actors IN (%s) ";
 
+    /**
+     * @since 5.6
+     */
+    public static final String GET_TASKS_FOR_PROCESS_ID_QUERY = GET_TASKS_QUERY
+            + " AND nt:processId = '%s' ";
+
+    /**
+     * @since 5.6
+     */
+    public static final String GET_TASKS_FOR_PROCESS_ID_AND_ACTORS_QUERY = GET_TASKS_QUERY
+            + " AND nt:processId = '%s' AND nt:actors IN (%s) ";
+
     public static String getVariableWhereClause(String key, String value) {
         return String.format(TASK_VARIABLES_WHERE_CLAUSE, key, value);
     }
