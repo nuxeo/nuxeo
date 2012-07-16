@@ -199,7 +199,7 @@
         <widget>toggle</widget>
       </row>
      </rows>
-      <widget name="toggle" type="toggableLayoutWithForms">
+      <widget name="toggle" type="toggleableLayoutWithForms">
         <labels>
           <label mode="any"> </label>
         </labels>
