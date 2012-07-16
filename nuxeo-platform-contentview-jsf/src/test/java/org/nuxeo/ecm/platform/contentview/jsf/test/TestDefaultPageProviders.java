@@ -110,7 +110,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         // title by default
         for (int i = 4; i >= 0; i--) {
             DocumentModel doc = session.createDocumentModel("Folder");
-            doc.setPropertyValue("dc:title", "Document number " + i);
+            doc.setPropertyValue("dc:title", "Document number" + i);
             doc.setPathInfo(root.getPathAsString(), "doc_" + i);
             session.createDocument(doc);
         }
@@ -170,9 +170,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 0", docs.get(0).getPropertyValue(
+        assertEquals("Document number0", docs.get(0).getPropertyValue(
                 "dc:title"));
-        assertEquals("Document number 1", docs.get(1).getPropertyValue(
+        assertEquals("Document number1", docs.get(1).getPropertyValue(
                 "dc:title"));
 
         pp.nextPage();
@@ -194,9 +194,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 2", docs.get(0).getPropertyValue(
+        assertEquals("Document number2", docs.get(0).getPropertyValue(
                 "dc:title"));
-        assertEquals("Document number 3", docs.get(1).getPropertyValue(
+        assertEquals("Document number3", docs.get(1).getPropertyValue(
                 "dc:title"));
 
         // test selection
@@ -205,11 +205,11 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(selections);
         assertEquals(2, selections.getSize());
         assertFalse(selections.isSelected());
-        assertEquals("Document number 2",
+        assertEquals("Document number2",
                 selections.getEntries().get(0).getData().getPropertyValue(
                         "dc:title"));
         assertFalse(selections.getEntries().get(0).isSelected());
-        assertEquals("Document number 3",
+        assertEquals("Document number3",
                 selections.getEntries().get(1).getData().getPropertyValue(
                         "dc:title"));
         assertTrue(selections.getEntries().get(1).isSelected());
@@ -265,9 +265,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 0", docs.get(0).getPropertyValue(
+        assertEquals("Document number0", docs.get(0).getPropertyValue(
                 "dc:title"));
-        assertEquals("Document number 1", docs.get(1).getPropertyValue(
+        assertEquals("Document number1", docs.get(1).getPropertyValue(
                 "dc:title"));
 
         pp.nextPage();
@@ -289,9 +289,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 2", docs.get(0).getPropertyValue(
+        assertEquals("Document number2", docs.get(0).getPropertyValue(
                 "dc:title"));
-        assertEquals("Document number 3", docs.get(1).getPropertyValue(
+        assertEquals("Document number3", docs.get(1).getPropertyValue(
                 "dc:title"));
 
         // test selection
@@ -300,11 +300,11 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(selections);
         assertEquals(2, selections.getSize());
         assertFalse(selections.isSelected());
-        assertEquals("Document number 2",
+        assertEquals("Document number2",
                 selections.getEntries().get(0).getData().getPropertyValue(
                         "dc:title"));
         assertFalse(selections.getEntries().get(0).isSelected());
-        assertEquals("Document number 3",
+        assertEquals("Document number3",
                 selections.getEntries().get(1).getData().getPropertyValue(
                         "dc:title"));
         assertTrue(selections.getEntries().get(1).isSelected());
@@ -347,9 +347,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(docs);
         assertEquals(2, docs.size());
         assertEquals(1, docs.get(0).size());
-        assertEquals("Document number 0", docs.get(0).get("dc:title"));
+        assertEquals("Document number0", docs.get(0).get("dc:title"));
         assertEquals(1, docs.get(1).size());
-        assertEquals("Document number 1", docs.get(1).get("dc:title"));
+        assertEquals("Document number1", docs.get(1).get("dc:title"));
 
         // check query
         assertTrue(pp instanceof CoreQueryAndFetchPageProvider);
@@ -382,9 +382,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(docs);
         assertEquals(2, docs.size());
         assertEquals(1, docs.get(0).size());
-        assertEquals("Document number 2", docs.get(0).get("dc:title"));
+        assertEquals("Document number2", docs.get(0).get("dc:title"));
         assertEquals(1, docs.get(1).size());
-        assertEquals("Document number 3", docs.get(1).get("dc:title"));
+        assertEquals("Document number3", docs.get(1).get("dc:title"));
     }
 
     @SuppressWarnings("unchecked")
@@ -485,19 +485,19 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number 0", docs.get(0).getPropertyValue(
+        assertEquals("Document number0", docs.get(0).getPropertyValue(
                 "dc:title"));
-        assertEquals("Document number 1", docs.get(1).getPropertyValue(
+        assertEquals("Document number1", docs.get(1).getPropertyValue(
                 "dc:title"));
 
         // fill search document with some properDocumentModelties
-        searchDocument.setPropertyValue("dc:title", "0");
+        searchDocument.setPropertyValue("dc:title", "number0");
 
         docs = pp.getCurrentPage();
 
         assertEquals(
                 String.format(
-                        "SELECT * FROM Document WHERE ecm:fulltext.dc:title = '+0'"
+                        "SELECT * FROM Document WHERE ecm:fulltext.dc:title = 'number0'"
                                 + " AND (ecm:parentId = '%s'"
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
@@ -512,7 +512,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(1, docs.size());
-        assertEquals("Document number 0", docs.get(0).getPropertyValue(
+        assertEquals("Document number0", docs.get(0).getPropertyValue(
                 "dc:title"));
 
     }
