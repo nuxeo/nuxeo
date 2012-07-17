@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,6 +197,11 @@ public class TestMultiTenantService {
             session = directoryService.open(TENANTS_DIRECTORY);
             DocumentModelList docs = session.getEntries();
             assertEquals(2, docs.size());
+            // order from directory is not fixed
+            if (docs.get(0).getPropertyValue("tenant:id").equals("newDomain")) {
+                // swap
+                Collections.reverse(docs);
+            }
             DocumentModel doc = docs.get(1);
             assertEquals(newDomain.getName(), doc.getPropertyValue("tenant:id"));
             assertEquals(newDomain.getTitle(),
