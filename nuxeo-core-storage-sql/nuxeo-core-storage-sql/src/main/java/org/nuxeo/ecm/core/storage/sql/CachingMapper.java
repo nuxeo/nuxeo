@@ -12,6 +12,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.util.Map;
+
 /**
  * A {@link Mapper} that cache rows.
  */
@@ -24,7 +26,8 @@ public interface CachingMapper extends Mapper {
     public void initialize(Model model, Mapper mapper,
             InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
-            InvalidationsQueue repositoryEventQueue);
+            InvalidationsQueue repositoryEventQueue,
+            Map<String, String> properties);
 
     /**
      * Sets the session, used for event propagation.

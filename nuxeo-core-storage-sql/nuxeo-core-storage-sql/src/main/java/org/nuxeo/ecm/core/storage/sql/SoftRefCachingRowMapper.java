@@ -145,7 +145,8 @@ public class SoftRefCachingRowMapper implements RowMapper {
     public void initialize(Model model, RowMapper rowMapper,
             InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
-            InvalidationsQueue repositoryEventQueue) {
+            InvalidationsQueue repositoryEventQueue,
+            Map<String, String> properties) {
         this.model = model;
         this.rowMapper = rowMapper;
         this.cachePropagator = cachePropagator;

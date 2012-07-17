@@ -225,9 +225,10 @@ public class RepositoryImpl implements Repository {
         }
         CachingMapper cachingMapper;
         try {
+            log.warn("VCS Mapper cache using: " + cachingMapperClass.getName());
             cachingMapper = cachingMapperClass.newInstance();
             cachingMapper.initialize(model, mapper, cachePropagator,
-                    eventPropagator, repositoryEventQueue);
+                    eventPropagator, repositoryEventQueue, repositoryDescriptor.cachingMapperProperties);
         } catch (Exception e) {
             throw new StorageException(e);
         }
