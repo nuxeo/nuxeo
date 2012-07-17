@@ -431,10 +431,9 @@ public class SQLHelper {
 
     public static Table addTable(String name, Dialect dialect,
             boolean nativeCase) {
-        String physicalName;
-        if (nativeCase) {
-            physicalName = dialect.getTableName(name);
-        } else {
+        String physicalName = dialect.getTableName(name);
+        if (!nativeCase && name.length() == physicalName.length()) {
+            // we can keep the name specified in the config
             physicalName = name;
         }
         return new TableImpl(dialect, physicalName, physicalName);
