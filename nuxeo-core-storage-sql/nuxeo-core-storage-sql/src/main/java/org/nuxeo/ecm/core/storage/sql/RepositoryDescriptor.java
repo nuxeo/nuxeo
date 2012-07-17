@@ -130,6 +130,9 @@ public class RepositoryDescriptor {
     @XNode("cachingMapper@enabled")
     public boolean cachingMapperEnabled = true;
 
+    @XNodeMap(value = "cachingMapper/property", key = "@name", type = HashMap.class, componentType = String.class)
+    public Map<String, String> cachingMapperProperties = new HashMap<String, String>();
+
     @XNode("noDDL")
     public boolean noDDL = false;
 

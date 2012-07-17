@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.xa.XAException;
@@ -40,9 +41,10 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     public void initialize(Model model, Mapper mapper,
             InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
-            InvalidationsQueue repositoryEventQueue) {
+            InvalidationsQueue repositoryEventQueue,
+            Map<String, String> properties) {
         super.initialize(model, mapper, cachePropagator, eventPropagator,
-                repositoryEventQueue);
+                repositoryEventQueue, properties);
         this.mapper = mapper;
     }
 
