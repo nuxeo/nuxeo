@@ -509,8 +509,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         String username = userEntry.getId();
 
         List<String> virtualGroups = new LinkedList<String>();
-        // Add preconfigured groups: useful for LDAP
-        if (defaultGroup != null) {
+        // Add preconfigured groups: useful for LDAP, not for anonymous users
+        if (defaultGroup != null && !anonymous) {
             virtualGroups.add(defaultGroup);
         }
         // Add additional groups: useful for virtual users
