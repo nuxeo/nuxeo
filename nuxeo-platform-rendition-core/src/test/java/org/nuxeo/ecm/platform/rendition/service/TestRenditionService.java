@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
@@ -228,6 +229,9 @@ public class TestRenditionService {
         assertFalse(rendition.isStored());
         // Live Rendition should point to the live doc
         assertTrue(rendition.getHostDocument().getRef().equals(file.getRef()));
+
+        // needed for MySQL otherwise version order could be random
+        DatabaseHelper.DATABASE.maybeSleepToNextSecond();
 
         // now store rendition for version 0.2
         rendition = renditionService.getRendition(file,
