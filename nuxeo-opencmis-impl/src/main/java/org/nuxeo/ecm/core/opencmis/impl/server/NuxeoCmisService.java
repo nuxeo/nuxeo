@@ -1688,6 +1688,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         try {
             coreSession.saveDocument(doc);
             DocumentRef ver = doc.checkIn(option, checkinComment);
+            doc.removeLock();
             coreSession.save();
             objectIdHolder.setValue(getIdFromDocumentRef(ver));
         } catch (ClientException e) {
@@ -1717,6 +1718,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         try {
             coreSession.saveDocument(doc);
             DocumentRef ver = doc.checkIn(option, checkinComment);
+            doc.removeLock();
             coreSession.save();
             return getIdFromDocumentRef(ver);
         } catch (ClientException e) {
@@ -1762,6 +1764,11 @@ public class NuxeoCmisService extends AbstractCmisService {
                 throw new CmisConstraintException("Already checked out: "
                         + objectId);
             }
+            if (pwc.isLocked()) {
+                throw new CmisInvalidArgumentException(
+                        "Cannot check out since currently locked: " + objectId);
+            }
+            pwc.setLock();
             pwc.checkOut();
             coreSession.save();
             return pwc.getId();
@@ -1792,6 +1799,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             } else {
                 // restore and keep checked in
                 coreSession.restoreToVersion(docRef, verRef, true, true);
+                doc.removeLock();
             }
             coreSession.save();
         } catch (ClientException e) {
@@ -1965,7 +1973,21 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public void deleteObjectOrCancelCheckOut(String repositoryId,
             String objectId, Boolean allVersions, ExtensionsData extension) {
-        deleteObject(repositoryId, objectId, allVersions, extension);
+        try {
+            DocumentModel doc = getDocumentModel(objectId);
+            DocumentRef docRef = doc.getRef();
+            // find last version
+            DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
+            // If doc has versions, is locked, and is checkedOut, then it was likely
+            // explicitly checkedOut so invoke cancelCheckOut not delete
+            if (verRef != null && doc.isLocked() && doc.isCheckedOut()) {
+                cancelCheckOut(repositoryId, objectId, extension);
+            } else {
+                deleteObject(repositoryId, objectId, allVersions, extension);
+            }
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
 }
