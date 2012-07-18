@@ -30,7 +30,8 @@
           to the current Case.
         </description>
         <categories>
-          <category>summary</category>
+          <!-- deprecated summary => remove from this category -->
+          <!-- <category>summary</category> -->
           <category>cmf</category>
         </categories>
         <supportedModes>
