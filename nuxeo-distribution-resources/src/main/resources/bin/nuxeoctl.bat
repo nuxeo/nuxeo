@@ -1,6 +1,6 @@
 @echo off
 rem ##
-rem ## (C) Copyright 2010-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+rem ## (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
 rem ##
 rem ## All rights reserved. This program and the accompanying materials
 rem ## are made available under the terms of the GNU Lesser General Public License
@@ -73,18 +73,43 @@ echo. >> "%NUXEO_CONF%" || (
 )
 
 REM ***** Read nuxeo.conf *****
-FOR /F "eol=# tokens=1,2 delims==" %%A in ("%NUXEO_CONF%") do (
-    if "%%A" == "JAVA_HOME" set JAVA_HOME=%%B
-    if "%%A" == "JAVA_OPTS" set JAVA_OPTS=%%B
-    if "%%A" == "nuxeo.log.dir" set NUXEO_LOG_DIR=%%B
-	if "%%A" == "nuxeo.tmp.dir" set NUXEO_TMP_DIR=%%B
+VERIFY other 2>nul
+SETLOCAL EnableDelayedExpansion
+if errorlevel 1 (
+  echo Cannot enable delayed expansion - using basic parsing of nuxeo.conf.
+  goto NODELAYEDEXPANSION
 )
-
+FOR /F "usebackq eol=# tokens=1,* delims==" %%A in ("%NUXEO_CONF%") do (
+  if "%%A" == "JAVA_HOME" set LOCAL_JAVA_HOME=%%B
+  if "%%A" == "nuxeo.log.dir" set LOCAL_NUXEO_LOG_DIR=%%B
+  if "%%A" == "nuxeo.tmp.dir" set LOCAL_NUXEO_TMP_DIR=%%B
+  if "%%A" == "JAVA_OPTS" (
+    set __JAVA_OPTS=%%B
+    REM ***** Expand local string and replace $JAVA_OPTS with %LOCAL_JAVA_OPTS% *****
+    set LOCAL_JAVA_OPTS=!LOCAL_JAVA_OPTS! !__JAVA_OPTS:$JAVA_OPTS=%LOCAL_JAVA_OPTS%!
+  )
+)
+( ENDLOCAL
+  REM ***** Save local variables to global/system variables *****
+  set "JAVA_HOME=%LOCAL_JAVA_HOME%"
+  set "JAVA_OPTS=%LOCAL_JAVA_OPTS%"
+  set "NUXEO_LOG_DIR=%LOCAL_NUXEO_LOG_DIR%"
+  set "NUXEO_TMP_DIR=%LOCAL_NUXEO_TMP_DIR%"
+)
+goto NUXEO_CONF_READ
+:NODELAYEDEXPANSION
+FOR /F "usebackq eol=# tokens=1,* delims==" %%A in ("%NUXEO_CONF%") do (
+  if "%%A" == "JAVA_HOME" set JAVA_HOME=%%B
+  if "%%A" == "JAVA_OPTS" set JAVA_OPTS=%%B
+  if "%%A" == "nuxeo.log.dir" set NUXEO_LOG_DIR=%%B
+  if "%%A" == "nuxeo.tmp.dir" set NUXEO_TMP_DIR=%%B
+)
+:NUXEO_CONF_READ
 
 REM ***** Check log directory *****
 if "%NUXEO_LOG_DIR%" == "" set NUXEO_LOG_DIR=%NUXEO_HOME%\log
 if not exist "%NUXEO_LOG_DIR%" (
-    mkdir "%NUXEO_LOG_DIR%" || goto SET_DEFAULT_LOG_DIR
+  mkdir "%NUXEO_LOG_DIR%" || goto SET_DEFAULT_LOG_DIR
 )
 echo. >> "%NUXEO_LOG_DIR%\console.log" || goto SET_DEFAULT_LOG_DIR
 goto LOG_DIR_OK
@@ -98,7 +123,7 @@ if not exist "%NUXEO_LOG_DIR%" mkdir "%NUXEO_LOG_DIR%"
 REM ***** Check tmp directory *****
 if "%NUXEO_TMP_DIR%" == "" set NUXEO_TMP_DIR=%TMP%
 if not exist "%NUXEO_TMP_DIR%" (
-    mkdir "%NUXEO_TMP_DIR%" || goto SET_DEFAULT_TMP_DIR
+  mkdir "%NUXEO_TMP_DIR%" || goto SET_DEFAULT_TMP_DIR
 )
 echo. >> "%NUXEO_TMP_DIR%\test_tmp_writable.txt" || goto SET_DEFAULT_TMP_DIR
 goto TMP_DIR_OK
