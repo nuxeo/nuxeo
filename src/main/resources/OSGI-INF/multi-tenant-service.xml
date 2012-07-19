@@ -21,6 +21,8 @@
         tenant isolation.
       - membersGroupPermission: the default permission on the tenant for the
         group containing all the members of the tenant.
+      - enabledByDefault: if 'true' the tenant isolation will be enabled when
+        Nuxeo starts.
     </documentation>
     <object class="org.nuxeo.ecm.multi.tenant.MultiTenantConfiguration" />
   </extension-point>

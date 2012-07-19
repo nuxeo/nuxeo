@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.multi.tenant.test.enabled.default">
+
+  <require>org.nuxeo.ecm.multi.tenant.contrib</require>
+
+  <extension target="org.nuxeo.ecm.multi.tenant.MultiTenantService"
+    point="configuration">
+
+    <configuration>
+      <tenantDocumentType>Domain</tenantDocumentType>
+      <membersGroupPermission>Read</membersGroupPermission>
+      <enabledByDefault>true</enabledByDefault>
+    </configuration>
+
+  </extension>
+</component>

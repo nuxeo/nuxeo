@@ -38,14 +38,18 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -61,6 +65,11 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     private MultiTenantConfiguration configuration;
 
     private Boolean isTenantIsolationEnabled;
+
+    @Override
+    public boolean isTenantIsolationEnabledByDefault() {
+        return configuration.isEnabledByDefault();
+    }
 
     @Override
     public String getTenantDocumentType() {
@@ -236,6 +245,38 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
             return p.getTenantId() != null && p.isMemberOf(POWER_USERS_GROUP);
         }
         return false;
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        boolean started = false;
+        boolean ok = false;
+        try {
+            started = TransactionHelper.startTransaction();
+            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            for (Repository repository : repositoryManager.getRepositories()) {
+                new UnrestrictedSessionRunner(repository.getName()) {
+                    @Override
+                    public void run() throws ClientException {
+                        if (isTenantIsolationEnabledByDefault()
+                                && !isTenantIsolationEnabled(session)) {
+                            enableTenantIsolation(session);
+                        }
+                    }
+                }.runUnrestricted();
+            }
+            ok = true;
+        } finally {
+            if (started) {
+                try {
+                    if (!ok) {
+                        TransactionHelper.setTransactionRollbackOnly();
+                    }
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }
+        }
     }
 
     @Override

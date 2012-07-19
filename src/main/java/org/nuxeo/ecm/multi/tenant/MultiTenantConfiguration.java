@@ -37,12 +37,19 @@ public class MultiTenantConfiguration {
     @XNode("membersGroupPermission")
     protected String membersGroupPermission = SecurityConstants.READ;
 
+    @XNode("enabledByDefault")
+    protected boolean enabledByDefault = false;
+
     public String getTenantDocumentType() {
         return tenantDocumentType;
     }
 
     public String getMembersGroupPermission() {
         return membersGroupPermission;
+    }
+
+    public boolean isEnabledByDefault() {
+        return enabledByDefault;
     }
 
     @Override
