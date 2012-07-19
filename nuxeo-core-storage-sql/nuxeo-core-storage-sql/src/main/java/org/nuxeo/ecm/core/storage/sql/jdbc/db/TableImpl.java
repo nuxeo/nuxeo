@@ -135,7 +135,7 @@ public class TableImpl implements Table {
     @Override
     public Column addColumn(String name, ColumnType type, String key,
             Model model) {
-        String physicalName = dialect.getTableName(name);
+        String physicalName = dialect.getColumnName(name);
         Column column = new Column(this, physicalName, type, key);
         return addColumn(name, column);
     }
