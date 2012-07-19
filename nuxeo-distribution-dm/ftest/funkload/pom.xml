@@ -47,7 +47,6 @@
             </goals>
             <configuration>
               <targets>
-                <target>make-legacy-dirs</target>
                 <target>run-funkload-tests</target>
               </targets>
               <testFailureIgnore>true</testFailureIgnore>
@@ -92,6 +91,9 @@
     </profile>
     <profile>
       <id>mysql</id>
+    </profile>
+    <profile>
+      <id>monitor</id>
     </profile>
   </profiles>
 

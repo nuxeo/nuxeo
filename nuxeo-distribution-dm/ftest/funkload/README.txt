@@ -164,7 +164,7 @@ Benching
   Full bench: init users and test layout, bench writer, bench reader.
 
   This will produce an html report located in
-  ../../target/ftest/funkload/report
+  ./target/results
 
 * make bench-reader
   Bench the reader part only.
@@ -199,7 +199,7 @@ environment variable.
 * Edit the FunkLoad Nuxeo.conf file and set the following path:
 
 pglog=/path/to/postgresql/log/postgresql-8.4-main.log
-log_dir=../../target/ftest/funkload/log
+log_dir=./target/log
 monitorctl_file=/path/to/nuxeo-server/bin/monitorctl.sh
 
 * To extract all the SQL queries you need to use the following

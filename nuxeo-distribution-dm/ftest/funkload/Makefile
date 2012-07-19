@@ -1,6 +1,6 @@
 CREDCTL := fl-credential-ctl credential.conf
 MONCTL := fl-monitor-ctl monitor.conf
-LOG_HOME := ../../target/ftest/funkload/log
+LOG_HOME := ./target/log
 
 ifdef URL
 	FLOPS = -u $(URL) $(EXT)
@@ -11,7 +11,7 @@ endif
 ifdef REPORT_HOME
 	REPORT = $(REPORT_HOME)
 else
-	REPORT = ../../target/ftest/funkload/report
+	REPORT = ./target/results
 endif
 
 

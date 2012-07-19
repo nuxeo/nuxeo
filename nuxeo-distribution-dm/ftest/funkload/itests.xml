@@ -22,11 +22,4 @@
         test_dav.py
     " />
 
-  <!-- Those shouldn't be there but needs to be changed both
-       in the conf files and the builds at the same time -->
-  <target name="make-legacy-dirs">
-    <mkdir dir="../../target/ftest/funkload/log" />
-    <mkdir dir="../../target/ftest/funkload/report" />
-  </target>
-
 </project>
