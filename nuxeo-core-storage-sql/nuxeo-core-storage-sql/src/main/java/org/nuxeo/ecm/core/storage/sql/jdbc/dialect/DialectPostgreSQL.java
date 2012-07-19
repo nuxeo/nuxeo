@@ -73,6 +73,9 @@ public class DialectPostgreSQL extends Dialect {
 
     private static final String PREFIX_REPL = PREFIX_SEARCH + "$2";
 
+    private static final String[] RESERVED_COLUMN_NAMES = { "xmin", "xmax",
+            "cmin", "cmax", "ctid", "oid", "tableoid" };
+
     protected final String fulltextAnalyzer;
 
     protected final boolean supportsWith;
@@ -299,6 +302,20 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     protected int getMaxNameSize() {
         return 63;
+    }
+
+    @Override
+    public String getColumnName(String name) {
+        // ignore suffixed "_" when checking for reservedness
+        String n = name.replaceAll("_+$", "");
+        for (String reserved : RESERVED_COLUMN_NAMES) {
+            if (n.equals(reserved)) {
+                // reserved, add one more suffix "_"
+                name += "_";
+                break;
+            }
+        }
+        return super.getColumnName(name);
     }
 
     @Override
