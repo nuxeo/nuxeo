@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
@@ -39,6 +41,10 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
     protected final NuxeoArtifact item;
 
     protected final CoreSession session;
+
+    protected Map<String, ResourceDocumentationItem> liveDoc;
+
+    protected final Log log = LogFactory.getLog(AssociatedDocumentsImpl.class);
 
     public AssociatedDocumentsImpl(NuxeoArtifact item, CoreSession session) {
         this.item = item;
@@ -64,6 +70,19 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
             String catLabel = categories.get(cat);
             result.get(catLabel).add(docItem);
             empty.remove(catLabel);
+        }
+        // add virtual items
+        if (liveDoc != null) {
+            for (String vCat : liveDoc.keySet()) {
+                String catLabel = categories.get(vCat);
+                if (result.get(catLabel) != null) {
+                    result.get(catLabel).add(liveDoc.get(vCat));
+                    empty.remove(catLabel);
+                } else {
+                    log.warn("Live doc for category " + catLabel
+                            + " won't be visible");
+                }
+            }
         }
         // clear empty
         for (String catLabel : empty) {
@@ -158,7 +177,12 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
             @Override
             public String getContent() {
-                return "";
+                String content = liveDoc.get(
+                        DefaultDocumentationType.DESCRIPTION.getValue()).getContent();
+                if (content == null) {
+                    content = "";
+                }
+                return content;
             }
 
             @Override
@@ -182,6 +206,10 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
             }
         };
 
+    }
+
+    public void setLiveDoc(Map<String, ResourceDocumentationItem> liveDoc) {
+        this.liveDoc = liveDoc;
     }
 
 }

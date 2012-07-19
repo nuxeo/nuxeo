@@ -161,22 +161,26 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
                 }
             }
 
-            for (String grp : subGroups) {
-                List<String> grpArtifactIds = new ArrayList<String>();
-                for (String aid : artifactIds) {
-                    if (aid.startsWith(grp) || ("grp:" + aid).startsWith(grp)) {
-                        grpArtifactIds.add(aid);
+            if (subGroups.size() < 2) {
+                // no need to split the maven group into subGroups
+            } else {
+                for (String grp : subGroups) {
+                    List<String> grpArtifactIds = new ArrayList<String>();
+                    for (String aid : artifactIds) {
+                        if (aid.startsWith(grp)
+                                || ("grp:" + aid).startsWith(grp)) {
+                            grpArtifactIds.add(aid);
+                        }
                     }
-                }
-                if (grpArtifactIds.size() > 0) {
-                    for (String aid : grpArtifactIds) {
-                        artifactIds.remove(aid);
+                    if (grpArtifactIds.size() > 0) {
+                        for (String aid : grpArtifactIds) {
+                            artifactIds.remove(aid);
+                        }
+                        mavenSubGroups.put(grp, grpArtifactIds);
+                        artifactIds.add(grp);
                     }
-                    mavenSubGroups.put(grp, grpArtifactIds);
-                    artifactIds.add(grp);
                 }
             }
-            // mavenGroups.put(mvnGroupName, artifactIds);
         }
 
         for (String grpId : mavenGroups.keySet()) {
@@ -197,6 +201,8 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
             } else {
                 bGroup.add(aid);
                 getBundle(aid).setBundleGroup(bGroup);
+                BundleInfoImpl bi = getBundle(aid);
+                bGroup.addLiveDoc(bi.getParentLiveDoc());
             }
         }
         return bGroup;
@@ -427,8 +433,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        for (OperationType op : ops) {            
-            operations.add(new OperationInfoImpl(op.getDocumentation(), getVersion(), op.getType().getCanonicalName(), op.getContributingComponent()));
+        for (OperationType op : ops) {
+            operations.add(new OperationInfoImpl(op.getDocumentation(),
+                    getVersion(), op.getType().getCanonicalName(),
+                    op.getContributingComponent()));
         }
         opsInitialized = true;
     }

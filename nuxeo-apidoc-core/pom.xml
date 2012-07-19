@@ -66,7 +66,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
-
+    <dependency>
+       <groupId>com.cforcoding.jmd</groupId>
+       <artifactId>jmd</artifactId>
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>

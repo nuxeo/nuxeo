@@ -19,11 +19,16 @@ package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.documentation.AssociatedDocumentsImpl;
+import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
@@ -44,6 +49,10 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     protected String artifactVersion;
 
     protected BundleGroup bundleGroup;
+
+    protected Map<String, ResourceDocumentationItem> liveDoc;
+
+    protected Map<String, ResourceDocumentationItem> parentLiveDoc;
 
     public BundleGroup getBundleGroup() {
         return bundleGroup;
@@ -155,6 +164,46 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     @Override
     public String getHierarchyPath() {
         return bundleGroup.getHierarchyPath() + "/" + getId();
+    }
+
+    public void setLiveDoc(Map<String, ResourceDocumentationItem> liveDoc) {
+        this.liveDoc = liveDoc;
+    }
+
+    public void setParentLiveDoc(
+            Map<String, ResourceDocumentationItem> parentLiveDoc) {
+        this.parentLiveDoc = parentLiveDoc;
+    }
+
+    protected Map<String, ResourceDocumentationItem> getMergedDocumentation() {
+
+        Map<String, ResourceDocumentationItem> merged = parentLiveDoc;
+        if (merged == null) {
+            merged = new HashMap<String, ResourceDocumentationItem>();
+        }
+        if (liveDoc != null) {
+            for (String key : liveDoc.keySet()) {
+                if (liveDoc.get(key) != null) {
+                    merged.put(key, liveDoc.get(key));
+                }
+            }
+        }
+        return merged;
+    }
+
+    @Override
+    public AssociatedDocumentsImpl getAssociatedDocuments(CoreSession session) {
+        AssociatedDocumentsImpl docs = super.getAssociatedDocuments(session);
+        docs.setLiveDoc(getMergedDocumentation());
+        return docs;
+    }
+
+    public Map<String, ResourceDocumentationItem> getLiveDoc() {
+        return liveDoc;
+    }
+
+    public Map<String, ResourceDocumentationItem> getParentLiveDoc() {
+        return parentLiveDoc;
     }
 
 }

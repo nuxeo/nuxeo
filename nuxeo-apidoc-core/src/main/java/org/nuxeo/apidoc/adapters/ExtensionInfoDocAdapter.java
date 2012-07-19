@@ -18,11 +18,15 @@ package org.nuxeo.apidoc.adapters;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
+import org.nuxeo.apidoc.documentation.ContributionItem;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
+import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -139,6 +143,15 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         String toReplace = "/" + getId() + "###";
         return path.replace(toReplace, "/"
                 + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId());
+    }
+
+    public List<ContributionItem> getContributionItems() {
+        try {
+            return XMLContributionParser.extractContributionItems(getXml());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
 }
