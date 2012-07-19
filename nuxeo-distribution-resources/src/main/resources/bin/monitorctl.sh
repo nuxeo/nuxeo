@@ -312,7 +312,7 @@ log_misc() {
         fi
         if [ ! -z $JMXSTAT ]; then
             echo "## VCS cache row stats: access, hits, size (,cache_get, db_gets)" >> $file
-            out=`$JMXSTAT $JMXHOST $JMXSTAT_VCS_ROW 1 1`
+            out=`$JMXSTAT $JMXHOST $JMXSTAT_VCS_ROW 1 1 2> /dev/null`
             echo $out >> $file
 	    echo "## VCS cache row stats" >> $file
             s_access=`echo $out |  cut -d{ -f2 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
@@ -321,23 +321,23 @@ log_misc() {
             s_get=`echo $out |cut -d{ -f5 | sed 's/^.*total=\([^,]*\),.*$/\1/g'`
             s_db=`echo $out |cut -d{ -f6 | sed 's/^.*total=\([^,]*\),.*$/\1/g'`
             echo -e "Access: $s_access\nHits: $s_hits\nSize: $s_size" >> $file
-            s_miss=`echo "$s_access - $s_hits" | bc`
-            s_ratio=`echo "scale=3;$s_hits/$s_access" | bc`
-            s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc`
-            s_getdb=`echo "scale=3;$s_db / $s_miss" | bc`
-            s_getcache=`echo "scale=3;$s_get / $s_access" | bc`
-            s_speedup=`echo "scale=2;$s_getdb/$s_getcache" | bc`
-            s_sys_speedup=`echo "scale=2; 1 / ((1 - $s_ratio) + $s_ratio/$s_speedup)" | bc`
+            s_miss=`echo "$s_access - $s_hits" | bc 2> /dev/null`
+            s_ratio=`echo "scale=3;$s_hits/$s_access" | bc 2> /dev/null`
+            s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc 2> /dev/null`
+            s_getdb=`echo "scale=3;$s_db / $s_miss" | bc 2> /dev/null`
+            s_getcache=`echo "scale=3;$s_get / $s_access" | bc 2> /dev/null`
+            s_speedup=`echo "scale=2;$s_getdb/$s_getcache" | bc 2> /dev/null`
+            s_sys_speedup=`echo "scale=2; 1 / ((1 - $s_ratio) + $s_ratio/$s_speedup)" | bc 2> /dev/null`
             echo -e "HitRatio: $s_ratio_pc%\nSpeedup: $s_speedup\nSystemSpeedup: $s_sys_speedup" >> $file
             echo "## VCS cache selection stats: access, hits, size" >> $file
-            out=`$JMXSTAT $JMXHOST $JMXSTAT_VCS_SEL 1 1`
+            out=`$JMXSTAT $JMXHOST $JMXSTAT_VCS_SEL 1 1  2> /dev/null`
             echo $out >> $file
 	    echo "## VCS cache selection stats" >> $file
             s_access=`echo $out |  cut -d{ -f2 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
             s_hits=`echo $out |  cut -d{ -f3 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
             s_size=`echo $out |  cut -d{ -f4 | sed 's/^.*counter=\([^,]*\),.*$/\1/g'`
-            s_ratio=`echo "scale=3;$s_hits/$s_access" | bc`
-            s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc`
+            s_ratio=`echo "scale=3;$s_hits/$s_access" | bc 2> /dev/null`
+            s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc 2> /dev/null`
             echo -e "Access: $s_access\nHits: $s_hits\nSize: $s_size\nHitRatio: $s_ratio_pc%" >> $file
         fi
     fi
@@ -610,7 +610,7 @@ archive() {
     fi
     ARCH_FILE=$LOG_DIR/log-$TAG.tgz
     logdir=`basename $LOG_DIR`
-    (cd `dirname $LOG_DIR`; tar czf $ARCH_FILE $logdir/*.txt $logdir/*.log $logdir/*.html)
+    (cd `dirname $LOG_DIR`; tar czf $ARCH_FILE --exclude='*.tgz' $logdir/*)
     echo "Done: $ARCH_FILE"
 }
 
@@ -621,15 +621,8 @@ invoke_fgc() {
        echo "Invoking Full GC"
        $JMXSTAT localhost:1089 --performGC $NXPID
     else
-       [ -z $JMXSH ] && die "You need to enable JMX and install jmxstat or JMXSH"
-       cat <<EOF |  $JAVA_HOME/bin/java -jar $JMXSH
-jmx_connect -h localhost -p 1089
-set MBEAN java.lang:type=Memory
-set ATTROP gc
-jmx_invoke
-jmx_close
-EOF
-   fi
+       warn "FGC requires jmxstat and a running instance with JMX enable"
+    fi
 }
 
 
