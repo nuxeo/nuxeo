@@ -17,38 +17,26 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
-import java.security.Principal;
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public interface MultiTenantService {
+public class MultiTenantRepositoryInitializationHandler extends
+        RepositoryInitializationHandler {
 
-    boolean isTenantIsolationEnabledByDefault();
-
-    String getTenantDocumentType();
-
-    boolean isTenantIsolationEnabled(CoreSession session)
-            throws ClientException;
-
-    void enableTenantIsolation(CoreSession session) throws ClientException;
-
-    void disableTenantIsolation(CoreSession session) throws ClientException;
-
-    void enableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException;
-
-    void disableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException;
-
-    List<DocumentModel> getTenants() throws ClientException;
-
-    boolean isTenantAdministrator(Principal principal);
+    @Override
+    public void doInitializeRepository(CoreSession session)
+            throws ClientException {
+        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        if (multiTenantService.isTenantIsolationEnabledByDefault()
+                && !multiTenantService.isTenantIsolationEnabled(session)) {
+            multiTenantService.enableTenantIsolation(session);
+        }
+    }
 
 }
