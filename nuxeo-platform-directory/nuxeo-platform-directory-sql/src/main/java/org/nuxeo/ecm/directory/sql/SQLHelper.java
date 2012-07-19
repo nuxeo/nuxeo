@@ -441,8 +441,11 @@ public class SQLHelper {
 
     public static Column addColumn(Table table, String fieldName,
             ColumnType type, boolean nativeCase) {
-        String physicalName = nativeCase ? table.getDialect().getTableName(
-                fieldName) : fieldName;
+        String physicalName = table.getDialect().getColumnName(fieldName);
+        if (!nativeCase && fieldName.length() == physicalName.length()) {
+            // we can keep the name specified in the config
+            physicalName = fieldName;
+        }
         Column column = new Column(table, physicalName, type, fieldName);
         return ((TableImpl) table).addColumn(fieldName, column);
     }
