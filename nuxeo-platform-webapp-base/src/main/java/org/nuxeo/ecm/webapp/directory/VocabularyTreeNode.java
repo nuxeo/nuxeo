@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -190,15 +191,7 @@ public class VocabularyTreeNode {
     private class LabelComparator implements Comparator<VocabularyTreeNode> {
         @Override
         public int compare(VocabularyTreeNode o1, VocabularyTreeNode o2) {
-            if (o1.getLabel() == null && o2.getLabel() != null) {
-                return -1;
-            } else if (o1.getLabel() != null && o2.getLabel() == null) {
-                return 1;
-            } else if (o1.getLabel() == o2.getLabel()) {
-                return 0;
-            } else {
-                return o1.getLabel().compareTo(o2.getLabel());
-            }
+            return ObjectUtils.compare(o1.getLabel(), o2.getLabel());
         }
     }
 

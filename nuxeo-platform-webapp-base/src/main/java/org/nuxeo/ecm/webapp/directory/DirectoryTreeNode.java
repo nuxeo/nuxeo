@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Events;
@@ -298,15 +299,7 @@ public class DirectoryTreeNode {
 
         @Override
         public int compare(DirectoryTreeNode o1, DirectoryTreeNode o2) {
-            if (o1.getDescription() == null && o2.getDescription() != null) {
-                return -1;
-            } else if (o1.getDescription() != null && o2.getDescription() == null) {
-                return 1;
-            } else if (o1.getDescription() == o2.getDescription()) {
-                return 0;
-            } else {
-                return o1.getDescription().compareTo(o2.getDescription());
-            }
+            return ObjectUtils.compare(o1.getDescription(), o2.getDescription());
         }
     }
 
