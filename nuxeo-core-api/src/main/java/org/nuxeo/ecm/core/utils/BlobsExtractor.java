@@ -171,11 +171,6 @@ public class BlobsExtractor {
                     String blobMatchedPath = path
                             + String.format("/%s/*",
                                     field.getName().getLocalName());
-                    if ("*".equals(field.getName())) {
-                        throw new Exception(
-                                "A field can't be named '*' please check this field: "
-                                        + path);
-                    }
                     if (findInteresting(docType, schema, blobMatchedPath,
                             (ComplexType) ftype)) {
                         containsBlob(docType, schema, blobMatchedPath, field);
@@ -309,7 +304,10 @@ public class BlobsExtractor {
     }
 
     private boolean matchProperty(String prefix, String fieldPath, Set<String> propPaths) {
-        String pathToMatch = (prefix == "" ? "" : prefix + ":") + fieldPath.substring(1);
+        if (!prefix.equals("")) {
+            prefix += ":";
+        }
+        String pathToMatch = prefix + fieldPath.substring(1);
         for (String propPath : propPaths) {
             if (propPath.startsWith(pathToMatch)) {
                 return true;
