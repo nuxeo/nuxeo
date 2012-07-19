@@ -274,10 +274,8 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         WSRemotingSession rs = initSession(sid);
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uid));
         String srcid = doc.getSourceId();
-        if (srcid != null) {
-            if (srcid != uid) {
-                doc = rs.getDocumentManager().getSourceDocument(doc.getRef());
-            }
+        if (srcid != null && !srcid.equals(uid)) {
+            doc = rs.getDocumentManager().getSourceDocument(doc.getRef());
         }
         if (doc != null) {
             return new DocumentDescriptor(doc);
