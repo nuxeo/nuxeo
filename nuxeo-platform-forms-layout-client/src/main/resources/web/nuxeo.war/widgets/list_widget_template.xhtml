@@ -48,7 +48,7 @@
   <c:set var="showActions"
     value="#{isEditMode and (not widgetProperty_hideDeleteButton or widgetProperty_orderable)}" />
 
-  <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
+  <a4j:region id="#{widget.id}_region">
     <a4j:outputPanel id="#{widget.id}_panel"
       styleClass="widgetPanel listWidgetPanel #{widgetProperty_styleClass}">
 
