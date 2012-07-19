@@ -17,10 +17,15 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
+import org.nuxeo.apidoc.documentation.AssociatedDocumentsImpl;
+import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
@@ -35,6 +40,8 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
     protected final String version;
 
     protected final List<String> parentIds = new ArrayList<String>();
+
+    protected Map<String, ResourceDocumentationItem> liveDoc;
 
     public BundleGroupImpl(String key, String version) {
         this.key = key;
@@ -101,4 +108,25 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
         return path + "/" + getId();
     }
 
+    public void addLiveDoc(Map<String, ResourceDocumentationItem> newLiveDoc) {
+        if (liveDoc == null) {
+            liveDoc = new HashMap<String, ResourceDocumentationItem>();
+        }
+        if (newLiveDoc != null) {
+            for (String key : newLiveDoc.keySet()) {
+                if (newLiveDoc.get(key) != null) {
+                    liveDoc.put(key, newLiveDoc.get(key));
+                }
+            }
+        }
+    }
+
+    @Override
+    public AssociatedDocumentsImpl getAssociatedDocuments(CoreSession session) {
+        AssociatedDocumentsImpl docs = super.getAssociatedDocuments(session);
+        if (liveDoc != null) {
+            docs.setLiveDoc(liveDoc);
+        }
+        return docs;
+    }
 }

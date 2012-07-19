@@ -62,11 +62,11 @@ import org.w3c.dom.Document;
  * using the method {@link #build(String, String)}.
  * <p>
  * Example
- *
+ * 
  * <pre>
  * ServerInfo info = ServerInfo.build();
  * </pre>
- *
+ * 
  * The server name and version will be fetched form the runtime properties:
  * <code>org.nuxeo.ecm.product.name</code> and
  * <code>org.nuxeo.ecm.product.version</code> If you ant to use another name and
@@ -79,10 +79,10 @@ import org.w3c.dom.Document;
  * <p>
  * To write down the server information as XML use {@link #toXML(Writer)} and to
  * read it back use {@link #fromXML(Reader)}.
- *
+ * 
  * <p>
  * Example:
- *
+ * 
  * <pre>
  * ServerInfo info = ServerInfo.build();
  * BundleInfo binfo =info.getBundle("org.nuxeo.runtime");
@@ -97,7 +97,7 @@ import org.w3c.dom.Document;
  *     System.out.println("Extension point: "+xpi.getName());
  *     System.out.println("Accepted contribution classes: "+Arrays.asList(xpi.getTypes()));
  *     // find contributed extensions to this extension point:
- *
+ * 
  *   }
  *   // find contribution provided by this component
  *   for (ExtensionInfo xi : cinfo.getExtensions()) {
@@ -255,6 +255,9 @@ public class ServerInfo {
                         break;
                     }
                 }
+                zFile.close();
+                zFile = new ZipFile(jarFile);
+                EmbeddedDocExtractor.extractEmbeddedDoc(zFile, binfo);
                 zFile.close();
             }
         } catch (Exception e) {

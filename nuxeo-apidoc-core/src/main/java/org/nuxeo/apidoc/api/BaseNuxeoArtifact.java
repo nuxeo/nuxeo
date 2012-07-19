@@ -21,10 +21,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public abstract class BaseNuxeoArtifact implements NuxeoArtifact {
 
-    protected AssociatedDocuments associatedDocuments;
+    protected AssociatedDocumentsImpl associatedDocuments;
 
     @Override
-    public AssociatedDocuments getAssociatedDocuments(CoreSession session) {
+    public AssociatedDocumentsImpl getAssociatedDocuments(CoreSession session) {
 
         if (associatedDocuments == null) {
             associatedDocuments = new AssociatedDocumentsImpl(this, session);

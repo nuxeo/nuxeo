@@ -17,10 +17,15 @@
  */
 package org.nuxeo.apidoc.introspection;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
+import org.nuxeo.apidoc.documentation.ContributionItem;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
+import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.runtime.model.ComponentName;
 
 public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
@@ -112,4 +117,12 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
                 + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId();
     }
 
+    public List<ContributionItem> getContributionItems() {
+        try {
+            return XMLContributionParser.extractContributionItems(getXml());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 }

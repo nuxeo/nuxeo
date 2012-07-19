@@ -23,6 +23,18 @@ Extension point
 of component
 <a href="${Root.path}/${distId}/viewComponent/${nxItem.targetComponentName.name}">${nxItem.targetComponentName.name?replace(".*\\.","","r")}</a>.
 
+<h2>Contributed items</h2>
+<ul>
+<#list nxItem.contributionItems as contributionItem>
+<li> ${contributionItem.label}
+<p> ${contributionItem.documentation} </p>
+<span class="resourceToggle">View XML source</span>
+<div class="hiddenResource">
+  <pre><code>${contributionItem.xml}</code></pre>
+</div>
+</li>
+</#list>
+</ul>
 <h2>XML source</h2>
 <span class="resourceToggle">View XML source</span>
 <div class="hiddenResource">

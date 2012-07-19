@@ -17,6 +17,9 @@
  */
 package org.nuxeo.apidoc.api;
 
+import java.util.List;
+
+import org.nuxeo.apidoc.documentation.ContributionItem;
 import org.nuxeo.runtime.model.ComponentName;
 
 public interface ExtensionInfo extends NuxeoArtifact {
@@ -40,5 +43,7 @@ public interface ExtensionInfo extends NuxeoArtifact {
     ComponentName getTargetComponentName();
 
     String getXml();
+
+    List<ContributionItem> getContributionItems();
 
 }

@@ -70,7 +70,7 @@ public class DocumentationHelper {
         } catch (Exception e) {
             sanitizer = null;
         }
-        if (sanitizer == null) {
+        if (sanitizer == null && !Framework.isTestModeSet()) {
             throw new RuntimeException("Cannot find HtmlSanitizerService");
         }
 
@@ -129,7 +129,9 @@ public class DocumentationHelper {
             lines.add(CODE_END);
         }
         String html = StringUtils.join(lines, "\n");
-        html = sanitizer.sanitizeString(html, null);
+        if (sanitizer != null) {
+            html = sanitizer.sanitizeString(html, null);
+        }
         return secureXML(html);
     }
 
