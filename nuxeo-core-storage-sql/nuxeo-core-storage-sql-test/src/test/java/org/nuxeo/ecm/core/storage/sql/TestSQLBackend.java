@@ -89,7 +89,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.getRootNode();
     }
 
-    @Test
     public void testSchemaWithReservedFieldName() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-schema-reservedfieldname.xml");
