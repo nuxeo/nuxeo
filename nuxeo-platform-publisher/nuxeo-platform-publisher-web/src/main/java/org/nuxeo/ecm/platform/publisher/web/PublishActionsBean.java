@@ -169,17 +169,25 @@ public class PublishActionsBean extends AbstractPublishActions implements
         List<String> filteredTrees = new ArrayList<String>();
 
         for (String tree : trees) {
-            PublicationTree pTree = publisherService.getPublicationTree(tree,
-                    documentManager, null,
-                    navigationContext.getCurrentDocument());
-            if (pTree != null) {
-                if (pTree.getTreeType().equals("RootSectionsPublicationTree")) {
-                    if (pTree.getChildrenNodes().size() > 0) {
+            try {
+                PublicationTree pTree = publisherService.getPublicationTree(
+                        tree, documentManager, null,
+                        navigationContext.getCurrentDocument());
+                if (pTree != null) {
+                    if (pTree.getTreeType().equals(
+                            "RootSectionsPublicationTree")) {
+                        if (pTree.getChildrenNodes().size() > 0) {
+                            filteredTrees.add(tree);
+                        }
+                    } else {
                         filteredTrees.add(tree);
                     }
-                } else {
-                    filteredTrees.add(tree);
                 }
+            } catch (PublicationTreeNotAvailable e) {
+                log.warn("Publication tree " + tree
+                        + " is not available : check config");
+                log.debug("Publication tree " + tree
+                        + " is not available : root cause is ", e);
             }
         }
         return filteredTrees;
