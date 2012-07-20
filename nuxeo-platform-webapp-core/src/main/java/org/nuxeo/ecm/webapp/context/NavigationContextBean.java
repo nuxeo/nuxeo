@@ -574,6 +574,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         } else if (hasSuperType(docType, "Workspace")) {
             setCurrentWorkspace(currentDocument);
         }
+        // TODO compute SuperSpace with logic above
+        currentSuperSpace = null; // lazily recompute
     }
 
     private SchemaManager getSchemaManager() throws Exception {
