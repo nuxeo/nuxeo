@@ -107,13 +107,12 @@ public class RepositoryManagerImpl extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        repositories = new Hashtable<String, Repository>();
+        repositories.clear();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         repositories.clear();
-        repositories = null;
     }
 
     @Override
