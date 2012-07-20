@@ -23,6 +23,19 @@
       <filter-id>popup_view_preview</filter-id>
     </action>
 
+    <action id="showFancyBoxPreview" order="50" type="fancybox"
+      label="label.document.preview" icon="/icons/contextual_menu/preview.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>view_preview</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="iframe">
+          #{previewActions.getCurrentDocumentPreviewPopupURL()}
+        </property>
+      </properties>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
