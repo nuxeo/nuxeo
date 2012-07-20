@@ -5,7 +5,7 @@
     Generic service used by DAM for configuration.
 
     @author Thomas Roger (troger@nuxeo.com)
-    @since 5.5.0-HF11-SNAPSHOT
+    @since 5.5.0-HF12-SNAPSHOT
   </documentation>
 
   <implementation class="org.nuxeo.dam.DamServiceImpl"/>
@@ -24,7 +24,7 @@
       </code>
 
       @author Thomas Roger (troger@nuxeo.com)
-      @since 5.5.0-HF11-SNAPSHOT
+      @since 5.5.0-HF12-SNAPSHOT
     </documentation>
     <object
         class="org.nuxeo.dam.AssetLibrary"/>
