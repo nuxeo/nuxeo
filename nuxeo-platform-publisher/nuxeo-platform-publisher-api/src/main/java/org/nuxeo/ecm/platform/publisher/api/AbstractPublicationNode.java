@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.publisher.api;
 
 public abstract class AbstractPublicationNode implements PublicationNode {
 
+    private static final long serialVersionUID = 1L;
+
     protected String treeName;
 
     public String getNodeType() {
