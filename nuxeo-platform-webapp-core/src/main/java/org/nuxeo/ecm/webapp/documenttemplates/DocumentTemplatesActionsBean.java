@@ -181,9 +181,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
             created.setProperty("dublincore", "title", title);
 
             String descr = (String) doc.getProperty("dublincore", "description");
-            if (descr.length() != 0) {
-                created.setProperty("dublincore", "description", descr);
-            }
+            created.setProperty("dublincore", "description", descr);
 
             Blob blob = (Blob) doc.getProperty("file", "content");
             if (blob != null) {
