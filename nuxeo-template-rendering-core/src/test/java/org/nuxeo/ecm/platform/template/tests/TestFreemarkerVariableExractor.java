@@ -66,5 +66,7 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         assertFalse(vars.contains("(doc"));
         assertFalse(vars.contains("1..(doc"));
 
+        assertFalse(vars.contains("allergen"));
+
     }
 }
