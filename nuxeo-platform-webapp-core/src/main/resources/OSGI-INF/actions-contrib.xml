@@ -671,7 +671,7 @@
         <type>Domain</type>
         <type>WorkspaceRoot</type>
         <type>Workspace</type>
-        <permission>WriteSecurity</permission>
+        <permission>Write</permission>
       </rule>
     </filter>
 
