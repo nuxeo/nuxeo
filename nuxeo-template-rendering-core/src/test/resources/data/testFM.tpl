@@ -76,7 +76,6 @@ ${functions.formatDate(doc.dublincore.created)}
 
 ${core.getParent().dublincore.title}
 
-
 [#if (doc.schema.field ==1)]
 [/#if]
 
@@ -89,7 +88,9 @@ ${core.getParent().dublincore.title}
 [#list 1..(doc.vItemGeneral.packMaterialNature?size - 1) as cpt]
 [/#if]
 
-
-
-
+[#list ((doc.vItemCaracteristics.allergens)![]) as allergen]
+  ${functions.getVocabularyTranslatedLabel("Allergens",allergen.allergen,"fr")}
+  ${allergen.quantity}
+  ${(functions.getVocabularyLabel("AllergenUnit",allergen.quantityUnit))!}
+[/#list]
 

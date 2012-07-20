@@ -61,7 +61,7 @@ public class FreeMarkerVariableExtractor {
             varName = varName.substring(1);
         }
 
-        if (varName.startsWith("(")) {
+        while (varName.startsWith("(")) {
             varName = varName.substring(1);
         }
 
@@ -96,6 +96,12 @@ public class FreeMarkerVariableExtractor {
         List<String> variables = new ArrayList<String>();
 
         List<String> blackListedVariables = new ArrayList<String>();
+
+        if (content.length() > 10000) {
+            // split content in multilines
+            // otherwise some regexp won't capture everything
+            content = content.replaceAll("</", "\n</");
+        }
 
         Matcher matcher = simpleVariableMatcher.matcher(content);
 
