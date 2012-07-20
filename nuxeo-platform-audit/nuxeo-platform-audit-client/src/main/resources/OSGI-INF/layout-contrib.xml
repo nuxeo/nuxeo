@@ -6,7 +6,7 @@
 
     <widgetType name="audit_comments">
       <configuration>
-        <sinceVersion>5.5.0-HF11-SNAPSHOT</sinceVersion>
+        <sinceVersion>5.5.0-HF12-SNAPSHOT</sinceVersion>
         <title>Audit comments</title>
         <description>
           <p>
