@@ -75,7 +75,7 @@
                         <h:commandLink immediate="true"
                           action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
                           id="#{layoutColumn.widgets[0].name}_header_sort_desc">
-                          <h:graphicImage value="/icons/sort_selected_down.png" />
+                          <h:graphicImage value="/icons/sort_selected_up.png" />
                           <c:if test="#{hasSeveralSorts}">
                             #{ascIndex + 1}
                           </c:if>
@@ -90,7 +90,7 @@
                         <h:commandLink immediate="true"
                           action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
                           id="#{layoutColumn.widgets[0].name}_header_sort_asc">
-                          <h:graphicImage value="/icons/sort_selected_up.png" />
+                          <h:graphicImage value="/icons/sort_selected_down.png" />
                           <c:if test="#{hasSeveralSorts}">
                             #{descIndex + 1}
                           </c:if>
@@ -105,7 +105,7 @@
                         <h:commandLink immediate="true"
                           action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
                           id="#{layoutColumn.widgets[0].name}_header_sort_add">
-                          <h:graphicImage value="/icons/sort_down.png" />
+                          <h:graphicImage value="/icons/sort_up.png" />
                         </h:commandLink>
                       </span>
                       <div class="tooltip">
