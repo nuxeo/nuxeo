@@ -42,7 +42,7 @@ public class SimpleDataSource implements DataSource {
      * Maximum number of time we retry a connection if the server says it's
      * overloaded.
      */
-    public static final int MAX_CONNECTION_TRIES = 3;
+    public static final int MAX_CONNECTION_TRIES = 5;
 
     private final String url;
 
