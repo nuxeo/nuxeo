@@ -5,8 +5,8 @@
     <package id="nuxeo-dam" label="Digital Assets Management features (DAM)" filename="nuxeo-dam.zip" md5="" implies="nuxeo-content-browser" shortlabel="DAM"/>
     <package id="nuxeo-sc" label="Collaboration features (social collab)" filename="nuxeo-collab.zip" md5="" shortlabel="SC"/>
     <package id="nuxeo-cmf" label="Case Management Framework (CMF)" filename="nuxeo-cmf.zip" md5="" implies="nuxeo-content-browser-cmf" shortlabel="CMF"/>
-    <package id="nuxeo-content-browser" filename="nuxeo-content-browser-5.5.0-HF11-SNAPSHOT" md5="" />
-    <package id="nuxeo-content-browser-cmf" filename="nuxeo-content-browser-5.5.0-HF11-SNAPSHOT-cmf" md5="" />
+    <package id="nuxeo-content-browser" filename="nuxeo-content-browser-5.5.0-HF12-SNAPSHOT" md5="" />
+    <package id="nuxeo-content-browser-cmf" filename="nuxeo-content-browser-5.5.0-HF12-SNAPSHOT-cmf" md5="" />
   </packageDefinitions>
   <install>
     <packageOptions>
