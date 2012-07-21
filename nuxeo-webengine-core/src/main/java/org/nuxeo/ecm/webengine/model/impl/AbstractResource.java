@@ -61,7 +61,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         this.type = (T)type;
         path = ctx.getUriInfo().getMatchedURIs().get(0);
         // quote path component to replace special characters (except slash)
-        path = URIUtils.quoteURIPathComponent(path, false);
+        path = URIUtils.quoteURIPathComponent(path, false, false);
         // avoid paths ending in / -> this will mess-up URLs in FTL files.
         if (path.endsWith("/")) {
             path = path.substring(0, path.length()-1);
