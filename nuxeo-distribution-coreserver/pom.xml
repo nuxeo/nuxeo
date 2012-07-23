@@ -13,10 +13,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-el</groupId>
       <artifactId>commons-el</artifactId>
     </dependency>
@@ -251,17 +247,23 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-rendering</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo</groupId>
+      <artifactId>nuxeo-platform-lang-ext</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-core</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-server</artifactId>
     </dependency>
-
 
     <!-- CMIS -->
     <dependency>
