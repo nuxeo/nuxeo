@@ -17,7 +17,7 @@
 
       <c:forEach var="task" items="#{tasks}" varStatus="status">
         <div>
-          <h:outputFormat value="#{messages['label.route.task.type']} ">
+          <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
             <f:param value="#{messages[task.type]}" />
           </h:outputFormat>
           <h:outputText value="#{messages['label.route.task.assigned.to']} " />
@@ -48,13 +48,13 @@
               </c:otherwise>
             </c:choose>
           </c:forEach>
-          <span class="dueDate">
+          <div class="dueDate warningLabel">
             <h:outputText value=" #{messages['label.route.task.due.date']} " />
             <h:outputText value="#{task.dueDate}" />
-          </span>
-          <span class="directive">
+          </div>
+          <div class="directive quote">
             <h:outputText value="#{messages[task.directive]}" />
-          </span>
+          </div>
         </div>
       </c:forEach>
 

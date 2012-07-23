@@ -32,8 +32,23 @@
               var="actionClicked"
               defaultValue="false">
 
+              <a4j:commandButton id="#{idPrefix}_link"
+                  value="#{messages['label.document.routing.process.task']}"
+                  ajaxSingle="true"
+                  ignoreDupResponses="true" requestDelay="100"
+                  styleClass="button floatR"
+                  reRender="#{idPrefix}_ajax_panel">
+                  <f:setPropertyActionListener value="true"
+                    target="#{selectionActions.selectedValue}" />
+                  <f:setPropertyActionListener
+                    value="#{idPrefix}_valueHolder"
+                    target="#{selectionActions.selectedValueHolder}" />
+                  <nxu:actionListenerMethod
+                    value="#{selectionActions.onClick}" />
+                </a4j:commandButton>
+
               <f:subview id="#{idPrefix}_subview">
-                <h:outputFormat value="#{messages['label.route.task.type']} ">
+                <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
                   <f:param value="#{messages[task.type]}" />
                 </h:outputFormat>
                 <h:outputText value="#{messages['label.route.task.assigned.to']} " />
@@ -64,27 +79,13 @@
                     </c:otherwise>
                   </c:choose>
                 </c:forEach>
-                <span class="dueDate">
+                <div class="dueDate warningLabel">
                   <h:outputText value=" #{messages['label.route.task.due.date']} " />
                   <h:outputText value="#{task.dueDate}" />
-                </span>
-                <span class="directive">
+                </div>
+                <div class="directive quote">
                   <h:outputText value="#{messages[task.directive]}" />
-                </span>
-                <a4j:commandButton id="#{idPrefix}_link"
-                  value="#{messages['label.document.routing.process.task']}"
-                  ajaxSingle="true"
-                  ignoreDupResponses="true" requestDelay="100"
-                  styleClass="button"
-                  reRender="#{idPrefix}_ajax_panel">
-                  <f:setPropertyActionListener value="true"
-                    target="#{selectionActions.selectedValue}" />
-                  <f:setPropertyActionListener
-                    value="#{idPrefix}_valueHolder"
-                    target="#{selectionActions.selectedValueHolder}" />
-                  <nxu:actionListenerMethod
-                    value="#{selectionActions.onClick}" />
-                </a4j:commandButton>
+                </div>
               </f:subview>
 
               <a4j:outputPanel id="#{idPrefix}_ajax_panel">
@@ -93,7 +94,7 @@
                     <div id="#{idPrefix}_box">
                       <nxu:set var="isRoutingTask" value="#{routingTaskActions.isRoutingTask(task)}">
                         <c:if test="#{isRoutingTask}">
-                          <h3>#{routingActions.getRouteInstanceFor(task).title} - #{task.type}</h3>
+                          <h4>#{routingActions.getRouteInstanceFor(task).title} - #{task.type}</h4>
                           <nxl:layout name="#{routingTaskActions.getTaskLayout(task)}" mode="edit" value="#{routingTaskActions.formVariables}"/>
                           <p class="buttonsGadget">
                             <nxu:set var="actions"  value="#{routingTaskActions.getTaskButtons(task)}" cache="true">
@@ -111,7 +112,7 @@
                         </c:if>
 
                         <c:if test="#{not isRoutingTask}">
-                          <h3>#{dashboardItem.i18nTaskName}</h3>
+                          <h4>#{dashboardItem.i18nTaskName}</h4>
                           <table class="dataInput">
                             <tr>
                               <td class="labelColumn">
