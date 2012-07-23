@@ -34,7 +34,7 @@ input.button[disabled], input.button[disabled]:hover {
 	cursor: default;
 	visibility: hidden }
 
-a.button { text-decoration: none }
+a.button { color: "link.action (__FLAVOR__ color)"; display: inline-block; text-decoration: none }
 
 .major, input.major {
 	background: none repeat scroll 0 0 #0080b0;

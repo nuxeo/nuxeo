@@ -19,11 +19,11 @@ author: lkemen@nuxeo.com
 .menu dd { padding: 1em 0 }
 
 td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-space: normal }
-.dr-tree-h-ic-div { margin-left: .7em; padding-left: 1em }
+.dr-tree-h-ic-div { margin-left: 8px; padding-left: 10px }
 .treeNodeHighlightedClass { text-decoration: none }
 .treeNodeSelectedClass { border: none }
 
-.dataInput .dr-tree td, .dataInput .dr-tree td td {padding: .1em }
+.dataInput .dr-tree td, .dataInput .dr-tree td td { padding: .1em }
 .fieldColumn .dr-tree img { margin: 0 }
 
 /* =FileUpload */

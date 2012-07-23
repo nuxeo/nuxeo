@@ -36,9 +36,11 @@ author: lkemen@nuxeo.com
 .gridStyle3 { width: 22% }
 .gridStyle2 { width: 14% }
 
-.contentViewTitle { float: left; line-height: normal; margin: 1em 1em 1em 0 }
+.contentViewTitle { float: left; line-height: normal; margin: 0 1em 1em 0 }
 
-h3.summaryTitle {
+.gridBox h3, .gridBox h4 { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: 1.15em; margin: .7em 0 .2em; padding: .4em 0 }
+
+h3.summaryTitle, .gridBox h3.summaryTitle {
   border-width: 3px; border-style: none none double; border-color: "color.major.medium (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
   font-size: 1.2em;
@@ -53,7 +55,7 @@ h3.summaryTitle {
 .description_block span { display: block; font-size: 1em; padding-bottom: 1em }
 .description_block span.documentDescription { color: #444; font-size: 1.1em; font-weight: bold }
 .description_block .createdBy { color: #111; font-weight: bold; padding: 0 }
-.description_block .creationDate { display: inline }
+.description_block .creationDate { display: inline-block }
 .dublincore_block table.floatingLeftTable { float: left; margin-right: 100px }
 .labelColumnLeftAlign { font-weight: bold; padding-right: 2.5em }
 .rank_block, .publication_block, .attachments { margin-top: 1.3em }
