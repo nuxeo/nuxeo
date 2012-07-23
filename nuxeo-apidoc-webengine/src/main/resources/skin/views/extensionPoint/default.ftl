@@ -26,16 +26,20 @@ ${nxItem.documentationHtml}
   </#list>
 </ul>
 
-<h2>Contributions</h2>
+
 <#if nxItem.extensions?size gt 0>
+<h2>Contributions (${nxItem.extensions?size}) </h2>
   <ul>
     <#list nxItem.extensions as contrib>
     <li>
-      <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">${contrib.id}</a>
+      <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">
+      ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
+      </A>
     </li>
     </#list>
   </ul>
 <#else>
+<h2>Contributions</h2>
 No known contributions.
 </#if>
 

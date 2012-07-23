@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.apidoc.api.AbstractDocumentationItem;
+import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.DocumentationItem;
-import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.introspection.BundleGroupImpl;
+import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 
 import com.cforcoding.jmd.MarkDownParserAndSanitizer;
 
@@ -18,20 +20,39 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem
 
     protected String filename;
 
-    protected NuxeoArtifact target;
+    protected BaseNuxeoArtifact target;
 
     protected String type;
 
     public ResourceDocumentationItem(String filename, String content,
-            NuxeoArtifact target, String type) {
+            BundleInfoImpl target, String type) {
         this.content = content;
         this.filename = filename;
         this.target = target;
         this.type = type;
     }
 
+    public ResourceDocumentationItem(ResourceDocumentationItem other,
+            BundleGroupImpl target) {
+        this.content = other.content;
+        this.filename = other.filename;
+        this.target = target;
+        this.type = other.type;
+    }
+
     @Override
     public String getTitle() {
+        return getCleanName() + " " + target.getId();
+    }
+
+    protected String getCleanName() {
+        if (filename == null || filename.toLowerCase().startsWith("readme")) {
+            return "ReadMe";
+        }
+        int idx = filename.indexOf(".");
+        if (idx > 0) {
+            return filename.substring(0, idx);
+        }
         return filename;
     }
 
@@ -59,8 +80,7 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem
 
     @Override
     public String getTarget() {
-        // TODO Auto-generated method stub
-        return null;
+        return target.getId();
     }
 
     @Override
@@ -90,7 +110,7 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem
 
     @Override
     public boolean isPlaceHolder() {
-        return false;
+        return true;
     }
 
     @Override
@@ -98,4 +118,7 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem
         return null;
     }
 
+    public boolean isReadOnly() {
+        return true;
+    }
 }

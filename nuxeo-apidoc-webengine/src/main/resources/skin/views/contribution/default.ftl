@@ -11,7 +11,8 @@
   </a>
 </h1>
 
-In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.id?split("--")[0]}">${nxItem.id?split("--")[0]}</a>
+This contribution is part of XML component <a href="${Root.path}/${distId}/viewComponent/${nxItem.component.id}">${nxItem.component.id}</a>
+inside ${nxItem.component.bundle.fileName} ${nxItem.component.xmlFileName}
 
 <h2>Description</h2>
 ${nxItem.documentationHtml}

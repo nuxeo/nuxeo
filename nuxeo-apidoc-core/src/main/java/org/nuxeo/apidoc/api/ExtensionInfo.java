@@ -46,4 +46,6 @@ public interface ExtensionInfo extends NuxeoArtifact {
 
     List<ContributionItem> getContributionItems();
 
+    ComponentInfo getComponent();
+
 }

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.documentation.ContributionItem;
@@ -152,6 +153,16 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public ComponentInfo getComponent() {
+        String cId = getId().split("--")[0];
+        ComponentInfo parentComponent = getParentNuxeoArtifact(ComponentInfo.class);
+        if (parentComponent.getId().equals(cId)) {
+            return parentComponent;
+        }
+        return null;
     }
 
 }

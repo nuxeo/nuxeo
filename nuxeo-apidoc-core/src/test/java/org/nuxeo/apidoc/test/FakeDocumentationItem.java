@@ -22,7 +22,8 @@ import java.util.Map;
 import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.DocumentationItem;
 
-public class FakeDocumentationItem extends AbstractDocumentationItem implements DocumentationItem {
+public class FakeDocumentationItem extends AbstractDocumentationItem implements
+        DocumentationItem {
 
     public List<String> applicableVersion;
 
@@ -134,6 +135,11 @@ public class FakeDocumentationItem extends AbstractDocumentationItem implements 
     public String getEditId() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return false;
     }
 
 }

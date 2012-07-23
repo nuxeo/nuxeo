@@ -204,6 +204,10 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
             public String getEditId() {
                 return "placeholder_" + item.getId();
             }
+
+            public boolean isReadOnly() {
+                return true;
+            }
         };
 
     }

@@ -53,10 +53,15 @@ Here are the currently available distributions:
   <form method="POST" action="${Root.path}/save">
     <table>
     <tr>
-      <td>name : </td>
+      <td>Name : </td>
       <td><input type="text" name="name" value="${rtSnap.name}"/> </td>
     </tr>
+    <tr>
+      <td>Version : </td>
+      <td>${rtSnap.version} </td>
+    </tr>
     </table>
+    <i>( Existing snapshot with the same name and version will be updated )</i><br/>
     <input type="submit" value="Save"/>
   </form>
   </div>
@@ -64,15 +69,15 @@ Here are the currently available distributions:
   <form  method="POST" action="${Root.path}/saveExtended">
     <table>
     <tr>
-      <td>name : </td>
+      <td>Name : </td>
       <td><input type="text" name="name" value="${rtSnap.name}"/> </td>
     </tr>
     <tr>
-      <td>bundle prefixes : </td>
+      <td>Bundle prefixes : </td>
       <td><textarea rows="4" cols="30" name="bundles"></textarea></td>
     </tr>
     <tr>
-      <td>packages prefixes : </td>
+      <td>Packages prefixes : </td>
       <td><textarea rows="4" cols="30" name="packages"></textarea></td>
     </tr>
     </table>
