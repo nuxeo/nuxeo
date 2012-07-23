@@ -8,7 +8,7 @@
   <nxu:set var="currentRoute" value="#{routingActions.relatedRoute}">
 
     <c:if test="#{!empty currentRoute.name}">
-      <h3><h:outputText value="#{currentRoute.name}" /></h3>
+      <h3 class="summaryTitle"><h:outputText value="#{currentRoute.name}" /></h3>
     </c:if>
     <c:if test="#{!empty currentRoute.description}">
       <nxl:widgetType name="textarea" mode="view"
