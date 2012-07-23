@@ -114,8 +114,6 @@ public class TestMultiTenantService {
 
     @Test
     public void shouldEnableTenantIsolation() throws ClientException {
-        assertFalse(multiTenantService.isTenantIsolationEnabled(session));
-
         multiTenantService.enableTenantIsolation(session);
 
         assertTrue(multiTenantService.isTenantIsolationEnabled(session));
