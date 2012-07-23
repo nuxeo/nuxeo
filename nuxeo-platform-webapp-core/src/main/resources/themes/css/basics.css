@@ -71,4 +71,4 @@ h5, h6 { color: "title.minor (__FLAVOR__ color)"; font-size: .8em; margin: .2em 
 /* reset width class */
 .autoWidth { width: auto }
 
-.quote { background: url("${basePath}/icons/quote.png") no-repeat scroll 0 1px transparent; text-indent: 23px }
+.quote { background: url("${basePath}/icons/quote.png") no-repeat scroll 0 1px transparent; color: "gray.dark (__FLAVOR__ color)"; margin: .3em 0; text-indent: 1.7em }
