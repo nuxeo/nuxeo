@@ -19,7 +19,6 @@ package org.nuxeo.apidoc.browse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationService;
@@ -41,6 +42,7 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
+import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.forms.FormData;
@@ -50,7 +52,8 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@Path("/distribution") // needed for 5.4.1
+@Path("/distribution")
+// needed for 5.4.1
 @WebObject(type = "distribution")
 public class Distribution extends ModuleRoot {
 
@@ -101,7 +104,6 @@ public class Distribution extends ModuleRoot {
         } else if (currentUrl.contains("/doc")) {
             navPoint = "documentation";
         }
-
         return navPoint;
     }
 
@@ -112,16 +114,32 @@ public class Distribution extends ModuleRoot {
     }
 
     @Path("{distributionId}")
-    public Resource viewDistribution(
-            @PathParam("distributionId") String distributionId) {
+    public Resource viewDistribution(@PathParam("distributionId")
+    String distributionId) {
         try {
             if (distributionId == null || "".equals(distributionId)) {
                 return this;
             }
+            String orgDistributionId = distributionId;
             Boolean embeddedMode = Boolean.FALSE;
             if ("adm".equals(distributionId)) {
                 embeddedMode = Boolean.TRUE;
+            } else {
+                List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots(
+                        (ctx.getCoreSession()));
+                snaps.add(getSnapshotManager().getRuntimeSnapshot());
+                distributionId = SnapshotResolverHelper.findBestMatch(snaps,
+                        distributionId);
             }
+            if (distributionId == null || "".equals(distributionId)) {
+                distributionId = "current";
+            }
+
+            if (!orgDistributionId.equals(distributionId)) {
+                return ctx.newObject("redirectWO", orgDistributionId,
+                        distributionId);
+            }
+
             ctx.setProperty("embeddedMode", embeddedMode);
             ctx.setProperty(
                     "distribution",
@@ -148,7 +166,8 @@ public class Distribution extends ModuleRoot {
     }
 
     public List<DistributionSnapshot> listPersistedDistributions() {
-        return getSnapshotManager().listPersistentSnapshots(ctx.getCoreSession());
+        return getSnapshotManager().listPersistentSnapshots(
+                ctx.getCoreSession());
     }
 
     public Map<String, DistributionSnapshot> getPersistedDistributions() {
@@ -200,7 +219,7 @@ public class Distribution extends ModuleRoot {
             tx.commit();
         }
 
-        String redirectUrl = getContext().getBaseURL()+  getPath();
+        String redirectUrl = getContext().getBaseURL() + getPath();
         log.error("Path => " + redirectUrl);
         return getView("saved");
     }
@@ -220,14 +239,14 @@ public class Distribution extends ModuleRoot {
         String pkgList = formData.getString("packages");
         SnapshotFilter filter = new SnapshotFilter(distribLabel);
 
-        if (bundleList!=null) {
+        if (bundleList != null) {
             String[] bundles = bundleList.split("\n");
             for (String bundleId : bundles) {
                 filter.addBundlePrefix(bundleId);
             }
         }
 
-        if (pkgList!=null) {
+        if (pkgList != null) {
             String[] packages = pkgList.split("\\r?\\n");
             for (String pkg : packages) {
                 filter.addPackagesPrefix(pkg);
@@ -244,7 +263,7 @@ public class Distribution extends ModuleRoot {
         }
         try {
             getSnapshotManager().persistRuntimeSnapshot(
-                    getContext().getCoreSession(),distribLabel,filter);
+                    getContext().getCoreSession(), distribLabel, filter);
         } catch (Exception e) {
             log.error("Error during storage", e);
             if (tx != null) {
@@ -293,8 +312,8 @@ public class Distribution extends ModuleRoot {
 
     @GET
     @Path("download/{distributionId}")
-    public Response downloadDistrib(
-            @PathParam("distributionId") String distribId) throws Exception {
+    public Response downloadDistrib(@PathParam("distributionId")
+    String distribId) throws Exception {
         File tmp = getExportTmpFile();
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);

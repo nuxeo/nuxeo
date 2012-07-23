@@ -79,7 +79,14 @@ public class SnapshotManagerComponent extends DefaultComponent implements
         if (key == null || RUNTIME.equals(key) || RUNTIME_ADM.equals(key)) {
             return getRuntimeSnapshot();
         }
-        return getPersistentSnapshots(session).get(key);
+        DistributionSnapshot snap = getPersistentSnapshots(session).get(key);
+        if (snap == null) {
+            DistributionSnapshot rtsnap = getRuntimeSnapshot();
+            if (rtsnap.getKey().equals(key)) {
+                return rtsnap;
+            }
+        }
+        return snap;
     }
 
     @Override
@@ -89,17 +96,19 @@ public class SnapshotManagerComponent extends DefaultComponent implements
         return snaps;
     }
 
-    public List<DistributionSnapshot> listPersistentSnapshots(CoreSession session) {
+    public List<DistributionSnapshot> listPersistentSnapshots(
+            CoreSession session) {
 
         List<DistributionSnapshot> distribs = readPersistentSnapshots(session);
 
         Collections.sort(distribs, new Comparator<DistributionSnapshot>() {
             @Override
-            public int compare(DistributionSnapshot dist0,DistributionSnapshot dist1) {
+            public int compare(DistributionSnapshot dist0,
+                    DistributionSnapshot dist1) {
                 if (dist0.getVersion().equals(dist1.getVersion())) {
                     return dist0.getName().compareTo(dist1.getName());
                 } else {
-                    return - dist0.getVersion().compareTo(dist1.getVersion());
+                    return -dist0.getVersion().compareTo(dist1.getVersion());
                 }
             }
         });
