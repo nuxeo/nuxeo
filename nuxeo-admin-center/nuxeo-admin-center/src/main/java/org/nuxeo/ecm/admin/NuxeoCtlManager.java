@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 import org.nuxeo.runtime.api.Framework;
@@ -55,8 +56,8 @@ public class NuxeoCtlManager {
         String[] cmd;
         if (isWindows()) {
             cmd = new String[] { "cmd", "/C",
-                    winEscape(new File(path, CMD_WIN).getPath()), "--gui=false",
-                    "restartbg" };
+                    winEscape(new File(path, CMD_WIN).getPath()),
+                    "--gui=false", "restartbg" };
         } else {
             cmd = new String[] {
                     "/bin/sh",
@@ -108,9 +109,10 @@ public class NuxeoCtlManager {
             return false;
         }
         restartInProgress = true;
-        String nuxeoHome = Framework.getProperty("nuxeo.home");
+        String nuxeoHome = Framework.getProperty(Environment.NUXEO_HOME);
         final String binPath = new File(nuxeoHome, "bin").getPath();
-        final String logDir = Framework.getProperty("nuxeo.log.dir", nuxeoHome);
+        final String logDir = Framework.getProperty(Environment.NUXEO_LOG_DIR,
+                nuxeoHome);
         new Thread("restart thread") {
             @Override
             public void run() {
