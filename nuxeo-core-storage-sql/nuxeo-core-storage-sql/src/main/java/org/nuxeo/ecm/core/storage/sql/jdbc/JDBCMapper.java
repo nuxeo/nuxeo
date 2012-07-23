@@ -193,146 +193,157 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         Database database = sqlInfo.getDatabase();
         Map<String, List<Column>> added = new HashMap<String, List<Column>>();
 
-        Statement st = connection.createStatement();
+        Statement st = null;
+        try {
+            st = connection.createStatement();
+            for (Table table : database.getTables()) {
+                String tableName = getTableName(table.getPhysicalName());
+                if (tableNames.contains(tableName.toUpperCase())) {
+                    sqlInfo.dialect.existingTableDetected(connection, table,
+                            model, sqlInfo.database);
+                } else {
 
-        for (Table table : database.getTables()) {
-            String tableName = getTableName(table.getPhysicalName());
-            if (tableNames.contains(tableName.toUpperCase())) {
-                sqlInfo.dialect.existingTableDetected(connection, table, model,
-                        sqlInfo.database);
-            } else {
+                    /*
+                     * Create missing table.
+                     */
 
-                /*
-                 * Create missing table.
-                 */
-
-                boolean create = sqlInfo.dialect.preCreateTable(connection,
-                        table, model, sqlInfo.database);
-                if (!create) {
-                    log.warn("Creation skipped for table: " + tableName);
-                    continue;
-                }
-
-                String sql = table.getCreateSql();
-                logger.log(sql);
-                try {
-                    st.execute(sql);
-                    countExecute();
-                } catch (SQLException e) {
-                    throw new SQLException("Error creating table: " + sql
-                            + " : " + e.getMessage(), e);
-                }
-                for (String s : table.getPostCreateSqls(model)) {
-                    logger.log(s);
-                    try {
-                        st.execute(s);
-                        countExecute();
-                    } catch (SQLException e) {
-                        throw new SQLException("Error post creating table: "
-                                + s + " : " + e.getMessage(), e);
-                    }
-                }
-                for (String s : sqlInfo.dialect.getPostCreateTableSqls(table,
-                        model, sqlInfo.database)) {
-                    logger.log(s);
-                    try {
-                        st.execute(s);
-                        countExecute();
-                    } catch (SQLException e) {
-                        throw new SQLException("Error post creating table: "
-                                + s + " : " + e.getMessage(), e);
-                    }
-                }
-                added.put(table.getKey(), null); // null = table created
-            }
-
-            /*
-             * Get existing columns.
-             */
-
-            ResultSet rs = metadata.getColumns(null, schemaName, tableName, "%");
-            Map<String, Integer> columnTypes = new HashMap<String, Integer>();
-            Map<String, String> columnTypeNames = new HashMap<String, String>();
-            Map<String, Integer> columnTypeSizes = new HashMap<String, Integer>();
-            while (rs.next()) {
-                String schema = rs.getString("TABLE_SCHEM");
-                if (schema != null) { // null for MySQL, doh!
-                    if ("INFORMATION_SCHEMA".equals(schema.toUpperCase())) {
-                        // H2 returns some system tables (locks)
+                    boolean create = sqlInfo.dialect.preCreateTable(connection,
+                            table, model, sqlInfo.database);
+                    if (!create) {
+                        log.warn("Creation skipped for table: " + tableName);
                         continue;
                     }
-                }
-                String columnName = rs.getString("COLUMN_NAME").toUpperCase();
-                columnTypes.put(columnName,
-                        Integer.valueOf(rs.getInt("DATA_TYPE")));
-                columnTypeNames.put(columnName, rs.getString("TYPE_NAME"));
-                columnTypeSizes.put(columnName,
-                        Integer.valueOf(rs.getInt("COLUMN_SIZE")));
-            }
 
-            /*
-             * Update types and create missing columns.
-             */
-
-            List<Column> addedColumns = new LinkedList<Column>();
-            for (Column column : table.getColumns()) {
-                String upperName = column.getPhysicalName().toUpperCase();
-                Integer type = columnTypes.remove(upperName);
-                if (type == null) {
-                    log.warn("Adding missing column in database: "
-                            + column.getFullQuotedName());
-                    String sql = table.getAddColumnSql(column);
+                    String sql = table.getCreateSql();
                     logger.log(sql);
                     try {
                         st.execute(sql);
                         countExecute();
                     } catch (SQLException e) {
-                        throw new SQLException("Error adding column: " + sql
+                        throw new SQLException("Error creating table: " + sql
                                 + " : " + e.getMessage(), e);
                     }
-                    for (String s : table.getPostAddSqls(column, model)) {
+                    for (String s : table.getPostCreateSqls(model)) {
                         logger.log(s);
                         try {
                             st.execute(s);
                             countExecute();
                         } catch (SQLException e) {
-                            throw new SQLException("Error post adding column: "
-                                    + s + " : " + e.getMessage(), e);
+                            throw new SQLException(
+                                    "Error post creating table: " + s + " : "
+                                            + e.getMessage(), e);
                         }
                     }
-                    addedColumns.add(column);
-                } else {
-                    int expected = column.getJdbcType();
-                    int actual = type.intValue();
-                    String actualName = columnTypeNames.get(upperName);
-                    Integer actualSize = columnTypeSizes.get(upperName);
-                    if (!column.setJdbcType(actual, actualName,
-                            actualSize.intValue())) {
-                        log.error(String.format(
-                                "SQL type mismatch for %s: expected %s, database has %s / %s (%s)",
-                                column.getFullQuotedName(),
-                                Integer.valueOf(expected), type, actualName,
-                                actualSize));
+                    for (String s : sqlInfo.dialect.getPostCreateTableSqls(
+                            table, model, sqlInfo.database)) {
+                        logger.log(s);
+                        try {
+                            st.execute(s);
+                            countExecute();
+                        } catch (SQLException e) {
+                            throw new SQLException(
+                                    "Error post creating table: " + s + " : "
+                                            + e.getMessage(), e);
+                        }
+                    }
+                    added.put(table.getKey(), null); // null = table created
+                }
+
+                /*
+                 * Get existing columns.
+                 */
+
+                ResultSet rs = metadata.getColumns(null, schemaName, tableName,
+                        "%");
+                Map<String, Integer> columnTypes = new HashMap<String, Integer>();
+                Map<String, String> columnTypeNames = new HashMap<String, String>();
+                Map<String, Integer> columnTypeSizes = new HashMap<String, Integer>();
+                while (rs.next()) {
+                    String schema = rs.getString("TABLE_SCHEM");
+                    if (schema != null) { // null for MySQL, doh!
+                        if ("INFORMATION_SCHEMA".equals(schema.toUpperCase())) {
+                            // H2 returns some system tables (locks)
+                            continue;
+                        }
+                    }
+                    String columnName = rs.getString("COLUMN_NAME").toUpperCase();
+                    columnTypes.put(columnName,
+                            Integer.valueOf(rs.getInt("DATA_TYPE")));
+                    columnTypeNames.put(columnName, rs.getString("TYPE_NAME"));
+                    columnTypeSizes.put(columnName,
+                            Integer.valueOf(rs.getInt("COLUMN_SIZE")));
+                }
+
+                /*
+                 * Update types and create missing columns.
+                 */
+
+                List<Column> addedColumns = new LinkedList<Column>();
+                for (Column column : table.getColumns()) {
+                    String upperName = column.getPhysicalName().toUpperCase();
+                    Integer type = columnTypes.remove(upperName);
+                    if (type == null) {
+                        log.warn("Adding missing column in database: "
+                                + column.getFullQuotedName());
+                        String sql = table.getAddColumnSql(column);
+                        logger.log(sql);
+                        try {
+                            st.execute(sql);
+                            countExecute();
+                        } catch (SQLException e) {
+                            throw new SQLException("Error adding column: "
+                                    + sql + " : " + e.getMessage(), e);
+                        }
+                        for (String s : table.getPostAddSqls(column, model)) {
+                            logger.log(s);
+                            try {
+                                st.execute(s);
+                                countExecute();
+                            } catch (SQLException e) {
+                                throw new SQLException(
+                                        "Error post adding column: " + s
+                                                + " : " + e.getMessage(), e);
+                            }
+                        }
+                        addedColumns.add(column);
+                    } else {
+                        int expected = column.getJdbcType();
+                        int actual = type.intValue();
+                        String actualName = columnTypeNames.get(upperName);
+                        Integer actualSize = columnTypeSizes.get(upperName);
+                        if (!column.setJdbcType(actual, actualName,
+                                actualSize.intValue())) {
+                            log.error(String.format(
+                                    "SQL type mismatch for %s: expected %s, database has %s / %s (%s)",
+                                    column.getFullQuotedName(),
+                                    Integer.valueOf(expected), type,
+                                    actualName, actualSize));
+                        }
                     }
                 }
-            }
-            if (!columnTypes.isEmpty()) {
-                log.warn("Database contains additional unused columns for table "
-                        + table.getQuotedName()
-                        + ": "
-                        + StringUtils.join(
-                                new ArrayList<String>(columnTypes.keySet()),
-                                ", "));
-            }
-            if (!addedColumns.isEmpty()) {
-                if (added.containsKey(table.getKey())) {
-                    throw new AssertionError();
+                if (!columnTypes.isEmpty()) {
+                    log.warn("Database contains additional unused columns for table "
+                            + table.getQuotedName()
+                            + ": "
+                            + StringUtils.join(new ArrayList<String>(
+                                    columnTypes.keySet()), ", "));
                 }
-                added.put(table.getKey(), addedColumns);
+                if (!addedColumns.isEmpty()) {
+                    if (added.containsKey(table.getKey())) {
+                        throw new AssertionError();
+                    }
+                    added.put(table.getKey(), addedColumns);
+                }
+            }
+        } finally {
+            if (st != null) {
+                try {
+                    closeStatement(st);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
             }
         }
-
-        closeStatement(st);
 
         if (testProps.containsKey(TEST_UPGRADE)) {
             // create "old" content in tables
