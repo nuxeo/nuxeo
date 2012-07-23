@@ -47,6 +47,9 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
         if ("".equals(type)) {
             return "";
         }
+        if (Framework.isTestModeSet()) {
+            return type;
+        }
         Session session = null;
         try {
             DirectoryService dm = Framework.getService(DirectoryService.class);

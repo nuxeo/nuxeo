@@ -171,23 +171,22 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         log.info(pDump);
 
         /*
-
-        String[] rtDumpLines = rtDump.trim().split("\n");
-        String[] pDumpLines = pDump.trim().split("\n");
-
-        assertEquals(rtDumpLines.length, pDumpLines.length);
-
-        for (int i = 0; i < rtDumpLines.length; i++) {
-            assertEquals(rtDumpLines[i], pDumpLines[i]);
-        }*/
-
+         * 
+         * String[] rtDumpLines = rtDump.trim().split("\n"); String[] pDumpLines
+         * = pDump.trim().split("\n");
+         * 
+         * assertEquals(rtDumpLines.length, pDumpLines.length);
+         * 
+         * for (int i = 0; i < rtDumpLines.length; i++) {
+         * assertEquals(rtDumpLines[i], pDumpLines[i]); }
+         */
 
         assertEquals(rtDump, pDump);
     }
 
     @After
     public void tearDown() throws Exception {
-        if (session!=null) {
+        if (session != null) {
             CoreInstance.getInstance().close(session);
         }
         super.tearDown();

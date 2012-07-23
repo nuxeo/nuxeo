@@ -16,7 +16,10 @@
  */
 package org.nuxeo.apidoc.repository;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,25 +34,34 @@ import org.nuxeo.apidoc.adapters.ServiceInfoDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
+import org.nuxeo.apidoc.documentation.DocumentationService;
+import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
+import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.runtime.api.Framework;
 
 public class SnapshotPersister {
 
@@ -79,11 +91,12 @@ public class SnapshotPersister {
 
         protected final boolean setAcl;
 
-        public UnrestrictedRootCreator(CoreSession session, String parentPath, String name, boolean setAcl) {
+        public UnrestrictedRootCreator(CoreSession session, String parentPath,
+                String name, boolean setAcl) {
             super(session);
-            this.name=name;
-            this.parentPath=parentPath;
-            this.setAcl= setAcl;
+            this.name = name;
+            this.parentPath = parentPath;
+            this.setAcl = setAcl;
         }
 
         public DocumentRef getRootRef() {
@@ -93,8 +106,8 @@ public class SnapshotPersister {
         @Override
         public void run() throws ClientException {
 
-            DocumentModel root = session.createDocumentModel(parentPath,
-                    name, "Workspace");
+            DocumentModel root = session.createDocumentModel(parentPath, name,
+                    "Workspace");
             root.setProperty("dublincore", "title", name);
             root = session.createDocument(root);
 
@@ -114,14 +127,15 @@ public class SnapshotPersister {
 
     }
 
-
-    public DocumentModel getSubRoot(CoreSession session, DocumentModel root, String name) throws ClientException {
+    public DocumentModel getSubRoot(CoreSession session, DocumentModel root,
+            String name) throws ClientException {
 
         DocumentRef rootRef = new PathRef(root.getPathAsString() + name);
         if (session.exists(rootRef)) {
             return session.getDocument(rootRef);
         }
-        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, root.getPathAsString(), name, false);
+        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session,
+                root.getPathAsString(), name, false);
         creator.runUnrestricted();
         // flush caches
         session.save();
@@ -134,7 +148,8 @@ public class SnapshotPersister {
         if (session.exists(rootRef)) {
             return session.getDocument(rootRef);
         }
-        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, Root_PATH, Root_NAME, true);
+        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session,
+                Root_PATH, Root_NAME, true);
         creator.runUnrestricted();
         // flush caches
         session.save();
@@ -142,16 +157,19 @@ public class SnapshotPersister {
     }
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot,
-            CoreSession session, String label, SnapshotFilter filter) throws ClientException {
+            CoreSession session, String label, SnapshotFilter filter)
+            throws ClientException {
 
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(
                 snapshot, session, label);
 
-        DocumentModel bundleContainer = getSubRoot(session, distribContainer.getDoc(), Bundle_Root_NAME);
+        DocumentModel bundleContainer = getSubRoot(session,
+                distribContainer.getDoc(), Bundle_Root_NAME);
 
-        if (filter!=null) {
+        if (filter != null) {
             // create VGroup that contain,s only the target bundles
-            BundleGroupImpl vGroup = new BundleGroupImpl(filter.getBundleGroupName(), snapshot.getVersion());
+            BundleGroupImpl vGroup = new BundleGroupImpl(
+                    filter.getBundleGroupName(), snapshot.getVersion());
             for (String bundleId : snapshot.getBundleIds()) {
                 if (filter.includeBundleId(bundleId)) {
                     vGroup.add(bundleId);
@@ -167,11 +185,13 @@ public class SnapshotPersister {
             }
         }
 
-        DocumentModel seamContainer = getSubRoot(session, distribContainer.getDoc(), Seam_Root_NAME);
+        DocumentModel seamContainer = getSubRoot(session,
+                distribContainer.getDoc(), Seam_Root_NAME);
         persistSeamComponents(snapshot, snapshot.getSeamComponents(), session,
                 label, seamContainer, filter);
 
-        DocumentModel opContainer = getSubRoot(session, distribContainer.getDoc(), Operation_Root_NAME);
+        DocumentModel opContainer = getSubRoot(session,
+                distribContainer.getDoc(), Operation_Root_NAME);
         persistOperations(snapshot, snapshot.getOperations(), session, label,
                 opContainer, filter);
 
@@ -180,11 +200,12 @@ public class SnapshotPersister {
 
     public void persistSeamComponents(DistributionSnapshot snapshot,
             List<SeamComponentInfo> seamComponents, CoreSession session,
-            String label, DocumentModel parent, SnapshotFilter filter) throws ClientException {
+            String label, DocumentModel parent, SnapshotFilter filter)
+            throws ClientException {
         for (SeamComponentInfo seamComponent : seamComponents) {
-            if (filter==null || filter.includeSeamComponent(seamComponent)) {
+            if (filter == null || filter.includeSeamComponent(seamComponent)) {
                 persistSeamComponent(snapshot, seamComponent, session, label,
-                    parent);
+                        parent);
             }
         }
     }
@@ -203,9 +224,10 @@ public class SnapshotPersister {
 
     public void persistOperations(DistributionSnapshot snapshot,
             List<OperationInfo> operations, CoreSession session, String label,
-            DocumentModel parent,SnapshotFilter filter) throws ClientException {
+            DocumentModel parent, SnapshotFilter filter) throws ClientException {
         for (OperationInfo op : operations) {
-            if (filter==null || (op instanceof OperationInfoImpl && filter.includeOperation((OperationInfoImpl) op))) {
+            if (filter == null
+                    || (op instanceof OperationInfoImpl && filter.includeOperation((OperationInfoImpl) op))) {
                 persistOperation(snapshot, op, session, label, parent);
             }
         }
@@ -231,6 +253,15 @@ public class SnapshotPersister {
         DocumentModel bundleGroupDoc = createBundleGroupDoc(bundleGroup,
                 session, label, parent);
 
+        // save GitHub doc
+        if (bundleGroup instanceof BundleGroupImpl) {
+            Map<String, ResourceDocumentationItem> liveDoc = ((BundleGroupImpl) bundleGroup).getLiveDoc();
+            if (liveDoc != null && liveDoc.size() > 0) {
+                persistLiveDoc(liveDoc,
+                        bundleGroupDoc.getAdapter(BundleGroup.class), session);
+            }
+        }
+
         for (String bundleId : bundleGroup.getBundleIds()) {
             BundleInfo bi = snapshot.getBundle(bundleId);
             persistBundle(snapshot, bi, session, label, bundleGroupDoc);
@@ -242,6 +273,43 @@ public class SnapshotPersister {
         }
     }
 
+    protected void persistLiveDoc(
+            Map<String, ResourceDocumentationItem> liveDoc, NuxeoArtifact item,
+            CoreSession session) throws ClientException {
+        DocumentationService ds = Framework.getLocalService(DocumentationService.class);
+        List<DocumentationItem> existingDocs = ds.findDocumentItems(session,
+                item);
+        for (String cat : liveDoc.keySet()) {
+            ResourceDocumentationItem docItem = liveDoc.get(cat);
+            DocumentationItem previousDocItem = null;
+            for (DocumentationItem exiting : existingDocs) {
+                if (exiting.getTitle().equals(docItem.getTitle())
+                        && exiting.getTarget().equals(docItem.getTarget())) {
+                    previousDocItem = exiting;
+                    break;
+                }
+            }
+            if (previousDocItem == null) {
+                ds.createDocumentationItem(session, item, docItem.getTitle(),
+                        docItem.getContent(), cat,
+                        Arrays.asList(item.getVersion()), docItem.isApproved(),
+                        docItem.getRenderingType());
+            } else {
+                if (previousDocItem instanceof DocumentationItemDocAdapter) {
+                    DocumentationItemDocAdapter existingDoc = (DocumentationItemDocAdapter) previousDocItem;
+                    Blob blob = new StringBlob(docItem.getContent());
+                    Blob oldBlob = (Blob) existingDoc.getDocumentModel().getPropertyValue(
+                            "file:content");
+                    blob.setFilename(oldBlob.getFilename());
+                    existingDoc.getDocumentModel().setPropertyValue(
+                            "file:content", (Serializable) blob);
+                    ds.updateDocumentationItem(session, existingDoc);
+                }
+
+            }
+        }
+    }
+
     public void persistBundle(DistributionSnapshot snapshot,
             BundleInfo bundleInfo, CoreSession session, String label,
             DocumentModel parent) throws ClientException {
@@ -249,6 +317,15 @@ public class SnapshotPersister {
 
         DocumentModel bundleDoc = createBundleDoc(snapshot, session, label,
                 bundleInfo, parent);
+
+        // save GitHub doc
+        if (bundleInfo instanceof BundleInfoImpl) {
+            Map<String, ResourceDocumentationItem> liveDoc = ((BundleInfoImpl) bundleInfo).getLiveDoc();
+            if (liveDoc != null && liveDoc.size() > 0) {
+                persistLiveDoc(liveDoc, bundleDoc.getAdapter(BundleInfo.class),
+                        session);
+            }
+        }
 
         for (ComponentInfo ci : bundleInfo.getComponents()) {
             persistComponent(snapshot, ci, session, label, bundleDoc);

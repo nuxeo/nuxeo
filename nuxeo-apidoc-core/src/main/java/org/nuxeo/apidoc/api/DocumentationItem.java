@@ -109,4 +109,6 @@ public interface DocumentationItem extends Comparable<DocumentationItem> {
      */
     String getEditId();
 
+    boolean isReadOnly();
+
 }

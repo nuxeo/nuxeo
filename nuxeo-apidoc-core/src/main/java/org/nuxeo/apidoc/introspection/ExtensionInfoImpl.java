@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
+import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.documentation.ContributionItem;
@@ -124,5 +125,9 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    public ComponentInfo getComponent() {
+        return component;
     }
 }

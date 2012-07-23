@@ -115,7 +115,9 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
         if (newLiveDoc != null) {
             for (String key : newLiveDoc.keySet()) {
                 if (newLiveDoc.get(key) != null) {
-                    liveDoc.put(key, newLiveDoc.get(key));
+                    liveDoc.put(key,
+                            new ResourceDocumentationItem(newLiveDoc.get(key),
+                                    this));
                 }
             }
         }
@@ -129,4 +131,9 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
         }
         return docs;
     }
+
+    public Map<String, ResourceDocumentationItem> getLiveDoc() {
+        return liveDoc;
+    }
+
 }
