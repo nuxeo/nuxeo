@@ -923,7 +923,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             List<Column> columns = sqlInfo.getCopyHierColumns(explicitName,
                     createVersion);
             Column whereColumn = sqlInfo.getCopyHierWhereColumn();
-            ps = connection.prepareStatement(sql);
             int i = 1;
             for (Column column : columns) {
                 String key = column.getKey();
