@@ -50,8 +50,10 @@ public class TransactionalFeature extends SimpleFeature {
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        Environment.getDefault().setHostApplicationName(
-                Environment.NXSERVER_HOST);
+        Environment env = Environment.getDefault();
+        if (env != null) {
+            env.setHostApplicationName(Environment.NXSERVER_HOST);
+        }
         try {
             Context comp = (Context) new InitialContext().lookup("java:comp/");
             if (comp == null) {
