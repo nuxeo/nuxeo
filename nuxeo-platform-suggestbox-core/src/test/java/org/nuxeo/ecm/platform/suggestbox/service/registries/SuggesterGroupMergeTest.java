@@ -32,13 +32,13 @@ public class SuggesterGroupMergeTest {
      * Tests the merge of the 'searchbox' suggesterGroup contribution.
      * <p>
      * Before merge, the list of suggesters for this suggesterGroup is:
-     * ["documentLookupByTitle", "searchByUsersAndGroups", "searchByDate",
-     * "searchByKeywords"]
+     * ["searchByKeywords", "documentLookupByTitle", "searchByUsersAndGroups",
+     * "searchByDate"]
      * <p>
-     * After merge, it should be: ["myNewSuggesterBegin",
+     * After merge, it should be: ["myNewSuggesterBegin", "searchByKeywords",
      * "myNewSuggesterBeforeUsers", "searchByUsersAndGroups",
-     * "myNewSuggesterAfterUsers", "searchByDate", "searchByKeywords",
-     * "myNewSuggesterEnd", "myNewSuggesterVeryEnd"]
+     * "myNewSuggesterAfterUsers", "searchByDate", "myNewSuggesterEnd",
+     * "myNewSuggesterVeryEnd"]
      * <p>
      * See following steps for details.
      * <p>
@@ -91,14 +91,14 @@ public class SuggesterGroupMergeTest {
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "myNewSuggesterBegin"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
+                "searchByKeywords"));
+        expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "myNewSuggesterBeforeUsers"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "searchByUsersAndGroups"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "myNewSuggesterAfterUsers"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor("searchByDate"));
-        expectedSuggesters.add(new SuggesterGroupItemDescriptor(
-                "searchByKeywords"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "myNewSuggesterEnd"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
