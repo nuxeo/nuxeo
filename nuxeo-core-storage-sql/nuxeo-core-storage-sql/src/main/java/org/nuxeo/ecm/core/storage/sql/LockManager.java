@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -19,15 +20,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
 /**
  * Manager of locks that serializes access to them.
@@ -52,6 +49,8 @@ public class LockManager {
      * prefetch.
      */
     protected final Mapper mapper;
+
+    protected Connection connection;
 
     /**
      * If clustering is enabled then we have to wrap test/set and test/remove in
@@ -108,13 +107,20 @@ public class LockManager {
      * <p>
      * {@link #shutdown} must be called when done with the lock manager.
      */
-    public LockManager(Mapper mapper, boolean clusteringEnabled) {
+    public LockManager(Mapper mapper, boolean clusteringEnabled)
+            throws StorageException {
         this.mapper = mapper;
+        this.connection = ((JDBCMapper) mapper).connection;
         this.clusteringEnabled = clusteringEnabled;
         serializationLock = new ReentrantLock(true); // fair
         caching = !clusteringEnabled;
         lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE)
                 : null;
+        try {
+            connection.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
     }
 
     /**
@@ -271,20 +277,15 @@ public class LockManager {
      */
     protected Lock callInTransaction(Callable<Lock> callable)
             throws StorageException {
-        Xid xid = null;
-        boolean txStarted = false;
-        boolean txSuccess = false;
+        boolean tx = clusteringEnabled;
+        boolean ok = false;
         try {
-            if (clusteringEnabled) {
-                xid = new XidImpl("nuxeolockmanager."
-                        + System.currentTimeMillis() + "."
-                        + txCounter.incrementAndGet());
+            if (tx) {
                 try {
-                    mapper.start(xid, XAResource.TMNOFLAGS);
-                } catch (XAException e) {
+                    connection.setAutoCommit(false);
+                } catch (SQLException e) {
                     throw new StorageException(e);
                 }
-                txStarted = true;
             }
             // else no need to process invalidations,
             // only this mapper writes locks
@@ -299,20 +300,26 @@ public class LockManager {
                 throw new StorageException(e);
             }
 
-            txSuccess = true;
+            ok = true;
             return result;
         } finally {
-            if (txStarted) {
+            if (tx) {
                 try {
-                    if (txSuccess) {
-                        mapper.end(xid, XAResource.TMSUCCESS);
-                        mapper.commit(xid, true);
-                    } else {
-                        mapper.end(xid, XAResource.TMFAIL);
-                        mapper.rollback(xid);
+                    try {
+                        if (ok) {
+                            connection.commit();
+                        } else {
+                            connection.rollback();
+                        }
+                    } catch (SQLException e) {
+                        throw new StorageException(e);
                     }
-                } catch (XAException e) {
-                    throw new StorageException(e);
+                } finally {
+                    try {
+                        connection.setAutoCommit(true);
+                    } catch (SQLException e) {
+                        throw new StorageException(e);
+                    }
                 }
             }
         }
