@@ -68,12 +68,12 @@ public class SuggesterGroupContribTest {
         List<SuggesterGroupItemDescriptor> suggesters = sgd.getSuggesters();
         List<SuggesterGroupItemDescriptor> expectedSuggesters = new ArrayList<SuggesterGroupItemDescriptor>();
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
+                "searchByKeywords"));
+        expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "documentLookupByTitle"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor(
                 "searchByUsersAndGroups"));
         expectedSuggesters.add(new SuggesterGroupItemDescriptor("searchByDate"));
-        expectedSuggesters.add(new SuggesterGroupItemDescriptor(
-                "searchByKeywords"));
         assertEquals(expectedSuggesters, suggesters);
 
     }

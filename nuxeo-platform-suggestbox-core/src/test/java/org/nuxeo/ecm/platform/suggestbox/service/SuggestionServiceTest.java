@@ -179,17 +179,17 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertNotNull(suggestions);
         assertEquals(2, suggestions.size());
 
-        Suggestion sugg1 = suggestions.get(0);
+        Suggestion sugg0 = suggestions.get(0);
+        assertEquals("searchDocuments", sugg0.getType());
+        assertEquals("Search documents with keywords: 'superuni'",
+                sugg0.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
+
+        Suggestion sugg1 = suggestions.get(1);
         assertEquals("document", sugg1.getType());
         assertEquals("First document with a superuniqueword in the title",
                 sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
-
-        Suggestion sugg2 = suggestions.get(1);
-        assertEquals("searchDocuments", sugg2.getType());
-        assertEquals("Search documents with keywords: 'superuni'",
-                sugg2.getLabel());
-        assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
     }
 
     @Test
@@ -211,41 +211,41 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertNotNull(suggestions);
         assertEquals(5, suggestions.size());
 
-        Suggestion sugg1 = suggestions.get(0);
+        Suggestion sugg0 = suggestions.get(0);
+        assertEquals("searchDocuments", sugg0.getType());
+        assertEquals("Search documents with keywords: '2009'", sugg0.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
+
+        Suggestion sugg1 = suggestions.get(1);
         assertEquals("searchDocuments", sugg1.getType());
         assertEquals("Search documents created after Jan 1, 2009",
                 sugg1.getLabel());
         assertEquals("/img/facetedSearch.png", sugg1.getIconURL());
 
-        Suggestion sugg2 = suggestions.get(1);
+        Suggestion sugg2 = suggestions.get(2);
         assertEquals("searchDocuments", sugg2.getType());
         assertEquals("Search documents created before Jan 1, 2009",
                 sugg2.getLabel());
         assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
 
-        Suggestion sugg3 = suggestions.get(2);
+        Suggestion sugg3 = suggestions.get(3);
         assertEquals("searchDocuments", sugg3.getType());
         assertEquals("Search documents modified after Jan 1, 2009",
                 sugg3.getLabel());
         assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
 
-        Suggestion sugg4 = suggestions.get(3);
+        Suggestion sugg4 = suggestions.get(4);
         assertEquals("searchDocuments", sugg4.getType());
         assertEquals("Search documents modified before Jan 1, 2009",
                 sugg4.getLabel());
         assertEquals("/img/facetedSearch.png", sugg4.getIconURL());
-
-        Suggestion sugg5 = suggestions.get(4);
-        assertEquals("searchDocuments", sugg5.getType());
-        assertEquals("Search documents with keywords: '2009'", sugg5.getLabel());
-        assertEquals("/img/facetedSearch.png", sugg5.getIconURL());
 
         // 2012 both matches a title and a date
         suggestions = suggestionService.suggest("2012", context);
         assertNotNull(suggestions);
         assertEquals(6, suggestions.size());
 
-        sugg1 = suggestions.get(0);
+        sugg1 = suggestions.get(1);
         assertEquals("document", sugg1.getType());
         assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
@@ -306,25 +306,25 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertNotNull(suggestions);
         assertEquals(4, suggestions.size());
 
-        Suggestion sugg1 = suggestions.get(0);
+        Suggestion sugg0 = suggestions.get(0);
+        assertEquals("searchDocuments", sugg0.getType());
+        assertEquals("Search documents with keywords: 'marl'", sugg0.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
+
+        Suggestion sugg1 = suggestions.get(1);
         assertEquals("document", sugg1.getType());
         assertEquals("The 2012 document about Bob Marley", sugg1.getLabel());
         assertEquals("/icons/file.gif", sugg1.getIconURL());
 
-        Suggestion sugg2 = suggestions.get(1);
+        Suggestion sugg2 = suggestions.get(2);
         assertEquals("user", sugg2.getType());
         assertEquals("Bob Marley", sugg2.getLabel());
         assertEquals("/icons/user.png", sugg2.getIconURL());
 
-        Suggestion sugg3 = suggestions.get(2);
+        Suggestion sugg3 = suggestions.get(3);
         assertEquals("searchDocuments", sugg3.getType());
         assertEquals("Search documents by Bob Marley", sugg3.getLabel());
         assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
-
-        Suggestion sugg4 = suggestions.get(3);
-        assertEquals("searchDocuments", sugg4.getType());
-        assertEquals("Search documents with keywords: 'marl'", sugg4.getLabel());
-        assertEquals("/img/facetedSearch.png", sugg4.getIconURL());
     }
 
     protected Map<String, String> getTestMessages() {
