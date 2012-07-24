@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -30,9 +30,11 @@ import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -89,12 +91,12 @@ public class NuxeoFrame extends JFrame {
 
         @Override
         public void componentHidden(ComponentEvent e) {
-            getController().notifyLogsObserver(logFile, false);
+            controller.notifyLogsObserver(logFile, false);
         }
 
         @Override
         public void componentShown(ComponentEvent e) {
-            getController().notifyLogsObserver(logFile, true);
+            controller.notifyLogsObserver(logFile, true);
         }
 
     }
@@ -126,7 +128,7 @@ public class NuxeoFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             mainButton.setEnabled(false);
-            getController().start();
+            controller.start();
         }
     };
 
@@ -141,7 +143,7 @@ public class NuxeoFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             mainButton.setEnabled(false);
-            getController().stop();
+            controller.stop();
         }
     };
 
@@ -152,7 +154,7 @@ public class NuxeoFrame extends JFrame {
         public void actionPerformed(ActionEvent event) {
             try {
                 Desktop.getDesktop().browse(
-                        java.net.URI.create(getController().getLauncher().getURL()));
+                        java.net.URI.create(controller.getLauncher().getURL()));
             } catch (Exception e) {
                 setError("An error occurred while launching browser", e);
             }
@@ -199,7 +201,7 @@ public class NuxeoFrame extends JFrame {
 
     protected JButton mainButton = null;
 
-    private NuxeoLauncherGUI controller;
+    protected NuxeoLauncherGUI controller;
 
     protected boolean logsShown = false;
 
@@ -222,6 +224,8 @@ public class NuxeoFrame extends JFrame {
     protected JButton launchBrowserButton;
 
     protected JLabel errorMessageLabel;
+
+    private JTabbedPane logsTab;
 
     /**
      * @return JLabel for error display
@@ -299,7 +303,7 @@ public class NuxeoFrame extends JFrame {
             public void run() {
                 try {
                     Shell.get().main(
-                            new String[] { getController().launcher.getURL()
+                            new String[] { controller.launcher.getURL()
                                     + "site/automation" });
                 } catch (Exception e) {
                     setError(e);
@@ -341,19 +345,24 @@ public class NuxeoFrame extends JFrame {
         return launchBrowserButton;
     }
 
-    protected JComponent buildLogsTab() {
+    protected JTabbedPane buildLogsTab() {
         JTabbedPane logsTabbedPane = new JTabbedPane(SwingConstants.TOP);
         // Get Launcher log file(s)
         ArrayList<String> logFiles = Log4JHelper.getFileAppendersFiles(LogManager.getLoggerRepository());
         // Get server log file(s)
-        logFiles.addAll(getController().getConfigurationGenerator().getLogFiles());
+        logFiles.addAll(controller.getConfigurationGenerator().getLogFiles());
         for (String logFile : logFiles) {
-            if (!hideLogTab(logFile)) {
-                logsTabbedPane.addTab(new File(logFile).getName(),
-                        buildLogPanel(logFile));
-            }
+            addFileToLogsTab(logsTabbedPane, logFile);
         }
         return logsTabbedPane;
+    }
+
+    protected void addFileToLogsTab(JTabbedPane logsTabbedPane, String logFile) {
+        if (!hideLogTab(logFile)
+                && !controller.getLogsMap().containsKey(logFile)) {
+            logsTabbedPane.addTab(new File(logFile).getName(),
+                    buildLogPanel(logFile));
+        }
     }
 
     /**
@@ -386,7 +395,7 @@ public class NuxeoFrame extends JFrame {
         logsScroller.setWheelScrollingEnabled(true);
         logsScroller.setPreferredSize(new Dimension(450, 160));
 
-        getController().initLogsManagement(logFile, textArea);
+        controller.initLogsManagement(logFile, textArea);
         logsScroller.addComponentListener(new LogsPanelListener(logFile));
         return logsScroller;
     }
@@ -405,13 +414,13 @@ public class NuxeoFrame extends JFrame {
 
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
                 + NuxeoLauncherGUI.getMessage("summary.status.label")));
-        summaryStatus = new JLabel(getController().launcher.status());
+        summaryStatus = new JLabel(controller.launcher.status());
         summaryStatus.setForeground(Color.WHITE);
         summaryPanel.add(summaryStatus);
 
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
                 + NuxeoLauncherGUI.getMessage("summary.url.label")));
-        summaryURL = new JLabel(getController().launcher.getURL());
+        summaryURL = new JLabel(controller.launcher.getURL());
         summaryURL.setForeground(Color.WHITE);
         summaryPanel.add(summaryURL);
 
@@ -420,7 +429,7 @@ public class NuxeoFrame extends JFrame {
         summaryPanel.add(errorMessageLabel);
 
         summaryPanel.add(new JSeparator());
-        ConfigurationGenerator config = getController().launcher.getConfigurationGenerator();
+        ConfigurationGenerator config = controller.launcher.getConfigurationGenerator();
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
                 + NuxeoLauncherGUI.getMessage("summary.homedir.label")));
         summaryPanel.add(new JLabel("<html><font color=white>"
@@ -440,8 +449,9 @@ public class NuxeoFrame extends JFrame {
         tabbedPanel = new JTabbedPane(SwingConstants.TOP);
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.summary.title"),
                 buildSummaryPanel());
+        logsTab = buildLogsTab();
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.logs.title"),
-                buildLogsTab());
+                logsTab);
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.shell.title"),
                 buildConsolePanel());
         tabbedPanel.addChangeListener(new ChangeListener() {
@@ -486,12 +496,12 @@ public class NuxeoFrame extends JFrame {
     }
 
     protected void updateMainButton() {
-        if (getController().launcher.isStarted()) {
+        if (controller.launcher.isStarted()) {
             mainButton.setAction(stopAction);
             mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.stop.text"));
             mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
             mainButton.setIcon(stopIcon);
-        } else if (getController().launcher.isRunning()) {
+        } else if (controller.launcher.isRunning()) {
             if (stopping) {
                 mainButton.setAction(stopAction);
                 mainButton.setText(NuxeoLauncherGUI.getMessage("mainbutton.stop.inprogress"));
@@ -515,7 +525,7 @@ public class NuxeoFrame extends JFrame {
      * @since 5.5
      */
     protected void updateLaunchBrowserButton() {
-        launchBrowserButton.setEnabled(getController().launcher.isStarted());
+        launchBrowserButton.setEnabled(controller.launcher.isStarted());
     }
 
     /**
@@ -524,10 +534,10 @@ public class NuxeoFrame extends JFrame {
     public void updateSummary() {
         String errorMessageLabelStr = "";
         Color summaryStatusFgColor = Color.WHITE;
-        if (!getController().getConfigurationGenerator().isWizardRequired()
-                && getController().launcher.isStarted()) {
-            String startupSummary = getController().launcher.getStartupSummary();
-            if (!getController().launcher.wasStartupFine()) {
+        if (!controller.getConfigurationGenerator().isWizardRequired()
+                && controller.launcher.isStarted()) {
+            String startupSummary = controller.launcher.getStartupSummary();
+            if (!controller.launcher.wasStartupFine()) {
                 String[] lines = startupSummary.split("\n");
                 // extract line with summary informations
                 for (String line : lines) {
@@ -543,8 +553,21 @@ public class NuxeoFrame extends JFrame {
         }
         errorMessageLabel.setText(errorMessageLabelStr);
         summaryStatus.setForeground(summaryStatusFgColor);
-        summaryStatus.setText(getController().launcher.status());
-        summaryURL.setText(getController().launcher.getURL());
+        summaryStatus.setText(controller.launcher.status());
+        summaryURL.setText(controller.launcher.getURL());
+    }
+
+    /**
+     * Add Windows rotated console log
+     *
+     * @since 5.6
+     */
+    public void updateLogsTab(String consoleLogId) {
+        if (consoleLogId != null) {
+            addFileToLogsTab(logsTab, new File(
+                    controller.getConfigurationGenerator().getLogDir(),
+                    "console" + consoleLogId + ".log").getPath());
+        }
     }
 
     /**
@@ -557,6 +580,15 @@ public class NuxeoFrame extends JFrame {
 
     public void setController(NuxeoLauncherGUI controller) {
         this.controller = controller;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void close() {
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
+                new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
 
 }

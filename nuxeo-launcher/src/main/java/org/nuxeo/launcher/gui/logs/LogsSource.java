@@ -90,7 +90,7 @@ public class LogsSource extends Observable implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            log.error(e);
+            log.debug(e);
         } catch (IOException e) {
             log.error(e);
         } finally {

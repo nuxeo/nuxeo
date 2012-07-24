@@ -53,6 +53,9 @@
   <logger name="org.apache.commons.httpclient.HttpMethodBase">
     <level value="ERROR" />
   </logger>
+  <logger name="org.apache.commons.vfs2.impl.StandardFileSystemManager">
+    <level value="WARN" />
+  </logger>
 
   <!-- ======================= -->
   <!-- Setup the Root category -->

@@ -23,9 +23,12 @@ import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +37,12 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs2.FileChangeEvent;
+import org.apache.commons.vfs2.FileListener;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.VFS;
+import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.launcher.NuxeoLauncher;
@@ -55,20 +64,38 @@ public class NuxeoLauncherGUI {
 
     protected static final long UPDATE_FREQUENCY = 3000;
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(5,
-            new DaemonThreadFactory("NuxeoLauncherGUITask"));
+    private ExecutorService executor = newExecutor();
+
+    /**
+     * @since 5.6
+     */
+    protected ExecutorService newExecutor() {
+        return Executors.newFixedThreadPool(5, new DaemonThreadFactory(
+                "NuxeoLauncherGUITask"));
+    }
 
     protected NuxeoLauncher launcher;
 
     protected NuxeoFrame nuxeoFrame;
 
-    private HashMap<String, LogsSourceThread> logsMap = new HashMap<String, LogsSourceThread>();
+    protected HashMap<String, LogsSourceThread> logsMap = new HashMap<String, LogsSourceThread>();
 
     /**
-     * @param launcher Launcher being used in background
+     * @since 5.6
      */
-    public NuxeoLauncherGUI(NuxeoLauncher launcher) {
-        this.launcher = launcher;
+    public final HashMap<String, LogsSourceThread> getLogsMap() {
+        return logsMap;
+    }
+
+    private DefaultFileMonitor dumpedConfigMonitor;
+
+    private Thread nuxeoFrameUpdater;
+
+    /**
+     * @param aLauncher Launcher being used in background
+     */
+    public NuxeoLauncherGUI(NuxeoLauncher aLauncher) {
+        this.launcher = aLauncher;
         // Set OS-specific decorations
         if (PlatformUtils.isMac()) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -77,14 +104,57 @@ public class NuxeoLauncherGUI {
             System.setProperty("com.apple.mrj.application.live-resize", "true");
             System.setProperty("com.apple.macos.smallTabs", "true");
         }
-        initFrame(this);
+        initFrame();
+        dumpedConfigMonitor = new DefaultFileMonitor(new FileListener() {
+            @Override
+            public void fileDeleted(FileChangeEvent event) throws Exception {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void fileCreated(FileChangeEvent event) throws Exception {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void fileChanged(FileChangeEvent event) throws Exception {
+                waitForFrameLoaded();
+                log.debug("Configuration changed. Reloading frame...");
+                launcher.init();
+                updateServerStatus();
+                try {
+                    Properties props = new Properties();
+                    props.load(new FileReader(
+                            getConfigurationGenerator().getDumpedConfig()));
+                    nuxeoFrame.updateLogsTab(props.getProperty("log.id"));
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
+        });
+        try {
+            dumpedConfigMonitor.setRecursive(false);
+            FileObject dumpedConfig = VFS.getManager().resolveFile(
+                    getConfigurationGenerator().getDumpedConfig().getPath());
+            dumpedConfigMonitor.addFile(dumpedConfig);
+            dumpedConfigMonitor.start();
+        } catch (FileSystemException e) {
+            throw new RuntimeException("Couldn't find "
+                    + getConfigurationGenerator().getNuxeoConf(), e);
+        }
     }
 
-    protected void initFrame(final NuxeoLauncherGUI controller) {
+    protected void initFrame() {
+        final NuxeoLauncherGUI controller = this;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 try {
+                    if (nuxeoFrame != null) {
+                        executor.shutdownNow();
+                        nuxeoFrame.close();
+                        executor = newExecutor();
+                    }
                     nuxeoFrame = createNuxeoFrame(controller);
                     nuxeoFrame.pack();
                     // Center frame
@@ -99,19 +169,22 @@ public class NuxeoLauncherGUI {
                 }
             }
         });
-        new Thread() {
-            @Override
-            public void run() {
-                while (true) {
-                    updateServerStatus();
-                    try {
-                        Thread.sleep(UPDATE_FREQUENCY);
-                    } catch (InterruptedException e) {
-                        break;
+        if (nuxeoFrameUpdater == null) {
+            nuxeoFrameUpdater = new Thread() {
+                @Override
+                public void run() {
+                    while (true) {
+                        updateServerStatus();
+                        try {
+                            Thread.sleep(UPDATE_FREQUENCY);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
                     }
                 }
-            }
-        }.start();
+            };
+            nuxeoFrameUpdater.start();
+        }
     }
 
     /**
@@ -173,7 +246,6 @@ public class NuxeoLauncherGUI {
      * before any access to {@link NuxeoFrame} from this controller.
      */
     public void waitForFrameLoaded() {
-        // Wait for Frame being initialized
         while (nuxeoFrame == null) {
             try {
                 Thread.sleep(500);

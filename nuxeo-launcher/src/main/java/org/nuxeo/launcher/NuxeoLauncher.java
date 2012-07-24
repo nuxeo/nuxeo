@@ -228,8 +228,6 @@ public abstract class NuxeoLauncher {
 
     private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
 
-    private static final String PARAM_NUXEO_URL = "nuxeo.url";
-
     private static final long STREAM_MAX_WAIT = 3000;
 
     private static final String PACK_JBOSS_CLASS = "org.nuxeo.runtime.deployment.preprocessor.PackZip";
@@ -238,10 +236,10 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
 
-    private static final String[] COMMANDS_NO_GUI = { "mp-init", "mp-purge",
-            "mp-add", "mp-install", "mp-uninstall", "mp-request", "mp-remove",
-            "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall",
-            "mp-update", "status", "showconf" };
+    private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init",
+            "mp-purge", "mp-add", "mp-install", "mp-uninstall", "mp-request",
+            "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list",
+            "mp-listall", "mp-update", "status", "showconf" };
 
     private static final String[] COMMANDS_NO_RUNNING_SERVER = { "mp-init",
             "mp-purge", "mp-add", "mp-install", "mp-uninstall", "mp-request",
@@ -337,7 +335,14 @@ public abstract class NuxeoLauncher {
 
     public NuxeoLauncher(ConfigurationGenerator configurationGenerator) {
         this.configurationGenerator = configurationGenerator;
-        configurationGenerator.init();
+        init();
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void init() {
+        configurationGenerator.init(true);
         statusServletClient = new StatusServletClient(configurationGenerator);
         statusServletClient.setKey(configurationGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_STATUS_KEY));
@@ -688,6 +693,10 @@ public abstract class NuxeoLauncher {
                 launcher.setGUI(new NuxeoLauncherGUI(launcher));
             }
             launch(launcher);
+        } catch (IllegalStateException e) {
+            log.error("Cannot execute command. " + e.getMessage());
+            log.debug(e, e);
+            System.exit(1);
         } catch (ParseException e) {
             System.exit(1);
         }
@@ -1705,7 +1714,7 @@ public abstract class NuxeoLauncher {
      */
     public String getURL() {
         return configurationGenerator.getUserConfig().getProperty(
-                PARAM_NUXEO_URL);
+                ConfigurationGenerator.PARAM_NUXEO_URL);
     }
 
     protected ConnectBroker getConnectBroker() throws IOException,
