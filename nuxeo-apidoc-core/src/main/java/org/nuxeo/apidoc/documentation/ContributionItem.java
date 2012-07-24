@@ -43,12 +43,20 @@ public class ContributionItem {
         return sb.toString();
     }
 
+    public String getId() {
+        return nameOrId;
+    }
+
     public String getDocumentation() {
         return DocumentationHelper.getHtml(documentation);
     }
 
     public String getXml() {
         return StringEscapeUtils.escapeHtml(xml);
+    }
+
+    public String getRawXml() {
+        return xml;
     }
 
 }
