@@ -25,9 +25,12 @@ of component
 <a href="${Root.path}/${distId}/viewComponent/${nxItem.targetComponentName.name}">${nxItem.targetComponentName.name?replace(".*\\.","","r")}</a>.
 
 <h2>Contributed items</h2>
+<form method="POST" action="${Root.path}/${distId}/viewContribution/${nxItem.id}/override">
 <ul>
 <#list nxItem.contributionItems as contributionItem>
-<li> ${contributionItem.label}
+<li>
+<input type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
+ ${contributionItem.label}
 <p> ${contributionItem.documentation} </p>
 <span class="resourceToggle">View XML source</span>
 <div class="hiddenResource">
@@ -36,6 +39,17 @@ of component
 </li>
 </#list>
 </ul>
+<input id="overrideStart" type="button" value="Generate Override" onclick="showOverrideForm()"/>
+<input id="overrideGen" type="submit" value="Generate XML file" style="display:none"/>
+</form>
+<script>
+function showOverrideForm(event) {
+  $('#overrideStart').css("display", "none");
+  $('#overrideGen').css("display", "inline");
+  $(':checkbox').css("display","inline");
+  return false;
+}
+</script>
 <h2>XML source</h2>
 <span class="resourceToggle">View XML source</span>
 <div class="hiddenResource">

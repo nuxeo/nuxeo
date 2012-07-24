@@ -16,12 +16,19 @@
  */
 package org.nuxeo.apidoc.browse;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 @WebObject(type = "contribution")
@@ -44,6 +51,24 @@ public class ContributionWO extends NuxeoArtifactWebObject {
     @Override
     public NuxeoArtifact getNxArtifact() {
         return getTargetExtensionInfo();
+    }
+
+    @POST
+    @Produces("text/xml")
+    @Path("override")
+    public Object generateOverride() throws Exception {
+
+        ExtensionInfo ei = getTargetExtensionInfo();
+        String epid = ei.getExtensionPoint();
+        ExtensionPointInfo ep = getSnapshotManager().getSnapshot(
+                getDistributionId(), ctx.getCoreSession()).getExtensionPoint(
+                epid);
+
+        FormData formData = ctx.getForm();
+        Map<String, String[]> fields = formData.getFormFields();
+        List<String> selectedContribs = new ArrayList<String>(fields.keySet());
+        return getView("override").arg("contribution", ei).arg(
+                "selectedContribs", selectedContribs).arg("ep", ep);
     }
 
 }

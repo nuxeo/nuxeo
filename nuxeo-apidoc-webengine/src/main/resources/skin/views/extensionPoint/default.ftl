@@ -26,15 +26,42 @@ ${nxItem.documentationHtml}
   </#list>
 </ul>
 
-
 <#if nxItem.extensions?size gt 0>
 <h2>Contributions (${nxItem.extensions?size}) </h2>
+<input type="text" id="searchField"/>
+<input type="button" value="search text in contributions" onclick="searchContrib($('#searchField').val());"/>
+<span id="searchMatchResult"></span>
+<script>
+function searchContrib(text) {
+  $('#highlight-plugin').removeHighlight();
+  $('div.searchableText').addClass('hiddenResource');
+  $('#searchMatchResult').html("");
+  var elems = $('div.searchableText:contains("' + text +'")');
+  for (var i = 0; i < elems.size(); i++) {
+    var elem = $(elems[i]);
+    elem.removeClass('hiddenResource');
+  }
+  if (elems.size()>0) {
+    $('div.searchableText').highlight(text);
+    $('#searchMatchResult').html(elems.size() + " matching contribution(s)");
+  } else {
+    $('#searchMatchResult').html("no match found");
+  }
+}
+</script>
+
+
   <ul>
     <#list nxItem.extensions as contrib>
     <li>
       <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">
       ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
       </A>
+      <span class="resourceToggle">View XML source</span>
+<div class="hiddenResource searchableText">
+  <span style="display:none">${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}</span>
+  <pre><code>${contrib.xml?xml}</code></pre>
+</div>
     </li>
     </#list>
   </ul>

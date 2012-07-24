@@ -24,6 +24,7 @@
    <script type="text/javascript" src="${skinPath}/script/jquery//treeview/jquery.treeview.js"></script>
    <script type="text/javascript" src="${skinPath}/script/jquery//treeview/jquery.treeview.async.js"></script>
    <script type="text/javascript" src="${skinPath}/script/quickEditor.js"></script>
+   <script type="text/javascript" src="${skinPath}/script/jquery.highlight-3.js"></script>
 
    <@block name="header_scripts" />
 
@@ -67,8 +68,8 @@
         </#if>
           <td style="padding:10px;">
      <#if enableDocumentationView && !Root.isEmbeddedMode() >
-     
-     
+
+
      <div class="tabsbar">
        <ul>
          <li <#if selectedTab=="defView">class="selected"</#if> >
@@ -79,9 +80,9 @@
          </li>
        </ul>
      </div>
-     
-     <div style="clear:both;"></div>        
-            
+
+     <div style="clear:both;"></div>
+
        </#if>
          <div class="tabscontent">
           <@block name="right">
