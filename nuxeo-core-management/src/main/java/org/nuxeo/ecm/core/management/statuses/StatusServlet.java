@@ -49,6 +49,8 @@ public class StatusServlet extends HttpServlet {
 
     public static final String PARAM_SUMMARY_KEY = "key";
 
+    public static final String PARAM_RELOAD = "reload";
+
     // duplicated from org.nuxeo.launcher.config.ConfigurationGenerator to avoid
     // dependencies on nuxeo-launcher-commons
     public static final String PARAM_STATUS_KEY = "server.status.key";
@@ -69,8 +71,8 @@ public class StatusServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String requestedInfo = req.getParameter(PARAM);
         StringBuilder response = new StringBuilder();
+        String requestedInfo = req.getParameter(PARAM);
         if (requestedInfo.equals(PARAM_STARTED)) {
             getStartedInfo(response);
         } else if (requestedInfo.equals(PARAM_SUMMARY)) {
@@ -79,7 +81,13 @@ public class StatusServlet extends HttpServlet {
                     givenKey)) {
                 getSummaryInfo(response);
             } else {
-                resp.setStatus(403);
+                resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            }
+        } else if (requestedInfo.equals(PARAM_RELOAD)) {
+            if (isStarted()) {
+                response.append("reload();");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             }
         }
         sendResponse(resp, response.toString());
@@ -106,7 +114,7 @@ public class StatusServlet extends HttpServlet {
     }
 
     protected void getSummaryInfo(StringBuilder response) {
-        if (getRuntimeService() != null && runtimeService.isStarted()) {
+        if (isStarted()) {
             StringBuilder msg = new StringBuilder();
             boolean isFine = runtimeService.getStatusMessage(msg);
             response.append(isFine).append("\n");
@@ -118,9 +126,11 @@ public class StatusServlet extends HttpServlet {
     }
 
     protected void getStartedInfo(StringBuilder response) {
-        getRuntimeService();
-        response.append(
-                getRuntimeService() != null && runtimeService.isStarted()).toString();
+        response.append(isStarted()).toString();
+    }
+
+    private boolean isStarted() {
+        return getRuntimeService() != null && runtimeService.isStarted();
     }
 
     @Override
