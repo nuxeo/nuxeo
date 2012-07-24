@@ -160,12 +160,12 @@ function mkCell(colDef, entry) {
     if (colDef.type == 'builtin') {
         if (colDef.field == "titleWithLink") {
             html += "<td><a target = \"_top\" title=\"";
-            html += entry.documentTitle;
+            html += gadgets.util.escapeString(entry.documentTitle);
             html += "\" href=\"";
             html += NXGadgetContext.clientSideBaseUrl;
             html += entry.documentLink;
             html += "\">";
-            html += entry.documentTitle;
+            html += gadgets.util.escapeString(entry.documentTitle);
             html += "</a></td>";
         }
     } else {
@@ -176,7 +176,7 @@ function mkCell(colDef, entry) {
             html += getDateForDisplay(date);
           }
         } else {
-            html += entry[colDef.field];
+            html += gadgets.util.escapeString(entry[colDef.field]);
         }
         html += "</td>";
     }

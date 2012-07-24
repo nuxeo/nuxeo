@@ -149,13 +149,14 @@ function mkCell(colDef, dashBoardItem) {
             }
             html += "<td><a target = \"_top\" title=\"";
             html += dashBoardItem.title;
+            html += gadgets.util.escapeString(dashBoardItem.title);
             html += "\" href=\"";
             html += NXGadgetContext.clientSideBaseUrl;
             html += codec + "/default";
             html += encode(dashBoardItem.path);
             html += "@" + view;
             html += "\" />";
-            html += dashBoardItem.title;
+            html += gadgets.util.escapeString(dashBoardItem.title);
             html += "</a></td>";
         }
     } else if (colDef.type == 'system') {
@@ -165,9 +166,9 @@ function mkCell(colDef, dashBoardItem) {
             if (text == "") {
                 text = dashBoardItem[colDef.field];
             }
-            html += text;
+            html += gadgets.util.escapeString(text);
         } else {
-            html += dashBoardItem[colDef.field];
+            html += gadgets.util.escapeString(dashBoardItem[colDef.field]);
         }
         html += "</td>";
     } else {
@@ -175,7 +176,7 @@ function mkCell(colDef, dashBoardItem) {
         if (colDef.type == 'date') {
             html += getDateForDisplay(dashBoardItem.properties[colDef.field]);
         } else {
-            html += dashBoardItem.properties[colDef.field];
+            html += gadgets.util.escapeString(dashBoardItem.properties[colDef.field]);
         }
         html += "</td>";
     }
