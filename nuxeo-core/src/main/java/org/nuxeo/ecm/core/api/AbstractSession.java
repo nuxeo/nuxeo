@@ -1836,8 +1836,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 String name = docModel.getName();
                 notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                         options, null, null, true, true);
-                // did the event change the name?
-                if (!name.equals(docModel.getName())) {
+                // did the event change the name? not applicable to Root whose name is null/empty
+                if (name != null && !name.equals(docModel.getName())) {
                     doc = getSession().move(doc, doc.getParent(),
                             docModel.getName());
                 }
