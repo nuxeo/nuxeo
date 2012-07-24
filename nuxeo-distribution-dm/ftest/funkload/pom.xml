@@ -11,9 +11,9 @@
   <groupId>org.nuxeo.tool</groupId>
   <artifactId>funkload-utility</artifactId>
   <packaging>pom</packaging>
-  <name>Utility POM for running Funkload tests</name>
+  <name>Utility POM for running Funkload test and bench</name>
   <description>
-    This POM uses tools-nuxeo-ftest to run funkload tests
+    This POM uses tools-nuxeo-ftest to run funkload test and bench
     in multiple environments (OS, DB)
   </description>
 
@@ -94,6 +94,35 @@
     </profile>
     <profile>
       <id>monitor</id>
+    </profile>
+    <profile>
+      <id>bench</id>
+      <build>
+	<plugins>
+	  <plugin>
+	    <groupId>org.nuxeo.build</groupId>
+	    <artifactId>nuxeo-distribution-tools</artifactId>
+	    <configuration>
+	      <buildFile>${basedir}/ibench.xml</buildFile>
+	    </configuration>
+	    <executions>
+	      <execution>
+		<id>run-tests</id>
+		<goals>
+		  <goal>integration-test</goal>
+		  <goal>verify</goal>
+		</goals>
+		<configuration>
+		  <targets>
+		    <target>run-funkload-benchs</target>
+		  </targets>
+		  <testFailureIgnore>true</testFailureIgnore>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
     </profile>
   </profiles>
 

@@ -121,7 +121,8 @@ For other distro visit http://funkload.nuxeo.org/INSTALL
 Running test
 -------------
 
-Using a makefile
+Using a Makefile
+~~~~~~~~~~~~~~~~~
 
 * make
   this is equivalent to "make start rest page test-nuxeo stop"
@@ -157,8 +158,23 @@ To pass extra options to the funkload test runner using EXT:
 Note that log files are located in the target/ftest/funkload of the
 nuxeo-distribution-dm.
 
+Using Maven
+~~~~~~~~~~~~
+
+* Running funkload tests on a default tomcat
+
+    mvn clean verify -Ptomcat
+
+* Running test on tomcat with PostgreSQL
+
+    mvn clean verify -Ptomcat,pgsql
+
+
 Benching
 ---------
+
+Using a Makefile
+~~~~~~~~~~~~~~~~~
 
 * make bench
   Full bench: init users and test layout, bench writer, bench reader.
@@ -169,6 +185,15 @@ Benching
 * make bench-reader
   Bench the reader part only.
 
+
+Using Maven
+~~~~~~~~~~~~
+
+Just add the bench and monitor profile:
+
+    mvn clean verify -Ptomcat,pgsql,bench,monitor
+
+See https://github.com/nuxeo/tools-nuxeo-ftest/ for more information.
 
 
 Nuxeo DM running on JAVA 5
