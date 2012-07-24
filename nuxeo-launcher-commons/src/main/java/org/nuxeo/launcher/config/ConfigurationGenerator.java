@@ -69,6 +69,11 @@ import freemarker.template.TemplateException;
  */
 public class ConfigurationGenerator {
 
+    /**
+     * @since 5.6
+     */
+    protected static final String CONFIGURATION_PROPERTIES = "configuration.properties";
+
     private static final Log log = LogFactory.getLog(ConfigurationGenerator.class);
 
     /**
@@ -169,6 +174,11 @@ public class ConfigurationGenerator {
     public static final String PARAM_PRODUCT_NAME = "org.nuxeo.ecm.product.name";
 
     public static final String PARAM_PRODUCT_VERSION = "org.nuxeo.ecm.product.version";
+
+    /**
+     * @since 5.6
+     */
+    public static final String PARAM_NUXEO_URL = "nuxeo.url";
 
     /**
      * Global dev property, dupplicated from runtime framework
@@ -395,13 +405,26 @@ public class ConfigurationGenerator {
      *         false
      */
     public boolean init() {
+        return init(false);
+    }
+
+    /**
+     * Initialize configurator, check requirements and load current
+     * configuration
+     *
+     * @since 5.6
+     * @param forceReload If true, forces configuration reload.
+     * @return returns true if current install is configurable, else returns
+     *         false
+     */
+    public boolean init(boolean forceReload) {
         if (serverConfigurator == null) {
             log.warn("Unrecognized server. Considered as already configured.");
             configurable = false;
         } else if (!nuxeoConf.exists()) {
             log.info("Missing " + nuxeoConf);
             configurable = false;
-        } else if (userConfig == null) {
+        } else if (userConfig == null || forceReload) {
             try {
                 setBasicConfiguration();
                 configurable = true;
@@ -417,7 +440,6 @@ public class ConfigurationGenerator {
 
     public void changeTemplates(String newTemplates) {
         try {
-            includedTemplates.clear();
             templates = newTemplates;
             setBasicConfiguration();
             configurable = true;
@@ -440,44 +462,24 @@ public class ConfigurationGenerator {
     private void setBasicConfiguration() throws ConfigurationException {
         try {
             // Load default configuration
-            defaultConfig = new Properties();
-            loadTrimmedProperties(defaultConfig, nuxeoDefaultConf);
+            defaultConfig = loadTrimmedProperties(nuxeoDefaultConf);
             userConfig = new Properties(defaultConfig);
 
-            // Add useful system properties
-            userConfig.putAll(System.getProperties());
-
-            // If Windows, replace backslashes in paths
+            // If Windows, replace backslashes in paths in nuxeo.conf
             if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
                 replaceBackslashes();
             }
+
             // Load user configuration
-            loadTrimmedProperties(userConfig, nuxeoConf);
+            userConfig.putAll(System.getProperties()); // Add System properties
+            userConfig.putAll(loadTrimmedProperties(nuxeoConf));
             onceGeneration = "once".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
             forceGeneration = onceGeneration
                     || Boolean.parseBoolean(userConfig.getProperty(
                             PARAM_FORCE_GENERATION, "false"));
+            checkForDeprecatedParameters(userConfig);
 
-            // Check for deprecated parameters
-            @SuppressWarnings("rawtypes")
-            Enumeration userEnum = userConfig.propertyNames();
-            while (userEnum.hasMoreElements()) {
-                String key = (String) userEnum.nextElement();
-                if (parametersMigration.containsKey(key)) {
-                    String value = userConfig.getProperty(key);
-                    userConfig.setProperty(parametersMigration.get(key), value);
-                    // Don't remove the deprecated key yet - more
-                    // warnings but old things should keep working
-                    // userConfig.remove(key);
-                    if (!hideDeprecationWarnings) {
-                        log.warn("WARNING: Parameter " + key
-                                + " is deprecated - please use "
-                                + parametersMigration.get(key) + " instead");
-                    }
-                }
-            }
-
-            // Manage directories set from (or set to) system properties
+            // Synchronize directories between serverConfigurator and userConfig
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR);
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_PID_DIR);
@@ -497,7 +499,9 @@ public class ConfigurationGenerator {
             if (templates == null) {
                 templates = getUserTemplates();
             }
+            includedTemplates.clear();
             includeTemplates(templates);
+            checkForDeprecatedParameters(defaultConfig);
             extractDatabaseTemplateName();
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
@@ -546,9 +550,8 @@ public class ConfigurationGenerator {
      * of a file.
      * <p>
      * On 5.6, using the config generator to get the info from the nuxeo.conf
-     * file makes it possible to get the property value this early, so adding
-     * an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer
-     * needed.
+     * file makes it possible to get the property value this early, so adding an
+     * empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer needed.
      *
      * @deprecated since 5.6
      */
@@ -758,8 +761,8 @@ public class ConfigurationGenerator {
                 log.error(String.format(
                         "Template '%s' not found with relative or absolute path (%s). "
                                 + "Check your %s parameter, and %s for included files.",
-                                nextToken, chosenTemplate, PARAM_TEMPLATES_NAME,
-                                PARAM_INCLUDED_TEMPLATES));
+                        nextToken, chosenTemplate, PARAM_TEMPLATES_NAME,
+                        PARAM_INCLUDED_TEMPLATES));
                 continue;
             }
             File chosenTemplateConf = new File(chosenTemplate,
@@ -771,14 +774,13 @@ public class ConfigurationGenerator {
                 continue;
             }
 
-            Properties subTemplateConf = new Properties();
-            loadTrimmedProperties(subTemplateConf, chosenTemplateConf);
+            Properties subTemplateConf = loadTrimmedProperties(chosenTemplateConf);
             String subTemplatesList = subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES);
             if (subTemplatesList != null && subTemplatesList.length() > 0) {
                 includeTemplates(subTemplatesList);
             }
             // Load configuration from chosen templates
-            loadTrimmedProperties(defaultConfig, chosenTemplateConf);
+            defaultConfig.putAll(subTemplateConf);
             String templateInfo = "Include template: "
                     + chosenTemplate.getPath();
             if (quiet) {
@@ -786,23 +788,30 @@ public class ConfigurationGenerator {
             } else {
                 log.info(templateInfo);
             }
-            // Check for deprecated parameters
-            @SuppressWarnings("rawtypes")
-            Enumeration userEnum = defaultConfig.propertyNames();
-            while (userEnum.hasMoreElements()) {
-                String key = (String) userEnum.nextElement();
-                if (parametersMigration.containsKey(key)) {
-                    String value = defaultConfig.getProperty(key);
-                    defaultConfig.setProperty(parametersMigration.get(key),
-                            value);
-                    // Don't remove the deprecated key yet - more
-                    // warnings but old things should keep working
-                    // defaultConfig.remove(key);
-                    if (!hideDeprecationWarnings) {
-                        log.warn("Parameter " + key
-                                + " is deprecated - please use "
-                                + parametersMigration.get(key) + " instead");
-                    }
+        }
+    }
+
+    /**
+     * Check for deprecated parameters
+     *
+     * @param properties
+     * @since 5.6
+     */
+    protected void checkForDeprecatedParameters(Properties properties) {
+        @SuppressWarnings("rawtypes")
+        Enumeration userEnum = properties.propertyNames();
+        while (userEnum.hasMoreElements()) {
+            String key = (String) userEnum.nextElement();
+            if (parametersMigration.containsKey(key)) {
+                String value = properties.getProperty(key);
+                properties.setProperty(parametersMigration.get(key), value);
+                // Don't remove the deprecated key yet - more
+                // warnings but old things should keep working
+                // properties.remove(key);
+                if (!hideDeprecationWarnings) {
+                    log.warn("Parameter " + key
+                            + " is deprecated - please use "
+                            + parametersMigration.get(key) + " instead");
                 }
             }
         }
@@ -853,7 +862,7 @@ public class ConfigurationGenerator {
      */
     public void saveConfiguration(Map<String, String> changedParameters,
             boolean setGenerationOnceToFalse, boolean setGenerationFalseToOnce)
-                    throws ConfigurationException {
+            throws ConfigurationException {
         this.setOnceToFalse = setGenerationOnceToFalse;
         this.setFalseToOnce = setGenerationFalseToOnce;
         writeConfiguration(loadConfiguration(changedParameters),
@@ -912,7 +921,7 @@ public class ConfigurationGenerator {
 
     private void writeConfiguration(StringBuffer newContent,
             Map<String, String> changedParameters)
-                    throws ConfigurationException {
+            throws ConfigurationException {
         FileWriter writer = null;
         try {
             writer = new FileWriter(nuxeoConf, false);
@@ -1483,13 +1492,12 @@ public class ConfigurationGenerator {
      */
     public void checkDatabaseConnection(String databaseTemplate, String dbName,
             String dbUser, String dbPassword, String dbHost, String dbPort)
-                    throws FileNotFoundException, IOException, DatabaseDriverException,
-                    SQLException {
+            throws FileNotFoundException, IOException, DatabaseDriverException,
+            SQLException {
         File databaseTemplateDir = new File(nuxeoHome, TEMPLATES
                 + File.separator + databaseTemplate);
-        Properties templateProperties = new Properties();
-        loadTrimmedProperties(templateProperties, new File(databaseTemplateDir,
-                NUXEO_DEFAULT_CONF));
+        Properties templateProperties = loadTrimmedProperties(new File(
+                databaseTemplateDir, NUXEO_DEFAULT_CONF));
         String classname = templateProperties.getProperty(PARAM_DB_DRIVER);
         // Load driver class from template or default lib directory
         Driver driver = lookupDriver(databaseTemplate, databaseTemplateDir,
@@ -1525,7 +1533,7 @@ public class ConfigurationGenerator {
      */
     private Driver lookupDriver(String databaseTemplate,
             File databaseTemplateDir, String classname)
-                    throws FileNotFoundException, IOException, DatabaseDriverException {
+            throws FileNotFoundException, IOException, DatabaseDriverException {
         File[] files = (File[]) ArrayUtils.addAll( //
                 new File(databaseTemplateDir, "lib").listFiles(), //
                 serverConfigurator.getServerLibDir().listFiles());
@@ -1576,9 +1584,7 @@ public class ConfigurationGenerator {
                     "common/config/distribution.properties");
             if (distribFile.exists()) {
                 try {
-                    Properties distributionProperties = new Properties();
-                    loadTrimmedProperties(distributionProperties, distribFile);
-                    env.loadProperties(distributionProperties);
+                    env.loadProperties(loadTrimmedProperties(distribFile));
                 } catch (FileNotFoundException e) {
                     log.error(e);
                 } catch (IOException e) {
@@ -1597,19 +1603,20 @@ public class ConfigurationGenerator {
      * @since 5.6
      * @param props Properties object to be filled
      * @param propsFile Properties file
+     * @return new Properties containing trimmed keys and values read in
+     *         {@code propsFile}
      * @throws IOException
      */
-    public static void loadTrimmedProperties(Properties props, File propsFile)
+    public static Properties loadTrimmedProperties(File propsFile)
             throws IOException {
-        if (props == null) {
-            return;
-        }
+        Properties props = new Properties();
         FileInputStream propsIS = new FileInputStream(propsFile);
         try {
             loadTrimmedProperties(props, propsIS);
         } finally {
             propsIS.close();
         }
+        return props;
     }
 
     /**
@@ -1625,11 +1632,20 @@ public class ConfigurationGenerator {
         }
         Properties p = new Properties();
         p.load(propsIS);
-        Enumeration pEnum = p.propertyNames();
+        @SuppressWarnings("unchecked")
+        Enumeration<String> pEnum = (Enumeration<String>) p.propertyNames();
         while (pEnum.hasMoreElements()) {
-            String key = (String) pEnum.nextElement();
+            String key = pEnum.nextElement();
             String value = p.getProperty(key);
             props.put(key.trim(), value.trim());
         }
+    }
+
+    /**
+     * @return The generated properties file with dumped configuration.
+     * @since 5.6
+     */
+    public File getDumpedConfig() {
+        return new File(getConfigDir(), CONFIGURATION_PROPERTIES);
     }
 }

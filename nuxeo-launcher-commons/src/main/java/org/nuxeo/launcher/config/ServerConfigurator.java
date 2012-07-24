@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -68,8 +69,8 @@ public abstract class ServerConfigurator {
     /**
      * @since 5.4.2
      */
-    public static final String[] NUXEO_SYSTEM_PROPERTIES = new String[] {
-            "nuxeo.conf", "nuxeo.home" };
+    public static final List<String> NUXEO_SYSTEM_PROPERTIES = Arrays.asList(new String[] {
+            "nuxeo.conf", "nuxeo.home", "log.id" });
 
     protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
 
@@ -490,8 +491,7 @@ public abstract class ServerConfigurator {
      */
     public void dumpProperties(Properties userConfig) {
         Properties dumpedProperties = filterSystemProperties(userConfig);
-        File dumpedFile = new File(generator.getConfigDir(),
-                "configuration.properties");
+        File dumpedFile = generator.getDumpedConfig();
         OutputStream os = null;
         try {
             os = new FileOutputStream(dumpedFile, false);
@@ -520,15 +520,13 @@ public abstract class ServerConfigurator {
             String key = propertyNames.nextElement();
             dumpedProperties.setProperty(key, properties.getProperty(key));
         }
-        // Remove System properties
+        // Remove System properties except Nuxeo's System properties
         for (@SuppressWarnings("unchecked")
         Enumeration<String> propertyNames = (Enumeration<String>) System.getProperties().propertyNames(); propertyNames.hasMoreElements();) {
             String key = propertyNames.nextElement();
-            dumpedProperties.remove(key);
-        }
-        // Re-add Nuxeo's System properties
-        for (String key : NUXEO_SYSTEM_PROPERTIES) {
-            dumpedProperties.setProperty(key, properties.getProperty(key));
+            if (!NUXEO_SYSTEM_PROPERTIES.contains(key)) {
+                dumpedProperties.remove(key);
+            }
         }
         return dumpedProperties;
     }
