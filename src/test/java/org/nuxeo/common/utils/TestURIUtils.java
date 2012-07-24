@@ -88,6 +88,10 @@ public class TestURIUtils {
         return URIUtils.quoteURIPathComponent(s, b);
     }
 
+    private static String q(String s, boolean quoteSlash, boolean quoteAt) {
+        return URIUtils.quoteURIPathComponent(s, quoteSlash, quoteAt);
+    }
+
     @Test
     public void testQuoteURIPathComponent() {
         assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin", q(
@@ -96,6 +100,9 @@ public class TestURIUtils {
         assertEquals("a/b/c", q("a/b/c", false));
         // NXP-2480
         assertEquals("%5Bfoo%5D%20bar%3F", q("[foo] bar?", true));
+        assertEquals("http%3A%2F%2Ffoo%2Fbar%2F%40adapter", q("http://foo/bar/@adapter", true));
+        assertEquals("http%3A%2F%2Ffoo%2Fbar%2F@adapter", q("http://foo/bar/@adapter", true, false));
+        assertEquals("http%3A//foo/bar/@adapter", q("http://foo/bar/@adapter", false, false));
     }
 
     private static String uq(String s) {
