@@ -49,6 +49,16 @@ public class LocalConfigurationServiceImpl extends DefaultComponent implements
             }
             while (localConfiguration.canMerge()) {
                 DocumentRef parentRef = session.getParentDocumentRef(localConfiguration.getDocumentRef());
+                if (parentRef == null) {
+                    DocumentModel parentDoc = session.getParentDocument(localConfiguration.getDocumentRef());
+                    if (parentDoc == null) {
+                        break;
+                    }
+                    parentRef = parentDoc.getRef();
+                    if (parentRef == null) {
+                        break;
+                    }
+                }
                 T parentConfiguration = session.adaptFirstMatchingDocumentWithFacet(
                         parentRef, configurationFacet, configurationClass);
                 if (parentConfiguration == null) {
