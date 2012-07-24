@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.dom4j.swing.LeafTreeNode;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -51,8 +52,29 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                     "Can not version a folder that has not snapshot schema");
         }
         if (!targetDoc.isFolder() && !targetDoc.isCheckedOut()) {
+            if (targetDoc.isVersion()) {
+                return targetDoc.getRef();
+            }
             return targetDoc.getCoreSession().getLastDocumentVersionRef(
                     targetDoc.getRef());
+        }
+        if (targetDoc.isVersion()) {
+            return targetDoc.getRef();
+        }
+        if (targetDoc.isProxy()) {
+            DocumentModel proxyTarget = targetDoc.getCoreSession().getDocument(
+                    new IdRef(targetDoc.getSourceId()));
+            if (proxyTarget.isVersion()) {
+                // standard proxy : nothing to snapshot
+                return targetDoc.getRef();
+            } else {
+                // live proxy
+                // checkin the target doc ?
+                targetDoc.getCoreSession().checkIn(proxyTarget.getRef(),
+                        option, null);
+                // create a new proxy ??
+            }
+
         }
         return targetDoc.getCoreSession().checkIn(targetDoc.getRef(), option,
                 null);
@@ -110,7 +132,16 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         for (int i = 0; i < children.size(); i++) {
             DocumentModel child = children.get(i);
             if (!child.isFolder()) {
-                vuuids[i] = createLeafVersion(child, option).toString();
+                DocumentRef leafRef = createLeafVersion(child, option);
+                if (leafRef != null) {
+                    vuuids[i] = leafRef.toString();
+                } else {
+                    throw new ClientException(
+                            "Unable to create leaf version for "
+                                    + child.getPathAsString() + " ("
+                                    + child.isVersion() + "," + child.isProxy()
+                                    + ")");
+                }
             } else {
                 SnapshotableAdapter adapter = new SnapshotableAdapter(child);
                 Snapshot snap = adapter.createSnapshot(option);
