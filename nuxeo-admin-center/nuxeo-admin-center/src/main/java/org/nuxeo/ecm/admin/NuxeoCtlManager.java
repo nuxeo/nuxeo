@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 import org.nuxeo.runtime.api.Framework;
 
@@ -41,6 +42,8 @@ public class NuxeoCtlManager {
     protected static final String CMD_WIN = "nuxeoctl.bat";
 
     protected static final Log log = LogFactory.getLog(NuxeoCtlManager.class);
+
+    private ConfigurationGenerator cg;
 
     public static boolean isWindows() {
         String osName = System.getProperty("os.name");
@@ -130,4 +133,18 @@ public class NuxeoCtlManager {
         restart();
         return "Nuxeo server is restarting";
     }
+
+    /**
+     * @since 5.6
+     * @return Configured server URL (may differ from current URL)
+     */
+    public String getServerURL() {
+        if (cg == null) {
+            cg = new ConfigurationGenerator();
+            cg.init();
+        }
+        return cg.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_NUXEO_URL);
+    }
+
 }
