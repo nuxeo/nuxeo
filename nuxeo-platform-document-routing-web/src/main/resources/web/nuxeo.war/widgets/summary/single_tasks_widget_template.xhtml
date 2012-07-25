@@ -23,7 +23,7 @@
           varStatus="status">
 
           <nxu:set var="task" value="#{routingTaskActions.setCurrentTask(dashboardItem.task)}" cache="true">
-          <nxu:set var="idPrefix" value="#{task.name}#{status.index}" cache="true">
+          <nxu:set var="idPrefix" value="task_#{task.id}" cache="true">
 
             <div>
 

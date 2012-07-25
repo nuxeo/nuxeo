@@ -20,7 +20,7 @@
 
       <c:forEach var="task" items="#{tasks}" varStatus="status">
 
-        <nxu:set var="idPrefix" value="#{task.name}#{status.index}" cache="true">
+        <nxu:set var="idPrefix" value="task_#{task.id}" cache="true">
 
         <div>
 
