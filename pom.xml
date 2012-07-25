@@ -111,6 +111,12 @@
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-gwt</artifactId>
         <version>${nuxeo.platform.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>nuxeo-distribution-tools</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
