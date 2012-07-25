@@ -9,6 +9,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
+  <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-launcher</artifactId>
   <name>Nuxeo multi-OS startup</name>
   <description>Build a Nuxeo launcher working with all Nuxeo products</description>
