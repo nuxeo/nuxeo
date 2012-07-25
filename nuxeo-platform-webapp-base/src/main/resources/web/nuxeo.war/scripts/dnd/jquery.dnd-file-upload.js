@@ -109,13 +109,59 @@
   function drop(event, opts) {
 
     var dt = event.dataTransfer;
-    var files = dt.files;
+    var files = new Array();
 
     event.preventDefault();
+
+    var useChrome21Method = false;
+    // special handling for chrome > 21
+    // to be able to manage simple folder upload
+    if (dt.items) {
+       var length = dt.items.length;
+       for (var i = 0; i < length; i++) {
+           if (dt.items[i].webkitGetAsEntry) {
+              useChrome21Method = true;
+              var entry = dt.items[i].webkitGetAsEntry();
+              if (entry.isFile) {
+                 files.push(entry);
+              } else if (entry.isDirectory) {
+                 // getting directory content is async
+                 // so it must be handled via a callback system
+                 var dirReader = entry.createReader();
+                 var readDirContent = function() {
+                     dirReader.readEntries (function(results) {
+                       if (results.length) {
+                        for (var j=0; j < results.length; j++) {
+                          if (results[j].isFile) {
+                            uploadStack.push(results[j]);
+                          } else {
+                            // skip subfolders
+                          }
+                        }
+                        // continue reading since we may receive the content by chunks
+                        readDirContent();
+                       } else {
+                        // no more result : fire upload if needed
+                        if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
+                          uploadFiles(opts);
+                        }
+                       }
+                     },
+                     function(err) { console.log(err)});
+                 }
+                 readDirContent();
+              }
+          }
+        }
+    }
+    if (!useChrome21Method) {
+        files = dt.files;
+    }
 
     for ( var i = 0; i < files.length; i++) {
       uploadStack.push(files[i]);
     }
+
     if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
       uploadFiles(opts);
     }
@@ -197,7 +243,7 @@
 
       xhr.setRequestHeader("Content-Type", "multipart/form-data");
       nbUploadInprogress++;
-      
+
       opts.handler.uploadStarted(uploadIdx, file);
       uploadIdx++;
 
