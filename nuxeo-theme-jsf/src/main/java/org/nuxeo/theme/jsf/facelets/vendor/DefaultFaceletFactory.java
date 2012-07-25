@@ -228,9 +228,10 @@ public class DefaultFaceletFactory extends FaceletFactory {
             DefaultFacelet f = new DefaultFacelet(this,
                     this.compiler.createExpressionFactory(), url, alias, h);
             return f;
-        } catch (FileNotFoundException fnfe) {
+        } catch (IOException e) {
             if (log.isLoggable(Level.SEVERE)) {
-                log.severe(alias + " not found at " + url.toExternalForm());
+                log.severe(alias + " not found at " + url.toExternalForm()
+                        + " : " + e.getMessage());
             }
             Facelet f = new NotFoundFacelet(alias);
             return f;
