@@ -176,6 +176,9 @@ public class FrameworkLoader {
                 } finally {
                     jf.close();
                 }
+                if (mf == null) {
+                    return false;
+                }
             } else if (f.isDirectory()) { // directory
                 f = new File(f, "META-INF/MANIFEST.MF");
                 if (!f.isFile()) {
