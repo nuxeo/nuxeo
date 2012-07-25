@@ -245,7 +245,10 @@ class Repository(object):
         profiles_param = ""
         if profiles is not None:
             profiles_param = "-P%s" % profiles
-        system("mvn %s %s -Paddons,distrib,all-distributions %s" %
+        system("mvn %s %s -Paddons %s" %
+               (commands, skip_tests_param, profiles_param),
+               delay_stdout=False)
+        system("mvn %s %s -Pall-distributions -f nuxeo-distribution/pom.xml %s" %
                (commands, skip_tests_param, profiles_param),
                delay_stdout=False)
 
