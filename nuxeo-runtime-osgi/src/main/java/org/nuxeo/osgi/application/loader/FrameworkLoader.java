@@ -171,6 +171,9 @@ public class FrameworkLoader {
             JarFile jf = new JarFile(f);
             try {
                 Manifest mf = jf.getManifest();
+                if (mf == null) {
+                    return false;
+                }
                 return mf.getMainAttributes().containsKey(SYMBOLIC_NAME);
             } finally {
                 jf.close();
