@@ -1036,6 +1036,9 @@ public class ConfigurationGenerator {
                                 // Backward compliance, it must be ignored
                                 continue;
                             }
+                            if (equalIdx < 1) { // Ignore non-readable lines
+                                continue;
+                            }
                             if (line.trim().startsWith("#")) {
                                 String key = line.substring(1, equalIdx).trim();
                                 String value = line.substring(equalIdx + 1).trim();
