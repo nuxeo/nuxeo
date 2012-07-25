@@ -108,16 +108,20 @@ public class NuxeoLauncherGUI {
         dumpedConfigMonitor = new DefaultFileMonitor(new FileListener() {
             @Override
             public void fileDeleted(FileChangeEvent event) throws Exception {
-                throw new UnsupportedOperationException();
+                // Ignore
             }
 
             @Override
             public void fileCreated(FileChangeEvent event) throws Exception {
-                throw new UnsupportedOperationException();
+                updateNuxeoFrame();
             }
 
             @Override
             public void fileChanged(FileChangeEvent event) throws Exception {
+                updateNuxeoFrame();
+            }
+
+            synchronized private void updateNuxeoFrame() {
                 waitForFrameLoaded();
                 log.debug("Configuration changed. Reloading frame...");
                 launcher.init();
