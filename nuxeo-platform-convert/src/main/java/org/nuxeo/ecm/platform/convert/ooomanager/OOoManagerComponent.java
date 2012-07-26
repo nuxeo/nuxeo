@@ -107,6 +107,7 @@ public class OOoManagerComponent extends DefaultComponent implements
     public void stopOOoManager() {
         if (started) {
             officeManager.stop();
+            started = false;
             log.debug("Stopping ooo manager.");
         } else {
             log.debug("OOoManager already stopped..");
@@ -237,15 +238,27 @@ public class OOoManagerComponent extends DefaultComponent implements
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
-        try {
-            startOOoManager();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not start OOoManager.", e);
-        }
+        Runnable oooStarter = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    startOOoManager();
+                } catch (IOException e) {
+                    log.error("Could not start OOoManager.", e);
+                }
+            }
+        };
+        Thread oooStarterThread = new Thread(oooStarter);
+        oooStarterThread.setDaemon(true);
+        oooStarterThread.start();
+        log.info("Started OOo Manager");
     }
 
     public boolean isOOoManagerStarted() {
         return started;
     }
 
+    public OfficeManager getOfficeManager() {
+        return officeManager;
+    }
 }
