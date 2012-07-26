@@ -78,7 +78,6 @@ import tempfile
 import time
 import urllib
 
-
 PKG_RENAMINGS = {
     # JBoss packages
     "nuxeo-distribution/nuxeo-distribution-jboss/target/"
@@ -94,35 +93,14 @@ PKG_RENAMINGS = {
     "nuxeo-distribution-tomcat-%s-coreserver.zip":
     "nuxeo-coreserver-%s-tomcat",
     "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
-    "nuxeo-distribution-tomcat-%s-nuxeo-cap.zip": "nuxeo-cap-%s-tomcat"
-}
-
-PKG_RENAMINGS_OPTIONALS = {
-    # Tomcat packages
+    "nuxeo-distribution-tomcat-%s-nuxeo-cap.zip": "nuxeo-cap-%s-tomcat",
     "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
-    "nuxeo-distribution-tomcat-%s-coreserver-sdk.zip":
-    "nuxeo-coreserver-%s-tomcat-sdk",
-    "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
-    "nuxeo-distribution-tomcat-%s-nuxeo-cap-sdk.zip":
-    "nuxeo-cap-%s-tomcat-sdk"
+    "nuxeo-distribution-tomcat-%s-nuxeo-dm.zip": "nuxeo-dm-%s-tomcat",
+    "nuxeo-distribution/nuxeo-distribution-jetty/target/"
+    "nuxeo-distribution-jetty-%s-nuxeo-cap.zip": "nuxeo-cap-%s-jetty",
+    "nuxeo-distribution/nuxeo-distribution-jetty/target/"
+    "nuxeo-distribution-jetty-%s-nuxeo-cap.zip": "nuxeo-cap-%s-jetty"
 }
-
-MP_RENAMINGS = {
-    "nuxeo-distribution/nuxeo-marketplace-cmf/target/"
-    "nuxeo-marketplace-cmf-%s.zip": "nuxeo-cmf-%s.zip",
-    "nuxeo-distribution/nuxeo-marketplace-content-browser/target/"
-    "nuxeo-marketplace-content-browser-%s.zip": "nuxeo-content-browser-%s.zip",
-    "nuxeo-distribution/nuxeo-marketplace-content-browser/target/"
-    "nuxeo-marketplace-content-browser-%s-cmf.zip":
-    "nuxeo-content-browser-cmf-%s.zip",
-    "nuxeo-distribution/nuxeo-marketplace-dam/target/"
-    "nuxeo-marketplace-dam-%s.zip": "nuxeo-dam-%s.zip",
-    "nuxeo-distribution/nuxeo-marketplace-dm/target/"
-    "nuxeo-marketplace-dm-%s.zip": "nuxeo-dm-%s.zip",
-    "nuxeo-distribution/nuxeo-marketplace-social-collaboration/target/"
-    "nuxeo-marketplace-social-collaboration-%s.zip": "nuxeo-sc-%s.zip"
-}
-
 
 class Release(object):
     """Nuxeo release manager.
@@ -252,58 +230,7 @@ class Release(object):
         # Tomcat and JBoss packages
         for old, new in PKG_RENAMINGS.items():
             self.package(old % version, new % version)
-        # Tomcat SDK packages
-        for old, new in PKG_RENAMINGS_OPTIONALS.items():
-            self.package(old % version, new % version, False)
 
-        # Online (aka light) Tomcat package
-        offline_name = "nuxeo-cap-%s-tomcat" % version
-        extract_zip(os.path.join(self.archive_dir, offline_name + ".zip"),
-                    self.tmpdir)
-        online_name = "nuxeo-cap-%s-tomcat-online" % version
-        # Keep packages.xml file
-        shutil.move(os.path.join(self.tmpdir, offline_name,
-                                   "setupWizardDownloads", "packages.xml"),
-                  os.path.join(self.archive_dir, "packages.xml"))
-        # Remove Marketplace packages
-        shutil.rmtree(os.path.join(self.tmpdir, offline_name,
-                                   "setupWizardDownloads"))
-        shutil.move(os.path.join(self.tmpdir, offline_name),
-                  os.path.join(self.tmpdir, online_name))
-        make_zip(os.path.join(self.archive_dir, online_name + ".zip"),
-                            os.path.join(self.tmpdir, online_name),
-                            online_name)
-
-        # Marketplace packages
-        archive_mp_dir = os.path.join(self.archive_dir, "mp")
-        if not os.path.isdir(archive_mp_dir):
-            os.mkdir(archive_mp_dir)
-        # Copy and rename MP to archive directory
-        for old, new in MP_RENAMINGS.items():
-            shutil.copy2(old % version,
-                         os.path.join(archive_mp_dir, new % version))
-        log("Checking packages integrity...")
-        for package in os.listdir(archive_mp_dir):
-            m = hashlib.md5()
-            with open(os.path.join(archive_mp_dir, package), "rb") as f:
-                m.update(f.read())
-            package_md5 = m.hexdigest()
-            found_package = False
-            found_package_md5 = False
-            for line in open(os.path.join(self.archive_dir, "packages.xml")):
-                if package in line:
-                    found_package = True
-                if package_md5 in line:
-                    found_package_md5 = True
-                if found_package and found_package_md5:
-                    break
-            if not found_package:
-                log("[ERROR] Could not find %s in packages.xml" % package,
-                sys.stderr)
-            if not found_package_md5:
-                log("[ERROR] %s MD5 did not match packages.xml information"
-                    % package, sys.stderr)
-        log("Done.")
         self.package_sources(version)
         shutil.rmtree(self.tmpdir)
 
