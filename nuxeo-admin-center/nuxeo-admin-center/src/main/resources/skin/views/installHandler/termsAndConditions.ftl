@@ -10,7 +10,7 @@
 
    <h3> ${pkg.title} (${pkg.id}) </h3>
 
-   <p>You need to accept the Terms and Condition before continuing the installation.</p>
+   <p><a href="https://www.nuxeo.com/en/services/nuxeo-admin-center-tc" target="_blank">You need to accept the Terms and Condition before continuing the installation.</a></p>
 
    <div class="termsAndConditionsBlock" style="white-space:pre-line">
    ${content}
