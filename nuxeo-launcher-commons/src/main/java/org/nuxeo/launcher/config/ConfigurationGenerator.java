@@ -1501,13 +1501,30 @@ public class ConfigurationGenerator {
                 + File.separator + databaseTemplate);
         Properties templateProperties = loadTrimmedProperties(new File(
                 databaseTemplateDir, NUXEO_DEFAULT_CONF));
-        String classname = templateProperties.getProperty(PARAM_DB_DRIVER);
+        String classname, connectionUrl;
+        if (userConfig.getProperty(PARAM_TEMPLATE_DBNAME).equals(
+                databaseTemplateDir)) {
+            // userConfig already includes databaseTemplate
+            classname = userConfig.getProperty(PARAM_DB_DRIVER);
+            connectionUrl = userConfig.getProperty(PARAM_DB_JDBC_URL);
+        } else { // testing a databaseTemplate not included in userConfig
+            // check if value is set in nuxeo.conf
+            if (userConfig.containsKey(PARAM_DB_DRIVER)) {
+                classname = (String) userConfig.get(PARAM_DB_DRIVER);
+            } else {
+                classname = templateProperties.getProperty(PARAM_DB_DRIVER);
+            }
+            if (userConfig.containsKey(PARAM_DB_JDBC_URL)) {
+                connectionUrl = (String) userConfig.get(PARAM_DB_JDBC_URL);
+            } else {
+                connectionUrl = templateProperties.getProperty(PARAM_DB_JDBC_URL);
+            }
+        }
         // Load driver class from template or default lib directory
         Driver driver = lookupDriver(databaseTemplate, databaseTemplateDir,
                 classname);
         // Test db connection
         DriverManager.registerDriver(driver);
-        String connectionUrl = templateProperties.getProperty(PARAM_DB_JDBC_URL);
         TextTemplate tt = new TextTemplate();
         tt.setVariable(PARAM_DB_HOST, dbHost);
         tt.setVariable(PARAM_DB_PORT, dbPort);
@@ -1515,7 +1532,9 @@ public class ConfigurationGenerator {
         Properties props = new Properties();
         props.put("user", dbUser);
         props.put("password", dbPassword);
-        Connection con = driver.connect(tt.processText(connectionUrl), props);
+        String url = tt.processText(connectionUrl);
+        log.debug("Testing URL " + url + " with " + props);
+        Connection con = driver.connect(url, props);
         con.close();
     }
 
