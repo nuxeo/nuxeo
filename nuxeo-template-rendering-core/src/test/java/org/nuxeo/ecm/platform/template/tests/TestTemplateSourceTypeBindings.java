@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -104,10 +105,10 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
-        Map<String, String> mapping = tps.getTypeMapping();
+        Map<String, List<String>> mapping = tps.getTypeMapping();
 
-        assertEquals(t1.getAdaptedDoc().getId(), mapping.get("File"));
-        assertEquals(t1.getAdaptedDoc().getId(), mapping.get("Note"));
+        assertTrue(mapping.get("File").contains(t1.getAdaptedDoc().getId()));
+        assertTrue(mapping.get("Note").contains(t1.getAdaptedDoc().getId()));
 
         // wait for Async listener to run !
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
@@ -127,15 +128,17 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
         session.save();
 
         mapping = tps.getTypeMapping();
-        assertEquals(t1.getAdaptedDoc().getId(), mapping.get("File"));
-        assertEquals(t2.getAdaptedDoc().getId(), mapping.get("Note"));
+
+        assertTrue(mapping.get("File").contains(t1.getAdaptedDoc().getId()));
+        assertTrue(mapping.get("Note").contains(t1.getAdaptedDoc().getId()));
+        assertTrue(mapping.get("Note").contains(t2.getAdaptedDoc().getId()));
 
         // check update on initial template
-        // refetch staled DocumentModel
+        // re-fetch staled DocumentModel
         t1 = session.getDocument(new IdRef(t1.getAdaptedDoc().getId())).getAdapter(
                 TemplateSourceDocument.class);
         assertTrue(t1.getForcedTypes().contains("File"));
-        assertFalse(t1.getForcedTypes().contains("Note"));
+        assertTrue(t1.getForcedTypes().contains("Note"));
     }
 
     @Test
@@ -201,6 +204,43 @@ public class TestTemplateSourceTypeBindings extends SQLRepositoryTestCase {
 
         // verify that template has been associated
         assertNotNull(simpleNote.getAdapter(TemplateBasedDocument.class));
+
+    }
+
+    @Test
+    public void testAutomaticTemplateMultiBinding() throws Exception {
+
+        // create a template and a simple mapping
+        TemplateSourceDocument t1 = createTemplateDoc("t1");
+        t1.setForcedTypes(new String[] { "File" }, true);
+        assertTrue(t1.getForcedTypes().contains("File"));
+        session.save();
+
+        // create a second template and a simple mapping
+        TemplateSourceDocument t2 = createTemplateDoc("t2");
+        t2.setForcedTypes(new String[] { "File" }, true);
+        assertTrue(t2.getForcedTypes().contains("File"));
+        session.save();
+
+        // wait for Async listener to run !
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+
+        // now create a simple file
+        DocumentModel root = session.getRootDocument();
+        DocumentModel simpleFile = session.createDocumentModel(
+                root.getPathAsString(), "myTestFile", "File");
+        simpleFile = session.createDocument(simpleFile);
+
+        session.save();
+
+        // verify that template has been associated
+        TemplateBasedDocument templatizedFile = simpleFile.getAdapter(TemplateBasedDocument.class);
+        assertNotNull(templatizedFile);
+
+        List<String> templateNames = templatizedFile.getTemplateNames();
+
+        assertTrue(templateNames.contains("t1"));
+        assertTrue(templateNames.contains("t2"));
 
     }
 

@@ -105,13 +105,13 @@ public interface TemplateProcessorService {
             DocumentModel source) throws ClientException;
 
     /**
-     * Retrieve the Map used for mapping Document Types to Template Name. This
-     * Map represent the Template that must be automatically bound at creation
+     * Retrieve the Map used for mapping Document Types to Template Names. This
+     * Map represent the Templates that must be automatically bound at creation
      * time for each Document Type.
      * 
      * @return the Type2Template mapping
      */
-    Map<String, String> getTypeMapping();
+    Map<String, List<String>> getTypeMapping();
 
     /**
      * Update Type2Template Mapping from the data contained in the source
