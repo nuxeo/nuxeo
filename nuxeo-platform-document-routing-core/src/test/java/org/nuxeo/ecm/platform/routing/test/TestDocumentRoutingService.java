@@ -854,19 +854,17 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
         // create an initial route to test that is override at import
         DocumentModel root = createDocumentModel(session,
-                "document-route-models-root", "DocumentRouteModelsRoot",
-                "/default-domain/");
+                "document-route-models-root", "DocumentRouteModelsRoot", "/");
         assertNotNull(root);
         DocumentModel route = createDocumentModel(session, "myRoute",
-                "DocumentRoute", "/default-domain/document-route-models-root/");
+                "DocumentRoute", "/document-route-models-root/");
         route.setPropertyValue("dc:coverage", "test");
         route = session.saveDocument(route);
         assertNotNull(route);
         assertEquals("test", route.getPropertyValue("dc:coverage"));
 
         DocumentModel node = createDocumentModel(session, "myNode",
-                "RouteNode",
-                "/default-domain/document-route-models-root/myRoute");
+                "RouteNode", "/document-route-models-root/myRoute");
 
         assertNotNull(node);
 
@@ -885,15 +883,16 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         resource.setUrl(tmp.toURI().toURL());
         service.registerRouteResource(resource, null);
 
+        session.save();
         // trigger model creation (calls service.importRouteModel)
         fireFrameworkStarted();
         session.save(); // process invalidations
 
         DocumentModel modelsRoot = session.getDocument(new PathRef(
-                "/default-domain/document-route-models-root/"));
+                "/document-route-models-root/"));
         assertNotNull(modelsRoot);
         route = session.getDocument(new PathRef(
-                "/default-domain/document-route-models-root/myRoute"));
+                "/document-route-models-root/myRoute"));
         assertNotNull(route);
         // test that document was overriden
 
@@ -901,18 +900,18 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertTrue(StringUtils.isBlank((String) route.getPropertyValue("dc:coverage")));
         try {
             node = session.getDocument(new PathRef(
-                    "/default-domain/document-route-models-root/myRoute/myNode"));
+                    "/document-route-models-root/myRoute/myNode"));
         } catch (ClientException e) {
             node = null;
         }
         assertNull(node);
         assertEquals("DocumentRoute", route.getType());
         DocumentModel step1 = session.getDocument(new PathRef(
-                "/default-domain/document-route-models-root/myRoute/Step1"));
+                "/document-route-models-root/myRoute/Step1"));
         assertNotNull(step1);
         assertEquals("RouteNode", step1.getType());
         DocumentModel step2 = session.getDocument(new PathRef(
-                "/default-domain/document-route-models-root/myRoute/Step2"));
+                "/document-route-models-root/myRoute/Step2"));
         assertNotNull(step2);
         assertEquals("RouteNode", step2.getType());
     }
