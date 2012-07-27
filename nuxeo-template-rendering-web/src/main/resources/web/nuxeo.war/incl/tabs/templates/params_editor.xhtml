@@ -7,7 +7,7 @@
     xmlns:nxu="http://nuxeo.org/nxweb/util"
     xmlns:c="http://java.sun.com/jstl/core">
 
-  <script src="/nuxeo/scripts/template-edit-param.js"></script>
+  <script src="#{contextPath}/scripts/template-edit-param.js"></script>
   <h:form enctype="multipart/form-data" id="params_edit">
       <nxu:repeat var="param" value="#{bean.templateEditableInputs}">
           <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />

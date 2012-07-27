@@ -18,7 +18,7 @@
             <h3>
                 <h:outputText value="#{messages['title.create.document']} #{messages[changeableDocument.type]}" />
             </h3>
-            <script src="/nuxeo/scripts/template-edit-param.js"></script>
+            <script src="#{contextPath}/scripts/template-edit-param.js"></script>
             <h:form enctype="multipart/form-data" id="params_edit">
 
                 <nxu:repeat var="param" value="#{templateActions.templateInputs}">
