@@ -453,7 +453,7 @@ public abstract class NuxeoLauncher {
                         "A server is running with process ID " + existingPid);
             }
         } catch (IOException e) {
-            log.warn("Could not check existing process" + e.getMessage());
+            log.warn("Could not check existing process: " + e.getMessage());
         }
     }
 
@@ -1149,15 +1149,15 @@ public abstract class NuxeoLauncher {
             }
         } catch (ConfigurationException e) {
             errorValue = 6;
-            log.error("Could not run configuration" + e.getMessage());
+            log.error("Could not run configuration: " + e.getMessage());
             log.debug(e, e);
         } catch (IOException e) {
             errorValue = 1;
-            log.error("Could not start process" + e.getMessage());
+            log.error("Could not start process: " + e.getMessage());
             log.debug(e, e);
         } catch (InterruptedException e) {
             errorValue = 1;
-            log.error("Could not start process" + e.getMessage());
+            log.error("Could not start process: " + e.getMessage());
             log.debug(e, e);
         } catch (IllegalStateException e) {
             log.error(e.getMessage());
