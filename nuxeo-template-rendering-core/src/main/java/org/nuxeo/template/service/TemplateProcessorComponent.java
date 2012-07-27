@@ -50,7 +50,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
 
     protected TemplateProcessorRegistry processorRegistry;
 
-    protected ConcurrentHashMap<String, String> type2Template = null;
+    protected ConcurrentHashMap<String, List<String>> type2Template = null;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -285,11 +285,11 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return processorRegistry.getRegistredProcessors();
     }
 
-    public Map<String, String> getTypeMapping() {
+    public Map<String, List<String>> getTypeMapping() {
         if (type2Template == null) {
             synchronized (this) {
                 if (type2Template == null) {
-                    type2Template = new ConcurrentHashMap<String, String>();
+                    type2Template = new ConcurrentHashMap<String, List<String>>();
                     TemplateMappingFetcher fetcher = new TemplateMappingFetcher();
                     try {
                         fetcher.runUnrestricted();
@@ -308,26 +308,34 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             throws ClientException {
         TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
         if (tmpl != null) {
-            Map<String, String> mapping = getTypeMapping();
+            Map<String, List<String>> mapping = getTypeMapping();
             // check existing mapping for this docId
             List<String> boundTypes = new ArrayList<String>();
             for (String type : mapping.keySet()) {
-                if (doc.getId().equals(mapping.get(type))) {
-                    boundTypes.add(type);
+                if (mapping.get(type) != null) {
+                    if (mapping.get(type).contains(doc.getId())) {
+                        boundTypes.add(type);
+                    }
                 }
             }
             // unbind previous mapping for this docId
             for (String type : boundTypes) {
-                mapping.remove(type);
+                List<String> templates = mapping.get(type);
+                templates.remove(doc.getId());
+                if (templates.size() == 0) {
+                    mapping.remove(type);
+                }
             }
             // rebind types (with override)
             for (String type : tmpl.getForcedTypes()) {
-                String uidToClean = mapping.get(type);
-                if (uidToClean != null) {
-                    new TemplateMappingRemover(doc.getCoreSession(),
-                            uidToClean, type).runUnrestricted();
+                List<String> templates = mapping.get(type);
+                if (templates == null) {
+                    templates = new ArrayList<String>();
+                    mapping.put(type, templates);
                 }
-                mapping.put(type, doc.getId());
+                if (!templates.contains(doc.getId())) {
+                    templates.add(doc.getId());
+                }
             }
         }
     }

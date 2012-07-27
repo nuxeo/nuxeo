@@ -1,6 +1,8 @@
 package org.nuxeo.template.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -28,7 +30,7 @@ public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
         return repoName;
     }
 
-    protected Map<String, String> mapping = new HashMap<String, String>();
+    protected Map<String, List<String>> mapping = new HashMap<String, List<String>>();
 
     protected TemplateMappingFetcher() {
         super(getRepoName());
@@ -48,20 +50,18 @@ public class TemplateMappingFetcher extends UnrestrictedSessionRunner {
             if (tmpl != null) {
                 for (String type : tmpl.getForcedTypes()) {
                     if (mapping.containsKey(type)) {
-                        log.warn("Several templates are mapped to type " + type
-                                + ": " + mapping.get(type) + " -- "
-                                + doc.getId()
-                                + " - removing duplicated binding");
-                        tmpl.removeForcedType(type, true);
+                        mapping.get(type).add(doc.getId());
                     } else {
-                        mapping.put(type, doc.getId());
+                        List<String> templates = new ArrayList<String>();
+                        templates.add(doc.getId());
+                        mapping.put(type, templates);
                     }
                 }
             }
         }
     }
 
-    public Map<String, String> getMapping() {
+    public Map<String, List<String>> getMapping() {
         return mapping;
     }
 }
