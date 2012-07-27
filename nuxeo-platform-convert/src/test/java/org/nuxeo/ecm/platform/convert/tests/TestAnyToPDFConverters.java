@@ -82,7 +82,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         try {
             result.getBlob().transferTo(pdfFile);
             text = readPdfText(pdfFile);
-            assertTrue(text.contains("Hello"));
+            assertTrue(text.contains("Hello") || text.contains("hello"));
             if (pdfa) {
                 assertTrue("Output is not PDF/A", isPDFA(pdfFile));
             }
@@ -93,7 +93,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
     }
 
     @Test
-    public void testAnyToTextConverter() throws Exception {
+    public void testAnyToPDFConverter() throws Exception {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         ConverterCheckResult check = cs.isConverterAvailable("any2pdf");
         assertNotNull(check);
@@ -117,10 +117,21 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         doTestPDFConverter("application/vnd.sun.xml.impress", "hello.sxi");
         doTestPDFConverter("application/vnd.oasis.opendocument.presentation",
                 "hello.odp");
+
+        doTestPDFConverter(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "hello.docx");
+        doTestPDFConverter(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "hello.xlsx");
+        doTestPDFConverter(
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                "hello.pptx");
+
     }
 
     @Test
-    public void testAnyToTextConverterWithToc() throws Exception {
+    public void testAnyToPDFConverterWithToc() throws Exception {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         ConverterCheckResult check = cs.isConverterAvailable("any2pdf");
         assertNotNull(check);
@@ -157,7 +168,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         public void run() {
 
             try {
-                testAnyToTextConverter();
+                testAnyToPDFConverter();
             } catch (Exception e) {
                 exception = false;
             } finally {

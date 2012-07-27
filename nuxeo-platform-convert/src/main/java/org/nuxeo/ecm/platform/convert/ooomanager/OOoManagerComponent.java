@@ -68,6 +68,10 @@ public class OOoManagerComponent extends DefaultComponent implements
 
     protected boolean started = false;
 
+    protected boolean starting = false;
+
+    protected boolean shutingdown = false;
+
     public OOoManagerDescriptor getDescriptor() {
         return descriptor;
     }
@@ -105,9 +109,11 @@ public class OOoManagerComponent extends DefaultComponent implements
     }
 
     public void stopOOoManager() {
-        if (started) {
+        if (started && !shutingdown) {
+            shutingdown = true;
             officeManager.stop();
             started = false;
+            shutingdown = false;
             log.debug("Stopping ooo manager.");
         } else {
             log.debug("OOoManager already stopped..");
@@ -117,104 +123,111 @@ public class OOoManagerComponent extends DefaultComponent implements
     public void startOOoManager() throws IOException {
         DefaultOfficeManagerConfiguration configuration = new DefaultOfficeManagerConfiguration();
 
-        // Properties configuration
-        String connectionProtocol = Framework.getProperty(CONNECTION_PROTOCOL_PROPERTY_KEY);
-        if (connectionProtocol != null && !"".equals(connectionProtocol)) {
-            if (OfficeConnectionProtocol.PIPE.toString().equals(
-                    connectionProtocol)) {
-                ConfigBuilderHelper.hackClassLoader();
-                configuration.setConnectionProtocol(OfficeConnectionProtocol.PIPE);
-            } else if (OfficeConnectionProtocol.SOCKET.toString().equals(
-                    connectionProtocol)) {
-                configuration.setConnectionProtocol(OfficeConnectionProtocol.SOCKET);
-            }
-        }
-        String maxTasksPerProcessProperty = Framework.getProperty(MAX_TASKS_PER_PROCESS_PROPERTY_KEY);
-        if (maxTasksPerProcessProperty != null
-                && !"".equals(maxTasksPerProcessProperty)) {
-            Integer maxTasksPerProcess = Integer.valueOf(maxTasksPerProcessProperty);
-            configuration.setMaxTasksPerProcess(maxTasksPerProcess);
-        }
-        String officeHome = Framework.getProperty(OFFICE_HOME_PROPERTY_KEY);
-        if (officeHome != null && !"".equals(officeHome)) {
-            configuration.setOfficeHome(officeHome);
-        }
+        starting = true;
 
-        String taskExecutionTimeoutProperty = Framework.getProperty(TASK_EXECUTION_TIMEOUT_PROPERTY_KEY);
-        if (taskExecutionTimeoutProperty != null
-                && !"".equals(taskExecutionTimeoutProperty)) {
-            Long taskExecutionTimeout = Long.valueOf(taskExecutionTimeoutProperty);
-            configuration.setTaskExecutionTimeout(taskExecutionTimeout);
-        }
-        String taskQueueTimeoutProperty = Framework.getProperty(TASK_QUEUE_TIMEOUT_PROPERTY_KEY);
-        if (taskQueueTimeoutProperty != null
-                && !"".equals(taskQueueTimeoutProperty)) {
-            Long taskQueueTimeout = Long.valueOf(taskQueueTimeoutProperty);
-            configuration.setTaskQueueTimeout(taskQueueTimeout);
-        }
-        String templateProfileDir = Framework.getProperty(TEMPLATE_PROFILE_DIR_PROPERTY_KEY);
-        if (templateProfileDir != null && !"".equals(templateProfileDir)) {
-            File templateDirectory = new File(templateProfileDir);
-            if (!templateDirectory.exists()) {
-                try {
-                    FileUtils.forceMkdir(templateDirectory);
-                } catch (IOException e) {
-                    throw new RuntimeException(
-                            "I/O Error: could not create JOD templateDirectory");
-                }
-            }
-            configuration.setTemplateProfileDir(templateDirectory);
-        }
-
-        // Descriptor configuration
-        String pipeNamesProperty = Framework.getProperty(OFFICE_PIPES_PROPERTY_KEY);
-        String[] pipeNames = null;
-        if (pipeNamesProperty != null) {
-            String[] unvalidatedPipeNames = pipeNamesProperty.split(",\\s*");
-            ArrayList<String> validatedPipeNames = new ArrayList<String>();
-            // Basic validation to avoid empty strings
-            for (int i = 0; i < unvalidatedPipeNames.length; i++) {
-                String tmpPipeName = unvalidatedPipeNames[i].trim();
-                if (tmpPipeName.length() > 0) {
-                    validatedPipeNames.add(tmpPipeName);
-                }
-            }
-            pipeNames = validatedPipeNames.toArray(new String[0]);
-        } else {
-            pipeNames = descriptor.getPipeNames();
-        }
-        if (pipeNames != null && pipeNames.length != 0) {
-            configuration.setPipeNames(pipeNames);
-        }
-        String portNumbersProperty = Framework.getProperty(OFFICE_PORTS_PROPERTY_KEY);
-        int[] portNumbers = null;
-        if (portNumbersProperty != null) {
-            String[] portStrings = portNumbersProperty.split(",\\s*");
-            ArrayList<Integer> portList = new ArrayList<Integer>();
-            for (int i = 0; i < portStrings.length; i++) {
-                try {
-                    portList.add(Integer.parseInt(portStrings[i].trim()));
-                } catch (NumberFormatException e) {
-                    log.error("Ignoring malformed port number: "
-                            + portStrings[i]);
-                }
-            }
-            portNumbers = ArrayUtils.toPrimitive(portList.toArray(new Integer[0]));
-        } else {
-            portNumbers = descriptor.getPortNumbers();
-        }
-        if (portNumbers != null && portNumbers.length != 0) {
-            configuration.setPortNumbers(portNumbers);
-        }
         try {
-            officeManager = configuration.buildOfficeManager();
-            officeManager.start();
-            started = true;
-            log.debug("Starting ooo manager.");
-        } catch (Exception e) {
-            Throwable t = unwrapException(e);
-            log.warn("OpenOffice was not found, JOD Converter "
-                    + "won't be available: " + t.getMessage());
+            // Properties configuration
+            String connectionProtocol = Framework.getProperty(CONNECTION_PROTOCOL_PROPERTY_KEY);
+            if (connectionProtocol != null && !"".equals(connectionProtocol)) {
+                if (OfficeConnectionProtocol.PIPE.toString().equals(
+                        connectionProtocol)) {
+                    ConfigBuilderHelper.hackClassLoader();
+                    configuration.setConnectionProtocol(OfficeConnectionProtocol.PIPE);
+                } else if (OfficeConnectionProtocol.SOCKET.toString().equals(
+                        connectionProtocol)) {
+                    configuration.setConnectionProtocol(OfficeConnectionProtocol.SOCKET);
+                }
+            }
+            String maxTasksPerProcessProperty = Framework.getProperty(MAX_TASKS_PER_PROCESS_PROPERTY_KEY);
+            if (maxTasksPerProcessProperty != null
+                    && !"".equals(maxTasksPerProcessProperty)) {
+                Integer maxTasksPerProcess = Integer.valueOf(maxTasksPerProcessProperty);
+                configuration.setMaxTasksPerProcess(maxTasksPerProcess);
+            }
+            String officeHome = Framework.getProperty(OFFICE_HOME_PROPERTY_KEY);
+            if (officeHome != null && !"".equals(officeHome)) {
+                configuration.setOfficeHome(officeHome);
+            }
+
+            String taskExecutionTimeoutProperty = Framework.getProperty(TASK_EXECUTION_TIMEOUT_PROPERTY_KEY);
+            if (taskExecutionTimeoutProperty != null
+                    && !"".equals(taskExecutionTimeoutProperty)) {
+                Long taskExecutionTimeout = Long.valueOf(taskExecutionTimeoutProperty);
+                configuration.setTaskExecutionTimeout(taskExecutionTimeout);
+            }
+            String taskQueueTimeoutProperty = Framework.getProperty(TASK_QUEUE_TIMEOUT_PROPERTY_KEY);
+            if (taskQueueTimeoutProperty != null
+                    && !"".equals(taskQueueTimeoutProperty)) {
+                Long taskQueueTimeout = Long.valueOf(taskQueueTimeoutProperty);
+                configuration.setTaskQueueTimeout(taskQueueTimeout);
+            }
+            String templateProfileDir = Framework.getProperty(TEMPLATE_PROFILE_DIR_PROPERTY_KEY);
+            if (templateProfileDir != null && !"".equals(templateProfileDir)) {
+                File templateDirectory = new File(templateProfileDir);
+                if (!templateDirectory.exists()) {
+                    try {
+                        FileUtils.forceMkdir(templateDirectory);
+                    } catch (IOException e) {
+                        throw new RuntimeException(
+                                "I/O Error: could not create JOD templateDirectory");
+                    }
+                }
+                configuration.setTemplateProfileDir(templateDirectory);
+            }
+
+            // Descriptor configuration
+            String pipeNamesProperty = Framework.getProperty(OFFICE_PIPES_PROPERTY_KEY);
+            String[] pipeNames = null;
+            if (pipeNamesProperty != null) {
+                String[] unvalidatedPipeNames = pipeNamesProperty.split(",\\s*");
+                ArrayList<String> validatedPipeNames = new ArrayList<String>();
+                // Basic validation to avoid empty strings
+                for (int i = 0; i < unvalidatedPipeNames.length; i++) {
+                    String tmpPipeName = unvalidatedPipeNames[i].trim();
+                    if (tmpPipeName.length() > 0) {
+                        validatedPipeNames.add(tmpPipeName);
+                    }
+                }
+                pipeNames = validatedPipeNames.toArray(new String[0]);
+            } else {
+                pipeNames = descriptor.getPipeNames();
+            }
+            if (pipeNames != null && pipeNames.length != 0) {
+                configuration.setPipeNames(pipeNames);
+            }
+            String portNumbersProperty = Framework.getProperty(OFFICE_PORTS_PROPERTY_KEY);
+            int[] portNumbers = null;
+            if (portNumbersProperty != null) {
+                String[] portStrings = portNumbersProperty.split(",\\s*");
+                ArrayList<Integer> portList = new ArrayList<Integer>();
+                for (int i = 0; i < portStrings.length; i++) {
+                    try {
+                        portList.add(Integer.parseInt(portStrings[i].trim()));
+                    } catch (NumberFormatException e) {
+                        log.error("Ignoring malformed port number: "
+                                + portStrings[i]);
+                    }
+                }
+                portNumbers = ArrayUtils.toPrimitive(portList.toArray(new Integer[0]));
+            } else {
+                portNumbers = descriptor.getPortNumbers();
+            }
+            if (portNumbers != null && portNumbers.length != 0) {
+                configuration.setPortNumbers(portNumbers);
+            }
+            try {
+                officeManager = configuration.buildOfficeManager();
+                officeManager.start();
+                started = true;
+                log.debug("Starting ooo manager.");
+            } catch (Exception e) {
+                started = false;
+                Throwable t = unwrapException(e);
+                log.warn("OpenOffice was not found, JOD Converter "
+                        + "won't be available: " + t.getMessage());
+            }
+        } finally {
+            starting = false;
         }
     }
 
@@ -238,6 +251,7 @@ public class OOoManagerComponent extends DefaultComponent implements
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        log.info("Starting OOo manager");
         Runnable oooStarter = new Runnable() {
             @Override
             public void run() {
@@ -255,6 +269,28 @@ public class OOoManagerComponent extends DefaultComponent implements
     }
 
     public boolean isOOoManagerStarted() {
+        if (shutingdown) {
+            return false;
+        }
+        if (!starting) {
+            return started;
+        }
+
+        // wait a little bit
+        // while we are starting Ooo
+        for (int i = 0; i < 100; i++) {
+            if (starting) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    // NOP
+                }
+            }
+            if (!starting) {
+                return started;
+            }
+        }
+
         return started;
     }
 
