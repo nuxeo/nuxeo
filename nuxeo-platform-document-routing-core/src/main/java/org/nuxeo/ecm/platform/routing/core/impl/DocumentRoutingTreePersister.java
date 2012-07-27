@@ -151,6 +151,32 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     /**
+     * Create the rootModels under to root document. Grant READ to everyone on
+     * the root models ; workflow availability is specified on each route
+     *
+     * @param routeStructureDocType
+     * @param id
+     * @param session
+     * @return
+     * @throws ClientException
+     */
+    protected DocumentModel createModelsRoutesStructure(
+            String routeStructureDocType, String id, CoreSession session)
+            throws ClientException {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel rootModels = session.createDocumentModel(
+                root.getPathAsString(), id, routeStructureDocType);
+        rootModels.setPropertyValue(DC_TITLE, routeStructureDocType);
+        rootModels = session.createDocument(rootModels);
+        ACP acp = session.getACP(root.getRef());
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ,
+                true));
+        session.setACP(root.getRef(), acp, true);
+        return rootModels;
+    }
+
+    /**
      * @return
      */
     protected List<ACE> getACEs() {
@@ -262,7 +288,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
                     DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
                     session);
             if (root == null) {
-                root = createDocumentRoutesStructure(
+                root = createModelsRoutesStructure(
                         DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
                         DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_ID,
                         session);
@@ -271,6 +297,5 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
-
     }
 }
