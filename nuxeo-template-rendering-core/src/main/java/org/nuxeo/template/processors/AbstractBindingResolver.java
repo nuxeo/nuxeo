@@ -118,39 +118,44 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                                 "Unable to ready property " + param.getSource(),
                                 e);
                     }
-                    if (property != null) {
-                        Serializable value = property.getValue();
-                        if (value != null) {
-                            if (param.getType() == InputType.Content) {
 
+                    Serializable value = null;
+                    if (property != null) {
+                        value = property.getValue();
+                    }
+
+                    if (value != null) {
+                        if (param.getType() == InputType.Content) {
+
+                        } else {
+                            if (Blob.class.isAssignableFrom(value.getClass())) {
+                                Blob blob = (Blob) value;
+                                if (param.getType() == InputType.PictureProperty) {
+                                    if (blob.getMimeType() == null
+                                            || "".equals(blob.getMimeType().trim())) {
+                                        blob.setMimeType("image/jpeg");
+                                    }
+                                    context.put(
+                                            param.getName(),
+                                            handlePictureField(param.getName(),
+                                                    blob));
+                                }
                             } else {
-                                if (Blob.class.isAssignableFrom(value.getClass())) {
-                                    Blob blob = (Blob) value;
-                                    if (param.getType() == InputType.PictureProperty) {
-                                        if (blob.getMimeType() == null
-                                                || "".equals(blob.getMimeType().trim())) {
-                                            blob.setMimeType("image/jpeg");
-                                        }
-                                        context.put(
-                                                param.getName(),
-                                                handlePictureField(
-                                                        param.getName(), blob));
-                                    }
+                                if (param.isAutoLoop()) {
+                                    // should do the same on all children
+                                    // properties ?
+                                    Object loopVal = handleLoop(
+                                            param.getName(), property);
+                                    context.put(param.getName(), loopVal);
                                 } else {
-                                    if (param.isAutoLoop()) {
-                                        // should do the same on all children
-                                        // properties ?
-                                        Object loopVal = handleLoop(
-                                                param.getName(), property);
-                                        context.put(param.getName(), loopVal);
-                                    } else {
-                                        context.put(param.getName(),
-                                                nuxeoWrapper.wrap(property));
-                                    }
+                                    context.put(param.getName(),
+                                            nuxeoWrapper.wrap(property));
                                 }
                             }
-                        } else {
-                            // no available value, try to find a default one ...
+                        }
+                    } else {
+                        // no available value, try to find a default one ...
+                        if (property != null) {
                             Type pType = property.getType();
                             if (pType.getName().equals(BooleanType.ID)) {
                                 context.put(param.getName(), new Boolean(false));
@@ -162,12 +167,24 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                                 context.put(param.getName(), "");
                             } else if (pType.getName().equals(
                                     InputType.PictureProperty)) {
-                                // NOP
+                                context.put(
+                                        param.getName(),
+                                        handlePictureField(param.getName(),
+                                                null));
                             } else {
                                 context.put(param.getName(), "!NOVALUE!");
                             }
+                        } else {
+                            if (param.getType().equals(
+                                    InputType.PictureProperty)) {
+                                context.put(
+                                        param.getName(),
+                                        handlePictureField(param.getName(),
+                                                null));
+                            }
                         }
                     }
+
                 } else {
                     if (InputType.StringValue.equals(param.getType())) {
                         context.put(param.getName(), param.getStringValue());
