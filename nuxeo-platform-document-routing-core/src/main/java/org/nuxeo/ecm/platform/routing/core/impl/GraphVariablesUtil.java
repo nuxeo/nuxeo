@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -61,6 +62,9 @@ public class GraphVariablesUtil {
                 String name = f.getName().getLocalName();
                 Serializable value = hasFacet ? doc.getPropertyValue(name)
                         : null;
+                if (value instanceof Calendar) {
+                    value = ((Calendar) value).getTime();
+                }
                 map.put(name, value);
             }
             return map;
