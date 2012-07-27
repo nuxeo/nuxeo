@@ -1,6 +1,11 @@
 package org.nuxeo.template.processors.xdocreport;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.template.processors.AbstractBindingResolver;
 
 import fr.opensagres.xdocreport.core.document.SyntaxKind;
@@ -36,6 +41,20 @@ public class XDocReportBindingResolver extends AbstractBindingResolver {
 
     @Override
     protected Object handlePictureField(String paramName, Blob blobValue) {
+        if (blobValue == null) {
+            // manage a default picture : blank one :)
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream(
+                    "blank.png");
+            byte[] bin;
+            try {
+                bin = FileUtils.readBytes(is);
+                blobValue = new ByteArrayBlob(bin);
+                blobValue.setFilename("blank.png");
+                blobValue.setMimeType("image/png");
+            } catch (IOException e) {
+                log.error("Unable to read fake Blob", e);
+            }
+        }
         IImageProvider imgBlob = new BlobImageProvider(blobValue);
         metadata.addFieldAsImage(paramName);
         return imgBlob;
