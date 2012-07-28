@@ -278,10 +278,10 @@ public class OOoManagerComponent extends DefaultComponent implements
 
         // wait a little bit
         // while we are starting Ooo
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 200; i++) {
             if (starting) {
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     // NOP
                 }
@@ -290,6 +290,8 @@ public class OOoManagerComponent extends DefaultComponent implements
                 return started;
             }
         }
+
+        log.error("Timeout on waiting for officeManager to start");
 
         return started;
     }
