@@ -25,28 +25,19 @@ You will be automatically redirected to the login page when Nuxeo server is back
 
 <script type="text/javascript">
 <!--
-// start polling after 15s to be sure the server begun the restart
-setTimeout(startPolling, 15000);
-
-// be sure Ajax Requests will timeout quickly
+//be sure Ajax Requests will timeout quickly
 $.ajaxSetup( {
   timeout: 8000
 } );
 
-// polls until login page is available again
-function startPolling() {
-  var intId = setInterval(function isNuxeoReady() {
-    var sc = $("#reloadPage");
-    if (sc) sc.remove();
-    sc = $("<script></script>");
-    sc.attr("id","reloadPage");
-    sc.attr("src","${nuxeoctl.getServerURL()}/runningstatus?info=reload");
-    $("body").append(sc);
-  }, 10000);
-}
+setTimeout(startPolling, 15000);
 
-function reload() {
-  window.location.href='${nuxeoctl.getServerURL()}/';
+function startPolling() {
+    var intId = setInterval(function isNuxeoReady() {
+        $.get("${nuxeoctl.getServerURL()}/login.jsp", function(data, textStatus) {
+            window.location.href='${nuxeoctl.getServerURL()}/';
+        });
+    }, 10000);
 }
 -->
 </script>
