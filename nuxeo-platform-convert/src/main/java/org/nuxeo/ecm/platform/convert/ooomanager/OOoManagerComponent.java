@@ -109,7 +109,7 @@ public class OOoManagerComponent extends DefaultComponent implements
     }
 
     public void stopOOoManager() {
-        if (started && !shutingdown) {
+        if (isOOoManagerStarted() && !shutingdown) {
             shutingdown = true;
             officeManager.stop();
             started = false;
