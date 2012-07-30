@@ -22,8 +22,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.ConnectHomePage;
 import org.nuxeo.functionaltests.pages.admincenter.PackageInstallationScreen;
@@ -328,6 +330,19 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         }
 
+    }
+
+    @Test
+    @Ignore
+    public void testRestartFromAdminCenter() throws UserNotConnectedException {
+        // login
+        DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
+        // Open Admin Center and restart
+        AdminCenterBasePage adminHome = home.getAdminCenter();
+        assertNotNull(adminHome);
+        SystemHomePage systemHome = adminHome.getSystemHomePage();
+        assertNotNull(systemHome);
+        systemHome.restart();
     }
 
     public void installPackageAndRestart() throws Exception {
