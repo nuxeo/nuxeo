@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
+      <artifactId>ehcache-core</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
