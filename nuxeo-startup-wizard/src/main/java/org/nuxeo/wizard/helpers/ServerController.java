@@ -58,8 +58,8 @@ public class ServerController {
         String[] cmd;
         if (isWindows()) {
             cmd = new String[] { "cmd", "/C",
-                    winEscape(new File(path, CMD_WIN).getPath()), "--gui=false",
-                    "restartbg" };
+                    winEscape(new File(path, CMD_WIN).getPath()),
+                    "--gui=false", "restartbg" };
         } else {
             cmd = new String[] {
                     "/bin/sh",
@@ -106,6 +106,8 @@ public class ServerController {
 
     private static boolean restartInProgress = false;
 
+    private static ConfigurationGenerator cgForRestart;
+
     public static synchronized boolean restart(Context context) {
         if (restartInProgress) {
             return false;
@@ -127,5 +129,18 @@ public class ServerController {
             }
         }.start();
         return true;
+    }
+
+    /**
+     * @since 5.6
+     * @return Configured server URL (may differ from current URL)
+     */
+    public static synchronized String getServerURL() {
+        if (cgForRestart == null) {
+            cgForRestart = new ConfigurationGenerator();
+            cgForRestart.init();
+        }
+        return cgForRestart.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_NUXEO_URL);
     }
 }

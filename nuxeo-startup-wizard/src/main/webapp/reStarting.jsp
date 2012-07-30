@@ -12,18 +12,29 @@
 %>
 
 <script type="text/javascript">
-setTimeout(startPolling, 15000);
-
-//be sure Ajax Requests will timeout quickly
+<!--
+// be sure Ajax Requests will timeout quickly
 $.ajaxSetup( {
   timeout: 8000
 } );
 
+// start polling after 15s to be sure the server begun the restart
+setTimeout(startPolling, 15000);
+
+// polls until login page is available again
 function startPolling() {
-    var intId = setInterval(function isNuxeoReady() {
-        $.get("<%=contextPath%>/login.jsp", function(data, textStatus) {
-            window.location.href='<%=contextPath%>/';
-        });
-    }, 10000);
+  var intId = setInterval(function isNuxeoReady() {
+    var sc = $("#reloadPage");
+    if (sc) sc.remove();
+    sc = $("<script></script>");
+    sc.attr("id","reloadPage");
+    sc.attr("src","<%=ServerController.getServerURL()%>/runningstatus?info=reload");
+    $("body").append(sc);
+  }, 10000);
 }
+
+function reload() {
+  window.location.href='<%=ServerController.getServerURL()%>/';
+}
+-->
 </script>
