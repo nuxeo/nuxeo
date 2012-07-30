@@ -37,6 +37,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -199,6 +201,8 @@ public class DocumentTemplatesActionsBean extends InputController implements
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("document_saved"),
                     resourcesAccessor.getMessages().get(created.getType()));
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    currentDocument);
             return navigationContext.navigateToDocument(created, "after-create");
         } catch (Throwable t) {
             throw ClientException.wrap(t);
