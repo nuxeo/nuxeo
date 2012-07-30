@@ -2053,7 +2053,7 @@
       <dependency>
         <groupId>org.artofsolving.jodconverter</groupId>
         <artifactId>jodconverter-core</artifactId>
-        <version>3.0-NX5</version>
+        <version>3.0-NX6</version>
       </dependency>
       <dependency>
         <groupId>net.sf.jodreports</groupId>
