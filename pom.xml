@@ -3023,6 +3023,13 @@
         <groupId>org.jsecurity</groupId>
         <artifactId>jsecurity</artifactId>
         <version>0.9.0</version>
+        <exclusions>
+          <!-- ehcache is known as ehcache-core since v2 -->
+          <exclusion>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.shindig</groupId>
@@ -3063,6 +3070,11 @@
           <exclusion>
             <groupId>com.google.code.guice</groupId>
             <artifactId>guice</artifactId>
+          </exclusion>
+          <!-- ehcache is known as ehcache-core since v2 -->
+           <exclusion>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
