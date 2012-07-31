@@ -19,22 +19,35 @@ $.ajaxSetup( {
 } );
 
 // start polling after 15s to be sure the server begun the restart
-setTimeout(startPolling, 15000);
+var currentUrl = "<%=request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + contextPath%>";
+var newUrl = "<%=ServerController.getServerURL()%>";
+if (currentUrl == newUrl)
+    setTimeout(startDirectPolling, 15000);
+  else
+    setTimeout(startIndirectPolling, 15000);
 
 // polls until login page is available again
-function startPolling() {
+function startIndirectPolling() {
   var intId = setInterval(function isNuxeoReady() {
     var sc = $("#reloadPage");
     if (sc) sc.remove();
     sc = $("<script></script>");
     sc.attr("id","reloadPage");
-    sc.attr("src","<%=ServerController.getServerURL()%>/runningstatus?info=reload");
+    sc.attr("src", newUrl + "/runningstatus?info=reload");
     $("body").append(sc);
   }, 10000);
 }
 
+function startDirectPolling() {
+  var intId = setInterval(function isNuxeoReady() {
+      $.get("<%=contextPath%>/login.jsp", function(data, textStatus) {
+          window.location.href='<%=contextPath%>/';
+      });
+  }, 10000);
+}
+
 function reload() {
-  window.location.href='<%=ServerController.getServerURL()%>/';
+  window.location.href = newUrl;
 }
 -->
 </script>
