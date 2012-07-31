@@ -9,6 +9,7 @@
   </parent>
 
   <artifactId>nuxeo-startup-wizard</artifactId>
+  <version>5.6-RC2.1</version>
   <name>Nuxeo Startup Wizard</name>
   <description>Nuxeo Startup Wizard WebApp</description>
   <packaging>war</packaging>
