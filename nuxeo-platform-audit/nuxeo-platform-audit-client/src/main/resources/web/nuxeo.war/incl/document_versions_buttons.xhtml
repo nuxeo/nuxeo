@@ -3,6 +3,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
         <h:commandButton value="#{messages['command.restore']}"
@@ -12,10 +13,11 @@
 
         <h:outputText value=" "/>
 
-        <h:commandButton value="#{messages['command.viewArchivedVersion']}"
-          class="button"
-          action="#{versionedActions.viewArchivedVersion(versionItem)}" />
-
+	    <nxd:restDocumentLink document="#{documentManager.getDocumentWithVersion(currentDocument.ref,versionItem)}"
+	      class="button">
+            <h:outputText value="#{messages['command.viewArchivedVersion']}" /> 
+        </nxd:restDocumentLink>
+  
         <h:outputText value=" "/>
 
         <nxu:methodResult name="removable"
