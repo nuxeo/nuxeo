@@ -176,5 +176,28 @@ class Dav(FunkLoadTestCase):
                     description="Remove doc")
 
 
+    def testCreateUpdate(self):
+        self.initWorkspace()
+        self.setBasicAuth(*self.cred_admin)
+        dav_url = self.dav_url
+        url = dav_url + "/" + self.ws_title
+
+        folder_url = url + "/" + self._lipsum.getUniqWord()
+        # create a folder
+        self.method("MKCOL", folder_url, ok_codes=[201, ],
+                    description="Create a folder")
+        # create files
+        for i in range(self.nb_docs):
+            doc_url = folder_url + '/' + self._lipsum.getUniqWord() + '.txt'
+            content = self._lipsum.getParagraph()
+            self.put(doc_url, params=Data(None, content),
+                     description="Create a doc " + str(i), ok_codes=[201, ])
+            content += self._lipsum.getParagraph() + " UPDATE"
+            self.put(doc_url, params=Data(None, content),
+                     description="Update doc " + str(i), ok_codes=[201, ])
+            #self.delete(doc_url, ok_codes=[204, ], description="Delete doc")
+        self.clearBasicAuth()
+
+
 if __name__ in ('main', '__main__'):
     unittest.main()
