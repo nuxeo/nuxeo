@@ -45,14 +45,18 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected static final String DRIVER = "org.h2.Driver";
 
+    protected static final String URL_FORMAT = "jdbc:h2:%s/%s";
+
     protected String h2Path;
 
     protected String origUrl;
 
     protected String url;
 
+    protected String url2;
+
     protected void setProperties() {
-        url = String.format("jdbc:h2:%s/%s", h2Path, databaseName);
+        url = String.format(URL_FORMAT, h2Path, databaseName);
         origUrl = setProperty(URL_PROPERTY, url);
 
         Framework.getProperties().setProperty(REPOSITORY_PROPERTY,
@@ -64,6 +68,13 @@ public class DatabaseH2 extends DatabaseHelper {
         setProperty(DRIVER_PROPERTY, DRIVER);
     }
 
+    protected void setProperties2() {
+        url2 = String.format(URL_FORMAT, h2Path, databaseName + "2");
+        setProperty(URL_PROPERTY + "2", url2);
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY + "2",
+                repositoryName + "2");
+    }
+
     @Override
     public void setUp() throws Exception {
         Class.forName(DRIVER);
@@ -72,6 +83,10 @@ public class DatabaseH2 extends DatabaseHelper {
         dir.mkdirs();
         h2Path = new File(dir, getId()).getAbsolutePath();
         setProperties();
+    }
+
+    public void setUp2() throws Exception {
+        setProperties2();
     }
 
     protected String getId() {
@@ -86,18 +101,25 @@ public class DatabaseH2 extends DatabaseHelper {
             System.setProperty(URL_PROPERTY, origUrl);
         }
         try {
-            Connection connection = DriverManager.getConnection(url,
-                    System.getProperty(USER_PROPERTY),
-                    System.getProperty(PASSWORD_PROPERTY));
-            Statement st = connection.createStatement();
-            String sql = "SHUTDOWN";
-            log.trace(sql);
-            st.execute(sql);
-            st.close();
-            connection.close();
+            tearDownDatabase(url);
+            if (url2 != null) {
+                tearDownDatabase(url2);
+            }
         } finally {
             super.tearDown();
         }
+    }
+
+    protected void tearDownDatabase(String url) throws SQLException {
+        Connection connection = DriverManager.getConnection(url,
+                System.getProperty(USER_PROPERTY),
+                System.getProperty(PASSWORD_PROPERTY));
+        Statement st = connection.createStatement();
+        String sql = "SHUTDOWN";
+        log.trace(sql);
+        st.execute(sql);
+        st.close();
+        connection.close();
     }
 
     @Override

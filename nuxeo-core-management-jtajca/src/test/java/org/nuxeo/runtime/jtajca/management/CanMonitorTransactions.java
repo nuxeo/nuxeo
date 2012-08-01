@@ -59,8 +59,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author matic
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, TransactionalFeature.class })
-@Deploy("org.nuxeo.ecm.core.management.jtajca")
+@Features({ TransactionalFeature.class, RuntimeFeature.class })
+@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.management.jtajca" })
 public class CanMonitorTransactions {
 
     protected TransactionMonitor monitor;
@@ -213,7 +213,7 @@ public class CanMonitorTransactions {
 
                 @Override
                 protected void append(LoggingEvent event) {
-                    if (MDC.get("TX") != null) {
+                    if (MDC.get("tx") != null) {
                         seenTX = true;
                     }
                 }

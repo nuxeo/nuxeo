@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * Pooling repository factory.
@@ -39,40 +40,48 @@ public class PoolingRepositoryFactory implements RepositoryFactory {
     @Override
     public Repository createRepository(RepositoryDescriptor descriptor)
             throws Exception {
-        log.info("Creating pooling repository: " + descriptor.getName());
+        String repositoryName = descriptor.getName();
+        log.info("Creating pooling repository: " + repositoryName);
         ManagedConnectionFactory managedConnectionFactory = new ManagedConnectionFactoryImpl(
                 SQLRepository.getDescriptor(descriptor));
-        return (Repository) managedConnectionFactory.createConnectionFactory(lookupConnectionManager());
+        ConnectionManager connectionManager = lookupConnectionManager(descriptor);
+        return (Repository) managedConnectionFactory.createConnectionFactory(connectionManager);
     }
 
     /**
      * Various binding names for the ConnectionManager. They depend on the
      * application server used and how the configuration is done.
      */
-    private static final String[] CM_NAMES = {
-            "java:comp/NuxeoConnectionManager",
-            "java:comp/env/NuxeoConnectionManager",
-            "java:NuxeoConnectionManager" };
+    private static final String[] CM_NAMES_PREFIXES = {
+            "java:comp/NuxeoConnectionManager/",
+            "java:comp/env/NuxeoConnectionManager/",
+            "java:NuxeoConnectionManager/" };
 
-    protected static ConnectionManager lookupConnectionManager()
-            throws NamingException {
+    protected static ConnectionManager lookupConnectionManager(
+            RepositoryDescriptor descriptor) throws NamingException {
+        String repositoryName = descriptor.getName();
+        // Check in container
+        ConnectionManager cm = NuxeoContainer.getConnectionManager(repositoryName);
+        if (cm != null) {
+            return cm;
+        }
+        // Check in JNDI
         InitialContext context = new InitialContext();
-        int i = 0;
-        for (String name : CM_NAMES) {
+        for (String name : CM_NAMES_PREFIXES) {
             try {
-                ConnectionManager connectionManager = (ConnectionManager) context.lookup(name);
-                if (connectionManager != null) {
-                    if (i != 0) {
-                        // put successful name first for next time
-                        CM_NAMES[i] = CM_NAMES[0];
-                        CM_NAMES[0] = name;
-                    }
-                    return connectionManager;
+                cm = (ConnectionManager) context.lookup(name + repositoryName);
+                if (cm != null) {
+                    return cm;
                 }
             } catch (NamingException e) {
                 // try next one
             }
-            i++;
+        }
+        // Creation from descriptor pool config
+        cm = NuxeoContainer.installConnectionManager(repositoryName,
+                descriptor.getPool());
+        if (cm != null) {
+            return cm;
         }
         throw new NamingException("NuxeoConnectionManager not found in JNDI");
     }

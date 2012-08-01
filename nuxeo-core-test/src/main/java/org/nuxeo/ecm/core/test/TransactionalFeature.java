@@ -44,6 +44,10 @@ public class TransactionalFeature extends SimpleFeature {
         if (config == null) {
             config = Defaults.of(TransactionalConfig.class);
         }
+    }
+
+    @Override
+    public void start(FeaturesRunner runner) throws Exception {
         autoactivationValue = System.getProperty(JtaActivator.AUTO_ACTIVATION);
         System.setProperty(JtaActivator.AUTO_ACTIVATION, "true");
     }

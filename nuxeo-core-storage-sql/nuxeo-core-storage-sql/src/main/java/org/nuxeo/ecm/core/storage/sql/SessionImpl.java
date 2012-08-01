@@ -71,6 +71,21 @@ public class SessionImpl implements Session, XAResource {
 
     private static final Log log = LogFactory.getLog(SessionImpl.class);
 
+    /**
+     * Set this system property to false if you don't want repositories to be
+     * looked up under the compatibility name "default" in the "repositories"
+     * table.
+     * <p>
+     * Only do this if you start from an empty database, or if you have migrated
+     * the "repositories" table by hand, or if you need to create a new
+     * repository in a database already containing a "default" repository (table
+     * sharing, not recommended).
+     */
+    public static final String COMPAT_REPOSITORY_NAME_KEY = "org.nuxeo.vcs.repository.name.default.compat";
+
+    private static final boolean COMPAT_REPOSITORY_NAME = Boolean.parseBoolean(Framework.getProperty(
+            COMPAT_REPOSITORY_NAME_KEY, "true"));
+
     private final RepositoryImpl repository;
 
     private final Mapper mapper;
@@ -1134,8 +1149,12 @@ public class SessionImpl implements Session, XAResource {
     }
 
     private void computeRootNode() throws StorageException {
-        String repositoryId = "default"; // TODO use repo name
+        String repositoryId = repository.getName();
         Serializable rootId = mapper.getRootId(repositoryId);
+        if (rootId == null && COMPAT_REPOSITORY_NAME) {
+            // compat, old repositories had fixed id "default"
+            rootId = mapper.getRootId("default");
+        }
         if (rootId == null) {
             log.debug("Creating root");
             rootNode = addRootNode();
