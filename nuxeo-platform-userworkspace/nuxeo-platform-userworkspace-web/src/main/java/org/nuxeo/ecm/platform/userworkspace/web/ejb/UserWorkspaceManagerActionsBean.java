@@ -35,7 +35,9 @@ import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceManagerActions;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
@@ -63,6 +65,9 @@ public class UserWorkspaceManagerActionsBean implements
 
     private static final Log log = LogFactory.getLog(UserWorkspaceManagerActions.class);
 
+    protected static final String DOCUMENT_MANAGEMENT_TAB = WebActions.MAIN_TABS_CATEGORY
+            + ":" + WebActions.DOCUMENTS_MAIN_TAB_ID;
+
     protected boolean showingPersonalWorkspace;
 
     protected boolean initialized;
@@ -84,6 +89,9 @@ public class UserWorkspaceManagerActionsBean implements
 
     @In(create = true)
     protected transient MainTabsActions mainTabsActions;
+
+    @In(create = true)
+    protected transient WebActions webActions;
 
     public void initialize() {
         log.debug("Initializing user workspace manager actions bean");
@@ -137,6 +145,9 @@ public class UserWorkspaceManagerActionsBean implements
         }
         String returnView = DOCUMENT_VIEW;
 
+        // force return to Documents tab
+        webActions.setCurrentTabId(WebActions.MAIN_TABS_CATEGORY, DOCUMENT_MANAGEMENT_ACTION);
+
         // Rux INA-221: separated links for going to workspaces
         DocumentModel currentUserPersonalWorkspace = getCurrentUserPersonalWorkspace();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -160,10 +171,16 @@ public class UserWorkspaceManagerActionsBean implements
         }
         String returnView = DOCUMENT_VIEW;
 
+        // force return to Documents tab
+        webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
+
         if (lastAccessedDocument != null) {
             navigationContext.setCurrentDocument(lastAccessedDocument);
         } else if (navigationContext.getCurrentDomain() != null) {
             navigationContext.setCurrentDocument(navigationContext.getCurrentDomain());
+        } else if (documentManager.hasPermission(documentManager.getRootDocument().getRef(),
+                SecurityConstants.READ_CHILDREN)) {
+            navigationContext.setCurrentDocument(documentManager.getRootDocument());
         } else {
             navigationContext.setCurrentDocument(null);
             returnView = dashboardNavigationHelper.navigateToDashboard();
@@ -181,15 +198,19 @@ public class UserWorkspaceManagerActionsBean implements
             initialize();
         }
 
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        // NXP-9813 : navigating to a tab different than Documents should not change
+        // the value for showingPersonalWorkspace
+        if (mainTabsActions.isOnMainTab(DOCUMENT_MANAGEMENT_ACTION)) {
+            DocumentModel currentDoc = navigationContext.getCurrentDocument();
 
-        if (currentDoc == null || currentDoc.getPath().segmentCount() < 2) {
-            return false;
+            if (currentDoc == null || currentDoc.getPath().segmentCount() < 2) {
+                return false;
+            }
+
+            String secondSegment = currentDoc.getPath().segment(1);
+            showingPersonalWorkspace = secondSegment != null
+                    && secondSegment.startsWith(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         }
-
-        String secondSegment = currentDoc.getPath().segment(1);
-        showingPersonalWorkspace = secondSegment != null
-                && secondSegment.startsWith(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         return showingPersonalWorkspace;
     }
 
