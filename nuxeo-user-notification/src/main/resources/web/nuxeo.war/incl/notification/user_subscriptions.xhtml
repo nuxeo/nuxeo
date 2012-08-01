@@ -35,7 +35,8 @@
           <h:outputText value="#{messages['label.on.document']}"/>
         </f:facet>
         <h:outputText value="#{messages['label.deleted.document']} #{row.docId}" rendered="#{doc == null}"/>
-        <nxd:restDocumentLink title="#{nxd:titleOrId(doc)}" document="#{doc}" rendered="#{doc != null}">
+        <nxd:restDocumentLink title="#{nxd:titleOrId(doc)}" document="#{doc}" rendered="#{doc != null}"
+          tabs="MAIN_TABS:documents" addTabInfo="false">
           <span id="title_#{row.docId}">
           <h:outputText value="#{nxd:titleOrId(doc)}" />
           </span>
