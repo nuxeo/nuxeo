@@ -25,7 +25,6 @@ import javax.resource.spi.ConnectionManager;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerConfiguration;
 
 /**
  * Factory for the ConnectionManager.
@@ -41,9 +40,16 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
         if (!ConnectionManager.class.getName().equals(ref.getClassName())) {
             return null;
         }
-        if (NuxeoContainer.getConnectionManager() == null) {
+        String repositoryName;
+        int size = objName.size();
+        if (size == 1) {
+            repositoryName = "default";
+        } else {
+            repositoryName = objName.get(size - 1);
+        }
+        if (NuxeoContainer.getConnectionManager(repositoryName) == null) {
             // initialize
-            ConnectionManagerConfiguration config = new ConnectionManagerConfiguration();
+            NuxeoConnectionManagerConfiguration config = new NuxeoConnectionManagerConfiguration();
             for (RefAddr addr : Collections.list(ref.getAll())) {
                 String name = addr.getType();
                 String value = (String) addr.getContent();
@@ -55,9 +61,9 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
                             name, value));
                 }
             }
-            NuxeoContainer.initConnectionManager(config);
+            NuxeoContainer.initConnectionManager(repositoryName, config);
         }
-        return NuxeoContainer.getConnectionManager();
+        return NuxeoContainer.getConnectionManager(repositoryName);
     }
 
 }

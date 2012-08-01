@@ -17,6 +17,11 @@
 
 package org.nuxeo.runtime.datasource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -24,17 +29,13 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerConfiguration;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -113,8 +114,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
 
     @Test
     public void testXA() throws Exception {
-        NuxeoContainer.install(new TransactionManagerConfiguration(),
-                new ConnectionManagerConfiguration());
+        NuxeoContainer.install(null);
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/xadatasource-contrib.xml");
         TransactionHelper.startTransaction();
