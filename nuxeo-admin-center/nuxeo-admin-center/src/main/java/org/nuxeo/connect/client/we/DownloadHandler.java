@@ -17,6 +17,7 @@
  */
 package org.nuxeo.connect.client.we;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -156,15 +157,12 @@ public class DownloadHandler extends DefaultObject {
             if (pkgList != null) {
                 String[] pkgs = pkgList.split("/");
                 PackageManager pm = Framework.getLocalService(PackageManager.class);
-                for (String pkg : pkgs) {
-                    try {
-                        log.info("Starting download for package " + pkg);
-                        pm.download(pkg);
-                    } catch (Exception e) {
-                        log.error(
-                                "Unable to start download for package " + pkg,
-                                e);
-                    }
+                try {
+                    log.info("Starting download for packages " + pkgs);
+                    pm.download(Arrays.asList(pkgs));
+                } catch (Exception e) {
+                    log.error("Unable to start download for packages " + pkgs,
+                            e);
                 }
                 // here we generate a fake progress report so that if some
                 // download are very fast, they will still be visible on the
@@ -195,7 +193,7 @@ public class DownloadHandler extends DefaultObject {
             @QueryParam("source") String source) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         pm.cancelDownload(pkgId);
-        return redirect(getPrevious().getPath() + "/" + source);
+        return redirect(getPrevious().getPath() + "/packages/" + source);
     }
 
 }
