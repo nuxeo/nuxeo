@@ -22,8 +22,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
+import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.naming.InitialContext;
@@ -40,10 +39,10 @@ import org.apache.geronimo.connector.outbound.ConnectionInterceptor;
 import org.apache.log4j.MDC;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionMonitor;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.CachingMapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.ecm.core.storage.sql.SoftRefCachingMapper;
 import org.nuxeo.ecm.core.storage.sql.ra.ManagedConnectionImpl;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
@@ -53,12 +52,18 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
  */
 public class DefaultConnectionMonitor implements ConnectionMonitor {
 
-    protected final AbstractConnectionManager cm;
+    private static final Log log = LogFactory.getLog(DefaultConnectionMonitor.class);
 
-    protected final Log log = LogFactory.getLog(DefaultConnectionMonitor.class);
+    private static final String NUXEO_CONNECTION_MANAGER_PREFIX = "java:comp/env/NuxeoConnectionManager/";
 
-    protected DefaultConnectionMonitor(AbstractConnectionManager cm) {
-        this.cm = enhanceConnectionManager(cm);
+    protected String repositoryName;
+
+    protected AbstractConnectionManager cm;
+
+    protected MBeanServer mbs;
+
+    protected DefaultConnectionMonitor(String repositoryName) {
+        this.repositoryName = repositoryName;
     }
 
     protected static Field field(Class<?> clazz, String name) {
@@ -155,7 +160,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
                 String name = method.getName();
                 traceInvoke(method, args);
                 if (name.startsWith("get")) {
-                    MDC.put("mid", mapperId((ConnectionInfo)args[0]));
+                    MDC.put("mid", mapperId((ConnectionInfo) args[0]));
                 } else if (name.startsWith("return")) {
                     MDC.remove("mid");
                 }
@@ -166,17 +171,17 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
     private static final Field SESSION_FIELD = field(
             ManagedConnectionImpl.class, "session");
 
-    private static final Field WRAPPED_FIELD = field(CachingMapper.class,
+    private static final Field WRAPPED_FIELD = field(SoftRefCachingMapper.class,
             "mapper");
 
-    protected  Identification mapperId(ConnectionInfo info) {
+    protected Identification mapperId(ConnectionInfo info) {
         ManagedConnection connection = info.getManagedConnectionInfo().getManagedConnection();
         if (connection == null) {
             return null;
         }
         SessionImpl session = fetch(SESSION_FIELD, connection);
         Mapper mapper = session.getMapper();
-        if (mapper instanceof CachingMapper) {
+        if (mapper instanceof SoftRefCachingMapper) {
             mapper = fetch(WRAPPED_FIELD, mapper);
         }
         try {
@@ -187,31 +192,25 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         }
     }
 
-    protected static ConnectionMonitor monitor;
-
-    public static void install() {
-        AbstractConnectionManager cm = lookup();
-        monitor = new DefaultConnectionMonitor(cm);
-        bindManagementInterface();
+    public void install() {
+        AbstractConnectionManager cm = lookup(repositoryName);
+        this.cm = enhanceConnectionManager(cm);
+        bindManagementInterface(repositoryName, this);
     }
 
-    public static void uninstall() throws MBeanRegistrationException,
-            InstanceNotFoundException {
-        if (monitor == null) {
-            return;
-        }
-        unbindManagementInterface();
-        monitor = null;
+    public void uninstall() throws JMException {
+        unbindManagementInterface(repositoryName, this);
     }
 
-    public static AbstractConnectionManager lookup() {
-        ConnectionManager cm = NuxeoContainer.getConnectionManager();
+    protected AbstractConnectionManager lookup(String repositoryName) {
+        ConnectionManager cm = NuxeoContainer.getConnectionManager(repositoryName);
         if (cm == null) { // try setup through NuxeoConnectionManagerFactory
             try {
                 InitialContext ic = new InitialContext();
-                cm = (ConnectionManager) ic.lookup("java:comp/env/NuxeoConnectionManager");
+                cm = (ConnectionManager) ic.lookup(NUXEO_CONNECTION_MANAGER_PREFIX
+                        + repositoryName);
             } catch (NamingException cause) {
-                throw new RuntimeException("Cannot lookup tx manager", cause);
+                throw new RuntimeException("Cannot lookup connection manager", cause);
             }
         }
         if (!(cm instanceof NuxeoContainer.ConnectionManagerWrapper)) {
@@ -227,25 +226,32 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         }
     }
 
-    protected static MBeanServer mbs;
-
-    protected static void bindManagementInterface() {
+    protected void bindManagementInterface(String repositoryName,
+            DefaultConnectionMonitor monitor) {
         try {
             mbs = ManagementFactory.getPlatformMBeanServer();
-            mbs.registerMBean(monitor, new ObjectName(ConnectionMonitor.NAME));
-        } catch (Exception cause) {
-            throw new RuntimeException("Cannot register tx monitor", cause);
+            mbs.registerMBean(monitor, getObjectName(repositoryName));
+        } catch (JMException cause) {
+            throw new RuntimeException("Cannot register connection monitor",
+                    cause);
         }
     }
 
-    protected static void unbindManagementInterface() {
+    protected void unbindManagementInterface(String repositoryName,
+            ConnectionMonitor monitor) {
         try {
-            mbs.unregisterMBean(new ObjectName(ConnectionMonitor.NAME));
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot unregister tx monitor");
+            mbs.unregisterMBean(getObjectName(repositoryName));
+        } catch (JMException e) {
+            throw new RuntimeException("Cannot unregister connection monitor");
         } finally {
             mbs = null;
         }
+    }
+
+    public static ObjectName getObjectName(String repositoryName)
+            throws JMException {
+        return new ObjectName(String.format(ConnectionMonitor.NAME_PATTERN,
+                repositoryName));
     }
 
     @Override

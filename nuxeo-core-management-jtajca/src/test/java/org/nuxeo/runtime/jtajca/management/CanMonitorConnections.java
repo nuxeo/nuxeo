@@ -22,9 +22,9 @@ import static org.junit.Assert.assertThat;
 
 import java.lang.management.ManagementFactory;
 
+import javax.management.JMException;
 import javax.management.JMX;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.junit.Before;
@@ -33,6 +33,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionMonitor;
+import org.nuxeo.ecm.core.management.jtajca.internal.DefaultConnectionMonitor;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -50,22 +52,18 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.core.management.jtajca")
 public class CanMonitorConnections {
 
-     protected ConnectionMonitor monitor;
+    protected ConnectionMonitor monitor;
 
     @Before
-    public void lookupMonitor() throws MalformedObjectNameException {
+    public void lookupMonitor() throws JMException {
         MBeanServer srv = ManagementFactory.getPlatformMBeanServer();
-        monitor = JMX.newMXBeanProxy(srv, new ObjectName(ConnectionMonitor.NAME),
-                ConnectionMonitor.class);
+        String repositoryName = DatabaseHelper.DATABASE.repositoryName;
+        ObjectName objectName = DefaultConnectionMonitor.getObjectName(repositoryName);
+        monitor = JMX.newMXBeanProxy(srv, objectName, ConnectionMonitor.class);
     }
 
     @Inject
-    @Before
-    public void installPooling() {
-
-    }
-
-    @Inject CoreSession repository;
+    CoreSession repository;
 
     @Test
     public void isMonitorInstalled() {
@@ -75,7 +73,8 @@ public class CanMonitorConnections {
 
     @Test
     public void isConnectionOpened() throws ClientException {
-       int count = monitor.getConnectionCount();
-       assertThat(count, greaterThan(0));
+        int count = monitor.getConnectionCount();
+        assertThat(count, greaterThan(0));
     }
+
 }

@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -42,6 +43,19 @@ public class RepositoryDescriptor {
 
     @XNode("@factory")
     private Class<RepositoryFactory> factoryClass;
+
+    /**
+     * Note, this xpath corresponds to an element two levels deep, that will
+     * therefore appear in the "repository" element of the underlying repository
+     * implementation (VCS) descriptor
+     * (org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor). This is done
+     * because all the content of the "repository" element of this (core)
+     * descriptor is passed as an XML file parsed by the VCS descriptor, so we
+     * cannot have the "pool" element as a normal subelement of this core
+     * descriptor.
+     */
+    @XNode("repository/pool")
+    public NuxeoConnectionManagerConfiguration pool;
 
     private String home;
     private String config;
@@ -116,6 +130,10 @@ public class RepositoryDescriptor {
 
     public Class<RepositoryFactory> getFactoryClass() {
         return factoryClass;
+    }
+
+    public NuxeoConnectionManagerConfiguration getPool() {
+        return pool;
     }
 
     public void setSecurityManagerClass(Class<SecurityManager> securityManager) {

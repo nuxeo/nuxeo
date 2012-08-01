@@ -58,6 +58,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     protected RepositoryDescriptor newDescriptor(long clusteringDelay,
             boolean fulltextDisabled) {
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
+        descriptor.name = DatabaseHelper.DATABASE.repositoryName;
         descriptor.clusteringEnabled = clusteringDelay != -1;
         descriptor.clusteringDelay = clusteringDelay;
         FieldDescriptor schemaField1 = new FieldDescriptor("tst:bignote",

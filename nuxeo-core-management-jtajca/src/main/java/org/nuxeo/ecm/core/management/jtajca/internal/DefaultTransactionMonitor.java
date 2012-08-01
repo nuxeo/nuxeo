@@ -56,45 +56,34 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
 public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         TransactionMonitor, Synchronization {
 
-    protected TransactionManagerImpl tm;
-
-    protected static MBeanServer mbs;
-
-    private DefaultTransactionMonitor(TransactionManagerImpl manager) {
-        this.tm = manager;
-    }
-
     protected static final Log log = LogFactory.getLog(DefaultTransactionMonitor.class);
 
-    protected static DefaultTransactionMonitor monitor;
+    protected TransactionManagerImpl tm;
 
-    public static void install() {
-        TransactionManagerImpl tm = lookup();
-        monitor = new DefaultTransactionMonitor(tm);
-        tm.addTransactionAssociationListener(monitor);
+    protected MBeanServer mbs;
+
+    public void install() {
+        tm = lookup();
+        tm.addTransactionAssociationListener(this);
         bindManagementInterface();
     }
 
-    public static void uninstall() throws MBeanRegistrationException,
+    public void uninstall() throws MBeanRegistrationException,
             InstanceNotFoundException {
-        if (monitor == null) {
-            return;
-        }
         unbindManagementInterface();
-        monitor.tm.removeTransactionAssociationListener(monitor);
-        monitor = null;
+        tm.removeTransactionAssociationListener(this);
     }
 
-    protected static void bindManagementInterface() {
+    protected void bindManagementInterface() {
         try {
             mbs = ManagementFactory.getPlatformMBeanServer();
-            mbs.registerMBean(monitor, new ObjectName(TransactionMonitor.NAME));
+            mbs.registerMBean(this, new ObjectName(TransactionMonitor.NAME));
         } catch (Exception cause) {
             throw new RuntimeException("Cannot register tx monitor", cause);
         }
     }
 
-    protected static void unbindManagementInterface() {
+    protected void unbindManagementInterface() {
         try {
             mbs.unregisterMBean(new ObjectName(TransactionMonitor.NAME));
         } catch (Exception e) {
@@ -104,7 +93,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         }
     }
 
-    public static TransactionManagerImpl lookup() {
+    public TransactionManagerImpl lookup() {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
         if (tm == null) { // try setup trough NuxeoTransactionManagerFactory
             try {
@@ -167,7 +156,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         synchronized (this) {
             activeStatistics.put(key, info);
         }
-        tm.registerInterposedSynchronization(monitor); // register end status
+        tm.registerInterposedSynchronization(this); // register end status
         if (log.isTraceEnabled()) {
             log.trace(info.toString());
         }
@@ -182,13 +171,13 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
                 stats = activeStatistics.remove(key);
             }
             if (stats == null) {
-                log.error(key + " not found in active statitics map");
+                log.debug(key + " not found in active statistics map");
                 return;
             }
             stats.split.stop();
             stats.split = null;
             if (log.isTraceEnabled()) {
-                log.trace(stats.toString());
+                log.trace(stats);
             }
             if (TransactionStatistics.Status.COMMITTED.equals(stats.status)) {
                 lastCommittedStatistics = stats;
@@ -247,7 +236,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
             stats = (DefaultTransactionStatistics) activeStatistics.get(key);
         }
         if (stats == null) {
-            log.error(key + " not found in active statitics map");
+            log.debug(key + " not found in active statistics map");
         }
         return stats;
     }

@@ -22,11 +22,11 @@ import org.apache.geronimo.connector.outbound.PoolingAttributes;
 
 /**
  * @author matic
- * 
+ *
  */
 @MXBean
 public interface ConnectionMonitor extends PoolingAttributes {
 
-    public static final String NAME = "org.nuxeo:name=ConnectionMonitoring,type=service";
+    public static final String NAME_PATTERN = "org.nuxeo:name=ConnectionMonitoring,type=service,repositoryName=%s";
 
 }

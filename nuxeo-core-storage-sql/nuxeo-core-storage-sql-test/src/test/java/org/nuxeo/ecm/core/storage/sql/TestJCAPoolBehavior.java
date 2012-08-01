@@ -12,16 +12,24 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerConfiguration;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.TransactionManagerConfiguration;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -41,12 +49,13 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
 
     @Override
     protected void setUpContainer() throws Exception {
-        TransactionManagerConfiguration tmconfig = new TransactionManagerConfiguration();
-        ConnectionManagerConfiguration cmconfig = new ConnectionManagerConfiguration();
+        NuxeoConnectionManagerConfiguration cmconfig = new NuxeoConnectionManagerConfiguration();
         cmconfig.setMinPoolSize(MIN_POOL_SIZE);
         cmconfig.setMaxPoolSize(MAX_POOL_SIZE);
         cmconfig.setBlockingTimeoutMillis(BLOCKING_TIMEOUT);
-        NuxeoContainer.install(tmconfig, cmconfig);
+        NuxeoContainer.install();
+        NuxeoContainer.installConnectionManager(database.repositoryName,
+                cmconfig);
     }
 
     @Test
@@ -141,6 +150,45 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
             }
             log.info("end of thread " + Thread.currentThread().getName());
         }
+    }
+
+    /**
+     * Check that for two different repositories we get the connections from two
+     * different pools. If not, TransactionCachingInterceptor will return a
+     * session from the first repository when asked for a new session for the
+     * second repository.
+     */
+    @Test
+    public void testMultipleRepositoriesPerTransaction() throws Exception {
+        // config for second repo available only for H2
+        if (!(database instanceof DatabaseH2)) {
+            return;
+        }
+        DatabaseH2 db = (DatabaseH2) database;
+        db.setUp2();
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
+                "OSGI-INF/test-pooling-h2-repo2-contrib.xml");
+        // open a second repository
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        context.put("username", SecurityConstants.ADMINISTRATOR);
+        CoreSession session2 = CoreInstance.getInstance().open(
+                database.repositoryName + "2", context);
+        try {
+            doTestMultipleRepositoriesPerTransaction(session2);
+        } finally {
+            CoreInstance.getInstance().close(session2);
+        }
+    }
+
+    protected void doTestMultipleRepositoriesPerTransaction(CoreSession session2)
+            throws Exception {
+        assertEquals(database.repositoryName, session.getRepositoryName());
+        assertEquals(database.repositoryName + "2",
+                session2.getRepositoryName());
+        assertTrue(TransactionHelper.isTransactionActive());
+        assertNotSame("Sessions from two different repos",
+                session.getRootDocument().getId(),
+                session2.getRootDocument().getId());
     }
 
 }
