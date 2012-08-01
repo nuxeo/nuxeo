@@ -36,6 +36,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -124,7 +125,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
                 // Mainly for tests
                 if (filePath.startsWith("$TMP")) {
                     filePath = filePath.replace("$TMP",
-                            System.getProperty("java.io.tmpdir"));
+                            Framework.getProperty("nuxeo.import.tmpdir"));
                 }
 
                 File file = new File(filePath);
