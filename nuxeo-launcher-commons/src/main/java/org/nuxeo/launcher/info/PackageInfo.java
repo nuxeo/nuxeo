@@ -22,8 +22,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.nuxeo.connect.update.Package;
-
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "package")
 public class PackageInfo {
@@ -31,11 +29,11 @@ public class PackageInfo {
     public PackageInfo() {
     }
 
-    public PackageInfo(Package pkg) {
-        name = pkg.getName();
-        version = pkg.getVersion().toString();
-        id = pkg.getId();
-        state = pkg.getState();
+    public PackageInfo(String name, String version, String id, int state) {
+        this.name = name;
+        this.version = version;
+        this.id = id;
+        this.state = state;
     }
 
     @XmlAttribute()
