@@ -1,18 +1,31 @@
+/*
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Nuxeo
+ */
 package org.nuxeo.platform.scanimporter.tests;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -24,42 +37,44 @@ public class TestImport extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(TestImport.class);
 
-    protected List<File> tmpDirectories = new ArrayList<File>();
+    protected List<File> tmp = new ArrayList<File>();
 
     protected String deployTestFiles(String name) throws IOException {
-
-        File directory = new File(FileUtils.getResourcePathFromContext("data/"
-                + name));
-
-        String tmpDirectoryPath = System.getProperty("java.io.tmpdir");
-        File dst = new File(tmpDirectoryPath);
-
-        FileUtils.copy(directory, dst);
-        tmpDirectories.add(dst);
-
+        File src = new File(
+                org.nuxeo.common.utils.FileUtils.getResourcePathFromContext("data/"
+                        + name));
+        File dst = File.createTempFile("nuxeoTestImport", ".dir");
+        dst.delete();
+        dst.mkdir();
+        tmp.add(dst);
+        FileUtils.copyDirectoryToDirectory(src, dst);
         return dst.getPath() + "/" + name;
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/core-type-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
+                "OSGI-INF/core-type-test-contrib.xml");
         openSession();
-
-        deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter",
+                "OSGI-INF/importerservice-framework.xml");
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-        for (File dir : tmpDirectories) {
+        for (File dir : tmp) {
             if (dir.exists()) {
-                FileUtils.deleteTree(dir);
+                FileUtils.deleteDirectory(dir);
             }
         }
+        tmp.clear();
     }
 
     @Test
