@@ -1446,6 +1446,11 @@
         <artifactId>commons-lang</artifactId>
         <version>2.6</version>
       </dependency>
+      <dependency>
+        <groupId>backport-util-concurrent</groupId>
+        <artifactId>backport-util-concurrent</artifactId>
+        <version>3.1</version>
+      </dependency>
       <!-- used in jboss patch -->
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -2294,8 +2299,8 @@
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
-        <version>1.5.0</version>
+        <artifactId>ehcache-core</artifactId>
+        <version>2.5.2</version>
       </dependency>
       <!-- deprecated - use jackson instead -->
       <dependency>
@@ -3018,6 +3023,13 @@
         <groupId>org.jsecurity</groupId>
         <artifactId>jsecurity</artifactId>
         <version>0.9.0</version>
+        <exclusions>
+          <!-- ehcache is known as ehcache-core since v2 -->
+          <exclusion>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.shindig</groupId>
@@ -3058,6 +3070,11 @@
           <exclusion>
             <groupId>com.google.code.guice</groupId>
             <artifactId>guice</artifactId>
+          </exclusion>
+          <!-- ehcache is known as ehcache-core since v2 -->
+           <exclusion>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
