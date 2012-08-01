@@ -1907,7 +1907,8 @@ public abstract class NuxeoLauncher {
         log.info("** Packages:");
         List<String> pkgTemplates = new ArrayList<String>();
         for (LocalPackage pkg : pkgs) {
-            nxInstance.packages.add(new PackageInfo(pkg));
+            nxInstance.packages.add(new PackageInfo(pkg.getName(),
+                    pkg.getVersion().toString(), pkg.getId(), pkg.getState()));
             String packageDescription;
             switch (pkg.getState()) {
             case PackageState.DOWNLOADING:

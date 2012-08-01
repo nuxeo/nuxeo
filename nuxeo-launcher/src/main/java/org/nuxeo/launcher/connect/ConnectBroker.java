@@ -410,7 +410,9 @@ public class ConnectBroker {
                 NuxeoConnectClient.getPackageManager().sort(packagesList);
                 StringBuilder sb = new StringBuilder();
                 for (Package pkg : packagesList) {
-                    cmdInfo.packages.add(new PackageInfo(pkg));
+                    cmdInfo.packages.add(new PackageInfo(pkg.getName(),
+                            pkg.getVersion().toString(), pkg.getId(),
+                            pkg.getState()));
                     String packageDescription;
                     switch (pkg.getState()) {
                     case PackageState.DOWNLOADING:
@@ -490,7 +492,9 @@ public class ConnectBroker {
                 localPackage.getUninstallFile().delete();
                 FileUtils.deleteDirectory(localPackage.getData().getEntry(
                         LocalPackage.BACKUP_DIR));
-                cmdInfo.packages.add(new PackageInfo(localPackage));
+                cmdInfo.packages.add(new PackageInfo(localPackage.getName(),
+                        localPackage.getVersion().toString(),
+                        localPackage.getId(), localPackage.getState()));
             }
             service.getRegistry().delete();
             FileUtils.deleteDirectory(service.getBackupDir());
@@ -567,7 +571,8 @@ public class ConnectBroker {
             }
             // Refresh state
             pkg = service.getPackage(pkgId);
-            cmdInfo.packages.add(new PackageInfo(pkg));
+            cmdInfo.packages.add(new PackageInfo(pkg.getName(),
+                    pkg.getVersion().toString(), pkg.getId(), pkg.getState()));
             cmdInfo.exitCode = 0;
             return pkg;
         } catch (Exception e) {
@@ -641,7 +646,8 @@ public class ConnectBroker {
             }
             log.info("Removing " + pkgId);
             service.removePackage(pkgId);
-            PackageInfo pkgInfo = new PackageInfo(pkg);
+            PackageInfo pkgInfo = new PackageInfo(pkg.getName(),
+                    pkg.getVersion().toString(), pkg.getId(), pkg.getState());
             pkgInfo.state = PackageState.REMOTE;
             cmdInfo.packages.add(pkgInfo);
             cmdInfo.exitCode = 0;
@@ -707,7 +713,9 @@ public class ConnectBroker {
             } else {
                 log.info("Adding " + packageFileName);
                 LocalPackage pkg = service.addPackage(fileToAdd);
-                cmdInfo.packages.add(new PackageInfo(pkg));
+                cmdInfo.packages.add(new PackageInfo(pkg.getName(),
+                        pkg.getVersion().toString(), pkg.getId(),
+                        pkg.getState()));
                 cmdInfo.exitCode = 0;
                 return pkg;
             }
@@ -783,7 +791,8 @@ public class ConnectBroker {
             }
             // Refresh state
             pkg = service.getPackage(pkgId);
-            cmdInfo.packages.add(new PackageInfo(pkg));
+            cmdInfo.packages.add(new PackageInfo(pkg.getName(),
+                    pkg.getVersion().toString(), pkg.getId(), pkg.getState()));
             cmdInfo.exitCode = 0;
             return pkg;
         } catch (Exception e) {
