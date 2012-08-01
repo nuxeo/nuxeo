@@ -21,6 +21,8 @@
 #   INTO READ_ACL_PERMISSIONS VALUES ('ReadRemove')
 #   INTO READ_ACL_PERMISSIONS VALUES ('ReadWrite')
 #   INTO READ_ACL_PERMISSIONS VALUES ('Everything')
+# ${usersSeparator} default to '|'
+# ${readAclMaxSize} default to 4096
 
 # Conditions used:
 # fulltextEnabled
@@ -342,7 +344,7 @@ SELECT 1 FROM USER_TABLES WHERE table_name = 'ACLR'
 #IF: emptyResult
 CREATE TABLE ACLR (
   acl_id VARCHAR2(34) NOT NULL,
-  acl VARCHAR2(4000)
+  acl VARCHAR2(${readAclMaxSize})
 )
 
 #TEST:
@@ -478,7 +480,7 @@ IS
   newid acls.id%TYPE;
   acl VARCHAR2(32767) := NULL;
   first BOOLEAN := TRUE;
-  sep VARCHAR2(1) := '|';
+  sep VARCHAR2(1) := '${usersSeparator}';
   read_permissions NX_STRING_TABLE;
 BEGIN
   SELECT permission BULK COLLECT INTO read_permissions FROM aclr_permission;
@@ -541,7 +543,7 @@ IS
   aclusers NX_STRING_ARRAY;
   acluser VARCHAR2(32767);
   aclids NX_STRING_TABLE := NX_STRING_TABLE();
-  sep VARCHAR2(1) := '|';
+  sep VARCHAR2(1) := '${usersSeparator}';
 BEGIN
   -- Build a black list with negative users
   FOR n IN users.FIRST .. users.LAST LOOP
@@ -582,7 +584,7 @@ CREATE OR REPLACE FUNCTION nx_hash_users(users NX_STRING_TABLE)
 RETURN VARCHAR2
 IS
   s VARCHAR2(32767) := NULL;
-  sep VARCHAR2(1) := '|';
+  sep VARCHAR2(1) := '${usersSeparator};
 BEGIN
   -- TODO use canonical (sorted) order for users
   FOR i IN users.FIRST .. users.LAST LOOP
@@ -674,7 +676,7 @@ DECLARE
   negusers NX_STRING_TABLE;
   acl NX_STRING_ARRAY;
   ace VARCHAR(4000);
-  sep VARCHAR2(1) := '|';
+  sep VARCHAR2(1) := '${usersSeparator}';
 BEGIN
   FOR r IN (SELECT * FROM ACLR_USER) LOOP
     -- Build a black list with negative users
