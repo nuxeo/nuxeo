@@ -1,56 +1,40 @@
+/*
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Thierry Delprat
+ */
 package org.nuxeo.platform.scanimporter.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.scanimporter.service.ScanFileBlobHolder;
 import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestParse extends NXRuntimeTestCase {
+public class TestParse extends ImportTestCase {
 
-    protected List<File> tmpDirectories = new ArrayList<File>();
-
-    protected String deployTestFiles(String name) throws IOException {
-
-        File directory = new File(FileUtils.getResourcePathFromContext("data/" + name));
-
-        String tmpDirectoryPath =System.getProperty("java.io.tmpdir");
-        File dst = new File(tmpDirectoryPath);
-
-        FileUtils.copy(directory, dst);
-        tmpDirectories.add(dst);
-
-        return dst.getPath() + "/" + name;
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-        for (File dir : tmpDirectories) {
-            if (dir.exists()) {
-                FileUtils.deleteTree(dir);
-            }
-        }
+        deployContrib("org.nuxeo.ecm.platform.scanimporter",
+                "OSGI-INF/importerservice-framework.xml");
     }
 
     @Test

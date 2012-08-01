@@ -1,49 +1,25 @@
+/*
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Thierry Delprat
+ */
 package org.nuxeo.platform.scanimporter.tests;
 
+import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.platform.scanimporter.listener.IngestionTrigger;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestImportListener extends NXRuntimeTestCase {
-
-    protected List<File> tmpDirectories = new ArrayList<File>();
-
-    @Before
-    public void tearDown() throws Exception {
-        super.tearDown();
-        for (File dir : tmpDirectories) {
-            if (dir.exists()) {
-                FileUtils.deleteTree(dir);
-            }
-        }
-    }
-
-    protected String deployTestFiles(String name) throws IOException {
-
-        File directory = new File(FileUtils.getResourcePathFromContext("data/"
-                + name));
-
-        String tmpDirectoryPath = System.getProperty("java.io.tmpdir");
-        File dst = new File(tmpDirectoryPath);
-
-        FileUtils.copy(directory, dst);
-        tmpDirectories.add(dst);
-
-        return dst.getPath() + "/" + name;
-    }
+public class TestImportListener extends ImportTestCase {
 
     @Test
     public void testTrigger() throws Exception {

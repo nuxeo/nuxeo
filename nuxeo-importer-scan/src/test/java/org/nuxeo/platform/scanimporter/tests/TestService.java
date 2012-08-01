@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Thierry Delprat
+ */
 package org.nuxeo.platform.scanimporter.tests;
 
 import org.junit.Before;
@@ -13,6 +24,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo
+ *     Thierry Delprat
  */
 package org.nuxeo.platform.scanimporter.tests;
 
@@ -16,40 +16,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.scanimporter.processor.ScannedFileImporter;
 import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
 
-public class TestImport extends SQLRepositoryTestCase {
+public class TestImport extends ImportTestCase {
 
     private static final Log log = LogFactory.getLog(TestImport.class);
-
-    protected List<File> tmp = new ArrayList<File>();
-
-    protected String deployTestFiles(String name) throws IOException {
-        File src = new File(
-                org.nuxeo.common.utils.FileUtils.getResourcePathFromContext("data/"
-                        + name));
-        File dst = File.createTempFile("nuxeoTestImport", ".dir");
-        dst.delete();
-        dst.mkdir();
-        tmp.add(dst);
-        FileUtils.copyDirectoryToDirectory(src, dst);
-        return dst.getPath() + "/" + name;
-    }
 
     @Override
     @Before
@@ -63,18 +43,6 @@ public class TestImport extends SQLRepositoryTestCase {
         openSession();
         deployContrib("org.nuxeo.ecm.platform.scanimporter",
                 "OSGI-INF/importerservice-framework.xml");
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-        for (File dir : tmp) {
-            if (dir.exists()) {
-                FileUtils.deleteDirectory(dir);
-            }
-        }
-        tmp.clear();
     }
 
     @Test
