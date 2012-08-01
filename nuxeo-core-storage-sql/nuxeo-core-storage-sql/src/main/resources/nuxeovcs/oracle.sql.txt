@@ -22,7 +22,6 @@
 #   INTO READ_ACL_PERMISSIONS VALUES ('ReadWrite')
 #   INTO READ_ACL_PERMISSIONS VALUES ('Everything')
 # ${usersSeparator} default to '|'
-# ${readAclMaxSize} default to 4096
 
 # Conditions used:
 # fulltextEnabled
@@ -344,7 +343,7 @@ SELECT 1 FROM USER_TABLES WHERE table_name = 'ACLR'
 #IF: emptyResult
 CREATE TABLE ACLR (
   acl_id VARCHAR2(34) NOT NULL,
-  acl VARCHAR2(${readAclMaxSize})
+  acl NCLOB
 )
 
 #TEST:
