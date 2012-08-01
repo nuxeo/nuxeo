@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -90,6 +91,10 @@ public class TreeActionsBean implements TreeActions, Serializable {
     protected String currentPersonalWorkspacePath;
 
     protected String userWorkspacePath;
+
+    // cache the path of the tree root to check if invalidation are needed when
+    // bypassing interceptors
+    protected String firstAccessibleParentPath;
 
     @In(create = true)
     protected TreeInvalidatorBean treeInvalidator;
@@ -160,6 +165,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
 
                 }
             }
+            firstAccessibleParentPath = firstAccessibleParent == null ? null
+                    : firstAccessibleParent.getPathAsString();
             if (firstAccessibleParent != null) {
                 Filter filter = null;
                 Filter leafFilter = null;
@@ -281,6 +288,10 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @BypassInterceptors
     public void resetCurrentDocumentData() {
         currentDocumentPath = null;
+        if (checkIfTreeInvalidationNeeded()) {
+            trees.clear();
+            return;
+        }
         // reset tree in case an accessible parent is finally found this time
         // for the new current document
         for (List<DocumentTreeNode> tree : trees.values()) {
@@ -288,6 +299,24 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 tree = null;
             }
         }
+    }
+
+    protected boolean checkIfTreeInvalidationNeeded() {
+        // NXP-9813: this check may consume more resource, because called each
+        // time a document selection is changed but it guarantees a better
+        // detection if moving from one tree to another without using
+        // UserWorkspace actions from user menu, which raise appropriate events
+        DocumentModel currentDocument = (DocumentModel) Component.getInstance("currentDocument");
+        if (currentDocument != null
+                && firstAccessibleParentPath != null
+                && currentDocument.getPathAsString() != null
+                && (!currentDocument.getPathAsString().contains(
+                        firstAccessibleParentPath) || (userWorkspacePath != null
+                        && currentDocument.getPathAsString().contains(
+                                userWorkspacePath) && !firstAccessibleParentPath.contains(userWorkspacePath)))) {
+            return true;
+        }
+        return false;
     }
 
     @Observer(value = { EventNames.GO_HOME,
