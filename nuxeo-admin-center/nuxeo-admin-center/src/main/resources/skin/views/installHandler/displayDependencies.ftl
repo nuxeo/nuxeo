@@ -138,13 +138,13 @@ $(document).ready(function() {
    <h1> Installation of ${pkg.title} (${pkg.id}) </h1>
 
    <div class="installWarningsTitle">
-     <h2>The package you want to install requires some dependencies changes:</h2>
+     <h2>The package you want to install requires some dependencies changes</h2>
 
       <br/>
       <input type="checkbox" id="manualModeCheckBox" onClick="switchMode()"> Manual installation mode</input>
       <br/>
       <#if (resolution.getRemovePackageIds()?size>0) >
-      <h3>Packages that need to be removed from your instance :</h3>
+      <h3>Packages that need to be removed from your instance:</h3>
       <table>
         <#list resolution.getRemovePackageIds() as pkgId>
           <tr>
@@ -156,7 +156,7 @@ $(document).ready(function() {
       </#if>
 
       <#if (resolution.getUpgradePackageIds()?size>0) >
-      <h3>Already installed packages that need to be upgraded :</h3>
+      <h3>Already installed packages that need to be upgraded:</h3>
       <table>
         <#list resolution.getUpgradePackageIds() as pkgId>
         <tr><td> ${pkgId} </td>
@@ -167,17 +167,17 @@ $(document).ready(function() {
       </table>
       </#if>
 
-      <#if (resolution.getInstallPackageIds()?size>0) >
-      <h3>Already downloaded packages that need to be installed :</h3>
+      <#if (resolution.getLocalToInstallIds()?size>0) >
+      <h3>Already downloaded packages that need to be installed:</h3>
       <table>
-        <#list resolution.getInstallPackageIds() as pkgId>
+        <#list resolution.getLocalToInstallIds() as pkgId>
           <tr><td> ${pkgId} </td><td><A href="javascript:installPackage('${pkgId}', false)" class="manualModeCmd">Manual installation</A></td></tr>
         </#list>
       </table>
       </#if>
 
       <#if (resolution.getDownloadPackageIds()?size>0) >
-      <h3>New packages that need to be  downloaded and installed :</h3>
+      <h3>New packages that need to be downloaded and installed:</h3>
       <table>
         <#list resolution.getDownloadPackageIds() as pkgId>
           <tr>
@@ -190,7 +190,7 @@ $(document).ready(function() {
       </#if>
 
       <#if (resolution.getUnchangedPackageIds()?size>0) >
-      <h3>Dependencies that are already installed on your instance and won't be changed :</h3>
+      <h3>Dependencies that are already installed on your instance and won't be changed:</h3>
       <table>
         <#list resolution.getUnchangedPackageIds() as pkgId>
           <tr><td> ${pkgId}</td></tr>
