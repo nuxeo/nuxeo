@@ -42,7 +42,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class, TransactionalFeature.class})
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy( {
     "org.nuxeo.runtime.datasource",
 	"org.nuxeo.ecm.directory",
