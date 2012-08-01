@@ -41,6 +41,9 @@ public class TestFulltextWordSplit extends NXRuntimeTestCase {
         check("abc|def", "  -,abc DEF?? !");
         // accents left alone
         check("hot|caf\u00e9", "hot CAF\u00c9");
+        // check html removal and entities unescape
+        check("test|é|test", "test &eacute; test");
+        check("test|é|test", "test <p style=\"something\">&eacute;</p> test");
     }
 
 }

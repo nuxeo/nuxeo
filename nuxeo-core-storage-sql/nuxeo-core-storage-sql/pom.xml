@@ -126,7 +126,10 @@
       <artifactId>mail</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+        <groupId>net.htmlparser.jericho</groupId>
+        <artifactId>jericho-html</artifactId>
+    </dependency>
     <!-- cache stat -->
     <dependency>
       <groupId>org.javasimon</groupId>

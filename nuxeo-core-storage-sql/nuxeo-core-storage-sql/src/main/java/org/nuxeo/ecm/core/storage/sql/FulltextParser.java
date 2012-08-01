@@ -23,6 +23,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import net.htmlparser.jericho.Renderer;
+import net.htmlparser.jericho.Source;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.runtime.api.Framework;
@@ -32,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Takes strings extracted from the document, and decides which preprocessed
  * strings to pass to the underlying database for native indexing.
- *
+ * 
  * @since 5.6, 5.5.0-HF03
  */
 public class FulltextParser {
@@ -161,17 +165,36 @@ public class FulltextParser {
      * <p>
      * This can be subclassed. Implementations should append to the
      * {@link #strings} list.
-     *
+     * 
      * @param s the string to be parsed and normalized
      * @param path the abstracted path for the property, where all complex
      *            indexes have been replaced by {@code *}
      */
     public void parse(String s, String path) {
+        s = preprocessField(s, path);
         for (String word : WORD_SPLIT_PATTERN.split(s)) {
             if (!word.isEmpty()) {
                 strings.add(word.toLowerCase());
             }
         }
+    }
+
+    protected String preprocessField(String s, String path) {
+        if (s == null) {
+            return null;
+        }
+        if (s.contains("<")) {
+            s = removeHtml(s);
+        }
+        return StringEscapeUtils.unescapeHtml(s);
+    }
+
+    protected String removeHtml(String s) {
+        Source source = new Source(s);
+        Renderer renderer = source.getRenderer();
+        renderer.setIncludeHyperlinkURLs(false);
+        renderer.setDecorateFontStyles(false);
+        return renderer.toString();
     }
 
 }
