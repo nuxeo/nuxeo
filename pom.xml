@@ -19,6 +19,7 @@
   <modules>
     <module>nuxeo-quota-core</module>
     <module>nuxeo-quota-web</module>
+    <module>nuxeo-quota-automation</module>
   </modules>
 
   <dependencyManagement>

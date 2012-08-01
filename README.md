@@ -48,6 +48,13 @@ The current implementation of documentSizeUpdater :
  - handles checks create / update / delete / move / copy
  - takes into accounts the versions (Document with 2 versions will have a total size of innersize + size of the versions).
 
+## Automation API 
+
+2 Automation Operations are defined to be able to remotely manage the Quota on a given Document :
+
+ - Quotas.GetInfo : to retrieve informations about the Quota Info of a Document (innerSize, totalSize and maxSize)
+ - Quotas.SetMaxSize : to define the maximum size allowed in a given Document 
+
 ## About Nuxeo
 
 Nuxeo provides a modular, extensible Java-based [open source software platform for enterprise content management](http://www.nuxeo.com/en/products/ep) and packaged applications for [document management](http://www.nuxeo.com/en/products/document-management), [digital asset management](http://www.nuxeo.com/en/products/dam) and [case management](http://www.nuxeo.com/en/products/case-management). Designed by developers for developers, the Nuxeo platform offers a modern architecture, a powerful plug-in model and extensive packaging capabilities for building content applications.
