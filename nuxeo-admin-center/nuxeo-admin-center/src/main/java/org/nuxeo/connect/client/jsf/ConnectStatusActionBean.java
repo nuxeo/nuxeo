@@ -180,7 +180,7 @@ public class ConnectStatusActionBean implements Serializable {
 
     public void validateLogin() {
         if (login == null || password == null) {
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.addToControl("login", StatusMessage.Severity.WARN,
                     messages.get("label.empty.loginpassword"));
             loginValidated = false;
             flushContextCache();
@@ -188,7 +188,7 @@ public class ConnectStatusActionBean implements Serializable {
         }
         List<ConnectProject> prjs = getProjectsAvailableForRegistration();
         if (prjs == null || prjs.size() == 0) {
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.addToControl("online", StatusMessage.Severity.WARN,
                     messages.get("label.bad.loginpassword.or.noproject"));
             loginValidated = false;
             flushContextCache();
@@ -273,20 +273,18 @@ public class ConnectStatusActionBean implements Serializable {
 
     public String register() {
         if (registredProject == null) {
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.addToControl("online", StatusMessage.Severity.WARN,
                     messages.get("label.empty.project"));
             return null;
         }
-        if (instanceDescription == null || instanceDescription.isEmpty()) {
-            instanceDescription = login + "'s " + instanceType + " instance";
-        }
+        autofillInstanceDescription();
         try {
             getService().remoteRegisterInstance(login, password,
                     registredProject,
                     NuxeoClientInstanceType.fromString(instanceType),
                     instanceDescription);
         } catch (Exception e) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
+            facesMessages.addToControl("online", StatusMessage.Severity.ERROR,
                     messages.get("label.connect.registrationError"));
             log.error("Error while registering instance", e);
         }
@@ -296,18 +294,30 @@ public class ConnectStatusActionBean implements Serializable {
         return null;
     }
 
+    /**
+     * @since 5.6
+     */
+    protected void autofillInstanceDescription() {
+        if (instanceDescription == null || instanceDescription.isEmpty()) {
+            instanceDescription = login + "'s " + instanceType + " instance";
+        }
+    }
+
     public String getCTID() throws Exception {
         return TechnicalInstanceIdentifier.instance().getCTID();
     }
 
     public String localRegister() {
+        autofillInstanceDescription();
         try {
             getService().localRegisterInstance(CLID, instanceDescription);
         } catch (InvalidCLID e) {
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.addToControl("offline_clid",
+                    StatusMessage.Severity.WARN,
                     messages.get("label.connect.wrongCLID"));
         } catch (IOException e) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
+            facesMessages.addToControl("offline_clid",
+                    StatusMessage.Severity.ERROR,
                     messages.get("label.connect.registrationError"));
             log.error("Error while registering instance locally", e);
         }
