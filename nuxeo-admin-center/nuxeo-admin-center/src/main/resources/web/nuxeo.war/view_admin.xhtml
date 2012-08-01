@@ -32,7 +32,7 @@
           <a4j:outputPanel id="setupRequiresRestartPanel"
             ajaxRendered="true">
             <c:if test="#{setupRequiresRestart}">
-              <div class="warningFeedback">
+              <div class="warningMessage">
                 <h:form id="restartRequiredForm">
                   <h:outputText value="#{messages['label.setup.restartNeeded']} " />
                   <h:commandButton onclick="return confirmRestart();"
