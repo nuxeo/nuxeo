@@ -247,6 +247,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
                     resourcesAccessor.getMessages().get(
                             currentDocument.getType()));
         }
+        currentPublicationTree = null;
         return null;
     }
 
