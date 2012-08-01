@@ -39,8 +39,8 @@
         </div>
         <div class="body">
         <div class="feedBackMessages"><h:messages
-          infoClass="infoFeedback" warnClass="warningFeedback"
-          errorClass="errorFeedback" /></div>
+          infoClass="infoMessage" warnClass="warningMessage"
+          errorClass="errorMessage" /></div>
 
         <h:form rendered="#{!connectLoginValidated}">
           <table class="loginTable">
@@ -244,7 +244,7 @@
     </c:if>
     <c:if test="#{connectStatus.status.isError()}">
       <br />
-      <div class="warningFeedback">
+      <div class="warningMessage">
       #{messages['connect.message.registred.problem']}</div>
       <br />
       <h:form>
