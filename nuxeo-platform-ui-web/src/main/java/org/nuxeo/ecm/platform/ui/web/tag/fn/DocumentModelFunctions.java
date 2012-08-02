@@ -371,6 +371,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                     return true;
                 }
             }
+        } else if (value != null) {
+            // in any other case, test if object is null (int, calendar,
+            // etc...)
+            return true;
         }
         return false;
     }
