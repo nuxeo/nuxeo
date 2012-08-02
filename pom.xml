@@ -4,7 +4,7 @@
 
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-addons-list</artifactId>
-  <version>5.4.1.1-SNAPSHOT</version>
+  <version>5.4.1-HF18</version>
   <name>Nuxeo Addons list</name>
   <packaging>pom</packaging>
   <description>Nuxeo Addons list</description>
