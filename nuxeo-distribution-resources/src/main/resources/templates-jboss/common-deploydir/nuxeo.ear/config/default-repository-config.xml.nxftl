@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 <component name="default-repository-config">
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="default" label="Default Repository" />
+  </extension>
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="default"
