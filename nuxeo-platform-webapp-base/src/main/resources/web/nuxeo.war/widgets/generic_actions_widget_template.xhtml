@@ -20,12 +20,12 @@
       </h3>
     </c:if>
 
-    <div class="actions_block #{widgetProperty_subStyleClass}">
+    <div class="#{widgetProperty_subStyleClass}">
 
       <c:choose>
 
         <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
-          <div>
+          <div class="widgetPanel actionsWidgetPanel">
             <c:forEach var="action" items="#{widgetProperty_actions}"
               begin="0"
               end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
@@ -61,7 +61,7 @@
             begin="0"
             end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
             step="1">
-            <div>
+            <div class="widgetPanel actionsWidgetPanel">
               <ui:decorate template="/incl/action/action_template.xhtml">
                 <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                 <ui:param name="idPrefix" value="#{widget.id}_" />
