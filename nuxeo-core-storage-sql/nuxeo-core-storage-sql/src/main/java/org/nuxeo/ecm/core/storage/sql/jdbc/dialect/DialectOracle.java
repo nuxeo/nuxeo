@@ -65,6 +65,11 @@ public class DialectOracle extends Dialect {
 
     protected boolean pathOptimizationsEnabled;
 
+    private static final String DEFAULT_USERS_SEPARATOR = "|";
+
+    protected String usersSeparator;
+
+
     public DialectOracle(DatabaseMetaData metadata,
             BinaryManager binaryManager,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
@@ -74,6 +79,9 @@ public class DialectOracle extends Dialect {
                         : repositoryDescriptor.fulltextAnalyzer;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.pathOptimizationsEnabled;
+        usersSeparator = repositoryDescriptor == null ? null
+                : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
+                        : repositoryDescriptor.usersSeparatorKey;
     }
 
     @Override
@@ -550,6 +558,8 @@ public class DialectOracle extends Dialect {
                     perm));
         }
         properties.put("readPermissions", StringUtils.join(permsList, "\n"));
+        properties.put("usersSeparator", getUsersSeparator());
+        properties.put("everyone", SecurityConstants.EVERYONE);
         return properties;
     }
 
@@ -641,4 +651,10 @@ public class DialectOracle extends Dialect {
         return "TRUNC(%s)";
     }
 
+    public String getUsersSeparator() {
+        if (usersSeparator == null) {
+            return DEFAULT_USERS_SEPARATOR;
+        }
+        return usersSeparator;
+    }
 }
