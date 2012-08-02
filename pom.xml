@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
-    <version>5.4.1.1-SNAPSHOT</version>
+    <version>5.4.1-HF18</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -14,10 +14,10 @@
   <description>Nuxeo Features: Parent.</description>
 
   <properties>
-    <nuxeo.theme.version>5.4.1.1-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.features.version>5.4.1.1-SNAPSHOT</nuxeo.features.version>
-    <nuxeo.webengine.version>5.4.1.1-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.jsf.version>5.4.1.1-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.theme.version>5.4.1-HF18</nuxeo.theme.version>
+    <nuxeo.features.version>5.4.1-HF18</nuxeo.features.version>
+    <nuxeo.webengine.version>5.4.1-HF18</nuxeo.webengine.version>
+    <nuxeo.jsf.version>5.4.1-HF18</nuxeo.jsf.version>
     <nuxeo.connect.client.version>1.2</nuxeo.connect.client.version>
   </properties>
 
