@@ -583,7 +583,7 @@ CREATE OR REPLACE FUNCTION nx_hash_users(users NX_STRING_TABLE)
 RETURN VARCHAR2
 IS
   s VARCHAR2(32767) := NULL;
-  sep VARCHAR2(1) := '${usersSeparator};
+  sep VARCHAR2(1) := '${usersSeparator}';
 BEGIN
   -- TODO use canonical (sorted) order for users
   FOR i IN users.FIRST .. users.LAST LOOP
