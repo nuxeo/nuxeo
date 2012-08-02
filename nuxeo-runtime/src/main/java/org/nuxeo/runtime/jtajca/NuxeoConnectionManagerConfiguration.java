@@ -99,7 +99,7 @@ public class NuxeoConnectionManagerConfiguration {
         this.partitionBySubject = partitionBySubject;
     }
 
-    @XNode("@minPoolSize")
+    @XNode("@maxPoolSize")
     public void setMaxPoolSize(int maxPoolSize) {
         this.maxPoolSize = maxPoolSize;
     }
