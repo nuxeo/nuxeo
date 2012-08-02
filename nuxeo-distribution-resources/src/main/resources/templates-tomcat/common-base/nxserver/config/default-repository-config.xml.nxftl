@@ -5,6 +5,8 @@
     <repository name="default"
       factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
       <repository name="default">
+        <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
+          blockingTimeoutMillis="100" idleTimeoutMinutes="10" />
 <#if "${nuxeo.core.binarymanager}" != "" >
         <binaryManager class="${nuxeo.core.binarymanager}" />
 </#if>
