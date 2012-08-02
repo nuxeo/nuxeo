@@ -3,6 +3,7 @@ oracle.target=server/default
 
 nuxeo.template.includes=common
 
+nuxeo.db.user_separator_key=|
 nuxeo.db.host=localhost
 nuxeo.db.port=1521
 nuxeo.db.name=NUXEO
