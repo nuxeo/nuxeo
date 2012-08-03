@@ -63,6 +63,19 @@ public class ContentViewObserverActions implements Serializable {
     }
 
     /**
+     * Refreshes and resets content views that have declared event
+     * {@link EventNames#DOCUMENT_PUBLICATION_REJECTED} as a refresh/reset
+     * event.
+     *
+     * @since 5.6
+     */
+    @Observer(value = { EventNames.DOCUMENT_PUBLICATION_REJECTED })
+    public void onDocumentPublicationRejected() {
+        contentViewActions.refreshOnSeamEvent(EventNames.DOCUMENT_PUBLICATION_REJECTED);
+        contentViewActions.resetPageProviderOnSeamEvent(EventNames.DOCUMENT_PUBLICATION_REJECTED);
+    }
+
+    /**
      * Resets all caches on {@link EventNames#FLUSH_EVENT}, triggered by hot
      * reload when dev mode is set.
      *
