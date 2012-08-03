@@ -25,9 +25,9 @@
       <h:form enctype="multipart/form-data" id="document_template_associate">
 
       <h:selectOneMenu value="#{templateBasedActions.templateIdToAssociate}">
-        <nxu:selectItems var="doc" value="#{templateBasedActions.getBindableTemplatesForDocument()}"
-          itemValue="#{doc.id}"
-          itemLabel="#{doc.title} (#{doc.name})" />
+        <nxu:selectItems var="item" value="#{templateBasedActions.getBindableTemplatesForDocumentAsSelectItems()}"
+          itemValue="#{item.value}"
+          itemLabel="#{item.label}" />
       </h:selectOneMenu>
 
       <a4j:commandButton value="#{messages['command.template.associate']}"

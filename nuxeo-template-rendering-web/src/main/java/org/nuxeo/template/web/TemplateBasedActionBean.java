@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
@@ -336,6 +337,23 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         }
         return result;
 
+    }
+
+    public List<SelectItem> getBindableTemplatesForDocumentAsSelectItems()
+            throws ClientException {
+
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        List<TemplateSourceDocument> sources = getBindableTemplatesForDocument();
+        for (TemplateSourceDocument sd : sources) {
+            DocumentModel doc = sd.getAdaptedDoc();
+            String label = doc.getTitle();
+            if (doc.isVersion()) {
+                label = label + " (V " + doc.getVersionLabel() + ")";
+            }
+            items.add(new SelectItem(doc.getId(), label));
+        }
+
+        return items;
     }
 
     public boolean canBindNewTemplate() throws Exception {

@@ -119,9 +119,9 @@
              </td>
              <td class="fieldColumn">
                    <h:selectOneMenu value="#{templateBasedActions.templateIdToAssociate}">
-                    <nxu:selectItems var="doc" value="#{templateBasedActions.getBindableTemplatesForDocument()}"
-                      itemValue="#{doc.id}"
-                      itemLabel="#{doc.title} (#{doc.name})" />
+                    <nxu:selectItems var="item" value="#{templateBasedActions.getBindableTemplatesForDocumentAsSelectItems()}"
+                      itemValue="#{item.value}"
+                      itemLabel="#{item.label}" />
                    </h:selectOneMenu>
                 <h:commandButton class="button" value="#{messages['command.template.associate']}"
                     action="#{templateBasedActions.associateDocumentToTemplate}" id="button_save" />
