@@ -66,6 +66,7 @@ import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
 import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 
 public class VirtualFolderResource extends AbstractResource {
@@ -81,12 +82,21 @@ public class VirtualFolderResource extends AbstractResource {
     @Produces("text/html")
     public String get() throws ClientException {
         StringBuilder sb = new StringBuilder();
-        sb.append("<html><body><p>Folder listing for " + path + ":</p>\n<ul>");
+        sb.append("<html><body><p>");
+        sb.append("Folder listing for ");
+        sb.append(path);
+        sb.append("/");
+        sb.append("</p>\n<ul>\n");
         for (String name : rootFolderNames) {
-            sb.append("<li><a href='" + name + "'>" + name + "</a></li>\n");
+            String qname = StringEscapeUtils.escapeHtml(name);
+            sb.append("<li><a href=\"");
+            sb.append(qname);
+            sb.append("/"); // terminating slash
+            sb.append("\">");
+            sb.append(qname);
+            sb.append("</a></li>\n");
         }
         sb.append("</ul></body>\n");
-
         return sb.toString();
     }
 
