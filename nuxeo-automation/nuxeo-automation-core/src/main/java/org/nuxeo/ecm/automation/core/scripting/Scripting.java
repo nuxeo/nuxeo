@@ -16,7 +16,9 @@ import groovy.lang.Binding;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +28,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
@@ -99,6 +102,16 @@ public class Scripting {
         if (input instanceof DocumentModel) {
             map.put("Document", new DocumentWrapper(ctx.getCoreSession(),
                     (DocumentModel) input));
+        }
+        if (input instanceof DocumentModelList) {
+            List<DocumentWrapper> docs = new ArrayList<DocumentWrapper>();
+            for (DocumentModel doc : (DocumentModelList) input) {
+                docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+            }
+            map.put("Documents", docs);
+            if (docs.size() >= 1) {
+                map.put("Document", docs.get(0));
+            }
         }
         return map;
     }
