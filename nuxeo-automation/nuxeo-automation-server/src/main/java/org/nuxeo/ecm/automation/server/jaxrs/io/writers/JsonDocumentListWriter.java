@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -115,8 +116,10 @@ public class JsonDocumentListWriter implements
                 DocumentLocation docLoc = new DocumentLocationImpl(doc);
                 DocumentView docView = new DocumentViewImpl(docLoc,
                         doc.getAdapter(TypeInfo.class).getDefaultView());
-                String documentURL = documentViewCodecManager.getUrlFromDocumentView(
-                        codecName, docView, true, provider.getBaseURL());
+                String documentURL = VirtualHostHelper.getContextPathProperty()
+                        + "/"
+                        + documentViewCodecManager.getUrlFromDocumentView(
+                                codecName, docView, false, null);
 
                 Map<String, String> contextParameters = new HashMap<String, String>();
                 contextParameters.put("documentURL", documentURL);

@@ -142,21 +142,18 @@ public class DocumentPageProviderOperation {
             targetPageSize = Long.valueOf(pageSize.longValue());
         }
 
-        HttpServletRequest req = (HttpServletRequest) context.get("request");
-        String baseURL = VirtualHostHelper.getBaseURL(req);
         if (query != null) {
             CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
             desc.setPattern(query);
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
                             sortInfos, targetPageSize, targetPage, props,
-                            parameters), documentLinkBuilder, baseURL);
+                            parameters), documentLinkBuilder);
         } else {
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider(
                             providerName, sortInfos, targetPageSize,
-                            targetPage, props, parameters),
-                    documentLinkBuilder, baseURL);
+                            targetPage, props, parameters), documentLinkBuilder);
         }
 
     }

@@ -32,10 +32,8 @@ public class PaginableDocumentModelListImpl extends DocumentModelListImpl
 
     protected String documentLinkBuilder;
 
-    protected String baseURL;
-
     public PaginableDocumentModelListImpl(PageProvider<DocumentModel> provider) {
-        this(provider, null, null);
+        this(provider, null);
     }
 
     /**
@@ -44,16 +42,14 @@ public class PaginableDocumentModelListImpl extends DocumentModelListImpl
      *
      * @param documentLinkBuilder the name of what will be used to compute the
      *            document URLs, usually a codec name.
-     * @param baseURL the base URL to use when computing document URLs.
      * @since 5.6
      */
     public PaginableDocumentModelListImpl(PageProvider<DocumentModel> provider,
-            String documentLinkBuilder, String baseURL) {
+            String documentLinkBuilder) {
         super(provider.getCurrentPage());
         this.provider = provider;
         this.totalSize = provider.getResultsCount();
         this.documentLinkBuilder = documentLinkBuilder;
-        this.baseURL = baseURL;
     }
 
     public PageProvider<DocumentModel> getProvider() {
@@ -76,7 +72,4 @@ public class PaginableDocumentModelListImpl extends DocumentModelListImpl
         return documentLinkBuilder;
     }
 
-    public String getBaseURL() {
-        return baseURL;
-    }
 }
