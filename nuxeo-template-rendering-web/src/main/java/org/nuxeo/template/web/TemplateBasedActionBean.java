@@ -135,10 +135,12 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
-        TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
+        TemplateBasedDocument template = currentDocument.getAdapter(TemplateBasedDocument.class);
         if (template != null) {
-            currentDocument = template.saveParams(templateEditableInputs, true);
+            currentDocument = template.saveParams(editableTemplateName,
+                    templateEditableInputs, true);
         }
+        reset();
         return navigationContext.navigateToDocument(currentDocument);
     }
 

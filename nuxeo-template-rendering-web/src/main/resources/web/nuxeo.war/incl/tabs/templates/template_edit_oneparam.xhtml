@@ -11,6 +11,7 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
 <h:panelGroup id="param_#{param.name}">
+
 <table border="0" width="80%">
 <tr>
 <td class="labelColumn" width="10%">  <h:outputText value="#{messages['label.template.parameter.name']}" /></td>
@@ -55,6 +56,7 @@
   <c:if test="#{param.sourceValue}">
      <c:if test="#{param.typeAsString=='content'}">
       <td class="labelColumn" width="20%"><h:outputText value="#{messages['label.template.parameter.content.source']}"/></td>
+      <c:if test="#{!param.readOnly}">
       <td class="fieldColumn" width="20%">
       <span class="contentWidget">
          <h:inputHidden value="#{param.source}"/>
@@ -67,6 +69,15 @@
       </span>
       </td>
      </c:if>
+     <c:if test="#{param.readOnly}">
+      <td class="fieldColumn" width="20%">
+      <span class="contentWidget">
+         <h:outputText value="#{param.source}"/>
+      </span>
+      </td>
+     </c:if>
+    </c:if>
+
      <c:if test="#{param.typeAsString!='content'}">
       <td class="labelColumn" width="20%"> <h:outputText value="#{messages['label.template.parameter.xpath']}"/> </td>
       <td class="fieldColumn" width="20%">

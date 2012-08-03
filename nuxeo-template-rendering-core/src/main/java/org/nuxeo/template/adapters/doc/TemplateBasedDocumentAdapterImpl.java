@@ -203,7 +203,8 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         List<TemplateInput> params = tmpl.getParams();
         List<TemplateInput> myParams = new ArrayList<TemplateInput>();
         for (TemplateInput param : params) {
-            TemplateInput myParam = param.getCopy(param.isSet());
+            boolean readOnly = param.isSet() && !tmpl.allowInstanceOverride();
+            TemplateInput myParam = param.getCopy(readOnly);
             myParams.add(myParam);
         }
 

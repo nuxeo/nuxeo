@@ -55,9 +55,7 @@ public class BaseTemplateAction implements Serializable {
         }
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
         if (templateBased != null) {
-            return templateBased.hasEditableParams(templateName)
-                    && documentManager.hasPermission(currentDocument.getRef(),
-                            "Write");
+            return templateBased.hasEditableParams(templateName);
         }
         return false;
     }
