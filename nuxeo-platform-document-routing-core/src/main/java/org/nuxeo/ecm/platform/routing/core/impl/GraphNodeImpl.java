@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.runtime.api.Framework;
@@ -451,11 +452,21 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     @Override
     public boolean canMerge() {
+        try {
         int n = 0;
         List<Transition> inputTransitions = getInputTransitions();
+        
         for (Transition t : inputTransitions) {
-            if (t.result) {
-                n++;
+            Property property = t.source.getDocument().getProperty("rnode:transitions").get(0)
+                .get("result");
+            if (property != null ){
+                Object obj = property.getValue();
+                if (obj != null) {
+                    boolean res = (Boolean) obj;
+                    if (res) {
+                        n++;
+                    }
+                }
             }
         }
         String merge = (String) getProperty(PROP_MERGE);
@@ -466,6 +477,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         } else {
             throw new ClientRuntimeException("Illegal merge mode '" + merge
                     + "' for node " + this);
+        }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

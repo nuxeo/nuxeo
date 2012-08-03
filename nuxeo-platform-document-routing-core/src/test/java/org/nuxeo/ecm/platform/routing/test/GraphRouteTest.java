@@ -446,6 +446,131 @@ public class GraphRouteTest {
         assertEquals("rights 1", doc.getPropertyValue("dc:rights"));
     }
 
+    // a few more nodes before the merge
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testForkMergeAllWithTasks() throws Exception {
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        assertNotNull(user1);
+
+        NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
+        assertNotNull(user2);
+
+        NuxeoPrincipal user3 = userManager.getPrincipal("myuser3");
+        assertNotNull(user3);
+
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans1", "node2", "true"),
+                transition("trans2", "node3", "true"),
+                transition("trans3", "node4", "true"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
+        setTransitions(node2, transition("trans1", "node5", "true"));
+
+        node2.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
+        node2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
+                "Write");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
+                "test_setGlobalvariable");
+        node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users = { user1.getName() };
+        node2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
+        setButtons(node2, button("btn1", "label-btn1", "filterrr"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
+        setTransitions(node3, transition("trans2", "node5", "true"));
+
+        node3.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
+        node3.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
+                "Write");
+        node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
+                "test_setGlobalvariable");
+        node3.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users2 = { user2.getName() };
+        node3.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
+        setButtons(node1, button("btn2", "label-btn2", "filterrr"));
+        node3 = session.saveDocument(node3);
+
+
+        DocumentModel node4 = createNode(routeDoc, "node4");
+        node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
+        setTransitions(node4, transition("trans3", "node5", "true"));
+
+        node4.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
+        node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
+                "Write");
+        node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
+                "test_setGlobalvariable");
+        node4.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users3 = { user3.getName() };
+        node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users3);
+        setButtons(node1, button("btn2", "label-btn2", "filterrr"));
+        node4 = session.saveDocument(node4);
+
+
+
+        DocumentModel node5 = createNode(routeDoc, "node5");
+        node5.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node5.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node5.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node5 = session.saveDocument(node5);
+
+        DocumentRoute route = instantiateAndRun();
+
+        List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        CoreSession sessionUser1 = openSession(user1);
+        // task assignees have READ on the route instance
+        assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
+        routingTaskService.endTask(sessionUser1, tasks.get(0), data, "trans1");
+        closeSession(sessionUser1);
+
+        tasks = taskService.getTaskInstances(doc, user2, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        data = new HashMap<String, Object>();
+        CoreSession sessionUser2 = openSession(user2);
+        // task assignees have READ on the route instance
+        assertNotNull(sessionUser2.getDocument(route.getDocument().getRef()));
+        routingTaskService.endTask(sessionUser2, tasks.get(0), data, "trans2");
+        closeSession(sessionUser2);
+
+        
+
+        // end task and verify that route was done
+        NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
+        session = openSession(admin);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertFalse(route.isDone());
+
+        tasks = taskService.getTaskInstances(doc, user3, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        data = new HashMap<String, Object>();
+        CoreSession sessionUser3 = openSession(user3);
+        // task assignees have READ on the route instance
+        assertNotNull(sessionUser3.getDocument(route.getDocument().getRef()));
+        routingTaskService.endTask(sessionUser3, tasks.get(0), data, "trans3");
+        closeSession(sessionUser3);
+        // end task and verify that route was done
+        admin = new UserPrincipal("admin", null, false, true);
+        session = openSession(admin);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testForkMergeOne() throws Exception {
