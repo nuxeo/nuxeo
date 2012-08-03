@@ -33,11 +33,4 @@ public interface PaginableDocumentModelList extends DocumentModelList {
      */
     String getDocumentLinkBuilder();
 
-    /**
-     * Returns the base URL to use when computing document URLs.
-     *
-     * @since 5.6
-     */
-    String getBaseURL();
-
 }
