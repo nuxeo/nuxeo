@@ -13,9 +13,9 @@ textarea { font-family: "default (__FLAVOR__ font)"; padding: .4em; font-size: .
 option { background-color: white }
 optgroup { background-color: background-color: "color.major.light (__FLAVOR__ background)"; }
 
-input, input[type="file"], textarea, select, .field { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; line-height: 18px; padding: .3em }
+input, input[type="file"], textarea, select, .field { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; line-height: 18px; margin-bottom: .3em; padding: .3em }
 input[type="file"] { margin-left: .6em }
-input[type="checkbox"], input[type="radio"], input[type="image"], input[type="hidden"] { background: none; border: none !important; box-shadow: none; }
+input[type="checkbox"], input[type="radio"], input[type="image"], input[type="hidden"] { background: none; border: none !important; box-shadow: none; margin-right: .5em }
 
 select:focus > option:checked, select:focus > optgroup > option:checked { background-color: "color.major.stronger (__FLAVOR__ background)"; }
 input:focus, textarea:focus { border-color: "color.major.strong (__FLAVOR__ border)"; }
