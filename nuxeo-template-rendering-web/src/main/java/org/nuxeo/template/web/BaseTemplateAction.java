@@ -32,8 +32,12 @@ public class BaseTemplateAction implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    public boolean canAddTemplateInputs() {
+    public boolean canAddTemplateInputs() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (!documentManager.hasPermission(currentDocument.getRef(),
+                SecurityConstants.WRITE)) {
+            return false;
+        }
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         return template != null ? true : false;
     }
@@ -60,6 +64,10 @@ public class BaseTemplateAction implements Serializable {
 
     public boolean canResetParameters() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (!documentManager.hasPermission(currentDocument.getRef(),
+                SecurityConstants.WRITE)) {
+            return false;
+        }
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
         if (templateBased != null) {
             return true;
