@@ -57,8 +57,6 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 @Install(precedence = Install.FRAMEWORK)
 public class StartupHelper implements Serializable {
 
-    public static final String LANGUAGE_PARAMETER = "language";
-
     protected static final String SERVERS_VIEW = "view_servers";
 
     protected static final String DOMAINS_VIEW = "view_domains";
@@ -128,7 +126,8 @@ public class StartupHelper implements Serializable {
         }
 
         if (Events.exists()) {
-            Events.instance().raiseEvent(EventNames.USER_SESSION_STARTED, documentManager);
+            Events.instance().raiseEvent(EventNames.USER_SESSION_STARTED,
+                    documentManager);
         }
 
         // select home page
@@ -171,23 +170,14 @@ public class StartupHelper implements Serializable {
 
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
-            // language selection now handled by url pattern, here for compat
-            if (request.getParameter(LANGUAGE_PARAMETER) != null) {
-                String localeStr = request.getParameter(LANGUAGE_PARAMETER);
-                restHelper.setLocaleString(localeStr);
-            }
-
             // more than one repo
             if (SERVERS_VIEW.equals(result)) {
                 return result;
             }
 
-            String query = "SELECT * FROM Domain WHERE "
-                    + NXQL.ECM_MIXINTYPE
-                    + " <> '"
-                    + FacetNames.HIDDEN_IN_NAVIGATION + "' AND "
-                    + NXQL.ECM_LIFECYCLESTATE
-                    + " <> '"
+            String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_MIXINTYPE
+                    + " <> '" + FacetNames.HIDDEN_IN_NAVIGATION + "' AND "
+                    + NXQL.ECM_LIFECYCLESTATE + " <> '"
                     + LifeCycleConstants.DELETED_STATE + "'";
             DocumentModelList domains = documentManager.query(query);
             if (domains.size() == 1) {
