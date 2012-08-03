@@ -14,5 +14,4 @@ Provide-Package: org.nuxeo.ecm.platform.audit.web,
  org.nuxeo.ecm.platform.audit.web.listener.events
 Nuxeo-Component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/layout-contrib.xml,
- OSGI-INF/content-view-contrib.xml,
- OSGI-INF/directory-ui-contrib.xml
+ OSGI-INF/content-view-contrib.xml
