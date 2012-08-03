@@ -39,7 +39,6 @@
 </c:if>
 
   <c:if test="#{param.simpleValue}">
-
       <td class="labelColumn" width="20%" > <h:outputText value="#{messages['label.template.parameter.value']}"/></td>
       <td class="fieldColumn" width="20%"><c:if test="#{param.typeAsString=='String'}">
         <nxl:widgetType name="textarea" value="#{param.stringValue}"
@@ -84,8 +83,10 @@
         <nxl:widgetType name="text" value="#{param.source}" mode="#{widgetMode}" />
          (
         <h:outputText value="#{messages['label.template.parameter.loop']}"/> :
-        <nxl:widgetType name="checkbox" value="#{param.autoLoop}"
-          mode="#{widgetMode}" />
+        <h:selectBooleanCheckbox
+         title="emailUpdates"
+          value="#{param.autoLoop}" readonly="#{param.readOnly}" >
+        </h:selectBooleanCheckbox>
           )
       </td>
      </c:if>
