@@ -28,6 +28,7 @@
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>manage</filter-id>
       <filter-id>mutable_document</filter-id>
+      <filter-id>view_content</filter-id>
     </action>
 
     <action id="UserRegistrationRequestsMultipleCreate"
@@ -36,6 +37,7 @@
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>manage</filter-id>
       <filter-id>mutable_document</filter-id>
+      <filter-id>view_content</filter-id>
     </action>
 
     <action id="UserRegistrationRequestsListingLocal"
