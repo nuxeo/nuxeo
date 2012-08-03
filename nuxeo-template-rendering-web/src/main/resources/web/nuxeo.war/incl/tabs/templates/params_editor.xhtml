@@ -8,11 +8,11 @@
     xmlns:c="http://java.sun.com/jstl/core">
 
   <script src="#{contextPath}/scripts/template-edit-param.js"></script>
-  <h:form enctype="multipart/form-data" id="params_edit">
+  <h:panelGroup id="params_edit">
+  <h:form enctype="multipart/form-data" id="params_edit_form">
       <nxu:repeat var="param" value="#{bean.templateEditableInputs}">
           <ui:include src="/incl/tabs/templates/template_edit_oneparam.xhtml" />
       </nxu:repeat>
-
       <c:if test="#{bean.canUpdateTemplateInputs(targetTemplate)}">
 
         <c:if test="#{bean.canAddTemplateInputs()}">
@@ -69,5 +69,10 @@
                   </p>
                 </c:if>
             </h:form>
-
+           </h:panelGroup>
+<script>
+ jQuery(document).ready(function(){
+      initContentWidgets();
+    });
+</script>
 </div>
