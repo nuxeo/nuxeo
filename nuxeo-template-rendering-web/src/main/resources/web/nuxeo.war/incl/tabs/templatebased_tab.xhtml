@@ -96,8 +96,10 @@
                         <h:commandLink type="submit" class="button" value="#{messages['command.template.resetParams']}"
                             action="#{templateBasedActions.resetParameters(template.name)}" id="button_resetParams" />
                   </c:if>
+                  <c:if test="#{templateBasedActions.canDetachTemplate(template.name)}">
                         <h:commandLink type="submit" class="button" value="#{messages['command.template.detach']}"
                             action="#{templateBasedActions.detachTemplate(template.name)}" id="button_detach" />
+                  </c:if>
                 </p>
             </h:form>
           </td>
