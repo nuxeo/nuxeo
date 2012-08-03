@@ -169,6 +169,7 @@
       <refresh>
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
+        <event>documentPublicationRejected</event>
       </refresh>
       <cacheKey>#{currentDocument.id}</cacheKey>
       <cacheSize>10</cacheSize>
