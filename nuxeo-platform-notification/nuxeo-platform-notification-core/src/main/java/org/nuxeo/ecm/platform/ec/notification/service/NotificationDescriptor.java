@@ -55,6 +55,14 @@ public class NotificationDescriptor implements Notification {
     @XNode("@template")
     protected String template;
 
+    /**
+     * The mail template name will be dinamycally evaluated from a Mvel exp
+     *
+     * @since 5.6
+     */
+    @XNode("@templateExpr")
+    protected String templateExpr;
+
     @XNode("@enabled")
     protected boolean enabled = true;
 
@@ -67,18 +75,22 @@ public class NotificationDescriptor implements Notification {
     @XNodeList(value = "event", type = ArrayList.class, componentType = NotificationEventDescriptor.class)
     protected List<NotificationEventDescriptor> events;
 
+    @Override
     public boolean getAutoSubscribed() {
         return autoSubscribed;
     }
 
+    @Override
     public String getAvailableIn() {
         return availableIn;
     }
 
+    @Override
     public String getChannel() {
         return channel;
     }
 
+    @Override
     public boolean getEnabled() {
         return enabled;
     }
@@ -87,24 +99,33 @@ public class NotificationDescriptor implements Notification {
         return events;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getSubject() {
         return subject;
     }
 
+    @Override
     public String getTemplate() {
         return template;
     }
 
+    @Override
     public String getSubjectTemplate() {
         return subjectTemplate;
     }
 
+    @Override
+    public String getTemplateExpr(){
+        return templateExpr;
+    }
 }

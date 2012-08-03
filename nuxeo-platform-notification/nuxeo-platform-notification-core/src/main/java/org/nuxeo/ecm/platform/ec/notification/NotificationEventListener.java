@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -307,7 +308,17 @@ public class NotificationEventListener implements
         }
 
         String subjectTemplate = notif.getSubjectTemplate();
-        String mailTemplate = notif.getTemplate();
+
+        String mailTemplate = null;
+        // mail template can be dynamically computed from a MVEL expression
+        if (notif.getTemplateExpr() != null) {
+            mailTemplate = emailHelper.evaluateMvelExpresssion(
+                    notif.getTemplateExpr(), eventInfo);
+        }
+        // if there is no mailTemplate evaluated, use the defined one
+        if (StringUtils.isEmpty(mailTemplate)) {
+            mailTemplate = notif.getTemplate();
+        }
 
         log.debug("email: " + email);
         log.debug("mail template: " + mailTemplate);
