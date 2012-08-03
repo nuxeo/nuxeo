@@ -148,6 +148,10 @@ public final class URIUtils {
     }
 
     public static String quoteURIPathComponent(String s, boolean quoteSlash) {
+        return quoteURIPathComponent(s, quoteSlash, true);
+    }
+
+    public static String quoteURIPathComponent(String s, boolean quoteSlash, boolean quoteAt) {
         if ("".equals(s)) {
             return s;
         }
@@ -170,7 +174,9 @@ public final class URIUtils {
         r = r.replace("?", "%3F");
         r = r.replace("[", "%5B");
         r = r.replace("]", "%5D");
-        r = r.replace("@", "%40");
+        if (quoteAt) {
+            r = r.replace("@", "%40");
+        }
         if (quoteSlash) {
             r = r.replace("/", "%2F");
         }
