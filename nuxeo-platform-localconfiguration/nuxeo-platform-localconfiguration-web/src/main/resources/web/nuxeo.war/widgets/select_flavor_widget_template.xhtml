@@ -21,7 +21,6 @@
         <nxu:set var="flavors"
           value="#{themeConfigurationActions.getAvailableFlavors(themeActions.defaultTheme)}"
           cache="true">
-          
           <h:selectOneListbox id="#{widget.id}" value="#{field}">
             <nxu:selectItems
               var="flavor" value="#{flavors}"
@@ -37,7 +36,7 @@
           </h:selectOneListbox>
         </nxu:set>
         <h:message for="#{widget.id}" id="#{widget.id}_message"
-          styleClass="errorStyleClass" />            
+          styleClass="errorMessage" />
       </h:panelGroup>
 
       <nxu:valueHolder id="#{widget.id}_valueHolder"
