@@ -361,7 +361,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         } else if (BaseTypeId.CMIS_FOLDER.value().equals(typeId)) {
             nuxeoTypeId = NuxeoTypeHelper.NUXEO_FOLDER;
         } else if (BaseTypeId.CMIS_RELATIONSHIP.value().equals(typeId)) {
-            nuxeoTypeId = NuxeoTypeHelper.NUXEO_RELATION;
+            nuxeoTypeId = NuxeoTypeHelper.NUXEO_RELATION_DEFAULT;
         }
         try {
             doc = coreSession.createDocumentModel(nuxeoTypeId);
