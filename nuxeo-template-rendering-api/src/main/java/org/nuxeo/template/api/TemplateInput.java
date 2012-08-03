@@ -204,7 +204,6 @@ public class TemplateInput implements Serializable {
 
     public boolean isSet() {
         return source != null || dateValue != null || booleanValue != null
-                || stringValue != null
                 || (stringValue != null && !stringValue.isEmpty());
     }
 
