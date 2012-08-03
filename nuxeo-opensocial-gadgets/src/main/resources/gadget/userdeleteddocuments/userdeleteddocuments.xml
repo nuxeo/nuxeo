@@ -11,6 +11,7 @@
     <Require feature="dynamic-height" />
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
+  <UserPref name="documentLinkBuilder" datatype="hidden" default_value="" />
   <Content type="html">
 
 <![CDATA[

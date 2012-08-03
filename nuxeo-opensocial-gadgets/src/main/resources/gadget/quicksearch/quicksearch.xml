@@ -8,6 +8,7 @@
     <Require feature="dynamic-height" />
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
+  <UserPref name="documentLinkBuilder" datatype="hidden" default_value="" />
   <#include "context-prefs.ftl"/>
   <UserPref name="savedQuery" datatype="string"></UserPref>
   <UserPref name="queryType" display_name="__MSG_label.search.queryType__"

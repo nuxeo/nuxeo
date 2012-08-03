@@ -151,10 +151,7 @@ function mkCell(colDef, dashBoardItem) {
             html += dashBoardItem.title;
             html += gadgets.util.escapeString(dashBoardItem.title);
             html += "\" href=\"";
-            html += NXGadgetContext.clientSideBaseUrl;
-            html += codec + "/default";
-            html += encode(dashBoardItem.path);
-            html += "@" + view;
+            html += dashBoardItem.contextParameters.documentURL;
             html += "\" />";
             html += gadgets.util.escapeString(dashBoardItem.title);
             html += "</a></td>";

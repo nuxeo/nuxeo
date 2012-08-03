@@ -12,6 +12,7 @@
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
   <#include "context-prefs.ftl"/>
+  <UserPref name="documentLinkBuilder" datatype="hidden" default_value="" />
   <Content type="html">
 
 <![CDATA[

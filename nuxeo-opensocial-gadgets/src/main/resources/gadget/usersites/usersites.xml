@@ -10,6 +10,7 @@
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
   <#include "context-prefs.ftl"/>
+  <UserPref name="documentLinkBuilder" datatype="hidden" default_value="" />
   <UserPref name="title" display_name="Title" required="false" default_value="My Sites"/>
 
   <Content type="html">
