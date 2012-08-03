@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 
-<component
-  name="org.nuxeo.ecm.platform.query.api.PageProviderservice.testContrib">
+<component name="org.nuxeo.ecm.platform.query.api.PageProviderservice.testContrib">
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
 
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN">
-      <property name="dummy">dummy</property>"
+      <property name="dummy">dummy</property>
       <pattern>
-        SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:isCheckedInVersion
+        SELECT * FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion
         = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:currentLifeCycleState != 'deleted'
       </pattern>
@@ -17,12 +17,13 @@
       <pageSize>2</pageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider
-      name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
       <whereClause docType="File">
         <fixedPart>
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
+          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:currentLifeCycleState !=
+          'deleted'
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">
           <field schema="dublincore" name="title" />
