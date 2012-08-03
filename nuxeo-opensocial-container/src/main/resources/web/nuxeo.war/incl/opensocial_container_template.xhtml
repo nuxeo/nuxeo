@@ -27,9 +27,6 @@
    document and user links in activity message. If not set, default to 'default'.
 </c:if>
 
-  <c:set var="documentLinkBuilder" value="#{nxu:test(not empty documentLinkBuilder, documentLinkBuilder, 'docid')}" />
-  <c:set var="activityLinkBuilder" value="#{nxu:test(not empty activityLinkBuilder, activityLinkBuilder, 'default')}" />
-
   <script type="text/javascript">
     jQuery(document).ready(function() {
       jQuery("#addGadgetButton").fancybox({
@@ -57,8 +54,12 @@
           showPreferencesAfterAddingGadget: false,
           userLanguage: "#{localeSelector.language}",
           generateTitle: true,
+          <c:if test="#{not empty documentLinkBuilder}">
           documentLinkBuilder: "#{documentLinkBuilder}",
+          </c:if>
+          <c:if test="#{not empty activityLinkBuilder}">
           activityLinkBuilder: "#{activityLinkBuilder}",
+          </c:if>
           applicationContextPath: "#{nxu:javaScriptEscape(applicationContextPath)}"
         }
       }
