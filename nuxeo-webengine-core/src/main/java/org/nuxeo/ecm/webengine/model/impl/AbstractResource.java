@@ -43,45 +43,52 @@ import org.nuxeo.ecm.webengine.security.PermissionService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 // DO NOT MODIFY class declaration! Cannot use WebResourceType<?> since groovy
 // doesn't supports wildcards for now
 @SuppressWarnings("unchecked")
-public abstract class AbstractResource<T extends ResourceType> implements Resource {
+public abstract class AbstractResource<T extends ResourceType> implements
+        Resource {
 
     protected WebContext ctx;
+
     protected AbstractResource<?> next;
+
     protected AbstractResource<?> prev;
+
     protected String path;
+
     protected T type;
 
-    public Resource initialize(WebContext ctx, ResourceType type, Object ...  args) {
+    public Resource initialize(WebContext ctx, ResourceType type,
+            Object... args) {
         this.ctx = ctx;
-        this.type = (T)type;
+        this.type = (T) type;
         path = ctx.getUriInfo().getMatchedURIs().get(0);
-        // quote path component to replace special characters (except slash)
+        // quote path component to replace special characters (except slash and
+        // @ chars)
         path = URIUtils.quoteURIPathComponent(path, false, false);
         // avoid paths ending in / -> this will mess-up URLs in FTL files.
         if (path.endsWith("/")) {
-            path = path.substring(0, path.length()-1);
+            path = path.substring(0, path.length() - 1);
         }
-        // resteasy doesn't return correct paths - that should be relative as is JAX-RS specs
-        // on resteasy paths begin with a /
+        // resteasy doesn't return correct paths - that should be relative as
+        // is JAX-RS specs on resteasy paths begin with a /
         StringBuilder buf = new StringBuilder(64).append(ctx.getBasePath());
         if (!path.startsWith("/")) {
             buf.append('/');
         }
         path = buf.append(path).toString();
         if (!this.type.getGuard().check(this)) {
-            throw new WebSecurityException(
-                    "Failed to initialize object: " + path + ". Object is not accessible in the current context", path);
+            throw new WebSecurityException("Failed to initialize object: "
+                    + path
+                    + ". Object is not accessible in the current context", path);
         }
         initialize(args);
         return this;
     }
 
-    protected void initialize(Object ...  args) {
+    protected void initialize(Object... args) {
         // do nothing
     }
 
@@ -110,8 +117,8 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     public Response redirect(String uri) {
         try {
-            //return Response.seeOther(new URI(URLEncoder.encode(uri, "UTF-8"))).build();
-            if (!uri.contains("://")) { // not an absolute URI
+            if (!uri.contains("://")) {
+                // not an absolute URI
                 if (uri.startsWith("/")) {
                     uri = ctx.getServerURL().append(uri).toString();
                 } else {
@@ -125,7 +132,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
     public AdapterResource getActiveAdapter() {
-        return next != null && next.isAdapter() ? (AdapterResource)next : null;
+        return next != null && next.isAdapter() ? (AdapterResource) next : null;
     }
 
     public void dispose() {
@@ -159,7 +166,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
     public void setNext(Resource next) {
-        this.next = (AbstractResource<?>)next;
+        this.next = (AbstractResource<?>) next;
     }
 
     public Resource getPrevious() {
@@ -167,13 +174,13 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     }
 
     public void setPrevious(Resource previous) {
-        this.prev = (AbstractResource<?>)previous;
+        this.prev = (AbstractResource<?>) previous;
     }
 
     public String getName() {
         int e = path.endsWith("/") ? path.length() - 1 : path.length();
-        int p = path.lastIndexOf('/', e-1);
-        return p > -1 ? path.substring(p+1) : path;
+        int p = path.lastIndexOf('/', e - 1);
+        return p > -1 ? path.substring(p + 1) : path;
     }
 
     public String getPath() {
@@ -183,7 +190,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
     public String getTrailingPath() {
         int len = path.length();
         String urlPath = ctx.getUrlPath();
-        return len < urlPath.length() ? urlPath.substring(len): "/";
+        return len < urlPath.length() ? urlPath.substring(len) : "/";
     }
 
     public String getNextSegment() {
@@ -245,17 +252,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     @Override
     public String toString() {
-        return type.getName()+" ["+path+"]";
+        return type.getName() + " [" + path + "]";
     }
-
-//    @GET
-//    @Path("@entries")
-//    public Response doGetEntries() {
-//        return getEntries();
-//    }
-//
-//    public Iterator<ResourceEntry> getEntries() {
-//        return Response.noContent().build();
-//    }
 
 }
