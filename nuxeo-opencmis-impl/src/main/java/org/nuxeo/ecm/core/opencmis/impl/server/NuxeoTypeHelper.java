@@ -79,6 +79,8 @@ public class NuxeoTypeHelper {
 
     public static final String NUXEO_RELATION = "Relation";
 
+    public static final String NUXEO_RELATION_DEFAULT = "DefaultRelation";
+
     public static final String NUXEO_FILE = "File";
 
     public static final String NUXEO_ORDERED_FOLDER = "OrderedFolder";
@@ -139,10 +141,15 @@ public class NuxeoTypeHelper {
      */
 
     public static String getParentTypeId(DocumentType documentType) {
-        if (documentType.getFacets().contains(FacetNames.HIDDEN_IN_NAVIGATION)
-                || !documentType.hasSchema(NX_DUBLINCORE)) {
-            // ignore type
+        if (!documentType.hasSchema(NX_DUBLINCORE)) {
+            // ignore type without dublincore
             return null;
+        }
+        if (documentType.getFacets().contains(FacetNames.HIDDEN_IN_NAVIGATION)) {
+            // ignore hiddeninnavigation type except if it's a relation
+            if (getBaseTypeId(documentType) != BaseTypeId.CMIS_RELATIONSHIP) {
+                return null;
+            }
         }
         String nuxeoTypeId = documentType.getName();
         // NUXEO_DOCUMENT already excluded be previous checks
