@@ -8,7 +8,7 @@
 
     <widgetType name="audio_player">
       <configuration>
-        <sinceVersion>5.5.0-HF12-SNAPSHOT</sinceVersion>
+        <sinceVersion>5.5.0-HF12</sinceVersion>
         <title>Audio Player</title>
         <description>
           <p>This widgets displays a html5 or flash audio player</p>
