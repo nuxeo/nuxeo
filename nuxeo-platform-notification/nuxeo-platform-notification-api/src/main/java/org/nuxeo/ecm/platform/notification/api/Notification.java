@@ -64,4 +64,9 @@ public interface Notification extends Serializable {
 
     boolean getEnabled();
 
+    /**
+     * @return the mvelExpr used to evaluate the mail template name
+     * @since 5.6
+     */
+    String getTemplateExpr();
 }

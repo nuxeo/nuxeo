@@ -44,14 +44,20 @@ public class NotificationRegistryImpl implements NotificationRegistry {
 
     private final List<Notification> notificationList = new ArrayList<Notification>();
 
+    @Override
     public void clear() {
         notificationRegistry.clear();
     }
 
+    @Override
     public void registerNotification(Notification notif, List<String> events) {
-        Notification notification = new NotificationImpl(notif.getName(),
-                notif.getTemplate(), notif.getChannel(), notif.getSubjectTemplate(), notif.getAutoSubscribed(),
-                 notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
+        NotificationImpl notification = new NotificationImpl(notif.getName(),
+                notif.getTemplate(), notif.getChannel(),
+                notif.getSubjectTemplate(), notif.getAutoSubscribed(),
+                notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
+        if (notif.getTemplateExpr() != null) {
+            notification.setTemplateExpr(notif.getTemplateExpr());
+        }
         if (notif.getEnabled()) {
             notificationList.add(notification);
             if (events != null && !events.isEmpty()) {
@@ -64,6 +70,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
         }
     }
 
+    @Override
     public void unregisterNotification(Notification notif, List<String> events) {
         NotificationImpl notification = new NotificationImpl(notif.getName(),
                 notif.getTemplate(), notif.getChannel(), notif.getSubjectTemplate(),
@@ -90,6 +97,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
     /**
      * Gets the list of possible notifications for an event.
      */
+    @Override
     public List<Notification> getNotificationsForEvent(String eventId) {
         if (notificationRegistry.get(eventId) == null) {
             notificationRegistry.put(eventId, new ArrayList<Notification>());
@@ -98,6 +106,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
         return notificationRegistry.get(eventId);
     }
 
+    @Override
     public List<Notification> getNotifications() {
         return notificationList;
     }
@@ -106,6 +115,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
         return notificationRegistry;
     }
 
+    @Override
     public List<Notification> getNotificationsForSubscriptions(String parentType) {
         List<Notification> result = new ArrayList<Notification>();
         for (Notification notification : notificationList) {

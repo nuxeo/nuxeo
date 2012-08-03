@@ -67,6 +67,13 @@
       label="label.nuxeo.notifications.appReviewStarted">
       <event name="approbationWorkflowStarted"/>
     </notification>
+ 
+    <notification name="Notif with template" channel="email" enabled="true" availableIn="workspace"
+      autoSubscribed="false" templateExpr="NotificationContext['template']" subject="Approbation review started for ${docTitle}"
+      label="label.nuxeo.notifications.appReviewStarted">
+      <event name="workflowTaskStarted"/>
+    </notification>
+ 
   </extension>
 
   <extension

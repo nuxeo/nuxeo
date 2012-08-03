@@ -21,19 +21,23 @@ package org.nuxeo.ecm.platform.ec.notification;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
@@ -51,6 +55,9 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
     NotificationRegistry notificationRegistry;
 
+    EmailHelper mailHelper = new EmailHelper();
+
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -110,8 +117,9 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         notifs = notificationRegistry.getNotificationsForSubscriptions("workspace");
         assertEquals(Arrays.asList("Ajout d'un commentaire",
                 "Approbation review started",
-                "Cr\u00e9ation/modification de contenu", "Something important",
-                "Workflow Change"), sortedNotificationNames(notifs));
+                "Cr\u00e9ation/modification de contenu", "Notif with template",
+                "Something important", "Workflow Change"),
+                sortedNotificationNames(notifs));
 
         notifs = notificationRegistry.getNotificationsForSubscriptions("something");
         assertEquals(
@@ -143,4 +151,26 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
     }
 
+
+    @Test
+    public void testRegisterNotifWithTemplateExpr() throws ClientException {
+        List<Notification> notifs = notificationRegistry.getNotifications();
+        for (Notification notification : notifs) {
+            if ("Workflow Change".equals(notification.getName())) {
+                assertNull(notification.getTemplateExpr());
+                assertEquals("workflow",
+                        notification.getTemplate());
+            }
+            if ("Notif with template".equals(notification.getName())) {
+                // evaluate mvel expression
+                String expr = notification.getTemplateExpr();
+                assertEquals("NotificationContext['template']", expr);
+                Map<String, Serializable> infos = new HashMap<String, Serializable>();
+                infos.put("template", "myDynamicTemplate");
+                String template = mailHelper.evaluateMvelExpresssion(expr,
+                        infos);
+                assertEquals("myDynamicTemplate", template);
+            }
+        }
+    }
 }

@@ -18,11 +18,13 @@
 
 package org.nuxeo.ecm.platform.ec.notification.email;
 
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -37,6 +39,8 @@ import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mvel2.MVEL;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
@@ -204,5 +208,41 @@ public class EmailHelper {
             session.setProtocolForAddress("rfc822", protocol);
         }
         return session;
+    }
+
+    protected Map<String, Object> initMvelBindings(
+            Map<String, Serializable> infos) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("NotificationContext", infos);
+        return map;
+    }
+
+    /***
+     * Evaluates a MVEL expression within some context infos accessible on the
+     * "NotificationContext" object.
+     * Returns null if the result is not evaluated to a String
+     *
+     * @param expr
+     * @param ctx
+     * @return
+     * @since 5.6
+     *
+     */
+    public String evaluateMvelExpresssion(String expr,
+            Map<String, Serializable> ctx) throws ClientException {
+        // check to see if there is a dynamic MVEL expr
+        try {
+            Serializable compiledExpr = MVEL.compileExpression(expr);
+            Object result = MVEL.executeExpression(compiledExpr,
+                    initMvelBindings(ctx));
+            if (result instanceof String) {
+                return (String) result;
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        return null;
     }
 }

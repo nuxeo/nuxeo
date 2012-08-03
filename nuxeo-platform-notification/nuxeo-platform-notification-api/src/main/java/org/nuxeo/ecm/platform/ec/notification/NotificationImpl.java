@@ -59,6 +59,8 @@ public class NotificationImpl implements Notification {
 
     private boolean enabled;
 
+    private String templateExpr;
+
     public NotificationImpl(String name, String template, String channel, String subjectTemplate,
             boolean autoSubscribed, String subject, String availableIn, String label) {
         this.name = name;
@@ -71,34 +73,50 @@ public class NotificationImpl implements Notification {
         this.label = label;
     }
 
+    /**
+     *
+     * @since 5.6
+     */
+    public void setTemplateExpr(String templateExpr) {
+        this.templateExpr = templateExpr;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getChannel() {
         return channel;
     }
 
+    @Override
     public String getTemplate() {
         return template;
     }
 
+    @Override
     public boolean getAutoSubscribed() {
         return autoSubscribed;
     }
 
+    @Override
     public String getSubject() {
         return subject;
     }
 
+    @Override
     public String getSubjectTemplate() {
         return subjectTemplate;
     }
 
+    @Override
     public String getAvailableIn() {
         return availableIn;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -120,6 +138,7 @@ public class NotificationImpl implements Notification {
         return name.hashCode();
     }
 
+    @Override
     public boolean getEnabled() {
         return enabled;
     }
@@ -128,4 +147,8 @@ public class NotificationImpl implements Notification {
         this.enabled = enabled;
     }
 
+    @Override
+    public String getTemplateExpr() {
+        return templateExpr;
+    }
 }
