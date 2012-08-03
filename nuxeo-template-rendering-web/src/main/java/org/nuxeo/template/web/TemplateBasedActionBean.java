@@ -207,6 +207,10 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     public boolean canResetParameters() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (!documentManager.hasPermission(currentDocument.getRef(),
+                SecurityConstants.WRITE)) {
+            return false;
+        }
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
         if (templateBased != null) {
             return true;
@@ -221,6 +225,20 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
             templateBased.initializeFromTemplate(templateName, true);
             templateEditableInputs = null;
         }
+    }
+
+    public boolean canDetachTemplate(String templateName)
+            throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (!documentManager.hasPermission(currentDocument.getRef(),
+                SecurityConstants.WRITE)) {
+            return false;
+        }
+        TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
+        if (templateBased != null) {
+            return true;
+        }
+        return false;
     }
 
     public String detachTemplate(String templateName) throws Exception {

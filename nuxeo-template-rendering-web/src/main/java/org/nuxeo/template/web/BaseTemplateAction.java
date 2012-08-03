@@ -10,6 +10,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -40,6 +41,10 @@ public class BaseTemplateAction implements Serializable {
     public boolean canUpdateTemplateInputs(String templateName)
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (!documentManager.hasPermission(currentDocument.getRef(),
+                SecurityConstants.WRITE)) {
+            return false;
+        }
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         if (template != null) {
             return true;
