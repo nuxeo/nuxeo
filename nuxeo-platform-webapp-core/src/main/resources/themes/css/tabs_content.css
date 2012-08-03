@@ -51,7 +51,7 @@ h3.summaryTitle, .gridBox h3.summaryTitle {
 .summary_div_1 h3.summaryTitle { font-size: 1.1em }
 .summary_div_1 .fieldColumn img { float: left; margin-bottom: 15px }
 
-.description_block { color: "gray.medium (__FLAVOR__ color)" }
+.description_block { color: "gray.medium (__FLAVOR__ color)"; line-height: 155% }
 .description_block span { display: block; font-size: 1em; padding-bottom: 1em }
 .description_block span.documentDescription { color: #444; font-size: 1.1em; font-weight: bold }
 .description_block .createdBy { color: #111; font-weight: bold; padding: 0 }
