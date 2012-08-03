@@ -634,7 +634,6 @@
           <field>['nuxeo.http.proxy.host']</field>
         </fields>
         <properties widgetMode="edit">
-          <property name="size">30</property>
           <property name="required">true</property>
         </properties>
         <properties widgetMode="any">
@@ -674,7 +673,6 @@
           <field>['nuxeo.http.proxy.login']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">20</property>
           <property name="required">true</property>
         </properties>
         <properties widgetMode="any">
@@ -692,9 +690,6 @@
         <fields>
           <field>['nuxeo.http.proxy.password']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">20</property>
-        </properties>
         <properties widgetMode="any">
           <property name="rendered">
             #{setupWizardAction.proxyType ==
@@ -796,9 +791,6 @@
         <fields>
           <field>['mailservice.password']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">20</property>
-        </properties>
       </widget>
       <widget name="mail.store.protocol" type="text">
         <labels>
@@ -851,7 +843,6 @@
           <field>['mail.store.user']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">50</property>
           <property name="styleClass">dataInputText</property>
           <property name="required">false</property>
         </properties>
@@ -865,7 +856,6 @@
           <field>['mail.store.password']</field>
         </fields>
         <properties mode="edit">
-          <property name="size">20</property>
           <property name="styleClass">dataInputText</property>
           <property name="required">false</property>
         </properties>
@@ -941,9 +931,6 @@
         <fields>
           <field>['mail.transport.password']</field>
         </fields>
-        <properties mode="edit">
-          <property name="size">20</property>
-        </properties>
         <properties widgetMode="any">
           <property name="rendered">
             #{value['mail.transport.auth'] == true}
