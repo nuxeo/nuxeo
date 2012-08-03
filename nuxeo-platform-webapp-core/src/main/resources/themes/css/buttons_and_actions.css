@@ -73,7 +73,8 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
   font-weight: bold;
   margin-right: .9em;
   padding: .3em .7em .5em;
-  text-decoration:none }
+  text-decoration:none;
+  white-space: nowrap }
 .action_bar a:hover { background: none "color.major.medium (__FLAVOR__ background)";
 border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 .action_bar a img { float: left; margin: -0.2em .3em -0.3em -0.4em }
