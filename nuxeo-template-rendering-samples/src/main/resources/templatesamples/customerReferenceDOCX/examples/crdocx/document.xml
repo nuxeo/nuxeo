@@ -83,7 +83,7 @@
       <templateEntry>
         <templateId><![CDATA[c7d2740b-2c6c-41de-b39a-a824f0cc4cde]]></templateId>
         <templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"><nxdt:field name="abstract" type="content" readonly="true" source="cr:abstract"></nxdt:field><nxdt:field name="main_picture" type="picture" readonly="true" source="file:content"></nxdt:field></nxdt:templateParams>]]></templateData>
-        <templateName><![CDATA[Custom ref sous word]]></templateName>
+        <templateName><![CDATA[Customer reference using Word template]]></templateName>
         <useMainContentAsTemplate><![CDATA[false]]></useMainContentAsTemplate>
       </templateEntry>
     </nxts:bindings>
