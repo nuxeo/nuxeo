@@ -90,7 +90,7 @@
       <templateEntry>
         <templateId><![CDATA[e0c92b89-7aa6-4d55-b64e-6340d6fa49d1]]></templateId>
         <templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"><nxdt:field name="abstract" type="content" readonly="true" source="cr:abstract"></nxdt:field><nxdt:field name="main_picture" type="picture" readonly="true" source="file:content"></nxdt:field></nxdt:templateParams>]]></templateData>
-        <templateName><![CDATA[model odt bis]]></templateName>
+        <templateName><![CDATA[Customer Reference using ODT Template]]></templateName>
         <useMainContentAsTemplate><![CDATA[false]]></useMainContentAsTemplate>
       </templateEntry>
     </nxts:bindings>
