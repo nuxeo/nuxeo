@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Anahide Tchertchian
  *     Florent Guillaume
@@ -65,8 +65,9 @@ public final class URIUtils {
                         if (value == null) {
                             value = "";
                         }
-                        items.add(String.format("%s=%s", URLEncoder.encode(key,
-                                "UTF-8"), URLEncoder.encode(value, "UTF-8")));
+                        items.add(String.format("%s=%s",
+                                URLEncoder.encode(key, "UTF-8"),
+                                URLEncoder.encode(value, "UTF-8")));
                     }
                 }
                 query = StringUtils.join(items, "&");
@@ -106,12 +107,13 @@ public final class URIUtils {
                         String[] param = item.split("=");
                         if (param != null) {
                             if (param.length == 2) {
-                                parameters.put(URLDecoder.decode(param[0],
-                                        "UTF-8"), URLDecoder.decode(param[1],
-                                        "UTF-8"));
+                                parameters.put(
+                                        URLDecoder.decode(param[0], "UTF-8"),
+                                        URLDecoder.decode(param[1], "UTF-8"));
                             } else if (param.length == 1) {
-                                parameters.put(URLDecoder.decode(param[0],
-                                        "UTF-8"), null);
+                                parameters.put(
+                                        URLDecoder.decode(param[0], "UTF-8"),
+                                        null);
                             }
                         }
                     }
@@ -151,7 +153,17 @@ public final class URIUtils {
         return quoteURIPathComponent(s, quoteSlash, true);
     }
 
-    public static String quoteURIPathComponent(String s, boolean quoteSlash, boolean quoteAt) {
+    /**
+     * Quotes a URI path component, with ability to quote "/" and "@"
+     * characters or not depending on the URI path
+     *
+     * @since 5.6
+     * @param the uri path to quote
+     * @param quoteSlash true if "/" character should be quoted
+     * @param quoteAt true if "@" character should be quoted
+     */
+    public static String quoteURIPathComponent(String s, boolean quoteSlash,
+            boolean quoteAt) {
         if ("".equals(s)) {
             return s;
         }
