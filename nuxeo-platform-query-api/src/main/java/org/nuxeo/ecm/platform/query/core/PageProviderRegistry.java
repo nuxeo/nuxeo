@@ -41,6 +41,21 @@ public class PageProviderRegistry extends
         return contrib.getName();
     }
 
+    /**
+     * @since 5.6: hack the removal of disabled page providers
+     */
+    @Override
+    public synchronized void addContribution(PageProviderDefinition contrib) {
+        // XXX hack: remove disabled contributions by hand, assuming there is
+        // no merge support
+        if (contrib.isEnabled()) {
+            super.addContribution(contrib);
+        } else {
+            contribs.remove(contrib.getName());
+            contributionRemoved(contrib.getName(), contrib);
+        }
+    }
+
     @Override
     public void contributionUpdated(String id, PageProviderDefinition desc,
             PageProviderDefinition newOrigContrib) {
@@ -66,14 +81,18 @@ public class PageProviderRegistry extends
     }
 
     @Override
+    public boolean isSupportingMerge() {
+        return false;
+    }
+
+    @Override
     public PageProviderDefinition clone(PageProviderDefinition orig) {
-        return orig.clone();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void merge(PageProviderDefinition src, PageProviderDefinition dst) {
-        // limited merge: only updates the enable flag
-        dst.setEnabled(src.isEnabled());
+        throw new UnsupportedOperationException();
     }
 
     // API

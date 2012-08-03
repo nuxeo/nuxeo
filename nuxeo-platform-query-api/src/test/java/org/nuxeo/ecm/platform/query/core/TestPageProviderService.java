@@ -16,16 +16,20 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -73,10 +77,62 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
 
         assertNull(service.getPageProviderDefinition(FOO));
 
+        PageProviderDefinition def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        assertNotNull(def);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
+                def.getName());
+        assertEquals(
+                "ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'",
+                def.getWhereClause().getFixedPart());
+        assertEquals(1, def.getSortInfos().size());
+        assertEquals("dc:title", def.getSortInfos().get(0).getSortColumn());
+        assertTrue(def.getSortInfos().get(0).getSortAscending());
+
+        // test override
+        deployContrib("org.nuxeo.ecm.platform.query.api.test",
+                "test-pageprovider-override-contrib.xml");
+
+        def = service.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        assertNotNull(def);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
+                def.getName());
+        assertNull(def.getWhereClause().getFixedPart());
+        assertEquals(1, def.getSortInfos().size());
+        assertEquals("dc:description",
+                def.getSortInfos().get(0).getSortColumn());
+        assertFalse(def.getSortInfos().get(0).getSortAscending());
+    }
+
+    /**
+     * non regression test for NXP-9809
+     *
+     * @since 5.6
+     * @throws Exception
+     */
+    @Test
+    public void testRegistrationOverrideEnable() throws Exception {
+        PageProviderService service = Framework.getService(PageProviderService.class);
+        assertNotNull(service);
+
+        assertNull(service.getPageProviderDefinition(FOO));
+
         PageProviderDefinition def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
         assertNotNull(def);
         assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
-        // TODO: test given provider information
+        assertEquals(2, def.getPageSize());
+
+        // test override when disabling page provider
+        deployContrib("org.nuxeo.ecm.platform.query.api.test",
+                "test-pageprovider-override-contrib.xml");
+        def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        assertNull(def);
+
+        // test override again after, changed page size
+        deployContrib("org.nuxeo.ecm.platform.query.api.test",
+                "test-pageprovider-override-contrib2.xml");
+        def = service.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        assertEquals(CURRENT_DOCUMENT_CHILDREN, def.getName());
+        assertEquals(20, def.getPageSize());
     }
 
     @Test
@@ -100,6 +156,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testMergedProperties() throws Exception {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         assertNotNull(pps);
