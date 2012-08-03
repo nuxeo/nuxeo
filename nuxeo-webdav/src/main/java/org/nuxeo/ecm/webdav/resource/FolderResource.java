@@ -28,6 +28,7 @@ import net.java.dev.webdav.jaxrs.xml.properties.*;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,15 +73,25 @@ public class FolderResource extends ExistingResource {
     @Produces("text/html")
     public String get() throws ClientException {
         StringBuilder sb = new StringBuilder();
-        sb.append("<html><body><p>Folder listing for " + path + ":</p>\n<ul>");
+        sb.append("<html><body><p>");
+        sb.append("Folder listing for ");
+        sb.append(path);
+        sb.append("/");
+        sb.append("</p>\n<ul>\n");
         List<DocumentModel> children = backend.getChildren(doc.getRef());
         for (DocumentModel child : children) {
-            String childName = backend.getDisplayName(child);
-            // TODO: properly escape.
-            sb.append("<li><a href='" + childName + "'>" + childName + "</a></li>\n");
+            String name = backend.getDisplayName(child);
+            String qname = StringEscapeUtils.escapeHtml(name);
+            sb.append("<li><a href=\"");
+            sb.append(qname);
+            if (child.isFolder()) {
+                sb.append("/");
+            }
+            sb.append("\">");
+            sb.append(qname);
+            sb.append("</a></li>\n");
         }
         sb.append("</ul></body>\n");
-
         return sb.toString();
     }
 
