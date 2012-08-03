@@ -23,11 +23,6 @@
     </directory>
     <directory name="subtopic" layout="subtopic_vocabulary" sortField="parent" />
 
-    <!-- seems it's not used anymore -->
-    <directory name="subject" layout="vocabulary" sortField="label" />
-
-    <directory name="search_operators" layout="vocabulary" sortField="label" />
-
     <directory name="predicates" layout="vocabulary" sortField="label" />
     <directory name="inverse_predicates" layout="vocabulary" sortField="label" />
     <directory name="language" layout="vocabulary" sortField="label" />
