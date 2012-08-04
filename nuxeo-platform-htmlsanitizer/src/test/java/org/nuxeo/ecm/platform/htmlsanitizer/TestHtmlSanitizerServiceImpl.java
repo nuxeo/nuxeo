@@ -46,6 +46,8 @@ public class TestHtmlSanitizerServiceImpl {
 
     public static final String NORMAL_TEXT = "Caf\u00e9 < Tea";
 
+    public static final String MARKDOWN_TEXT = "Caf\u00e9 < Tea";
+
     // script tag is added here just to be sure sanitizer is not run
     public static final String WIKI_MARKUP = "<script></script>[image:http://server/path/image.jpg My Image]";
 
@@ -99,6 +101,23 @@ public class TestHtmlSanitizerServiceImpl {
         doc = session.saveDocument(doc);
         note = (String) doc.getPropertyValue("note");
         assertEquals(NORMAL_TEXT, note);
+    }
+
+    // but text/markdown notes must not be sanitized
+    @Test
+    public void sanitizeNoteMarkdown() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "n", "Note");
+        doc.setPropertyValue("note", MARKDOWN_TEXT);
+        doc.setPropertyValue("mime_type", "text/x-web-markdown");
+        doc = session.createDocument(doc);
+        String note = (String) doc.getPropertyValue("note");
+        assertEquals(MARKDOWN_TEXT, note);
+
+        session.save();
+        doc.setPropertyValue("note", MARKDOWN_TEXT);
+        doc = session.saveDocument(doc);
+        note = (String) doc.getPropertyValue("note");
+        assertEquals(MARKDOWN_TEXT, note);
     }
 
     @Test

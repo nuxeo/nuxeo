@@ -53,8 +53,21 @@ public class FieldDescriptor {
         return filterValue;
     }
 
+    public String[] getFilterValues() {
+        return filterValue.split(",");
+    }
+
     public boolean doSanitize() {
         return sanitize;
+    }
+
+    public boolean match(String fieldValue) {
+        for (String v : getFilterValues()) {
+            if (fieldValue.equals(v)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -206,8 +206,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
                     } catch (PropertyNotFoundException e) {
                         continue;
                     }
-                    if (field.getFilterValue().equals(
-                            String.valueOf(filterProp.getValue())) != field.doSanitize()) {
+                    if (field.match(String.valueOf(filterProp.getValue())) != field.doSanitize()) {
                         continue;
                     }
                 }
