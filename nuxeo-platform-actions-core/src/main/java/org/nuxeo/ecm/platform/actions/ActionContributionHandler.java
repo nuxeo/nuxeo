@@ -49,8 +49,19 @@ public class ActionContributionHandler extends
     }
 
     @Override
-    public void contributionRemoved(String id, Action origContrib) {
+    public void contributionRemoved(String id, Action action) {
         actionReg.removeAction(id);
+        // also remove local filters
+        ActionFilter[] localFilters = action.getFilters();
+        if (localFilters != null) {
+            for (ActionFilter filter : localFilters) {
+                // XXX: local filters implicitly append their rules to existing
+                // ones => see append to true
+                DefaultActionFilter f = (DefaultActionFilter) filter;
+                f.setAppend(true);
+                filters.removeContribution(f, true);
+            }
+        }
     }
 
     @Override

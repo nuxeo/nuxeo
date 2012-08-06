@@ -269,6 +269,53 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("filter overriden globally", opreviewRules[1].types[0]);
     }
 
+    // NXP-9677: test override of inner filter after uninstall of the first
+    // contribution
+    @Test
+    public void testActionUninstallOverrideOfInnerFilter() throws Exception {
+        Action previewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
+        assertNotNull(previewAction);
+        assertEquals(1, previewAction.getCategories().length);
+        assertTrue(Arrays.asList(previewAction.getCategories()).contains(
+                "VIEW_ACTION_LIST"));
+        assertFalse(Arrays.asList(previewAction.getCategories()).contains(
+                "OVERRIDE"));
+        List<String> previewFilterIds = previewAction.getFilterIds();
+        assertEquals(1, previewFilterIds.size());
+        assertTrue(previewFilterIds.contains("local_filter"));
+        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter(
+                "local_filter");
+        FilterRule[] previewRules = previewFilter.getRules();
+        assertNotNull(previewRules);
+        assertEquals(1, previewRules.length);
+        assertTrue(previewRules[0].grant);
+        assertEquals("filter defined in action", previewRules[0].types[0]);
+
+        // uninstall first, this time
+        undeployContrib("org.nuxeo.ecm.actions.tests",
+                "test-actions-contrib.xml");
+        // deploy override
+        deployContrib("org.nuxeo.ecm.actions.tests",
+                "test-actions-override-innerfilter-contrib.xml");
+
+        Action opreviewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
+        assertNotNull(opreviewAction);
+        assertEquals(1, opreviewAction.getCategories().length);
+        assertTrue(Arrays.asList(opreviewAction.getCategories()).contains(
+                "OVERRIDE"));
+        assertFalse(Arrays.asList(opreviewAction.getCategories()).contains(
+                "VIEW_ACTION_LIST"));
+        assertEquals(1, opreviewAction.getFilterIds().size());
+        assertTrue(opreviewAction.getFilterIds().contains("local_filter"));
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter(
+                "local_filter");
+        FilterRule[] opreviewRules = opreviewFilter.getRules();
+        assertNotNull(opreviewRules);
+        assertEquals(1, opreviewRules.length);
+        assertFalse(opreviewRules[0].grant);
+        assertEquals("filter re-defined in action", opreviewRules[0].types[0]);
+    }
+
     // NXP-7287: test override by inner filter
     @Test
     public void testActionOverrideByInnerFilter() throws Exception {
