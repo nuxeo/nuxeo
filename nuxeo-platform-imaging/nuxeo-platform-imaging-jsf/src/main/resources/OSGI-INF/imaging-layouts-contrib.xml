@@ -43,6 +43,27 @@
       <property name="template">/widgets/picture_view_widget_template.xhtml</property>
     </widgetType>
 
+    <widgetType name="summary_raw_pictures">
+      <configuration>
+        <title>Raw Pictures</title>
+        <description>
+          <p>
+            This widget displays the list of raw pictures of the current Picture.
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/summary/raw_pictures_widget_template.xhtml</property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -72,6 +93,8 @@
       </properties>
     </widget>
 
+    <widget name="summary_raw_pictures" type="summary_raw_pictures" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -81,6 +104,14 @@
       <category>SUMMARY_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">summary_picture_view</property>
+      </properties>
+      <filter-id>hasPicture</filter-id>
+    </action>
+
+    <action id="summary_raw_pictures" type="widget" order="300">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_raw_pictures</property>
       </properties>
       <filter-id>hasPicture</filter-id>
     </action>

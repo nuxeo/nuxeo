@@ -1,0 +1,40 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <nxu:set var="rawPictures" value="#{pictureManager.getRawPictures(currentDocument)}" cache="true">
+
+  <c:if test="#{not empty rawPictures}">
+
+    <h3 class="summaryTitle">
+      <h:outputText value="#{messages['label.picture.raw.pictures']}" />
+    </h3>
+
+    <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_CONTENT"
+      styleClass="button">
+      <h:outputText value="#{messages['action.new.raw.picture']}" />
+    </nxd:restDocumentLink>
+
+    <table width="100%" cellspacing="0" class="dataInput">
+      <tbody>
+      <c:forEach var="rawPicture" items="#{rawPictures}">
+        <tr class="videoConversionRow">
+          <td class="fieldColumn">
+            <nxd:restDocumentLink document="#{rawPicture}">
+              #{nxd:titleOrId(rawPicture)}
+            </nxd:restDocumentLink>
+          </td>
+        </tr>
+      </c:forEach>
+      </tbody>
+    </table>
+  </c:if>
+
+  </nxu:set>
+
+</c:if>

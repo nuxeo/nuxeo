@@ -21,6 +21,10 @@
       <schema name="iptc"/>
     </facet>
 
+    <facet name="RawPicture">
+      <schema name="file"/>
+    </facet>
+
     <facet name="MultiviewPicture"/>
 
     <doctype name="Picture" extends="Document">
@@ -29,6 +33,18 @@
       <schema name="dublincore"/>
       <facet name="MultiviewPicture"/>
       <facet name="Picture"/>
+      <facet name="Versionable"/>
+      <facet name="Publishable"/>
+      <facet name="Commentable"/>
+      <facet name="HasRelatedText"/>
+      <facet name="Folderish"/>
+    </doctype>
+
+    <doctype name="RawPicture" extends="Document">
+      <schema name="common"/>
+      <schema name="uid"/>
+      <schema name="dublincore"/>
+      <facet name="RawPicture"/>
       <facet name="Versionable"/>
       <facet name="Publishable"/>
       <facet name="Commentable"/>

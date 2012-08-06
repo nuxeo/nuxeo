@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -397,4 +398,14 @@ public class PictureManagerBean implements PictureManager, Serializable {
         }
         return imageMagickAvailable;
     }
+
+    @Override
+    public List<DocumentModel> getRawPictures(DocumentModel picture) throws ClientException {
+        String query = "SELECT * FROM Document WHERE ecm:parentId = '%s' " +
+                "AND ecm:mixinType = '%s' " +
+                "AND ecm:currentLifeCycleState != 'deleted' " +
+                "ORDER BY dc:title";
+        return documentManager.query(String.format(query, picture.getId(), "RawPicture"));
+    }
+
 }

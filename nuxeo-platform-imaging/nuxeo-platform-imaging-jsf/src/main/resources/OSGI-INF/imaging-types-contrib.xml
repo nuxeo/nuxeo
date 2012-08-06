@@ -24,6 +24,27 @@
       <bigIcon>/icons/image_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Picture.description</description>
+      <subtypes>
+        <type>RawPicture</type>
+      </subtypes>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>picture</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>picture</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
+    <type id="RawPicture">
+      <label>RawPicture</label>
+      <default-view>view_documents</default-view>
+      <icon>/icons/image.gif</icon>
+      <bigIcon>/icons/image_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>RawPicture.description</description>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>picture</layout>

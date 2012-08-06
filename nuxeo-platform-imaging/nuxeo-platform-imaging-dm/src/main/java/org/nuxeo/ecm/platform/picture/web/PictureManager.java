@@ -21,9 +21,11 @@ package org.nuxeo.ecm.platform.picture.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 
 /**
@@ -142,5 +144,7 @@ public interface PictureManager {
     void initialize() throws Exception;
 
     void destroy();
+
+    List<DocumentModel> getRawPictures(DocumentModel picture) throws ClientException;
 
 }
