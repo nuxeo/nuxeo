@@ -170,12 +170,40 @@ public abstract class ContributionFragmentRegistry<T> {
      * Remove a contribution. This will uninstall the contribution and notify
      * the implementation about the new value it should store (after re-merging
      * contribution fragments).
+     * <p>
+     * Uses standard equality to check for old objects (useEqualsMethod ==
+     * false).
      *
      * @param contrib
+     * @see #removeContribution(Object, boolean)
      */
     public synchronized void removeContribution(T contrib) {
+        removeContribution(contrib, false);
+    }
+
+    /**
+     * Remove a contribution. This will uninstall the contribution and notify
+     * the implementation about the new value it should store (after re-merging
+     * contribution fragments).
+     * <p>
+     * Equality can be controlled from here.
+     * <p>
+     * Contributions come from the runtime that keeps exact instances, so using
+     * equality usually makes it possible to remove the exact instance that was
+     * contributed by this component (without needing to reference the
+     * component name for instance). But when unit-testing, or when
+     * registrating contributions that do not come directly from the runtime,
+     * regirties need to use the equals method defined on each contribution.
+     *
+     * @param contrib the contrib to remove
+     * @param useEqualsMethod a boolean stating that old contributions should
+     *            be checked using the equals method instead of
+     * @since 5.6
+     */
+    public synchronized void removeContribution(T contrib,
+            boolean useEqualsMethod) {
         String id = getContributionId(contrib);
-        FragmentList<T> head = removeFragment(id, contrib);
+        FragmentList<T> head = removeFragment(id, contrib, useEqualsMethod);
         if (head != null) {
             T result = head.merge(this);
             if (result != null) {
@@ -225,12 +253,13 @@ public abstract class ContributionFragmentRegistry<T> {
         return head;
     }
 
-    protected FragmentList<T> removeFragment(String id, T contrib) {
+    protected FragmentList<T> removeFragment(String id, T contrib,
+            boolean useEqualsMethod) {
         FragmentList<T> head = contribs.get(id);
         if (head == null) {
             return null;
         }
-        if (head.remove(contrib)) {
+        if (head.remove(contrib, useEqualsMethod)) {
             if (head.isEmpty()) {
                 contribs.remove(id);
             }
@@ -286,14 +315,17 @@ public abstract class ContributionFragmentRegistry<T> {
         }
 
         public boolean remove(T contrib) {
+            return remove(contrib, false);
+        }
+
+        /**
+         * @since 5.6
+         */
+        public boolean remove(T contrib, boolean useEqualsMethod) {
             Fragment<T> p = next;
             while (p != this) {
-                // contributions come from the runtime that keeps exact
-                // instances, so using equality here makes it possible to
-                // remove the exact instance that was contributed by this
-                // component (without needing to reference the component name
-                // for instance)
-                if (p.object == contrib) {
+                if ((useEqualsMethod && (p.object != null && p.object.equals(contrib)))
+                        || (!useEqualsMethod && p.object == contrib)) {
                     p.remove();
                     object = null;
                     return true;
