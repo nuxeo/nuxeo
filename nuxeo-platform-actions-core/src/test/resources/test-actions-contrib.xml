@@ -34,6 +34,7 @@
     </action>
 
     <!-- NXP-7287: test merge with global filter -->
+    <!-- + NXP-9677: test merge with inner filter -->
     <action id="TAB_WITH_LOCAL_FILTER">
       <category>VIEW_ACTION_LIST</category>
       <filter id="local_filter">

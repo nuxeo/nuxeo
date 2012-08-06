@@ -97,6 +97,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
         if (action == null) {
             return false;
         }
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Checking access for action '%s'...",
+                    action.getId()));
+        }
         for (String filterId : action.getFilterIds()) {
             ActionFilter filter = filterReg.getFilter(filterId);
             if (filter == null) {
@@ -104,8 +108,21 @@ public class ActionService extends DefaultComponent implements ActionManager {
             }
             if (!filter.accept(action, context)) {
                 // denying filter found => ignore following filters
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Filter '%s' denied access",
+                            filterId));
+                    log.debug(String.format("Denying access for action '%s'",
+                            action.getId()));
+                }
                 return false;
             }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Filter '%s' granted access", filterId));
+            }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Granting access for action '%s'",
+                    action.getId()));
         }
         return true;
     }

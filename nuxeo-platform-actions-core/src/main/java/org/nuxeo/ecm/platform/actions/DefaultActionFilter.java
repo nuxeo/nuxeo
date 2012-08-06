@@ -329,4 +329,58 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         return clone;
     }
 
+    /**
+     * Equals method added to handle hot reload of inner filters, see NXP-9677
+     *
+     * @since 5.6
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof DefaultActionFilter)) {
+            return false;
+        }
+        final DefaultActionFilter o = (DefaultActionFilter) obj;
+        String id = o.getId();
+        if (id == null && !(this.id == null)) {
+            return false;
+        }
+        if (this.id == null && !(id == null)) {
+            return false;
+        }
+        if (!id.equals(this.id)) {
+            return false;
+        }
+        boolean append = o.getAppend();
+        if (!append == this.append) {
+            return false;
+        }
+        FilterRule[] rules = o.getRules();
+        if (rules == null && !(this.rules == null)) {
+            return false;
+        }
+        if (this.rules == null && !(rules == null)) {
+            return false;
+        }
+        if (rules.length != this.rules.length) {
+            return false;
+        }
+        for (int i = 0; i < rules.length; i++) {
+            if (rules[i] == null && (!(this.rules[i] == null))) {
+                return false;
+            }
+            if (this.rules[i] == null && (!(rules[i] == null))) {
+                return false;
+            }
+            if (!rules[i].equals(this.rules[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
