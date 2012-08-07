@@ -894,6 +894,9 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = session.getDocument(new PathRef(
                 "/document-route-models-root/myRoute"));
         assertNotNull(route);
+
+        DocumentRoute model = service.getRouteModelWithId(session, "myRoute");
+        assertEquals(route.getId(), model.getDocument().getId());
         // test that document was overriden
 
         // Oracle makes no difference between null and blank

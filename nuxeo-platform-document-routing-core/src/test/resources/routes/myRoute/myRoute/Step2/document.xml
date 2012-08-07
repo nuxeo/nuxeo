@@ -4,7 +4,7 @@
   <system>
     <type>RouteNode</type>
     <path>myRoute/Step2</path>
-    <lifecycle-state>draft</lifecycle-state>
+    <lifecycle-state>validated</lifecycle-state>
     <lifecycle-policy>documentRouteElement</lifecycle-policy>
     <access-control/>
   </system>

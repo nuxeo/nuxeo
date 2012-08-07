@@ -669,4 +669,22 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
         return url;
     }
+
+    @Override
+    public DocumentRoute getRouteModelWithId(CoreSession session, String id)
+            throws ClientException {
+        DocumentModelList list = null;
+        String query = String.format(
+                "Select * from %s where ecm:name like '%s' and  ecm:currentLifeCycleState = 'validated'",
+                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, id);
+        try {
+            list = session.query(query);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        if (list.size() != 1) {
+            return null;
+        }
+        return list.get(0).getAdapter(DocumentRoute.class);
+    }
 }
