@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.library;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.faces.FacesException;
@@ -191,6 +193,8 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
                 }
             }
         }
+        // preserve selected rows order
+        Collections.sort(selectedRows, new LayoutRowsSorter(selectedRowNames));
         return selectedRows;
     }
 
@@ -224,6 +228,54 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
             }
         }
         return selectedRowNames;
+    }
+
+    /**
+     * Sorter that re-arranges rows according to the row names order.
+     *
+     * @since 5.6
+     */
+    public static class LayoutRowsSorter implements Comparator<LayoutRow> {
+
+        protected List<String> orderedRowNames;
+
+        private LayoutRowsSorter(List<String> orderedRowNames) {
+            super();
+            this.orderedRowNames = orderedRowNames;
+        }
+
+        @Override
+        public int compare(LayoutRow o1, LayoutRow o2) {
+            if (orderedRowNames == null || orderedRowNames.size() == 0) {
+                return 0;
+            }
+            if (o1 == null && o2 == null) {
+                return 0;
+            }
+            if (o1 == null) {
+                return -1;
+            }
+            if (o2 == null) {
+                return 1;
+            }
+            String id1 = o1.getName();
+            String id2 = o2.getName();
+            if (id1 == null && id2 == null) {
+                return 0;
+            }
+            if (id1 == null) {
+                return -1;
+            }
+            if (id2 == null) {
+                return 1;
+            }
+            if (orderedRowNames.indexOf(id1) <= orderedRowNames.indexOf(id2)) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+
     }
 
 }
