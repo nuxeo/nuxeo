@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.layout.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,14 +80,14 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
 
         // select some rows and re-do tests
         List<String> selectedRowNames = Arrays.asList(new String[] {
-                "title_link", "modification_date", "description" });
+                "modification_date", "title_link", "description" });
 
         selectedRows = LayoutTagLibrary.getSelectedRows(layout,
                 selectedRowNames, false);
         assertNotNull(selectedRows);
         assertEquals(3, selectedRows.size());
-        assertEquals("title_link", selectedRows.get(0).getName());
-        assertEquals("modification_date", selectedRows.get(1).getName());
+        assertEquals("modification_date", selectedRows.get(0).getName());
+        assertEquals("title_link", selectedRows.get(1).getName());
         assertEquals("description", selectedRows.get(2).getName());
 
         // again with always selected rows
@@ -93,8 +96,8 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
         assertNotNull(selectedRows);
         assertEquals(4, selectedRows.size());
         assertEquals("selection", selectedRows.get(0).getName());
-        assertEquals("title_link", selectedRows.get(1).getName());
-        assertEquals("modification_date", selectedRows.get(2).getName());
+        assertEquals("modification_date", selectedRows.get(1).getName());
+        assertEquals("title_link", selectedRows.get(2).getName());
         assertEquals("description", selectedRows.get(3).getName());
 
         notSelectedRows = LayoutTagLibrary.getNotSelectedRows(layout,
