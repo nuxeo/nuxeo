@@ -358,4 +358,12 @@ public interface DocumentRoutingService {
     List<DocumentModel> searchRouteModels(CoreSession session,
             String searchString) throws ClientException;
 
+    /**
+     * Returns the route model with the given id
+     *
+     * @since 5.6
+     */
+    DocumentRoute getRouteModelWithId(CoreSession session, String id)
+            throws ClientException;
+
 }

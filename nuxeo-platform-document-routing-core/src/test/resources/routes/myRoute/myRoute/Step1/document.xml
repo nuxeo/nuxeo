@@ -4,7 +4,7 @@
   <system>
     <type>RouteNode</type>
     <path>myRoute/Step1</path>
-    <lifecycle-state>draft</lifecycle-state>
+    <lifecycle-state>validated</lifecycle-state>
     <lifecycle-policy>documentRouteElement</lifecycle-policy>
     <facet>FacetNode1</facet>
     <access-control/>

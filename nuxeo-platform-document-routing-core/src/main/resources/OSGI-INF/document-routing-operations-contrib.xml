@@ -18,7 +18,8 @@
       class="org.nuxeo.ecm.platform.routing.api.operation.SetWorkflowNodeVar" /> 
     <operation
       class="org.nuxeo.ecm.platform.routing.api.operation.SetWorkflowVar" />   
-     
+    <operation
+      class="org.nuxeo.ecm.platform.routing.api.operation.StartWorkflowOperation" />   
         
   </extension>
 
