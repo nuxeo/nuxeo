@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -96,7 +95,7 @@ public class RepositoryImpl implements Repository {
     /** Single event queue global to the repository. */
     private final InvalidationsQueue repositoryEventQueue;
 
-    private volatile Model model;
+    private Model model;
 
     private boolean serverStarted;
 
@@ -107,8 +106,6 @@ public class RepositoryImpl implements Repository {
      * connection. This is not persisted.
      */
     public String repositoryId;
-
-    private ReentrantLock modelSetupLock = new ReentrantLock();
 
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
@@ -348,7 +345,7 @@ public class RepositoryImpl implements Repository {
      * @throws StorageException
      */
     @Override
-    public SessionImpl getConnection(ConnectionSpec connectionSpec)
+    public synchronized SessionImpl getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
         assert connectionSpec == null
                 || connectionSpec instanceof ConnectionSpecImpl;
@@ -358,25 +355,18 @@ public class RepositoryImpl implements Repository {
 
         boolean create = model == null;
         if (create) {
-            modelSetupLock.lock();
-            try {
-                if (model == null) {
-                    log.debug("Initializing");
-                    ModelSetup modelSetup = new ModelSetup();
-                    modelSetup.repositoryDescriptor = repositoryDescriptor;
-                    modelSetup.schemaManager = schemaManager;
-                    backend.initializeModelSetup(modelSetup);
-                    model = new Model(modelSetup);
-                    backend.initializeModel(model);
+            log.debug("Initializing");
+            ModelSetup modelSetup = new ModelSetup();
+            modelSetup.repositoryDescriptor = repositoryDescriptor;
+            modelSetup.schemaManager = schemaManager;
+            backend.initializeModelSetup(modelSetup);
+            model = new Model(modelSetup);
+            backend.initializeModel(model);
 
-                    Mapper lockManagerMapper = backend.newMapper(model, null,
-                                                                 credentials, true);
-                    lockManager = new LockManager(lockManagerMapper,
-                                                  repositoryDescriptor.clusteringEnabled);
-                }
-            } finally {
-                modelSetupLock.unlock();
-            }
+            Mapper lockManagerMapper = backend.newMapper(model, null,
+                    credentials, true);
+            lockManager = new LockManager(lockManagerMapper,
+                    repositoryDescriptor.clusteringEnabled);
         }
 
         SessionPathResolver pathResolver = new SessionPathResolver();
