@@ -25,24 +25,32 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MailTemplateHelper {
 
     private MailTemplateHelper() {
     }
 
-    public static String getDocumentUrl(DocumentModel doc, String viewId) throws Exception {
+    public static String getDocumentUrl(DocumentModel doc, String viewId)
+            throws Exception {
         if (viewId == null) {
             viewId = "view_documents";
         }
         DocumentLocation docLoc = new DocumentLocationImpl(doc);
         DocumentView docView = new DocumentViewImpl(docLoc);
         docView.setViewId(viewId);
-        return Framework.getService(DocumentViewCodecManager.class).getUrlFromDocumentView(
-                        docView,
-                        true,
-                        NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
+        DocumentViewCodecManager codecMgr = Framework.getService(DocumentViewCodecManager.class);
+        NotificationService notifMgr = NotificationServiceHelper.getNotificationService();
+        if (codecMgr == null) {
+            throw new RuntimeException(
+                    "Service 'DocumentViewCodecManager' not available");
+        }
+        if (notifMgr == null) {
+            throw new RuntimeException(
+                    "Service 'NotificationService' not available");
+        }
+        return codecMgr.getUrlFromDocumentView(docView, true,
+                notifMgr.getServerUrlPrefix());
     }
 
     public static URL getTemplate(String name) {
