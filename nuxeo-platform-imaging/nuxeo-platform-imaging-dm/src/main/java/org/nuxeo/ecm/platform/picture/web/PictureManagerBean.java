@@ -79,6 +79,8 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
     private static final Log log = LogFactory.getLog(PictureManagerBean.class);
 
+    public static final String RAW_PICTURE_FACET = "RawPicture";
+
     protected static Boolean imageMagickAvailable;
 
     @In(create = true, required = false)
@@ -401,11 +403,22 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
     @Override
     public List<DocumentModel> getRawPictures(DocumentModel picture) throws ClientException {
-        String query = "SELECT * FROM Document WHERE ecm:parentId = '%s' " +
-                "AND ecm:mixinType = '%s' " +
-                "AND ecm:currentLifeCycleState != 'deleted' " +
-                "ORDER BY dc:title";
-        return documentManager.query(String.format(query, picture.getId(), "RawPicture"));
+        return getRawPictures(picture, null);
+    }
+
+    @Override
+    public List<DocumentModel> getRawPictures(DocumentModel picture,
+            String docType) throws ClientException {
+        StringBuilder query = new StringBuilder(
+                "SELECT * FROM Document WHERE ecm:parentId = '%s' ");
+        query.append("AND ecm:mixinType = '%s' ");
+        if (docType != null) {
+            query.append("AND ecm:primaryType = '%s' ");
+        }
+        query.append("AND ecm:currentLifeCycleState != 'deleted' ");
+        query.append("ORDER BY dc:title");
+        return documentManager.query(String.format(query.toString(),
+                new String[] { picture.getId(), RAW_PICTURE_FACET, docType }));
     }
 
 }

@@ -93,7 +93,13 @@
       </properties>
     </widget>
 
-    <widget name="summary_raw_pictures" type="summary_raw_pictures" />
+    <widget name="summary_raw_pictures" type="summary_raw_pictures">
+      <labels>
+        <label mode="any">label.picture.raw.pictures</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+    </widget>
 
   </extension>
 

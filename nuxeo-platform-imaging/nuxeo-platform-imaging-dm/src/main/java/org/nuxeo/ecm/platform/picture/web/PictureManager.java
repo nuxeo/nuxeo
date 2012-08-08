@@ -145,6 +145,19 @@ public interface PictureManager {
 
     void destroy();
 
+    /**
+     * Returns the list of RawPictures of the given {@code picture}.
+     *
+     * @since 5.7
+     */
     List<DocumentModel> getRawPictures(DocumentModel picture) throws ClientException;
+
+    /**
+     * Returns the list of RawPictures of the given {@code picture} matching the
+     * {@code docType}.
+     *
+     * @since 5.7
+     */
+    List<DocumentModel> getRawPictures(DocumentModel picture, String docType) throws ClientException;
 
 }

@@ -3,21 +3,29 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <nxu:set var="rawPictures" value="#{pictureManager.getRawPictures(currentDocument)}" cache="true">
+  <c:set var="showLabel" value="#{widget.handlingLabels or widgetProperty_handlingLabels}" />
+  <c:set var="newRawPictureButtonLabel" value="#{nxu:test(!empty widgetProperty_newRawPictureButtonLabel, widgetProperty_newRawPictureButtonLabel, 'action.new.raw.picture')}" />
+
+  <nxu:set var="rawPictures"
+    value="#{nxu:test(!empty widgetProperty_rawPictureDocType, pictureManager.getRawPictures(currentDocument, widgetProperty_rawPictureDocType), pictureManager.getRawPictures(currentDocument))}"
+    cache="true">
 
   <c:if test="#{not empty rawPictures}">
 
-    <h3 class="summaryTitle">
-      <h:outputText value="#{messages['label.picture.raw.pictures']}" />
-    </h3>
+    <c:if test="#{showLabel}">
+      <h3 class="summaryTitle">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+      </h3>
+    </c:if>
 
     <nxd:restDocumentLink document="#{currentDocument}" tab="TAB_CONTENT"
       styleClass="button">
-      <h:outputText value="#{messages['action.new.raw.picture']}" />
+      <h:outputText value="#{messages[newRawPictureButtonLabel]}" />
     </nxd:restDocumentLink>
 
     <table width="100%" cellspacing="0" class="dataInput">
