@@ -83,7 +83,7 @@ public class JsonDocumentListWriter implements
             }
             writeDocuments(out, docs, schemas);
         } catch (Exception e) {
-            log.error("Failed to wserialize document list", e);
+            log.error("Failed to serialize document list", e);
             throw new WebApplicationException(500);
         }
     }
@@ -107,6 +107,10 @@ public class JsonDocumentListWriter implements
             jg.writeNumberField("pageCount", provider.getNumberOfPages());
 
             DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
+            if (documentViewCodecManager == null) {
+                throw new RuntimeException(
+                        "Service 'DocumentViewCodecManager' not available");
+            }
             String documentLinkBuilder = provider.getDocumentLinkBuilder();
             String codecName = isBlank(documentLinkBuilder) ? documentViewCodecManager.getDefaultCodecName()
                     : documentLinkBuilder;
