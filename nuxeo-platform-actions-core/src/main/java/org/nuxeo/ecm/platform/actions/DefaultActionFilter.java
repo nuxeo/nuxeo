@@ -353,7 +353,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         if (this.id == null && !(id == null)) {
             return false;
         }
-        if (!id.equals(this.id)) {
+        if (id != null && !id.equals(this.id)) {
             return false;
         }
         boolean append = o.getAppend();
@@ -367,18 +367,20 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         if (this.rules == null && !(rules == null)) {
             return false;
         }
-        if (rules.length != this.rules.length) {
-            return false;
-        }
-        for (int i = 0; i < rules.length; i++) {
-            if (rules[i] == null && (!(this.rules[i] == null))) {
+        if (rules != null) {
+            if (rules.length != this.rules.length) {
                 return false;
             }
-            if (this.rules[i] == null && (!(rules[i] == null))) {
-                return false;
-            }
-            if (!rules[i].equals(this.rules[i])) {
-                return false;
+            for (int i = 0; i < rules.length; i++) {
+                if (rules[i] == null && (!(this.rules[i] == null))) {
+                    return false;
+                }
+                if (this.rules[i] == null && (!(rules[i] == null))) {
+                    return false;
+                }
+                if (!rules[i].equals(this.rules[i])) {
+                    return false;
+                }
             }
         }
         return true;
