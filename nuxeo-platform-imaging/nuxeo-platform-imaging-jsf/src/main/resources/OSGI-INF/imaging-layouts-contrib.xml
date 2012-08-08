@@ -50,6 +50,23 @@
           <p>
             This widget displays the list of raw pictures of the current Picture.
           </p>
+          <p>
+            It accepts the following properties:
+            <ul>
+              <li>
+                handlingLabels: 'true' if the widget needs to display its
+                label itself.
+              </li>
+              <li>
+                rawPictureDocType: the document type, if any, to filter the
+                Raw Pictures of this Picture.
+              </li>
+              <li>
+                newRawPictureButtonLabel: label used for the new raw picture
+                button.
+              </li>
+            </ul>
+          </p>
         </description>
         <categories>
           <category>document</category>
