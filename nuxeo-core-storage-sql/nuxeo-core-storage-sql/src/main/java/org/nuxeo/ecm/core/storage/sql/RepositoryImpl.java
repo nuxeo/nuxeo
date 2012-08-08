@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.naming.Reference;
 import javax.resource.cci.ConnectionSpec;
@@ -85,7 +86,7 @@ public class RepositoryImpl implements Repository {
 
     private final Collection<SessionImpl> sessions;
 
-    private Model model;
+    private volatile Model model;
 
     private Mapper clusterMapper; // used synchronized
 
@@ -95,6 +96,8 @@ public class RepositoryImpl implements Repository {
     private boolean serverStarted;
 
     private boolean binaryServerStarted;
+
+    private ReentrantLock modelSetupLock = new ReentrantLock();
 
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
@@ -239,7 +242,7 @@ public class RepositoryImpl implements Repository {
      * @return the session
      * @throws StorageException
      */
-    public synchronized SessionImpl getConnection(ConnectionSpec connectionSpec)
+    public SessionImpl getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
         assert connectionSpec == null
                 || connectionSpec instanceof ConnectionSpecImpl;
@@ -247,34 +250,41 @@ public class RepositoryImpl implements Repository {
         Credentials credentials = connectionSpec == null ? null
                 : ((ConnectionSpecImpl) connectionSpec).getCredentials();
 
-        boolean initialized = model != null;
-        if (!initialized) {
-            log.debug("Initializing");
-            ModelSetup modelSetup = new ModelSetup();
-            modelSetup.repositoryDescriptor = repositoryDescriptor;
-            modelSetup.schemaManager = schemaManager;
-            backend.initializeModelSetup(modelSetup);
-            model = new Model(modelSetup);
-            backend.initializeModel(model);
-        }
-
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = backend.newMapper(model, pathResolver);
+        Mapper mapper;
+        if (model == null) {
+            modelSetupLock.lock();
+            try {
+                if (model == null) {
+                    log.debug("Initializing");
+                    ModelSetup modelSetup = new ModelSetup();
+                    modelSetup.repositoryDescriptor = repositoryDescriptor;
+                    modelSetup.schemaManager = schemaManager;
+                    backend.initializeModelSetup(modelSetup);
+                    model = new Model(modelSetup);
+                    backend.initializeModel(model);
 
-        if (!initialized) {
-            // first connection, initialize the database
-            mapper.createDatabase();
-            if (repositoryDescriptor.clusteringEnabled) {
-                log.info("Clustering enabled with "
-                        + repositoryDescriptor.clusteringDelay
-                        + " ms delay for repository: " + getName());
-                // use the mapper that created the database as cluster mapper
-                clusterMapper = mapper;
-                clusterMapper.createClusterNode();
-                processClusterInvalidationsNext();
-                mapper = backend.newMapper(model, pathResolver);
+                    mapper = backend.newMapper(model, pathResolver);
+
+                    // first connection, initialize the database
+                    mapper.createDatabase();
+                    if (repositoryDescriptor.clusteringEnabled) {
+                        log.info("Clustering enabled with "
+                                + repositoryDescriptor.clusteringDelay
+                                + " ms delay for repository: " + getName());
+                        // use the mapper that created the database as cluster
+                        // mapper
+                        clusterMapper = mapper;
+                        clusterMapper.createClusterNode();
+                        processClusterInvalidationsNext();
+                    }
+                }
+            }
+            finally {
+            	modelSetupLock.unlock();
             }
         }
+        mapper = backend.newMapper(model, pathResolver);
 
         SessionImpl session = newSession(mapper, credentials);
         pathResolver.setSession(session);
