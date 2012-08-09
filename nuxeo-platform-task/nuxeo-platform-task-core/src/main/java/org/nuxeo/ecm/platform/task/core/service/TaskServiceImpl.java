@@ -140,7 +140,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
      */
     @Override
     public List<Task> createTask(CoreSession coreSession,
-            NuxeoPrincipal principal, DocumentModel document, String taskName,
+            NuxeoPrincipal principal, DocumentModel document, String taskDocumentType, String taskName,
             String taskType, String processId, List<String> actorIds,
             boolean createOneTaskPerActor, String directive, String comment,
             Date dueDate, Map<String, String> taskVariables, String parentPath)
@@ -149,7 +149,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             parentPath = getTaskRootParentPath(coreSession);
         }
         CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession,
-                principal, document, taskName, taskType, processId, actorIds,
+                principal, document, taskDocumentType, taskName, taskType, processId, actorIds,
                 createOneTaskPerActor, directive, comment, dueDate,
                 taskVariables, parentPath);
         runner.runUnrestricted();
@@ -177,6 +177,23 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     eventProperties, comment, null);
         }
         return tasks;
+    }
+
+
+    /**
+     * @since 5.6
+     */
+    @Override
+    public List<Task> createTask(CoreSession coreSession,
+            NuxeoPrincipal principal, DocumentModel document, String taskName,
+            String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath)
+            throws ClientException {
+        return createTask(coreSession, principal, document,
+                TaskConstants.TASK_TYPE_NAME, taskName, taskType, processId,
+                prefixedActorIds, createOneTaskPerActor, directive, comment,
+                dueDate, taskVariables, parentPath);
     }
 
     @Override

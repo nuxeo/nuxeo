@@ -111,6 +111,41 @@ public interface TaskService extends Serializable, TaskProvider {
             throws ClientException;
 
     /**
+     * Creates a task of the given document type and starts it. Notifies events with names
+     * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED} and
+     * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED}, passing the task in the
+     * event properties using key {@link #TASK_INSTANCE_EVENT_PROPERTIES_KEY}
+     *
+     * @param coreSession the session to use when notifying
+     * @param principal the principal marked as initiator of the task and used
+     *            when notifying.
+     * @param document the document to attach to the task.
+     * @param the task document type
+     * @param taskName the task name.
+     * @param taskType the task type.
+     * @param processId the process ID linked to this task if any.
+     * @param prefixedActorIds the list of actor ids, prefixed with 'user:' or
+     *            'group:'.
+     * @param createOneTaskPerActor if true, one task will be created per actor,
+     *            else a single task will be assigned to all actors.
+     * @param directive the directive, put in the task variables.
+     * @param comment string added to the task comments and used as a
+     *            notification comment
+     * @param dueDate the due date, set on the task instance
+     * @param taskVariables additional task variables
+     * @param parentPath /task-root if null
+     * @throws ClientException
+     * @since 5.6
+     */
+    List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal,
+            DocumentModel document, String taskDocumentType, String taskName, String taskType, String processId,
+            List<String> prefixedActorIds, boolean createOneTaskPerActor,
+            String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath)
+            throws ClientException;
+
+
+    /**
      * Returns true if user is an administrator, the initiator of the task, or
      * an actor of the task.
      *
@@ -161,6 +196,7 @@ public interface TaskService extends Serializable, TaskProvider {
      *             error occurs
      * @return the name of the Seam event to raise
      */
+    @Override
     String endTask(CoreSession coreSession, NuxeoPrincipal principal,
             Task task, String comment, String eventName, boolean isValidated)
             throws ClientException;
