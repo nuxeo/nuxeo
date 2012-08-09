@@ -16,6 +16,19 @@
     <facet name="FacetNode1">
       <schema name="facetnode1" />
     </facet>
+    
+    <doctype name="MyTaskDoc" extends="TaskDoc">
+      <facet name="HiddenInNavigation" />
+    </doctype>
+    
   </extension>
+  
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="MyTaskDoc">task</type>
+    </types>
+  </extension>
+  
 
 </component>

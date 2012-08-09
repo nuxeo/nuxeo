@@ -102,6 +102,8 @@ public interface GraphNode {
 
     String PROP_NODE_BUTTON = "rnode:button";
 
+    String PROP_TASK_DOC_TYPE = "rnode:taskDocType";
+
     /**
      * The internal state of a node.
      */
@@ -363,6 +365,12 @@ public interface GraphNode {
      * @return
      */
     String getTaskLayout();
+
+    /**
+     * @returns the taskDocType. If none is specified, the default task type is
+     *          returned.
+     */
+    String getTaskDocType();
 
     /**
      * Increments the execution counter for this node.

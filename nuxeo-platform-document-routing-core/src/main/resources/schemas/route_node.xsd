@@ -22,6 +22,7 @@
   <xs:element name="taskAssigneesExpr" type="xs:string" />
   <xs:element name="taskAssigneesPermission" type="xs:string" />
   <xs:element name="taskLayout" type="xs:string" />
+  <xs:element name="taskDocType" type="xs:string" />
   <xs:element name="taskNotificationTemplate" type="xs:string" />
   <xs:element name="taskButtons" type="node:buttons" />
 

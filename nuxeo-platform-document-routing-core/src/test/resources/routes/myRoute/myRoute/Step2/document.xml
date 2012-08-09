@@ -56,5 +56,6 @@
     <rnode:count/>
     <rnode:taskAssigneesPermission/>
     <rnode:button/>
+    <rnode:taskDocType/>
   </schema>
 </document>
