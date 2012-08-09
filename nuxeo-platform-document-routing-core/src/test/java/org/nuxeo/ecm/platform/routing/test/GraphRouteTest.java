@@ -544,7 +544,7 @@ public class GraphRouteTest {
         routingTaskService.endTask(sessionUser2, tasks.get(0), data, "trans2");
         closeSession(sessionUser2);
 
-        
+
 
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
@@ -666,6 +666,7 @@ public class GraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
                 "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
         setButtons(node1, button("btn1", "label-btn1", "filterrr"));
@@ -687,6 +688,8 @@ public class GraphRouteTest {
         CoreSession sessionUser1 = openSession(user1);
         // task assignees have READ on the route instance
         assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
+        Task task1 = tasks.get(0);
+        assertEquals("MyTaskDoc",task1.getDocument().getType());
         routingTaskService.endTask(sessionUser1, tasks.get(0), data, "trans1");
         closeSession(sessionUser1);
         // end task and verify that route was done

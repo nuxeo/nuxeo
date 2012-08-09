@@ -41,9 +41,9 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
+import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -455,7 +455,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         try {
         int n = 0;
         List<Transition> inputTransitions = getInputTransitions();
-        
+
         for (Transition t : inputTransitions) {
             Property property = t.source.getDocument().getProperty("rnode:transitions").get(0)
                 .get("result");
@@ -538,5 +538,14 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
         }
+    }
+
+    @Override
+    public String getTaskDocType() {
+        String taskDocType = (String) getProperty(PROP_TASK_DOC_TYPE);
+        if (StringUtils.isEmpty(taskDocType)) {
+            taskDocType = TaskConstants.TASK_TYPE_NAME;
+        }
+        return taskDocType;
     }
 }

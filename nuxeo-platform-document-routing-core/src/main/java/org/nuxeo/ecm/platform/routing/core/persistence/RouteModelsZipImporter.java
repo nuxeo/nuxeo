@@ -100,7 +100,7 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
             pipe.setWriter(writer);
             pipe.run();
         } catch (Exception e) {
-            // log.warn(e, e);
+             log.error(e, e);
         } finally {
             reader.close();
             writer.close();

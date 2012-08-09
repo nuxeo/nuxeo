@@ -47,6 +47,7 @@
     <rnode:start><![CDATA[true]]></rnode:start>
     <rnode:startDate/>
     <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:taskDocType><![CDATA[MyTaskDoc]]></rnode:taskDocType>
     <rnode:taskNotificationTemplate/>
     <rnode:transitions>
       <transition>

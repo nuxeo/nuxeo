@@ -844,6 +844,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     public void testImportRouteModel() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle("org.nuxeo.ecm.platform.task.core");
         deployBundle(TEST_BUNDLE);
 
         // test contrib parsing and deployment
