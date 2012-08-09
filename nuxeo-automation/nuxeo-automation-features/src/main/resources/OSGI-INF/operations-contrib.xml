@@ -55,6 +55,18 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.RunOperationOnProvider" />
 
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.CreateDirectoryEntries" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirectoryEntries" />
+
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.UpdateDirectoryEntries" />
+
+    <operation
+        class="org.nuxeo.ecm.automation.core.operations.services.directory.ReadDirectoryEntries" />
+
   </extension>
 
   <extension point="chains"
