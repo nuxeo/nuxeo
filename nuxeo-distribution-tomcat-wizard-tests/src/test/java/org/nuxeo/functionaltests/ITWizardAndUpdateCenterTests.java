@@ -62,17 +62,11 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     @Test
     public void testAll() throws Exception {
-
         runWizardAndRestart();
-
         installPackageAndRestart();
-
         verifyPackageInstallation();
-
         studioPackageInstallAndUninstall();
-
         verifyPackageUndeployProcessUnderWindows();
-
     }
 
     protected String getTestPassword() {
@@ -80,7 +74,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     public void runWizardAndRestart() throws Exception {
-
         // **********************
         // welcome
         WizardPage welcomePage = get(NUXEO_URL, WizardPage.class);
@@ -175,9 +168,8 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // try to validate
         ConnectWizardPage connectPage2 = connectPage1.next(ConnectWizardPage.class);
         assertNotNull(connectPage2);
-        assertEquals(
-                "There were some errors in your form: You must define a login",
-                connectPage2.getErrorMessage());
+        assertTrue(connectPage2.getErrorMessage().startsWith(
+                "There were some errors in your form: "));
 
         // ok, let's try to skip the screen
         WizardPage connectSkip = connectPage1.navByLink(WizardPage.class,
@@ -237,7 +229,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         // **************************
         // Package Download Screen
-
         WizardPage packageDownloadPage = packageSelectiondPage.next(true);
         assertNotNull(packageDownloadPage);
         assertEquals("Modules download", packageDownloadPage.getTitle());
@@ -331,7 +322,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     public void installPackageAndRestart() throws Exception {
-
         // login
         DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
 
@@ -384,7 +374,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     public void verifyPackageInstallation() throws Exception {
-
         DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
         AdminCenterBasePage adminHome = home.getAdminCenter();
         assertNotNull(adminHome);
@@ -400,7 +389,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     public void studioPackageInstallAndUninstall() throws Exception {
-
         // Login
         DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
         AdminCenterBasePage adminHome = home.getAdminCenter();
@@ -449,7 +437,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     public void verifyPackageUndeployProcessUnderWindows() throws Exception {
-
         // Login
         DocumentBasePage home = login(NX_LOGIN, NX_PASSWORD);
         AdminCenterBasePage adminHome = home.getAdminCenter();
