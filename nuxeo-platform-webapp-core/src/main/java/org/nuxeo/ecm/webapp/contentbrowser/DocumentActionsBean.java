@@ -296,7 +296,9 @@ public class DocumentActionsBean extends InputController implements
         return null;
     }
 
-    protected String updateDocument(DocumentModel doc) throws ClientException {
+    @Override
+    public String updateDocument(DocumentModel doc, Boolean restoreCurrentTabs)
+            throws ClientException {
         try {
             String tabId = null;
             String subTabId = null;
@@ -327,6 +329,11 @@ public class DocumentActionsBean extends InputController implements
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
+    }
+
+    // kept for BBB
+    protected String updateDocument(DocumentModel doc) throws ClientException {
+        return updateDocument(doc, restoreCurrentTabs);
     }
 
     @Override

@@ -57,11 +57,11 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
-import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
+import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -103,7 +103,7 @@ public class FileManageActionsBean extends InputController implements
     protected TypeManager typeManager;
 
     @In(create = true)
-    protected transient WebActions webActions;
+    protected transient DocumentActions documentActions;
 
     @In(create = true)
     protected ClipboardActions clipboardActions;
@@ -133,12 +133,10 @@ public class FileManageActionsBean extends InputController implements
         log.debug("Removing Seam action listener...");
     }
 
-    @Override
     public String display() {
         return "view_documents";
     }
 
-    @Override
     public String addFile() throws ClientException {
         return addFile(getFileUpload(), getFileName());
     }
@@ -179,7 +177,6 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    @Override
     @Deprecated
     // TODO: update the Seam remoting-based desktop plugins to stop calling
     // this
@@ -206,7 +203,6 @@ public class FileManageActionsBean extends InputController implements
      * @deprecated use addBinaryFileFromPlugin with a Blob argument API to
      *             avoid loading the content in memory
      */
-    @Override
     @Deprecated
     @WebRemote
     public String addFileFromPlugin(String content, String mimetype,
@@ -227,7 +223,6 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    @Override
     @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             String morePath) throws ClientException {
@@ -238,7 +233,6 @@ public class FileManageActionsBean extends InputController implements
         return createDocumentFromBlob(blob, fullName, path);
     }
 
-    @Override
     @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName,
             DocumentModel targetContainer) throws ClientException {
@@ -294,7 +288,6 @@ public class FileManageActionsBean extends InputController implements
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
-    @Override
     @WebRemote
     public String addFolderFromPlugin(String fullName, String morePath)
             throws ClientException {
@@ -427,7 +420,6 @@ public class FileManageActionsBean extends InputController implements
         return MOVE_OK;
     }
 
-    @Override
     @SuppressWarnings("static-access")
     @WebRemote
     public String moveWithId(String docId, String containerId)
@@ -494,7 +486,6 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    @Override
     @WebRemote
     public String copyWithId(String docId) throws ClientException {
         try {
@@ -518,7 +509,6 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    @Override
     @WebRemote
     public String pasteWithId(String docId) throws ClientException {
         try {
@@ -588,7 +578,7 @@ public class FileManageActionsBean extends InputController implements
                 }
             }
             current.setProperty("files", "files", files);
-            updateDocument(current);
+            documentActions.updateDocument(current, Boolean.TRUE);
         } finally {
             for (UploadItem uploadItem : getUploadedFiles()) {
                 uploadItem.getFile().delete();
@@ -597,7 +587,7 @@ public class FileManageActionsBean extends InputController implements
         Contexts.getConversationContext().remove("fileUploadHolder");
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("unchecked")
     public void performAction(ActionEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
@@ -613,33 +603,10 @@ public class FileManageActionsBean extends InputController implements
             Object file = CollectionUtils.get(files, new Integer(index));
             files.remove(file);
             current.setProperty("files", "files", files);
-            updateDocument(current);
+            documentActions.updateDocument(current, Boolean.TRUE);
         } catch (Exception e) {
             log.error(e, e);
         }
-    }
-
-    protected void updateDocument(DocumentModel doc) throws ClientException {
-        // save current tabs
-        String tabId = webActions.getCurrentTabId();
-        String subTabId = webActions.getCurrentSubTabId();
-
-        Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED, doc);
-        documentManager.saveDocument(doc);
-        documentManager.save();
-
-        // some changes (versioning) happened server-side, fetch new one
-        navigationContext.invalidateCurrentDocument();
-        facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("document_modified"),
-                resourcesAccessor.getMessages().get(doc.getType()));
-        EventManager.raiseEventsOnDocumentChange(doc);
-
-        navigationContext.navigateToDocument(doc, "after-edit");
-
-        // restore previously stored tabs;
-        webActions.setCurrentTabId(tabId);
-        webActions.setCurrentSubTabId(subTabId);
     }
 
     public String validate() throws ClientException {
@@ -672,7 +639,6 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    @Override
     public InputStream getFileUpload() {
         if (fileUploadHolder != null) {
             return fileUploadHolder.getFileUpload();
@@ -681,14 +647,12 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    @Override
     public void setFileUpload(InputStream fileUpload) {
         if (fileUploadHolder != null) {
             fileUploadHolder.setFileUpload(fileUpload);
         }
     }
 
-    @Override
     public String getFileName() {
         if (fileUploadHolder != null) {
             return fileUploadHolder.getFileName();
@@ -696,7 +660,6 @@ public class FileManageActionsBean extends InputController implements
         return null;
     }
 
-    @Override
     public void setFileName(String fileName) {
         if (fileUploadHolder != null) {
             fileUploadHolder.setFileName(fileName);
@@ -725,7 +688,6 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    @Override
     @WebRemote
     public String removeSingleUploadedFile() throws ClientException {
         if (fileUploadHolder != null) {
@@ -738,7 +700,6 @@ public class FileManageActionsBean extends InputController implements
         return "";
     }
 
-    @Override
     @WebRemote
     public String removeAllUploadedFile() throws ClientException {
         if (fileUploadHolder != null) {
@@ -750,7 +711,6 @@ public class FileManageActionsBean extends InputController implements
         return "";
     }
 
-    @Override
     @WebRemote
     public String removeUploadedFile(String fileName) throws ClientException {
         UploadItem fileToDelete = null;
