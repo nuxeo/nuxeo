@@ -46,10 +46,9 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
 
-
 /**
  * Restlet to provide a REST API on top of the PictureTilingService.
- *
+ * 
  * @author tiry
  */
 public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
@@ -107,13 +106,13 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         PictureTilesAdapter adapter;
         try {
             adapter = getFromCache(targetDocument, xpath);
-        if (adapter == null) {
-            adapter = targetDocument.getAdapter(PictureTilesAdapter.class);
-            if ((xpath != null) && (!"".equals(xpath))) {
-                adapter.setXPath(xpath);
+            if (adapter == null) {
+                adapter = targetDocument.getAdapter(PictureTilesAdapter.class);
+                if ((xpath != null) && (!"".equals(xpath))) {
+                    adapter.setXPath(xpath);
+                }
+                updateCache(targetDocument, adapter, xpath);
             }
-            updateCache(targetDocument, adapter, xpath);
-        }
         } catch (ClientException e) {
             handleError(res, e);
             return;
@@ -255,7 +254,18 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         }
     }
 
-    protected PictureTilesAdapter getFromCache(DocumentModel doc, String xpath) throws ClientException {
+    protected boolean isSameDate(Calendar d1, Calendar d2) {
+
+        // because one of the date is stored in the repository
+        // the date may be 'rounded'
+        // so compare
+        long t1 = d1.getTimeInMillis() / 1000;
+        long t2 = d2.getTimeInMillis() / 1000;
+        return Math.abs(t1 - t2) <= 1;
+    }
+
+    protected PictureTilesAdapter getFromCache(DocumentModel doc, String xpath)
+            throws ClientException {
         if (cachedAdapters.containsKey(doc.getId())) {
             if (xpath == null) {
                 xpath = "";
@@ -264,7 +274,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
                     "modified");
             PictureTilesCachedEntry entry = cachedAdapters.get(doc.getId());
 
-            if ((!entry.getModified().equals(modified))
+            if ((!isSameDate(entry.getModified(), modified))
                     || (!xpath.equals(entry.getXpath()))) {
                 removeFromCache(doc.getId());
                 return null;
