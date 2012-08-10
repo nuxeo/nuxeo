@@ -5,6 +5,8 @@
     point="schema">
     <schema name="user" src="schema/user.xsd" />
     <schema name="secupolicy" src="schema/secupolicy.xsd" prefix="sp" />
+    <schema name="mapping" src="schema/mapping.xsd" prefix="mp" />
+    
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -15,6 +17,13 @@
       <schema name="secupolicy" />
       <facet name="Folderish" />
     </doctype>
+    
+     <doctype name="MappingDoc" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="mapping" />
+     </doctype>
+    
   </extension>
 
 </component>

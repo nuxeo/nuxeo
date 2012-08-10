@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingComponent">
+
+  <implementation class="org.nuxeo.ecm.core.api.propertiesmapping.impl.PropertiesMappingComponent" version="1.0.0"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingService" />
+  </service>
+
+  <documentation>
+  </documentation>
+
+  <extension-point name="mapping">
+    <documentation>
+      This extension point can be used to register Mappings.
+      Mapping is in the form : target DocumentModel property path : source DocumentModel property path
+      <code>
+        <mapping name="mappingName">
+          <property path="somePropOnTargetDoc">somePropOnSourceDoc</property>
+        </mapping>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingDescriptor"/>
+  </extension-point>
+
+</component>
