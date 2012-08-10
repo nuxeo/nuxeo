@@ -55,6 +55,20 @@ public interface DocumentActions extends SelectDataModelListener {
     String updateDocument() throws ClientException;
 
     /**
+     * Saves changes held by the given document, and updates the current
+     * document context with the new version.
+     * <p>
+     * Makes it possible to specify whether current tabs should be restored or
+     * not after edition.
+     *
+     * @since 5.7
+     * @param restoreCurrentTabs
+     * @return the JSF outcome for navigation after document edition.
+     */
+    String updateDocument(DocumentModel document, Boolean restoreCurrentTabs)
+            throws ClientException;
+
+    /**
      * Saves changes held by the changeableDocument document model in current
      * version and then create a new current one.
      */
