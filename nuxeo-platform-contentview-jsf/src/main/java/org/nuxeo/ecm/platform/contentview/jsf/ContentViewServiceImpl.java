@@ -375,11 +375,15 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         CoreQueryPageProviderDescriptor coreDesc = newDesc.getCoreQueryPageProvider();
         if (coreDesc != null && coreDesc.isEnabled()) {
             oldDesc.coreQueryPageProvider = coreDesc;
+            // make sure the generic page provider is reset
+            oldDesc.genericPageProvider = null;
         }
 
         GenericPageProviderDescriptor genDesc = newDesc.getGenericPageProvider();
         if (genDesc != null && genDesc.isEnabled()) {
             oldDesc.genericPageProvider = genDesc;
+            // make sure the core query page provider is reset
+            oldDesc.coreQueryPageProvider = null;
         }
 
         String pagination = newDesc.getPagination();
