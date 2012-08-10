@@ -331,7 +331,6 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(0, headers.size());
     }
 
-    @Test
     public void testOverrideWithGenericPP() throws Exception {
         ContentView cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
         PageProvider<?> pp = cv.getPageProvider(null, null, -1L, -1L, null);
