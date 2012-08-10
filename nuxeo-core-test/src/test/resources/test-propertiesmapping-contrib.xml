@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingComponent.defaultContrib">
+
+  <extension target="org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingComponent"
+    point="mapping">
+
+    <mapping name="testMapping">
+      <property path="dc:title">dc:title</property>
+      <property path="dc:source">dc:source</property>
+      <property path="dc:contributors">dc:contributors</property>
+      <property path="dc:created">dc:modified</property>
+      <property path="mp:comments">mp:comments</property>
+    </mapping>
+
+    <mapping name="testMappingInvalidXpath">
+      <property path="dc:title">mySchema:title</property>
+      <property path="dc:source">dc:source</property>
+    </mapping>
+    
+    
+    <mapping name="testMappingWrongTypes">
+      <property path="dc:title">dc:created</property>
+      <property path="dc:source">dc:source</property>
+    </mapping>
+
+  </extension>
+</component>
