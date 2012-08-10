@@ -21,7 +21,12 @@ package org.nuxeo.ecm.platform.pictures.tiles.api.adapter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
@@ -33,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Default implementation for the PictureTilesAdapter. This implementation
  * simply uses a xPath to get the target blob.
- *
+ * 
  * @author tiry
  */
 public class PictureTilesAdapterImpl implements PictureTilesAdapter {
@@ -44,9 +49,11 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
 
     protected String fileName;
 
-    protected Map<String, PictureTiles> tiles = new HashMap<String, PictureTiles>();
+    protected Map<String, PictureTiles> tiles = new ConcurrentHashMap<String, PictureTiles>();
 
     protected static PictureTilingService pts;
+
+    protected static final Log log = LogFactory.getLog(PictureTilesAdapterImpl.class);
 
     public PictureTilesAdapterImpl(DocumentModel doc, String xPath) {
         this.xPath = xPath;
@@ -86,11 +93,13 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
     }
 
     public void cleanup() {
+        if (tiles == null) {
+            return;
+        }
         for (String k : tiles.keySet()) {
             tiles.get(k).release();
         }
-        tiles = null;
-
+        tiles = new ConcurrentHashMap<String, PictureTiles>();
     }
 
     public String getXPath() {
