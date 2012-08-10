@@ -22,6 +22,16 @@
   </ui:define>
 
   <ui:define name="body">
-    <div>This is the content of the Workflow tab.</div>
+    <div>
+
+      <ui:include src="/incl/message_banner.xhtml" />
+
+      <ui:include src="/incl/workflow_dashboard_action_tabs.xhtml" />
+      <div style="clear: both"></div>
+      <div class="tabsContent">
+        <ui:include src="#{currentWorkflowView.link}" />
+      </div>
+
+    </div>
   </ui:define>
 </nxthemes:composition>
