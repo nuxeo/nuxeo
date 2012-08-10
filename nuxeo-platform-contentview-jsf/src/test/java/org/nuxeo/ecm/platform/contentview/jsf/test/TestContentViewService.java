@@ -33,6 +33,9 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -205,7 +208,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testGetContentViewNames() throws Exception {
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(7, names.size());
+        assertEquals(8, names.size());
         List<String> orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -217,7 +220,6 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 orderedNames.get(4));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
                 orderedNames.get(5));
-        assertEquals("QUERY_WITH_SUBCLAUSE", orderedNames.get(6));
 
         // check after override too
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
@@ -225,7 +227,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
         names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(6, names.size());
+        assertEquals(7, names.size());
         orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -236,14 +238,13 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 orderedNames.get(3));
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
                 orderedNames.get(4));
-        assertEquals("QUERY_WITH_SUBCLAUSE", orderedNames.get(5));
     }
 
     @Test
     public void testGetContentViewHeaders() throws Exception {
         Set<ContentViewHeader> headers = service.getContentViewHeaders();
         assertNotNull(headers);
-        assertEquals(7, headers.size());
+        assertEquals(8, headers.size());
         List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);
@@ -264,7 +265,6 @@ public class TestContentViewService extends NXRuntimeTestCase {
                 sortedHeaders.get(4).getName());
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF",
                 sortedHeaders.get(5).getName());
-        assertEquals("QUERY_WITH_SUBCLAUSE", sortedHeaders.get(6).getName());
     }
 
     @Test
@@ -350,6 +350,21 @@ public class TestContentViewService extends NXRuntimeTestCase {
         headers = service.getContentViewHeaders("not_set");
         assertNotNull(headers);
         assertEquals(0, headers.size());
+    }
+
+    @Test
+    public void testOverrideWithGenericPP() throws Exception {
+        ContentView cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
+        PageProvider<?> pp = cv.getPageProvider(null, null, -1L, -1L, null);
+        assertTrue(pp instanceof CoreQueryDocumentPageProvider);
+
+        // check after override too
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
+                "test-contentview-override-contrib.xml");
+
+        cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
+        pp = cv.getPageProvider(null, null, -1L, -1L, null);
+        assertTrue(pp instanceof CoreQueryAndFetchPageProvider);
     }
 
 }
