@@ -152,6 +152,19 @@
       </coreQueryPageProvider>
     </contentView>
 
+    <contentView name="OVERRIDE_PAGE_PROVIDER_WITH_GENERIC">
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ?
+        </pattern>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>2</pageSize>
+        <maxPageSize>0</maxPageSize>
+        <parameter>#{currentDocument.id}</parameter>
+      </coreQueryPageProvider>
+    </contentView>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"

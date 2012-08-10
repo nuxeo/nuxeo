@@ -584,6 +584,13 @@ public class ContentViewImpl implements ContentView {
     }
 
     protected Object addSearchDocumentToELContext(FacesContext facesContext) {
+        if (facesContext == null) {
+            log.error(String.format(
+                    "Faces context is null: cannot expose variable '%s' "
+                            + "for content view '%s'",
+                    SEARCH_DOCUMENT_EL_VARIABLE, getName()));
+            return null;
+        }
         ExternalContext econtext = facesContext.getExternalContext();
         if (econtext != null) {
             Map<String, Object> requestMap = econtext.getRequestMap();
@@ -601,6 +608,10 @@ public class ContentViewImpl implements ContentView {
 
     protected void removeSearchDocumentFromELContext(FacesContext facesContext,
             Object previousValue) {
+        if (facesContext == null) {
+            // ignore
+            return;
+        }
         ExternalContext econtext = facesContext.getExternalContext();
         if (econtext != null) {
             Map<String, Object> requestMap = econtext.getRequestMap();
