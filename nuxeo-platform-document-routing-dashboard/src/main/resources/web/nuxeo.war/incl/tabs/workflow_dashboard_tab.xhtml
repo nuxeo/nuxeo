@@ -1,0 +1,27 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <div class="tabsBar subtabsBar">
+    <h:form id="workflow_dashboard_tab">
+      <nxu:dataList layout="unorderedList" var="workflowSubTab"
+        value="#{workflowDashboardActions.availableSubActions}"
+        itemStyleClass="#{nxu:test(workflowDashboardActions.currentSubViewId == workflowSubTab.id, 'selected', '')}">
+
+        <h:commandLink id="workflowSubTabLink"
+          action="#{workflowDashboardActions.setCurrentSubViewId(workflowSubTab.id)}"
+          immediate="true">
+          <h:outputText value="#{messages[workflowSubTab.label]}" />
+        </h:commandLink>
+
+      </nxu:dataList>
+    </h:form>
+  </div>
+  <div style="clear: both"></div>
+
+  <div class="tabsContent">
+    <ui:include src="#{currentWorkflowSubView.link}"/>
+  </div>
+
+</div>

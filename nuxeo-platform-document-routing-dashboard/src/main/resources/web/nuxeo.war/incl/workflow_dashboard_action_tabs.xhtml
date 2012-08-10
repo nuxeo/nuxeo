@@ -1,0 +1,17 @@
+<div class="tabsBar"
+  xmlns:h="http://java.sun.com/jsf/html"  
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  <h:form>
+    <nxu:dataList layout="unorderedList" var="workflowTab"
+      value="#{workflowDashboardActions.availableActions}"
+      itemStyleClass="#{nxu:test(workflowDashboardActions.currentViewId == workflowTab.id, 'selected', '')}">
+      
+      <h:commandLink id="workflowTabLink"
+        action="#{workflowDashboardActions.setCurrentViewId(workflowTab.id)}"
+        immediate="true">
+        <h:outputText value="#{messages[workflowTab.label]}" />
+      </h:commandLink>
+
+    </nxu:dataList>
+  </h:form>
+</div>

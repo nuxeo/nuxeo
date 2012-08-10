@@ -14,6 +14,12 @@
   <description>Nuxeo Platform Document Routing Dashboard</description>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web</artifactId>
+    </dependency>
+
   </dependencies>
 
 </project>
