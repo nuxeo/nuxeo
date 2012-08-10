@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -102,6 +103,9 @@ public class FileManageActionsBean extends InputController implements
     protected TypeManager typeManager;
 
     @In(create = true)
+    protected transient WebActions webActions;
+
+    @In(create = true)
     protected ClipboardActions clipboardActions;
 
     @In(create = true, required = false)
@@ -142,7 +146,8 @@ public class FileManageActionsBean extends InputController implements
             throws ClientException {
         try {
             if (fileUpload == null || fileName == null) {
-                facesMessages.add(StatusMessage.Severity.ERROR,
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.nullUploadedFile"));
                 return navigationContext.getActionResult(
@@ -351,7 +356,8 @@ public class FileManageActionsBean extends InputController implements
                     SecurityConstants.ADD_CHILDREN)) {
                 // only publish via D&D if this can be done directly (no wf)
                 // => need to have write access
-                facesMessages.add(StatusMessage.Severity.WARN,
+                facesMessages.add(
+                        StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get(
                                 "move_insuffisant_rights"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
@@ -361,7 +367,8 @@ public class FileManageActionsBean extends InputController implements
             if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
                 return MOVE_PUBLISH;
             } else {
-                facesMessages.add(StatusMessage.Severity.WARN,
+                facesMessages.add(
+                        StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get(
                                 "publish_impossible"));
                 // TODO: this should be PUBLISH_IMPOSSIBLE
@@ -383,7 +390,8 @@ public class FileManageActionsBean extends InputController implements
         // check that we have the right to create the copy in the target
         if (!documentManager.hasPermission(containerRef,
                 SecurityConstants.ADD_CHILDREN)) {
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.add(
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "move_insuffisant_rights"));
             return MOVE_IMPOSSIBLE;
@@ -465,7 +473,8 @@ public class FileManageActionsBean extends InputController implements
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     otherContainer);
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(action),
                     resourcesAccessor.getMessages().get(
                             documentManager.getDocument(srcRef).getType()));
@@ -569,8 +578,7 @@ public class FileManageActionsBean extends InputController implements
                 }
             }
             current.setProperty("files", "files", files);
-            documentManager.saveDocument(current);
-            documentManager.save();
+            updateDocument(current);
         } finally {
             for (UploadItem uploadItem : getUploadedFiles()) {
                 uploadItem.getFile().delete();
@@ -595,11 +603,33 @@ public class FileManageActionsBean extends InputController implements
             Object file = CollectionUtils.get(files, new Integer(index));
             files.remove(file);
             current.setProperty("files", "files", files);
-            documentManager.saveDocument(current);
-            documentManager.save();
+            updateDocument(current);
         } catch (Exception e) {
             log.error(e, e);
         }
+    }
+
+    protected void updateDocument(DocumentModel doc) throws ClientException {
+        // save current tabs
+        String tabId = webActions.getCurrentTabId();
+        String subTabId = webActions.getCurrentSubTabId();
+
+        Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED, doc);
+        documentManager.saveDocument(doc);
+        documentManager.save();
+
+        // some changes (versioning) happened server-side, fetch new one
+        navigationContext.invalidateCurrentDocument();
+        facesMessages.add(StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get("document_modified"),
+                resourcesAccessor.getMessages().get(doc.getType()));
+        EventManager.raiseEventsOnDocumentChange(doc);
+
+        navigationContext.navigateToDocument(doc, "after-edit");
+
+        // restore previously stored tabs;
+        webActions.setCurrentTabId(tabId);
+        webActions.setCurrentSubTabId(subTabId);
     }
 
     public String validate() throws ClientException {
@@ -611,7 +641,8 @@ public class FileManageActionsBean extends InputController implements
             } catch (Exception e) {
                 log.warn(e.getMessage());
                 log.debug(e.getMessage(), e);
-                facesMessages.add(StatusMessage.Severity.ERROR,
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.unsupportedFile"));
                 return null;
@@ -623,7 +654,8 @@ public class FileManageActionsBean extends InputController implements
                 }
             }
         } else {
-            facesMessages.add(StatusMessage.Severity.ERROR,
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "fileImporter.error.nullUploadedFile"));
             return null;
@@ -707,7 +739,8 @@ public class FileManageActionsBean extends InputController implements
         UploadItem fileToDelete = null;
 
         // Retrieve only the real filename
-        // IE stores the full path of the file as the filename (ie. Z:\\path\\to\\file)
+        // IE stores the full path of the file as the filename (ie.
+        // Z:\\path\\to\\file)
         fileName = FilenameUtils.getName(fileName);
         for (UploadItem file : getUploadedFiles()) {
             String uploadedFileName = file.getFileName();
