@@ -9,7 +9,7 @@ Hello ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}
 <br />
 
 <br /><br />
-<p>Here are your login information:</p>
+<p>Here are your login credentials:</p>
 <p>Login:  ${registrationDoc.userinfo.login}</p>
 <p>Password:
 <#if userAlreadyExists>
@@ -18,8 +18,11 @@ Your usual account password.
 ${registrationDoc.userinfo.password}
 </#if>
 </p>
+<#if !userAlreadyExists>
+<p>Please, update your password after your first login.</p>
+</#if>
 
-<#if registrationDoc.registration.comment??>
+<#if registrationDoc.registration.comment != "">
 <p>Comment:</p>
 <p>${registrationDoc.registration.comment}</p>
 </#if>

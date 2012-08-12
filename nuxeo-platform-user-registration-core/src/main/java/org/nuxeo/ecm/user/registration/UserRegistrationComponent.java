@@ -73,6 +73,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         UserRegistrationService {
 
     protected static Log log = LogFactory.getLog(UserRegistrationService.class);
+
     public static final String NUXEO_URL_KEY = "nuxeo.url";
 
     protected String repoName = null;
@@ -223,6 +224,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
                     docInfo.getDocumentId());
             doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_RIGHT_FIELD,
                     docInfo.getPermission());
+            doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_TITLE_FIELD,
+                    docInfo.getDocumentTitle());
 
             // additionnal infos
             for (String key : additionnalInfo.keySet()) {
@@ -499,10 +502,12 @@ public class UserRegistrationComponent extends DefaultComponent implements
         byPassAdminValidation |= registrationRules.allowDirectValidationForExistingUser()
                 && registrationRules.allowDirectValidationForNonExistingUser();
         if (byPassAdminValidation) {
-            // Build validationBaseUrl with nuxeo.url property as request is not accessible.
+            // Build validationBaseUrl with nuxeo.url property as request is not
+            // accessible.
             if (!additionnalInfo.containsKey("validationBaseUrl")) {
                 String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
-                Path path = new Path(StringUtils.isBlank(baseUrl) ? "/" : baseUrl);
+                Path path = new Path(StringUtils.isBlank(baseUrl) ? "/"
+                        : baseUrl);
                 path = path.append(getConfiguration(configurationName).getValidationRelUrl());
                 additionnalInfo.put("validationBaseURL", path.toString());
             }

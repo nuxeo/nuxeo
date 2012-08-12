@@ -178,8 +178,9 @@ public class UserRegistrationActions implements Serializable {
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
-    public void submitUserRegistration(String configurationName) {
+    public void submitUserRegistration(String configurationName) throws ClientException {
         docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
+        docinfo.setDocumentTitle(navigationContext.getCurrentDocument().getTitle());
         doSubmitUserRegistration(configurationName);
         resetPojos();
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
@@ -364,7 +365,7 @@ public class UserRegistrationActions implements Serializable {
     protected Map<String, Serializable> getAdditionalsParameters() {
         Map<String, Serializable> additionalsInfo = new HashMap<String, Serializable>();
         try {
-            additionalsInfo.put("documentTitle",
+            additionalsInfo.put("docinfo:documentTitle",
                     navigationContext.getCurrentDocument().getTitle());
             additionalsInfo.put(
                     "registration:copyTo",
