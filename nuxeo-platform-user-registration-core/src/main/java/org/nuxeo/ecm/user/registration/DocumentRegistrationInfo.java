@@ -11,6 +11,8 @@ public class DocumentRegistrationInfo {
 
     public static final String DOCUMENT_ID_FIELD = SCHEMA_NAME + ":documentId";
 
+    public static final String DOCUMENT_TITLE_FIELD = SCHEMA_NAME + ":documentTitle";
+
     public static final String DOCUMENT_RIGHT_FIELD = SCHEMA_NAME
             + ":permission";
 
@@ -19,6 +21,16 @@ public class DocumentRegistrationInfo {
     protected String documentId;
 
     protected String permission;
+
+    protected String documentTitle;
+
+    public String getDocumentTitle() {
+        return documentTitle;
+    }
+
+    public void setDocumentTitle(String documentTitle) {
+        this.documentTitle = documentTitle;
+    }
 
     public String getDocumentId() {
         return documentId;
