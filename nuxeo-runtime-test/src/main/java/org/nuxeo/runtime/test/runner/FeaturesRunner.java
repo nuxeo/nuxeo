@@ -16,10 +16,14 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.runner.notification.Failure;
@@ -49,7 +53,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
      */
     protected Injector injector;
 
-    protected List<RunnerFeature> features;
+    protected LinkedList<RunnerFeature> features;
 
     public static AnnotationScanner getScanner() {
         return scanner;
@@ -107,7 +111,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             }
         }
         // register collected features
-        this.features = new ArrayList<RunnerFeature>();
+        this.features = new LinkedList<RunnerFeature>();
         for (Class<? extends RunnerFeature> fc : features) {
             RunnerFeature rf = fc.newInstance();
             this.features.add(rf);
@@ -234,7 +238,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
         return new InvokeMethod(method, test);
     }
-
+    
     protected class InvokeMethod extends Statement {
         protected FrameworkMethod testMethod;
         protected Object target;
@@ -254,5 +258,49 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             }
         }
     }
+
+    protected abstract class Visitor {
+
+        final Iterator<RunnerFeature> it;
+
+        Visitor(Iterator<RunnerFeature>it) {
+            this.it = it;
+        }
+
+        public void visit() throws Exception {
+            while (it.hasNext()) {
+                RunnerFeature feature = it.next();
+                if (feature == null) {
+                    throw new IllegalStateException("pfff");
+                }
+                visit(feature);
+            }
+        }
+
+        abstract void visit(RunnerFeature feature) throws Exception;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public <T extends Annotation> T getConfig(final Class<T> type) {
+        final List<T> configs = new ArrayList<T>();
+        try {
+            new Visitor(features.descendingIterator()) {
+                @Override
+                void visit(RunnerFeature feature) throws Exception {
+                    List<T> scanned = scanner.getAnnotations(
+                            feature.getClass(), type);
+                    configs.addAll(scanned);
+                }
+            }.visit();
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot visit features for annotation " + type.getSimpleName(), e);
+        }
+        List<T> scanned = scanner.getAnnotations(getDescription().getTestClass(),type);
+        configs.addAll(scanned);
+        return MergedAnnotationHandler.newProxy(configs, type);
+    }
+
 
 }
