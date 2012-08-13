@@ -225,6 +225,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
+    public String getTaskNotificationTemplate() {
+        return (String) getProperty(PROP_TASK_NOTIFICATION_TEMPLATE);
+    }
+
+    @Override
     public void incrementCount() {
         incrementProp(PROP_COUNT);
     }

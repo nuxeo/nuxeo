@@ -234,6 +234,12 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 node.getId());
         taskVariables.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
                 node.getDocument().getId());
+        String taskNotiftemplate = node.getTaskNotificationTemplate();
+        if (!StringUtils.isEmpty(taskNotiftemplate)) {
+            taskVariables.put(
+                    DocumentRoutingConstants.TASK_ASSIGNED_NOTIFICATION_TEMPLATE,
+                    taskNotiftemplate);
+        }
         // evaluate task assignees from taskVar if any
         HashSet<String> actors = new HashSet<String>();
         actors.addAll(node.evaluateTaskAssignees());
