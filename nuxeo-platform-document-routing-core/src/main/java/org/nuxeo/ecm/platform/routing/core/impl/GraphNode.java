@@ -104,6 +104,8 @@ public interface GraphNode {
 
     String PROP_TASK_DOC_TYPE = "rnode:taskDocType";
 
+    String PROP_TASK_NOTIFICATION_TEMPLATE = "rnode:taskNotificationTemplate";
+
     /**
      * The internal state of a node.
      */
@@ -371,6 +373,8 @@ public interface GraphNode {
      *          returned.
      */
     String getTaskDocType();
+
+    String getTaskNotificationTemplate();
 
     /**
      * Increments the execution counter for this node.

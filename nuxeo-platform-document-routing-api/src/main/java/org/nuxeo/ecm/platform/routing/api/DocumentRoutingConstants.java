@@ -78,6 +78,11 @@ public interface DocumentRoutingConstants {
 
     String DOCUMENT_ROUTING_ACL = "routing";
 
+    /**
+     * @since 5.6
+     */
+    String TASK_ASSIGNED_NOTIFICATION_TEMPLATE = "taskNotificationTemplate";
+
     enum ExecutionTypeValues {
         /** Serial running of children nodes. */
         serial,
