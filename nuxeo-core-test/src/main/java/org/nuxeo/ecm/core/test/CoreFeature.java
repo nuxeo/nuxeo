@@ -84,7 +84,7 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void stop(FeaturesRunner runner) throws Exception {
-    	repository = null;
+ //   	repository = null;
     }
     
     @Override
