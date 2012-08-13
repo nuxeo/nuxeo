@@ -22,7 +22,6 @@ public class MergedAnnotationHandler<T extends Annotation> implements Invocation
 
     List<T> requestedValues;
 
-    @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         Object d = method.invoke(defaultValue, args);

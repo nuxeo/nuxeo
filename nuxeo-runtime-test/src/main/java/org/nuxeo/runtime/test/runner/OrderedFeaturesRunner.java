@@ -21,7 +21,6 @@ public class OrderedFeaturesRunner extends FeaturesRunner {
     	List<FrameworkMethod> copy = new ArrayList<FrameworkMethod>(list);
     	Collections.sort(copy, new Comparator<FrameworkMethod>() {
 
-			@Override
 			public int compare(FrameworkMethod o1,
 					FrameworkMethod o2) {
 				return o1.getName().compareTo(o2.getName());
