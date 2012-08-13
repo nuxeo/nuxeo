@@ -146,6 +146,7 @@ public class RepositoryService extends DefaultComponent implements EventListener
         }
 
         for (String name : repositoryMgr.getRepositoryNames()) {
+            log.trace("initializing repo " + name);
             boolean started = false;
             boolean ok = false;
             try {

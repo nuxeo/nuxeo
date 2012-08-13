@@ -83,6 +83,11 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
+    public void stop(FeaturesRunner runner) throws Exception {
+    	repository = null;
+    }
+    
+    @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(RepositorySettings.class).toInstance(repository);
     }
@@ -118,13 +123,17 @@ public class CoreFeature extends SimpleFeature {
             log.error("Unable to reset repository", e);
         }
 
-        initializeSession(runner);
+        initializeSession(session);
     }
 
     protected void initializeSession(FeaturesRunner runner) {
         CoreSession session = runner.getInjector().getInstance(CoreSession.class);
 
-        RepositoryInit factory = repository.getInitializer();
+        initializeSession(session);
+    }
+
+	private void initializeSession(CoreSession session) {
+		RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             try {
                 factory.populate(session);
@@ -133,7 +142,7 @@ public class CoreFeature extends SimpleFeature {
                 log.error(e.toString(), e);
             }
         }
-    }
+	}
 
     public void setRepositorySettings(RepositorySettings settings) {
         repository.importSettings(settings);
