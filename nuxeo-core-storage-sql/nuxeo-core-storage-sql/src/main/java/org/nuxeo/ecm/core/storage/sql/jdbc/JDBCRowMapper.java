@@ -837,8 +837,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 invalidations.addModified(new RowId(tableName, overwriteId));
             }
             // create the new hierarchy by copy
+            boolean resetVersion = destParentId != null;
             Serializable newRootId = copyHierRecursive(source, destParentId,
-                    destName, overwriteId, idMap, idToTypes);
+                    destName, overwriteId, resetVersion, idMap, idToTypes);
             // invalidate children
             Serializable invalParentId = overwriteId == null ? destParentId
                     : overwriteId;
@@ -945,12 +946,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      */
     protected Serializable copyHierRecursive(IdWithTypes source,
             Serializable parentId, String name, Serializable overwriteId,
-            Map<Serializable, Serializable> idMap,
+            boolean resetVersion, Map<Serializable, Serializable> idMap,
             Map<Serializable, IdWithTypes> idToTypes) throws SQLException {
         idToTypes.put(source.id, source);
         Serializable newId;
         if (overwriteId == null) {
-            newId = copyHier(source.id, parentId, name, idMap);
+            newId = copyHier(source.id, parentId, name, resetVersion, idMap);
         } else {
             newId = overwriteId;
             idMap.put(source.id, newId);
@@ -958,7 +959,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         // recurse in children
         boolean onlyComplex = parentId == null;
         for (IdWithTypes child : getChildrenIdsWithTypes(source.id, onlyComplex)) {
-            copyHierRecursive(child, newId, null, null, idMap, idToTypes);
+            copyHierRecursive(child, newId, null, null, resetVersion, idMap, idToTypes);
         }
         return newId;
     }
@@ -975,12 +976,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * @return the new id
      */
     protected Serializable copyHier(Serializable id, Serializable parentId,
-            String name, Map<Serializable, Serializable> idMap)
-            throws SQLException {
+            String name, boolean resetVersion,
+            Map<Serializable, Serializable> idMap) throws SQLException {
         boolean explicitName = name != null;
         Serializable newId = null;
 
-        SQLInfoSelect copy = sqlInfo.getCopyHier(explicitName);
+        SQLInfoSelect copy = sqlInfo.getCopyHier(explicitName, resetVersion);
         PreparedStatement ps = connection.prepareStatement(copy.sql);
         try {
             // TODO DB_IDENTITY
@@ -1004,6 +1005,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     v = newId;
                 } else if (key.equals(model.MAIN_BASE_VERSION_KEY)
                         || key.equals(model.MAIN_CHECKED_IN_KEY)) {
+                    v = null;
+                } else if (key.equals(model.MAIN_MINOR_VERSION_KEY)
+                        || key.equals(model.MAIN_MAJOR_VERSION_KEY)) {
+                    // present if reset version (regular copy, not checkin)
                     v = null;
                 } else {
                     throw new RuntimeException(column.toString());

@@ -397,7 +397,7 @@ public class SQLInfo {
 
     // ----- copy -----
 
-    public SQLInfoSelect getCopyHier(boolean explicitName) {
+    public SQLInfoSelect getCopyHier(boolean explicitName, boolean resetVersion) {
         Table table = database.getTable(model.HIER_TABLE_NAME);
         Collection<Column> columns = table.getColumns();
         List<String> selectWhats = new ArrayList<String>(columns.size());
@@ -415,6 +415,8 @@ public class SQLInfo {
                     || key.equals(model.HIER_PARENT_KEY) //
                     || key.equals(model.MAIN_BASE_VERSION_KEY) //
                     || key.equals(model.MAIN_CHECKED_IN_KEY) //
+                    || (key.equals(model.MAIN_MINOR_VERSION_KEY) && resetVersion) //
+                    || (key.equals(model.MAIN_MAJOR_VERSION_KEY) && resetVersion) //
                     || (key.equals(model.HIER_CHILD_NAME_KEY) && explicitName)) {
                 // explicit value set
                 selectWhats.add("?");

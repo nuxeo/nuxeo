@@ -12,6 +12,13 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -477,6 +484,22 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals(versionSeriesId, proxyCopy.getVersionSeriesId());
     }
 
+    public void testCopyCheckedIn() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        doc.checkIn(VersioningOption.MAJOR, "comment");
+        session.save();
+        assertFalse(doc.isCheckedOut());
+        assertEquals("1.0", doc.getVersionLabel());
+
+        // copy
+        DocumentModel copy = session.copy(doc.getRef(),
+                session.getRootDocument().getRef(), "fileCopied");
+
+        assertTrue(copy.isCheckedOut());
+        assertEquals("0.0", copy.getVersionLabel());
+    }
+
     public void testPublishing() throws ClientException {
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
@@ -570,28 +593,28 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         // publish
         DocumentModel proxy = session.publishDocument(doc, folder);
         checkVersions(doc, "0.1");
-        VersionModel lastVersion = session.getLastVersion(doc.getRef());
+        DocumentModel lastVersion = session.getLastDocumentVersion(doc.getRef());
         assertNotNull(lastVersion);
-        assertEquals("0.1", lastVersion.getLabel());
+        assertEquals("0.1", lastVersion.getVersionLabel());
         DocumentModel lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
         assertNotNull(lastVersionDocument);
         assertEquals("file", lastVersionDocument.getName());
 
-        // copy published file
+        // copy published file, version is reset
         DocumentModel copy = session.copy(doc.getRef(), folder.getRef(),
                 "fileCopied");
         checkVersions(copy);
-        lastVersion = session.getLastVersion(copy.getRef());
+        lastVersion = session.getLastDocumentVersion(copy.getRef());
         assertNull(lastVersion);
         lastVersionDocument = session.getLastDocumentVersion(copy.getRef());
         assertNull(lastVersionDocument);
 
         // republish
         DocumentModel newProxy = session.publishDocument(copy, folder);
-        checkVersions(copy, "0.2");
-        lastVersion = session.getLastVersion(copy.getRef());
+        checkVersions(copy, "0.1");
+        lastVersion = session.getLastDocumentVersion(copy.getRef());
         assertNotNull(lastVersion);
-        assertEquals("0.2", lastVersion.getLabel());
+        assertEquals("0.1", lastVersion.getVersionLabel());
         lastVersionDocument = session.getLastDocumentVersion(copy.getRef());
         assertNotNull(lastVersionDocument);
         assertEquals("fileCopied", lastVersionDocument.getName());
@@ -762,23 +785,29 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals(doc.getId(), session.getWorkingCopy(ver.getRef()).getId());
     }
 
-    public void testSaveRestoredVersionWithVersionAutoIncrement() throws ClientException {
-            // check-in version 1.0, 2.0 and restore version 1.0
-             DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
-             doc = session.createDocument(doc);
-             doc = session.saveDocument(doc);
-             DocumentRef co = doc.getRef();
-             DocumentRef ci1 = session.checkIn(co, VersioningOption.MAJOR, "first check-in" ); 
-             session.checkOut(co);
-             DocumentRef ci2 = session.checkIn(co,VersioningOption.MAJOR, "second check-in");
-             session.restoreToVersion(co, ci1);
-            
-            // save document with auto-increment should produce version 3.0
-            doc = session.getDocument(co);
-            assertEquals(doc.getVersionLabel(), "1.0");
-            doc.getContextData().putScopedValue(ScopeType.DEFAULT, VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
-            doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title")); // mark as dirty
-            doc = session.saveDocument(doc);
-            assertEquals(doc.getVersionLabel(), "3.0");
+    public void testSaveRestoredVersionWithVersionAutoIncrement()
+            throws ClientException {
+        // check-in version 1.0, 2.0 and restore version 1.0
+        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        doc = session.createDocument(doc);
+        doc = session.saveDocument(doc);
+        DocumentRef co = doc.getRef();
+        DocumentRef ci1 = session.checkIn(co, VersioningOption.MAJOR,
+                "first check-in");
+        session.checkOut(co);
+        DocumentRef ci2 = session.checkIn(co, VersioningOption.MAJOR,
+                "second check-in");
+        session.restoreToVersion(co, ci1);
+
+        // save document with auto-increment should produce version 3.0
+        doc = session.getDocument(co);
+        assertEquals(doc.getVersionLabel(), "1.0");
+        doc.getContextData().putScopedValue(ScopeType.DEFAULT,
+                VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        // mark as dirty
+        doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title"));
+        doc = session.saveDocument(doc);
+        assertEquals(doc.getVersionLabel(), "3.0");
     }
+
 }
