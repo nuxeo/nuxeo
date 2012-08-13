@@ -162,9 +162,8 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         // try to validate
         ConnectWizardPage connectPage2 = connectPage1.next(ConnectWizardPage.class);
         assertNotNull(connectPage2);
-        assertEquals(
-                "There were some errors in your form: You must define a login",
-                connectPage2.getErrorMessage());
+        assertTrue(connectPage2.getErrorMessage().startsWith(
+                "There were some errors in your form: "));
 
         // ok, let's try to skip the screen
         WizardPage connectSkip = connectPage1.navByLink(
