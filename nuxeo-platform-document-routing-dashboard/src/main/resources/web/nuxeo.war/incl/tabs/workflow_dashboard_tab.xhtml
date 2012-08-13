@@ -1,27 +1,34 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core">
 
   <div class="tabsBar subtabsBar">
-    <h:form id="workflow_dashboard_tab">
-      <nxu:dataList layout="unorderedList" var="workflowSubTab"
-        value="#{workflowDashboardActions.availableSubActions}"
-        itemStyleClass="#{nxu:test(workflowDashboardActions.currentSubViewId == workflowSubTab.id, 'selected', '')}">
+    <nxu:set var="contentViewName" value="#{currentWorkflowView.id}">
+      <ui:decorate template="/incl/content_view.xhtml" />
+    </nxu:set>
+    <c:if
+      test="#{not empty workflowDashboardActions.availableSubActions}">
+      <h:form id="workflow_dashboard_tab">
+        <nxu:dataList layout="unorderedList" var="workflowSubTab"
+          value="#{workflowDashboardActions.availableSubActions}"
+          itemStyleClass="#{nxu:test(workflowDashboardActions.currentSubViewId == workflowSubTab.id, 'selected', '')}">
 
-        <h:commandLink id="workflowSubTabLink"
-          action="#{workflowDashboardActions.setCurrentSubViewId(workflowSubTab.id)}"
-          immediate="true">
-          <h:outputText value="#{messages[workflowSubTab.label]}" />
-        </h:commandLink>
+          <h:commandLink id="workflowSubTabLink"
+            action="#{workflowDashboardActions.setCurrentSubViewId(workflowSubTab.id)}"
+            immediate="true">
+            <h:outputText value="#{messages[workflowSubTab.label]}" />
+          </h:commandLink>
 
-      </nxu:dataList>
-    </h:form>
+        </nxu:dataList>
+      </h:form>
+    </c:if>
   </div>
   <div style="clear: both"></div>
 
   <div class="tabsContent">
-    <ui:include src="#{currentWorkflowSubView.link}"/>
+    <ui:include src="#{currentWorkflowSubView.link}" />
   </div>
 
 </div>

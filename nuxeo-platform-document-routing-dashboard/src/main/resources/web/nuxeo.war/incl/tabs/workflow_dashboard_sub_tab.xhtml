@@ -1,6 +1,9 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:c="http://java.sun.com/jstl/core">
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  This is the content of a Workflow dashboard sub tab.
-  
+  <nxu:set var="contentViewName" value="#{currentWorkflowSubView.id}">
+    <ui:decorate template="/incl/content_view.xhtml" />
+  </nxu:set>
+
 </div>
