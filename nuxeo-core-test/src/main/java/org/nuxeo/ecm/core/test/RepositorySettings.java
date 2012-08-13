@@ -49,198 +49,206 @@ import com.google.inject.Provider;
  */
 public class RepositorySettings implements Provider<CoreSession> {
 
-    private static final Log log = LogFactory.getLog(RepositorySettings.class);
+	private static final Log log = LogFactory.getLog(RepositorySettings.class);
 
-    protected FeaturesRunner runner;
-    protected BackendType type;
-    protected String username;
-    protected RepositoryInit initializer;
-    protected Granularity granularity;
+	protected FeaturesRunner runner;
+	protected BackendType type;
+	protected String username;
+	protected RepositoryInit initializer;
+	protected Granularity granularity;
 
-    protected TestRepositoryHandler repo;
-    protected CoreSession session;
+	protected TestRepositoryHandler repo;
+	protected CoreSession session;
 
-    /**
-     * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}
-     */
-    protected RepositorySettings() {
-        importAnnotations(Defaults.of(RepositoryConfig.class));
-    }
+	/**
+	 * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}
+	 */
+	protected RepositorySettings() {
+		importAnnotations(Defaults.of(RepositoryConfig.class));
+	}
 
-    protected RepositorySettings(RepositoryConfig config) {
-        importAnnotations(config);
-    }
+	protected RepositorySettings(RepositoryConfig config) {
+		importAnnotations(config);
+	}
 
-    public RepositorySettings(FeaturesRunner runner) {
-        this.runner = runner;
-        Description description = runner.getDescription();
-        RepositoryConfig repo = description.getAnnotation(RepositoryConfig.class);
-        if (repo == null) {
-            repo = Defaults.of(RepositoryConfig.class);
-        }
-        importAnnotations(repo);
-    }
+	public RepositorySettings(FeaturesRunner runner) {
+		this.runner = runner;
+		Description description = runner.getDescription();
+		RepositoryConfig repo = description
+				.getAnnotation(RepositoryConfig.class);
+		if (repo == null) {
+			repo = Defaults.of(RepositoryConfig.class);
+		}
+		importAnnotations(repo);
+	}
 
-    public void importAnnotations(RepositoryConfig repo) {
-        type = repo.type();
-        username = repo.user();
-        granularity = repo.cleanup();
-        Class<? extends RepositoryInit> clazz = repo.init();
-        if (clazz != RepositoryInit.class) {
-            try {
-                initializer = clazz.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+	public void importAnnotations(RepositoryConfig repo) {
+		type = repo.type();
+		username = repo.user();
+		granularity = repo.cleanup();
+		Class<? extends RepositoryInit> clazz = repo.init();
+		if (clazz != RepositoryInit.class) {
+			try {
+				initializer = clazz.newInstance();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-    public void importSettings(RepositorySettings settings) {
-        shutdown();
-        // override only the user name and the type.
-        // overriding initializer and granularity may broke tests that are using specific initializers
-        RepositoryConfig defaultConfig = Defaults.of(RepositoryConfig.class);
-        if (defaultConfig.type() != settings.type) {
-            type = settings.type;
-        }
-        username = settings.username;
-    }
+	public void importSettings(RepositorySettings settings) {
+		shutdown();
+		// override only the user name and the type.
+		// overriding initializer and granularity may broke tests that are using
+		// specific initializers
+		RepositoryConfig defaultConfig = Defaults.of(RepositoryConfig.class);
+		if (defaultConfig.type() != settings.type) {
+			type = settings.type;
+		}
+		username = settings.username;
+	}
 
+	public BackendType getBackendType() {
+		return type;
+	}
 
-    public BackendType getBackendType() {
-        return type;
-    }
+	public void setBackendType(BackendType type) {
+		this.type = type;
+	}
 
-    public void setBackendType(BackendType type) {
-        this.type = type;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public RepositoryInit getInitializer() {
+		return initializer;
+	}
 
-    public RepositoryInit getInitializer() {
-        return initializer;
-    }
+	public void setInitializer(RepositoryInit initializer) {
+		this.initializer = initializer;
+	}
 
-    public void setInitializer(RepositoryInit initializer) {
-        this.initializer = initializer;
-    }
+	public Granularity getGranularity() {
+		return granularity;
+	}
 
-    public Granularity getGranularity() {
-        return granularity;
-    }
+	public void setGranularity(Granularity granularity) {
+		this.granularity = granularity;
+	}
 
-    public void setGranularity(Granularity granularity) {
-        this.granularity = granularity;
-    }
+	public void initialize() {
+		try {
+			RuntimeHarness harness = runner.getFeature(RuntimeFeature.class)
+					.getHarness();
+			BackendType repoType = getBackendType();
+			if (repoType == BackendType.JCR) {
+				log.info("Deploying a JCR repo implementation");
+				harness.deployBundle("org.nuxeo.ecm.core.jcr");
+				harness.deployBundle("org.nuxeo.ecm.core.jcr-connector");
+				// runner.deployments().addDeployment("org.nuxeo.ecm.core.jcr");
+				// runner.deployments().addDeployment("org.nuxeo.ecm.core.jcr-connector");
 
+			} else {
+				log.info("Deploying a VCS repo implementation");
+				harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
+				// runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql");
 
-    public void initialize() {
-        try {
-            RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-            BackendType repoType = getBackendType();
-            if (repoType == BackendType.JCR) {
-                log.info("Deploying a JCR repo implementation");
-                harness.deployBundle("org.nuxeo.ecm.core.jcr");
-                harness.deployBundle("org.nuxeo.ecm.core.jcr-connector");
-//                runner.deployments().addDeployment("org.nuxeo.ecm.core.jcr");
-//                runner.deployments().addDeployment("org.nuxeo.ecm.core.jcr-connector");
+				// TODO: should use a factory
+				DatabaseHelper dbHelper;
+				if (repoType == BackendType.H2) {
+					log.info("VCS relies on H2");
+					dbHelper = DatabaseH2.DATABASE;
+				} else {
+					log.info("VCS relies on Postgres");
+					dbHelper = DatabasePostgreSQL.DATABASE;
+				}
+				harness.deployContrib("org.nuxeo.ecm.core.storage.sql.test",
+						dbHelper.getDeploymentContrib());
+				// runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql.test:"
+				// +dbHelper.getDeploymentContrib());
+				dbHelper.setUp();
 
-            } else {
-                log.info("Deploying a VCS repo implementation");
-                harness.deployBundle("org.nuxeo.ecm.core.storage.sql");
-//                runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql");
+				if (dbHelper instanceof DatabasePostgreSQL) {
+					Class.forName("org.postgresql.Driver");
+					String url = String.format("jdbc:postgresql://%s:%s/%s",
+							"localhost", "5432", "nuxeojunittests");
+					Connection connection = DriverManager.getConnection(url,
+							"postgres", "");
+					Statement st = connection.createStatement();
+					String sql = "CREATE LANGUAGE plpgsql";
+					st.execute(sql);
+					st.close();
+					connection.close();
+				}
+			}
+		} catch (Exception e) {
+			log.error(e.toString(), e);
+		}
+	}
 
-                // TODO: should use a factory
-                DatabaseHelper dbHelper;
-                if (repoType == BackendType.H2) {
-                    log.info("VCS relies on H2");
-                    dbHelper = DatabaseH2.DATABASE;
-                } else {
-                    log.info("VCS relies on Postgres");
-                    dbHelper = DatabasePostgreSQL.DATABASE;
-                }
-                harness.deployContrib("org.nuxeo.ecm.core.storage.sql.test",
-                        dbHelper.getDeploymentContrib());
-//                runner.deployments().addDeployment("org.nuxeo.ecm.core.storage.sql.test:"
-//                        +dbHelper.getDeploymentContrib());
-                dbHelper.setUp();
+	@SuppressWarnings("deprecation")
+	public void shutdown() {
+		try {
+			if (repo != null) {
+				if (session != null) {
+					repo.releaseSession(session);
+					session = null;
+				}
+				for (CoreSession cs : CoreInstance.getInstance().getSessions()) {
+					CoreInstance.getInstance().close(cs);
+				}
+				repo.releaseRepository();
+				repo = null;
+			}
+		} finally {
+			try {
+				DatabaseHelper.DATABASE.tearDown();
+			} catch (Exception e) {
+				log.error("Cannot shutdown database", e);
+			}
+		}
+	}
 
-                if (dbHelper instanceof DatabasePostgreSQL) {
-                    Class.forName("org.postgresql.Driver");
-                    String url = String.format("jdbc:postgresql://%s:%s/%s",
-                            "localhost", "5432", "nuxeojunittests");
-                    Connection connection = DriverManager.getConnection(url,
-                            "postgres", "");
-                    Statement st = connection.createStatement();
-                    String sql = "CREATE LANGUAGE plpgsql";
-                    st.execute(sql);
-                    st.close();
-                    connection.close();
-                }
-            }
-        } catch (Exception e) {
-            log.error(e.toString(), e);
-        }
-    }
+	private String getRepoName() {
+		// Small hacks since test repo name differs between implementation
+		if (getBackendType() == BackendType.JCR) {
+			return "demo";
+		} else {
+			return "test";
+		}
+	}
 
-    @SuppressWarnings("deprecation")
-    public void shutdown() {
-        if (repo != null) {
-            if (session != null) {
-                repo.releaseSession(session);
-                session = null;
-            }
-            for (CoreSession cs : CoreInstance.getInstance().getSessions()) {
-                CoreInstance.getInstance().close(cs);
-            }
-            repo.releaseRepository();
-            repo = null;
-        }
-    }
+	public TestRepositoryHandler getRepositoryHandler() {
+		if (repo == null) {
+			try {
+				repo = new TestRepositoryHandler(getRepoName());
+				repo.openRepository();
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+				return null;
+			}
+		}
+		return repo;
+	}
 
-    private String getRepoName() {
-        // Small hacks since test repo name differs between implementation
-        if (getBackendType() == BackendType.JCR) {
-            return "demo";
-        } else {
-            return "test";
-        }
-    }
+	public CoreSession getSession() {
+		if (session == null) {
+			try {
+				session = getRepositoryHandler().openSessionAs(getUsername());
+			} catch (Exception e) {
+				log.error(e.toString(), e);
+				return null;
+			}
+		}
+		return session;
+	}
 
-    public TestRepositoryHandler getRepositoryHandler() {
-        if (repo == null) {
-            try {
-                repo = new TestRepositoryHandler(
-                        getRepoName());
-                repo.openRepository();
-            } catch (Exception e) {
-                log.error(e.toString(), e);
-                return null;
-            }
-        }
-        return repo;
-    }
-
-    public CoreSession getSession() {
-        if (session == null) {
-            try {
-                session = getRepositoryHandler().openSessionAs(getUsername());
-            } catch (Exception e) {
-                log.error(e.toString(), e);
-                return null;
-            }
-        }
-        return session;
-    }
-
-    public CoreSession get() {
-        return getSession();
-    }
+	public CoreSession get() {
+		return getSession();
+	}
 
 }
