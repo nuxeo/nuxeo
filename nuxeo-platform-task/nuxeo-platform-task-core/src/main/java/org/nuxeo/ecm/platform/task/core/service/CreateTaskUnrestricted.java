@@ -84,9 +84,9 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             List<String> prefixedActorIds, boolean createOneTaskPerActor,
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath) {
-        this(session, principal, document, taskName, null, null, prefixedActorIds,
-                createOneTaskPerActor, directive, comment, dueDate,
-                taskVariables, parentPath);
+        this(session, principal, document, taskName, null, null,
+                prefixedActorIds, createOneTaskPerActor, directive, comment,
+                dueDate, taskVariables, parentPath);
     }
 
     /**
@@ -111,7 +111,6 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         this.taskVariables = taskVariables;
         this.parentPath = parentPath;
     }
-
 
     /**
      * @since 5.6
@@ -138,15 +137,14 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 directive, comment, dueDate, taskVariables, parentPath);
     }
 
-
     /**
      * @since 5.6
      */
     public void createTask(CoreSession coreSession, NuxeoPrincipal principal,
-            DocumentModel document,String taskDocumentType, String taskName, String taskType, String processId,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath)
+            DocumentModel document, String taskDocumentType, String taskName,
+            String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath)
             throws ClientException {
         if (createOneTaskPerActor) {
             for (String prefixedActorId : prefixedActorIds) {
@@ -156,9 +154,12 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             }
         } else {
             try {
-                //use task type as a docName ( is actually the nodeId so it doesn't contain "/" characters)
+                // use task type as a docName (is actually the nodeId so it
+                // doesn't contain "/" characters), but fallback on task name
+                // if task type is null (for old API kept for compat)
+                String docName = taskType == null ? taskName : taskType;
                 DocumentModel taskDocument = session.createDocumentModel(
-                        parentPath, taskType, taskDocumentType);
+                        parentPath, docName, taskDocumentType);
                 taskDocument = session.createDocument(taskDocument);
                 Task task = taskDocument.getAdapter(Task.class);
                 if (task == null) {
