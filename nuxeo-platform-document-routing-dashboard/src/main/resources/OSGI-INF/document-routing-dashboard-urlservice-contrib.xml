@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.routing.dashboard.urlservice">
 
-  <extension
-    target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
+  <extension target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
     point="codecs">
 
     <documentViewCodec name="docpathworkflow" enabled="true"
@@ -20,12 +19,14 @@
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
       <codecName>docpathworkflow</codecName>
-      <actionBinding>#{restHelper.initContextFromRestRequest}
+      <actionBinding>
+        #{restHelper.initContextFromRestRequest}
       </actionBinding>
       <documentViewBindingApplies>
         #{mainTabsActions.isOnMainTab('workflow_dashboard')}
       </documentViewBindingApplies>
-      <documentViewBinding>#{restHelper.documentView}
+      <documentViewBinding>
+        #{restHelper.documentView}
       </documentViewBinding>
       <newDocumentViewBinding>
         #{restHelper.getNewDocumentView(null)}
@@ -43,6 +44,18 @@
         </binding>
       </bindings>
     </urlPattern>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>nxworkflow/</pattern>
+      </patterns>
+    </startURLPattern>
 
   </extension>
 
