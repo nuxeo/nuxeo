@@ -9,14 +9,14 @@
       <ui:decorate template="/incl/content_view.xhtml" />
     </nxu:set>
     <c:if
-      test="#{not empty workflowDashboardActions.availableSubActions}">
+      test="#{not empty routingDashboardActions.availableSubActions}">
       <h:form id="workflow_dashboard_tab">
         <nxu:dataList layout="unorderedList" var="workflowSubTab"
-          value="#{workflowDashboardActions.availableSubActions}"
-          itemStyleClass="#{nxu:test(workflowDashboardActions.currentSubViewId == workflowSubTab.id, 'selected', '')}">
+          value="#{routingDashboardActions.availableSubActions}"
+          itemStyleClass="#{nxu:test(routingDashboardActions.currentSubViewId == workflowSubTab.id, 'selected', '')}">
 
           <h:commandLink id="workflowSubTabLink"
-            action="#{workflowDashboardActions.setCurrentSubViewId(workflowSubTab.id)}"
+            action="#{routingDashboardActions.setCurrentSubViewId(workflowSubTab.id)}"
             immediate="true">
             <h:outputText value="#{messages[workflowSubTab.label]}" />
           </h:commandLink>
