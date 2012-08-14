@@ -361,6 +361,13 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
                 doc1.getId(), session);
         assertTrue(routeInstance.isDone());
+
+        // check that we don't get route instances when querying for models
+        route = service.getRouteModelWithId(session, ROUTE1);
+        assertNotNull(route);
+        // this API does not restrict itself to models actually
+        routes = service.getAvailableDocumentRouteModel(session);
+        assertEquals(2, routes.size());
     }
 
     @Test

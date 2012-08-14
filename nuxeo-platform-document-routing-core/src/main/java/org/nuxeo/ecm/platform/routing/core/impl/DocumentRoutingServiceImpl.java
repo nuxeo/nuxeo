@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
@@ -80,8 +81,14 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(DocumentRoutingServiceImpl.class);
 
+    /** Routes in any state (model or not). */
     private static final String AVAILABLE_ROUTES_QUERY = String.format(
-            "Select * from %s",
+            "SELECT * FROM %s",
+            DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
+
+    /** Route models that have been validated. */
+    private static final String ROUTE_MODEL_WITH_ID_QUERY = String.format(
+            "SELECT * FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated'",
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
 
     private static final String ORDERED_CHILDREN_QUERY = "SELECT * FROM Document WHERE"
@@ -674,9 +681,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     public DocumentRoute getRouteModelWithId(CoreSession session, String id)
             throws ClientException {
         DocumentModelList list = null;
-        String query = String.format(
-                "Select * from %s where ecm:name like '%s' and  ecm:currentLifeCycleState = 'validated'",
-                DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, id);
+        String query = String.format(ROUTE_MODEL_WITH_ID_QUERY,
+                NXQLQueryBuilder.prepareStringLiteral(id, true, true));
         try {
             list = session.query(query);
         } catch (ClientException e) {
