@@ -437,6 +437,11 @@
         <artifactId>nuxeo-platform-document-routing-dm</artifactId>
         <version>${nuxeo.routing.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-document-routing-dashboard</artifactId>
+        <version>${nuxeo.routing.version}</version>
+      </dependency>
 
       <!-- jBPM -->
       <dependency>
