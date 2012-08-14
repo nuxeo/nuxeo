@@ -156,8 +156,9 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             }
         } else {
             try {
+                //use task type as a docName ( is actually the nodeId so it doesn't contain "/" characters)
                 DocumentModel taskDocument = session.createDocumentModel(
-                        parentPath, taskName, taskDocumentType);
+                        parentPath, taskType, taskDocumentType);
                 taskDocument = session.createDocument(taskDocument);
                 Task task = taskDocument.getAdapter(Task.class);
                 if (task == null) {
