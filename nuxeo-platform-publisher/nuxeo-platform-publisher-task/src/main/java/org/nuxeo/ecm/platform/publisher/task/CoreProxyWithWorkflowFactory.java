@@ -179,8 +179,6 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements
         ctx.setProperty(NotificationConstants.RECIPIENTS_KEY, actorIds);
         try {
             getEventProducer().fireEvent(
-                    ctx.newEvent(TaskEventNames.WORKFLOW_TASK_ASSIGNED));
-            getEventProducer().fireEvent(
                     ctx.newEvent(TaskEventNames.WORKFLOW_TASK_START));
         } catch (ClientException e) {
             throw new PublishingException(e);
