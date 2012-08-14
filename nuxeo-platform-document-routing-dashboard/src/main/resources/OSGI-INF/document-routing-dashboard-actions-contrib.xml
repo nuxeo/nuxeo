@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.routing.dashboard.actions">
 
-  <require>org.nuxeo.ecm.platform.actions</require>
+  <documentation>
+    Main workflow tab, disabled by default.
+    <p>
+      To enable it, add the following contribution:
+    </p>
+    <code>
+      <require>org.nuxeo.ecm.platform.routing.dashboard.actions</require>
+      <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+        point="actions">
+        <action id="workflow_dashboard" enabled="true" />
+      </extension>
+    </code>
+  </documentation>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="workflow_dashboard" link="view_workflow"
-      label="label.main.tab.workflow" order="30">
+    <action id="workflow_dashboard" link="view_workflow" label="label.main.tab.workflow"
+      order="30" enabled="false">
       <category>MAIN_TABS</category>
     </action>
 
