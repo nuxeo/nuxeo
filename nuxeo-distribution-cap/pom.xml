@@ -359,6 +359,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-document-routing-dm</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-document-routing-dashboard</artifactId>
+    </dependency>
 
     <!-- Scope test -->
     <dependency>
