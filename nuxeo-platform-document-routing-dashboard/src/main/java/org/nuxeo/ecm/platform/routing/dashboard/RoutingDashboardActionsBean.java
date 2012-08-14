@@ -40,9 +40,11 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  */
-@Name("workflowDashboardActions")
+// named "routing" instead of "workflow" to avoid confusion with old jbpm Seam
+// component
+@Name("routingDashboardActions")
 @Scope(CONVERSATION)
-public class WorkflowDashboardActionsBean implements Serializable {
+public class RoutingDashboardActionsBean implements Serializable {
 
     private static final long serialVersionUID = 6559435574355707710L;
 
