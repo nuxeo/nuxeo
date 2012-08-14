@@ -112,6 +112,31 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
+    public List<DocumentModel> getWorkflowInputDocuments(CoreSession session,
+            Task task) throws DocumentRouteException {
+        String routeInstanceId;
+        try {
+            routeInstanceId = task.getProcessId();
+        } catch (ClientException e) {
+            throw new DocumentRouteException(
+                    "Can not get the related workflow instance");
+        }
+        if (StringUtils.isEmpty(routeInstanceId)) {
+            throw new DocumentRouteException(
+                    "Can not get the related workflow instance");
+        }
+        DocumentModel routeDoc;
+        try {
+            routeDoc = session.getDocument(new IdRef(routeInstanceId));
+        } catch (ClientException e) {
+            throw new DocumentRouteException("No workflow with the id:"
+                    + routeInstanceId);
+        }
+        DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
+        return route.getAttachedDocuments(session);
+    }
+
     protected DocumentRoutingEngineService getDocumentRoutingEngineService() {
         if (routingEngineService == null) {
             try {
@@ -182,4 +207,5 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
                     nodeId, data, status);
         }
     }
+
 }

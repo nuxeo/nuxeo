@@ -62,4 +62,15 @@ public interface RoutingTaskService {
      */
     void grantPermissionToTaskAssignees(CoreSession session, String permission,
             DocumentModel doc, Task task) throws DocumentRouteException;
+
+    /**
+     * Gets the documents following the workflow to which the given task belongs
+     *
+     * @param session
+     * @param task
+     * @return
+     * @throws DocumentRouteException
+     */
+    List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task)
+            throws DocumentRouteException;
 }

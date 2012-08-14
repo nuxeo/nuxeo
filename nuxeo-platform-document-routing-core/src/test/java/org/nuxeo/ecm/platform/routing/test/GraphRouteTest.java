@@ -690,6 +690,9 @@ public class GraphRouteTest {
         assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
         Task task1 = tasks.get(0);
         assertEquals("MyTaskDoc",task1.getDocument().getType());
+        List<DocumentModel> docs = routingTaskService.getWorkflowInputDocuments(
+                sessionUser1, task1);
+        assertEquals(doc.getId(), docs.get(0).getId());
         routingTaskService.endTask(sessionUser1, tasks.get(0), data, "trans1");
         closeSession(sessionUser1);
         // end task and verify that route was done
