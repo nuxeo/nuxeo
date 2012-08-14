@@ -57,11 +57,14 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
     }
 
     public DocumentWrapper getParent(String type) throws Exception {
-        DocumentModel parent = doc;
+        DocumentModel parent = session.getParentDocument(doc.getRef());
         while (parent != null && !type.equals(parent.getType())) {
-            parent = session.getParentDocument(doc.getRef());
+            parent = session.getParentDocument(parent.getRef());
         }
-        return parent != null ? new DocumentWrapper(session, parent) : null;
+        if (parent == null) {
+            return null;
+        }
+        return new DocumentWrapper(session, parent);
     }
 
     public DocumentWrapper getWorkspace() throws Exception {
