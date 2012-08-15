@@ -326,6 +326,10 @@ public class RenditionServiceImpl extends DefaultComponent implements
 
         List<Rendition> renditions = new ArrayList<Rendition>();
 
+        if (doc.isProxy()) {
+            return renditions;
+        }
+
         List<RenditionDefinition> defs = getAvailableRenditionDefinitions(doc);
         if (defs != null) {
             for (RenditionDefinition def : defs) {
