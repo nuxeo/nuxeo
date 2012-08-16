@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<project name="nuxeo-platform-forms-layout-demo" default="web-tomcat" basedir=".">
+
+  <import file="../../../build.xml" />
+  <property file="build.properties" />
+
+</project>
