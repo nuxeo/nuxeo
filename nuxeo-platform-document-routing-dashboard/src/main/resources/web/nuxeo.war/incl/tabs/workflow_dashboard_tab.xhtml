@@ -4,33 +4,32 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <div class="tabsBar subtabsBar">
+  <nxu:set var="currentWorkflowSubTabAction"
+    value="#{webActions.getCurrentSubTabAction(currentWorkflowTabAction.id)}"
+    cache="true">
+  <nxu:set var="subActionsCategory"
+    value="#{currentWorkflowTabAction.id}_sub_tab"
+    cache="true">
+  <nxu:set var="subTabActions"
+    value="#{webActions.getActionsList(subActionsCategory)}"
+    cache="true">
 
-    <nxu:set var="currentWorkflowSubTabAction"
-      value="#{webActions.getCurrentSubTabAction(currentWorkflowTabAction.id)}"
-      cache="true">
-    <nxu:set var="subActionsCategory"
-      value="#{currentWorkflowTabAction.id}_sub_tab"
-      cache="true">
-    <nxu:set var="subTabActions"
-      value="#{webActions.getActionsList(subActionsCategory)}"
-      cache="true">
-
-      <c:if test="#{empty subTabActions}">
-        <c:if test="false">
-          Display the content view for this tab instead
-        </c:if>
-        <nxu:set var="contentViewName" value="#{currentWorkflowTabAction.id}">
-          <ui:decorate template="/incl/content_view.xhtml" />
-        </nxu:set>
+    <c:if test="#{empty subTabActions}">
+      <c:if test="false">
+        Display the content view for this tab instead
       </c:if>
+      <nxu:set var="contentViewName" value="#{currentWorkflowTabAction.id}">
+        <ui:decorate template="/incl/content_view.xhtml" />
+      </nxu:set>
+    </c:if>
 
-      <c:if test="#{not empty subTabActions}">
+    <c:if test="#{not empty subTabActions}">
+
+      <div class="tabsBar subtabsBar">
 
         <nxu:dataList layout="unorderedList" var="tab"
           value="#{subTabActions}"
           itemStyleClass="#{nxu:test(currentWorkflowSubTabAction.id == tab.id, 'selected', '')}">
-
           <nxd:restDocumentLink
             document="#{mainTabsActions.getDocumentFor('workflow_dashboard')}"
             view="view_workflow" pattern="workflow"
@@ -38,20 +37,19 @@
             tabs="WORKFLOW_DASHBOARD:#{currentWorkflowTabAction.id}:#{tab.id}">
             <h:outputText value="#{messages[tab.label]}" />
           </nxd:restDocumentLink>
-
         </nxu:dataList>
-        <div style="clear: both"></div>
 
-        <div class="tabsContent">
-          <ui:include src="#{currentWorkflowSubTabAction.link}" />
-        </div>
+      </div>
+      <div style="clear: both"></div>
 
-      </c:if>
+      <div class="tabsContent">
+        <ui:include src="#{currentWorkflowSubTabAction.link}" />
+      </div>
 
-    </nxu:set>
-    </nxu:set>
-    </nxu:set>
+    </c:if>
 
-  </div>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
 
 </div>
