@@ -477,7 +477,7 @@ SELECT * FROM DUAL
 
 
 CREATE OR REPLACE FUNCTION nx_get_read_acl(id VARCHAR2)
-RETURN VARCHAR2
+RETURN CLOB
 -- Compute the merged read acl for a doc id
 IS
   curid acls.id%TYPE := id;
