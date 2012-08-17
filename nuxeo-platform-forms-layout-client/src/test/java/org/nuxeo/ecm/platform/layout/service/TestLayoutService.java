@@ -505,4 +505,13 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNull(widget);
     }
 
+    @Test
+    public void testEmptyLayout() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+        LayoutDefinition layout = service.getLayoutDefinition("testEmptyLayout");
+        assertTrue(layout.isEmpty());
+        layout = service.getLayoutDefinition("testLayout");
+        assertFalse(layout.isEmpty());
+    }
 }
