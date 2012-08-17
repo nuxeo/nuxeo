@@ -49,6 +49,7 @@ import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
@@ -557,6 +558,57 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("test", acls[0].name);
         assertEquals("steve", acls[1].user);
         assertEquals("test", acls[1].name);
+    }
+
+    /** ACL bigger than VARCHAR limit for databases. */
+    @Test
+    public void testBigACLs() throws Exception {
+        if (!(DatabaseHelper.DATABASE instanceof DatabasePostgreSQL //
+        || DatabaseHelper.DATABASE instanceof DatabaseOracle)) {
+            return;
+        }
+        testBigACLs("foo100", 100); // len 2500-1
+        testBigACLs("foo161", 161); // len 4025-1 failed on Oracle
+        // TODO XXX test bigger ACL on PostgreSQL
+    }
+
+    protected void testBigACLs(String name, int n) throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        root.getCollectionProperty(Model.ACL_PROP).setValue(new ACLRow[0]);
+
+        Node node = session.addChildNode(root, name, null, "TestDoc", false);
+        CollectionProperty prop = node.getCollectionProperty(Model.ACL_PROP);
+
+        String user = "foobarfoobarfoobarfoobar"; // 24+1=25
+        ACLRow[] acls = new ACLRow[n];
+        for (int i = 0; i < n; i++) {
+            acls[i] = new ACLRow(i, "test", true, "Read", user, null);
+        }
+        prop.setValue(acls);
+        session.save();
+        session.updateReadAcls();
+
+        QueryFilter qf;
+        PartialList<Serializable> res;
+
+        // random user with no groups cannot read
+        qf = new QueryFilter(null, new String[] { "bob" },
+                new String[] { "Read" }, null,
+                Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
+        String query = String.format(
+                "SELECT * FROM TestDoc WHERE ecm:name = '%s'", name);
+        res = session.query(query, qf, false);
+        assertEquals(0, res.list.size());
+
+        // user in ACL can read
+        qf = new QueryFilter(null, new String[] { user },
+                new String[] { "Read" }, null,
+                Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
+        res = session.query(query, qf, false);
+        assertEquals(1, res.list.size());
+
+        session.close();
     }
 
     public void XXX_TODO_testConcurrentModification() throws Exception {
