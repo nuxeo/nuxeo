@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.actions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +83,19 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      */
     @XNode("properties")
     protected ActionPropertiesDescriptor properties;
+
+    /**
+     * Extra set of properties to be used by API, when creating actions on the
+     * fly without contributions to the service.
+     *
+     * @since 5.6
+     */
+    protected Map<String, Serializable> localProperties;
+
+    /**
+     * @since 5.6
+     */
+    protected Map<String, Serializable> propertiesCache;
 
     protected boolean available = true;
 
@@ -351,16 +364,36 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      */
     public void setPropertiesDescriptor(ActionPropertiesDescriptor properties) {
         this.properties = properties;
+        this.propertiesCache = null;
     }
 
     /**
+     * Sets local properties programatically
+     *
+     * @since 5.6
+     */
+    public void setProperties(Map<String, Serializable> localProperties) {
+        this.localProperties = localProperties;
+        this.propertiesCache = null;
+    }
+
+    /**
+     * Returns an aggregate of {@link #localProperties} and {@link #properties}
+     * set via descriptors.
+     *
      * @since 5.6
      */
     public Map<String, Serializable> getProperties() {
-        if (properties != null) {
-            return properties.getAllProperties();
+        if (propertiesCache == null) {
+            propertiesCache = new HashMap<String, Serializable>();
+            if (properties != null) {
+                propertiesCache.putAll(properties.getAllProperties());
+            }
+            if (localProperties != null) {
+                propertiesCache.putAll(localProperties);
+            }
         }
-        return Collections.emptyMap();
+        return propertiesCache;
     }
 
     /**
