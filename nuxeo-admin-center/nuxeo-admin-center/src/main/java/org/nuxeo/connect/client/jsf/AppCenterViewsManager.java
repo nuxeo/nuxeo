@@ -42,7 +42,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
@@ -55,6 +54,7 @@ import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.ecm.admin.AdminViewManager;
 import org.nuxeo.ecm.admin.setup.SetupWizardActionBean;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloadContextKeeper;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
@@ -221,13 +221,9 @@ public class AppCenterViewsManager implements Serializable {
         return isStudioSnapshopUpdateInProgress;
     }
 
-    // TODO: move into ResourcesAccessor?
     protected static String translate(String label, Object... params) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        String bundleName = context.getApplication().getMessageBundle();
-        Locale locale = context.getViewRoot().getLocale();
-        label = I18NUtils.getMessageString(bundleName, label, params, locale);
-        return label;
+        return ComponentUtils.translate(FacesContext.getCurrentInstance(),
+                label, params);
     }
 
     protected String getLastUpdateDate() {
