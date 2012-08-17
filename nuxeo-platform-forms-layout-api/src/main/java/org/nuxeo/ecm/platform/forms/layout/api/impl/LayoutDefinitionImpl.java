@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRowDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 
 /**
  * Default implementation for a layout definition.
@@ -260,6 +261,24 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
                 ctemplates, crows, cwidgets);
         clone.setRenderingInfos(crenderingInfos);
         return clone;
+    }
+
+    public boolean isEmpty() {
+        LayoutRowDefinition[] rows = getRows();
+        if (rows == null) {
+            return true;
+        }
+        for (LayoutRowDefinition row : rows) {
+            WidgetReference[] refs = row.getWidgetReferences();
+            if (refs != null) {
+                for (WidgetReference ref : refs) {
+                    if (ref.getName() != null && !ref.getName().isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 }

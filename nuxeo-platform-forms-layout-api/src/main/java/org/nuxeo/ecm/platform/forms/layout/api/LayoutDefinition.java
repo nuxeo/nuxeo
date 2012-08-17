@@ -127,4 +127,11 @@ public interface LayoutDefinition extends Serializable {
      */
     LayoutDefinition clone();
 
+    /**
+     * Returns true if all widget references in this layout are empty
+     *
+     * @since 5.6
+     */
+    boolean isEmpty();
+
 }
