@@ -42,7 +42,7 @@
 #CATEGORY: beforeTableCreation
 
 
-CREATE OR REPLACE TYPE NX_STRING_ARRAY AS VARRAY(300) OF VARCHAR2(32767);
+CREATE OR REPLACE TYPE NX_STRING_ARRAY AS VARRAY(32767) OF VARCHAR2(32767);
 
 # -- CREATE OR REPLACE will not work if ACLR_USER_USERS nested table is not empty
 #TEST:
@@ -59,6 +59,15 @@ IS
 BEGIN
   -- hash function 1 is MD4 (faster than 2 = MD5)
   RETURN DBMS_CRYPTO.HASH(UTL_I18N.STRING_TO_RAW(string, 'AL32UTF8'), 1);
+END;
+
+# needs: GRANT EXECUTE ON DBMS_CRYPTO TO nuxeo;
+CREATE OR REPLACE FUNCTION nx_hash_clob(c NCLOB)
+RETURN VARCHAR2
+IS
+BEGIN
+  -- hash function 1 is MD4 (faster than 2 = MD5)
+  RETURN DBMS_CRYPTO.HASH(COALESCE(c, '-'), 1);
 END;
 
 
@@ -477,7 +486,7 @@ SELECT * FROM DUAL
 
 
 CREATE OR REPLACE FUNCTION nx_get_read_acl(id VARCHAR2)
-RETURN CLOB
+RETURN NCLOB
 -- Compute the merged read acl for a doc id
 IS
   curid acls.id%TYPE := id;
@@ -515,26 +524,32 @@ BEGIN
     first := FALSE;
     curid := newid;
   END LOOP;
-  RETURN acl;
+  RETURN NVL(acl, '-');
 END;
 
 
-CREATE OR REPLACE FUNCTION split(string VARCHAR2, sep VARCHAR2)
+CREATE OR REPLACE FUNCTION nx_split(c NCLOB, sep VARCHAR2)
 RETURN NX_STRING_ARRAY
 -- splits a string, order matters
 IS
   pos PLS_INTEGER := 1;
-  len PLS_INTEGER := NVL(LENGTH(string), 0);
+  len PLS_INTEGER := NVL(DBMS_LOB.GETLENGTH(c), 0);
   i PLS_INTEGER;
   res NX_STRING_ARRAY := NX_STRING_ARRAY();
 BEGIN
+  -- dbms_output.put_line('NX_SPLIT');
+  -- dbms_output.put_line('  len: ' || len);
   WHILE pos <= len LOOP
-    i := INSTR(string, sep, pos);
+    i := DBMS_LOB.INSTR(c, sep, pos);
     IF i = 0 THEN i := len + 1; END IF;
+    -- dbms_output.put_line('  pos: ' || pos || ' i: ' || i);
     res.EXTEND;
-    res(res.COUNT) := SUBSTR(string, pos, i - pos);
+    -- dbms_output.put_line('  extended to ' || res.COUNT);
+    res(res.COUNT) := DBMS_LOB.SUBSTR(c, i - pos, pos);
+    -- dbms_output.put_line('  chunk: ' || res(res.COUNT));
     pos := i + 1;
   END LOOP;
+  -- dbms_output.put_line('NX_SPLIT end');
   RETURN res;
 END;
 
@@ -556,7 +571,9 @@ BEGIN
   END LOOP;
   -- find match
   FOR r IN (SELECT acl_id, acl FROM aclr) LOOP
-    aclusers := split(r.acl, sep);
+    aclusers := nx_split(r.acl, sep);
+    -- dbms_output.put_line('---- acl_id ' || r.acl_id);
+    -- dbms_output.put_line('---- first ' || aclusers.FIRST || ' last ' || aclusers.LAST);
     FOR i IN aclusers.FIRST .. aclusers.LAST LOOP
       acluser := aclusers(i);
       IF acluser MEMBER OF users THEN
@@ -580,7 +597,7 @@ CREATE OR REPLACE FUNCTION nx_get_read_acl_id(id VARCHAR2)
 RETURN VARCHAR2
 IS
 BEGIN
-  RETURN nx_hash(nx_get_read_acl(id));
+  RETURN nx_hash_clob(nx_get_read_acl(id));
 END;
 
 
@@ -689,7 +706,7 @@ BEGIN
       negusers.EXTEND;
       negusers(i) := '-' || r.users(i);
     END LOOP;
-    acl := split(:NEW.acl, sep);
+    acl := nx_split(:NEW.acl, sep);
     FOR i IN acl.FIRST .. acl.LAST LOOP
       ace := acl(i);
       IF ace MEMBER OF r.users THEN
