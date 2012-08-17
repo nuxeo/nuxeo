@@ -5,5 +5,5 @@
   value="#{field_0}">
   <a4j:support id="#{widget.id}_ajax_onclick" event="onclick"
     action="#{documentListingActions.processSelectRow(field_1, contentView.name, contentView.selectionListName, field_0)}"
-    reRender="ajax_selection_buttons" />
+    reRender="ajax_selection_buttons, ajax_after_selection_buttons_form" />
 </h:selectBooleanCheckbox>

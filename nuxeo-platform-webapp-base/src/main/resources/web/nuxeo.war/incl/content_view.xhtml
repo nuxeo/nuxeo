@@ -205,26 +205,31 @@
                       <tbody>
                         <tr>
                           <td>
-                            <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
-                              <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
-                                <c:if test="#{not status.first and not empty actions}">
-                                  <br />
-                                </c:if>
-                                <nxu:dataList var="sel_action" value="#{actions}"
-                                  id="clipboardActionsTable_#{contentViewId}_#{status.index}">
-                                <span id="#{sel_action.id}">
-                                  <nxh:commandButton
-                                    styleClass="button"
-                                    action="#{sel_action.getLink()}"
-                                    value="#{messages[sel_action.label]}"
-                                    onclick="#{sel_action.confirm}"
-                                    disabled="#{!sel_action.available}"
-                                    immediate="#{sel_action.immediate}"
-                                    id="clipboardActionsButton" />
-                                 </span>
-                                </nxu:dataList>
-                              </nxu:set>
-                            </c:forEach>
+                            <ui:insert name="content_view_actions_before" />
+                            <ui:insert name="content_view_actions" />
+                            <ui:insert name="content_view_compat_actions">
+                              <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
+                                <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
+                                  <c:if test="#{not status.first and not empty actions}">
+                                    <br />
+                                  </c:if>
+                                  <nxu:dataList var="sel_action" value="#{actions}"
+                                    id="clipboardActionsTable_#{contentViewId}_#{status.index}">
+                                    <span id="#{sel_action.id}">
+                                      <nxh:commandButton
+                                        styleClass="button"
+                                        action="#{sel_action.getLink()}"
+                                        value="#{messages[sel_action.label]}"
+                                        onclick="#{sel_action.confirm}"
+                                        disabled="#{!sel_action.available}"
+                                        immediate="#{sel_action.immediate}"
+                                        id="clipboardActionsButton" />
+                                     </span>
+                                  </nxu:dataList>
+                                </nxu:set>
+                              </c:forEach>
+                            </ui:insert>
+                            <ui:insert name="content_view_actions_after" />
                           </td>
                           <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
                             <a4j:status>
@@ -237,6 +242,12 @@
                       </tbody>
                     </table>
                   </div>
+                </a4j:outputPanel>
+              </ui:define>
+
+              <ui:define name="after_documents_form">
+                <a4j:outputPanel id="ajax_after_selection_buttons_form" ajaxRendered="false">
+                  <ui:insert name="content_view_after_documents_form" />
                 </a4j:outputPanel>
               </ui:define>
 

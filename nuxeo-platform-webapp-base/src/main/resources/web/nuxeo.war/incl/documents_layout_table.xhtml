@@ -48,12 +48,14 @@
         <h:form id="#{formId}">
           <ui:include src="documents_layout_table_content.xhtml" />
         </h:form>
+        <ui:insert name="after_documents_form" />
       </c:if>
       <c:if test="#{useAjaxForm}">
         <a4j:form id="#{formId}" ajaxSubmit="true"
           reRender="#{contentIdToBeReRendered}">
           <ui:include src="documents_layout_table_content.xhtml" />
         </a4j:form>
+        <ui:insert name="after_documents_form" />
       </c:if>
     </c:if>
 
