@@ -3,31 +3,30 @@
 **/
 
 /* Remove default padding from Nuxeo Galaxy Theme */
-
 .themeCellFrame {
-  border:none;  
+  border: none;
 }
 
 .themeRegion {
-  padding:0px;  
+  padding: 0px;
 }
 
 .layoutDemoPage {
   border-spacing: 0;
   border-collapse: collapse;
-  width:100%;
-  overflow:hidden;
+  width: 100%;
+  overflow: hidden;
 }
 
 .layoutDemoPage td {
-  padding:0px;
+  padding: 0px;
 }
 
 /* HEADER */
-
 div.header {
-  background:url(/nuxeo/layoutDemo/img/header_nuxeo.png) no-repeat scroll right bottom #000;
-  border-bottom:1px solid #bbb;
+  background: url(/nuxeo/layoutDemo/img/header_nuxeo.png) no-repeat scroll
+    right bottom #000;
+  border-bottom: 1px solid #bbb;
   text-shadow: 2px 2px 2px #000;
   /* -moz-box-shadow:  -3px 0px 3px #555555;
   -webkit-box-shadow:  -3px 0px 3px #555555;
@@ -35,96 +34,96 @@ div.header {
 }
 
 div.nuxeoLogo {
-  float:left;
+  float: left;
   padding: 10px 20px !important;
 }
 
 div.nuxeoLogo span {
-  color:#fff;
-  font:18px/1.25em 'Lucida Grande',Verdana,Arial,sans-serif;
-  padding:0 30px;
-  vertical-align:top;
-  }
+  color: #fff;
+  font: 18px/1.25em 'Lucida Grande', Verdana, Arial, sans-serif;
+  padding: 0 30px;
+  vertical-align: top;
+}
 
 div.customButtons {
-  float:right;
-  padding:0 10px 0 0;
+  float: right;
+  padding: 0 10px 0 0;
 }
 
 div.customButtons p {
-  color:#dedede;
-  -moz-border-radius:0 0 5px 5px;
-  -webkit-border-radius:0 0 5px 5px;
-  border-radius:0 0 5px 5px;
-  background-color:#212121;
-  border:1px solid #333333;
-  color:#153e6b;
-  margin-left:10px;
-  padding:2px 15px 5px;
+  color: #dedede;
+  -moz-border-radius: 0 0 5px 5px;
+  -webkit-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
+  background-color: #212121;
+  border: 1px solid #333333;
+  color: #153e6b;
+  margin-left: 10px;
+  padding: 2px 15px 5px;
 }
 
-div.customButtons a, div.customButtons a:link, div.customButtons a:visited {
-  color:#ccc;
+div.customButtons a,div.customButtons a:link,div.customButtons a:visited
+  {
+  color: #ccc;
 }
 
 div.customButtons a:hover {
-  color:#fff;
+  color: #fff;
 }
 
 /* MENU */
-
 div.layoutDemoLeftMenu {
-  padding:10px;
+  padding: 10px;
 }
 
 ul.layoutDemoMenu {
-  margin:0;
-  padding:0;
-  list-style:none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 ul.layoutDemoMenu li {
-  margin-left:5px;
-  margin:0;
-  padding:0;
-  list-style:none;
+  margin-left: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-ul.layoutDemoMenu a, ul.layoutDemoMenu a:hover, ul.layoutDemoMenu a:visited {
-  text-decoration:none;
-  font-weight:normal;
-  display:block;
-  padding:3px 7px;
+ul.layoutDemoMenu a,ul.layoutDemoMenu a:hover,ul.layoutDemoMenu a:visited
+  {
+  text-decoration: none;
+  font-weight: normal;
+  display: block;
+  padding: 3px 7px;
 }
 
-ul.layoutDemoMenu li.selected a, ul.layoutDemoMenu li.selected a:hover, ul.layoutDemoMenu li.selected a:visited {
-  text-decoration:none;
-  font-weight:normal;
-  display:block;
-  padding:3px 7px;
-  background:#c0dcf5;
-  -moz-border-radius:3px;
-  -webkit-border-radius:3px;
-  border-radius:3px;
+ul.layoutDemoMenu li.selected a,ul.layoutDemoMenu li.selected a:hover,ul.layoutDemoMenu li.selected a:visited
+  {
+  text-decoration: none;
+  font-weight: normal;
+  display: block;
+  padding: 3px 7px;
+  background: #c0dcf5;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
 
 /* MAIN CONTENT */
-
 div.mainContent {
-  padding: 15px;  
+  padding: 15px;
 }
 
 /* FOOTER */
-
 div.footer {
-  color:#5c5c5c;
-  font:9px 'Lucida Grande',Verdana,Arial,sans-serif;
-  padding:5px 15px 5px 5px !important;
-  border-top:1px solid #dedede;
-  text-align:right;
+  color: #5c5c5c;
+  font: 9px 'Lucida Grande', Verdana, Arial, sans-serif;
+  padding: 5px 15px 5px 5px !important;
+  border-top: 1px solid #dedede;
+  text-align: right;
 }
 
 div.footer a {
-  color:#00a1f5;
-  text-decoration:none;
+  color: #00a1f5;
+  text-decoration: none;
 }
