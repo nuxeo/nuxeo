@@ -114,6 +114,11 @@ div.mainContent {
   padding: 15px;
 }
 
+ul.layoutDemoList {
+  list-style-type: circle;
+  padding: 15px;
+}
+
 /* FOOTER */
 div.footer {
   color: #5c5c5c;
