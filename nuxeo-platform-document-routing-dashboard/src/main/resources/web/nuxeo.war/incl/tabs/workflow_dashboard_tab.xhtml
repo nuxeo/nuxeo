@@ -19,7 +19,7 @@
         Display the content view for this tab instead
       </c:if>
       <nxu:set var="contentViewName" value="#{currentWorkflowTabAction.id}">
-        <ui:decorate template="/incl/content_view.xhtml" />
+        <ui:include src="/incl/workflow_content_view.xhtml" />
       </nxu:set>
     </c:if>
 
