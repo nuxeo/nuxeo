@@ -540,7 +540,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     /** ACL bigger than VARCHAR limit for databases. */
-    @Test
     public void testBigACLs() throws Exception {
         if (!(DatabaseHelper.DATABASE instanceof DatabasePostgreSQL //
         || DatabaseHelper.DATABASE instanceof DatabaseOracle)) {
