@@ -1,0 +1,112 @@
+<c:if test="true"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+<c:if test="false">
+  Template adding workflow actions before standard content view actions.
+
+  Needed parameters:
+  - contentViewName
+</c:if>
+
+  <ui:decorate template="/incl/content_view.xhtml">
+
+    <ui:define name="content_view_actions_before">
+
+      <nxu:set var="actions"
+        value="#{routingTaskActions.getTaskActions(contentView.selectionListName)}"
+        cache="true">
+
+        <c:forEach var="action" items="#{actions}">
+          <c:if test="#{action.type != 'fancybox'}">
+            <span id="#{action.id}">
+              <nxh:commandButton
+                styleClass="button"
+                action="#{routingTaskActions.endTasks(contentView.selectionListName, action)}"
+                value="#{messages[action.label]}"
+                onclick="#{action.confirm}"
+                disabled="#{!action.available}"
+                immediate="#{action.immediate}"
+                id="#{action.id}" />
+            </span>
+          </c:if>
+          <c:if test="#{action.type == 'fancybox'}">
+            <span id="#{action.id}">
+              <a4j:commandButton
+                styleClass="button"
+                value="#{messages[action.label]}"
+                ajaxSingle="true"
+                ignoreDupResponses="true" requestDelay="100"
+                disabled="#{!action.available}"
+                reRender="workflow_action_fancybox_content"
+                onclick="showFancyBox('##{action.id}_fancybox_box');jQuery('##{action.id}_fancybox_form').focusFirst();" />
+            </span>
+          </c:if>
+        </c:forEach>
+
+        <c:if test="#{empty actions}">
+          <h:outputText value="#{messages['label.workflow.taskList.help.selectToShowActions']}"
+            styleClass="detail" />
+        </c:if>
+        <br />
+
+      </nxu:set>
+    </ui:define>
+
+    <ui:define name="content_view_after_documents_form">
+      <a4j:outputPanel id="workflow_action_fancybox_content">
+
+        <nxu:set var="actions"
+          value="#{routingTaskActions.getTaskActions(contentView.selectionListName)}"
+          cache="true">
+          <c:forEach var="action" items="#{actions}">
+            <c:if test="#{action.type == 'fancybox'}">
+              <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
+              <nxu:set var="openFancyBox" value="#{nxu:hasMessages(fancyboxFormId)}">
+                <c:if test="#{openFancyBox}">
+                  <script>
+                    showFancyBox('##{action.id}_fancybox_box');
+                    jQuery('##{fancyboxFormId}').focusFirst();
+                  </script>
+                </c:if>
+                <div style="display:none;">
+                  <div id="#{action.id}_fancybox_box">
+                    <h:form id="#{fancyboxFormId}"
+                       enctype="multipart/form-data">
+                      <nxl:layout name="#{action.properties.layout}"
+                        mode="edit"
+                        value="#{action.properties.formVariables}"/>
+                      <p class="buttonsGadget">
+                        <nxh:commandButton
+                          action="#{routingTaskActions.endTasks(contentView.selectionListName, action)}"
+                          value="#{messages[action.label]}"
+                          styleClass="button"
+                          reRender="#{widget.id}_panel">
+                          <f:param name="button" value="#{action.id}" />
+                        </nxh:commandButton>
+                        <h:commandButton
+                          value="#{messages['command.cancel']}"
+                          onclick="jQuery.fancybox.close();"
+                          immediate="true"
+                          styleClass="button" />
+                      </p>
+                    </h:form>
+                  </div>
+                </div>
+              </nxu:set>
+              </nxu:set>
+            </c:if>
+          </c:forEach>
+        </nxu:set>
+
+      </a4j:outputPanel>
+    </ui:define>
+
+  </ui:decorate>
+
+</c:if>
