@@ -78,6 +78,7 @@ public class CreateNewRouteInstanceUnrestricted extends
                 model.getDocument(), session);
         DocumentRoute routeInstance = instance.getAdapter(DocumentRoute.class);
         routeInstance.setAttachedDocuments(docIds);
+        routeInstance.save(session);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY,
                 initiator);
