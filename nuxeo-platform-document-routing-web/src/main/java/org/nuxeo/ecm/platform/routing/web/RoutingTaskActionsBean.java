@@ -412,7 +412,7 @@ public class RoutingTaskActionsBean implements Serializable {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(selectionListName);
         if (docs != null && !docs.isEmpty()) {
             for (DocumentModel doc : docs) {
-                if (doc.hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME) && false) {
+                if (doc.hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME)) {
                     // add the button name that was clicked
                     try {
                         getRoutingTaskService().endTask(documentManager,
