@@ -14,6 +14,9 @@
   - contentViewName
 </c:if>
 
+<nxu:valueHolder id="clickedActionIdHolder"
+  var="clickedActionId" value="">
+
   <ui:decorate template="/incl/content_view.xhtml">
 
     <ui:define name="content_view_actions_before">
@@ -41,10 +44,18 @@
                 styleClass="button"
                 value="#{messages[action.label]}"
                 ajaxSingle="true"
+                eventsQueue="contentViewQueue"
                 ignoreDupResponses="true" requestDelay="100"
                 disabled="#{!action.available}"
-                reRender="workflow_action_fancybox_content"
-                onclick="showFancyBox('##{action.id}_fancybox_box');jQuery('##{action.id}_fancybox_form').focusFirst();" />
+                reRender="workflow_action_fancybox_content">
+                <f:setPropertyActionListener value="#{action.id}"
+                  target="#{selectionActions.selectedValue}" />
+                <f:setPropertyActionListener
+                  value="clickedActionIdHolder"
+                  target="#{selectionActions.selectedValueHolder}" />
+                <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
+              </a4j:commandButton>
             </span>
           </c:if>
         </c:forEach>
@@ -61,52 +72,77 @@
     <ui:define name="content_view_after_documents_form">
       <a4j:outputPanel id="workflow_action_fancybox_content">
 
+        <nxu:set var="elementsToReRender"
+          value="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_contentViewActionsPanel, ajax_selection_buttons, ajax_after_selection_buttons_form"
+          cache="true">
         <nxu:set var="actions"
           value="#{routingTaskActions.getTaskActions(contentView.selectionListName)}"
           cache="true">
+
           <c:forEach var="action" items="#{actions}">
-            <c:if test="#{action.type == 'fancybox'}">
-              <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
-              <nxu:set var="openFancyBox" value="#{nxu:hasMessages(fancyboxFormId)}">
-                <c:if test="#{openFancyBox}">
-                  <script>
-                    showFancyBox('##{action.id}_fancybox_box');
-                    jQuery('##{fancyboxFormId}').focusFirst();
-                  </script>
-                </c:if>
-                <div style="display:none;">
-                  <div id="#{action.id}_fancybox_box">
-                    <h:form id="#{fancyboxFormId}"
-                       enctype="multipart/form-data">
-                      <nxl:layout name="#{action.properties.layout}"
-                        mode="edit"
-                        value="#{action.properties.formVariables}"/>
-                      <p class="buttonsGadget">
-                        <nxh:commandButton
-                          action="#{routingTaskActions.endTasks(contentView.selectionListName, action)}"
-                          value="#{messages[action.label]}"
-                          styleClass="button"
-                          reRender="#{widget.id}_panel">
-                          <f:param name="button" value="#{action.id}" />
-                        </nxh:commandButton>
-                        <h:commandButton
-                          value="#{messages['command.cancel']}"
-                          onclick="jQuery.fancybox.close();"
-                          immediate="true"
-                          styleClass="button" />
-                      </p>
-                    </h:form>
-                  </div>
+            <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
+              <c:if test="#{(clickedActionId == action.id and action.type == 'fancybox') or nxu:hasMessages(fancyboxFormId)}">
+                <script>
+                  showFancyBox('##{action.id}_fancybox_box');
+                  jQuery('##{fancyboxFormId}').focusFirst();
+                </script>
+              </c:if>
+              <div style="display:none;">
+                <div id="#{action.id}_fancybox_box">
+                  <a4j:form id="#{fancyboxFormId}"
+                    ajaxSubmit="true"
+                    reRender="#{elementsToReRender}"
+                    ignoreDupResponses="true"
+                    requestDelay="100"
+                    eventsQueue="contentViewQueue"
+                    styleClass="action_bar"
+                    oncomplete="jQuery.fancybox.close();">
+                    <nxl:layout name="#{action.properties.layout}"
+                      mode="edit"
+                      value="#{action.properties.formVariables}"/>
+                    <p class="buttonsGadget">
+                      <nxh:commandButton
+                        id="submitAction_#{action.id}"
+                        action="#{routingTaskActions.endTasks(contentView.selectionListName, action)}"
+                        value="#{messages[action.label]}"
+                        styleClass="button">
+                        <f:param name="button" value="#{action.id}" />
+                        <f:setPropertyActionListener value=""
+                          target="#{selectionActions.selectedValue}" />
+                        <f:setPropertyActionListener
+                          value="clickedActionIdHolder"
+                          target="#{selectionActions.selectedValueHolder}" />
+                        <nxu:actionListenerMethod
+                          value="#{selectionActions.onClick}" />
+                      </nxh:commandButton>
+                      <h:commandButton
+                        value="#{messages['command.cancel']}"
+                        immediate="true"
+                        styleClass="button">
+                        <f:param name="button" value="" />
+                        <f:setPropertyActionListener value=""
+                          target="#{selectionActions.selectedValue}" />
+                        <f:setPropertyActionListener
+                          value="clickedActionIdHolder"
+                          target="#{selectionActions.selectedValueHolder}" />
+                        <nxu:actionListenerMethod
+                          value="#{selectionActions.onClick}" />
+                      </h:commandButton>
+                    </p>
+                  </a4j:form>
                 </div>
-              </nxu:set>
-              </nxu:set>
-            </c:if>
+              </div>
+            </nxu:set>
           </c:forEach>
+
+        </nxu:set>
         </nxu:set>
 
       </a4j:outputPanel>
     </ui:define>
 
   </ui:decorate>
+
+</nxu:valueHolder>
 
 </c:if>
