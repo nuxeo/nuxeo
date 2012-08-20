@@ -92,7 +92,7 @@ table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background
 .dataTableNoBorder td, .fieldColumn .dataTableNoBorder td,
 .dataInput .dataTableNoBorder td, .dataOutput .dataTableNoBorder td,  { padding: 0 .3em .5em; vertical-align: top }
 
-.dataTable { border-collapse: separate;
+.dataTable, .fieldColumn .dataTable { border-collapse: separate;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-style: solid none none solid;
   border-spacing: 0;
@@ -113,10 +113,10 @@ table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background
   text-align: left;
   vertical-align: top }
 .dataTable td, .fieldColumn .dataTable td,
-.dataInput .dataTable td, .dataOutput .dataTable td,  { padding: .1em .3em .2em; vertical-align: top }
+.dataInput .dataTable td, .dataOutput .dataTable td  { padding: .1em .3em .2em; vertical-align: top }
+.dataTable td td { border: none }
 
 .fieldColumn table, .fieldColumn td { vertical-align: top }
-.fieldColumn table td { }
 
 .containerSubWidget { margin: 0 .6em .6em 0 }
 
