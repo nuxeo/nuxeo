@@ -1,3 +1,4 @@
+package org.nuxeo.ecm.automation.core.test;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Serializable;
