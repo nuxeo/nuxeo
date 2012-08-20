@@ -1,4 +1,5 @@
 package org.nuxeo.ecm.automation.core.test;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.Serializable;
@@ -26,7 +27,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
@@ -48,12 +48,12 @@ public class TestComplexTypesMapping {
         Blob blob = new StringBlob("Yo");
         blob.setFilename("Yo.txt");
         blob.setMimeType("text/plain");
-        doc.setPropertyValue("file:content", (Serializable)blob);
+        doc.setPropertyValue("file:content", (Serializable) blob);
 
-        List<Map<String, Object>> blobs = new ArrayList<Map<String,Object>>();
-        for (int i = 0; i <5 ; i++) {
+        List<Map<String, Object>> blobs = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < 5; i++) {
             Blob subblob = new StringBlob("Yo" + i);
-            subblob.setFilename( "File" + i + ".txt");
+            subblob.setFilename("File" + i + ".txt");
             subblob.setMimeType("text/plain");
 
             Map<String, Object> map = new HashMap<String, Object>();
@@ -61,7 +61,7 @@ public class TestComplexTypesMapping {
             map.put("filename", "File" + i + ".txt");
             blobs.add(map);
         }
-        doc.setPropertyValue("files:files", (Serializable)blobs);
+        doc.setPropertyValue("files:files", (Serializable) blobs);
 
         doc = session.createDocument(doc);
 
@@ -73,8 +73,8 @@ public class TestComplexTypesMapping {
         address.put("zipCode", 75020);
         doc.setPropertyValue("addr:addressSingle", (Serializable) address);
 
-        List<Map<String, Object>> addresses = new ArrayList<Map<String,Object>>();
-        for (int i=0; i< 5; i++) {
+        List<Map<String, Object>> addresses = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < 5; i++) {
             Map<String, Object> add = new HashMap<String, Object>();
             add.put("streetNumber", "" + i);
             add.put("streetName", "whatever");
@@ -85,10 +85,10 @@ public class TestComplexTypesMapping {
         doc = session.saveDocument(doc);
         session.save();
 
-        Map<String, Object> addressSingle= (Map<String, Object>) doc.getPropertyValue("addr:addressSingle");
+        Map<String, Object> addressSingle = (Map<String, Object>) doc.getPropertyValue("addr:addressSingle");
         System.out.println(addressSingle);
 
-     }
+    }
 
     // ------ Tests comes here --------
 
@@ -98,7 +98,8 @@ public class TestComplexTypesMapping {
         File propFile = FileUtils.getResourceFileFromContext("testProperties.properties");
         Assert.assertNotNull(propFile);
 
-        Properties props = new Properties(Properties.loadProperties(new FileReader(propFile)));
+        Properties props = new Properties(
+                Properties.loadProperties(new FileReader(propFile)));
 
         DocumentHelper.setProperties(session, doc, props);
 
@@ -114,12 +115,6 @@ public class TestComplexTypesMapping {
         Assert.assertEquals(2, addresses.size());
         Assert.assertEquals("3bis", addresses.get(0).get("streetNumber"));
         Assert.assertEquals(2L, addresses.get(0).get("zipCode"));
-
-
-
-
-
-
 
     }
 
