@@ -58,7 +58,7 @@ public class StartWorkflowOperation {
         for (DocumentModel doc : docs) {
             ids.add(doc.getId());
         }
-        stratNewInstance(ids);
+        startNewInstance(ids);
         return docs;
     }
 
@@ -66,11 +66,11 @@ public class StartWorkflowOperation {
     public DocumentModel run(DocumentModel doc) throws ClientException {
         List<String> ids = new ArrayList<String>();
         ids.add(doc.getId());
-        stratNewInstance(ids);
+        startNewInstance(ids);
         return doc;
     }
 
-    private void stratNewInstance(List<String> ids) throws ClientException {
+    private void startNewInstance(List<String> ids) throws ClientException {
         DocumentRoute model = documentRoutingService.getRouteModelWithId(
                 session, id);
         if (model == null) {
