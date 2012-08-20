@@ -82,6 +82,10 @@
         <scope>test</scope>
       </dependency>
 
+    <dependency>
+    	<groupId>org.nuxeo.ecm.core</groupId>
+    	<artifactId>nuxeo-core-test</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -96,5 +100,34 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+    	<plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    		<plugin>
+    			<groupId>org.eclipse.m2e</groupId>
+    			<artifactId>lifecycle-mapping</artifactId>
+    			<version>1.0.0</version>
+    			<configuration>
+    				<lifecycleMappingMetadata>
+    					<pluginExecutions>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId></groupId>
+    								<artifactId></artifactId>
+    								<versionRange>[,)</versionRange>
+    								<goals>
+    									<goal></goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
+    					</pluginExecutions>
+    				</lifecycleMappingMetadata>
+    			</configuration>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
   </build>
 </project>

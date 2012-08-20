@@ -1,47 +1,44 @@
 package org.nuxeo.ecm.spaces.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.spaces.api.Gadget;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.spaces.api.SpaceProvider;
 import org.nuxeo.ecm.spaces.core.impl.docwrapper.VirtualUnivers;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-@RunWith(JUnit4.class)
-public class DocSpaceTest extends SQLRepositoryTestCase {
+import com.google.inject.Inject;
 
-    private SpaceManager service;
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({"org.nuxeo.ecm.spaces.api", "org.nuxeo.ecm.spaces.core"})
+@LocalDeploy({"org.nuxeo.ecm.spaces.core:OSGI-INF/test1-spaces-contrib.xml"})
+public class DocSpaceTest {
 
-    private VirtualUnivers univers;
+    @Inject private SpaceManager service;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.spaces.api");
-        deployBundle("org.nuxeo.ecm.spaces.core");
-        service = Framework.getService(SpaceManager.class);
-        session = openSessionAs("Administrator");
-        univers = new VirtualUnivers("main");
-        deployContrib("org.nuxeo.ecm.spaces.core.test",
-                "OSGI-INF/test1-spaces-contrib.xml");
-    }
+    @Inject CoreSession session;
 
-    @Test
-    public void iCanGetSpaceManager() throws Exception {
-        assertNotNull(service);
-    }
+    private VirtualUnivers univers =
+    		new VirtualUnivers("main");
 
     @Test
     public void iGetTheHomeSpaceProvider() throws Exception {
