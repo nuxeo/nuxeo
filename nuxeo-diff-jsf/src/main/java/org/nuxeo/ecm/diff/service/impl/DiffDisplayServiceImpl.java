@@ -948,7 +948,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             return new PropertyDiffDisplayImpl(new ArrayList<Serializable>());
         }
         boolean isComplexListWidget = isDisplayItemIndexes
-                || (listPropertyDiff != null && listPropertyDiff.size() > 0 && listPropertyDiff.getDiff(
+                || (listPropertyDiff != null && listPropertyDiff.size() > 0
+                        && listPropertyDiff.getDiff(0) != null && listPropertyDiff.getDiff(
                         0).isComplexType());
 
         if (isComplexListWidget) {
@@ -1181,7 +1182,8 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
             return new ContentDiffDisplayImpl(new ArrayList<Serializable>());
         }
         boolean isComplexListWidget = isDisplayItemIndexes
-                || (listPropertyDiff != null && listPropertyDiff.size() > 0 && listPropertyDiff.getDiff(
+                || (listPropertyDiff != null && listPropertyDiff.size() > 0
+                        && listPropertyDiff.getDiff(0) != null && listPropertyDiff.getDiff(
                         0).isComplexType());
 
         if (isComplexListWidget) {
