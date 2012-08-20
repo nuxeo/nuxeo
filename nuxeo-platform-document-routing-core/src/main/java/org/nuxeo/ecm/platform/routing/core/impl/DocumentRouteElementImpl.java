@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
@@ -173,7 +172,6 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
             if (document.followTransition(transition.name())) {
                 if (Framework.isTestModeSet()) {
                     session.save();
-                    Framework.getLocalService(EventService.class).waitForAsyncCompletion();
                 }
                 document = session.getDocument(document.getRef());
             }

@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
@@ -63,7 +62,8 @@ public class CreateNewRouteInstanceUnrestricted extends
      * @param docIds
      */
     public CreateNewRouteInstanceUnrestricted(CoreSession session,
-            DocumentRoute model, List<String> docIds, boolean startInstance, DocumentRoutingPersister persister) {
+            DocumentRoute model, List<String> docIds, boolean startInstance,
+            DocumentRoutingPersister persister) {
         super(session);
         this.model = model;
         this.docIds = docIds;
@@ -79,16 +79,14 @@ public class CreateNewRouteInstanceUnrestricted extends
         DocumentRoute routeInstance = instance.getAdapter(DocumentRoute.class);
         routeInstance.setAttachedDocuments(docIds);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY, initiator);
+        props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY,
+                initiator);
         fireEvent(session, routeInstance, props,
                 DocumentRoutingConstants.Events.beforeRouteReady.name());
         routeInstance.setReady(session);
         fireEvent(session, routeInstance, props,
                 DocumentRoutingConstants.Events.afterRouteReady.name());
         routeInstance.save(session);
-        if (Framework.isTestModeSet()) {
-            Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        }
         if (startInstance) {
             fireEvent(session, routeInstance, null,
                     DocumentRoutingConstants.Events.beforeRouteStart.name());
