@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -47,6 +45,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -78,8 +77,6 @@ import org.nuxeo.runtime.model.RuntimeContext;
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
-
-    private static final Log log = LogFactory.getLog(DocumentRoutingServiceImpl.class);
 
     /** Routes in any state (model or not). */
     private static final String AVAILABLE_ROUTES_QUERY = String.format(
@@ -114,6 +111,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     protected DocumentRoutingPersister persister;
 
     protected RouteTemplateResourceRegistry routeResourcesRegistry = new RouteTemplateResourceRegistry();
+
+    protected RepositoryInitializationHandler repositoryInitializationHandler;
 
     protected DocumentRoutingEngineService getEngineService() {
         try {
@@ -616,8 +615,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        RouteModelsInitializator routeInializator = new RouteModelsInitializator();
-        routeInializator.install();
+        repositoryInitializationHandler = new RouteModelsInitializator();
+        repositoryInitializationHandler.install();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        super.deactivate(context);
+        if (repositoryInitializationHandler != null) {
+            repositoryInitializationHandler.uninstall();
+        }
     }
 
     @Override
