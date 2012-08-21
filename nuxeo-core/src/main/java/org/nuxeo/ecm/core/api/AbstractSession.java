@@ -43,10 +43,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -139,6 +141,23 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     protected Map<String, Serializable> sessionContext;
 
+    protected static class QueryAndFetchExecuteContextException extends ClientRuntimeException {
+
+
+        private static final long serialVersionUID = 1L;
+        
+        public final IterableQueryResult result;
+        
+        public QueryAndFetchExecuteContextException(IterableQueryResult result) {
+            super("query and fetch call context");
+            this.result = result;
+        }
+        
+    }
+    
+    protected final Set<QueryAndFetchExecuteContextException> queryResults =
+            new HashSet<QueryAndFetchExecuteContextException>();
+    
     /**
      * Private access to protected it again direct access since this field is
      * lazy loaded. You must use {@link #getEventService()} to get the service
@@ -320,6 +339,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     @Override
     public void beforeCompletion() {
+        closeQueryResults();
     }
 
     @Override
@@ -942,6 +962,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         if (isSessionAlive()) {
             getSession().dispose();
         }
+        closeQueryResults();
         if (sessionId != null) {
             CoreInstance.getInstance().unregisterSession(sessionId);
         }
@@ -1541,14 +1562,36 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             }
             QueryFilter queryFilter = new QueryFilter(principal, principals,
                     permissions, null, transformers, 0, 0);
-            return getSession().queryAndFetch(query, queryType, queryFilter,
+            IterableQueryResult result = 
+             getSession().queryAndFetch(query, queryType, queryFilter,
                     params);
+            queryResults.add(new QueryAndFetchExecuteContextException(result));
+            return result;
         } catch (Exception e) {
             throw new ClientException("Failed to execute query: " + queryType
                     + ": " + query + ": " + tryToExtractMeaningfulErrMsg(e), e);
         }
     }
 
+    protected void closeQueryResults() {
+        Iterator<QueryAndFetchExecuteContextException> it = queryResults.iterator();
+        while (it.hasNext()) {
+            QueryAndFetchExecuteContextException context = it.next();
+            it.remove();
+            if (!context.result.isLife()) {
+                continue;
+            }
+            try {
+                context.result.close();
+            } catch (Exception e) {
+                log.error("Cannot close query result", e);
+            } finally {                
+                log.warn("Closing a query results for you, check stack trace for allocating point", context);
+            }
+            
+        }
+    }
+    
     @Override
     public DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException {
