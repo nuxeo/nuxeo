@@ -29,21 +29,6 @@
             var="actionClicked"
             defaultValue="false">
 
-          <a4j:commandButton id="#{idPrefix}_link"
-            value="#{messages['label.document.routing.process.task']}"
-            ajaxSingle="true"
-            ignoreDupResponses="true" requestDelay="100"
-            styleClass="button floatR"
-            reRender="#{idPrefix}_ajax_panel">
-            <f:setPropertyActionListener value="true"
-              target="#{selectionActions.selectedValue}" />
-            <f:setPropertyActionListener
-              value="#{idPrefix}_valueHolder"
-              target="#{selectionActions.selectedValueHolder}" />
-            <nxu:actionListenerMethod
-              value="#{selectionActions.onClick}" />
-          </a4j:commandButton>
-
           <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
             <f:param value="#{messages[task.type]}" />
           </h:outputFormat>
