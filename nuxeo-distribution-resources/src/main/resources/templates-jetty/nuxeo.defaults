@@ -19,7 +19,7 @@ nuxeo.loopback.url=http://localhost:8080/nuxeo
 org.nuxeo.ecm.contextPath=/nuxeo
 
 org.nuxeo.ecm.product.name=Nuxeo DM
-org.nuxeo.ecm.product.version=5.4.2.1-SNAPSHOT
+org.nuxeo.ecm.product.version=5.4.2-HF27
 
 # Various other default values
 #nuxeo.db.name=nuxeo
