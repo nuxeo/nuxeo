@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 @Features({TransactionalFeature.class, CoreFeature.class})
 @TransactionalConfig(autoStart=false)
 @RepositoryConfig(init=DefaultRepositoryInit.class)
-public class QueryResultsAreAutomaticallyClosedTest {
+public class QueryResultsAreAutomaticallyClosed {
 
     
     @Inject RepositorySettings settings;
@@ -41,11 +41,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
         IterableQueryResult results = session.queryAndFetch(
                 "SELECT * from Document", "NXQL");
         TransactionHelper.commitOrRollbackTransaction();
-        try {
-            Assert.assertFalse(results.isLife());
-        } finally {
-            settings.getRepositoryHandler().releaseSession(session);            
-        }
+        Assert.assertFalse(results.isLife());
     }
     
     protected static class NestedQueryRunner extends UnrestrictedSessionRunner {
@@ -72,11 +68,6 @@ public class QueryResultsAreAutomaticallyClosedTest {
         IterableQueryResult subResults;
         NestedQueryRunner runner = new NestedQueryRunner(settings.repositoryName);
         runner.runUnrestricted();
-        try {
-            Assert.assertFalse(runner.result.isLife());
-            Assert.assertTrue(mainResults.isLife());
-        } finally {
-            settings.getRepositoryHandler().releaseSession(main);
-        }
+        Assert.assertFalse(runner.result.isLife());
     }
 }
