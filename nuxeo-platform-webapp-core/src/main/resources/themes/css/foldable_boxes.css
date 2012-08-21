@@ -8,10 +8,11 @@ author: lkemen@nuxeo.com
 /* =Default boxes */
 .foldableBox { border-radius: 5px; border-width: 1px; border-style: solid; border-color:"neutral.lighter (__FLAVOR__ border)"; font-size: .9em; margin-bottom: 1.8em }
 
-.foldableBox h3 {
+.foldableBox h3, .gridBox .foldableBox h3 {
   background-color: #fff;
   font-size: 1.1em;
   height: 20px;
+  margin: 0;
   padding: .3em .3em .3em 1.7em }
 .foldableBox h3.folded {
   background:url("${basePath}/icons/arrow_folded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)" }
