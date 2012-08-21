@@ -17,7 +17,9 @@
     } 
   
     if (elem) {
-      elem.focus();
+      try {
+        elem.focus();
+      } catch(err) { }
     }
     return this;
   };
