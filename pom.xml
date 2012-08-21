@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.4.2.1-SNAPSHOT</version>
+    <version>5.4.2-HF27</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
@@ -25,7 +25,7 @@
 
   <properties>
     <chemistry.opencmis.version>0.4.0-r1096750</chemistry.opencmis.version>
-    <nuxeo.version>5.4.2.1-SNAPSHOT</nuxeo.version>
+    <nuxeo.version>5.4.2-HF27</nuxeo.version>
   </properties>
 
   <dependencyManagement>
