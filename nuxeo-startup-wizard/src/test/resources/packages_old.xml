@@ -4,7 +4,6 @@
     <package id="nuxeo-dm" label="Advanced Document Management (DM)" filename="nuxeo-dm.zip" md5="" />
     <package id="nuxeo-dam" label="Digital Assets Management features (DAM)" filename="nuxeo-dam.zip" md5="" />
     <package id="nuxeo-sc" label="Collaboration features (social collab)" filename="nuxeo-collab.zip" md5="" />
-    <package id="nuxeo-cmf" label="Case Management Framework (CMF)" filename="nuxeo-cmf.zip" md5="" />
   </packageDefinitions>
   <install>
     <common>
@@ -18,7 +17,6 @@
         <package ref="nuxeo-dam" exclusive="false" />
         <package ref="nuxeo-sc" exclusive="false" />
       </package>
-      <package ref="nuxeo-cmf" exclusive="true" />
     </packageOptions>
   </install>
 </packages>

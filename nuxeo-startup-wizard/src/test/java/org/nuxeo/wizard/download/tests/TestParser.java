@@ -40,17 +40,14 @@ public class TestParser {
 
         DownloadablePackageOptions pkgs = DownloadDescriptorParser.parsePackages(stream);
         assertNotNull(pkgs);
-        assertEquals(3, pkgs.size());
+        assertEquals(2, pkgs.size());
 
         assertEquals(1, pkgs.get(0).getChildrenPackages().size()); // CAP => DAM
         assertEquals(2, pkgs.get(1).getChildrenPackages().size()); // DM => DAM,
                                                                    // Collab
-        assertEquals(0, pkgs.get(2).getChildrenPackages().size()); // CMF =>
-                                                                   // Nothing
 
         assertEquals(true, pkgs.get(0).isExclusive());
         assertEquals(true, pkgs.get(1).isExclusive());
-        assertEquals(true, pkgs.get(2).isExclusive());
         assertEquals(false,
                 pkgs.get(1).getChildrenPackages().get(0).isExclusive());
         assertEquals(false,
@@ -98,7 +95,7 @@ public class TestParser {
         DownloadablePackageOption root = pkgs.get(0);
         assertEquals("nuxeo-cap", root.getPackage().getId());
 
-        assertEquals(3, root.getChildrenPackages().size()); // DAM / DM / CMF
+        assertEquals(2, root.getChildrenPackages().size()); // DAM / DM
 
         // System.out.println(pkgs.asJson());
 
@@ -116,14 +113,6 @@ public class TestParser {
         assertEquals("CAP", pkgs.getPkg4Download().get(2).getShortLabel());
 
         selectedIds.clear();
-        selectedIds.add("nuxeo-cmf");
-        pkgs.select(selectedIds);
-        assertEquals(2, pkgs.getPkg4Download().size()); // CMF / CAP
-        assertEquals("nuxeo-cmf", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(1).getId());
-
-        selectedIds.clear();
-        selectedIds.add("nuxeo-cmf");
         selectedIds.add("nuxeo-dm");
         pkgs.select(selectedIds);
         assertEquals(2, pkgs.getPkg4Download().size()); // DM / CAP
