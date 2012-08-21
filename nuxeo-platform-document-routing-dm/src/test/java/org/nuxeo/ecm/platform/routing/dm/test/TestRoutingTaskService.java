@@ -16,20 +16,20 @@
  */
 package org.nuxeo.ecm.platform.routing.dm.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -108,12 +108,12 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
     @Test
     public void testService() throws Exception {
         TaskService taskService = Framework.getLocalService(TaskService.class);
-        RoutingTaskService routingTaskService = Framework.getLocalService(RoutingTaskService.class);
+        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         List<String> actorIds = new ArrayList<String>();
         List<Task> tasks = taskService.createTask(session, administrator,
                 targetDoc, "MyRoutingTask", actorIds, false, null, null, null,
                 null, "/");
-        routingTaskService.makeRoutingTasks(session, tasks);
+        routing.makeRoutingTasks(session, tasks);
         session.save();
         DocumentModel taskDoc = session.getDocument(new PathRef("/MyRoutingTask"));
         RoutingTask routingTask = taskDoc.getAdapter(RoutingTask.class);

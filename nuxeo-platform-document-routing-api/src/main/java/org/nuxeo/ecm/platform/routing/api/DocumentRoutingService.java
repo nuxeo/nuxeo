@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
@@ -80,10 +81,11 @@ public interface DocumentRoutingService {
      * @param session the session
      * @param nodeId the node id to resume on
      * @param data the data coming from UI form
+     * @param status the status coming from UI form
      * @since 5.6
      */
     void resumeInstance(DocumentRef routeRef, CoreSession session,
-            String nodeId, Map<String, Object> data);
+            String nodeId, Map<String, Object> data, String status);
 
     /**
      * Save a route instance as a new model of route.
@@ -366,4 +368,55 @@ public interface DocumentRoutingService {
     DocumentRoute getRouteModelWithId(CoreSession session, String id)
             throws ClientException;
 
+    // copied from the deprecated RoutingTaskService
+
+    /**
+     * Marks the tasks as Routing tasks.
+     * <p>
+     * This allows the related documents to be adapted to {@link RoutingTask}.
+     *
+     * @param session the session
+     * @param tasks the tasks
+     *
+     * @since 5.6, was on RoutingTaskService before
+     */
+    void makeRoutingTasks(CoreSession session, List<Task> tasks)
+            throws ClientException;
+
+    /**
+     * Ends a task
+     *
+     * @param session
+     * @param task
+     * @param data
+     * @param status name of the button clicked to submit the task form
+     *
+     * @since 5.6, was on RoutingTaskService before
+     */
+    void endTask(CoreSession session, Task task, Map<String, Object> data,
+            String status) throws ClientException;
+
+    /**
+     * Grants the specified assignees permissions to the actors on this task
+     *
+     * @param session the session
+     * @param doc
+     * @param task
+     *
+     * @since 5.6, was on RoutingTaskService before
+     */
+    void grantPermissionToTaskAssignees(CoreSession session, String permission,
+            DocumentModel doc, Task task) throws ClientException;
+
+    /**
+     * Gets the documents following the workflow to which the given task belongs
+     *
+     * @param session
+     * @param task
+     * @return
+     *
+     * @since 5.6, was on RoutingTaskService before
+     */
+    List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task)
+            throws ClientException;
 }

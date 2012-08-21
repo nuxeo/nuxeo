@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -39,11 +40,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -61,11 +66,15 @@ import org.nuxeo.ecm.platform.routing.api.RouteFolderElement;
 import org.nuxeo.ecm.platform.routing.api.RouteModelResourceType;
 import org.nuxeo.ecm.platform.routing.api.RouteTable;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
 import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegistry;
 import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
+import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -113,14 +122,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     protected RouteTemplateResourceRegistry routeResourcesRegistry = new RouteTemplateResourceRegistry();
 
     protected RepositoryInitializationHandler repositoryInitializationHandler;
-
-    protected DocumentRoutingEngineService getEngineService() {
-        try {
-            return Framework.getService(DocumentRoutingEngineService.class);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
 
     @Override
     public void registerContribution(Object contribution,
@@ -187,38 +188,22 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void resumeInstance(DocumentRef routeRef, CoreSession session,
-            String nodeId, Map<String, Object> data) {
+    public void resumeInstance(final DocumentRef routeRef, CoreSession session,
+            final String nodeId, final Map<String, Object> data,
+            final String status) {
         try {
-            new ResumeRouteInstanceRunner(routeRef, session, nodeId, data).runUnrestricted();
+            new UnrestrictedSessionRunner(session) {
+                @Override
+                public void run() throws ClientException {
+                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
+                    DocumentModel routeDoc = session.getDocument(routeRef);
+                    DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+                    routingEngine.resume(routeInstance, session, nodeId, data,
+                            status);
+                }
+            }.runUnrestricted();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
-        }
-    }
-
-    public static class ResumeRouteInstanceRunner extends
-            UnrestrictedSessionRunner {
-
-        protected DocumentRef routeRef;
-
-        protected String nodeId;
-
-        protected Map<String, Object> data;
-
-        public ResumeRouteInstanceRunner(DocumentRef routeRef,
-                CoreSession session, String nodeId, Map<String, Object> data) {
-            super(session);
-            this.routeRef = routeRef;
-            this.nodeId = nodeId;
-            this.data = data;
-        }
-
-        @Override
-        public void run() throws ClientException {
-            DocumentRoutingEngineService engineService = Framework.getLocalService(DocumentRoutingEngineService.class);
-            DocumentModel routeDoc = session.getDocument(routeRef);
-            DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
-            engineService.resume(routeInstance, session, nodeId, data, null);
         }
     }
 
@@ -643,7 +628,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
         props.put(CORE_SESSION_PROPERTY, (Serializable) session);
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "boxing" })
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                 DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null,
                 0L, props, String.format("%s%%", searchString));
@@ -701,4 +686,97 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
         return list.get(0).getAdapter(DocumentRoute.class);
     }
+
+    @Override
+    public void makeRoutingTasks(CoreSession coreSession, final List<Task> tasks)
+            throws ClientException {
+        new UnrestrictedSessionRunner(coreSession) {
+            @Override
+            public void run() throws ClientException {
+                for (Task task : tasks) {
+                    DocumentModel taskDoc = task.getDocument();
+                    taskDoc.addFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME);
+                    session.saveDocument(taskDoc);
+                }
+            }
+        }.runUnrestricted();
+    }
+
+    @Override
+    public void endTask(CoreSession session, Task task,
+            Map<String, Object> data, String status) throws ClientException {
+        String comment = (String) data.get("comment");
+        TaskService taskService = Framework.getLocalService(TaskService.class);
+        taskService.endTask(session, (NuxeoPrincipal) session.getPrincipal(),
+                task, comment, TaskEventNames.WORKFLOW_TASK_COMPLETED, false);
+
+        Map<String, String> taskVariables = task.getVariables();
+        String routeInstanceId = taskVariables.get(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
+        if (StringUtils.isEmpty(routeInstanceId)) {
+            throw new DocumentRouteException(
+                    "Can not resume workflow, no related route");
+        }
+        String nodeId = taskVariables.get(DocumentRoutingConstants.TASK_NODE_ID_KEY);
+        if (StringUtils.isEmpty(nodeId)) {
+            throw new DocumentRouteException(
+                    "Can not resume workflow, nodeId is empty");
+        }
+
+        resumeInstance(new IdRef(routeInstanceId), session, nodeId, data,
+                status);
+    }
+
+    @Override
+    public List<DocumentModel> getWorkflowInputDocuments(CoreSession session,
+            Task task) throws ClientException {
+        String routeInstanceId;
+        try {
+            routeInstanceId = task.getProcessId();
+        } catch (ClientException e) {
+            throw new DocumentRouteException(
+                    "Can not get the related workflow instance");
+        }
+        if (StringUtils.isEmpty(routeInstanceId)) {
+            throw new DocumentRouteException(
+                    "Can not get the related workflow instance");
+        }
+        DocumentModel routeDoc;
+        try {
+            routeDoc = session.getDocument(new IdRef(routeInstanceId));
+        } catch (ClientException e) {
+            throw new DocumentRouteException("No workflow with the id:"
+                    + routeInstanceId);
+        }
+        DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
+        return route.getAttachedDocuments(session);
+    }
+
+    @Override
+    public void grantPermissionToTaskAssignees(CoreSession session,
+            final String permission, final DocumentModel doc, final Task task)
+            throws ClientException {
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                List<String> actorIds = new ArrayList<String>();
+                for (String actor : task.getActors()) {
+                    if (actor.contains(":")) {
+                        actorIds.add(actor.split(":")[1]);
+                    } else {
+                        actorIds.add(actor);
+                    }
+                }
+                ACP acp = doc.getACP();
+                ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+                for (String actorId : actorIds) {
+                    acl.add(new ACE(actorId, permission, true));
+                }
+                acp.addACL(acl);
+                doc.setACP(acp, true);
+                session.saveDocument(doc);
+            }
+
+        }.runUnrestricted();
+    }
+
 }

@@ -27,7 +27,10 @@ import org.nuxeo.ecm.platform.task.Task;
 
 /**
  * A small service adding Routing behavior to tasks.
+ * <p>
+ * @deprecated since 5.6, use DocumentRoutingService instead
  */
+@Deprecated
 public interface RoutingTaskService {
 
     /**
@@ -37,7 +40,9 @@ public interface RoutingTaskService {
      *
      * @param session the session
      * @param tasks the tasks
+     * @deprecated since 5.6, use DocumentRoutingService instead
      */
+    @Deprecated
     void makeRoutingTasks(CoreSession session, List<Task> tasks)
             throws ClientException;
 
@@ -49,7 +54,9 @@ public interface RoutingTaskService {
      * @param data
      * @param status name of the button clicked to submit the task form
      * @throws DocumentRouteException
+     * @deprecated since 5.6, use DocumentRoutingService instead
      */
+    @Deprecated
     void endTask(CoreSession session, Task task, Map<String, Object> data,
             String status) throws DocumentRouteException;
 
@@ -59,7 +66,9 @@ public interface RoutingTaskService {
      * @param session the session
      * @param doc
      * @param task
+     * @deprecated since 5.6, use DocumentRoutingService instead
      */
+    @Deprecated
     void grantPermissionToTaskAssignees(CoreSession session, String permission,
             DocumentModel doc, Task task) throws DocumentRouteException;
 
@@ -70,7 +79,9 @@ public interface RoutingTaskService {
      * @param task
      * @return
      * @throws DocumentRouteException
+     * @deprecated since 5.6, use DocumentRoutingService instead
      */
+    @Deprecated
     List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task)
             throws DocumentRouteException;
 }

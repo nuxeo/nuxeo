@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
@@ -246,27 +247,29 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     "true");
         }
         // evaluate task assignees from taskVar if any
-        HashSet<String> actors = new HashSet<String>();
+        HashSet<String> actors = new LinkedHashSet<String>();
         actors.addAll(node.evaluateTaskAssignees());
         actors.addAll(node.getTaskAssignees());
 
         DocumentModel doc = graph.getAttachedDocumentModels().get(0);
         try {
             TaskService taskService = Framework.getLocalService(TaskService.class);
-            RoutingTaskService routingTaskService = Framework.getLocalService(RoutingTaskService.class);
+            DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
             List<Task> tasks = taskService.createTask(session,
-                    (NuxeoPrincipal) session.getPrincipal(), doc, node.getTaskDocType() , node.getDocument().getTitle() ,node.getId(),
-                    routeInstance.getDocument().getId(), new ArrayList<String>(
-                            actors), false, node.getTaskDirective(), null,
-                    node.getTaskDueDate(), taskVariables, null);
+                    (NuxeoPrincipal) session.getPrincipal(), doc,
+                    node.getTaskDocType(), node.getDocument().getTitle(),
+                    node.getId(), routeInstance.getDocument().getId(),
+                    new ArrayList<String>(actors), false,
+                    node.getTaskDirective(), null, node.getTaskDueDate(),
+                    taskVariables, null);
 
-            routingTaskService.makeRoutingTasks(session, tasks);
+            routing.makeRoutingTasks(session, tasks);
             String taskAssigneesPermission = node.getTaskAssigneesPermission();
             if (StringUtils.isEmpty(taskAssigneesPermission)) {
                 return;
             }
             for (Task task : tasks) {
-                routingTaskService.grantPermissionToTaskAssignees(session,
+                routing.grantPermissionToTaskAssignees(session,
                         taskAssigneesPermission, doc, task);
             }
         } catch (ClientException e) {

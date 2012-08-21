@@ -45,7 +45,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.dm.adapter.TaskStep;
 import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants;
 import org.nuxeo.ecm.platform.task.Task;
@@ -92,7 +92,7 @@ public class CreateRoutingTask {
     protected TaskService taskService;
 
     @Context
-    protected RoutingTaskService routingTaskService;
+    protected DocumentRoutingService routing;
 
     @Param(name = "accept operation chain", required = false, order = 4)
     protected String acceptOperationChain;
@@ -146,7 +146,7 @@ public class CreateRoutingTask {
         // disable notification service
         taskVariables.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE, "true");
 
-        if (routingTaskService == null) {
+        if (routing == null) {
             throw new OperationException("Service routingTaskService not found");
         }
         if (mappingTaskVariables != null) {
@@ -158,7 +158,7 @@ public class CreateRoutingTask {
                 (NuxeoPrincipal) pal, document, taskStep.getName(), actors,
                 false, taskStep.getDirective(), null, taskStep.getDueDate(),
                 taskVariables, null);
-        routingTaskService.makeRoutingTasks(coreSession, tasks);
+        routing.makeRoutingTasks(coreSession, tasks);
         DocumentModelList docList = new DocumentModelListImpl(tasks.size());
         for (Task task : tasks) {
             docList.add(((mappingProperties == null) ? (task.getDocument())

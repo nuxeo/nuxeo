@@ -54,7 +54,7 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Button;
@@ -97,8 +97,6 @@ public class RoutingTaskActionsBean implements Serializable {
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
-
-    protected RoutingTaskService routingTaskService;
 
     protected Task currentTask;
 
@@ -172,7 +170,8 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         // add the button name that was clicked
         try {
-            getRoutingTaskService().endTask(documentManager, task, data, button);
+            DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+            routing.endTask(documentManager, task, data, button);
             facesMessages.add(StatusMessage.Severity.INFO,
                     messages.get("workflow.feedback.info.taskEnded"));
         } catch (DocumentRouteException e) {
@@ -236,17 +235,6 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         DocumentModel doc = documentManager.getDocument(new IdRef(routeDocId));
         return doc.getAdapter(GraphRoute.class);
-    }
-
-    private RoutingTaskService getRoutingTaskService() {
-        if (routingTaskService == null) {
-            try {
-                routingTaskService = Framework.getService(RoutingTaskService.class);
-            } catch (Exception e) {
-                throw new ClientRuntimeException(e);
-            }
-        }
-        return routingTaskService;
     }
 
     public Map<String, Serializable> getFormVariables(Task task)
@@ -409,14 +397,15 @@ public class RoutingTaskActionsBean implements Serializable {
 
         // get task documents
         boolean hasErrors = false;
+        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         List<DocumentModel> docs = documentsListsManager.getWorkingList(selectionListName);
         if (docs != null && !docs.isEmpty()) {
             for (DocumentModel doc : docs) {
                 if (doc.hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME)) {
                     // add the button name that was clicked
                     try {
-                        getRoutingTaskService().endTask(documentManager,
-                                new TaskImpl(doc), data, taskAction.getId());
+                        routing.endTask(documentManager, new TaskImpl(doc),
+                                data, taskAction.getId());
                     } catch (DocumentRouteException e) {
                         if (log.isDebugEnabled()) {
                             log.debug(e, e);
