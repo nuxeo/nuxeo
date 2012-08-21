@@ -85,7 +85,6 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
  * nuxeo-functional-tests: Framework for testing nuxeo distributions
  * nuxeo-launcher: Control Panel and launcher
  * nuxeo-marketplace-cmf: Marketplace package of CMF
- * nuxeo-marketplace-content-browser: Virtual marketplace package to manage compatibility between applications on top of CAP.
  * nuxeo-marketplace-dam: Marketplace package of DAM
  * nuxeo-marketplace-dm: Marketplace package of DM
  * nuxeo-marketplace-social-collaboration: Marketplace package of Social Collaboration
