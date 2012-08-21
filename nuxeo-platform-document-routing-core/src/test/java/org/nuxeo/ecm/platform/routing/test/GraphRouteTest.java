@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUT
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues.graph;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,7 +48,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
@@ -74,13 +72,13 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.userworkspace.core", //
         "org.nuxeo.ecm.platform.userworkspace.types", //
-        "org.nuxeo.ecm.platform.task.api", "org.nuxeo.ecm.platform.task.core",
+        "org.nuxeo.ecm.platform.task.api", //
+        "org.nuxeo.ecm.platform.task.core", //
         "org.nuxeo.ecm.platform.task.testing",
         "org.nuxeo.ecm.platform.routing.core" //
 
 })
 @LocalDeploy({
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml" })
 public class GraphRouteTest {
@@ -102,9 +100,6 @@ public class GraphRouteTest {
     // init userManager now for early user tables creation (cleaner debug)
     @Inject
     protected UserManager userManager;
-
-    @Inject
-    protected RoutingTaskService routingTaskService;
 
     @Inject
     protected TaskService taskService;
@@ -201,6 +196,11 @@ public class GraphRouteTest {
     }
 
     protected DocumentRoute instantiateAndRun() throws ClientException {
+        return instantiateAndRun(session);
+    }
+
+    protected DocumentRoute instantiateAndRun(CoreSession session)
+            throws ClientException {
         // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
         // draft -> validated
@@ -380,7 +380,7 @@ public class GraphRouteTest {
         // now resume, as if the task was actually executed
         Map<String, Object> data = new HashMap<String, Object>();
         routing.resumeInstance(route.getDocument().getRef(), session, "node2",
-                data);
+                data, null);
 
         route.getDocument().refresh();
         assertTrue(route.isDone());
@@ -530,7 +530,7 @@ public class GraphRouteTest {
         CoreSession sessionUser1 = openSession(user1);
         // task assignees have READ on the route instance
         assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
-        routingTaskService.endTask(sessionUser1, tasks.get(0), data, "trans1");
+        routing.endTask(sessionUser1, tasks.get(0), data, "trans1");
         closeSession(sessionUser1);
 
         tasks = taskService.getTaskInstances(doc, user2, session);
@@ -541,7 +541,7 @@ public class GraphRouteTest {
         CoreSession sessionUser2 = openSession(user2);
         // task assignees have READ on the route instance
         assertNotNull(sessionUser2.getDocument(route.getDocument().getRef()));
-        routingTaskService.endTask(sessionUser2, tasks.get(0), data, "trans2");
+        routing.endTask(sessionUser2, tasks.get(0), data, "trans2");
         closeSession(sessionUser2);
 
 
@@ -561,14 +561,17 @@ public class GraphRouteTest {
         CoreSession sessionUser3 = openSession(user3);
         // task assignees have READ on the route instance
         assertNotNull(sessionUser3.getDocument(route.getDocument().getRef()));
-        routingTaskService.endTask(sessionUser3, tasks.get(0), data, "trans3");
+        routing.endTask(sessionUser3, tasks.get(0), data, "trans3");
         closeSession(sessionUser3);
+
         // end task and verify that route was done
         admin = new UserPrincipal("admin", null, false, true);
+        closeSession(session);
         session = openSession(admin);
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
+        closeSession(session);
     }
 
     @SuppressWarnings("unchecked")
@@ -690,10 +693,10 @@ public class GraphRouteTest {
         assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
         Task task1 = tasks.get(0);
         assertEquals("MyTaskDoc",task1.getDocument().getType());
-        List<DocumentModel> docs = routingTaskService.getWorkflowInputDocuments(
+        List<DocumentModel> docs = routing.getWorkflowInputDocuments(
                 sessionUser1, task1);
         assertEquals(doc.getId(), docs.get(0).getId());
-        routingTaskService.endTask(sessionUser1, tasks.get(0), data, "trans1");
+        routing.endTask(sessionUser1, tasks.get(0), data, "trans1");
         closeSession(sessionUser1);
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
@@ -705,26 +708,21 @@ public class GraphRouteTest {
                 "test",
                 route.getDocument().getPropertyValue(
                         "fctroute1:globalVariable"));
+        closeSession(session);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testEvaluateTaskAssigneesFromVariable() throws Exception {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
-        assertNotNull(user1);
-
-        NuxeoPrincipal user2 = userManager.getPrincipal("myuser1");
-        assertNotNull(user2);
-
-        List<String> assignees = new ArrayList<String>();
-        assignees.add(user1.getName());
-        assignees.add(user2.getName());
+        NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
+        List<String> assignees = Arrays.asList(user1.getName(), user2.getName());
 
         routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
                 "FacetRoute1");
         routeDoc.addFacet("FacetRoute1");
-        routeDoc.setPropertyValue("fctroute1:assignees",
+        routeDoc.setPropertyValue("fctroute1:myassignees",
                 (Serializable) assignees);
-
         routeDoc = session.saveDocument(routeDoc);
 
         DocumentModel node1 = createNode(routeDoc, "node1");
@@ -733,12 +731,11 @@ public class GraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
                 "Write");
-
-        // add a workflow variables with name "assignees"
         setTransitions(node1,
                 transition("trans1", "node2", "true", "testchain_title1"));
+        // add a workflow variables with name "myassignees"
         node1.setPropertyValue("rnode:taskAssigneesExpr",
-                "WorkflowVariables[\"assignees\"]");
+                "WorkflowVariables[\"myassignees\"]");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1 = session.saveDocument(node1);
 
@@ -753,11 +750,11 @@ public class GraphRouteTest {
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
         Task ts = tasks.get(0);
-        assertEquals(1, ts.getActors().size());
+        assertEquals(2, ts.getActors().size());
 
         Map<String, Object> data = new HashMap<String, Object>();
         CoreSession sessionUser2 = openSession(user2);
-        routingTaskService.endTask(sessionUser2, tasks.get(0), data, "trans1");
+        routing.endTask(sessionUser2, tasks.get(0), data, "trans1");
         closeSession(sessionUser2);
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
@@ -767,5 +764,68 @@ public class GraphRouteTest {
         assertTrue(route.isDone());
         assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
         assertTrue(session.hasPermission(user2, doc.getRef(), "Write"));
+        closeSession(session);
     }
+
+
+    /**
+     * Check that when running as non-Administrator the assignees are set
+     * correctly.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testComputedTaskAssignees() throws Exception {
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
+
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
+                "Write");
+        setTransitions(node1,
+                transition("trans1", "node2", "true", "testchain_title1"));
+        // add a workflow node assignees expression
+        node1.setPropertyValue("rnode:taskAssigneesExpr", "\"myuser1\"");
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+
+        session.save();
+
+        // another session as user2
+        CoreSession session2 = openSession(user2);
+
+        DocumentRoute route = instantiateAndRun(session2);
+
+        List<Task> tasks = taskService.getTaskInstances(doc, user1, session2);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        Task ts = tasks.get(0);
+        assertEquals(1, ts.getActors().size());
+        session2.save(); // flush invalidations
+        closeSession(session2);
+
+        // process task as user1
+        CoreSession session1 = openSession(user1);
+        try {
+            routing.endTask(session1, tasks.get(0),
+                    new HashMap<String, Object>(), "trans1");
+        } finally {
+            closeSession(session1);
+        }
+
+        // verify that route was done
+        session.save(); // process invalidations
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
+        assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
+    }
+
 }

@@ -443,7 +443,21 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             throw new DocumentRouteException(
                     "Error evaluating task assignees: " + taskAssigneesVar, e);
         }
-        if (!((res instanceof String) || res instanceof String[])) {
+        if (res instanceof List<?>) {
+            res = ((List<?>) res).toArray();
+        }
+        if (res instanceof Object[]) {
+            // try to convert to String[]
+            Object[] list = (Object[]) res;
+            String[] tmp = new String[list.length];
+            try {
+                System.arraycopy(list, 0, tmp, 0, list.length);
+                res = tmp;
+            } catch (ArrayStoreException e) {
+                // one of the elements is not a String
+            }
+        }
+        if (!(res instanceof String || res instanceof String[])) {
             throw new DocumentRouteException(
                     "Can not evaluate task assignees from " + taskAssigneesVar);
         }

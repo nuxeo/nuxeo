@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingService;
-import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.task.Task;
 
 /**
@@ -53,7 +53,7 @@ public class MapPropertiesOnTaskOperation {
     protected String mappingName;
 
     @Context
-    protected RoutingTaskService routingTaskService;
+    protected DocumentRoutingService routing;
 
     @Context
     protected PropertiesMappingService mappingService;
@@ -64,8 +64,8 @@ public class MapPropertiesOnTaskOperation {
         if (task == null) {
             throw new ClientException("Input document is not a Task");
         }
-        List<DocumentModel> docs = routingTaskService.getWorkflowInputDocuments(
-                session, task);
+        List<DocumentModel> docs = routing.getWorkflowInputDocuments(session,
+                task);
         if (docs.size() == 0) {
             throw new ClientException(
                     "Can not fetch the input documents in the related workflow instance");
