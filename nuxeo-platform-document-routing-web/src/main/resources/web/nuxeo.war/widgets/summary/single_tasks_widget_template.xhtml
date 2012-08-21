@@ -32,24 +32,9 @@
               var="actionClicked"
               defaultValue="false">
 
-              <a4j:commandButton id="#{idPrefix}_link"
-                  value="#{messages['label.document.routing.process.task']}"
-                  ajaxSingle="true"
-                  ignoreDupResponses="true" requestDelay="100"
-                  styleClass="button floatR"
-                  reRender="#{idPrefix}_ajax_panel">
-                  <f:setPropertyActionListener value="true"
-                    target="#{selectionActions.selectedValue}" />
-                  <f:setPropertyActionListener
-                    value="#{idPrefix}_valueHolder"
-                    target="#{selectionActions.selectedValueHolder}" />
-                  <nxu:actionListenerMethod
-                    value="#{selectionActions.onClick}" />
-                </a4j:commandButton>
-
               <f:subview id="#{idPrefix}_subview">
                 <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
-                  <f:param value="#{messages[task.type]}" />
+                  <f:param value="#{routingActions.getRouteInstanceFor(task).title} - #{task.name}" />
                 </h:outputFormat>
                 <h:outputText value="#{messages['label.route.task.assigned.to']} " />
                 <c:forEach var="actor" items="#{task.actors}">
@@ -94,7 +79,6 @@
                     <div id="#{idPrefix}_box">
                       <nxu:set var="isRoutingTask" value="#{routingTaskActions.isRoutingTask(task)}">
                         <c:if test="#{isRoutingTask}">
-                          <h4>#{routingActions.getRouteInstanceFor(task).title} - #{task.type}</h4>
                           <nxl:layout name="#{routingTaskActions.getTaskLayout(task)}" mode="edit" value="#{routingTaskActions.formVariables}"/>
                           <p class="buttonsGadget">
                             <nxu:set var="actions"  value="#{routingTaskActions.getTaskButtons(task)}" cache="true">
