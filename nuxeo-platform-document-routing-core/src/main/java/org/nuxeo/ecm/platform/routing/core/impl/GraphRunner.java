@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -239,6 +240,10 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             taskVariables.put(
                     DocumentRoutingConstants.TASK_ASSIGNED_NOTIFICATION_TEMPLATE,
                     taskNotiftemplate);
+        } else {
+            // disable notification service
+            taskVariables.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE,
+                    "true");
         }
         // evaluate task assignees from taskVar if any
         HashSet<String> actors = new HashSet<String>();
