@@ -30,7 +30,7 @@
             defaultValue="false">
 
           <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
-            <f:param value="#{messages[task.type]}" />
+            <f:param value="#{routingActions.getRouteInstanceFor(task).title} - #{task.name}" />
           </h:outputFormat>
           <h:outputText value="#{messages['label.route.task.assigned.to']} " />
           <c:forEach var="actor" items="#{task.actors}">
@@ -73,7 +73,6 @@
               <div>
                 <div id="#{idPrefix}_box">
                   <nxu:set var="isRoutingTask" value="#{routingTaskActions.isRoutingTask(task)}">
-                    <h4>#{routingActions.getRouteInstanceFor(task).title} - #{task.type}</h4>
                     <nxl:layout name="#{routingTaskActions.getTaskLayout(task)}" mode="edit" value="#{routingTaskActions.formVariables}"/>
                     <p class="buttonsGadget">
                       <nxu:set var="actions"  value="#{routingTaskActions.getTaskButtons(task)}" cache="true">
