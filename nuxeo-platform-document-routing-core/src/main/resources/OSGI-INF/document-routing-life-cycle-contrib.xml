@@ -43,7 +43,7 @@
             <transition>toValidated</transition>
           </transitions>
         </state>
-        <state name="validated" description="The element is validated">
+        <state name="validated" description="The element is validated" initial="true">
           <transitions>
             <transition>toReady</transition>
             <transition>toDraft</transition>
