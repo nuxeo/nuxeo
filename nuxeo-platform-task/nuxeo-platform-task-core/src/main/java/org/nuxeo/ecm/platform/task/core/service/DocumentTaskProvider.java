@@ -81,8 +81,7 @@ public class DocumentTaskProvider implements TaskProvider {
         String userNames = TaskQueryConstant.formatStringList(actors);
         String query = String.format(
                 TaskQueryConstant.GET_TASKS_FOR_ACTORS_QUERY, userNames);
-        DocumentModelList taskDocuments = coreSession.query(query);
-        return wrapDocModelInTask(taskDocuments);
+        return queryTasksUnrestricted(query, coreSession);
     }
 
     @Override
@@ -100,8 +99,7 @@ public class DocumentTaskProvider implements TaskProvider {
                     TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY,
                     dm.getId(), userNames);
         }
-        DocumentModelList taskDocuments = coreSession.query(query);
-        return wrapDocModelInTask(taskDocuments);
+        return queryTasksUnrestricted(query, coreSession);
     }
 
     @Override
@@ -114,25 +112,15 @@ public class DocumentTaskProvider implements TaskProvider {
         String query = String.format(
                 TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY,
                 dm.getId(), userNames);
-        DocumentModelList taskDocuments = coreSession.query(query);
-        return wrapDocModelInTask(taskDocuments);
+        return queryTasksUnrestricted(query, coreSession);
     }
 
     @Override
-    public List<Task> getAllTaskInstances(final String processId,
-            CoreSession session) throws ClientException {
-        final List<Task> tasks = new ArrayList<Task>();
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() throws ClientException {
-                String query = String.format(
-                        TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_QUERY,
-                        processId);
-                DocumentModelList taskDocuments = session.query(query);
-                tasks.addAll(wrapDocModelInTask(taskDocuments, true));
-            }
-        }.runUnrestricted();
-        return tasks;
+    public List<Task> getAllTaskInstances(String processId, CoreSession session)
+            throws ClientException {
+        String query = String.format(
+                TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_QUERY, processId);
+        return queryTasksUnrestricted(query, session);
     }
 
     @Override
@@ -143,17 +131,21 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(final String processId,
-            final List<String> actors, CoreSession session)
-            throws ClientException {
+    public List<Task> getAllTaskInstances(String processId,
+            List<String> actors, CoreSession session) throws ClientException {
+        String userNames = TaskQueryConstant.formatStringList(actors);
+        String query = String.format(
+                TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_AND_ACTORS_QUERY,
+                processId, userNames);
+        return queryTasksUnrestricted(query, session);
+    }
+
+    protected List<Task> queryTasksUnrestricted(final String query,
+            CoreSession session) throws ClientException {
         final List<Task> tasks = new ArrayList<Task>();
         new UnrestrictedSessionRunner(session) {
             @Override
             public void run() throws ClientException {
-                String userNames = TaskQueryConstant.formatStringList(actors);
-                String query = String.format(
-                        TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_AND_ACTORS_QUERY,
-                        processId, userNames);
                 DocumentModelList taskDocuments = session.query(query);
                 tasks.addAll(wrapDocModelInTask(taskDocuments, true));
             }
@@ -161,12 +153,9 @@ public class DocumentTaskProvider implements TaskProvider {
         return tasks;
     }
 
-    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) {
-        List<Task> tasks = new ArrayList<Task>();
-        for (DocumentModel doc : taskDocuments) {
-            tasks.add(doc.getAdapter(Task.class));
-        }
-        return tasks;
+    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments)
+            throws ClientException {
+        return wrapDocModelInTask(taskDocuments, false);
     }
 
     /**

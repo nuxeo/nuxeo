@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.task.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -634,6 +636,76 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
                 session);
         assertNotNull(tasks);
         assertEquals(4, tasks.size());
+    }
+
+    /**
+     * Test user tasks retrieval by non-admin session.
+     */
+    @Test
+    public void testUserTasksAsUser() throws Exception {
+
+        DocumentModel document = getDocument();
+        assertNotNull(document);
+
+        taskService.createTask(session, administrator, document,
+                "Task assigned to user1", Arrays.asList(user1.getName()),
+                false, null, null, null, null, null);
+
+        // check as admin
+        List<Task> tasks = taskService.getTaskInstances(document, user1,
+                session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        Task task = tasks.get(0);
+        assertEquals("Task assigned to user1", task.getName());
+        List<String> pooledActorIds = task.getActors();
+        assertEquals(1, pooledActorIds.size());
+        assertTrue(pooledActorIds.contains(user1.getName()));
+
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null,
+                session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        // check as user1
+        CoreSession session1 = openSessionAs(user1.getName());
+        try {
+            tasks = taskService.getTaskInstances(document, user1, session1);
+            assertNotNull(tasks);
+            assertEquals(1, tasks.size());
+            task = tasks.get(0);
+            assertEquals("Task assigned to user1", task.getName());
+            pooledActorIds = task.getActors();
+            assertEquals(1, pooledActorIds.size());
+            assertTrue(pooledActorIds.contains(user1.getName()));
+
+            tasks = taskService.getTaskInstances(document,
+                    (NuxeoPrincipal) null, session1);
+            assertNotNull(tasks);
+            assertEquals(1, tasks.size());
+        } finally {
+            closeSession(session1);
+        }
+
+        // check that user2 sees them if requesting the given user / all
+        CoreSession session2 = openSessionAs(user2.getName());
+        try {
+            tasks = taskService.getTaskInstances(document, user1, session2);
+            assertNotNull(tasks);
+            assertEquals(1, tasks.size());
+            task = tasks.get(0);
+            assertEquals("Task assigned to user1", task.getName());
+            pooledActorIds = task.getActors();
+            assertEquals(1, pooledActorIds.size());
+            assertTrue(pooledActorIds.contains(user1.getName()));
+
+            tasks = taskService.getTaskInstances(document,
+                    (NuxeoPrincipal) null, session2);
+            assertNotNull(tasks);
+            assertEquals(1, tasks.size());
+        } finally {
+            closeSession(session2);
+        }
     }
 
     protected Task getTask(final String taskId) throws ClientException {
