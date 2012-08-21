@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.webapp.locale;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import javax.faces.context.FacesContext;
@@ -48,7 +49,9 @@ import org.nuxeo.runtime.api.Framework;
 @Name("clientLocaleInitializer")
 @Scope(ScopeType.SESSION)
 @Startup
-public class LocaleStartup {
+public class LocaleStartup implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final Log log = LogFactory.getLog(LocaleStartup.class);
 
