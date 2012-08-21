@@ -85,6 +85,54 @@ public class SelectionActionsBean implements Serializable {
     protected String valueHolderId;
 
     /**
+     * Lookup level request parameter (defaults to 1, means search is done in
+     * first parent naming container)
+     *
+     * @since 5.6
+     */
+    @RequestParameter
+    protected Integer lookupLevel;
+
+    /**
+     * Lookup level field (defaults to 1, means search is done in first parent
+     * naming container)
+     * <p>
+     * Useful as fallback when posting a button where request parameter
+     * {@link #lookupLevel} cannot be set.
+     *
+     * @since 5.6
+     */
+    protected String lookupLevelValue;
+
+    /**
+     * @since 5.6
+     */
+    public String getLookupLevelValue() {
+        return lookupLevelValue;
+    }
+
+    /**
+     * @since 5.6
+     */
+    public void setLookupLevelValue(String lookupLevelValue) {
+        this.lookupLevelValue = lookupLevelValue;
+    }
+
+    /**
+     * @since 5.6
+     */
+    protected int computeLookupLevel() {
+        if (lookupLevel != null) {
+            return lookupLevel.intValue();
+        }
+        String setValue = getLookupLevelValue();
+        if (setValue != null) {
+            return Integer.valueOf(setValue).intValue();
+        }
+        return 1;
+    }
+
+    /**
      * Value held temporarily by this bean to be set on JSF components.
      *
      * @since 5.5
@@ -374,18 +422,20 @@ public class SelectionActionsBean implements Serializable {
             return;
         }
         EditableValueHolder hiddenSelector = null;
-        UIComponent base = null;
+        UIComponent base = ComponentUtils.getBase(component);
+        int lookupLevel = computeLookupLevel();
+        if (lookupLevel > 1) {
+            for (int i = 0; i < (lookupLevel - 1); i++) {
+                base = ComponentUtils.getBase(base);
+            }
+        }
         if (valueHolderId != null) {
-            base = ComponentUtils.getBase(component);
             hiddenSelector = ComponentUtils.getComponent(base, valueHolderId,
                     EditableValueHolder.class);
         }
         if (hiddenSelector == null) {
             String selectedValueHolder = getSelectedValueHolder();
             if (selectedValueHolder != null) {
-                if (base == null) {
-                    base = ComponentUtils.getBase(component);
-                }
                 hiddenSelector = ComponentUtils.getComponent(base,
                         selectedValueHolder, EditableValueHolder.class);
             }
