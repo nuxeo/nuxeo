@@ -17,6 +17,7 @@ import javax.naming.NoInitialContextException;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.jndi.NamingContextFactory;
+import org.apache.log4j.Logger;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -76,6 +77,14 @@ public class TransactionalFeature extends SimpleFeature {
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
         if (txStarted == false) {
+            if (TransactionHelper.isTransactionActive()) {
+                try {
+                TransactionHelper.setTransactionRollbackOnly();
+                TransactionHelper.commitOrRollbackTransaction();
+                } finally {
+                    Logger.getLogger(TransactionalFeature.class).warn("Committing a transaction for your, please do it yourself");
+                }
+            }
             return;
         }
         TransactionHelper.commitOrRollbackTransaction();
