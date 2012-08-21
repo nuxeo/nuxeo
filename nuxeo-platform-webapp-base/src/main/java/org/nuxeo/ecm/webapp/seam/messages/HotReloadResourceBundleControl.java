@@ -29,7 +29,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
-untime.reload.ReloadService;
 
 /**
  * Resource bundle controller for Seam.
