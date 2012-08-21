@@ -35,6 +35,13 @@ public interface IterableQueryResult extends
     void close();
 
     /**
+     * Indicates if the query result has not been closed
+     * 
+     * @return
+     */
+    boolean isLife();
+    
+    /**
      * Gets the total size of the query result.
      * <p>
      * Note that this may be costly, and that some backends may not be able to
