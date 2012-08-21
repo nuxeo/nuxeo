@@ -1,4 +1,5 @@
-<component name="org.nuxeo.ecm.platform.routing.CoreExtensions" version="1.0">
+<component name="org.nuxeo.ecm.platform.routing.CoreExtensions"
+  version="1.0">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
 
@@ -10,7 +11,8 @@
       src="schemas/document_route_model.xsd" />
     <schema name="step_folder" prefix="stepf" src="schemas/step_folder.xsd" />
     <schema name="info_comments" src="schemas/info_comments.xsd" prefix="infocom" />
-    <schema name="conditional_step_folder" prefix="condstepf" src="schemas/conditional_step_folder.xsd" />
+    <schema name="conditional_step_folder" prefix="condstepf"
+      src="schemas/conditional_step_folder.xsd" />
     <schema name="route_node" prefix="rnode" src="schemas/route_node.xsd" />
   </extension>
 
@@ -45,6 +47,7 @@
     </doctype>
 
     <doctype name="Domain" extends="Folder">
+      <facet name="SuperSpace" />
       <subtypes>
         <type>DocumentRouteInstancesRoot</type>
       </subtypes>
@@ -75,7 +78,7 @@
       <schema name="dublincore" />
       <facet name="RouteStep" />
       <facet name="Commentable" />
-      <facet name="CommentsInfoHolder"/>
+      <facet name="CommentsInfoHolder" />
     </doctype>
 
     <doctype name="ConditionalStepFolder" extends="StepFolder">
