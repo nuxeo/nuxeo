@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.routing.web;
 
+import java.io.Serializable;
+
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -31,12 +33,13 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
  */
 @Scope(ScopeType.CONVERSATION)
 @Name("routeSecurityChecker")
 @Install(precedence = Install.FRAMEWORK)
-public class RouteSecurityChecker {
+public class RouteSecurityChecker implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @In(required = true, create = false)
     protected NuxeoPrincipal currentUser;
@@ -45,7 +48,7 @@ public class RouteSecurityChecker {
     protected CoreSession documentManager;
 
     @In(create = true)
-    private transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @Deprecated
     /**
@@ -55,11 +58,11 @@ public class RouteSecurityChecker {
      */
     public boolean canValidateRoute() {
         try {
-        DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        if (!documentManager.hasChildren(currentDoc.getRef())) {
-            // Cannot validate an empty route
-            return false;
-        }
+            DocumentModel currentDoc = navigationContext.getCurrentDocument();
+            if (!documentManager.hasChildren(currentDoc.getRef())) {
+                // Cannot validate an empty route
+                return false;
+            }
         } catch (ClientException e) {
             new RuntimeException(e);
         }
