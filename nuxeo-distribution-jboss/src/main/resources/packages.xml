@@ -1,12 +1,10 @@
 <packages>
   <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-@VERSION@/mp/">
     <package id="nuxeo-cap" label="Content Application Platform (CAP)" md5="" color="#635959" textcolor="#FFF" shortlabel="CAP"/>
-    <package id="nuxeo-dm" label="Advanced Document Management (DM)" filename="nuxeo-dm-@VERSION@.zip" md5="@DMMPMD5@" implies="nuxeo-content-browser" color="#5e9adf" textcolor="#FFF" shortlabel="DM"/>
-    <package id="nuxeo-dam" label="Digital Asset Management (DAM)" filename="nuxeo-dam-@VERSION@.zip" md5="@DAMMPMD5@" implies="nuxeo-content-browser" color="#ffeb6d" textcolor="#333" shortlabel="DAM"/>
+    <package id="nuxeo-dm" label="Advanced Document Management (DM)" filename="nuxeo-dm-@VERSION@.zip" md5="@DMMPMD5@" color="#5e9adf" textcolor="#FFF" shortlabel="DM"/>
+    <package id="nuxeo-dam" label="Digital Asset Management (DAM)" filename="nuxeo-dam-@VERSION@.zip" md5="@DAMMPMD5@" color="#ffeb6d" textcolor="#333" shortlabel="DAM"/>
     <package id="nuxeo-social-collaboration" label="Social Collaboration (SC)" filename="nuxeo-social-collaboration-@VERSION@.zip" md5="@SCMPMD5@" color="#ff736e" textcolor="#FFF" shortlabel="SC"/>
-    <package id="nuxeo-cmf" label="Case Management Framework (CMF)" filename="nuxeo-cmf-@VERSION@.zip" md5="@CMFMPMD5@" implies="nuxeo-content-browser-cmf" color="#94b340" textcolor="#FFF" shortlabel="CMF"/>
-    <package id="nuxeo-content-browser" label="Standard Content Browser" filename="nuxeo-content-browser-@VERSION@.zip" md5="@VPCBMPMD5@" />
-    <package id="nuxeo-content-browser-cmf" label="CMF Content Browser" filename="nuxeo-content-browser-cmf-@VERSION@.zip" md5="@VPCBCMFMPMD5@" />
+    <package id="nuxeo-cmf" label="Case Management Framework (CMF)" filename="nuxeo-cmf-@VERSION@.zip" md5="@CMFMPMD5@" color="#94b340" textcolor="#FFF" shortlabel="CMF"/>
   </packageDefinitions>
   <install>
     <packageOptions>

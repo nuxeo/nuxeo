@@ -98,7 +98,6 @@
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-distribution-dam</module>
         <module>nuxeo-marketplace-dam</module>
@@ -116,7 +115,6 @@
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-distribution-dam</module>
         <module>nuxeo-marketplace-dam</module>
@@ -137,7 +135,6 @@
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-content-browser</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-distribution-dam</module>
         <module>nuxeo-marketplace-dam</module>
@@ -244,19 +241,6 @@
         <artifactId>nuxeo-distribution-dm</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-content-browser</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-content-browser</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>cmf</classifier>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>

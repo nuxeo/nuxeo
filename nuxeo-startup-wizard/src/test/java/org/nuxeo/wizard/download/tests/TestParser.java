@@ -107,40 +107,28 @@ public class TestParser {
         selectedIds.add("nuxeo-social-collaboration");
 
         pkgs.select(selectedIds);
-        assertEquals(4, pkgs.getPkg4Download().size()); // Collab / DM /
-                                                        // nuxeo-content-browser
-                                                        // / CAP
+        assertEquals(3, pkgs.getPkg4Download().size()); // Collab / DM / CAP
         assertEquals("nuxeo-social-collaboration", pkgs.getPkg4Download().get(0).getId());
         assertEquals("SC", pkgs.getPkg4Download().get(0).getShortLabel());
         assertEquals("nuxeo-dm", pkgs.getPkg4Download().get(1).getId());
         assertEquals("DM", pkgs.getPkg4Download().get(1).getShortLabel());
-        assertEquals("nuxeo-content-browser",
-                pkgs.getPkg4Download().get(2).getId());
-        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(3).getId());
-        assertEquals("CAP", pkgs.getPkg4Download().get(3).getShortLabel());
+        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(2).getId());
+        assertEquals("CAP", pkgs.getPkg4Download().get(2).getShortLabel());
 
         selectedIds.clear();
         selectedIds.add("nuxeo-cmf");
         pkgs.select(selectedIds);
-        assertEquals(3, pkgs.getPkg4Download().size()); // CMF /
-                                                        // nuxeo-content-browser-cmf
-                                                        // / CAP
+        assertEquals(2, pkgs.getPkg4Download().size()); // CMF / CAP
         assertEquals("nuxeo-cmf", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("nuxeo-content-browser-cmf",
-                pkgs.getPkg4Download().get(1).getId());
-        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(2).getId());
+        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(1).getId());
 
         selectedIds.clear();
         selectedIds.add("nuxeo-cmf");
         selectedIds.add("nuxeo-dm");
         pkgs.select(selectedIds);
-        assertEquals(3, pkgs.getPkg4Download().size()); // DM /
-                                                        // nuxeo-content-browser
-                                                        // / CAP
+        assertEquals(2, pkgs.getPkg4Download().size()); // DM / CAP
         assertEquals("nuxeo-dm", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("nuxeo-content-browser",
-                pkgs.getPkg4Download().get(1).getId());
-        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(2).getId());
+        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(1).getId());
 
     }
 

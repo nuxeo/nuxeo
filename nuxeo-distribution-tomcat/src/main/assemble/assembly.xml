@@ -150,18 +150,12 @@
           description="Embed Marketplace packages of CAP, DM, DAM and CMF">
     <!-- retrieve Marketplace packages -->
     <copy todir="${maven.project.build.directory}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-content-browser::zip" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-content-browser::zip:cmf" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dm::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dam::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-cmf::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-social-collaboration::zip" />
     </copy>
     <!-- compute MD5 checksums -->
-    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-content-browser-${nuxeo.distribution.version}.zip"
-              property="VPCBMPMD5" />
-    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-content-browser-${nuxeo.distribution.version}-cmf.zip"
-              property="VPCBCMFMPMD5" />
     <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip"
               property="DMMPMD5" />
     <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dam-${nuxeo.distribution.version}.zip"
@@ -175,8 +169,6 @@
     <copy file="src/main/resources/packages.xml"
           tofile="${tomcat}/setupWizardDownloads/packages.xml">
       <filterset>
-        <filter token="VPCBMPMD5" value="${VPCBMPMD5}" />
-        <filter token="VPCBCMFMPMD5" value="${VPCBCMFMPMD5}" />
         <filter token="DMMPMD5" value="${DMMPMD5}" />
         <filter token="DAMMPMD5" value="${DAMMPMD5}" />
         <filter token="CMFMPMD5" value="${CMFMPMD5}" />
@@ -186,10 +178,6 @@
     </copy>
 
     <!-- Embed the MP files -->
-    <move file="${maven.project.build.directory}/nuxeo-marketplace-content-browser-${nuxeo.distribution.version}.zip"
-          tofile="${tomcat}/setupWizardDownloads/${VPCBMPMD5}" />
-    <move file="${maven.project.build.directory}/nuxeo-marketplace-content-browser-${nuxeo.distribution.version}-cmf.zip"
-          tofile="${tomcat}/setupWizardDownloads/${VPCBCMFMPMD5}" />
     <move file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${DMMPMD5}" />
     <move file="${maven.project.build.directory}/nuxeo-marketplace-dam-${nuxeo.distribution.version}.zip"
