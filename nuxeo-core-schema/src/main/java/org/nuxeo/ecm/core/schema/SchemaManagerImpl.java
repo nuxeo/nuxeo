@@ -354,7 +354,10 @@ public class SchemaManagerImpl implements SchemaManager {
         // pending queue
         synchronized (docTypeReg) {
             DocumentType docType = docTypeReg.getType(name);
-            docTypeReg.removeContribution(docType);
+            // could be null (never registered) if was still pending
+            if (docType != null) {
+                docTypeReg.removeContribution(docType);
+            }
             return docType;
         }
     }
