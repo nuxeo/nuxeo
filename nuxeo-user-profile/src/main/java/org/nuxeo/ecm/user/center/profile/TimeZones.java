@@ -15,6 +15,7 @@
  */
 package org.nuxeo.ecm.user.center.profile;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,10 +39,12 @@ import org.jboss.seam.international.TimeZoneSelector;
  */
 @Scope(ScopeType.SESSION)
 @Name("timeZones")
-public class TimeZones {
+public class TimeZones implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @In
-    LocaleSelector localeSelector;
+    protected LocaleSelector localeSelector;
 
     private List<SelectItem> timeZoneSelectItems = null;
 
