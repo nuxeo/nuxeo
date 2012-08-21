@@ -67,9 +67,12 @@
   <platforms>
     <platform>cap-@VERSION@</platform>
   </platforms>
-  <dependencies>
+  <provides>
     <package>nuxeo-content-browser:1.0.0:1.0.0</package>
-  </dependencies>
+  </provides>
+  <conflicts>
+    <package>nuxeo-cmf</package>
+  </conflicts>
   <license>LGPL</license>
   <license-url>http://www.gnu.org/licenses/lgpl.html</license-url>
 </package>

@@ -418,11 +418,6 @@ public class PackageDownloader {
         List<DownloadPackage> pkgs = downloadOptions.getPkg4Download();
         List<String> pkgInstallIds = new ArrayList<String>();
         for (DownloadPackage pkg : pkgs) {
-            // FIXME: temporary workaround until nuxeo-content-browser* are
-            // removed
-            if (pkg.getId().contains("nuxeo-content-browser")) {
-                continue;
-            }
             if (pkg.isAlreadyInLocal()) {
                 fileEntries.add("install " + pkg.getId());
                 pkgInstallIds.add(pkg.getId());
