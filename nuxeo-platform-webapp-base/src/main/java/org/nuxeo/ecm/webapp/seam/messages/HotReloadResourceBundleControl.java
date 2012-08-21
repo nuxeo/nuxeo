@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webapp.seam.messages;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -28,6 +29,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
+untime.reload.ReloadService;
 
 /**
  * Resource bundle controller for Seam.
@@ -42,7 +44,10 @@ import org.nuxeo.runtime.reload.ReloadService;
 @BypassInterceptors
 @Scope(ScopeType.SESSION)
 @AutoCreate
-public class HotReloadResourceBundleControl extends ResourceBundle.Control {
+public class HotReloadResourceBundleControl extends ResourceBundle.Control
+        implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected long timeToLive = ResourceBundle.Control.TTL_NO_EXPIRATION_CONTROL;
 
