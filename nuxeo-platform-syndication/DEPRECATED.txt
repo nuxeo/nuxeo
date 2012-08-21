@@ -1,4 +1,4 @@
-This module is deprecated as of Nuxeo 5.4.2.1-SNAPSHOT, as content view offer ATOM and
+This module is deprecated as of Nuxeo 5.4.2-HF27, as content view offer ATOM and
 RSS exports on their own.
 Kept here for compatibility while custom code still uses query models and
 result provider farms.
