@@ -615,6 +615,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
         RouteModelsInitializator routeInializator = new RouteModelsInitializator();
         routeInializator.install();
     }
