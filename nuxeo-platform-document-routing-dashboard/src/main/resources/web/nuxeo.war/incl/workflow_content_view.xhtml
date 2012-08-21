@@ -106,7 +106,8 @@
                         action="#{routingTaskActions.endTasks(contentView.selectionListName, action)}"
                         value="#{messages[action.label]}"
                         styleClass="button">
-                        <f:param name="button" value="#{action.id}" />
+                        <f:setPropertyActionListener value="2"
+                          target="#{selectionActions.lookupLevelValue}" />
                         <f:setPropertyActionListener value=""
                           target="#{selectionActions.selectedValue}" />
                         <f:setPropertyActionListener
@@ -119,7 +120,8 @@
                         value="#{messages['command.cancel']}"
                         immediate="true"
                         styleClass="button">
-                        <f:param name="button" value="" />
+                        <f:setPropertyActionListener value="2"
+                          target="#{selectionActions.lookupLevelValue}" />
                         <f:setPropertyActionListener value=""
                           target="#{selectionActions.selectedValue}" />
                         <f:setPropertyActionListener
