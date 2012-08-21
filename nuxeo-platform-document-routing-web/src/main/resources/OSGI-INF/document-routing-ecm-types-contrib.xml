@@ -140,6 +140,21 @@
       </contentViews>
     </type>
     
+    <type id="RouteNode" coreType="RouteNode">
+      <label>Node</label>
+      <icon>/icons/step.png</icon>
+      <bigIcon>/icons/step_100.png</bigIcon>
+      <category>Steps</category>
+      <description>File.description</description>
+      <default-view>view_documents</default-view>
+      <edit-view>edit_route_element</edit-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+      </layouts>
+    </type>
 
   </extension>
 
