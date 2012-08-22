@@ -71,7 +71,6 @@
     </dependency>
   </dependencies>
 
-<<<<<<< HEAD
   <build>
     <plugins>
       <!-- APT plugin for annotation preprocessing -->
@@ -91,6 +90,3 @@
     </plugins>
   </build>
 </project>
-=======
-</project>
->>>>>>> NXP-9485 disable web engine annotations processing at build time
