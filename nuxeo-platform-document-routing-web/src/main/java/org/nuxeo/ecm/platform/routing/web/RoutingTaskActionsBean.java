@@ -46,10 +46,10 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
@@ -148,17 +148,12 @@ public class RoutingTaskActionsBean implements Serializable {
     }
 
     public String getTaskLayout(Task task) throws ClientException {
-        GraphNode node = getSourceGraphNode(task);
-        return node.getTaskLayout();
+        return getTaskInfo(task, false).layout;
     }
 
     public List<Button> getTaskButtons(Task task) throws ClientException {
-        GraphNode node = getSourceGraphNode(task);
-        if (node == null) {
-            return new ArrayList<Button>();
-        }
+        return getTaskInfo(task, false).buttons;
         // TODO evaluate action filter?
-        return node.getTaskButtons();
     }
 
     public String endTask(Task task) throws ClientException {
@@ -206,45 +201,58 @@ public class RoutingTaskActionsBean implements Serializable {
         return currentTask;
     }
 
-    protected GraphNode getSourceGraphNode(Task task) throws ClientException {
-        GraphRoute route = getSourceGraphRoute(task);
-        String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
-        if (route == null || nodeId == null) {
-            throw new ClientException(
-                    "Can not get the source graph of this task");
-        }
-        return route.getNode(nodeId);
-    }
-
-    // helper method to avoid retrieving the route again
-    protected GraphNode getSourceGraphNode(Task task, GraphRoute route)
+    public Map<String, Serializable> getFormVariables(Task task)
             throws ClientException {
-        String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
-        if (route == null || nodeId == null) {
-            throw new ClientException(
-                    "Can not get the source graph of this task");
-        }
-        return route.getNode(nodeId);
+        return getTaskInfo(task, true).formVariables;
     }
 
-    protected GraphRoute getSourceGraphRoute(Task task) throws ClientException {
-        String routeDocId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
+    protected class TaskInfo {
+        protected HashMap<String, Serializable> formVariables;
+
+        protected String layout;
+
+        protected List<Button> buttons;
+
+        protected TaskInfo(HashMap<String, Serializable> formVariables,
+                String layout, List<Button> buttons) {
+            this.formVariables = formVariables;
+            this.layout = layout;
+            this.buttons = buttons;
+        }
+    }
+
+    // we have to be unrestricted to get this info
+    // because the current user may not be the one that started the
+    // workflow
+    protected TaskInfo getTaskInfo(Task task, final boolean getFormVariables)
+            throws ClientException {
+        final String routeDocId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
+        final String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
         if (routeDocId == null) {
+            throw new ClientException(
+                    "Can not get the source graph for this task");
+        }
+        if (nodeId == null) {
             throw new ClientException(
                     "Can not get the source node for this task");
         }
-        DocumentModel doc = documentManager.getDocument(new IdRef(routeDocId));
-        return doc.getAdapter(GraphRoute.class);
-    }
-
-    public Map<String, Serializable> getFormVariables(Task task)
-            throws ClientException {
-        Map<String, Serializable> formVariables = new HashMap<String, Serializable>();
-        GraphNode node = getSourceGraphNode(task);
-        GraphRoute route = getSourceGraphRoute(task);
-        formVariables.putAll(node.getVariables());
-        formVariables.putAll(route.getVariables());
-        return formVariables;
+        final TaskInfo[] res = new TaskInfo[1];
+        new UnrestrictedSessionRunner(documentManager) {
+            @Override
+            public void run() throws ClientException {
+                DocumentModel doc = session.getDocument(new IdRef(routeDocId));
+                GraphRoute route = doc.getAdapter(GraphRoute.class);
+                GraphNode node = route.getNode(nodeId);
+                HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+                if (getFormVariables) {
+                    map.putAll(node.getVariables());
+                    map.putAll(route.getVariables());
+                }
+                res[0] = new TaskInfo(map, node.getTaskLayout(),
+                        node.getTaskButtons());
+            }
+        }.runUnrestricted();
+        return res[0];
     }
 
     public Map<String, Serializable> getFormVariables() throws ClientException {
@@ -304,20 +312,16 @@ public class RoutingTaskActionsBean implements Serializable {
             throws ClientException {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
 
-        GraphRoute route = getSourceGraphRoute(task);
-        GraphNode node = getSourceGraphNode(task, route);
+        TaskInfo taskInfo = getTaskInfo(task, true);
+        String layout = taskInfo.layout;
+        List<Button> buttons = taskInfo.buttons;
 
-        List<Button> buttons = node.getTaskButtons();
-        String layout = node.getTaskLayout();
         boolean addLayout = !isLayoutEmpty(layout);
         Map<String, Serializable> props = null;
         if (addLayout) {
             props = new HashMap<String, Serializable>();
             props.put("layout", layout);
-            HashMap<String, Serializable> formVariables = new HashMap<String, Serializable>();
-            formVariables.putAll(node.getVariables());
-            formVariables.putAll(route.getVariables());
-            props.put("formVariables", formVariables);
+            props.put("formVariables", taskInfo.formVariables);
         }
 
         if (buttons != null && !buttons.isEmpty()) {
