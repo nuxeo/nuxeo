@@ -25,7 +25,7 @@ import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 /**
  * Handle SearchDocumentsSuggestion using the faceted search JSF UI.
  */
-@Operation(id = FacetedSearchSuggestionHandler.ID, category = Constants.CAT_UI, label = "FacetedSearchSuggestionHandler", description = "")
+@Operation(id = FacetedSearchSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to faceted search view", description = "Handles JSF navigation given a SearchDocumentsSuggestion as input.")
 public class FacetedSearchSuggestionHandler {
 
     public static final String ID = "Suggestion.JSF.NavigateToFacetedSearch";

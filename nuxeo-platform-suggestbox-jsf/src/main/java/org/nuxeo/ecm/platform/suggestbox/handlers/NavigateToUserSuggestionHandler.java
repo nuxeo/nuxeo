@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 package org.nuxeo.ecm.platform.suggestbox.handlers;
@@ -16,7 +16,7 @@ import org.nuxeo.ecm.webapp.security.UserManagementActions;
 /**
  * Handle UserSuggestion using a simple navigation in the JSF UI.
  */
-@Operation(id = NavigateToUserSuggestionHandler.ID, category = Constants.CAT_UI, label = "DocumentSuggestionHandler", description = "")
+@Operation(id = NavigateToUserSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to user view", description = "Handles JSF navigation given a UserSuggestion as input.")
 public class NavigateToUserSuggestionHandler {
 
     public static final String ID = "Suggestion.JSF.NavigateToUser";
@@ -24,9 +24,9 @@ public class NavigateToUserSuggestionHandler {
     @OperationMethod
     public Object run(Object input) throws OperationException, ClientException {
         if (!(input instanceof UserSuggestion)) {
-            throw new OperationException(
-                    String.format("Expected an instance of DocumentSuggestion,"
-                            + " got '%s'", input));
+            throw new OperationException(String.format(
+                    "Expected an instance of UserSuggestion," + " got '%s'",
+                    input));
         }
         UserSuggestion suggestion = (UserSuggestion) input;
         UserManagementActions userManagementActions = (UserManagementActions) Component.getInstance(UserManagementActions.class);
