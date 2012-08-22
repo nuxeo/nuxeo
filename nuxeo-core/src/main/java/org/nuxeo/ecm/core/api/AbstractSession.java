@@ -150,7 +150,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     private Long maxResults;
 
-    protected static class QueryAndFetchExecuteContextException extends ClientRuntimeException {
+    public static class QueryAndFetchExecuteContextException extends ClientRuntimeException {
 
 
         private static final long serialVersionUID = 1L;

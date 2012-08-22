@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.test;
 
 import java.util.Properties;
 
+import org.mortbay.log.Log;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -73,6 +74,14 @@ public class TransactionalFeature extends SimpleFeature {
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
         if (txStarted == false) {
+            if (TransactionHelper.isTransactionActive()) {
+                try {
+                TransactionHelper.setTransactionRollbackOnly();
+                TransactionHelper.commitOrRollbackTransaction();
+                } finally {
+                    Log.warn("Committing a transaction for your, please do it yourself");
+                }
+            }
             return;
         }
         TransactionHelper.commitOrRollbackTransaction();
