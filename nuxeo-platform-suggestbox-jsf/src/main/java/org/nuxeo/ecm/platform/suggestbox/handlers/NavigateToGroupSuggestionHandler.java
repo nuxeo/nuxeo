@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 package org.nuxeo.ecm.platform.suggestbox.handlers;
@@ -16,7 +16,7 @@ import org.nuxeo.ecm.webapp.security.GroupManagementActions;
 /**
  * Handle GroupSuggestion using a simple navigation in the JSF UI.
  */
-@Operation(id = NavigateToGroupSuggestionHandler.ID, category = Constants.CAT_UI, label = "DocumentSuggestionHandler", description = "")
+@Operation(id = NavigateToGroupSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to group view", description = "Handles JSF navigation given a GroupSuggestion as input.")
 public class NavigateToGroupSuggestionHandler {
 
     public static final String ID = "Suggestion.JSF.NavigateToGroup";
@@ -24,9 +24,9 @@ public class NavigateToGroupSuggestionHandler {
     @OperationMethod
     public Object run(Object input) throws OperationException, ClientException {
         if (!(input instanceof GroupSuggestion)) {
-            throw new OperationException(
-                    String.format("Expected an instance of DocumentSuggestion,"
-                            + " got '%s'", input));
+            throw new OperationException(String.format(
+                    "Expected an instance of GroupSuggestion," + " got '%s'",
+                    input));
         }
         GroupSuggestion suggestion = (GroupSuggestion) input;
         GroupManagementActions groupManagementActions = (GroupManagementActions) Component.getInstance(GroupManagementActions.class);
