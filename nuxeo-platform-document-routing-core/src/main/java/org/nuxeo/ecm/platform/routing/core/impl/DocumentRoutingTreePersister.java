@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -82,11 +84,20 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             // policy applied on the model
             // on the instance, too => removing acls
             result = undoReadOnlySecurityPolicy(result, session);
+            // set initiator
+            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+            String initiator = principal.getOriginatingUser();
+            if (initiator == null) {
+                initiator = principal.getName();
+            }
+            result.setPropertyValue(DocumentRoutingConstants.INITIATOR, initiator);
             // using the ref, the value of the attached document might not been
             // saved on the model
             result.setPropertyValue(
                     DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
                     model.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
+            // reset creation date, used for workflow start time
+            result.setPropertyValue("dc:created", Calendar.getInstance());
             session.saveDocument(result);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

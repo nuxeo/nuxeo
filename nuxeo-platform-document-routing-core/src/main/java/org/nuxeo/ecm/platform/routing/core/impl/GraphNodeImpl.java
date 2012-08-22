@@ -41,9 +41,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -96,7 +98,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             }
             document.setPropertyValue(prop, Long.valueOf(count.longValue() + 1));
             saveDocument();
-            getSession().save(); // XXX debug
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -237,8 +238,26 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public void incrementCount() {
+    public void starting() {
         incrementProp(PROP_COUNT);
+        try {
+            document.setPropertyValue(PROP_NODE_START_DATE,
+                    Calendar.getInstance());
+            saveDocument();
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public void ending() {
+        try {
+            document.setPropertyValue(PROP_NODE_END_DATE,
+                    Calendar.getInstance());
+            saveDocument();
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     @Override
@@ -297,24 +316,44 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     protected OperationContext getContext() {
         OperationContext context = new OperationContext(getSession());
         context.setCommit(false); // no session save at end
-        // context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
-        // element);
+        // workflow context
         context.put("WorkflowVariables", graph.getVariables());
-        context.put("NodeVariables", getVariables());
-        context.put("initiator", "");
-        context.put("documents", graph.getAttachedDocumentModels());
-        context.put("workflowStartTime", "");
+        context.put("workflowInitiator", getWorkflowInitiator());
+        context.put("workflowStartTime", getWorkflowStartTime());
+        DocumentModelList documents = graph.getAttachedDocumentModels();
+        context.put("workflowDocuments", documents);
+        context.put("documents", documents);
         // node context
+        context.put("NodeVariables", getVariables());
         context.put("nodeId", getId());
-        context.put("state", getState().name().toLowerCase());
+        String state = getState().name().toLowerCase();
+        context.put("nodeState", state);
+        context.put("state", state);
         context.put("nodeStartTime", ""); // TODO
         // task context
         context.put("comment", "");
         ((Map<String, Serializable>) context.get("NodeVariables")).put(
                 "button", (String) getProperty(PROP_NODE_BUTTON));
         // associated docs
-        context.setInput(graph.getAttachedDocumentModels());
+        context.setInput(documents);
         return context;
+    }
+
+    protected String getWorkflowInitiator() {
+        try {
+            return (String) graph.getDocument().getPropertyValue(
+                    DocumentRoutingConstants.INITIATOR);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    protected Calendar getWorkflowStartTime() {
+        try {
+            return (Calendar) graph.getDocument().getPropertyValue("dc:created");
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     @Override
@@ -553,14 +592,23 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
+    @Override
+    public void setLastActor(String actor) {
+        try {
+            document.setPropertyValue(PROP_NODE_LAST_ACTOR, actor);
+            saveDocument();
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
     protected void addTaskAssignees(List<String> taskAssignees) {
         List<String> allTasksAssignees = getTaskAssignees();
         allTasksAssignees.addAll(taskAssignees);
         try {
             document.setPropertyValue(PROP_TASK_ASSIGNEES,
                     (Serializable) allTasksAssignees);
-            CoreSession session = document.getCoreSession();
-            session.saveDocument(document);
+            saveDocument();
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
         }

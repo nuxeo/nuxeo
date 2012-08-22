@@ -60,6 +60,12 @@
         <param type="object" name="value">test</param>
       </operation>
     </chain>
-    
+    <chain id="test_setGlobalVariableToWorkflowInitiator">
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">globalVariable</param>
+        <param type="object" name="value">expr:workflowInitiator</param>
+      </operation>
+    </chain>
+
   </extension>
 </component>
