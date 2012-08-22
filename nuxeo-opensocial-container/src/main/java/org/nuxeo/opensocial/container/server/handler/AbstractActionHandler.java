@@ -113,7 +113,7 @@ public abstract class AbstractActionHandler<T extends AbstractAction<R>, R exten
         }
     }
 
-    protected static Blob getBlob(FileItem item) {
+    protected static Blob getBlob(FileItem item)  {
         StreamSource src;
         if (item.isInMemory()) {
             src = new ByteArraySource(item.get());
@@ -128,6 +128,11 @@ public abstract class AbstractActionHandler<T extends AbstractAction<R>, R exten
         StreamingBlob blob = new StreamingBlob(src,
                 ctype == null ? "application/octet-stream" : ctype);
         blob.setFilename(item.getName());
+        try {
+            blob.persist();
+        } catch (IOException e) {
+            throw WebException.wrap("Failed to persist blob data", e);
+        }
         return blob;
     }
 
