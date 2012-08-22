@@ -765,6 +765,8 @@ public class ChainSelect extends UIInput {
             }
 
             String[] rows = StringUtils.split(newValueStr, getKeySeparator());
+            boolean allowBranchSelection = Boolean.TRUE.equals(getBooleanProperty(
+                    "allowBranchSelection", false));
             if (!allowBranchSelection && rows.length != size) {
                 String messageStr = ComponentUtils.translate(context,
                         "label.chainSelect.incomplete_selection");
