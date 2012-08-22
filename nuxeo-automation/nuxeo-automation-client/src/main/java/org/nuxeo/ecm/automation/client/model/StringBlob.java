@@ -81,4 +81,8 @@ public class StringBlob extends Blob {
         return content;
     }
 
+    @Override
+    public int getLength() {
+        return content.length();
+    }
 }

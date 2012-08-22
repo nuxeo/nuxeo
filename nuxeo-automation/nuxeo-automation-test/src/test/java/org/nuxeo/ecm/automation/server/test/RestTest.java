@@ -15,6 +15,12 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,12 +33,10 @@ import java.util.zip.ZipFile;
 
 import org.codehaus.jackson.JsonNode;
 import org.hamcrest.number.IsCloseTo;
-import org.junit.runner.RunWith;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
@@ -42,6 +46,7 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
+import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.DateInput;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
@@ -686,8 +691,8 @@ public class RestTest {
         assertEquals("hello world", msg.getMessage());
     }
 
-    @Ignore("No custom inputs are supported for now. and may not be supported in future. Use context/params to pass structured objects")
     @Test
+    @Ignore
     public void testReturnValues() throws Exception {
         Object r;
         r = session.newRequest(ReturnOperation.ID).setInput(
@@ -720,4 +725,14 @@ public class RestTest {
         fail("no exception caught");
     }
 
+    @BeforeClass
+    public static void addDataCapsuleOperation() throws OperationException {
+        Framework.getLocalService(AutomationService.class).putOperation(TestDataCapsule.class);
+    }
+    
+    @Test
+    public void testBlobSummaries() throws Exception {
+        Blob blob = (Blob)session.newRequest(TestDataCapsule.ID).execute();
+        assertEquals("TestDataCapsule - application/json - 25 B", blob.toString());
+    }
 }
