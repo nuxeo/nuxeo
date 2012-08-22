@@ -14,7 +14,7 @@
      value="#{nxd:fileUrl('downloadPicture', value, blobPropertyName, value.dublincore.modified)}"
      cache="true">
       <c:if test="#{not empty image_url}">
-        <nxu:graphicImage value="#{image_url}"
+        <nxu:graphicImage styleClass="fullWidth" value="#{image_url}"
           title="#{value.title}" alt="#{value.title}"
           width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
       </c:if>
