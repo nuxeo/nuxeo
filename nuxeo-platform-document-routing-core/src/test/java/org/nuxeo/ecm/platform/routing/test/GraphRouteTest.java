@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -77,7 +78,6 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.task.core", //
         "org.nuxeo.ecm.platform.task.testing",
         "org.nuxeo.ecm.platform.routing.core" //
-
 })
 @LocalDeploy({
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml",
@@ -353,6 +353,12 @@ public class GraphRouteTest {
         assertTrue(route.isDone());
         doc.refresh();
         assertEquals("title 1", doc.getTitle());
+
+        // check start/end dates and counts
+        DocumentModel doc1 = ((GraphRoute) route).getNode("node1").getDocument();
+        assertEquals(Long.valueOf(1), doc1.getPropertyValue("rnode:count"));
+        assertNotNull(doc1.getPropertyValue("rnode:startDate"));
+        assertNotNull(doc1.getPropertyValue("rnode:endDate"));
     }
 
     @SuppressWarnings("unchecked")
@@ -859,4 +865,72 @@ public class GraphRouteTest {
         assertEquals(currentDate.get(Calendar.DATE) + 1,
                 taskDueDate.get(Calendar.DATE));
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testWorkflowInitiatorAndTaskActor() throws Exception {
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
+
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        routeDoc.addFacet("FacetRoute1");
+        routeDoc = session.saveDocument(routeDoc);
+
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(
+                node1,
+                transition("trans1", "node2", "true",
+                        "test_setGlobalVariableToWorkflowInitiator"));
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES,
+                new String[] { user2.getName() });
+        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+        session.save();
+
+        // start workflow as user1
+
+        CoreSession sessionUser1 = openSession(user1);
+        DocumentRoute route = instantiateAndRun(sessionUser1);
+        DocumentRef routeDocRef = route.getDocument().getRef();
+        closeSession(sessionUser1);
+
+        // check user2 tasks
+
+        List<Task> tasks = taskService.getTaskInstances(doc, user2, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        // continue task as user2
+
+        CoreSession sessionUser2 = openSession(user2);
+        // task assignees have READ on the route instance
+        assertNotNull(sessionUser2.getDocument(routeDocRef));
+        Task task = tasks.get(0);
+        List<DocumentModel> docs = routing.getWorkflowInputDocuments(
+                sessionUser2, task);
+        assertEquals(doc.getId(), docs.get(0).getId());
+        Map<String, Object> data = new HashMap<String, Object>();
+        routing.endTask(sessionUser2, tasks.get(0), data, "trans1");
+        closeSession(sessionUser2);
+
+        // verify things
+        NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
+        CoreSession sessionAdmin = openSession(admin);
+        route = sessionAdmin.getDocument(routeDocRef).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
+        Serializable v = route.getDocument().getPropertyValue(
+                "fctroute1:globalVariable");
+        assertEquals("myuser1", v);
+        closeSession(sessionAdmin);
+    }
+
 }

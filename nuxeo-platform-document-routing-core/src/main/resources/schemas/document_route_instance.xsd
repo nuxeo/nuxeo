@@ -4,6 +4,7 @@
 
   <xs:include schemaLocation="base.xsd" />
 
+  <xs:element name="initiator" type="xs:string" />
   <xs:element name="participatingDocuments" type="nxs:stringList" />
   <xs:element name="variablesFacet" type="xs:string" />
   <xs:element name="availabilityFilter" type="xs:string" />

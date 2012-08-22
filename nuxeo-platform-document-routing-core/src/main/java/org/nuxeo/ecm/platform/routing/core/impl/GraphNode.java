@@ -102,6 +102,12 @@ public interface GraphNode {
 
     String PROP_NODE_BUTTON = "rnode:button";
 
+    String PROP_NODE_START_DATE = "rnode:startDate";
+
+    String PROP_NODE_END_DATE = "rnode:endDate";
+
+    String PROP_NODE_LAST_ACTOR = "rnode:lastActor";
+
     String PROP_TASK_DOC_TYPE = "rnode:taskDocType";
 
     String PROP_TASK_NOTIFICATION_TEMPLATE = "rnode:taskNotificationTemplate";
@@ -379,9 +385,14 @@ public interface GraphNode {
     String getTaskNotificationTemplate();
 
     /**
-     * Increments the execution counter for this node.
+     * Does bookkeeping at node start.
      */
-    void incrementCount();
+    void starting();
+
+    /**
+     * Does bookkeeping at node end.
+     */
+    void ending();
 
     /**
      * Executes an Automation chain in the context of this node.
@@ -457,6 +468,13 @@ public interface GraphNode {
      * @param status
      */
     void setButton(String status);
+
+    /**
+     * Sets the last actor on a node (user who completed the task).
+     *
+     * @param actor the user id
+     */
+    void setLastActor(String actor);
 
     /**
      * Evaluates the task assignees from the taskAssigneesVar

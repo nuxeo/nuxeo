@@ -137,6 +137,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 // else leave state to WAITING
                 break;
             case RUNNING_INPUT:
+                node.starting();
                 node.executeChain(node.getInputChain());
                 if (node.hasTask()) {
                     createTask(session, graph, node);
@@ -151,13 +152,20 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     throw new DocumentRouteException(
                             "Executing unexpected SUSPENDED state");
                 }
+                // actor
+                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                String actor = principal.getOriginatingUser();
+                if (actor == null) {
+                    actor = principal.getName();
+                }
+                node.setLastActor(actor);
                 // resuming, variables have been set by resumeGraph
                 jump = State.RUNNING_OUTPUT;
                 break;
             case RUNNING_OUTPUT:
                 node.executeChain(node.getOutputChain());
                 List<Transition> trueTrans = node.evaluateTransitions();
-                node.incrementCount();
+                node.ending();
                 node.setState(State.READY);
                 if (node.isStop()) {
                     if (!pendingNodes.isEmpty()) {

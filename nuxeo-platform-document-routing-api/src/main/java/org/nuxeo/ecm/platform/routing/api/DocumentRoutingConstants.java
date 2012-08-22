@@ -63,6 +63,8 @@ public interface DocumentRoutingConstants {
 
     String EXECUTION_TYPE_PROPERTY_NAME = "stepf:execution";
 
+    String INITIATOR = "docri:initiator";
+
     String ATTACHED_DOCUMENTS_PROPERTY_NAME = "docri:participatingDocuments";
 
     String COMMENTS_NO_PROPERTY_NAME = "info_comments:numberOfComments";
