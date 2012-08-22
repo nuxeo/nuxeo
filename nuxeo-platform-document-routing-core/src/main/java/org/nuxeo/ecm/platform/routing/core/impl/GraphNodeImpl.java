@@ -316,6 +316,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     protected OperationContext getContext() {
         OperationContext context = new OperationContext(getSession());
         context.setCommit(false); // no session save at end
+
         // workflow context
         context.put("WorkflowVariables", graph.getVariables());
         context.put("workflowInitiator", getWorkflowInitiator());
@@ -323,17 +324,23 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         DocumentModelList documents = graph.getAttachedDocumentModels();
         context.put("workflowDocuments", documents);
         context.put("documents", documents);
+
         // node context
-        context.put("NodeVariables", getVariables());
+        String button = (String) getProperty(PROP_NODE_BUTTON);
+        Map<String, Serializable> nodeVariables = getVariables();
+        nodeVariables.put("button", button);
+        context.put("NodeVariables", nodeVariables);
         context.put("nodeId", getId());
         String state = getState().name().toLowerCase();
         context.put("nodeState", state);
         context.put("state", state);
-        context.put("nodeStartTime", ""); // TODO
+        context.put("nodeStartTime", getNodeStartTime());
+        context.put("nodeEndTime", getNodeEndTime());
+        context.put("nodeLastActor", getNodeLastActor());
+
         // task context
         context.put("comment", "");
-        ((Map<String, Serializable>) context.get("NodeVariables")).put(
-                "button", (String) getProperty(PROP_NODE_BUTTON));
+
         // associated docs
         context.setInput(documents);
         return context;
@@ -351,6 +358,31 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     protected Calendar getWorkflowStartTime() {
         try {
             return (Calendar) graph.getDocument().getPropertyValue("dc:created");
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    protected Calendar getNodeStartTime() {
+        try {
+            return (Calendar) getDocument().getPropertyValue(
+                    PROP_NODE_START_DATE);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    protected Calendar getNodeEndTime() {
+        try {
+            return (Calendar) getDocument().getPropertyValue(PROP_NODE_END_DATE);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    protected String getNodeLastActor() {
+        try {
+            return (String) getDocument().getPropertyValue(PROP_NODE_LAST_ACTOR);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
