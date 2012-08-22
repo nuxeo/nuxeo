@@ -88,7 +88,7 @@ public abstract class Blob implements OperationInput {
     protected String formatLength(int len) {
         int k = len / 1024;
         if (k <= 0) {
-            return "0 B";
+            return len + " B";
         } else if (k < 1024) {
             return k + " K";
         } else {
