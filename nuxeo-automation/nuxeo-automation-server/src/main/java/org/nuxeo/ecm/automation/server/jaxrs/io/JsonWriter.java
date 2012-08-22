@@ -23,9 +23,20 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectMapper.DefaultTyping;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.SerializerProvider;
+import org.codehaus.jackson.map.introspect.BasicBeanDescription;
+import org.codehaus.jackson.map.module.SimpleModule;
+import org.codehaus.jackson.map.ser.BeanSerializer;
+import org.codehaus.jackson.map.ser.BeanSerializerModifier;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
@@ -42,10 +53,61 @@ public class JsonWriter {
 
     protected static JsonFactory factory = createFactory();
 
+    protected static class ThrowableSerializer extends BeanSerializer {
+
+
+        protected ThrowableSerializer(BeanSerializer src) {
+            super(src);
+        }
+
+        @Override
+        protected void serializeFields(Object bean, JsonGenerator jgen,
+                SerializerProvider provider) throws IOException,
+                JsonGenerationException {
+            serializeClassName(bean, jgen, provider);
+            super.serializeFields(bean, jgen, provider);
+        }
+
+        @Override
+        protected void serializeFieldsFiltered(Object bean, JsonGenerator jgen,
+                SerializerProvider provider) throws IOException,
+                JsonGenerationException {
+            serializeClassName(bean, jgen, provider);
+            super.serializeFieldsFiltered(bean, jgen, provider);
+        }
+
+        protected void serializeClassName(Object bean, JsonGenerator jgen, SerializerProvider provider) throws JsonGenerationException, IOException {
+            jgen.writeFieldName("className");
+            jgen.writeString(bean.getClass().getName());
+        }
+    }
     public static JsonFactory createFactory() {
         factory = new JsonFactory();
-        factory.enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
         final ObjectMapper oc = new ObjectMapper(factory);
+        final SimpleModule module = new SimpleModule("automation",
+                Version.unknownVersion()) {
+
+            @Override
+            public void setupModule(SetupContext context) {
+                super.setupModule(context);
+
+                context.addBeanSerializerModifier(new BeanSerializerModifier() {
+
+                    @Override
+                    public JsonSerializer<?> modifySerializer(
+                            SerializationConfig config,
+                            BasicBeanDescription beanDesc,
+                            JsonSerializer<?> serializer) {
+                        if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
+                            return super.modifySerializer(config, beanDesc, serializer);
+                        }
+                        return new ThrowableSerializer((BeanSerializer) serializer);
+                    }
+                });
+            }
+        };
+        oc.registerModule(module);
+
         factory.setCodec(oc);
         return factory;
     }
