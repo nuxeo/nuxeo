@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.Execut
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -496,7 +497,6 @@ public class GraphRouteTest {
         setButtons(node1, button("btn2", "label-btn2", "filterrr"));
         node3 = session.saveDocument(node3);
 
-
         DocumentModel node4 = createNode(routeDoc, "node4");
         node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
         setTransitions(node4, transition("trans3", "node5", "true"));
@@ -511,8 +511,6 @@ public class GraphRouteTest {
         node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users3);
         setButtons(node1, button("btn2", "label-btn2", "filterrr"));
         node4 = session.saveDocument(node4);
-
-
 
         DocumentModel node5 = createNode(routeDoc, "node5");
         node5.setPropertyValue(GraphNode.PROP_MERGE, "all");
@@ -543,8 +541,6 @@ public class GraphRouteTest {
         assertNotNull(sessionUser2.getDocument(route.getDocument().getRef()));
         routing.endTask(sessionUser2, tasks.get(0), data, "trans2");
         closeSession(sessionUser2);
-
-
 
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
@@ -692,7 +688,7 @@ public class GraphRouteTest {
         // task assignees have READ on the route instance
         assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
         Task task1 = tasks.get(0);
-        assertEquals("MyTaskDoc",task1.getDocument().getType());
+        assertEquals("MyTaskDoc", task1.getDocument().getType());
         List<DocumentModel> docs = routing.getWorkflowInputDocuments(
                 sessionUser1, task1);
         assertEquals(doc.getId(), docs.get(0).getId());
@@ -706,8 +702,7 @@ public class GraphRouteTest {
         assertTrue(route.isDone());
         assertEquals(
                 "test",
-                route.getDocument().getPropertyValue(
-                        "fctroute1:globalVariable"));
+                route.getDocument().getPropertyValue("fctroute1:globalVariable"));
         closeSession(session);
     }
 
@@ -766,7 +761,6 @@ public class GraphRouteTest {
         assertTrue(session.hasPermission(user2, doc.getRef(), "Write"));
         closeSession(session);
     }
-
 
     /**
      * Check that when running as non-Administrator the assignees are set
@@ -828,4 +822,41 @@ public class GraphRouteTest {
         assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testDinamicallyComputeDueDate() throws PropertyException,
+            ClientException {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
+                "Write");
+        setTransitions(node1,
+                transition("trans1", "node2", "true", "testchain_title1"));
+
+        node1.setPropertyValue("rnode:taskAssigneesExpr", "\"Administrator\"");
+        node1.setPropertyValue("rnode:taskDueDateExpr", "CurrentDate.days(1)");
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+
+        session.save();
+        instantiateAndRun(session);
+
+        List<Task> tasks = taskService.getTaskInstances(doc,
+                (NuxeoPrincipal) session.getPrincipal(), session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        Task ts = tasks.get(0);
+        Calendar currentDate = Calendar.getInstance();
+        Calendar taskDueDate = Calendar.getInstance();
+        taskDueDate.setTime(ts.getDueDate());
+        assertEquals(currentDate.get(Calendar.DATE) + 1,
+                taskDueDate.get(Calendar.DATE));
+    }
 }

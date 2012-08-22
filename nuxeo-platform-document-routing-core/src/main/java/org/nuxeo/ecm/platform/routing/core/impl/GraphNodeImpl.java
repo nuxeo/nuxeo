@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -227,6 +229,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     @Override
     public String getTaskNotificationTemplate() {
         return (String) getProperty(PROP_TASK_NOTIFICATION_TEMPLATE);
+    }
+
+    @Override
+    public String getTaskDueDateExpr() {
+        return (String) getProperty(PROP_TASK_DUE_DATE_EXPR);
     }
 
     @Override
@@ -472,31 +479,31 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     @Override
     public boolean canMerge() {
         try {
-        int n = 0;
-        List<Transition> inputTransitions = getInputTransitions();
+            int n = 0;
+            List<Transition> inputTransitions = getInputTransitions();
 
-        for (Transition t : inputTransitions) {
-            Property property = t.source.getDocument().getProperty("rnode:transitions").get(0)
-                .get("result");
-            if (property != null ){
-                Object obj = property.getValue();
-                if (obj != null) {
-                    boolean res = (Boolean) obj;
-                    if (res) {
-                        n++;
+            for (Transition t : inputTransitions) {
+                Property property = t.source.getDocument().getProperty(
+                        "rnode:transitions").get(0).get("result");
+                if (property != null) {
+                    Object obj = property.getValue();
+                    if (obj != null) {
+                        boolean res = (Boolean) obj;
+                        if (res) {
+                            n++;
+                        }
                     }
                 }
             }
-        }
-        String merge = (String) getProperty(PROP_MERGE);
-        if (MERGE_ONE.equals(merge)) {
-            return n > 0;
-        } else if (MERGE_ALL.equals(merge)) {
-            return n == inputTransitions.size();
-        } else {
-            throw new ClientRuntimeException("Illegal merge mode '" + merge
-                    + "' for node " + this);
-        }
+            String merge = (String) getProperty(PROP_MERGE);
+            if (MERGE_ONE.equals(merge)) {
+                return n > 0;
+            } else if (MERGE_ALL.equals(merge)) {
+                return n == inputTransitions.size();
+            } else {
+                throw new ClientRuntimeException("Illegal merge mode '" + merge
+                        + "' for node " + this);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -566,5 +573,52 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             taskDocType = TaskConstants.TASK_TYPE_NAME;
         }
         return taskDocType;
+    }
+
+    protected Date evaluateDueDate() throws DocumentRouteException {
+        OperationContext context = getContext();
+        String taskDueDateExpr = getTaskDueDateExpr();
+        if (StringUtils.isEmpty(taskDueDateExpr)) {
+            return new Date();
+        }
+        Expression expr = Scripting.newExpression(taskDueDateExpr);
+        Object res = null;
+        try {
+            res = expr.eval(context);
+        } catch (InterruptedException e) {
+            // restore interrupted state
+            Thread.currentThread().interrupt();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DocumentRouteException("Error evaluating task due date: "
+                    + taskDueDateExpr, e);
+        }
+        if (res instanceof DateWrapper) {
+            return ((DateWrapper) res).getDate();
+        } else if (res instanceof Date) {
+            return (Date) res;
+        } else if (res instanceof Calendar) {
+            return ((Calendar) res).getTime();
+        } else if (res instanceof String) {
+            return DateParser.parseW3CDateTime((String) res);
+        } else
+            throw new DocumentRouteException(
+                    "The following expression can not be evaluated to a date: "
+                            + taskDueDateExpr);
+
+    }
+
+    @Override
+    public Date computeTaskDueDate() throws DocumentRouteException {
+        Date dueDate = evaluateDueDate();
+        try {
+            document.setPropertyValue(PROP_TASK_DUE_DATE, dueDate);
+            CoreSession session = document.getCoreSession();
+            session.saveDocument(document);
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+        return dueDate;
     }
 }
