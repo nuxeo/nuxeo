@@ -7,7 +7,7 @@ author: lkemen@nuxeo.com
 */
 
 /* =TabsContent */
-.tabsContent { font-size: .95em; margin: 0; padding: .5em 1em 1em }
+.tabsContent { font-size: .95em; margin: 0; padding: 1.5em 1em }
 
 /* =Layout View and Summary Tab Styles */
 .layoutViewMode { margin: 0; padding: 0 }
@@ -15,7 +15,8 @@ author: lkemen@nuxeo.com
 .layoutViewMode a img { border: 1px solid; border-color: "noborder (__FLAVOR__ border)" }
 .layoutViewMode a:hover img, .layoutViewMode li.selected img { border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)" }
 
-/* Legacy summary layout styling, before grids */
+/* .summary_div_* classes in summary view are @deprecated since 5.6
+- Legacy summary layout styling, before grids */
 .summary_div_0 { float: left; padding: 1em 0; width: 62% }
 .summary_div_1 { float: right; font-size: .9em; padding: 1em 0; width: 33% }
 .summary_div_2 { clear: both }
@@ -23,18 +24,28 @@ author: lkemen@nuxeo.com
 .summary_div_0 img { max-height: 50em; max-width: 100% }
 .summary_div_0 .note_content_block { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); margin: auto; max-width: 65em }
 
-/* Grid layout */
-.gridRow { clear: both; padding: 1.5% 0 }
-.gridBox { float: left; margin: 0 1% }
-.gridStyle12 { width: 94% }
-.gridStyle9 { width: 70% }
-.gridStyle8 { width: 62% }
-.gridStyle7 { width: 56% }
-.gridStyle6 { width: 46% }
-.gridStyle5 { width: 36% }
-.gridStyle4 { width: 30% }
-.gridStyle3 { width: 22% }
-.gridStyle2 { width: 14% }
+/* Grid layout system */
+/*A .gridContainer contains several .gridRow. vertically
+Each .gridRow contains several .gridBox horizontally
+A .gridBox may contain several .actionsWidgetPanel vertically. */
+.gridRow { clear: both; padding: 0 }
+.gridBox { float: left; margin: 0 }
+
+/*The .gridStyle** classes represent the width of each .gridBox container.
+The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
+.gridStyle12 { width: 100% }
+.gridStyle9 { width: 75% }
+.gridStyle8 { width: 66% }
+.gridStyle7 { width: 58% }
+.gridStyle6 { width: 50% }
+.gridStyle5 { width: 42% }
+.gridStyle4 { width: 33% }
+.gridStyle3 { width: 25% }
+.gridStyle2 { width: 16% }
+
+/* Space between blocks in .gridBox containers */
+.actionsWidgetPanel { padding: 0 5% 5% 2% }
+.contextActions .actionsWidgetPanel { padding: 0 }
 
 .contentViewTitle { float: left; line-height: normal; margin: 0 1em 1em 0 }
 
@@ -45,14 +56,16 @@ h3.summaryTitle, .gridBox h3.summaryTitle {
   color: "black (__FLAVOR__ color)";
   font-size: 1.2em;
   font-weight: bold;
-  margin: 0 0 .8em;
-  padding: 2em 0 .3em;
+  margin: 0 0 .6em;
+  padding: 2em 0 .2em;
   text-transform: uppercase }
+.gridBox h3.summaryTitle { padding: 0 0 .2em }
+
 .summary_div_1 h3.summaryTitle { font-size: 1.1em }
 .summary_div_1 .fieldColumn img { float: left; margin-bottom: 15px }
 
 .description_block { color: "gray.medium (__FLAVOR__ color)"; line-height: 155% }
-.description_block span { display: block; font-size: 1em; padding-bottom: 1em }
+.description_block span { display: block; font-size: 1em }
 .description_block span.documentDescription { color: #444; font-size: 1.1em; font-weight: bold }
 .description_block .createdBy { color: #111; font-weight: bold; padding: 0 }
 .description_block .creationDate { display: inline-block }
