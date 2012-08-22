@@ -118,7 +118,10 @@ public class RestletServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        boolean tx = TransactionHelper.startTransaction();
+        boolean tx = false;
+        if (!TransactionHelper.isTransactionActive()) {
+            tx = TransactionHelper.startTransaction();
+        }
         try {
             converter.service(req, res);
         } catch (ServletException e) {
