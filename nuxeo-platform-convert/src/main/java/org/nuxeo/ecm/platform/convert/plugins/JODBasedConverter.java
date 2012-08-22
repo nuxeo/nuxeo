@@ -19,13 +19,17 @@
 package org.nuxeo.ecm.platform.convert.plugins;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
@@ -38,6 +42,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -64,14 +69,14 @@ public class JODBasedConverter implements ExternalConverter {
 
     /**
      * Boolean conversion parameter for PDF/A-1.
-     * 
+     *
      * @since 5.6
      */
     public static final String PDFA1_PARAM = "PDF/A-1";
 
     /**
      * Boolean parameter to force update of the document TOC
-     * 
+     *
      * @since 5.6
      */
     public static final String UPDATE_INDEX_PARAM = StandardConversionTask.UPDATE_DOCUMENT_INDEX;
@@ -94,7 +99,7 @@ public class JODBasedConverter implements ExternalConverter {
      * Returns the destination format for the given plugin.
      * <p>
      * It takes the actual destination mimetype from the plugin configuration.
-     * 
+     *
      * @param sourceFormat the source format
      * @param pdfa1 true if PDF/A-1 is required
      */
@@ -137,7 +142,7 @@ public class JODBasedConverter implements ExternalConverter {
      * Returns the format for the file passed as a parameter.
      * <p>
      * We will ask the mimetype registry service to sniff its mimetype.
-     * 
+     *
      * @return DocumentFormat for the given file
      */
     private static DocumentFormat getSourceFormat(File file) throws Exception {
@@ -149,7 +154,7 @@ public class JODBasedConverter implements ExternalConverter {
 
     /**
      * Returns the DocumentFormat for the given mimetype.
-     * 
+     *
      * @return DocumentFormat for the given mimetype
      */
     private static DocumentFormat getSourceFormat(String mimetype) {
@@ -189,6 +194,12 @@ public class JODBasedConverter implements ExternalConverter {
             File outFile = null;
             File[] files = null;
             try {
+
+                // If the input blob has the HTML mime type, make sure the
+                // charset meta is present, add it if not
+                if ("text/html".equals(sourceMimetype)) {
+                    inputBlob = checkCharsetMeta(inputBlob);
+                }
 
                 // Get original file extension
                 String ext = inputBlob.getFilename();
@@ -344,4 +355,32 @@ public class JODBasedConverter implements ExternalConverter {
         return tmp;
     }
 
+    /**
+     * Checks if the {@code inputBlob} string contains a {@code charset} meta
+     * tag. If not, add it.
+     *
+     * @param inputBlob the input blob
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    protected Blob checkCharsetMeta(Blob inputBlob) throws IOException {
+
+        String charset = inputBlob.getEncoding();
+        if (!StringUtils.isEmpty(charset)) {
+            Pattern charsetMetaPattern = Pattern.compile(String.format(
+                    "content=\"text/html;\\s*charset=%s\"", charset));
+            Matcher charsetMetaMatcher = charsetMetaPattern.matcher(inputBlob.getString());
+            if (!charsetMetaMatcher.find()) {
+                String charsetMetaTag = String.format(
+                        "<META http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">",
+                        charset);
+                StringBuilder sb = new StringBuilder(charsetMetaTag);
+                sb.append(new String(inputBlob.getByteArray(), charset));
+                Blob blobWithCharsetMetaTag = new StringBlob(sb.toString(),
+                        "text/html", charset);
+                blobWithCharsetMetaTag.setFilename(inputBlob.getFilename());
+                return blobWithCharsetMetaTag;
+            }
+        }
+        return inputBlob;
+    }
 }
