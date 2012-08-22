@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
@@ -872,8 +873,20 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @since 5.6
      */
     public DocumentModel getRouteInstanceFor(Task task) throws ClientException {
-        String id = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
-        return id != null ? documentManager.getDocument(new IdRef(id)) : null;
+        final String routeDocId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
+        if (routeDocId == null) {
+            return null;
+        }
+        final DocumentModel[] res = new DocumentModel[1];
+        new UnrestrictedSessionRunner(documentManager) {
+            @Override
+            public void run() throws ClientException {
+                DocumentModel doc = session.getDocument(new IdRef(routeDocId));
+                doc.detach(true);
+                res[0] = doc;
+            }
+        }.runUnrestricted();
+        return res[0];
     }
 
     /**
