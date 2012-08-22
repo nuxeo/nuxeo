@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -250,7 +251,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         HashSet<String> actors = new LinkedHashSet<String>();
         actors.addAll(node.evaluateTaskAssignees());
         actors.addAll(node.getTaskAssignees());
-
+        // evaluate taskDueDate from the taskDueDateExpr;
+        Date dueDate = node.computeTaskDueDate();
         DocumentModel doc = graph.getAttachedDocumentModels().get(0);
         try {
             TaskService taskService = Framework.getLocalService(TaskService.class);
@@ -260,8 +262,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     node.getTaskDocType(), node.getDocument().getTitle(),
                     node.getId(), routeInstance.getDocument().getId(),
                     new ArrayList<String>(actors), false,
-                    node.getTaskDirective(), null, node.getTaskDueDate(),
-                    taskVariables, null);
+                    node.getTaskDirective(), null, dueDate, taskVariables, null);
 
             routing.makeRoutingTasks(session, tasks);
             String taskAssigneesPermission = node.getTaskAssigneesPermission();

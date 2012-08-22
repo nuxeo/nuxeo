@@ -106,6 +106,8 @@ public interface GraphNode {
 
     String PROP_TASK_NOTIFICATION_TEMPLATE = "rnode:taskNotificationTemplate";
 
+    String PROP_TASK_DUE_DATE_EXPR = "rnode:taskDueDateExpr";
+
     /**
      * The internal state of a node.
      */
@@ -401,6 +403,8 @@ public interface GraphNode {
      */
     List<Transition> getOutputTransitions();
 
+    String getTaskDueDateExpr();
+
     /**
      * Executes an Automation chain in the context of this node for a given
      * transition
@@ -461,4 +465,13 @@ public interface GraphNode {
      * @return
      */
     List<String> evaluateTaskAssignees() throws DocumentRouteException;
+
+    /**
+     * Evaluates the task due date from the taskDueDateExpr and sets it as the
+     * dueDate
+     *
+     * @return
+     * @throws DocumentRouteException
+     */
+    Date computeTaskDueDate() throws DocumentRouteException;
 }

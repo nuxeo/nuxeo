@@ -18,6 +18,7 @@
   <xs:element name="taskDirective" type="xs:string" />
   <xs:element name="taskDescription" type="xs:string" />
   <xs:element name="taskDueDate" type="xs:date" />
+  <xs:element name="taskDueDateExpr" type="xs:string" />
   <xs:element name="taskAssignees" type="node:stringList" />
   <xs:element name="taskAssigneesExpr" type="xs:string" />
   <xs:element name="taskAssigneesPermission" type="xs:string" />
