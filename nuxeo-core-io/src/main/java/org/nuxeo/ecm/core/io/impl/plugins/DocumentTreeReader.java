@@ -29,9 +29,9 @@ import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
  */
 public class DocumentTreeReader extends DocumentModelReader {
 
-    private DocumentTreeIterator iterator;
+    protected DocumentTreeIterator iterator;
 
-    private int pathSegmentsToRemove = 0;
+    protected int pathSegmentsToRemove = 0;
 
     public DocumentTreeReader(CoreSession session, DocumentModel root,
             boolean excludeRoot) throws ClientException {
