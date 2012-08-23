@@ -16,7 +16,7 @@
 
    <c:set var="templates" value="#{currentTemplateBasedDocument.getSourceTemplates()}" />
 
-   <table>
+   <table class="dataOutput">
    <nxu:repeat var="template" value="#{templates}">
     <tr>
       <td>
@@ -110,10 +110,13 @@
    </table>
 
    <c:if test="#{templateBasedActions.canBindNewTemplate()}">
-     <A href="#" onclick="jQuery(event.target).hide().next().fadeIn('slow'); return false;"> <h:outputText value="#{messages['label.template.add']}"/> </A>
+     <a class="button" href="#" onclick="jQuery(event.target).hide().next().fadeIn('slow'); return false;"> <h:outputText value="#{messages['label.template.add']}"/> </a>
      <div style="display:none">
      <h:form>
-       <table>
+       <h3>
+         <h:outputText value="#{messages['command.template.associate']}"/>
+       </h3>
+       <table class="dataInput">
            <tr>
              <td class="labelColumn"><h:outputText value="#{messages['label.template.select']}"/>
              </td>
@@ -123,6 +126,8 @@
                       itemValue="#{item.value}"
                       itemLabel="#{item.label}" />
                    </h:selectOneMenu>
+              </td>
+              <td class="fieldColumn">
                 <h:commandButton class="button" value="#{messages['command.template.associate']}"
                     action="#{templateBasedActions.associateDocumentToTemplate}" id="button_save" />
              </td>
