@@ -18,6 +18,7 @@ import org.nuxeo.ecm.automation.core.events.operations.FireEvent;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.operations.FetchContextBlob;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
+import org.nuxeo.ecm.automation.core.operations.LogOperation;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobInput;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobInputFromScript;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobsInput;
@@ -97,7 +98,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Nuxeo component that provide an implementation of the
  * {@link AutomationService} and handle extensions registrations.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AutomationComponent extends DefaultComponent {
@@ -197,7 +198,8 @@ public class AutomationComponent extends DefaultComponent {
 
         service.putOperation(LoginAs.class);
         service.putOperation(Logout.class);
-        
+
+        service.putOperation(LogOperation.class);
 
         // disabled operations
         // service.putOperation(RunScriptFile.class);
