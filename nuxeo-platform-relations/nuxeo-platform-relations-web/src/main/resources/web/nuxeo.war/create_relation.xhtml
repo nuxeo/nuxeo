@@ -167,7 +167,7 @@
   <div id="relationSearchPopUp" class="genericPopUp bigPopUp">
     <div class="closePopUpHeader" id="closePopUpHeader"><span class="popUpTitle">
       <h:outputText value="#{messages['label.relation.search.popup.title']}" /></span>
-      <span class="closePopUp" onclick="hidePopUp('#relationSearchPopUp');">Close</span>
+      <span class="closePopUp" onclick="hidePopUp('#relationSearchPopUp');">#{messages['label.relation.search.popup.close']}</span>
     <div style="clear: both;"></div>
     </div>
     <ui:include src="/create_relation_search_document_popup.xhtml" />
