@@ -22,13 +22,6 @@
       <a4j:outputPanel id="#{widget.id}_taggingPanel"
         ajaxRendered="false">
 
-        <f:subview id="#{widget.id}_message_banner">
-          <ui:include src="/incl/message_banner.xhtml">
-            <ui:param name="messagesFacesId"
-              value="#{widget.id}_messages" />
-          </ui:include>
-        </f:subview>
-
         <nxu:dataList id="#{widget.id}_tagsTable" var="tag"
           value="#{currentDocumentTags}"
           rendered="#{not empty currentDocumentTags}">
