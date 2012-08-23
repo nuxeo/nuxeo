@@ -38,7 +38,7 @@ window.setTimeout(handleFallbackIfNeeded, 25000);
 
 <% if (showRegistrationForm) { %>
 
-<iframe id="connectForm" src="<%=formUrl%>" onload="setSize()" width="100%" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0" style="overflow:visible; width:100%; display:none"></iframe>
+<iframe id="connectForm" src="<%=formUrl%>" onload="setSize()" width="100%" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0" style="overflow:auto; width:100%; display:none"></iframe>
 
 <div style="display:none" id="fallback">
 
