@@ -83,7 +83,16 @@
             <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
               <c:if test="#{(clickedActionId == action.id and action.type == 'fancybox') or nxu:hasMessages(fancyboxFormId)}">
                 <script>
-                  showFancyBox('##{action.id}_fancybox_box');
+                  jQuery('<a href="##{action.id}_fancybox_box').fancybox({
+                      'autoDimensions': false,
+                      'autoScale': true,
+                      'width': 'auto',
+                      'height': '320',
+                      'transitionIn': 'none',
+                      'transitionOut': 'none',
+                      'enableEscapeButton': true,
+                      'centerOnScroll': true,
+                      'scrolling': 'auto'}).click();
                   jQuery('##{fancyboxFormId}').focusFirst();
                 </script>
               </c:if>
