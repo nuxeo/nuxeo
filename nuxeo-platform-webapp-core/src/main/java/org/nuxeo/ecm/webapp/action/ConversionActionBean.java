@@ -19,13 +19,13 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -46,6 +46,8 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.cache.ThreadSafeCacheHolder;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -134,7 +136,8 @@ public class ConversionActionBean implements ConversionAction {
             pdfConverterForTypes = new HashMap<String, ConverterCheckResult>();
         }
 
-        // Check if there is any saved ConverterCheckResult for the desired MIME type.
+        // Check if there is any saved ConverterCheckResult for the desired
+        // MIME type.
         if (pdfConverterForTypes.containsValue(mimetype)) {
             return pdfConverterForTypes.get(mimetype).isAvailable();
         }
@@ -149,10 +152,12 @@ public class ConversionActionBean implements ConversionAction {
                 pdfConverterAvailability = conversionService.isConverterAvailable(
                         pdfConverterName, true);
 
-                // Save the converter availability for all the mime-types the converter
+                // Save the converter availability for all the mime-types the
+                // converter
                 // supports.
                 for (String supMimeType : pdfConverterAvailability.getSupportedInputMimeTypes()) {
-                    pdfConverterForTypes.put(supMimeType, pdfConverterAvailability);
+                    pdfConverterForTypes.put(supMimeType,
+                            pdfConverterAvailability);
                 }
 
                 if (pdfConverterAvailability.isAvailable()) {
@@ -198,41 +203,25 @@ public class ConversionActionBean implements ConversionAction {
             BlobHolder result = Framework.getLocalService(
                     ConversionService.class).convert(pdfConverterName, bh, null);
 
-            String fname = new Path(bh.getFilePath()).lastSegment();
-            String name;
-            if (fname == null || fname.length() == 0) {
-                name = "file";
-            } else {
-                name = fname;
-            }
-            // add pdf extension
-            int pos = name.lastIndexOf('.');
-            if (pos > 0) {
-                name = name.substring(0, pos);
-            }
-            name += ".pdf";
-
             if (result == null) {
                 log.error("Transform service didn't return any resulting documents which is not normal.");
                 return "pdf_generation_error";
             }
 
-            // converting the result into byte[] to be able to put it in the
-            // response
-            InputStream inputStream = result.getBlob().getStream();
-            int length = inputStream.available();
-            byte[] array = new byte[length];
-            int offset = 0;
-            int n;
-            do {
-                n = inputStream.read(array, offset, length - offset);
-            } while (n != -1);
+            String origFilename = new Path(bh.getFilePath()).lastSegment();
+            String filename = FileUtils.getCleanFileName(origFilename);
+            if (StringUtils.isBlank(filename)) {
+                filename = "file";
+            }
+            // add pdf extension
+            int pos = filename.lastIndexOf('.');
+            if (pos > 0) {
+                filename = filename.substring(0, pos);
+            }
+            filename += ".pdf";
 
-            String headerContent = "attachment; filename=\"" + name + "\";";
-            writeResponse("Content-Disposition", headerContent,
-                    "application/pdf", array);
-
-            return null;
+            return ComponentUtils.download(FacesContext.getCurrentInstance(),
+                    result.getBlob(), filename);
         } catch (Exception e) {
             log.error("PDF generation error for file " + filename, e);
         }
@@ -250,20 +239,6 @@ public class ConversionActionBean implements ConversionAction {
             log.error("PDF generation error for file " + filename, e);
         }
         return "pdf_generation_error";
-    }
-
-    /**
-     * Simply sends what to be downloaded or shown at screen via
-     * HttpServletResponse.
-     */
-    private static void writeResponse(String header, String headerContent,
-            String contentType, byte[] value) throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-        response.setHeader(header, headerContent);
-        response.setContentType(contentType);
-        response.getOutputStream().write(value);
-        context.responseComplete();
     }
 
     public void initialize() {
