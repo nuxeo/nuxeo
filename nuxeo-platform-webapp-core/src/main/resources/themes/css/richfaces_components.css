@@ -11,7 +11,6 @@ author: lkemen@nuxeo.com
 .treeLink a:hover, .treeLink a:active { text-decoration: underline }
 .treeLink img {margin: .3em .4em .4em 0; vertical-align: top }
 
-.cell { margin-bottom: .2em; padding: .2em }
 .cell img, .clipboardFunction img { vertical-align: middle }
 .cell .iconImage { margin-right: .4em }
 
