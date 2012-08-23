@@ -57,6 +57,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         return new ToStringBuilder(this).append(getName()).toString();
     }
 
+    @Override
     public Collection<GraphNode> getNodes() {
         if (nodes == null) {
             compute();

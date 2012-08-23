@@ -492,4 +492,11 @@ public interface GraphNode {
      * @throws DocumentRouteException
      */
     Date computeTaskDueDate() throws DocumentRouteException;
+    
+    /**
+     * Gets a map containing the workflow and node variables
+     * 
+     * @return
+     */
+    Map<String, Serializable> getWorkflowContextualInfo();
 }

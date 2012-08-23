@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -315,10 +316,19 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     protected OperationContext getContext() {
         OperationContext context = new OperationContext(getSession());
+        context.putAll(getWorkflowContextualInfo());
         context.setCommit(false); // no session save at end
+        DocumentModelList documents = graph.getAttachedDocumentModels();
+        // associated docs
+        context.setInput(documents);
+        return context;
+    }
 
+    @Override
+    public Map<String, Serializable> getWorkflowContextualInfo() {
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
         // workflow context
-        context.put("WorkflowVariables", graph.getVariables());
+        context.put("WorkflowVariables", (Serializable) graph.getVariables());
         context.put("workflowInitiator", getWorkflowInitiator());
         context.put("workflowStartTime", getWorkflowStartTime());
         DocumentModelList documents = graph.getAttachedDocumentModels();
@@ -329,7 +339,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         String button = (String) getProperty(PROP_NODE_BUTTON);
         Map<String, Serializable> nodeVariables = getVariables();
         nodeVariables.put("button", button);
-        context.put("NodeVariables", nodeVariables);
+        context.put("NodeVariables", (Serializable) nodeVariables);
         context.put("nodeId", getId());
         String state = getState().name().toLowerCase();
         context.put("nodeState", state);
@@ -340,9 +350,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
         // task context
         context.put("comment", "");
-
-        // associated docs
-        context.setInput(documents);
         return context;
     }
 
