@@ -19,9 +19,13 @@ import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.operations.FetchContextBlob;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobInput;
+import org.nuxeo.ecm.automation.core.operations.RestoreBlobInputFromScript;
 import org.nuxeo.ecm.automation.core.operations.RestoreBlobsInput;
+import org.nuxeo.ecm.automation.core.operations.RestoreBlobsInputFromScript;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
+import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInputFromScript;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentsInput;
+import org.nuxeo.ecm.automation.core.operations.RestoreDocumentsInputFromScript;
 import org.nuxeo.ecm.automation.core.operations.RunInputScript;
 import org.nuxeo.ecm.automation.core.operations.RunScript;
 import org.nuxeo.ecm.automation.core.operations.SetInputAsVar;
@@ -127,6 +131,10 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(RestoreBlobInput.class);
         service.putOperation(RestoreBlobsInput.class);
         service.putOperation(RunScript.class);
+        service.putOperation(RestoreDocumentInputFromScript.class);
+        service.putOperation(RestoreDocumentsInputFromScript.class);
+        service.putOperation(RestoreBlobInputFromScript.class);
+        service.putOperation(RestoreBlobsInputFromScript.class);
         service.putOperation(RunOperation.class);
         service.putOperation(RunOperationOnList.class);
         service.putOperation(RunInNewTransaction.class);
@@ -189,6 +197,7 @@ public class AutomationComponent extends DefaultComponent {
 
         service.putOperation(LoginAs.class);
         service.putOperation(Logout.class);
+        
 
         // disabled operations
         // service.putOperation(RunScriptFile.class);
