@@ -21,7 +21,9 @@ $.ajaxSetup( {
 // start polling after 15s to be sure the server begun the restart
 var currentUrl = "<%=request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + contextPath%>";
 var newUrl = "<%=ServerController.getServerURL()%>";
-if (currentUrl == newUrl)
+// url check disabled for now, see NXP-8780
+// if (currentUrl == newUrl)
+if (true)
     setTimeout(startDirectPolling, 15000);
   else
     setTimeout(startIndirectPolling, 15000);
