@@ -7,7 +7,10 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   id="#{layout.id}">
 
-  <div style="padding-left:100px">
+  <div>
+    <span class="labelColumn displayIB">
+      <h:outputText value="#{messages[label.wizard.creationMode]}" />
+    </span>
     <span class="modeSelectorContainer">
        <input type="radio" class="modeSelector" name="modeSelector" value="preset" checked="true" /> #{messages["label.wizard.simpleMode"]}
     </span>

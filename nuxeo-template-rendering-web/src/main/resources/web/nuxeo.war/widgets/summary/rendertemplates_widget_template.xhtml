@@ -12,11 +12,13 @@
     <h:outputText value="#{messages['label.summary.template.rendition.title']}" />
   </h3>
 
-  <h:outputText value="#{messages['label.summary.template.rendition.header']}" />
+  <p>
+    <h:outputText value="#{messages['label.summary.template.rendition.header']}" />
+  </p>
 
   <nxu:dataTable value="#{associatedRenderableTemplates}"
     var="template" styleClass="dataOutput">
-    <nxu:column>
+    <nxu:column styleClass="iconColumn">
       <nxu:graphicImage value="#{template.adaptedDoc.common.icon}" />
     </nxu:column>
     <nxu:column>
