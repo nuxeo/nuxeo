@@ -26,7 +26,7 @@ import java.io.IOException;
  * and key for scrambling are available on the system as well, so this not a
  * secure store.
  */
-public class XORBinaryManager extends DefaultBinaryManager {
+public class XORBinaryManager extends LocalBinaryManager {
 
     protected byte[] pattern;
 
