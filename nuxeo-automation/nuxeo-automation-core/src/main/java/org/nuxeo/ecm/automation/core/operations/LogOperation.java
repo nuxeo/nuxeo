@@ -20,20 +20,14 @@ package org.nuxeo.ecm.automation.core.operations;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * @author Sun Seng David TAN <stan@nuxeo.com>
+ * An operation to log in log4j.
  */
-@Operation(id = LogOperation.ID, category = Constants.CAT_NOTIFICATION, label = "LogOperation", description = "")
+@Operation(id = LogOperation.ID, category = Constants.CAT_NOTIFICATION, label = "Log", description = "Logging with log4j")
 public class LogOperation {
 
     public static final String ID = "LogOperation";
@@ -44,8 +38,9 @@ public class LogOperation {
     @Param(name = "message", required = true)
     protected String message;
 
-    @Param(name = "priority", required = false)
-    protected String priority;
+    @Param(name = "level", required = true, widget = Constants.W_OPTION, values = {
+            "info", "debug", "warn", "error" })
+    protected String level = "info";
 
     @OperationMethod
     public void run() {
@@ -55,21 +50,21 @@ public class LogOperation {
 
         Log log = LogFactory.getLog(category);
 
-        if ("debug".equals(priority)) {
+        if ("debug".equals(level)) {
             log.debug(message);
             return;
         }
 
-        if ("warn".equals(priority)) {
+        if ("warn".equals(level)) {
             log.warn(message);
             return;
         }
 
-        if ("error".equals(priority)) {
+        if ("error".equals(level)) {
             log.error(message);
             return;
         }
-        // in any other case, use info priority
+        // in any other case, use info log level
         log.info(message);
 
     }
