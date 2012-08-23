@@ -124,7 +124,16 @@ empty:
     
         <c:if test="#{showFilterFormBox}">
           <script>
-            showFancyBox('##{filterFormId}_box');
+            jQuery('<a href="##{filterFormId}_box"></a>').fancybox({
+              'autoDimensions': false,
+              'autoScale': true,
+              'width': 'auto',
+              'height': '320',
+              'transitionIn': 'none',
+              'transitionOut': 'none',
+              'enableEscapeButton': true,
+              'centerOnScroll': true,
+              'scrolling': 'auto'}).click();
             jQuery('##{filterFormId}').focusFirst();
           </script>
         </c:if>
