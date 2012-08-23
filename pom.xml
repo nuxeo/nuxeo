@@ -2031,7 +2031,7 @@
       <dependency>
         <groupId>org.richfaces.ui</groupId>
         <artifactId>richfaces-ui</artifactId>
-        <version>3.3.1.GA-NX</version>
+        <version>3.3.1.GA-NX2</version>
       </dependency>
 
       <!-- OpenOffice.org -->
