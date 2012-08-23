@@ -115,6 +115,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED} and
      * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED}, passing the task in the
      * event properties using key {@link #TASK_INSTANCE_EVENT_PROPERTIES_KEY}
+     * Also the map eventInfo is passed in the event properties 
      *
      * @param coreSession the session to use when notifying
      * @param principal the principal marked as initiator of the task and used
@@ -134,6 +135,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param dueDate the due date, set on the task instance
      * @param taskVariables additional task variables
      * @param parentPath /task-root if null
+     * @param eventInfo
      * @throws ClientException
      * @since 5.6
      */
@@ -141,7 +143,7 @@ public interface TaskService extends Serializable, TaskProvider {
             DocumentModel document, String taskDocumentType, String taskName, String taskType, String processId,
             List<String> prefixedActorIds, boolean createOneTaskPerActor,
             String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath)
+            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
             throws ClientException;
 
 
