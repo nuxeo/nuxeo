@@ -26,6 +26,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 
 /**
  * An operation to log in log4j.
+ *
+ * @since 5.6
  */
 @Operation(id = LogOperation.ID, category = Constants.CAT_NOTIFICATION, label = "Log", description = "Logging with log4j")
 public class LogOperation {
