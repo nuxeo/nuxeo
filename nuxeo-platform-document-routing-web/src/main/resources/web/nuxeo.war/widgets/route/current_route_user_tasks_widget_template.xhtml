@@ -36,7 +36,7 @@
           <c:forEach var="actor" items="#{task.actors}">
             <c:choose>
               <c:when test="#{fn:startsWith(actor,'group:')}">
-                <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
+                <nxu:set var="group" value="#{fn:split(actor, ':')[1]}">
                 <span class="tag group creator">
                   <a href="#{baseURL}group/#{group}">
                     #{group}
