@@ -144,7 +144,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             String taskDocumentType, String taskName, String taskType,
             String processId, List<String> actorIds,
             boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath)
+            Date dueDate, Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
             throws ClientException {
         if (StringUtils.isBlank(parentPath)) {
             parentPath = getTaskRootParentPath(coreSession);
@@ -172,7 +172,9 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             eventProperties.put(
                     NotificationConstants.RECIPIENTS_KEY,
                     notificationRecipients.toArray(new String[notificationRecipients.size()]));
-
+            if (eventInfo != null) {
+                eventProperties.putAll(eventInfo);
+            }
             TaskEventNotificationHelper.notifyEvent(coreSession, document,
                     principal, task, TaskEventNames.WORKFLOW_TASK_ASSIGNED,
                     eventProperties, comment, null);
@@ -193,7 +195,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         return createTask(coreSession, principal, document,
                 TaskConstants.TASK_TYPE_NAME, taskName, taskType, processId,
                 prefixedActorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
+                dueDate, taskVariables, parentPath, null);
     }
 
     @Override
