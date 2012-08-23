@@ -114,9 +114,9 @@ div.mainContent {
   padding: 15px;
 }
 
-ul.layoutDemoList {
+ul.layoutDemoList, .layoutDemoList li {
   list-style-type: circle;
-  padding: 15px;
+  padding: 1px 1px 1px 15px;
 }
 
 /* FOOTER */
