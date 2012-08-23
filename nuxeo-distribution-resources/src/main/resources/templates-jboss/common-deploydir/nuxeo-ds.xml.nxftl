@@ -113,4 +113,10 @@
     <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
     <attribute name="FromName">${jndi.base}/nxjbpm</attribute>
   </mbean>
+
+  <mbean code="org.jboss.naming.NamingAlias" name="jboss.jca:name=nxactivities,service=DataSourceBinding">
+    <attribute name="ToName">${jndi.base}/NuxeoDS</attribute>
+    <attribute name="FromName">${jndi.base}/nxactivities</attribute>
+  </mbean>
+
 </datasources>
