@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Merge;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 
 /**
@@ -69,6 +70,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         try {
             computeNodes();
             computeTransitions();
+            computeMerge();
             // TODO compute loop transitions on the graph
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -94,12 +96,32 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         }
     }
 
+    /**
+     * Deduce input transitions from output transitions.
+     */
     protected void computeTransitions() throws DocumentRouteException {
         for (GraphNode node : nodes) {
             List<Transition> tt = node.getOutputTransitions();
             for (Transition t : tt) {
                 GraphNode target = getNode(t.target);
                 target.initAddInputTransition(t);
+            }
+        }
+    }
+
+    /**
+     * Compute merge flag, default to "all".
+     */
+    protected void computeMerge() {
+        for (GraphNode node : nodes) {
+            if (node.getInputTransitions().size() > 1) {
+                Merge merge = node.getMergeProperty();
+                if (merge == null) {
+                    merge = Merge.ALL;
+                }
+                node.setMerge(merge);
+            } else {
+                node.setMerge(null); // no merge
             }
         }
     }
