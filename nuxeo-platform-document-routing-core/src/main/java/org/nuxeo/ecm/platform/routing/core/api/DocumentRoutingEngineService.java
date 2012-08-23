@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.api;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,9 +35,12 @@ public interface DocumentRoutingEngineService {
      * Starts a route.
      *
      * @param routeInstance the route instance
+     * @param map the values to pass as initial workflow variables
      * @param session the session
+     * @since 5.6
      */
-    void start(DocumentRoute routeInstance, CoreSession session);
+    void start(DocumentRoute routeInstance, Map<String, Serializable> map,
+            CoreSession session);
 
     /**
      * Resumes a route, optionnally for a given task only.

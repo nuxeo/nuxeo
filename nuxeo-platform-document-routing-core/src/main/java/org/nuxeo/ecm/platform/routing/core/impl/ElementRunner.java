@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -27,6 +28,12 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
  * Runner responsible to run or undo an element of a route.
  */
 public interface ElementRunner {
+
+    /**
+     * Run this element.
+     */
+    void run(CoreSession session, DocumentRouteElement element,
+       Map<String, Serializable> map);
 
     /**
      * Run this element. If an exception is thrown while doing, it cancels the

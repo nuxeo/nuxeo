@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.platform.routing.api;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,21 @@ import org.nuxeo.runtime.model.RuntimeContext;
 public interface DocumentRoutingService {
 
     /**
-     * Creates a new route instance and optionnally starts it.
+     * Creates a new route instance and optionally starts it.
+     *
+     * @param routeModelId the route model id
+     * @param docIds the list of document bound to the instance
+     * @param map the values to pass as initial workflow variables
+     * @param session the session
+     * @param startInstance if the route is automatically started
+     * @return the created route instance id
+     */
+    String createNewInstance(String routeModelId,
+            List<String> docIds, Map<String, Serializable> map,
+            CoreSession session, boolean startInstance);
+
+    /**
+     * Creates a new route instance and optionally starts it.
      *
      * @param routeModelId the route model id
      * @param docIds The list of document bound to the instance.
