@@ -47,7 +47,6 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
 
     protected ZipOutputStream out;
 
-
     public NuxeoArchiveWriter(File destination) throws IOException {
         this(new BufferedOutputStream(new FileOutputStream(destination)),
                 Deflater.DEFAULT_COMPRESSION);
@@ -115,7 +114,7 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         }
     }
 
-    private void writeDocument(String path, ExportedDocument doc)
+    protected void writeDocument(String path, ExportedDocument doc)
             throws IOException {
 
         if (path.equals("/") || path.length() == 0) {
@@ -172,13 +171,14 @@ public class NuxeoArchiveWriter extends AbstractDocumentWriter {
         }
     }
 
-    protected static void writeXML(Document doc, OutputStream out) throws IOException {
+    protected static void writeXML(Document doc, OutputStream out)
+            throws IOException {
         OutputFormat format = AbstractDocumentWriter.createPrettyPrint();
         XMLWriter writer = new XMLWriter(out, format);
         writer.write(doc);
     }
 
-    private void writeMarker() throws IOException {
+    protected void writeMarker() throws IOException {
         ZipEntry entry = new ZipEntry(ExportConstants.MARKER_FILE);
         out.putNextEntry(entry);
         out.closeEntry();
