@@ -14,9 +14,6 @@
       <fields>
         <field>userSuggestionSearchType</field>
       </fields>
-      <properties widgetMode="any">
-        <property name="required">true</property>
-      </properties>
       <selectOptions>
         <option itemLabel="Users and Groups" itemValue="" />
         <option itemLabel="Users" itemValue="USER_TYPE" />
@@ -527,9 +524,6 @@
           <layouts mode="view">
             <layout name="singleUserSuggestion_widget_type_properties_view">
               <rows>
-                <row>
-                  <widget category="widgetTypeConf">userSuggestionSearchType</widget>
-                </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_firstLabelField</widget>
                 </row>
