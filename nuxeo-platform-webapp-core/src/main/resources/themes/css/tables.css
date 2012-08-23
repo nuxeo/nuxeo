@@ -8,7 +8,7 @@ table thead th { padding: .3em; text-align: left }
 .dataList { background: white; border-collapse: collapse; margin: 0 }
 .dataList td {
   border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
-  padding: .4em .3em }
+  padding: .5em .3em }
 .dataOutput thead th, .dataList thead th {
   background-color: "neutral.light (__FLAVOR__ background)";
   border-width: 1px; border-style: none none solid; border-color: "neutral.light (__FLAVOR__ border)";
@@ -31,7 +31,7 @@ table thead th { padding: .3em; text-align: left }
   margin-bottom: .4em }
 .dataOutput td {
   border-width: 1px; border-style: solid none; border-color: "neutral.light (__FLAVOR__ border)";
-  padding: .4em .3em }
+  padding: .5em .3em }
 .dataOutput td table td { border: 0 none transparent }
 .dataOutput, .dataOutput2Columns, .dataList { width: 100% }
 .dataOutput2Columns td { padding: .4em .3em; vertical-align: top }
