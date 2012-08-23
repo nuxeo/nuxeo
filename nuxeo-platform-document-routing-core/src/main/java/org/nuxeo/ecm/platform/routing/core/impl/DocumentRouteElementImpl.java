@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,11 @@ public class DocumentRouteElementImpl implements DocumentRouteElement,
     @Override
     public void run(CoreSession session) {
         runner.run(session, this);
+    }
+
+    @Override
+    public void run(CoreSession session, Map<String, Serializable> map) {
+        runner.run(session, this, map);
     }
 
     @Override

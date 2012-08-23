@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -197,18 +198,24 @@ public class GraphRouteTest {
     }
 
     protected DocumentRoute instantiateAndRun() throws ClientException {
-        return instantiateAndRun(session);
+        return instantiateAndRun(session, null);
     }
 
     protected DocumentRoute instantiateAndRun(CoreSession session)
             throws ClientException {
+        return instantiateAndRun(session, null);
+    }
+
+    protected DocumentRoute instantiateAndRun(CoreSession session,
+            Map<String, Serializable> map) throws ClientException {
         // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
         // draft -> validated
         route = routing.validateRouteModel(route, session);
         // create instance and start
-        return routing.createNewInstance(route,
-                Collections.singletonList(doc.getId()), session, true);
+        String id = routing.createNewInstance(route.getDocument().getId(),
+                Collections.singletonList(doc.getId()), map, session, true);
+        return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
     }
 
     @Test
@@ -263,6 +270,23 @@ public class GraphRouteTest {
         node1 = session.saveDocument(node1);
         DocumentRoute route = instantiateAndRun();
         assertTrue(route.isDone());
+    }
+
+    @Test
+    public void testStartWithMap() throws Exception {
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        routeDoc = session.saveDocument(routeDoc);
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node1 = session.saveDocument(node1);
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put("stringfield", "ABC");
+        DocumentRoute route = instantiateAndRun(session, map);
+        assertTrue(route.isDone());
+        String v = (String) route.getDocument().getPropertyValue("fctroute1:stringfield");
+        assertEquals("ABC", v);
     }
 
     @SuppressWarnings("unchecked")

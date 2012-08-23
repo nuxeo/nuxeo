@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,12 @@ public abstract class AbstractRunner implements ElementRunner {
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+    }
+
+    @Override
+    public void run(CoreSession session, DocumentRouteElement element,
+            Map<String, Serializable> map) {
+        run(session, element);
     }
 
     @Override

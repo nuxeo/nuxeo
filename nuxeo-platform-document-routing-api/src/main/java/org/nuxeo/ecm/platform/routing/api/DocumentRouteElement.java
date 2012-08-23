@@ -123,6 +123,15 @@ public interface DocumentRouteElement extends Serializable {
     void run(CoreSession session);
 
     /**
+     * Execute this element. If this is a step, it will run the operation, if
+     * this is a container it will run its children.
+     *
+     * @param session
+     * @param map the values to pass as initial workflow variables
+     */
+    void run(CoreSession session, Map<String, Serializable> map);
+
+    /**
      * Resumes execution on a route node.
      *
      * @param session the session

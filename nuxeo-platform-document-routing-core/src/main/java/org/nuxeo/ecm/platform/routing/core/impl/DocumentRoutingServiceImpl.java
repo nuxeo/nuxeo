@@ -157,7 +157,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public String createNewInstance(final String routeModelId,
-            final List<String> docIds, CoreSession session, final boolean startInstance) {
+            final List<String> docIds, final Map<String, Serializable> map,
+            CoreSession session, final boolean startInstance) {
         try {
             final String initiator = session.getPrincipal().getName();
             final String res[] = new String[1];
@@ -191,7 +192,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                                 DocumentRoutingConstants.Events.beforeRouteStart.name(),
                                 new HashMap<String, Serializable>());
                         DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
-                        routingEngine.start(route, session);
+                        routingEngine.start(route, map, session);
                     }
                     res[0] = instance.getId();
                 }
@@ -222,6 +223,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
+    }
+    @Override
+    public String createNewInstance(String routeModelId,
+            List<String> docIds, CoreSession session, boolean startInstance) {
+        return createNewInstance(routeModelId, docIds, null, session, startInstance);
     }
 
     @Override

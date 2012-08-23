@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -28,8 +29,9 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent
         implements DocumentRoutingEngineService {
 
     @Override
-    public void start(DocumentRoute routeInstance, CoreSession session) {
-        routeInstance.run(session);
+    public void start(DocumentRoute routeInstance,
+            Map<String, Serializable> map, CoreSession session) {
+        routeInstance.run(session, map);
     }
 
     @Override

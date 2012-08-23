@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,10 +63,14 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
     public static final int MAX_LOOPS = 100;
 
     @Override
-    public void run(CoreSession session, DocumentRouteElement element) {
+    public void run(CoreSession session, DocumentRouteElement element,
+            Map<String, Serializable> map) {
         try {
             GraphRoute graph = (GraphRoute) element;
             element.setRunning(session);
+            if (map != null) {
+                graph.setVariables(map);
+            }
             boolean done = runGraph(session, graph, graph.getStartNode());
             if (done) {
                 element.setDone(session);
@@ -74,6 +79,11 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+    }
+
+    @Override
+    public void run(CoreSession session, DocumentRouteElement element) {
+        run(session, element, null);
     }
 
     @Override

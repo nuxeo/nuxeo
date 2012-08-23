@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.routing.core.impl;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -35,6 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class StepElementRunner implements ElementRunner {
+
     @Override
     public void run(CoreSession session, DocumentRouteElement element) {
         if (element.isRunning()) {
@@ -65,6 +67,12 @@ public class StepElementRunner implements ElementRunner {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void run(CoreSession session, DocumentRouteElement element,
+            Map<String, Serializable> map) {
+        run(session, element);
     }
 
     @Override
