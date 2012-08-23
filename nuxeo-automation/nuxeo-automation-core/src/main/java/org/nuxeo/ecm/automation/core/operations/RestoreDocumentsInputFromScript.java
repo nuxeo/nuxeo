@@ -23,9 +23,14 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
+/**
+ * Run a script and return the result documents object of the script the output
+ * of the operation
+ *
+ * @since 5.6
+ */
 @Operation(id = RestoreDocumentsInputFromScript.ID, category = Constants.CAT_EXECUTION, label = "Restore input documents from a script", description = "Run a script and return the result documents object of the script the output of the operation")
 public class RestoreDocumentsInputFromScript {
 

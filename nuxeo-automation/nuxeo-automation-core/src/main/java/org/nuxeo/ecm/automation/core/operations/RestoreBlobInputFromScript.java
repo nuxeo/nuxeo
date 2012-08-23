@@ -25,6 +25,12 @@ import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.Blob;
 
+/**
+ * Run a script and return the result blob object of the script the output of
+ * the operation.
+ *
+ * @since 5.6
+ */
 @Operation(id = RestoreBlobInputFromScript.ID, category = Constants.CAT_EXECUTION, label = "Restore input blob from a script", description = "Run a script and return the result blob object of the script the output of the operation")
 public class RestoreBlobInputFromScript {
 

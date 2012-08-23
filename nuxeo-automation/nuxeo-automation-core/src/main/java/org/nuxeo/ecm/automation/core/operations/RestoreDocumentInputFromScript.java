@@ -25,6 +25,12 @@ import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
+/**
+ * Run a script and return the result Document object of the script the output
+ * of the operation
+ *
+ * @since 5.6
+ */
 @Operation(id = RestoreDocumentInputFromScript.ID, category = Constants.CAT_EXECUTION, label = "Restore input document from a script", description = "Run a script and return the result Document object of the script the output of the operation")
 public class RestoreDocumentInputFromScript {
 
