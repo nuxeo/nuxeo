@@ -7,21 +7,22 @@ author: lkemen@nuxeo.com
 */
 
 /* =Messages */
-.facesStatusMessage { bottom: 0; left: 0; position: fixed; z-index: 1000 }
-.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; min-width: 500px }
+.facesStatusMessage { top: 1em; right: 1em; position: fixed; z-index: 10000 }
+.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; max-height: 30em;	min-width: 15em; text-align: center }
 
 .errorMessage, .infoMessage, .warningMessage, .infoFeedback  {
-  background-color: #daebff;
-  border-color: "neutral.light (__FLAVOR__ border)";
+  background-color: #e6f1ff;
+  border-color: "neutral.medium (__FLAVOR__ border)";
   border-width: 1px;
   border-style: solid;
-  border-radius: 0 5px;
+  border-radius: 7px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
   color: "black (__FLAVOR__ color)";
   display: block;
+  font-weight: bold;
   list-style: none;
   margin: 0;
-  padding: .8em 1.2em }
+  padding: 1em }
 
 .errorMessage, .errorFeedback { background-color:"warning (__FLAVOR__ background)"; border-color:"error (__FLAVOR__ border)" }
 .warningMessage, .warningFeedback { background-color: "info (__FLAVOR__ background)"; border-color:"warning (__FLAVOR__ border)" }
@@ -37,17 +38,17 @@ author: lkemen@nuxeo.com
 div.detail, p.detail { margin: .1em 0 .7em }
 
 /* =Tips */
-.widgetHelpLabel { border-bottom: 1px dashed #FFCC1D;
+.widgetHelpLabel { border-bottom: 1px dashed #ffcc1d;
   cursor: help;
   display: inline;
-  padding-bottom: 0.2em }
-.tooltip { background-color: #FFE179;
-  border-radius: 0 4px;
-  box-shadow: 2px 2px 0 #DCB632;
+  padding-bottom: .2em }
+.tooltip { background-color: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  box-shadow: 0 0 3px #aaa;
   color: #000;
   display: none;
   font-weight: normal;
-  font-size: 90%;
   max-width: 14em;
   padding: .6em .8em .8em;
   white-space: normal;
