@@ -24,18 +24,17 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 
 /**
- * Starts the workflow with the given id on the input documents. Returns back
- * the input documents.
+ * Starts the workflow with the given model id on the input documents. Returns
+ * back the input documents.
  *
  * @since 5.6
  *
  */
-@Operation(id = StartWorkflowOperation.ID, category = Constants.CAT_WORKFLOW, label = "Start workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Starts the workflow with the given id on the input documents. Returns back the input documents ."
-        + " The workflow instance is available under the \"WorkflowInstance\" context variable")
+@Operation(id = StartWorkflowOperation.ID, category = Constants.CAT_WORKFLOW, label = "Start workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Starts the workflow with the given model id on the input documents. Returns back the input documents."
+        + " The created workflow instance id is available under the \"WorkflowId\" context variable")
 public class StartWorkflowOperation {
 
     public static final String ID = "Context.StartWorkflow";
@@ -48,6 +47,9 @@ public class StartWorkflowOperation {
 
     @Param(name = "id", required = true)
     protected String id;
+
+    @Param(name = "start", required = false)
+    protected Boolean start;
 
     @Context
     protected DocumentRoutingService documentRoutingService;
@@ -70,16 +72,10 @@ public class StartWorkflowOperation {
         return doc;
     }
 
-    private void startNewInstance(List<String> ids) throws ClientException {
-        DocumentRoute model = documentRoutingService.getRouteModelWithId(
-                session, id);
-        if (model == null) {
-            throw new ClientException(
-                    "Could not find any workflow with the id " + id);
-
-        }
-        DocumentRoute workflow = documentRoutingService.createNewInstance(
-                model, ids, session, true);
-        ctx.put("WorkflowInstance", workflow);
+    protected void startNewInstance(List<String> ids) throws ClientException {
+        String workflowId = documentRoutingService.createNewInstance(id, ids,
+                session, Boolean.TRUE.equals(start));
+        ctx.put("WorkflowId", workflowId);
     }
+
 }

@@ -61,18 +61,6 @@ public interface RoutingTaskService {
             String status) throws DocumentRouteException;
 
     /**
-     * Grants the specified assignees permissions to the actors on this task
-     *
-     * @param session the session
-     * @param doc
-     * @param task
-     * @deprecated since 5.6, use DocumentRoutingService instead
-     */
-    @Deprecated
-    void grantPermissionToTaskAssignees(CoreSession session, String permission,
-            DocumentModel doc, Task task) throws DocumentRouteException;
-
-    /**
      * Gets the documents following the workflow to which the given task belongs
      *
      * @param session

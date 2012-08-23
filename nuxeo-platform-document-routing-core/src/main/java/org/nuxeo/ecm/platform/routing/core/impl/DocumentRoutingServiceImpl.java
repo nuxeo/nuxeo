@@ -50,6 +50,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -71,7 +74,6 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedExcept
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
 import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegistry;
-import org.nuxeo.ecm.platform.routing.core.runner.CreateNewRouteInstanceUnrestricted;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -154,14 +156,69 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public DocumentRoute createNewInstance(DocumentRoute model,
-            List<String> docIds, CoreSession session, boolean startInstance) {
-        CreateNewRouteInstanceUnrestricted runner = new CreateNewRouteInstanceUnrestricted(
-                session, model, docIds, startInstance, persister);
+    public String createNewInstance(final String routeModelId,
+            final List<String> docIds, CoreSession session, final boolean startInstance) {
         try {
-            runner.runUnrestricted();
-            DocumentRef routeRef = runner.getInstance().getDocument().getRef();
-            return session.getDocument(routeRef).getAdapter(DocumentRoute.class);
+            final String initiator = session.getPrincipal().getName();
+            final String res[] = new String[1];
+            new UnrestrictedSessionRunner(session) {
+
+                protected DocumentRoute route;
+
+                @Override
+                public void run() throws ClientException {
+                    DocumentModel model = session.getDocument(new IdRef(
+                            routeModelId));
+                    DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(
+                            model, session);
+                    route = instance.getAdapter(DocumentRoute.class);
+                    route.setAttachedDocuments(docIds);
+                    route.save(session);
+                    Map<String, Serializable> props = new HashMap<String, Serializable>();
+                    props.put(
+                            DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY,
+                            initiator);
+                    fireEvent(
+                            DocumentRoutingConstants.Events.beforeRouteReady.name(),
+                            props);
+                    route.setReady(session);
+                    fireEvent(
+                            DocumentRoutingConstants.Events.afterRouteReady.name(),
+                            props);
+                    route.save(session);
+                    if (startInstance) {
+                        fireEvent(
+                                DocumentRoutingConstants.Events.beforeRouteStart.name(),
+                                new HashMap<String, Serializable>());
+                        DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
+                        routingEngine.start(route, session);
+                    }
+                    res[0] = instance.getId();
+                }
+
+                protected void fireEvent(String eventName,
+                        Map<String, Serializable> eventProperties) {
+                    eventProperties.put(
+                            DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
+                            route);
+                    eventProperties.put(
+                            DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                            DocumentRoutingConstants.ROUTING_CATEGORY);
+                    DocumentEventContext envContext = new DocumentEventContext(
+                            session, session.getPrincipal(),
+                            route.getDocument());
+                    envContext.setProperties(eventProperties);
+                    EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+                    try {
+                        eventProducer.fireEvent(envContext.newEvent(eventName));
+                    } catch (ClientException e) {
+                        throw new ClientRuntimeException(e);
+                    }
+                }
+
+            }.runUnrestricted();
+
+            return res[0];
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }
@@ -169,18 +226,33 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
+            List<String> docIds, CoreSession session, boolean startInstance) {
+        String id = createNewInstance(model.getDocument().getId(), docIds,
+                session, startInstance);
+        try {
+            return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    @Deprecated
+    public DocumentRoute createNewInstance(DocumentRoute model,
             String documentId, CoreSession session, boolean startInstance) {
         return createNewInstance(model, Collections.singletonList(documentId),
                 session, startInstance);
     }
 
     @Override
+    @Deprecated
     public DocumentRoute createNewInstance(DocumentRoute model,
             List<String> documentIds, CoreSession session) {
         return createNewInstance(model, documentIds, session, true);
     }
 
     @Override
+    @Deprecated
     public DocumentRoute createNewInstance(DocumentRoute model,
             String documentId, CoreSession session) {
         return createNewInstance(model, Collections.singletonList(documentId),
@@ -188,18 +260,28 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void resumeInstance(final DocumentRef routeRef, CoreSession session,
-            final String nodeId, final Map<String, Object> data,
-            final String status) {
+    public void resumeInstance(String routeId, String nodeId,
+            Map<String, Object> data, String status, CoreSession session) {
+        completeTask(routeId, nodeId, null, data, status, session);
+    }
+
+    @Override
+    public void completeTask(String routeId, String taskId,
+            Map<String, Object> data, String status, CoreSession session) {
+        completeTask(routeId, null, taskId, data, status, session);
+    }
+
+    protected void completeTask(final String routeId, final String nodeId,
+            final String taskId, final Map<String, Object> data,
+            final String status, CoreSession session) {
         try {
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
                     DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
-                    DocumentModel routeDoc = session.getDocument(routeRef);
+                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
                     DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
-                    routingEngine.resume(routeInstance, session, nodeId, data,
-                            status);
+                    routingEngine.resume(routeInstance, nodeId, taskId, data, status, session);
                 }
             }.runUnrestricted();
         } catch (ClientException e) {
@@ -716,14 +798,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new DocumentRouteException(
                     "Can not resume workflow, no related route");
         }
-        String nodeId = taskVariables.get(DocumentRoutingConstants.TASK_NODE_ID_KEY);
-        if (StringUtils.isEmpty(nodeId)) {
-            throw new DocumentRouteException(
-                    "Can not resume workflow, nodeId is empty");
-        }
-
-        resumeInstance(new IdRef(routeInstanceId), session, nodeId, data,
-                status);
+        completeTask(routeInstanceId, null, task.getId(), data, status,
+                session);
     }
 
     @Override
@@ -753,30 +829,60 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public void grantPermissionToTaskAssignees(CoreSession session,
-            final String permission, final DocumentModel doc, final Task task)
-            throws ClientException {
+            final String permission, final List<DocumentModel> docs,
+            final Task task) throws ClientException {
+        final List<String> actorIds = new ArrayList<String>();
+        for (String actor : task.getActors()) {
+            if (actor.contains(":")) {
+                actorIds.add(actor.split(":")[1]);
+            } else {
+                actorIds.add(actor);
+            }
+        }
+        final String aclName = getACLName(task);
         new UnrestrictedSessionRunner(session) {
             @Override
             public void run() throws ClientException {
-                List<String> actorIds = new ArrayList<String>();
-                for (String actor : task.getActors()) {
-                    if (actor.contains(":")) {
-                        actorIds.add(actor.split(":")[1]);
-                    } else {
-                        actorIds.add(actor);
+                for (DocumentModel doc : docs) {
+                    ACP acp = doc.getACP();
+                    acp.removeACL(aclName);
+                    ACL acl = new ACLImpl(aclName);
+                    for (String actorId : actorIds) {
+                        acl.add(new ACE(actorId, permission, true));
                     }
+                    acp.addACL(0, acl); // add first to get before blocks
+                    doc.setACP(acp, true);
+                    session.saveDocument(doc);
                 }
-                ACP acp = doc.getACP();
-                ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-                for (String actorId : actorIds) {
-                    acl.add(new ACE(actorId, permission, true));
-                }
-                acp.addACL(acl);
-                doc.setACP(acp, true);
-                session.saveDocument(doc);
             }
 
         }.runUnrestricted();
+    }
+
+    @Override
+    public void removePermissionFromTaskAssignees(CoreSession session,
+            final List<DocumentModel> docs, Task task) throws ClientException {
+        final String aclName = getACLName(task);
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                for (DocumentModel doc : docs) {
+                    ACP acp = doc.getACP();
+                    acp.removeACL(aclName);
+                    doc.setACP(acp, true);
+                    session.saveDocument(doc);
+                }
+            };
+        }.runUnrestricted();
+    }
+
+    /**
+     * Finds an ACL name specific to the task (there may be several tasks
+     * applying permissions to the same document).
+     */
+    protected static String getACLName(Task task) {
+        return DocumentRoutingConstants.DOCUMENT_ROUTING_ACL + '/'
+                + task.getId();
     }
 
 }

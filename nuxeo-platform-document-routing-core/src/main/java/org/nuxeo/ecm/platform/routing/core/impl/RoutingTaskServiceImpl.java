@@ -70,19 +70,4 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements
         }
     }
 
-    @Override
-    public void grantPermissionToTaskAssignees(CoreSession session,
-            String permission, DocumentModel doc, Task task)
-            throws DocumentRouteException {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
-        try {
-            routing.grantPermissionToTaskAssignees(session, permission, doc,
-                    task);
-        } catch (DocumentRouteException e) {
-            throw e;
-        } catch (ClientException e) {
-            throw new DocumentRouteException(e);
-        }
-    }
-
 }

@@ -334,7 +334,7 @@ public interface GraphNode {
     /**
      * Cancels the task if this is a suspended task node.
      */
-    void cancelTask();
+    void cancelTasks();
 
     /**
      * Get input chain.
