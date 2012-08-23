@@ -60,7 +60,7 @@
 
     <notification name="Email document" channel="email" enabled="true" availableIn="all"
       autoSubscribed="true" template="emailDocument" subject="${subject}"
-      label="label.noLabel">
+      label="label.nuxeo.notifications.email.document">
       <event name="emailDocumentSend"/>
     </notification>
 
