@@ -44,6 +44,7 @@
           nothingLabel="#{messages['label.noSuggestions']}"
           requestDelay="100" ajaxSingle="true"
           ignoreDupResponses="true" zindex="5000"
+          eventsQueue="searchFormQueue"
           styleClass="suggestionBoxResult">
           <f:param name="suggesterGroup" value="searchbox" />
           <a4j:support event="onselect" id="#{widget.id}_a4jSupport"
@@ -58,9 +59,10 @@
             <h:outputText value="#{result.label}" />
           </h:column>
         </rich:suggestionbox>
-        <h:commandButton
+        <a4j:commandButton
           action="#{suggestboxActions.performKeywordsSearch('searchByKeywords', 'searchbox')}"
           value="#{messages['command.search']}" styleClass="button"
+          eventsQueue="searchFormQueue"
           id="simpleSearchSubmitButton"/>
       </h:panelGroup>
 
