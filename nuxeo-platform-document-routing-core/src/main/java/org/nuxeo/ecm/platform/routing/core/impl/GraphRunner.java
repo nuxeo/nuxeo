@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -76,17 +78,45 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
 
     @Override
     public void resume(CoreSession session, DocumentRouteElement element,
-            String nodeId, Map<String, Object> varData, String status) {
+            String nodeId, String taskId, Map<String, Object> varData,
+            String status) {
         try {
             GraphRoute graph = (GraphRoute) element;
+            Task task = null;
+            if (taskId == null) {
+                if (nodeId == null) {
+                    throw new DocumentRouteException(
+                            "nodeId and taskId both missing");
+                }
+            } else {
+                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+                task = taskDoc.getAdapter(Task.class);
+                if (task == null) {
+                    throw new DocumentRouteException("Invalid taskId: " + taskId);
+                }
+                if (nodeId == null) {
+                    nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
+                    if (StringUtils.isEmpty(nodeId)) {
+                        throw new DocumentRouteException(
+                                "No nodeId found on task: " + taskId);
+                    }
+                }
+            }
             GraphNode node = graph.getNode(nodeId);
+            if (node == null) {
+                throw new DocumentRouteException("Invalid nodeId: " + nodeId);
+            }
             if (node.getState() != State.SUSPENDED) {
                 throw new DocumentRouteException(
                         "Cannot resume on non-suspended node: " + node);
             }
+
             node.setAllVariables(varData);
             if (StringUtils.isNotEmpty(status)) {
                 node.setButton(status);
+            }
+            if (task != null) {
+                finishTask(session, graph, node, task);
             }
             boolean done = runGraph(session, graph, node);
             if (done) {
@@ -140,7 +170,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 node.starting();
                 node.executeChain(node.getInputChain());
                 if (node.hasTask()) {
-                    createTask(session, graph, node);
+                    createTask(session, graph, node); // may create several
                     node.setState(State.SUSPENDED);
                     // next node
                 } else {
@@ -220,11 +250,12 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     continue;
                 }
                 source.setCanceled();
+                State state = source.getState();
                 source.setState(State.READY);
                 pendingNodes.remove(node);
-                if (source.getState() == State.SUSPENDED) {
+                if (state == State.SUSPENDED) {
                     // we're suspended on a task, cancel it and stop recursion
-                    source.cancelTask();
+                    source.cancelTasks();
                 } else {
                     // else recurse
                     todo.add(source);
@@ -233,7 +264,6 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         }
     }
 
-    // TODO : check docs?
     protected void createTask(CoreSession session, GraphRoute graph,
             GraphNode node) throws DocumentRouteException {
         DocumentRouteElement routeInstance = (DocumentRouteElement) graph;
@@ -261,10 +291,14 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         actors.addAll(node.getTaskAssignees());
         // evaluate taskDueDate from the taskDueDateExpr;
         Date dueDate = node.computeTaskDueDate();
-        DocumentModel doc = graph.getAttachedDocumentModels().get(0);
+        DocumentModelList docs = graph.getAttachedDocumentModels();
         try {
             TaskService taskService = Framework.getLocalService(TaskService.class);
             DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+            // TODO documents other than the first are not attached to the task
+            // (task API allows only one document)
+            DocumentModel doc = docs.size() > 0 ? docs.get(0) : null;
+            // we may get several tasks if there's one per actor
             List<Task> tasks = taskService.createTask(session,
                     (NuxeoPrincipal) session.getPrincipal(), doc,
                     node.getTaskDocType(), node.getDocument().getTitle(),
@@ -280,10 +314,23 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             }
             for (Task task : tasks) {
                 routing.grantPermissionToTaskAssignees(session,
-                        taskAssigneesPermission, doc, task);
+                        taskAssigneesPermission, docs, task);
             }
         } catch (ClientException e) {
             throw new DocumentRouteException("Can not create task", e);
         }
     }
+
+    protected void finishTask(CoreSession session, GraphRoute graph,
+            GraphNode node, Task task) throws DocumentRouteException {
+        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        DocumentModelList docs = graph.getAttachedDocumentModels();
+        try {
+            routing.removePermissionFromTaskAssignees(session, docs, task);
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Cannot finish task", e);
+        }
+        // TODO delete task?
+    }
+
 }

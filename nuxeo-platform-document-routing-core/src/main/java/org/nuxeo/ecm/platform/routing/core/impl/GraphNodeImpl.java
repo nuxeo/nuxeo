@@ -583,12 +583,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 Property property = t.source.getDocument().getProperty(
                         "rnode:transitions").get(0).get("result");
                 if (property != null) {
-                    Object obj = property.getValue();
-                    if (obj != null) {
-                        boolean res = (Boolean) obj;
-                        if (res) {
-                            n++;
-                        }
+                    if (Boolean.TRUE.equals(property.getValue())) {
+                        n++;
                     }
                 }
             }
@@ -609,7 +605,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public void cancelTask() {
+    public void cancelTasks() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

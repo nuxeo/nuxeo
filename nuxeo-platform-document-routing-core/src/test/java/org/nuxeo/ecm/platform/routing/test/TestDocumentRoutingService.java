@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -195,7 +196,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         service.validateRouteModel(route, session);
         service.unlockDocumentRouteUnrestrictedSession(route, session);
         route = service.createNewInstance(route, new ArrayList<String>(),
-                session);
+                session, true);
         session.save();
         assertNotNull(route);
         DocumentModel step = session.createDocumentModel(
@@ -263,7 +264,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = service.validateRouteModel(route, session);
         service.unlockDocumentRouteUnrestrictedSession(route, session);
         route = service.createNewInstance(route, new ArrayList<String>(),
-                session);
+                session, true);
         assertNotNull(route);
         session.save();
         CoreSession managersSession = openSessionAs("routeManagers");
@@ -359,7 +360,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
-                doc1.getId(), session);
+                Collections.singletonList(doc1.getId()), session, true);
         assertTrue(routeInstance.isDone());
 
         // check that we don't get route instances when querying for models
@@ -393,7 +394,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
-                doc1.getId(), session);
+                Collections.singletonList(doc1.getId()), session, true);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
         assertEquals(
@@ -449,7 +450,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
-                doc1.getId(), session);
+                Collections.singletonList(doc1.getId()), session, true);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
         assertEquals(
@@ -498,7 +499,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
-                doc1.getId(), session);
+                Collections.singletonList(doc1.getId()), session, true);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
         assertEquals(
@@ -581,7 +582,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
-                doc1.getId(), session);
+                Collections.singletonList(doc1.getId()), session, true);
         closeSession();
         openSession();
         routeInstance = session.getDocument(
@@ -756,7 +757,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         DocumentRoute routeInstance = service.createNewInstance(route,
-                doc1.getId(), session);
+                Collections.singletonList(doc1.getId()), session, true);
         session.save();
         waitForAsyncExec();
         assertTrue(routeInstance.isDone());
@@ -798,7 +799,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         waitForAsyncExec();
         DocumentRoute routeInstance = service.createNewInstance(routeModel,
-                doc1.getId(), session);
+                Collections.singletonList(doc1.getId()), session, true);
         assertNotNull(routeInstance);
         assertFalse(routeInstance.isDone());
         assertEquals(

@@ -176,8 +176,8 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String startRoute() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
-        getDocumentRoutingService().createNewInstance(currentRoute,
-                currentRoute.getAttachedDocuments(), documentManager);
+        getDocumentRoutingService().createNewInstance(currentDocument.getId(),
+                currentRoute.getAttachedDocuments(), documentManager, true);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
@@ -337,8 +337,6 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * Check if the related route to this case is started (ready or running) or
      * no
-     *
-     * @param doc the mail to remove
      */
     public boolean hasRelatedRoute() throws ClientException {
         return !relatedRoutes.isEmpty();
@@ -347,8 +345,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String startRouteRelatedToCurrentDocument() throws ClientException {
         DocumentRoute route = getRelatedRoute();
         // check relatedRoutedoc id
-        if (relatedRouteModelDocumentId != null
-                && !"".equals(relatedRouteModelDocumentId)) {
+        if (!StringUtils.isEmpty(relatedRouteModelDocumentId)) {
             DocumentModel model = documentManager.getDocument(new IdRef(
                     relatedRouteModelDocumentId));
             route = model.getAdapter(DocumentRoute.class);
@@ -364,8 +361,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         List<String> documentIds = new ArrayList<String>();
         documentIds.add(navigationContext.getCurrentDocument().getId());
         route.setAttachedDocuments(documentIds);
-        getDocumentRoutingService().createNewInstance(route,
-                route.getAttachedDocuments(), documentManager);
+        getDocumentRoutingService().createNewInstance(
+                route.getDocument().getId(), documentIds, documentManager, true);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
         webActions.resetTabList();
         return null;

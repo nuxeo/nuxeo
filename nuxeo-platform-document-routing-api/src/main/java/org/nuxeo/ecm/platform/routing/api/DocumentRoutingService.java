@@ -39,11 +39,23 @@ import org.nuxeo.runtime.model.RuntimeContext;
 public interface DocumentRoutingService {
 
     /**
+     * Creates a new route instance and optionnally starts it.
+     *
+     * @param routeModelId the route model id
+     * @param docIds The list of document bound to the instance.
+     * @param session the session
+     * @param startInstance if the route is automatically started
+     * @return the created route instance id
+     */
+    String createNewInstance(String routeModelId, List<String> docIds,
+            CoreSession session, boolean startInstance);
+
+    /**
      * Create a new {@link DocumentRoute} instance from this
      * {@link DocumentRoute} model.
      *
      * @param model The model used to create the instance.
-     * @param documents The list of document bound to the instance.
+     * @param documentIds The list of document bound to the instance.
      * @param startInstance if the {@link DocumentRoute} is automatically
      *            started.
      * @return the created {@link DocumentRoute} instance.
@@ -52,40 +64,57 @@ public interface DocumentRoutingService {
             List<String> documentIds, CoreSession session, boolean startInstance);
 
     /**
-     * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
-     *      only one document attached.
+     * @deprecated since 5.6, use other APIs
      */
+    @Deprecated
     DocumentRoute createNewInstance(DocumentRoute model, String documentId,
             CoreSession session, boolean startInstance);
 
     /**
-     * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
-     *      startInstance <code>true</code>
+     * @deprecated since 5.6, use other APIs
      */
+    @Deprecated
     DocumentRoute createNewInstance(DocumentRoute model,
             List<String> documentIds, CoreSession session);
 
     /**
-     * @see #createNewInstance(DocumentRoute, List, CoreSession, boolean) with
-     *      startInstance <code>true</code> and only one document attached.
+     * @deprecated since 5.6, use other APIs
      */
+    @Deprecated
     DocumentRoute createNewInstance(DocumentRoute model, String documentId,
             CoreSession session);
 
     /**
-     * Resumes a route instance.
+     * Resumes a route instance on a give node. Any remaining tasks on this node
+     * will be cancelled.
      * <p/>
      * Called by the UI action corresponding to a task button.
      *
-     * @param routeRef the reference to the route instance document
-     * @param session the session
+     * @param routeId the id of the route instance
      * @param nodeId the node id to resume on
      * @param data the data coming from UI form
      * @param status the status coming from UI form
+     * @param session the session
      * @since 5.6
      */
-    void resumeInstance(DocumentRef routeRef, CoreSession session,
-            String nodeId, Map<String, Object> data, String status);
+    void resumeInstance(String routeId, String nodeId,
+            Map<String, Object> data, String status, CoreSession session);
+
+    /**
+     * Completes a task on a give node. If this is the last task the workflow
+     * will continue.
+     * <p/>
+     * Called by the UI action corresponding to a task button.
+     *
+     * @param routeId the id of the route instance
+     * @param taskId the id of the task
+     * @param data the data coming from UI form
+     * @param status the status coming from UI form
+     * @param session the session
+     * @since 5.6
+     */
+    void completeTask(String routeId, String taskId, Map<String, Object> data,
+            String status, CoreSession session);
 
     /**
      * Save a route instance as a new model of route.
@@ -397,16 +426,31 @@ public interface DocumentRoutingService {
             String status) throws ClientException;
 
     /**
-     * Grants the specified assignees permissions to the actors on this task
+     * Grants on these documents the specified assignees permissions for this
+     * task.
      *
      * @param session the session
-     * @param doc
-     * @param task
+     * @param permission the permission
+     * @param docs the documents
+     * @param task the task
      *
-     * @since 5.6, was on RoutingTaskService before
+     * @since 5.6
      */
     void grantPermissionToTaskAssignees(CoreSession session, String permission,
-            DocumentModel doc, Task task) throws ClientException;
+            List<DocumentModel> docs, Task task) throws ClientException;
+
+    /**
+     * Removes on these documents the specified assignees permissions for this
+     * task.
+     *
+     * @param session the session
+     * @param docs the documents
+     * @param task the task
+     *
+     * @since 5.6
+     */
+    void removePermissionFromTaskAssignees(CoreSession session,
+            List<DocumentModel> docs, Task task) throws ClientException;
 
     /**
      * Gets the documents following the workflow to which the given task belongs
@@ -419,4 +463,5 @@ public interface DocumentRoutingService {
      */
     List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task)
             throws ClientException;
+
 }

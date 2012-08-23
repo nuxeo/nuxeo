@@ -207,8 +207,8 @@ public class GraphRouteTest {
         // draft -> validated
         route = routing.validateRouteModel(route, session);
         // create instance and start
-        route = routing.createNewInstance(route, doc.getId(), session, true);
-        return route;
+        return routing.createNewInstance(route,
+                Collections.singletonList(doc.getId()), session, true);
     }
 
     @Test
@@ -386,8 +386,8 @@ public class GraphRouteTest {
 
         // now resume, as if the task was actually executed
         Map<String, Object> data = new HashMap<String, Object>();
-        routing.resumeInstance(route.getDocument().getRef(), session, "node2",
-                data, null);
+        routing.resumeInstance(route.getDocument().getId(), "node2", data,
+                null, session);
 
         route.getDocument().refresh();
         assertTrue(route.isDone());
@@ -873,18 +873,28 @@ public class GraphRouteTest {
         Task ts = tasks.get(0);
         assertEquals(2, ts.getActors().size());
 
+        // check permissions set during task
+        assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
+        assertTrue(session.hasPermission(user2, doc.getRef(), "Write"));
+
+        // end task
+
         Map<String, Object> data = new HashMap<String, Object>();
         CoreSession sessionUser2 = openSession(user2);
         routing.endTask(sessionUser2, tasks.get(0), data, "trans1");
         closeSession(sessionUser2);
-        // end task and verify that route was done
+
+        // verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         session = openSession(admin);
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
-        assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
-        assertTrue(session.hasPermission(user2, doc.getRef(), "Write"));
+
+        // permissions are reset
+        assertFalse(session.hasPermission(user1, doc.getRef(), "Write"));
+        assertFalse(session.hasPermission(user2, doc.getRef(), "Write"));
+
         closeSession(session);
     }
 
@@ -945,7 +955,7 @@ public class GraphRouteTest {
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
-        assertTrue(session.hasPermission(user1, doc.getRef(), "Write"));
+        assertFalse(session.hasPermission(user1, doc.getRef(), "Write"));
     }
 
     @SuppressWarnings("unchecked")
