@@ -76,13 +76,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     /** To be used through getter. */
     protected List<Button> taskButtons;
 
-    protected Merge merge;
-
     public GraphNodeImpl(DocumentModel doc, GraphRouteImpl graph) {
         super(doc, new GraphRunner());
         this.graph = graph;
         inputTransitions = new ArrayList<Transition>(2);
-        merge = null;
     }
 
     @Override
@@ -180,25 +177,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public Merge getMergeProperty() {
-        String m = (String) getProperty(PROP_MERGE);
-        if (StringUtils.isBlank(m)) {
-            return null;
-        }
-        if (MERGE_ONE.equals(m)) {
-            return Merge.ONE;
-        }
-        return Merge.ALL;
-    }
-
-    @Override
-    public void setMerge(Merge merge) {
-        this.merge = merge;
-    }
-
-    @Override
     public boolean isMerge() {
-        return merge != null;
+        String merge = (String) getProperty(PROP_MERGE);
+        return StringUtils.isNotEmpty(merge);
     }
 
     @Override
@@ -588,11 +569,14 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                     }
                 }
             }
-
-            if (merge == Merge.ONE) {
+            String merge = (String) getProperty(PROP_MERGE);
+            if (MERGE_ONE.equals(merge)) {
                 return n > 0;
-            } else {
+            } else if (MERGE_ALL.equals(merge)) {
                 return n == inputTransitions.size();
+            } else {
+                throw new ClientRuntimeException("Illegal merge mode '" + merge
+                        + "' for node " + this);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

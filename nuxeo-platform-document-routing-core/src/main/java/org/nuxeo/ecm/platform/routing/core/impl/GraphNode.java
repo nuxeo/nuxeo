@@ -166,11 +166,6 @@ public interface GraphNode {
         }
     }
 
-    enum Merge {
-        ONE, //
-        ALL
-    }
-
     class Transition implements Comparable<Transition> {
 
         public GraphNode source;
@@ -297,16 +292,6 @@ public interface GraphNode {
      * Checks if this is a stop node.
      */
     boolean isStop();
-
-    /**
-     * Gets the merge property stored in the persisted node.
-     */
-    Merge getMergeProperty();
-
-    /**
-     * Sets the computed merge flag.
-     */
-    void setMerge(Merge merge);
 
     /**
      * Checks if this is a merge node.
