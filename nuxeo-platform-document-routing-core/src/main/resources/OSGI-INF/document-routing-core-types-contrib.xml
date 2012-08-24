@@ -35,12 +35,14 @@
 
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
       <facet name="HiddenInNavigation" />
+      <facet name="SystemDocument" />
       <subtypes>
         <type>Folder</type>
       </subtypes>
     </doctype>
 
     <doctype name="DocumentRouteModelsRoot" extends="Folder">
+      <facet name="SystemDocument" />
       <subtypes>
         <type>Folder</type>
       </subtypes>
@@ -55,6 +57,7 @@
 
     <doctype name="DocumentRoute" extends="StepFolder">
       <facet name="DocumentRoute" />
+      <facet name="SystemDocument" />
       <schema name="document_route_instance" />
       <schema name="document_route_model" />
       <subtypes>
@@ -66,6 +69,7 @@
 
     <doctype name="StepFolder" extends="OrderedFolder">
       <facet name="StepFolder" />
+      <facet name="SystemDocument" />
       <schema name="step_folder" />
       <subtypes>
         <type>StepFolder</type>
@@ -79,10 +83,12 @@
       <facet name="RouteStep" />
       <facet name="Commentable" />
       <facet name="CommentsInfoHolder" />
+      <facet name="SystemDocument" />
     </doctype>
 
     <doctype name="ConditionalStepFolder" extends="StepFolder">
       <facet name="ConditionalStepFolder" />
+      <facet name="SystemDocument" />
       <subtypes>
         <type>StepFolder</type>
         <type>DocumentRouteStep</type>
@@ -90,6 +96,7 @@
     </doctype>
 
     <doctype name="RouteNode" extends="Document">
+      <facet name="SystemDocument" />
       <schema name="dublincore" />
       <schema name="route_node" />
     </doctype>
