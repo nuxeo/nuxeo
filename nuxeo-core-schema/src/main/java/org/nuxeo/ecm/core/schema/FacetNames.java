@@ -81,6 +81,12 @@ public final class FacetNames {
      */
     public static final String HIDDEN_IN_NAVIGATION = "HiddenInNavigation";
 
+    /**
+     * The document type corresponds to a system document, not a user-visible
+     * document. It is often (but not always) hidden in navigation as well.
+     */
+    public static final String SYSTEM_DOCUMENT = "SystemDocument";
+
     @Deprecated
     public static final String BROWSE_VIA_SEARCH = "BrowseViaSearch";
 
