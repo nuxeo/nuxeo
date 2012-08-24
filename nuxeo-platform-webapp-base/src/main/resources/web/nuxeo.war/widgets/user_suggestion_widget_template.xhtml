@@ -4,6 +4,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:rich="http://richfaces.org/rich"
   class="UserSuggestionInput">
 
@@ -75,6 +76,8 @@
     <c:set var="displayHelpLabel" value="#{nxu:test(!empty widgetProperty_displayHelpLabel, widgetProperty_displayHelpLabel, true)}" />
     <c:set var="suggestionWidth" value="${nxu:test(!empty widgetProperty_width, widgetProperty_width, '400')}" />
     <c:set var="suggestionWithEmail" value="${nxu:test(!empty widgetProperty_displayEmailInSuggestion, widgetProperty_displayEmailInSuggestion, false)}" />
+    <c:set var="showActions"
+      value="#{not widgetProperty_hideDeleteButton or widgetProperty_orderable}" />
 
     <c:if test="#{!hideSearchTypeText}">
       <h:outputText value="#{messages['label.security.searchUsers']}"
@@ -157,19 +160,16 @@
         <h:panelGroup>
           <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion">
             <nxu:inputList id="#{widget.id}_list" value="#{field_0}" model="model"
-              required="#{widget.required}"
-              orderable="#{widgetProperty_orderable}">
+              required="#{widget.required}">
               <h:panelGroup id="#{widget.id}_listItem">
                 <h:panelGrid columns="2" columnClasses="iconColumn, ">
-                  <a4j:commandLink immediate="true"
-                    actionListener="#{editableListBean.performAction}"
-                    id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
-                    bypassUpdates="true">
-                    <h:graphicImage value="/icons/action_delete.gif" />
-                    <f:param name="for" value="#{widget.id}_list" />
-                    <f:param name="index" value="#{model.rowIndex}" />
-                    <f:param name="type" value="remove" />
-                  </a4j:commandLink>
+                  <h:panelGroup>
+                    <c:if test="#{showActions}">
+                      <ui:include src="/widgets/list_widget_template_actions.xhtml">
+                        <ui:param name="forComponentId" value="#{widget.id}_list" />
+                      </ui:include>
+                    </c:if>
+                  </h:panelGroup>
                   <nxu:methodResult name="info" value="#{userSuggestionActions.getUserInfo(model.rowData)}">
                     <f:subview rendered="#{info.type == 'USER_TYPE'}">
                       <h:graphicImage value="/icons/user.png" alt="user.png" />
