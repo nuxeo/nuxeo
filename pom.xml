@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm</groupId>
+  <artifactId>nuxeo-drive-server</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Drive Server Parent</name>
+  <description>Parent project for the Java server-side code of Nuxeo Drive</description>
+  <properties>
+    <nuxeo.drive.version>5.7-SNAPSHOT</nuxeo.drive.version>
+  </properties>
+
+  <modules>
+    <module>nuxeo-drive-jsf</module>
+    <module>nuxeo-drive-core</module>
+    <module>nuxeo-drive-operations</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-core</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+
+  </repositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-drive.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-drive.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-drive</url>
+  </scm>
+
+</project>
