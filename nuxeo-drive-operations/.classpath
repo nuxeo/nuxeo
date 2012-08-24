@@ -1,0 +1,10 @@
+<classpath>
+  <classpathentry kind="src" path="src/test/java" output="bin/test" including="**/*.java"/>
+  <classpathentry kind="src" path="src/test/resources" output="bin/test" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="output" path="bin/main"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="con" path="org.nuxeo.ide.SDK_CONTAINER"/>
+  <classpathentry kind="con" path="org.nuxeo.ide.SDK_TEST_CONTAINER"/>
+</classpath>
