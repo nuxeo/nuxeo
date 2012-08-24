@@ -168,8 +168,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
                 @Override
                 public void run() throws ClientException {
-                    DocumentModel model = session.getDocument(new IdRef(
-                            routeModelId));
+                    DocumentModel model = getRouteModelWithId(session,
+                            routeModelId).getDocument();
                     DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(
                             model, session);
                     route = instance.getAdapter(DocumentRoute.class);
@@ -233,7 +233,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public DocumentRoute createNewInstance(DocumentRoute model,
             List<String> docIds, CoreSession session, boolean startInstance) {
-        String id = createNewInstance(model.getDocument().getId(), docIds,
+        String id = createNewInstance(model.getDocument().getName(), docIds,
                 session, startInstance);
         try {
             return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);

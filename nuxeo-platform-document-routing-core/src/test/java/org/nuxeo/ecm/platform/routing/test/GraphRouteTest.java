@@ -213,7 +213,7 @@ public class GraphRouteTest {
         // draft -> validated
         route = routing.validateRouteModel(route, session);
         // create instance and start
-        String id = routing.createNewInstance(route.getDocument().getId(),
+        String id = routing.createNewInstance(route.getDocument().getName(),
                 Collections.singletonList(doc.getId()), map, session, true);
         return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
     }
