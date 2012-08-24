@@ -406,8 +406,13 @@ class BasePage:
             ['userServicesSearchForm:faceted_search_suggestionBox_selection', ''],
             ['userServicesSearchForm:simpleSearchSubmitButton', 'Search'],
             ['userServicesSearchForm_SUBMIT', '1'],
-            ['javax.faces.ViewState', fl.getLastJsfState()]],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['AJAX:EVENTS_COUNT', '1']],
             description=description)
+        # XXX AT: hack for NXP-9930: ajax response => need to force redirect
+        fl.get(fl.server_url + "/facetedsearch/faceted_search_results.faces?conversationId=0NXMAIN",
+            description="Get redirection to faceted search after " + description)
+
         fl.assert_('Default Faceted Search' in fl.getBody(),
                      'Not a search result page')
         return self
