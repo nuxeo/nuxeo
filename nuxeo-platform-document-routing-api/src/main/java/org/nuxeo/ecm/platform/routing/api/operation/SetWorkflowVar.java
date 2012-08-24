@@ -27,7 +27,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  * it as a document. If the input is not a document, an exception is thrown.
  *
  */
-@Operation(id = SetWorkflowVar.ID, category = Constants.CAT_WORKFLOW, label = "Set Workflow Variable on the Context", requires = Constants.WORKFLOW_CONTEXT, description = "Set a workflow  variable given a name and the value in the context of a running workflow. To compute the value at runtime from the current context you should use an EL expression as the value. This operation works on any input type and return back the input as the output.")
+@Operation(id = SetWorkflowVar.ID, category = Constants.CAT_WORKFLOW, label = "Set Workflow Variable", requires = Constants.WORKFLOW_CONTEXT, description = "Set a workflow  variable given a name and the value in the context of a running workflow. To compute the value at runtime from the current context you should use an EL expression as the value. This operation works on any input type and return back the input as the output.")
 public class SetWorkflowVar {
 
     public static final String ID = "Context.SetWorkflowVar";
