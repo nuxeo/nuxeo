@@ -362,7 +362,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         documentIds.add(navigationContext.getCurrentDocument().getId());
         route.setAttachedDocuments(documentIds);
         getDocumentRoutingService().createNewInstance(
-                route.getDocument().getId(), documentIds, documentManager, true);
+                route.getDocument().getName(), documentIds, documentManager,
+                true);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
         webActions.resetTabList();
         return null;
