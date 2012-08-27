@@ -154,6 +154,23 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return null;
     }
 
+    /**
+     * Get the annotation on the test method, if no annotation has been found,
+     * get the annotation from the test class (See {@link #getConfig(Class)})
+     *
+     * @since 5.7
+     */
+    public <T extends Annotation> T getConfig(FrameworkMethod method,
+            Class<T> type) {
+        T config = method.getAnnotation(type);
+        if (config != null) {
+            return config;
+        }
+        // if not define, try to get the config of the class
+        return getConfig(type);
+
+    }
+
     protected void initialize() throws Exception {
         for (RunnerFeature feature : features) {
             feature.initialize(this);
@@ -236,12 +253,14 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected final RunListener listener = new RunListener() {
 
+        @Override
         public void testStarted(Description description) throws Exception {
             for (RunnerFeature feature : features) {
                 feature.beforeSetup(FeaturesRunner.this);
             }
         }
 
+        @Override
         public void testFinished(Description description) throws Exception {
             for (RunnerFeature feature : features) {
                 feature.afterTeardown(FeaturesRunner.this);
