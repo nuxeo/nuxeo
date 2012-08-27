@@ -8,6 +8,9 @@
 
   <mbean code="org.jboss.mail.MailService" name="jboss:service=Mail">
     <attribute name="JNDIName">${jndi.base}/Mail</attribute>
+    <attribute name="User">${mail.transport.username}</attribute>
+    <attribute name="Password">${mail.transport.password}</attribute>
+
     <attribute name="Configuration">
       <configuration>
         <property name="mail.store.protocol" value="${mail.store.protocol}" />
