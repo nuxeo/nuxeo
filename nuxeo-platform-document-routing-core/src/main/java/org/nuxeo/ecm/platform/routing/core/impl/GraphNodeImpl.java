@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
@@ -286,7 +285,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 Serializable value = es.getValue();
                 if (nodeVariables.containsKey(key)) {
                     Serializable oldValue = nodeVariables.get(key);
-                    if (!ObjectUtils.equals(value, oldValue)) {
+                    if (!equality(value, oldValue)) {
                         changedNodeVariables = true;
                         nodeVariables.put(key, value);
                     }
@@ -299,7 +298,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 Serializable value = es.getValue();
                 if (graphVariables.containsKey(key)) {
                     Serializable oldValue = graphVariables.get(key);
-                    if (!ObjectUtils.equals(value, oldValue)) {
+                    if (!equality(value, oldValue)) {
                         changedGraphVariables = true;
                         graphVariables.put(key, value);
                     }
@@ -311,6 +310,25 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
         if (changedGraphVariables) {
             graph.setVariables(graphVariables);
+        }
+    }
+
+    public static boolean equality(Object o1, Object o2) {
+        if (o1 == o2) {
+            return true;
+        }
+        if (o1 == null || o2 == null) {
+            return false;
+        }
+        if (o1 instanceof List && o2.getClass().isArray()) {
+            return Arrays.equals(((List<?>) o1).toArray(), (Object[]) o2);
+        } else if (o1.getClass().isArray() && o2 instanceof List) {
+            return Arrays.equals((Object[]) o1, ((List<?>) o2).toArray());
+        } else if (o1.getClass().isArray() && o2.getClass().isArray()) {
+            // Nuxeo doesn't use arrays of primitive types
+            return Arrays.equals((Object[]) o1, (Object[]) o2);
+        } else {
+            return o1.equals(o2);
         }
     }
 
