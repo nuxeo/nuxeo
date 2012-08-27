@@ -19,11 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.converter;
 
-import java.io.Serializable;
-
-import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.faces.Converter;
 
 /**
@@ -33,15 +29,8 @@ import org.jboss.seam.annotations.faces.Converter;
  *
  */
 @Converter
-@Scope(ScopeType.STATELESS)
 @Name(javax.faces.convert.DateTimeConverter.CONVERTER_ID)
-public class DateTimeConverter extends org.jboss.seam.ui.converter.DateTimeConverter implements Serializable {
+public class DateTimeConverter extends org.jboss.seam.ui.converter.DateTimeConverter {
 
-
-    private static final long serialVersionUID = 1L;
-
-    public DateTimeConverter() {
-        setTransient(true);
-    }
 
 }
