@@ -14,8 +14,10 @@
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
  */
-package org.nuxeo.ecm.automation.server.test;
+package org.nuxeo.ecm.automation.core;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +25,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
+import org.nuxeo.ecm.automation.core.operations.LogOperation;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInputFromScript;
 import org.nuxeo.ecm.automation.core.operations.SetInputAsVar;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
@@ -32,21 +35,40 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import com.google.inject.Inject;
 
 /**
- * Testing RestoreInputFromScript operation.
+ * Testing RestoreDocumentInputFromScript and LogOperation operations.
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, LogCaptureFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.core" })
-public class TestRestoreInputFromScript {
+@LogCaptureFeature.FilterWith(TestRestoreInputFromScriptAndLogOperation.MyLogFilter.class)
+public class TestRestoreInputFromScriptAndLogOperation {
     @Inject
     AutomationService service;
 
     @Inject
     CoreSession session;
+
+    @Inject
+    LogCaptureFeature.Result logCaptureResult;
+
+    public static class MyLogFilter implements LogCaptureFeature.Filter {
+
+        @Override
+        public boolean accept(LoggingEvent event) {
+            if (!event.getLevel().equals(Level.ERROR)) {
+                return false;
+            }
+            if (!event.getLoggerName().equals("loggerName")) {
+                return false;
+            }
+            return true;
+        }
+
+    }
 
     @Test
     public void testRestoreInput() throws Exception {
@@ -65,10 +87,17 @@ public class TestRestoreInputFromScript {
         // set the input with fetch /
         chain.add(FetchDocument.ID).set("value", "/");
         // use the new operation to restore the input
-        chain.add(RestoreDocumentInputFromScript.ID).set("script", "Context[\"test\"]");
+        chain.add(RestoreDocumentInputFromScript.ID).set("script",
+                "Context[\"test\"]");
+        chain.add(LogOperation.ID).set("category", "loggerName").set("message",
+                "expr:Input title @{This.title}. next id : @{Fn.getNextId(\"pouet\")}").set(
+                "level", "error");
 
-        // assert that the output is "/test" is the one retrieved from the context variable
+        // assert that the output is "/test" is the one retrieved from the
+        // context variable
         DocumentModel returnedDoc = (DocumentModel) service.run(ctx, chain);
-        Assert.assertEquals("test", returnedDoc.getPropertyValue("dc:title"));
+        Assert.assertEquals("/test", returnedDoc.getPathAsString());
+        // making sure that
+        logCaptureResult.assertHasEvent();
     }
 }
