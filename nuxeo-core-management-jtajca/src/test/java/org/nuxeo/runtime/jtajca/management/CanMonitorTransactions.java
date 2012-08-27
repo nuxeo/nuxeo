@@ -21,9 +21,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
@@ -35,8 +33,12 @@ import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.google.inject.Inject;
 
 /*
  * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
@@ -59,7 +61,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author matic
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, RuntimeFeature.class })
+@Features({ TransactionalFeature.class, RuntimeFeature.class,
+        LogCaptureFeature.class })
 @Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.management.jtajca" })
 public class CanMonitorTransactions {
 
@@ -185,117 +188,84 @@ public class CanMonitorTransactions {
     }
 
     @Test
-    public void isActiveStatisticsCollected() throws InterruptedException, ExecutionException {
-        FutureTask<Boolean> task = new FutureTask<Boolean>(new TestCollectStatistics());
+    public void isActiveStatisticsCollected() throws InterruptedException,
+            ExecutionException {
+        FutureTask<Boolean> task = new FutureTask<Boolean>(
+                new TestCollectStatistics());
         executor.execute(task);
         assertThat(task.get(), is(true));
     }
 
-    protected class TestLogMessage implements Callable<Boolean> {
-
-        protected final Log log = LogFactory.getLog(TestLogMessage.class);
-
-        protected boolean seenTX;
-
-        @Override
-        public Boolean call() throws Exception {
-            Logger logger = Logger.getRootLogger();
-            final AppenderSkeleton appender = new AppenderSkeleton() {
-
-                @Override
-                public boolean requiresLayout() {
-                    return false;
-                }
-
-                @Override
-                public void close() {
-                }
-
-                @Override
-                protected void append(LoggingEvent event) {
-                    if (MDC.get("tx") != null) {
-                        seenTX = true;
-                    }
-                }
-            };
-            logger.addAppender(appender);
-
-            try {
-                begin();
-                log.warn("logging with active tx");
-                rollback();
-            } finally {
-                logger.removeAppender(appender);
-            }
-            return seenTX;
-        }
-
-    }
-
-    protected class TestLogRollbackTrace implements Callable<Boolean> {
-
-        protected final Log log = LogFactory.getLog(TestLogMessage.class);
-
-        protected boolean seenTrace;
-
-        @Override
-        public Boolean call() throws Exception {
-            Logger logger = Logger.getRootLogger();
-            final AppenderSkeleton appender = new AppenderSkeleton() {
-
-                @Override
-                public boolean requiresLayout() {
-                    return false;
-                }
-
-                @Override
-                public void close() {
-                }
-
-                @Override
-                protected void append(LoggingEvent event) {
-                    if (event.getLevel() != Level.TRACE) {
-                        return;
-                    }
-                    Object msg = event.getMessage();
-                    if (!(msg instanceof TransactionStatistics)) {
-                        return;
-                    }
-                    TransactionStatistics stats = (TransactionStatistics)msg;
-                    if (!TransactionStatistics.Status.ROLLEDBACK.equals(stats.getStatus())) {
-                        return;
-                    }
-                        seenTrace = true;
-                }
-            };
-            logger.addAppender(appender);
-
-            try {
-                begin();
-                rollback();
-            } finally {
-                logger.removeAppender(appender);
-            }
-            return seenTrace;
-        }
-
-    }
+    @Inject
+    LogCaptureFeature.Result logCaptureResults;
 
     @Test
+    @LogCaptureFeature.FilterWith(value = CanMonitorTransactions.LogRollbackTraceFilter.class)
     public void logContainsRollbackTrace() throws InterruptedException,
-            ExecutionException {
+            ExecutionException, NoLogCaptureFilterException {
         FutureTask<Boolean> task = new FutureTask<Boolean>(
                 new TestLogRollbackTrace());
         executor.execute(task);
         assertThat(task.get(), is(true));
+        logCaptureResults.assertHasEvent();
+    }
+
+    protected class TestLogRollbackTrace implements Callable<Boolean> {
+        @Override
+        public Boolean call() throws Exception {
+            begin();
+            rollback();
+            return true;
+        }
+    }
+
+    public static class LogRollbackTraceFilter implements
+            LogCaptureFeature.Filter {
+        @Override
+        public boolean accept(LoggingEvent event) {
+            if (event.getLevel() != Level.TRACE) {
+                return false;
+            }
+            Object msg = event.getMessage();
+            if (!(msg instanceof TransactionStatistics)) {
+                return false;
+            }
+            TransactionStatistics stats = (TransactionStatistics) msg;
+            if (!TransactionStatistics.Status.ROLLEDBACK.equals(stats.getStatus())) {
+                return false;
+            }
+            return true;
+        }
     }
 
     @Test
+    @LogCaptureFeature.FilterWith(value = CanMonitorTransactions.LogMessageFilter.class)
     public void logContainsTxKey() throws InterruptedException,
-            ExecutionException {
-        FutureTask<Boolean> logMessage = new FutureTask<Boolean>(
-                new TestLogMessage());
-        executor.execute(logMessage);
-        assertThat(logMessage.get(), is(true));
+            ExecutionException, NoLogCaptureFilterException {
+        FutureTask<Boolean> task = new FutureTask<Boolean>(
+                new TestLogRollbackTrace());
+        executor.execute(task);
+        assertThat(task.get(), is(true));
+        logCaptureResults.assertHasEvent();
     }
+
+    public static class LogMessageFilter implements LogCaptureFeature.Filter {
+        @Override
+        public boolean accept(LoggingEvent event) {
+            return MDC.get("tx") != null;
+        }
+    }
+
+    protected class TestLogMessage implements Callable<Boolean> {
+        protected final Log log = LogFactory.getLog(TestLogMessage.class);
+
+        @Override
+        public Boolean call() throws Exception {
+            begin();
+            log.warn("logging with active tx");
+            rollback();
+            return true;
+        }
+    }
+
 }
