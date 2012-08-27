@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.drive.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="driveSynchronize" link="#{nuxeoDriveActions.synchronizeCurrentDocument}"
+      order="50" label="command.unlock" type="link"
+      icon="/icons/drive_unsynced.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>can_sync</filter-id>
+    </action>
+
+    <action id="driveUnsynchronizeCurrentDocument"
+      link="#{nuxeoDriveActions.unsynchronizeCurrentDocumentRoot}"
+      order="50" label="command.driveUnsynchronizeCurrentDocument" type="link"
+      icon="/icons/drive_synced.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>can_unsync_current_doc</filter-id>
+    </action>
+
+    <action id="driveUnsynchronizeRoot"  link="#{nuxeoDriveActions.unsynchronizeCurrentDocumentRoot}"
+      confirm="if(!confirm('Unsynchronize container #{nuxeoDriveCurrentSynchronizationRoot.getTitle()}?')) return false;"
+      order="50" label="command.driveUnsynchronizeRoot" type="link"
+      icon="/icons/drive_synced.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>can_unsync_container</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="can_sync">
+      <rule grant="true">
+        <condition>#{canSynchronizeCurrentDocument}</condition>
+      </rule>
+    </filter>
+
+    <filter id="can_unsync_current_doc">
+      <rule grant="true">
+        <condition>#{canUnSynchronizeCurrentDocument}</condition>
+      </rule>
+    </filter>
+
+    <filter id="can_unsync_container">
+      <rule grant="true">
+        <condition>#{canUnSynchronizeContainer}</condition>
+      </rule>
+    </filter>
+  </extension>
+
+</component>

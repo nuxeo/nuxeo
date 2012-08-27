@@ -7,3 +7,4 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 5.7
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.drive.jsf;singleton:=true
+Nuxeo-Component: OSGI-INF/nuxeodrive-actions.xml
