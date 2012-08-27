@@ -13,7 +13,7 @@
   <c:choose>
     <c:when test="#{routingActions.hasRelatedRoute()}">
       <nxu:set var="relatedRoute" value="#{routingActions.getRelatedRoute()}">
-        <h:outputText value="#{relatedRoute.getName()} " />
+        <h:outputText value="#{messages[relatedRoute.name]} " />
         <h:outputText value="#{messages['label.route.started']} " />
         <h:outputText value="#{nxu:userFullName(relatedRoute.document.dc.creator)}"/>
       </nxu:set>

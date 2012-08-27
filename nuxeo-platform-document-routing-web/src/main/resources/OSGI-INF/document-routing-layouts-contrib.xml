@@ -82,6 +82,9 @@
         <label mode="any">label.step.folder.execution.type</label>
       </labels>
       <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
       <properties widgetMode="any">
         <property name="directoryName">execution_type</property>
         <property name="localize">true</property>

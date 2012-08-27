@@ -24,7 +24,7 @@
             <h:selectOneListbox id="#{widget.id}" value="#{field}" size="1">
               <nxu:selectItems
                 var="routeModel" value="#{routeModels}"
-                itemValue="#{routeModel.id}" itemLabel="#{routeModel.title}" />
+                itemValue="#{routeModel.id}" itemLabel="#{messages[routeModel.title]}" />
               <a4j:support event="onchange"
                 bypassUpdates="true"
                 actionListener="#{selectionActions.onSelection}"
@@ -48,10 +48,7 @@
                   value="#{routingActions.getRouteModel(selectedRouteModelId)}"
                   cache="true">
                   <span>
-                    <h:outputText value="#{selectedRouteModel.dc.title}" />
-                  </span>
-                  <span>
-                    <h:outputText value="#{selectedRouteModel.dc.description}" />
+                    <h:outputText value="#{messages[selectedRouteModel.dc.description]}" />
                   </span>
                 </nxu:set>
               </c:if>

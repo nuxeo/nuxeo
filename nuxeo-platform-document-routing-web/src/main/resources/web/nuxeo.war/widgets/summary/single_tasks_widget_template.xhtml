@@ -34,7 +34,7 @@
 
               <f:subview id="#{idPrefix}_subview">
                 <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
-                  <f:param value="#{routingActions.getRouteInstanceFor(task).title} - #{messages[task.name]}" />
+                  <f:param value="#{messages[routingActions.getRouteInstanceFor(task).title]} - #{messages[task.name]}" />
                 </h:outputFormat>
                 <h:outputText value="#{messages['label.route.task.assigned.to']} " />
                 <c:forEach var="actor" items="#{task.actors}">
