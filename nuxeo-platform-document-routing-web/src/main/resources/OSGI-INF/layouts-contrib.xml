@@ -203,6 +203,9 @@
       <fields>
         <field>data.task.name</field>
       </fields>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
     </widget>
     <widget name="task_directive" type="text">
       <labels>

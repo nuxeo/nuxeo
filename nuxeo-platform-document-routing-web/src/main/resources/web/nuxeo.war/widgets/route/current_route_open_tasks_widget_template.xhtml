@@ -18,7 +18,7 @@
       <c:forEach var="task" items="#{tasks}" varStatus="status">
         <div>
           <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
-            <f:param value="#{messages[task.type]}" />
+            <f:param value="#{messages[task.name]}" />
           </h:outputFormat>
           <h:outputText value="#{messages['label.route.task.assigned.to']} " />
           <c:forEach var="actor" items="#{task.actors}">
