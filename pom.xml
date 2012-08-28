@@ -19,6 +19,7 @@
     <module>nuxeo-platform-document-routing-web</module>
     <module>nuxeo-platform-document-routing-dm</module>
     <module>nuxeo-platform-document-routing-dashboard</module>
+    <module>nuxeo-platform-document-routing-default</module>
     <module>nuxeo-platform-document-routing-test</module>
   </modules>
 

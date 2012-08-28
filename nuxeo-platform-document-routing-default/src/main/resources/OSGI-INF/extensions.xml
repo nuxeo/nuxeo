@@ -1,0 +1,1077 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="studio.extensions.nuxeo-routing-default" version="1.0.0">
+  <require>org.nuxeo.runtime.started</require>
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="logInAudit">
+      <operation id="Audit.Log">
+        <param type="string" name="event">expr:NodeVariables["button"] =="reject"?"Document refused":"Document validated"</param>
+        <param type="string" name="category">Review workflow</param>
+        <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"Document refused":"validated"} the document with the following comment: @{NodeVariables["assigneeComment"]}</param>
+      </operation>
+    </chain>
+    <chain id="nextAssignee">
+      <operation id="Context.RunScript">
+        <param type="string" name="script">if (NodeVariables["button"] == "validate") {
+  WorkflowVariables["index"] = WorkflowVariables["index"] + 1;
+}
+else if (NodeVariables["button"] == "reject") {
+  WorkflowVariables["index"] = WorkflowVariables["index"] - 1;
+}
+else if (NodeVariables["button"] == "submit") {
+  WorkflowVariables["index"] = 0;
+}</param>
+      </operation>
+    </chain>
+    <chain id="notifyInitiatorEndOfWorkflow">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Notification.SendMail">
+        <param type="string" name="from">contact@noadress.com</param>
+        <param type="string" name="message">The document was approved by every participant.</param>
+        <param type="string" name="subject">Document approved</param>
+        <param type="stringlist" name="to">expr:Fn.getEmail(workflowInitiator)</param>
+        <param type="boolean" name="HTML">false</param>
+        <param type="string" name="viewId">view_documents</param>
+      </operation>
+    </chain>
+    <chain id="terminateWorkflow">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Context.RunOperation">
+        <param type="string" name="id">logInAudit</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+      <operation id="Context.RunDocumentOperationInNewTx">
+        <param type="string" name="id">notifyInitiatorEndOfWorkflow</param>
+        <param type="boolean" name="isolate">false</param>
+        <param type="boolean" name="rollbackGlobalOnError">false</param>
+      </operation>
+      <operation id="Context.RunOperation">
+        <param type="string" name="id">expr:WorkflowVariables["validationOrReview"] == "validation"?"validateDocument":"voidChain"</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+      <operation id="Audit.Log">
+        <param type="string" name="event">Review completed successfully</param>
+        <param type="string" name="category">Review workflow</param>
+        <param type="string" name="comment">All the participants of the review have approved the document.</param>
+      </operation>
+    </chain>
+    <chain id="validateDocument">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.SetLifeCycle">
+        <param type="string" name="value">approve</param>
+      </operation>
+    </chain>
+    <chain id="voidChain">
+      <operation id="Context.FetchDocument"/>
+    </chain>
+  </extension>
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+    <directory name="WorkflowType">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <table>studio_vocabulary_WorkflowType</table>
+      <dataFile>data/vocabularies/WorkflowType.csv</dataFile>
+    </directory>
+  </extension>
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories">
+    <directory name="WorkflowType" layout="vocabulary" sortField="label"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
+    <layout name="Task38e@taskLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>participants</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>validationOrReview</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>initiatorComment</widget>
+        </row>
+      </rows>
+      <widget name="participants" type="multiplePrefixedUsersSuggestion">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.ParticipantsOnTheReview</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['participants']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="orderable">true</property>
+          <property name="required">true</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="validationOrReview" type="selectOneDirectory">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.validationOrSimpleReview</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['validationOrReview']</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">#{currentDocument. currentLifeCycleState =='project'?'edit':'hidden'}</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="localize">true</property>
+          <property name="directoryName">WorkflowType</property>
+          <property name="required">true</property>
+        </properties>
+        <properties widgetMode="view">
+          <property name="localize">true</property>
+          <property name="directoryName">WorkflowType</property>
+        </properties>
+        <properties mode="any"/>
+      </widget>
+      <widget name="initiatorComment" type="textarea">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.comment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['initiatorComment']</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+    </layout>
+    <layout name="Task6d8@taskLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>participants</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>initiatorComment</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>assigneeComment</widget>
+        </row>
+      </rows>
+      <widget name="participants" type="list">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.ParticipantsOnTheReview</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['participants']</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+        <properties widgetMode="view">
+          <property name="display">table</property>
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <properties mode="any"/>
+        <subWidgets>
+          <widget name="sub0" type="text">
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <translated>false</translated>
+            <fields>
+              <field></field>
+            </fields>
+            <properties mode="any"/>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="initiatorComment" type="textarea">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.InitiatorComment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['initiatorComment']</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+        <properties mode="any"/>
+      </widget>
+      <widget name="assigneeComment" type="textarea">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.YourComment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['assigneeComment']</field>
+        </fields>
+        <properties mode="any"/>
+      </widget>
+    </layout>
+    <layout name="Task542@taskLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+      </rows>
+    </layout>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="var_Task38e" prefix="var_Task38e" src="data/schemas/var_Task38e.xsd"/>
+    <schema name="var_Task6d8" prefix="var_Task6d8" src="data/schemas/var_Task6d8.xsd"/>
+    <schema name="var_Task5c1" prefix="var_Task5c1" src="data/schemas/var_Task5c1.xsd"/>
+    <schema name="var_Task542" prefix="var_Task542" src="data/schemas/var_Task542.xsd"/>
+    <schema name="var_Task375f" prefix="var_Task375f" src="data/schemas/var_Task375f.xsd"/>
+    <schema name="var_SerialDocumentReview" prefix="var_SerialDocumentReview" src="data/schemas/var_SerialDocumentReview.xsd"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="facet-var_Task38e">
+      <schema name="var_Task38e"/>
+    </facet>
+    <facet name="facet-var_Task6d8">
+      <schema name="var_Task6d8"/>
+    </facet>
+    <facet name="facet-var_Task5c1">
+      <schema name="var_Task5c1"/>
+    </facet>
+    <facet name="facet-var_Task542">
+      <schema name="var_Task542"/>
+    </facet>
+    <facet name="facet-var_Task375f">
+      <schema name="var_Task375f"/>
+    </facet>
+    <facet name="facet-var_SerialDocumentReview">
+      <schema name="var_SerialDocumentReview"/>
+    </facet>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.routing.service" point="routeModelImporter">
+    <template-resource id="SerialDocumentReview" path="data/SerialDocumentReview.zip"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="filter@SerialDocumentReview">
+      <rule grant="true">
+        <type>File</type>
+        <type>Note</type>
+      </rule>
+    </filter>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
+
+    
+    <documentation>Widget types declared in studio</documentation>
+
+    
+    <widgetType name="path">
+      
+      <configuration>
+        
+        <title>Path</title>
+        
+        <description>
+          The path widget displays a popup browser in the document
+          hierarchy.
+        </description>
+        
+        <supportedModes>
+          
+          <mode>edit</mode>
+        
+        </supportedModes>
+        
+        <fields>
+          
+          <list>false</list>
+          
+          <complex>false</complex>
+          
+          <supportedTypes>
+            
+            <type>string</type>
+            
+            <type>path</type>
+          
+          </supportedTypes>
+          
+          <defaultTypes>
+            
+            <type>path</type>
+          
+          </defaultTypes>
+        
+        </fields>
+        
+        <categories>
+          
+          <category>document</category>
+          
+          <category>studio</category>
+        
+        </categories>
+        
+        <!-- no properties to configure -->
+      
+      </configuration>
+      
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      
+      <property name="template">/widgets/search_path_widget.xhtml</property>
+    
+    </widgetType>
+
+    
+    <widgetType name="studio_header">
+      
+      <configuration>
+        
+        <title>Header</title>
+        
+        <description>
+          The header widget just displays the widget label.
+        </description>
+        
+        <supportedModes>
+          
+          <mode>edit</mode>
+          
+          <mode>view</mode>
+        
+        </supportedModes>
+        
+        <fields>
+          
+          <list>false</list>
+          
+          <complex>false</complex>
+          
+          <supportedTypes/>
+          
+          <defaultTypes/>
+        
+        </fields>
+        
+        <categories>
+          
+          <category>document</category>
+          
+          <category>studio</category>
+        
+        </categories>
+        
+        <properties>
+          
+          <layouts mode="any">
+            
+            <layout name="studio_header_widget_type_properties_any">
+              
+              <rows>
+                
+                <row>
+                  
+                  <widget>styleClass</widget>
+                
+                </row>
+                
+                <row>
+                  
+                  <widget>style</widget>
+                
+                </row>
+              
+              </rows>
+              
+              <widget name="styleClass" type="text">
+                
+                <labels>
+                  
+                  <label mode="any">Style class</label>
+                
+                </labels>
+                
+                <fields>
+                  
+                  <field>styleClass</field>
+                
+                </fields>
+              
+              </widget>
+              
+              <widget name="style" type="text">
+                
+                <labels>
+                  
+                  <label mode="any">Style</label>
+                
+                </labels>
+                
+                <fields>
+                  
+                  <field>style</field>
+                
+                </fields>
+              
+              </widget>
+            
+            </layout>
+          
+          </layouts>
+        
+        </properties>
+      
+      </configuration>
+      
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      
+      <property name="template">
+        /widgets/studio_header_widget.xhtml
+      </property>
+    
+    </widgetType>
+
+    
+    <widgetType name="chainedDirectory">
+      
+      <configuration>
+        
+        <title>Chained Vocabulary</title>
+        
+        <supportedModes>
+          
+          <mode>view</mode>
+          
+          <mode>edit</mode>
+        
+        </supportedModes>
+        
+        <fields>
+          
+          <list>false</list>
+          
+          <complex>false</complex>
+          
+          <supportedTypes>
+            
+            <type>string</type>
+          
+          </supportedTypes>
+        
+        </fields>
+        
+        <categories>
+          
+          <category>document</category>
+          
+          <category>studio</category>
+        
+        </categories>
+        
+        <properties>
+          
+          <layouts mode="any">
+            
+            <layout name="chainedDirectory_widget_type_properties_any">
+              
+              <rows>
+                
+                <row>
+                  
+                  <widget>childDirectory</widget>
+                
+                </row>
+                
+                <row>
+                  
+                  <widget>localize</widget>
+                
+                </row>
+              
+              </rows>
+              
+              <widget name="childDirectory" type="selectOneResource">
+                
+                <labels>
+                  
+                  <label mode="any">Vocabulary</label>
+                
+                </labels>
+                
+                <helpLabels>
+                  
+                  <label mode="any">
+                    Select the child or hierarchical directory
+                    mapped.
+                  </label>
+                
+                </helpLabels>
+                
+                <fields>
+                  
+                  <field>childDirectory</field>
+                
+                </fields>
+                
+                <properties mode="any">
+                  
+                  <property name="resourceName">child_vocabularies</property>
+                
+                </properties>
+                
+                <properties widgetMode="edit">
+                  
+                  <property name="required">true</property>
+                
+                </properties>
+              
+              </widget>
+              
+              <widget name="localize" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">Localize</label>
+                
+                </labels>
+                
+                <helpLabels>
+                  
+                  <label mode="any">If true, labels will be localized.</label>
+                
+                </helpLabels>
+                
+                <fields>
+                  
+                  <field>localize</field>
+                
+                </fields>
+              
+              </widget>
+            
+            </layout>
+          
+          </layouts>
+          
+          <layouts mode="edit">
+            
+            <layout name="chainedDirectory_widget_type_properties_edit">
+              
+              <rows>
+                
+                <row>
+                  
+                  <widget>required</widget>
+                
+                </row>
+                
+                <row>
+                  
+                  <widget>allowBranchSelection</widget>
+                
+                </row>
+                
+                <row>
+                  
+                  <widget>on2rows</widget>
+                
+                </row>
+              
+              </rows>
+              
+              <widget name="required" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">Required</label>
+                
+                </labels>
+                
+                <fields>
+                  
+                  <field>required</field>
+                
+                </fields>
+              
+              </widget>
+              
+              <widget name="allowBranchSelection" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">Allow incomplete selection</label>
+                
+                </labels>
+                
+                <helpLabels>
+                  
+                  <label mode="any">
+                    If set to true, user cannot select only the
+                    first item in the selection, he will have to select a second
+                    item too. Defaults to false, available since 5.6.
+                  </label>
+                
+                </helpLabels>
+                
+                <fields>
+                  
+                  <field>allowBranchSelection</field>
+                
+                </fields>
+              
+              </widget>
+              
+              <widget name="on2rows" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">On 2 rows</label>
+                
+                </labels>
+                
+                <helpLabels>
+                  
+                  <label mode="any">
+                    If true, display the selectors on two rows.
+                    Defaults to
+                    false.
+                  </label>
+                
+                </helpLabels>
+                
+                <fields>
+                  
+                  <field>on2rows</field>
+                
+                </fields>
+              
+              </widget>
+            
+            </layout>
+          
+          </layouts>
+        
+        </properties>
+      
+      </configuration>
+      
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      
+      <property name="template">
+        /widgets/chain_monoselect_2levels_widget.xhtml
+      </property>
+    
+    </widgetType>
+
+    
+    <widgetType name="multiChainedDirectory">
+      
+      <configuration>
+        
+        <title>Multiple chained Vocabulary</title>
+        
+        <supportedModes>
+          
+          <mode>view</mode>
+          
+          <mode>edit</mode>
+        
+        </supportedModes>
+        
+        <fields>
+          
+          <list>true</list>
+          
+          <complex>false</complex>
+          
+          <supportedTypes>
+            
+            <type>string</type>
+          
+          </supportedTypes>
+        
+        </fields>
+        
+        <categories>
+          
+          <category>document</category>
+          
+          <category>studio</category>
+        
+        </categories>
+        
+        <properties>
+          
+          <layouts mode="any">
+            
+            <layout name="multiChainedDirectory_widget_type_properties_any">
+              
+              <rows>
+                
+                <row>
+                  
+                  <widget>childDirectory</widget>
+                
+                </row>
+                
+                <row>
+                  
+                  <widget>localize</widget>
+                
+                </row>
+              
+              </rows>
+              
+              <widget name="childDirectory" type="selectOneResource">
+                
+                <labels>
+                  
+                  <label mode="any">Vocabulary</label>
+                
+                </labels>
+                
+                <helpLabels>
+                  
+                  <label mode="any">
+                    Select the child or hierarchical directory
+                    mapped.
+                  </label>
+                
+                </helpLabels>
+                
+                <fields>
+                  
+                  <field>childDirectory</field>
+                
+                </fields>
+                
+                <properties mode="any">
+                  
+                  <property name="resourceName">child_vocabularies</property>
+                
+                </properties>
+                
+                <properties widgetMode="edit">
+                  
+                  <property name="required">true</property>
+                
+                </properties>
+              
+              </widget>
+              
+              <widget name="localize" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">Localize</label>
+                
+                </labels>
+                
+                <helpLabels>
+                  
+                  <label mode="any">If true, labels will be localized.</label>
+                
+                </helpLabels>
+                
+                <fields>
+                  
+                  <field>localize</field>
+                
+                </fields>
+              
+              </widget>
+            
+            </layout>
+          
+          </layouts>
+          
+          <layouts mode="edit">
+            
+            <layout name="multiChainedDirectory_widget_type_properties_edit">
+              
+              <rows>
+                
+                <row>
+                  
+                  <widget>required</widget>
+                
+                </row>
+                
+                <row>
+                  
+                  <widget>allowBranchSelection</widget>
+                
+                </row>
+                
+                <row>
+                  
+                  <widget>on2rows</widget>
+                
+                </row>
+              
+              </rows>
+              
+              <widget name="required" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">Required</label>
+                
+                </labels>
+                
+                <fields>
+                  
+                  <field>required</field>
+                
+                </fields>
+              
+              </widget>
+              
+              <widget name="allowBranchSelection" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">Allow incomplete selection</label>
+                
+                </labels>
+                
+                <helpLabels>
+                  
+                  <label mode="any">
+                    If set to true, user cannot select only the
+                    first item in the selection, he will have to select a second
+                    item too. Defaults to false.
+                  </label>
+                
+                </helpLabels>
+                
+                <fields>
+                  
+                  <field>allowBranchSelection</field>
+                
+                </fields>
+              
+              </widget>
+              
+              <widget name="on2rows" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">On 2 rows</label>
+                
+                </labels>
+                
+                <helpLabels>
+                  
+                  <label mode="any">
+                    If true, display the selectors on two rows.
+                    Defaults to
+                    false.
+                  </label>
+                
+                </helpLabels>
+                
+                <fields>
+                  
+                  <field>on2rows</field>
+                
+                </fields>
+              
+              </widget>
+            
+            </layout>
+          
+          </layouts>
+        
+        </properties>
+      
+      </configuration>
+      
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      
+      <property name="template">
+        /widgets/chain_multiselect_2levels_widget.xhtml
+      </property>
+    
+    </widgetType>
+
+    
+    <widgetType name="filesList">
+      
+      <configuration>
+        
+        <title>Files</title>
+        
+        <description>
+          
+          <p>
+            The Files displays an editable list of files, using javascript to
+            keep the uploaded file path when adding several files in a row.
+          </p>
+          
+          <p>Items are defined using sub wigdets configuration.</p>
+          
+          <p>
+            This is actually a template widget type whose template uses a
+            &lt;nxu:inputList /&gt; tag in edit or create mode, and a table
+            iterating over items in other modes.
+          </p>
+        
+        </description>
+        
+        <categories>
+          
+          <category>document</category>
+          
+          <category>studio</category>
+        
+        </categories>
+        
+        <supportedModes>
+          
+          <mode>edit</mode>
+          
+          <mode>view</mode>
+        
+        </supportedModes>
+        
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+        
+        <fields>
+          
+          <list>true</list>
+          
+          <complex>false</complex>
+          
+          <supportedTypes>
+            
+            <type>blob</type>
+          
+          </supportedTypes>
+          
+          <defaultTypes>
+            
+            <type>blob</type>
+          
+          </defaultTypes>
+        
+        </fields>
+        
+        <properties>
+          
+          <layouts mode="edit">
+            
+            <layout name="list_widget_type_properties_edit">
+              
+              <rows>
+                
+                <row>
+                  
+                  <widget>required</widget>
+                
+                </row>
+                
+                <row>
+                  
+                  <widget>diff</widget>
+                
+                </row>
+              
+              </rows>
+              
+              <widget name="required" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">Required</label>
+                
+                </labels>
+                
+                <fields>
+                  
+                  <field>required</field>
+                
+                </fields>
+              
+              </widget>
+              
+              <widget name="diff" type="checkbox">
+                
+                <labels>
+                  
+                  <label mode="any">Diff</label>
+                
+                </labels>
+                
+                <fields>
+                  
+                  <field>diff</field>
+                
+                </fields>
+              
+              </widget>
+            
+            </layout>
+          
+          </layouts>
+        
+        </properties>
+      
+      </configuration>
+      
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      
+      <property name="template">/widgets/files_list_widget_template.xhtml
+      </property>
+    
+    </widgetType>
+
+  
+  </extension>
+</component>
