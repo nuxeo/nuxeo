@@ -215,6 +215,9 @@
       <fields>
         <field>data.task.directive</field>
       </fields>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
     </widget>
     <widget name="task_assignee" type="template">
       <labels>

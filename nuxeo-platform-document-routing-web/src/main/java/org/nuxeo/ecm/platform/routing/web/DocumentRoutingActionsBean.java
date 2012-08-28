@@ -940,9 +940,4 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
-    public String abandonCurrentRoute() {
-        getRelatedRoute().cancel(documentManager);
-        return null;
-    }
-
 }
