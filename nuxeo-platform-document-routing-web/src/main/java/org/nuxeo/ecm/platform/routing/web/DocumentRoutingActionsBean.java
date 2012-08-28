@@ -918,8 +918,11 @@ public class DocumentRoutingActionsBean implements Serializable {
     public List<Task> getCurrentRouteAllTasks() throws ClientException {
         TaskService taskService = Framework.getLocalService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
-        return taskService.getAllTaskInstances(
-                currentRoute.getDocument().getId(), documentManager);
+        if (currentRoute != null) {
+            return taskService.getAllTaskInstances(
+                    currentRoute.getDocument().getId(), documentManager);
+        }
+        return null;
     }
 
     /**
@@ -928,10 +931,13 @@ public class DocumentRoutingActionsBean implements Serializable {
     public List<Task> getCurrentRouteCurrentUserTasks() throws ClientException {
         TaskService taskService = Framework.getLocalService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
-        return taskService.getAllTaskInstances(
-                currentRoute.getDocument().getId(),
-                (NuxeoPrincipal) documentManager.getPrincipal(),
-                documentManager);
+        if (currentRoute != null) {
+            return taskService.getAllTaskInstances(
+                    currentRoute.getDocument().getId(),
+                    (NuxeoPrincipal) documentManager.getPrincipal(),
+                    documentManager);
+        }
+        return null;
     }
 
     public String abandonCurrentRoute() {

@@ -66,7 +66,8 @@
       <c:if test="#{not empty routeModels}">
         <nxh:commandButton type="submit" class="button"
           value="#{messages['action.start.related.document.route']}"
-          action="#{routingActions.startRouteRelatedToCurrentDocument()}" id="start_route"/>
+          action="#{routingActions.startRouteRelatedToCurrentDocument()}"
+          id="#{widget.id}_start_route"/>
       </c:if>
 
     </h:panelGrid>
