@@ -332,9 +332,9 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 lastCreatedDocCounter = inbCreatedDocs;
             }
         }
+        stopImportProcrocess();
         log.info("All Threads terminated");
         perfLogger.release();
-
         notifyAfterImport();
 
         long t1 = System.currentTimeMillis();
