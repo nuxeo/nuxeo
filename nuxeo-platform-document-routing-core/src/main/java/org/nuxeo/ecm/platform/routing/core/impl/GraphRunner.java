@@ -126,11 +126,45 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 node.setButton(status);
             }
             if (task != null) {
-                finishTask(session, graph, node, task);
+                finishTask(session, graph, node, task, false);
+                // don't delete (yet)
             }
             boolean done = runGraph(session, graph, node);
             if (done) {
                 element.setDone(session);
+            }
+            session.save();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public void cancel(CoreSession session, DocumentRouteElement element) {
+        super.cancel(session, element);
+        if (!(element instanceof GraphRoute)) {
+            return;
+        }
+        // also cancel tasks
+        TaskService taskService = Framework.getLocalService(TaskService.class);
+        try {
+            GraphRoute graph = (GraphRoute) element;
+            List<Task> tasks = taskService.getAllTaskInstances(
+                    element.getDocument().getId(), session);
+            for (Task task : tasks) {
+                String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
+                if (StringUtils.isEmpty(nodeId)) {
+                    log.error("Task has no nodeId: " + task);
+                    continue;
+                }
+                GraphNode node;
+                try {
+                    node = graph.getNode(nodeId);
+                } catch (IllegalArgumentException e) {
+                    log.error("Graph has no nodeId: " + nodeId);
+                    continue;
+                }
+                finishTask(session, graph, node, task, true); // delete
             }
             session.save();
         } catch (ClientException e) {
@@ -332,15 +366,19 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
     }
 
     protected void finishTask(CoreSession session, GraphRoute graph,
-            GraphNode node, Task task) throws DocumentRouteException {
+            GraphNode node, Task task, boolean delete)
+            throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         DocumentModelList docs = graph.getAttachedDocumentModels();
         try {
             routing.removePermissionFromTaskAssignees(session, docs, task);
+            // delete task
+            if (delete) {
+                session.removeDocument(new IdRef(task.getId()));
+            }
         } catch (ClientException e) {
             throw new DocumentRouteException("Cannot finish task", e);
         }
-        // TODO delete task?
     }
 
 }

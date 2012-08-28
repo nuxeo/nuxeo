@@ -12,7 +12,7 @@
     }
   </script>
 
-  <h:commandButton action="#{routingActions.abandonCurrentRoute()}"
+  <h:commandButton action="#{routingActions.cancelRoute()}"
     value="#{messages['label.document.routing.abandon']}"
     styleClass="button"
     onclick="if( !confirmAbandonWorkflow() ) return false;" />

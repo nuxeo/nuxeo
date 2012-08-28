@@ -419,6 +419,42 @@ public class GraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void testCancel() throws Exception {
+        assertEquals("file", doc.getTitle());
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1,
+                transition("trans12", "node2", "true", "testchain_title1"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        setTransitions(node2, transition("trans23", "node3", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node3 = session.saveDocument(node3);
+
+        DocumentRoute route = instantiateAndRun();
+
+        assertFalse(route.isDone());
+
+        List<Task> tasks = taskService.getTaskInstances(doc,
+                (NuxeoPrincipal) null, session);
+        assertEquals(1, tasks.size());
+
+        route.cancel(session);
+        route.getDocument().refresh();
+        assertTrue(route.isCanceled());
+
+        tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) null,
+                session);
+        assertEquals(0, tasks.size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void testForkMergeAll() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
