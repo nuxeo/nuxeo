@@ -174,16 +174,15 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     protected DocumentModel createModelsRoutesStructure(
             String routeStructureDocType, String id, CoreSession session)
             throws ClientException {
-        DocumentModel root = session.getRootDocument();
-        DocumentModel rootModels = session.createDocumentModel(
-                root.getPathAsString(), id, routeStructureDocType);
+        DocumentModel rootModels = session.createDocumentModel("/", id,
+                routeStructureDocType);
         rootModels.setPropertyValue(DC_TITLE, routeStructureDocType);
         rootModels = session.createDocument(rootModels);
-        ACP acp = session.getACP(root.getRef());
+        ACP acp = session.getACP(rootModels.getRef());
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
         acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ,
                 true));
-        session.setACP(root.getRef(), acp, true);
+        session.setACP(rootModels.getRef(), acp, true);
         return rootModels;
     }
 
