@@ -92,6 +92,8 @@ public class FilterDocuments {
 
         String lc;
 
+        String path;
+
         Expression expr;
 
         Filter attr;
@@ -121,6 +123,13 @@ public class FilterDocuments {
                     lc = v;
                 }
             }
+            v = FilterDocuments.this.pathStartsWith;
+            if (v != null) {
+                v = v.trim();
+                if (v.length() > 0) {
+                    path = v;
+                }
+            }
             v = FilterDocuments.this.condition;
             if (v != null) {
                 v = v.trim();
@@ -148,6 +157,15 @@ public class FilterDocuments {
             if (lc != null) {
                 try {
                     if (!lc.equals(doc.getCurrentLifeCycleState())) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    log.error(e, e);
+                }
+            }
+            if (path != null) {
+                try {
+                    if (!lc.startsWith(doc.getPathAsString())) {
                         return false;
                     }
                 } catch (Exception e) {
