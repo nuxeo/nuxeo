@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl"
+  version="1.0">
+
+  <implementation class="org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.drive.service.NuxeoDriveManager" />
+  </service>
+
+  <documentation>
+    The NuxeoDriveManager provides simple API to manage the
+    list of folderish documents to be used as synchronization root with a
+    local filesystem folder of the Desktop computer of a user.
+  </documentation>
+
+
+</component>

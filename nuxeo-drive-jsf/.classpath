@@ -1,11 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-  <classpathentry kind="src" path="src/test/java" output="bin/test" including="**/*.java"/>
-  <classpathentry kind="src" path="src/test/resources" output="bin/test" excluding="**/*.java"/>
-  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
-  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
-  <classpathentry kind="src" output="bin/seam" path="src/main/seam"/>
-  <classpathentry kind="output" path="bin/main"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-  <classpathentry kind="con" path="org.nuxeo.ide.SDK_CONTAINER"/>
-  <classpathentry kind="con" path="org.nuxeo.ide.SDK_TEST_CONTAINER"/>
+	<classpathentry including="**/*.java" kind="src" output="bin/test" path="src/test/java"/>
+	<classpathentry excluding="**/*.java" kind="src" output="bin/test" path="src/test/resources"/>
+	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
+	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" output="bin/seam" path="src/main/seam"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.nuxeo.ide.SDK_CONTAINER"/>
+	<classpathentry kind="con" path="org.nuxeo.ide.SDK_TEST_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nuxeo-drive-core"/>
+	<classpathentry kind="output" path="bin/main"/>
 </classpath>

@@ -5,24 +5,23 @@
     point="actions">
 
     <action id="driveSynchronize" link="#{nuxeoDriveActions.synchronizeCurrentDocument}"
-      order="50" label="command.unlock" type="link"
+      order="50" label="command.driveSynchronizeFolder" type="link"
       icon="/icons/drive_unsynced.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>can_sync</filter-id>
     </action>
 
     <action id="driveUnsynchronizeCurrentDocument"
-      link="#{nuxeoDriveActions.unsynchronizeCurrentDocumentRoot}"
-      order="50" label="command.driveUnsynchronizeCurrentDocument" type="link"
+      link="#{nuxeoDriveActions.unsynchronizeCurrentDocument}"
+      order="50" label="command.driveUnsynchronizeFolder" type="link"
       icon="/icons/drive_synced.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>can_unsync_current_doc</filter-id>
     </action>
 
-    <action id="driveUnsynchronizeRoot"  link="#{nuxeoDriveActions.unsynchronizeCurrentDocumentRoot}"
-      confirm="if(!confirm('Unsynchronize container #{nuxeoDriveCurrentSynchronizationRoot.getTitle()}?')) return false;"
-      order="50" label="command.driveUnsynchronizeRoot" type="link"
-      icon="/icons/drive_synced.png">
+    <action id="driveUnsynchronizeRoot"  link="#{nuxeoDriveActions.navigateToCurrentSynchronizationRoot}"
+      order="50" label="command.navigateToSynchronizationRoot" type="link"
+      icon="/icons/drive_synced_under_root.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>can_unsync_container</filter-id>
     </action>
