@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.styleguide.theme">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!-- themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
+
+    <theme>
+      <src>themes/style-guide.xml</src>
+    </theme>
+
+  </extension>
+
+  <!-- Register mapping between theme pages and resources -->
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="styleGuide/default">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>popups</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>richfaces_components</style>
+        <style>tabs_content</style>
+        <style>style_guide</style>
+      </styles>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="style_guide">
+      <src>themes/css/style_guide.css</src>
+    </style>
+  </extension>
+
+    <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
+
+      <view id="/style_guide.xhtml">
+        <theme>styleGuide/default</theme>
+      </view>
+
+    </application>
+
+  </extension>
+
+
+</component>
