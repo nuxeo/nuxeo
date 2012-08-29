@@ -160,7 +160,6 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 String docName = taskType == null ? taskName : taskType;
                 DocumentModel taskDocument = session.createDocumentModel(
                         parentPath, docName, taskDocumentType);
-                taskDocument = session.createDocument(taskDocument);
                 Task task = taskDocument.getAdapter(Task.class);
                 if (task == null) {
                     throw new ClientRuntimeException("Document "
@@ -203,6 +202,9 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                     variables.putAll(taskVariables);
                 }
                 task.setVariables(variables);
+
+                // create document in order to set its ACP
+                taskDocument = session.createDocument(taskDocument);
 
                 // Set rights
                 List<String> actorIds = new ArrayList<String>();
