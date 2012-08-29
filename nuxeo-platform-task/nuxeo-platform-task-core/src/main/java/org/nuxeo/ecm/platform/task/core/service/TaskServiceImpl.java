@@ -144,8 +144,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             String taskDocumentType, String taskName, String taskType,
             String processId, List<String> actorIds,
             boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
-            throws ClientException {
+            Date dueDate, Map<String, String> taskVariables, String parentPath,
+            Map<String, Serializable> eventInfo) throws ClientException {
         if (StringUtils.isBlank(parentPath)) {
             parentPath = getTaskRootParentPath(coreSession);
         }
