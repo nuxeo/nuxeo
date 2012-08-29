@@ -6,6 +6,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.security.SecurityException;
 
 /**
  * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo
@@ -18,16 +19,19 @@ public interface NuxeoDriveManager {
      * @param newRootContainer the folderish document to be used as
      *            synchronization root: must be bound to an active session
      * @throws ClientException
+     * @throws SecurityException if the user does not have write permissions to
+     *             the container.
      */
     public void synchronizeRoot(String userName, DocumentModel newRootContainer)
-            throws ClientException;
+            throws ClientException, SecurityException;
 
     /**
      * @param userName the id of the Nuxeo Drive user
-     * @param rootContainer the folderish document that should no longer be used as a synchronization root
+     * @param rootContainer the folderish document that should no longer be used
+     *            as a synchronization root
      */
-    public void unsynchronizeRoot(String userName,
-            DocumentModel rootContainer) throws ClientException;
+    public void unsynchronizeRoot(String userName, DocumentModel rootContainer)
+            throws ClientException;
 
     /**
      * Fetch the list of synchronization root ids for a given user. This list is

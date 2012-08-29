@@ -19,6 +19,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 
@@ -112,7 +113,7 @@ public class NuxeoDriveActions implements Serializable {
         return !currentDocRef.equals(currentSyncRoot.getRef());
     }
 
-    public void synchronizeCurrentDocument() throws ClientException {
+    public void synchronizeCurrentDocument() throws ClientException, SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         String userName = documentManager.getPrincipal().getName();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();

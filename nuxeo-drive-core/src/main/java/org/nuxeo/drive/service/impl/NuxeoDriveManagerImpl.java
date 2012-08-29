@@ -18,8 +18,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.google.common.collect.MapMaker;
@@ -37,15 +41,33 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     public static final String DRIVE_SUBSCRIBERS_PROPERTY = "drv:subscribers";
 
-    // TODO: upgrade to latest version of google collections to be able to limit the size with a LRU policy
+    // TODO: upgrade to latest version of google collections to be able to limit
+    // the size with a LRU policy
     ConcurrentMap<String, Set<IdRef>> cache = new MapMaker().concurrencyLevel(4).softKeys().softValues().expiration(
             10, TimeUnit.MINUTES).makeMap();
 
     @Override
     public void synchronizeRoot(String userName, DocumentModel newRootContainer)
-            throws PropertyException, ClientException {
+            throws PropertyException, ClientException, SecurityException {
         if (!newRootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             newRootContainer.addFacet(NUXEO_DRIVE_FACET);
+        }
+        if (!newRootContainer.isFolder() || newRootContainer.isProxy()
+                || newRootContainer.isVersion()) {
+            throw new ClientException(String.format(
+                    "Document '%s' (%s) is not a suitable synchronization root"
+                            + " as it is either not folderish or is a readonly"
+                            + " proxy or archived version.",
+                    newRootContainer.getTitle(), newRootContainer.getRef()));
+        }
+        CoreSession session = newRootContainer.getCoreSession();
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        if (!session.hasPermission(userManager.getPrincipal(userName),
+                newRootContainer.getRef(), SecurityConstants.ADD_CHILDREN)) {
+            throw new SecurityException(String.format(
+                    "%s has no permission to create content in '%s' (%s).",
+                    userName, newRootContainer.getTitle(),
+                    newRootContainer.getRef()));
         }
         String[] subscribers = (String[]) newRootContainer.getPropertyValue(DRIVE_SUBSCRIBERS_PROPERTY);
         if (subscribers == null) {
@@ -63,7 +85,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         }
         newRootContainer.setPropertyValue(DRIVE_SUBSCRIBERS_PROPERTY,
                 (Serializable) subscribers);
-        CoreSession session = newRootContainer.getCoreSession();
         session.saveDocument(newRootContainer);
         session.save();
         cache.clear();
