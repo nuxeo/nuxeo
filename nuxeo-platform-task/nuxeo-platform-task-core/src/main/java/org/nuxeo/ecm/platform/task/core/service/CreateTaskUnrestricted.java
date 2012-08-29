@@ -206,6 +206,9 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 // create document in order to set its ACP
                 taskDocument = session.createDocument(taskDocument);
 
+                // re-fetch task from task document to set its id
+                task = taskDocument.getAdapter(Task.class);
+
                 // Set rights
                 List<String> actorIds = new ArrayList<String>();
                 for (String actor : prefixedActorIds) {
