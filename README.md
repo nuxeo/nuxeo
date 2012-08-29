@@ -118,3 +118,7 @@ In order to be seen as "Snapshotable", your folderish object must have the facet
 
 This addons also provides a contribution to the publisher service so that you can publish a tree via the publisher.
 
+## Proxy handling
+
+TODO This addon also provides helpers for handling proxies :
+* adding a document to a proxy folder actually adds it to its target folder, see TestSnapshotingAndProxies.testAddAndGetProxyFolderChildren()
