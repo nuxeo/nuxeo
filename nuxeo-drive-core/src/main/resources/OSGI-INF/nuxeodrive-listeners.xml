@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.listeners" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <documentation>
+      Notify the NuxeoDriveManager service to invalidate
+      it's cache when a document is deleted (physically or just the
+      trash).
+
+      @author Olivier Grisel
+    </documentation>
+
+    <listener name="nuxeoDriveCacheInvalidationListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.drive.listener.NuxeoDriveCacheInvalidationListener"
+      priority="300">
+      <event>lifecycle_transition_event</event>
+      <event>documentRemoved</event>
+    </listener>
+
+  </extension>
+
+</component>

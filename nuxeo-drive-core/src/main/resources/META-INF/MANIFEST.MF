@@ -6,7 +6,8 @@ Bundle-Version: 5.7
 Bundle-Name: org.nuxeo.drive.core
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nuxeodrive-service.xml,
- OSGI-INF/nuxeodrive-core-types.xml
+ OSGI-INF/nuxeodrive-core-types.xml,
+ OSGI-INF/nuxeodrive-listeners.xml
 Bundle-SymbolicName: org.nuxeo.drive.core;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 

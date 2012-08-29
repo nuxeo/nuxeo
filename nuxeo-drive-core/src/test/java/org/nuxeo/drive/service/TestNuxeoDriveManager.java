@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -38,7 +39,10 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
+import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -59,6 +63,7 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
+@RepositoryConfig(repositoryName = "default", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core" })
@@ -137,13 +142,16 @@ public class TestNuxeoDriveManager {
         user2Workspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
                 user2Session,
                 user2Session.getDocument(new PathRef("/default-domain"))).getRef();
-
     }
 
     @After
     public void closeSessions() throws Exception {
-        CoreInstance.getInstance().close(user1Session);
-        CoreInstance.getInstance().close(user2Session);
+        if (user1Session != null) {
+            CoreInstance.getInstance().close(user1Session);
+        }
+        if (user2Session != null) {
+            CoreInstance.getInstance().close(user2Session);
+        }
         Session usersDir = directoryService.getDirectory("userDirectory").getSession();
         try {
             usersDir.deleteEntry("user1");
@@ -151,6 +159,8 @@ public class TestNuxeoDriveManager {
         } finally {
             usersDir.close();
         }
+        // Simulate root deletion to cleanup the cache between the tests
+        nuxeoDriveManager.handleFolderDeletion((IdRef) doc("/").getRef());
     }
 
     protected void checkRootsCount(String userName, CoreSession session,
@@ -244,8 +254,31 @@ public class TestNuxeoDriveManager {
 
     @Test
     public void testSynchronizationRootDeletion() throws Exception {
-        // TODO: check service cache invalidation with a core event listener
-        // here
+        checkRootsCount("user1", session, 0);
+        checkRootsCount("user2", session, 0);
+
+        nuxeoDriveManager.synchronizeRoot("user1",
+                doc(user1Session, "/default-domain/workspaces/workspace-2"));
+        nuxeoDriveManager.synchronizeRoot(
+                "user2",
+                doc(user1Session,
+                        "/default-domain/workspaces/workspace-2/folder-2-1"));
+        checkRootsCount("user1", session, 1);
+        checkRootsCount("user2", session, 1);
+
+        // check deletion by lifecycle
+        session.followTransition(
+                doc("/default-domain/workspaces/workspace-2/folder-2-1").getRef(),
+                "delete");
+        session.save();
+        checkRootsCount("user1", session, 1);
+        checkRootsCount("user2", session, 0);
+
+        // check physical deletion of a parent folder
+        session.removeDocument(doc("/default-domain").getRef());
+        session.save();
+        checkRootsCount("user1", session, 0);
+        checkRootsCount("user2", session, 0);
     }
 
 }
