@@ -37,6 +37,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     public static final String DRIVE_SUBSCRIBERS_PROPERTY = "drv:subscribers";
 
+    // TODO: upgrade to latest version of google collections to be able to limit the size with a LRU policy
     ConcurrentMap<String, Set<IdRef>> cache = new MapMaker().concurrencyLevel(4).softKeys().softValues().expiration(
             10, TimeUnit.MINUTES).makeMap();
 
