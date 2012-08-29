@@ -165,7 +165,7 @@ public class FilterDocuments {
             }
             if (path != null) {
                 try {
-                    if (!path.startsWith(doc.getPathAsString())) {
+                    if (!doc.getPathAsString().startsWith(path)) {
                         return false;
                     }
                 } catch (Exception e) {
