@@ -3,6 +3,9 @@
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="event">
     <event name="auditLogRoute" />
+    <event name="workflowTaskAssigned"/>
+    <event name="workflowTaskCompleted"/>
+    
   </extension>
   <extension point="extendedInfo"
     target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">

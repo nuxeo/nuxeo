@@ -414,7 +414,11 @@ public class RoutingTaskActionsBean implements Serializable {
             data.put("WorkflowVariables", formVariables);
             data.put("NodeVariables", formVariables);
         }
-
+        //if there is a comment on the submitted form, pass it to be logged by audit
+        if (formVariables.containsKey("comment")) {
+            data.put("comment", formVariables.get("comment"));
+        }
+        
         // get task documents
         boolean hasErrors = false;
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
