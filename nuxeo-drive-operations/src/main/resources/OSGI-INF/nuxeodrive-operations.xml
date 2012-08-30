@@ -3,6 +3,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations" >
       <operation class="org.nuxeo.drive.operations.NuxeoDriveGetRootsOperation" />
+      <operation class="org.nuxeo.drive.operations.NuxeoDriveSetSynchronizationOperation" />
    </extension>
     
 </component>
