@@ -289,6 +289,7 @@ else if (NodeVariables["button"] == "submit") {
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
     <filter id="filter@SerialDocumentReview">
       <rule grant="true">
+        <permission>ReadWrite</permission>
         <type>File</type>
         <type>Note</type>
       </rule>
