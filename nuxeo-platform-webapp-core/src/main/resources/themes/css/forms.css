@@ -21,7 +21,7 @@ select:focus > option:checked, select:focus > optgroup > option:checked { backgr
 input:focus, textarea:focus { border-color: "color.major.strong (__FLAVOR__ border)"; }
 
 /* in Tables */
-.dataInput textarea, .dataInput .dataInputText { width: 500px }
+.dataInput textarea, .dataInput .dataInputText { max-width: 500px; width: 95% }
 .dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { vertical-align: top }
 .dataInput select { box-shadow: 1px 1px 2px #e0e0e0 inset; min-width: 9em; padding: .3em; vertical-align: top }
 

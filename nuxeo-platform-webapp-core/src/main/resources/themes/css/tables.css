@@ -58,7 +58,7 @@ table.dataOutput th a img { margin: 0 0 0 .2em; padding: 0; vertical-align: bott
 .buttonsGadget { margin: .4em 0 .4em 3.2em }
 .smallButtonsGadget { margin: 0 0 .4em 7em }
 
-.labelColumn { font-weight: bold; text-align: right; vertical-align: top; width: 11em }
+.labelColumn { font-weight: bold; text-align: right; vertical-align: top; width: 27% }
 .labelColumn span { display: block; padding-right: 1em }
 .labelColumn .widgetHelpLabel span { display: inline }
 .workflowLabelColumn { width: 120px }
