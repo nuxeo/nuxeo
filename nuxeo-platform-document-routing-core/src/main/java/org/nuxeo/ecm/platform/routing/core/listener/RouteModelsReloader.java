@@ -50,7 +50,7 @@ public class RouteModelsReloader implements EventListener {
             log.info("Do not flush the directory caches: dev mode is not set");
             return;
         }
-        if (!ReloadEventNames.FLUSH_EVENT_ID.equals(event.getId())) {
+        if (!ReloadEventNames.RELOAD_EVENT_ID.equals(event.getId())) {
             return;
         }
         try {
