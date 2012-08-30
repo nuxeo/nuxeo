@@ -1,0 +1,8 @@
+<component name="org.nuxeo.drive.operations.NuxeoDriveGetRootsOperation">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations" >
+      <operation class="org.nuxeo.drive.operations.NuxeoDriveGetRootsOperation" />
+   </extension>
+    
+</component>
