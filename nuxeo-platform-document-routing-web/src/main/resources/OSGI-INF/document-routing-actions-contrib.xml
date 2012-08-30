@@ -50,6 +50,7 @@
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
+    <!-- TODO this action should not be seen globally
     <action id="SAVE_SELECTED_ROUTE_AS_NEW_INSTANCE"
       link="#{routingActions.saveSelectedRouteAsNewInstance()}" order="50"
       label="label.document.routing.saveAsNew">
@@ -61,6 +62,7 @@
         </rule>
       </filter>
     </action>
+    -->
 
     <!-- TODO this action should not be seen globally
     <action id="SAVE_ROUTE_AS_NEW_INSTANCE" link="#{routingActions.saveRouteAsNewInstance()}"
