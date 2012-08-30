@@ -42,6 +42,7 @@
     </doctype>
 
     <doctype name="DocumentRouteModelsRoot" extends="Folder">
+      <facet name="HiddenInNavigation" />
       <facet name="SystemDocument" />
       <subtypes>
         <type>Folder</type>

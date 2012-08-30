@@ -62,12 +62,14 @@
       </filter>
     </action>
 
+    <!-- TODO this action should not be seen globally
     <action id="SAVE_ROUTE_AS_NEW_INSTANCE" link="#{routingActions.saveRouteAsNewInstance()}"
       order="20" label="label.document.routing.saveAsNew">
       <category>SUBVIEW_UPPER_LIST</category>
       <category>ROUTE_LIST</category>
       <filter-id>isRoute</filter-id>
     </action>
+    -->
 
     <action id="VALIDATE_ROUTE" link="#{routingActions.validateRouteModel()}"
       order="10" label="action.validate.document.routing.model">
