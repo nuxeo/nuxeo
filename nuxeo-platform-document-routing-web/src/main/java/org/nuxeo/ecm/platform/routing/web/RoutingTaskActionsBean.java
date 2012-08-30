@@ -374,13 +374,29 @@ public class RoutingTaskActionsBean implements Serializable {
             }
         }
         List<Action> res = new ArrayList<Action>(actions.values());
+        Action processAction = null;
         for (Action action : res) {
             if (!actionsCounter.get(action.getId()).equals(taskDocsNum)) {
                 action.setAvailable(false);
             }
+            // if there is a form attached to these tasks, add a generic process
+            // action to open the fancy box
+            // the form of the first task will be displayed, but all the tasks
+            // concerned by this action share the same form as they share the same type
+            if (processAction == null && "fancybox".equals(action.getType())) {
+                processAction = new Action("process_task",
+                        Action.EMPTY_CATEGORIES);
+                processAction.setType("process_task");
+                processAction.setProperties(action.getProperties());
+            }
+        }
+        if (processAction != null) {
+            res.add(processAction);
         }
         return res;
     }
+
+
 
     /**
      * Ends a task given a selection list name and an action
