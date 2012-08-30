@@ -293,6 +293,9 @@ else if (NodeVariables["button"] == "submit") {
         <type>File</type>
         <type>Note</type>
       </rule>
+      <rule grant="false">
+        <condition>document.isImmutable()</condition>
+      </rule>
     </filter>
   </extension>
 </component>
