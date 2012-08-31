@@ -51,6 +51,11 @@ public class LiveInstallTask extends InstallTask {
 
     @Override
     protected void taskDone() throws PackageException {
+        try {
+            Framework.getLocalService(ReloadService.class).reload();
+        } catch (Exception e) {
+            throw new PackageException("Can not relaod service", e);
+        }
         if (isRestartRequired()) {
             service.setPackageState(pkg, PackageState.INSTALLED);
         } else {
