@@ -20,6 +20,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:path STARTSWITH ?
         AND ecm:mixinType != 'Folderish' AND ecm:mixinType !=
+        'SystemDocument' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0
         AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
@@ -32,6 +33,7 @@
       <pattern>
         SELECT * FROM Document WHERE ecm:path STARTSWITH ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:mixinType != 'SystemDocument' AND
         ecm:isCheckedInVersion = 0 AND ecm:isProxy = 1
       </pattern>
       <sort column="dc:modified" ascending="true" />
@@ -43,6 +45,7 @@
       <pattern>
         SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:mixinType != 'SystemDocument' AND
         ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
         ecm:currentLifeCycleState != 'deleted' AND ecm:path STARTSWITH ?
       </pattern>
@@ -87,6 +90,7 @@
       <pattern>
         SELECT * FROM Document WHERE dc:contributors = ? AND ecm:mixinType !=
         'Folderish' AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:mixinType != 'SystemDocument' AND
         ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND
         ecm:currentLifeCycleState = 'deleted'
       </pattern>
