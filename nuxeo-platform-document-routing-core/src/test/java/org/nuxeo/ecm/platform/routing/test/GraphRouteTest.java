@@ -932,8 +932,11 @@ public class GraphRouteTest {
         Calendar currentDate = Calendar.getInstance();
         Calendar taskDueDate = Calendar.getInstance();
         taskDueDate.setTime(ts.getDueDate());
-        assertEquals(currentDate.get(Calendar.DATE) + 1,
-                taskDueDate.get(Calendar.DATE));
+        int tomorrow = currentDate.get(Calendar.DAY_OF_YEAR) + 1;
+        int due = taskDueDate.get(Calendar.DAY_OF_YEAR);
+        if (due != 1) {
+            assertEquals(tomorrow, due);
+        }
     }
 
     @SuppressWarnings("unchecked")
