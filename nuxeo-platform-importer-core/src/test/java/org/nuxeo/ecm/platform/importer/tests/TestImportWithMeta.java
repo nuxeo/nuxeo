@@ -68,7 +68,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
 
         session.save();
         DocumentModel doc1 = session.getDocument(new PathRef(targetPath
-                + "import-src/hello-pdf"));
+                + "import-src/hello.pdf"));
         assertEquals("src1", doc1.getPropertyValue("dc:source").toString());
 
         String[] subjects = (String[]) doc1.getPropertyValue("dc:subjects");
@@ -82,7 +82,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
                 ((Calendar) (doc1.getPropertyValue("dc:issued"))).get(Calendar.YEAR));
 
         DocumentModel doc2 = session.getDocument(new PathRef(targetPath
-                + "import-src/branch1/hello-pdf"));
+                + "import-src/branch1/hello.pdf"));
         assertEquals("src1", doc2.getPropertyValue("dc:source").toString());
         subjects = (String[]) doc2.getPropertyValue("dc:subjects");
         assertNotNull(subjects);
@@ -91,7 +91,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         assertTrue(subjects.length == 2);
 
         DocumentModel doc3 = session.getDocument(new PathRef(targetPath
-                + "import-src/branch1/branch11/hello-pdf"));
+                + "import-src/branch1/branch11/hello.pdf"));
         assertEquals("src1", doc3.getPropertyValue("dc:source").toString());
         subjects = (String[]) doc3.getPropertyValue("dc:subjects");
         assertNotNull(subjects);
@@ -100,7 +100,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         assertTrue(subjects.length == 2);
 
         DocumentModel doc4 = session.getDocument(new PathRef(targetPath
-                + "import-src/branch2/hello-pdf"));
+                + "import-src/branch2/hello.pdf"));
         assertEquals("src1", doc4.getPropertyValue("dc:source").toString());
         subjects = (String[]) doc4.getPropertyValue("dc:subjects");
         assertNotNull(subjects);
@@ -109,7 +109,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         assertTrue(subjects.length == 2);
 
         DocumentModel doc5 = session.getDocument(new PathRef(targetPath
-                + "import-src/branch2/branch21/hello-pdf"));
+                + "import-src/branch2/branch21/hello.pdf"));
         assertEquals("src2", doc5.getPropertyValue("dc:source").toString());
         subjects = (String[]) doc5.getPropertyValue("dc:subjects");
         assertNotNull(subjects);

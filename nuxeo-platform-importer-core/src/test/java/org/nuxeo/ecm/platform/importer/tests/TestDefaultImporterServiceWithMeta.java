@@ -59,18 +59,18 @@ public class TestDefaultImporterServiceWithMeta extends SQLRepositoryTestCase {
         assertEquals("Folder", folder.getType());
 
         DocumentModel file = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src-with-metadatas/hello-pdf"));
+                "/default-domain/workspaces/import-src-with-metadatas/hello.pdf"));
         assertNotNull(file);
         assertEquals("File", file.getType());
         assertEquals("src1", file.getPropertyValue("dc:source"));
 
-        DocumentModel file1 = session.getChild(folder.getRef(), "hello1-pdf");
+        DocumentModel file1 = session.getChild(folder.getRef(), "hello1.pdf");
         assertEquals("src1-hello1", file1.getPropertyValue("dc:source"));
 
         DocumentModel folder11 = session.getChild(folder.getRef(), "branch11");
 
         DocumentModel file11 = session.getChild(folder11.getRef(),
-                "hello11-pdf");
+                "hello11.pdf");
         String[] contributors = (String[]) file11.getPropertyValue("dc:subjects");
         assertNotNull(contributors);
         assertEquals("subject6", contributors[0]);
