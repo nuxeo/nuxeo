@@ -28,3 +28,4 @@ target
 *.gpd.*
 *cpJar*
 dependency-tree.log
+build.properties
