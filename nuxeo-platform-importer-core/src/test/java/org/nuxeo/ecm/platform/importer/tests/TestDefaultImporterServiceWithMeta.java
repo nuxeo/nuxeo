@@ -49,17 +49,17 @@ public class TestDefaultImporterServiceWithMeta extends SQLRepositoryTestCase {
         session.save();
 
         DocumentModel docContainer = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src-with-metadatas"));
+                "/default-domain/workspaces/import-src-with-metadata"));
         assertNotNull(docContainer);
         assertEquals("Folder", docContainer.getType());
 
         DocumentModel folder = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src-with-metadatas/branch1"));
+                "/default-domain/workspaces/import-src-with-metadata/branch1"));
         assertNotNull(folder);
         assertEquals("Folder", folder.getType());
 
         DocumentModel file = session.getDocument(new PathRef(
-                "/default-domain/workspaces/import-src-with-metadatas/hello.pdf"));
+                "/default-domain/workspaces/import-src-with-metadata/hello.pdf"));
         assertNotNull(file);
         assertEquals("File", file.getType());
         assertEquals("src1", file.getPropertyValue("dc:source"));
