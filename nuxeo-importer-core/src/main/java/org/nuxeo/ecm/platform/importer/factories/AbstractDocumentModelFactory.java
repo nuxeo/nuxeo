@@ -82,11 +82,9 @@ public abstract class AbstractDocumentModelFactory implements
 
         @Override
         public String normalize(String name) throws ClientException {
-            DocumentModel fake = new DocumentModelImpl("/", "none", "File");
-            fake.setPropertyValue("dc:title", name);
-            Framework.getLocalService(PathSegmentService.class).generatePathSegment(
+            DocumentModel fake = new DocumentModelImpl("/", name, "File");
+            return Framework.getLocalService(PathSegmentService.class).generatePathSegment(
                     fake);
-           return name;
         }
     }
     
