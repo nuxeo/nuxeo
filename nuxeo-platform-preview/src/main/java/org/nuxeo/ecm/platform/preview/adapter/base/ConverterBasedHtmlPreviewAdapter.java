@@ -177,7 +177,9 @@ public class ConverterBasedHtmlPreviewAdapter extends
 
     protected void setMimeType(BlobHolder result) throws ClientException {
         for (Blob blob : result.getBlobs()) {
-            if (blob.getMimeType() == null && blob.getFilename().endsWith("html")) {
+            if ((blob.getMimeType() == null || blob.getMimeType().startsWith(
+                    "application/octet-stream"))
+                    && blob.getFilename().endsWith("html")) {
                 String mimeTpye = getMimeType(blob);
                 blob.setMimeType(mimeTpye);
             }
