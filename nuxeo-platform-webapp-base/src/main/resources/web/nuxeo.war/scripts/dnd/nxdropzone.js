@@ -382,8 +382,10 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       continueButton.css("display","block")
 
       var batchExec=jQuery().automation(operationId);
-      var timeout = this.nxUploaded > 10 ? batchExec.opts.timeout * 10 : this.nxUploaded * batchExec.opts.timeout;
-      batchExec.setTimeout(timeout)
+      if (dndTimeout == 0) {
+          dndTimeout = this.nxUploaded > 10 ? batchExec.opts.timeout * 10 : this.nxUploaded * batchExec.opts.timeout;
+      }
+      batchExec.setTimeout(dndTimeout);
       log(this.ctx);
       batchExec.setContext(this.ctx);
       batchExec.addParameters(params);

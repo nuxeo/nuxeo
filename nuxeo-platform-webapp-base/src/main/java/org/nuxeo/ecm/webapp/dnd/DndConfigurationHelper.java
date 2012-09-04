@@ -28,6 +28,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component used to outject a Session scoped flag that indicates if
@@ -39,6 +40,8 @@ import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
 @Name("dndConfigHelper")
 @Scope(ScopeType.EVENT)
 public class DndConfigurationHelper {
+
+    public final static String DND_TIMEOUT_PROPERTY = "nuxeo.dnd.timeout";
 
     /**
      * Factory method used to push into the Session context a flag indicating if
@@ -60,6 +63,15 @@ public class DndConfigurationHelper {
 
     public void setHtml5DndEnabled(boolean enabled) {
         Contexts.getSessionContext().set("useHtml5DragAndDrop", enabled);
+    }
+
+    @Factory(value = "dndTimeout", scope = ScopeType.SESSION)
+    public int getDndTimeout() {
+        try {
+            return Integer.parseInt(Framework.getProperty(DND_TIMEOUT_PROPERTY));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
 }
