@@ -17,8 +17,8 @@
 
     <filter id="directoriesManagementAccess">
       <rule grant="true">
-        <condition>#{currentUser.administrator}</condition>
-        <condition>#{currentUser.isMemberOf('powerusers')}</condition>
+        <condition>currentUser.administrator</condition>
+        <condition>currentUser.isMemberOf('powerusers')</condition>
       </rule>
     </filter>
 
