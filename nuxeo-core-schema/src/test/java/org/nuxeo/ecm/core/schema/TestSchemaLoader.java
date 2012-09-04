@@ -109,6 +109,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     public void testContribs() throws Exception {
         deployContrib("org.nuxeo.ecm.core.schema.tests",
                 "CoreTestExtensions.xml");
+        Framework.getLocalService(SchemaManager.class).flushPendingsRegistration();
         DocumentType docType = typeMgr.getDocumentType("myDoc");
 
         assertNotNull(docType);

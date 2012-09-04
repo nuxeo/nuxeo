@@ -102,4 +102,11 @@ public interface SchemaManager extends TypeProvider {
     // XXX: This should be refactored to get a serializable InputStream.
     String getXmlSchemaDefinition(String name);
 
+    /**
+     * Flush pending registrations 
+     * 
+     * @since 5.7
+     */
+    void flushPendingsRegistration();
+
 }

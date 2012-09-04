@@ -247,5 +247,11 @@ public class TypeService extends DefaultComponent {
         }
         return null;
     }
+    
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        schemaManager.flushPendingsRegistration();
+    }
+    
 
 }
