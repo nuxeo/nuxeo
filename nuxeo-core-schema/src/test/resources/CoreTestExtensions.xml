@@ -15,13 +15,13 @@
       <facet name="viewable"/>
       <facet name="writable"/>
     </doctype>
-    <facet name="myfacet">
-      <schema name="schema2"/>
-    </facet>
     <doctype name="myDoc2" extends="Document">
       <schema name="schema1"/>
       <facet name="myfacet"/>
     </doctype>
+    <facet name="myfacet">
+      <schema name="schema2"/>
+    </facet>
   </extension>
 
 
