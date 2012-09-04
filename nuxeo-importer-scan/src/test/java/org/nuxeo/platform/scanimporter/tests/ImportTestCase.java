@@ -36,7 +36,7 @@ public abstract class ImportTestCase extends SQLRepositoryTestCase {
         Framework.getProperties().put("nuxeo.import.tmpdir", dst.getPath());
         tmp.add(dst);
         FileUtils.copyDirectoryToDirectory(src, dst);
-        return dst.getPath() + "/" + name;
+        return dst.getPath() + File.separator + name;
     }
 
     @After
