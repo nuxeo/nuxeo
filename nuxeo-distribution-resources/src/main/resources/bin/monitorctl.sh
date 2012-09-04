@@ -198,13 +198,12 @@ JMXSTAT_PID="$PID_DIR"/jmxstat.pid
 JMXSTAT_INTERVAL=$SAR_INTERVAL
 JMXSTAT_COUNT=$SAR_COUNT
 JMXSTAT_OPTS="$JMXHOST --contention Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"[numActive,numIdle]"
-JMXSTAT_VCS_ROW_RESET="org.nuxeo:name=ecm.core.storage.sql.row.cache.access,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.row.cache.hits,type=Counter,management=metric[!reset]"
-# org.nuxeo:name=ecm.core.storage.sql.row.cache.get,type=Stopwatch,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!reset]"
-JMXSTAT_VCS_ROW="org.nuxeo:name=ecm.core.storage.sql.row.cache.access,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.row.cache.hits,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.row.cache.size,type=Counter,management=metric[!sampleAsMap]"
-# org.nuxeo:name=ecm.core.storage.sql.row.cache.get,type=Stopwatch,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!sampleAsMap]"
+JMXSTAT_VCS_ROW_RESET="--quiet org.nuxeo:name=ecm.core.storage.sql.row.cache.access,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.row.cache.hits,type=Counter,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.row.cache.get,type=Stopwatch,management=metric[!reset] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!reset]"
+JMXSTAT_VCS_ROW="--quiet org.nuxeo:name=ecm.core.storage.sql.row.cache.access,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.row.cache.hits,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.row.cache.size,type=Counter,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.row.cache.get,type=Stopwatch,management=metric[!sampleAsMap] org.nuxeo:name=ecm.core.storage.sql.sor.gets,type=Stopwatch,management=metric[!sampleAsMap]"
 JMXSTAT_VCS_SEL_RESET=`echo $JMXSTAT_VCS_ROW_RESET | sed 's/row/selection/g'`
 JMXSTAT_VCS_SEL=`echo $JMXSTAT_VCS_ROW | sed 's/row/selection/g'`
-
+JMXSTAT_LISTENER_MON='org.nuxeo:name=EventMonitoring,type=service[!setSyncHandlersTrackingEnabled/true,!setAsyncHandlersTrackingEnabled/true,!resetHandlersExecTime]'
+JMXSTAT_LISTENER_STAT='org.nuxeo:name=EventMonitoring,type=service[!getListenersConfig,!getAsyncHandlersExecTime,!getSyncHandlersExecTime]'
 
 [ -z $JMXSTAT ] && echo "You can install jmxstat from https://github.com/bdelbosc/jmxstat"
 
@@ -339,6 +338,8 @@ log_misc() {
             s_ratio=`echo "scale=3;$s_hits/$s_access" | bc 2> /dev/null`
             s_ratio_pc=`echo "scale=2;$s_hits*100/$s_access" | bc 2> /dev/null`
             echo -e "Access: $s_access\nHits: $s_hits\nSize: $s_size\nHitRatio: $s_ratio_pc%" >> $file
+            echo "## Listener config, stats for async followed by sync" >> $file
+            $JMXSTAT $JMXHOST $JMXSTAT_LISTENER_STAT 1 1 2> /dev/null >> $file
         fi
     fi
 }
@@ -528,6 +529,7 @@ start() {
     if [ ! -z $JMXSTAT ]; then
         $JMXSTAT $JMXHOST $JMXSTAT_VCS_ROW_RESET 1 1 >/dev/null 2>&1 &
         $JMXSTAT $JMXHOST $JMXSTAT_VCS_SEL_RESET 1 1 >/dev/null 2>&1 &
+	$JMXSTAT $JMXHOST $JMXSTAT_LISTENER_MON 1 1 >/dev/null 2>&1 &
     fi
 
     # get a copy of nuxeo.conf
