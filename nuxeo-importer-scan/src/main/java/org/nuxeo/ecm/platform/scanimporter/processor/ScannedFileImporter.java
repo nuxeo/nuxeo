@@ -84,8 +84,7 @@ public class ScannedFileImporter {
                 if (outDir == null) {
                     file.delete();
                 } else {
-                    file.renameTo(new File(outDir.getAbsolutePath() + "/"
-                            + file.getName()));
+                    file.renameTo(new File(outDir, file.getName()));
                 }
             }
         }
