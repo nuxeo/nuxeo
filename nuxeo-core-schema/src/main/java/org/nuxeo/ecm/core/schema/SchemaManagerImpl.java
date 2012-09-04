@@ -17,10 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,8 +58,8 @@ public class SchemaManagerImpl implements SchemaManager {
     private final FacetRegistry facetReg;
 
     private final SchemaRegistry schemaReg;
-
-    private final Map<String, List<DocumentTypeDescriptor>> pendingDocTypes;
+    
+    private final Map<String, Set<DocumentTypeDescriptor>> pendingDocTypes;
 
     private final Map<String, Field> fields = new HashMap<String, Field>();
 
@@ -69,8 +68,12 @@ public class SchemaManagerImpl implements SchemaManager {
     // global prefetch info
     private PrefetchInfo prefetchInfo;
 
+    private static final String SUPER_PREFIX = "super:";
+
+    private static final String FACET_PREFIX = "facet:";
+
     public SchemaManagerImpl() throws Exception {
-        pendingDocTypes = new HashMap<String, List<DocumentTypeDescriptor>>();
+        pendingDocTypes = new HashMap<String, Set<DocumentTypeDescriptor>>();
         schemaDir = new File(Framework.getRuntime().getHome(), "schemas");
         typeReg = new SchemaTypeRegistry();
         docTypeReg = new DocumentTypeRegistry();
@@ -286,13 +289,25 @@ public class SchemaManagerImpl implements SchemaManager {
 
     public void registerDocumentType(DocumentTypeDescriptor dtd) {
         synchronized (docTypeReg) {
+            // check for super type
             DocumentType superType = null;
             if (dtd.superTypeName != null) {
                 superType = docTypeReg.getType(dtd.superTypeName);
                 if (superType == null) {
-                    postponeDocTypeRegistration(dtd);
+                    postponeDocTypeRegistration(dtd, SUPER_PREFIX+dtd.superTypeName);
                     return;
                 }
+            }
+            // check for known facets
+            boolean knownFacets = true;
+            for (String facetName:dtd.facets) {
+                if (facetReg.getFacet(facetName) == null) {
+                    postponeDocTypeRegistration(dtd, FACET_PREFIX+facetName);
+                    knownFacets = false;
+                }
+            }
+            if (!knownFacets) {
+                return;
             }
             registerDocumentType(superType, dtd);
         }
@@ -306,17 +321,7 @@ public class SchemaManagerImpl implements SchemaManager {
                 // add schemas from facets
                 for (String facetName : dtd.facets) {
                     CompositeType facet = getFacet(facetName);
-                    if (facet != null) {
-                        schemaNames.addAll(Arrays.asList(facet.getSchemaNames()));
-                    } else {
-                        log.warn("Document type " + dtd.name
-                                + " uses undeclared facet: " + facetName);
-                        // register it with no schemas
-                        CompositeType ct = new CompositeTypeImpl(
-                                (TypeRef<CompositeType>) null,
-                                SchemaNames.FACETS, facetName, null);
-                        registerFacet(ct);
-                    }
+                    schemaNames.addAll(Arrays.asList(facet.getSchemaNames()));
                 }
                 DocumentType docType = new DocumentTypeImpl(superType,
                         dtd.name, schemaNames.toArray(new String[0]),
@@ -327,7 +332,7 @@ public class SchemaManagerImpl implements SchemaManager {
                         dtd.prefetch) : prefetchInfo);
                 docTypeReg.addContribution(docType);
                 log.info("Registered document type: " + dtd.name);
-                registerPendingDocTypes(docType);
+                registerPendingDocTypes(SUPER_PREFIX+docType.getName());
                 return docType;
             } catch (Exception e) {
                 log.error("Error registering document type: " + dtd.name, e);
@@ -337,16 +342,16 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    private void registerPendingDocTypes(DocumentType superType) {
-        List<DocumentTypeDescriptor> list = pendingDocTypes.remove(superType.getName());
-        if (list == null) {
+    private void registerPendingDocTypes(String why) {
+        Set<DocumentTypeDescriptor> types = pendingDocTypes.remove(why);
+        if (types == null) {
             return;
         }
-        for (DocumentTypeDescriptor dtd : list) {
-            registerDocumentType(superType, dtd);
+        for (DocumentTypeDescriptor dtd : types) {
+            registerDocumentType(dtd);
         }
     }
-
+    
     @Override
     public DocumentType unregisterDocumentType(String name) {
         log.info("Unregister document type: " + name);
@@ -362,15 +367,15 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    private void postponeDocTypeRegistration(DocumentTypeDescriptor dtd) {
-        List<DocumentTypeDescriptor> list = pendingDocTypes.get(dtd.superTypeName);
-        if (list == null) {
-            list = new ArrayList<DocumentTypeDescriptor>();
-            pendingDocTypes.put(dtd.superTypeName, list);
+    private void postponeDocTypeRegistration(DocumentTypeDescriptor dtd, String why) {
+        Set<DocumentTypeDescriptor> types = pendingDocTypes.get(why);
+        if (types == null) {
+            types = new HashSet<DocumentTypeDescriptor>();
+            pendingDocTypes.put(why, types);
         }
-        list.add(dtd);
+        types.add(dtd);
     }
-
+    
     @Override
     public DocumentType getDocumentType(String name) {
         synchronized (docTypeReg) {
@@ -394,9 +399,11 @@ public class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public void registerFacet(CompositeType facet) {
+        final String name = facet.getName();
         synchronized (facetReg) {
             facetReg.addContribution(facet);
-            log.info("Registered facet: " + facet.getName());
+            registerPendingDocTypes(FACET_PREFIX+name);
+            log.info("Registered facet: " + name);
         }
     }
 
