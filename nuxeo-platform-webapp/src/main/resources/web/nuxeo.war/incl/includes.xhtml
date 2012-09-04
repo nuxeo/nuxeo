@@ -11,6 +11,8 @@
     value="var currentConversationId='#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';"/>
   <h:outputText
     value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
+  <h:outputText
+    value="var dndTimeout=#{dndTimeout};"/>
   // set the conversation id before doing any call
   Seam.Remoting.getContext().setConversationId(currentConversationId);
   Seam.Remoting.contextPath = '#{contextPath}';
