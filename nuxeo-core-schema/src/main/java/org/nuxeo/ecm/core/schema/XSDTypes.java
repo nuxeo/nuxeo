@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class XSDTypes {
 
@@ -60,6 +60,8 @@ public class XSDTypes {
         xsdBaseTypes.put("boolean", BooleanType.INSTANCE);
         xsdBaseTypes.put("base64Binary", BinaryType.INSTANCE);
         xsdBaseTypes.put("hexBinary", BinaryType.INSTANCE);
+        xsdBaseTypes.put("duration", StringType.INSTANCE);
+        xsdBaseTypes.put("anyType", StringType.INSTANCE);
     }
 
     public static SimpleType getType(String name) {

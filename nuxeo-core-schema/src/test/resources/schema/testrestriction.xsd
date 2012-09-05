@@ -10,4 +10,14 @@
 
   <xs:element name="shortstring" type="nxs:shortString" />
 
+  <xs:simpleType name = "Gender">
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "Male"/>
+            <xs:enumeration value = "Female"/>
+            <xs:enumeration value = "Unknown"/>
+        </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="gender" type = "nxs:Gender"/>
+
 </xs:schema>

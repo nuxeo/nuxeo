@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.StringLengthConstraint;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
@@ -220,6 +221,43 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         StringLengthConstraint slc = (StringLengthConstraint) c;
         assertEquals(0, slc.getMin());
         assertEquals(50, slc.getMax());
+
+        Field genderField = schema.getField("gender");
+        Type genderType = genderField.getType();
+        assertEquals("Gender", genderType.getName());
+        Type superType = genderType.getSuperType();
+        assertEquals("string", superType.getName());
+        assertTrue(genderType instanceof SimpleTypeImpl);
+        SimpleTypeImpl sGenderType = (SimpleTypeImpl) genderType;
+
+        constraints = sGenderType.getConstraints();
+        assertNotNull(constraints);
+        Constraint enumConstraint = constraints[0];
+        assertTrue(enumConstraint instanceof EnumConstraint);
+        EnumConstraint ec = (EnumConstraint) enumConstraint;
+        assertTrue(ec.getPossibleValues().contains("Male"));
+        assertTrue(ec.getPossibleValues().contains("Female"));
+        assertTrue(ec.getPossibleValues().contains("Unknown"));
+        assertFalse(ec.getPossibleValues().contains("Depends"));
+
+    }
+
+    @Test
+    public void testAdvancedTyping() throws Exception {
+        URL url = getResource("schema/advancedSchema.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("advancedSchema", "", url);
+
+        Field durField = schema.getField("dur");
+        assertEquals("string", durField.getType().getName());
+
+        Field anyField = schema.getField("any");
+        assertEquals("string", anyField.getType().getName());
+
+        Field extField = schema.getField("ext");
+        Type type = extField.getType();
+        assertTrue(type.isComplexType());
+
     }
 
 }

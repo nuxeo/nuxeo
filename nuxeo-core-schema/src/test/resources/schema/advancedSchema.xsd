@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/adv/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/adv/"
+  >
+
+  <xs:complexType name = "UserObject" abstract = "true">
+        <xs:complexContent>
+            <xs:extension base = "xs:anyType"/>
+        </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ext" type="nxs:UserObject"/>
+  <xs:element name="dur" type = "xs:duration"/>
+  <xs:element name="any" type = "xs:anyType"/>
+
+</xs:schema>
