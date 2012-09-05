@@ -52,6 +52,7 @@ public class ReloadServiceInvoker {
     }
 
     protected void hotDeployBundles(DevBundle[]bundles) throws Exception {
+        flush();
         for (DevBundle bundle :bundles) {
             if (bundle.devBundleType == DevBundleType.Bundle) {
                 bundle.name = (String)deployBundle.invoke(reloadService, new Object[] { bundle.file() });
@@ -66,7 +67,6 @@ public class ReloadServiceInvoker {
                 undeployBundle.invoke(reloadService, new Object[] { bundle.name });
             }
         }
-        flush();
     }
 
     protected void flush() throws Exception {
