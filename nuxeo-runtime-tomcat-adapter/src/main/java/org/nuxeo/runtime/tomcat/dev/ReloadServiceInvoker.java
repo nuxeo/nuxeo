@@ -82,6 +82,7 @@ public class ReloadServiceInvoker {
     }
 
     protected void hotDeployBundles(DevBundle[] bundles) throws Exception {
+        flush();
         boolean hasSeam = false;
         // rebuild existing war, this will remove previously copied web
         // resources
@@ -122,7 +123,6 @@ public class ReloadServiceInvoker {
         if (hasSeam) {
             flushSeam.invoke(reloadService);
         }
-        flush();
     }
 
     protected void flush() throws Exception {
