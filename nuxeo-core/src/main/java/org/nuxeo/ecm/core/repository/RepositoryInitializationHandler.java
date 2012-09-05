@@ -107,9 +107,9 @@ public abstract class RepositoryInitializationHandler {
         synchronized (RepositoryInitializationHandler.class) {
             if (previous != null) {
                 previous.next = next;
-                if (next != null) {
-                    next.previous = previous;
-                }
+            }
+            if (next != null) {
+                next.previous = previous;
             }
             if (instance == this) {
                 instance = previous;
