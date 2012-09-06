@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCRowMapper;
 
 public class TestSQLBackend extends SQLBackendTestCase {
 
@@ -2985,11 +2986,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         assertEquals(0, getClusterInvalidationsPropagatorSize());
         Session session = repository.getConnection();
-        // lock manager + session
-        assertEquals(1 + 1, getClusterInvalidationsPropagatorSize());
-        session.close();
-        // 1 connection remains for the lock manager
         assertEquals(1, getClusterInvalidationsPropagatorSize());
+        session.close();
+        assertEquals(0, getClusterInvalidationsPropagatorSize());
     }
 
     protected int getClusterInvalidationsPropagatorSize() throws Exception {
@@ -3006,6 +3005,48 @@ public class TestSQLBackend extends SQLBackendTestCase {
         propagatorField.setAccessible(true);
         InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(clusterNodeHandler);
         return propagator.queues.size();
+    }
+
+    public void testClusterInvalidationsQueueNotNeeded() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+        if (!DatabaseHelper.DATABASE.supportsClustering()) {
+            System.out.println("Skipping clustering test for unsupported database: "
+                    + DatabaseHelper.DATABASE.getClass().getName());
+            return;
+        }
+        repository.close();
+
+        // get a clustered repository
+        long DELAY = 0; // ms
+        repository = newRepository(DELAY, false);
+        repository.getConnection(); // init
+
+        // lock manager mapper has no invalidations queue
+        LockManager lockManager = ((RepositoryImpl) repository).getLockManager();
+        assertNoInvalidationsQueue((JDBCRowMapper) lockManager.mapper);
+
+        // cluster node handler mapper has no invalidations queue
+        Field backendField = RepositoryImpl.class.getDeclaredField("backend");
+        backendField.setAccessible(true);
+        JDBCBackend backend = (JDBCBackend) backendField.get(repository);
+        Field handlerField = JDBCBackend.class.getDeclaredField("clusterNodeHandler");
+        handlerField.setAccessible(true);
+        ClusterNodeHandler clusterNodeHandler = (ClusterNodeHandler) handlerField.get(backend);
+        Field clusterNodeMapperField = ClusterNodeHandler.class.getDeclaredField("clusterNodeMapper");
+        clusterNodeMapperField.setAccessible(true);
+        JDBCRowMapper mapper = (JDBCRowMapper) clusterNodeMapperField.get(clusterNodeHandler);
+        assertNoInvalidationsQueue(mapper);
+    }
+
+    protected static void assertNoInvalidationsQueue(JDBCRowMapper mapper)
+            throws Exception {
+        Field queueField = JDBCRowMapper.class.getDeclaredField("queue");
+        queueField.setAccessible(true);
+        InvalidationsQueue queue = (InvalidationsQueue) queueField.get(mapper);
+        assertNull(queue);
     }
 
     @SuppressWarnings("boxing")

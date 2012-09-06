@@ -111,8 +111,8 @@ public class RepositoryImpl implements Repository {
             throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
-        cachePropagator = new InvalidationsPropagator();
-        eventPropagator = new InvalidationsPropagator();
+        cachePropagator = new InvalidationsPropagator("cache-" + this);
+        eventPropagator = new InvalidationsPropagator("event-" + this);
         repositoryEventQueue = new InvalidationsQueue("repo-"
                 + repositoryDescriptor.name);
         try {
