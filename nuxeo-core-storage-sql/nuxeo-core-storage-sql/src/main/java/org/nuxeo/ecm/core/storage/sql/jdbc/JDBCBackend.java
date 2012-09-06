@@ -145,25 +145,28 @@ public class JDBCBackend implements RepositoryBackend {
     @Override
     public Mapper newMapper(Model model, PathResolver pathResolver,
             Credentials credentials, boolean create) throws StorageException {
+        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+
+        // The first mapper is used for the lock manager and must not accumulate
+        // invalidations from the cluster. Fortunately if first then there is
+        // no cluster node handler yet.
         Mapper mapper = createMapper(model, pathResolver);
+
         if (create) {
-            if (repository.getRepositoryDescriptor().noDDL) {
+            if (repositoryDescriptor.noDDL) {
                 log.info("Skipping database creation");
             } else {
                 // first connection, initialize the database
                 mapper.createDatabase();
             }
-            // create cluster mapper if needed
-            RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
             if (repositoryDescriptor.clusteringEnabled) {
+                Mapper clusterNodeMapper = createMapper(model, pathResolver);
                 log.info("Clustering enabled with "
                         + repositoryDescriptor.clusteringDelay
                         + " ms delay for repository: " + repository.getName());
-                // use the mapper that created the database as cluster mapper
-                clusterNodeHandler = new ClusterNodeHandler(mapper,
+                clusterNodeHandler = new ClusterNodeHandler(clusterNodeMapper,
                         repositoryDescriptor);
                 connectionPropagator.setClusterNodeHandler(clusterNodeHandler);
-                mapper = createMapper(model, pathResolver);
             }
         }
         return mapper;

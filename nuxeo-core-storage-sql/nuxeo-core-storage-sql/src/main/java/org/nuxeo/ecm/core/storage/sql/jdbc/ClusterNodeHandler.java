@@ -48,7 +48,7 @@ public class ClusterNodeHandler {
         clusterNodeMapper.createClusterNode();
         clusteringDelay = repositoryDescriptor.clusteringDelay;
         processClusterInvalidationsNext();
-        propagator = new InvalidationsPropagator();
+        propagator = new InvalidationsPropagator("cluster-" + this);
     }
 
     public JDBCConnection getConnection() {
