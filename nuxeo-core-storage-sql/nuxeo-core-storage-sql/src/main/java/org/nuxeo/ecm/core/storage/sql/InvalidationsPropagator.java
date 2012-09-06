@@ -21,8 +21,12 @@ public class InvalidationsPropagator {
 
     public final ArrayList<InvalidationsQueue> queues; // used synchronized
 
-    public InvalidationsPropagator() {
+    /** used for debugging */
+    public final String name;
+
+    public InvalidationsPropagator(String name) {
         queues = new ArrayList<InvalidationsQueue>();
+        this.name = name;
     }
 
     public synchronized void addQueue(InvalidationsQueue queue) {
@@ -49,6 +53,11 @@ public class InvalidationsPropagator {
                 n++;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + name + ')';
     }
 
 }
