@@ -43,6 +43,8 @@ public class TestDomainsFinder extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/core-types-contrib.xml");
 
+        fireFrameworkStarted();
+
         openSession();
 
         domainFinder = new DomainsFinderTester("default", session);
