@@ -274,4 +274,43 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals("string", att.getType().getName());
     }
 
+    @Test
+    public void testInlineTyping() throws Exception {
+        URL url = getResource("schema/advancedSchema.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("advancedSchema", "", url);
+
+        // check regular definition of simple type with restriction Field
+        Field simpleField = schema.getField("bureau");
+        Type simpleFieldType = simpleField.getType();
+        assertEquals("BureauType", simpleFieldType.getName());
+        Type superType = simpleFieldType.getSuperType();
+        assertEquals("string", superType.getName());
+        assertTrue(simpleFieldType instanceof SimpleTypeImpl);
+        SimpleTypeImpl sSimpleFieldType = (SimpleTypeImpl) simpleFieldType;
+        Constraint[] constraints = sSimpleFieldType.getConstraints();
+        assertNotNull(constraints);
+        Constraint enumConstraint = constraints[0];
+        assertTrue(enumConstraint instanceof EnumConstraint);
+        EnumConstraint ec = (EnumConstraint) enumConstraint;
+        assertTrue(ec.getPossibleValues().contains("EFU"));
+
+        // check inline definition of simple type with restriction Field
+        Field inlineField = schema.getField("inlineBureau");
+        assertNotNull(inlineField);
+        Type inlineFieldType = inlineField.getType();
+        assertNotNull(inlineFieldType);
+        superType = inlineFieldType.getSuperType();
+        assertEquals("string", superType.getName());
+        assertTrue(inlineFieldType instanceof SimpleTypeImpl);
+        SimpleTypeImpl sInlineFieldType = (SimpleTypeImpl) inlineFieldType;
+        constraints = sInlineFieldType.getConstraints();
+        assertNotNull(constraints);
+        enumConstraint = constraints[0];
+        assertTrue(enumConstraint instanceof EnumConstraint);
+        ec = (EnumConstraint) enumConstraint;
+        assertTrue(ec.getPossibleValues().contains("EFU"));
+
+    }
+
 }

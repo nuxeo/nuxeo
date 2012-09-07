@@ -10,6 +10,7 @@
  *     Bogdan Stefanescu
  *     Wojciech Sulejman
  *     Florent Guillaume
+ *     Thierry Delprat
  */
 package org.nuxeo.ecm.core.schema;
 
@@ -65,6 +66,8 @@ import com.sun.xml.xsom.parser.XSOMParser;
  * Loader of XSD schemas into Nuxeo Schema objects.
  */
 public class XSDLoader {
+
+    private static final String ANONYMOUS_TYPE_SUFFIX = "#anonymousType";
 
     public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
 
@@ -176,7 +179,7 @@ public class XSDLoader {
             Collection<XSElementDecl> elements = schema.getElementDecls().values();
             for (XSElementDecl el : elements) {
                 // register the type if not yet registered
-                Type ecmType = loadType(ecmSchema, el.getType());
+                Type ecmType = loadType(ecmSchema, el.getType(), el.getName());
                 if (ecmType != null) {
                     // add the field to the schema
                     createField(ecmSchema, el, ecmType);
@@ -189,7 +192,7 @@ public class XSDLoader {
             Collection<XSAttributeDecl> attributes = schema.getAttributeDecls().values();
             for (XSAttributeDecl att : attributes) {
                 // register the type if not yet registered
-                Type ecmType = loadType(ecmSchema, att.getType());
+                Type ecmType = loadType(ecmSchema, att.getType(), att.getName());
                 if (ecmType != null) {
                     // add the field to the schema
                     createField(ecmSchema, att, ecmType);
@@ -208,11 +211,11 @@ public class XSDLoader {
         }
     }
 
-    public Type loadType(Schema schema, XSType type)
+    public Type loadType(Schema schema, XSType type, String fieldName)
             throws TypeBindingException {
         String name;
         if (type.getName() == null || type.isLocal()) {
-            name = getAnonymousTypeName(type);
+            name = getAnonymousTypeName(type, fieldName);
             if (name == null) {
                 log.warn("Unable to load type - no name found");
                 return null;
@@ -238,7 +241,7 @@ public class XSDLoader {
             if (type instanceof XSListSimpleType) {
                 ecmType = loadListType(schema, (XSListSimpleType) type);
             } else {
-                ecmType = loadSimpleType(schema, type);
+                ecmType = loadSimpleType(schema, type, fieldName);
             }
         } else {
             ecmType = loadComplexType(schema, name, type.asComplexType());
@@ -270,7 +273,7 @@ public class XSDLoader {
         // the anyType is the basetype of itself
         if (baseType.getBaseType() != baseType) { // have a base type
             if (baseType.isComplexType()) {
-                superType = (ComplexType) loadType(schema, baseType);
+                superType = (ComplexType) loadType(schema, baseType, name);
             } else {
                 log.warn("Complex type has a non complex type super type???");
             }
@@ -296,7 +299,7 @@ public class XSDLoader {
         Collection<? extends XSAttributeUse> attrs = xsct.getAttributeUses();
         for (XSAttributeUse attr : attrs) {
             XSAttributeDecl at = attr.getDecl();
-            Type fieldType = loadType(schema, at.getType());
+            Type fieldType = loadType(schema, at.getType(), at.getName());
             if (fieldType == null) {
                 throw new TypeBindingException("Cannot add type for '"
                         + at.getName() + "'");
@@ -305,18 +308,18 @@ public class XSDLoader {
         }
     }
 
-    private SimpleType loadSimpleType(Schema schema, XSType type)
-            throws TypeBindingException {
+    private SimpleType loadSimpleType(Schema schema, XSType type,
+            String fieldName) throws TypeBindingException {
         String name = type.getName();
         if (name == null) {
-            // probably a local type -> ignore it
-            return null;
+            // probably a local type
+            name = fieldName + ANONYMOUS_TYPE_SUFFIX;
         }
         XSType baseType = type.getBaseType();
         SimpleType superType = null;
         if (baseType != type) {
             // have a base type
-            superType = (SimpleType) loadType(schema, baseType);
+            superType = (SimpleType) loadType(schema, baseType, fieldName);
         }
         SimpleTypeImpl simpleType = new SimpleTypeImpl(superType,
                 schema.getName(), name);
@@ -423,7 +426,7 @@ public class XSDLoader {
         if (dv != null) {
             defValue = dv.value;
         }
-        Type type = loadType(schema, element.getType());
+        Type type = loadType(schema, element.getType(), element.getName());
         return new ListTypeImpl(schema.getName(), name, type,
                 element.getName(), defValue, particle.getMinOccurs(),
                 particle.getMaxOccurs());
@@ -433,7 +436,7 @@ public class XSDLoader {
             XSElementDecl element) throws TypeBindingException {
         XSType elementType = element.getType();
 
-        Type fieldType = loadType(schema, elementType);
+        Type fieldType = loadType(schema, elementType, element.getName());
         if (fieldType != null) {
             createField(type, element, fieldType);
         }
@@ -534,13 +537,14 @@ public class XSDLoader {
 
     }
 
-    private static String getAnonymousTypeName(XSType type) {
+    private static String getAnonymousTypeName(XSType type, String fieldName) {
         if (type.isComplexType()) {
             XSElementDecl container = type.asComplexType().getScope();
             String elName = container.getName();
-            return elName + "#anonymousType";
+            return elName + ANONYMOUS_TYPE_SUFFIX;
+        } else {
+            return fieldName + ANONYMOUS_TYPE_SUFFIX;
         }
-        return null;
     }
 
 }

@@ -17,4 +17,20 @@
   <xs:element name="el" type = "xs:string"/>
   <xs:attribute name="att" type = "xs:string"/>
 
+  <xs:simpleType name="BureauType">
+      <xs:restriction base = "xs:string">
+          <xs:enumeration value = "EFU"/>
+      </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="bureau" type = "nxs:BureauType"/>
+
+  <xs:element name = "inlineBureau">
+        <xs:simpleType>
+            <xs:restriction base = "xs:string">
+                <xs:enumeration value = "EFU"/>
+            </xs:restriction>
+        </xs:simpleType>
+  </xs:element>
+
 </xs:schema>
