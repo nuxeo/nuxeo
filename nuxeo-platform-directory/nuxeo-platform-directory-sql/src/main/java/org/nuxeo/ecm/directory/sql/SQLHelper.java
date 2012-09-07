@@ -394,6 +394,18 @@ public class SQLHelper {
                                             formatColumnValues(columnValues)),
                                     e);
                         }
+                    } else if (column.getType().spec == ColumnSpec.DOUBLE) {
+                        try {
+                            v = Double.valueOf(value);
+                        } catch (NumberFormatException e) {
+                            throw new DirectoryException(
+                                    String.format(
+                                            "failed to set column '%s' on table '%s', values: %s",
+                                            column.getPhysicalName(),
+                                            table.getPhysicalName(),
+                                            formatColumnValues(columnValues)),
+                                    e);
+                        }
                     } else {
                         throw new DirectoryException(
                                 "unrecognized column type: " + column.getType()

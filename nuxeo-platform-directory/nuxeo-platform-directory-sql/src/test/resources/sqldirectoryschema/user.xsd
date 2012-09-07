@@ -16,7 +16,9 @@
 
   <!-- overridden -->
 
-  <xs:element name="intField" type="xs:integer" />
+  <xs:element name="intField" type="xs:integer" default="1" />
+  <xs:element name="longField" type="xs:long" default="1L"/>
+  <xs:element name="doubleField" type="xs:double" default="1.1" />
   <xs:element name="dateField" type="xs:date" />
 
   <!-- length restriction -->
