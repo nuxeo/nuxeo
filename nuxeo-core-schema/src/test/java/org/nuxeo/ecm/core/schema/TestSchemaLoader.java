@@ -257,7 +257,21 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         Field extField = schema.getField("ext");
         Type type = extField.getType();
         assertTrue(type.isComplexType());
+    }
 
+    @Test
+    public void testUseAttributeAsElements() throws Exception {
+        URL url = getResource("schema/advancedSchema.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("advancedSchema", "", url);
+
+        Field el = schema.getField("el");
+        assertNotNull(el);
+        assertEquals("string", el.getType().getName());
+
+        Field att = schema.getField("att");
+        assertNotNull(att);
+        assertEquals("string", att.getType().getName());
     }
 
 }

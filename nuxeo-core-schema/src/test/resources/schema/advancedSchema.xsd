@@ -14,5 +14,7 @@
   <xs:element name="ext" type="nxs:UserObject"/>
   <xs:element name="dur" type = "xs:duration"/>
   <xs:element name="any" type = "xs:anyType"/>
+  <xs:element name="el" type = "xs:string"/>
+  <xs:attribute name="att" type = "xs:string"/>
 
 </xs:schema>

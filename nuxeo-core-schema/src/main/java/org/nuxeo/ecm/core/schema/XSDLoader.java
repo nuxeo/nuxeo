@@ -185,6 +185,20 @@ public class XSDLoader {
                             + el.getType());
                 }
             }
+
+            Collection<XSAttributeDecl> attributes = schema.getAttributeDecls().values();
+            for (XSAttributeDecl att : attributes) {
+                // register the type if not yet registered
+                Type ecmType = loadType(ecmSchema, att.getType());
+                if (ecmType != null) {
+                    // add the field to the schema
+                    createField(ecmSchema, att, ecmType);
+                } else {
+                    log.warn("Failed to load field from attribute "
+                            + att.getName() + " : " + att.getType());
+                }
+            }
+
             typeManager.registerSchema(ecmSchema);
             return ecmSchema;
         } catch (TypeBindingException e) {
