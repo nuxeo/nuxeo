@@ -412,8 +412,8 @@
     <match>
       <mimetype>application/vnd.framemaker</mimetype>
       <extension>???</extension>
-      <description>(5.5.0-HF14-SNAPSHOT)</description>
-      <test offset="11" type="string" comparator="=">5.5.0-HF14-SNAPSHOT</test>
+      <description>(5.5.0-HF15-SNAPSHOT)</description>
+      <test offset="11" type="string" comparator="=">5.5.0-HF15-SNAPSHOT</test>
     </match>
     <match>
       <mimetype>application/vnd.framemaker</mimetype>
