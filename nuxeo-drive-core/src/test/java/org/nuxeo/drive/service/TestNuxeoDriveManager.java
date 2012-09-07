@@ -58,7 +58,7 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Tests for {@link NuxeoDriveManager}
- * 
+ *
  * @author <a href="mailto:ogrise@nuxeo.com">Olivier Grisel</a>
  */
 @RunWith(FeaturesRunner.class)
@@ -240,15 +240,23 @@ public class TestNuxeoDriveManager {
         checkRootsCount("user1", session, 1);
         checkRootsCount("user2", session, 2);
 
+        // make user1 synchronize the same subfolder as user 2
+        nuxeoDriveManager.synchronizeRoot(
+                "user1",
+                doc(user1Session,
+                        "/default-domain/workspaces/workspace-2/folder-2-1"));
+        checkRootsCount("user1", session, 2);
+        checkRootsCount("user2", session, 2);
+
         // unsyncing unsynced folder does nothing
         nuxeoDriveManager.unsynchronizeRoot("user2",
                 doc("/default-domain/workspaces/workspace-2"));
-        checkRootsCount("user1", session, 1);
+        checkRootsCount("user1", session, 2);
         checkRootsCount("user2", session, 2);
 
         nuxeoDriveManager.unsynchronizeRoot("user1",
                 session.getDocument(user1Workspace));
-        checkRootsCount("user1", session, 0);
+        checkRootsCount("user1", session, 1);
         checkRootsCount("user2", session, 2);
     }
 

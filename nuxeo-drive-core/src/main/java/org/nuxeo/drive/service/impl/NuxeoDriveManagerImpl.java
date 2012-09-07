@@ -85,7 +85,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (subscribers == null) {
             subscribers = new String[] { userName };
         } else {
-            if (Arrays.binarySearch(subscribers, userName) == -1) {
+            if (Arrays.binarySearch(subscribers, userName) < 0) {
                 String[] old = subscribers;
                 subscribers = new String[old.length + 1];
                 for (int i = 0; i < old.length; i++) {
@@ -112,7 +112,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (subscribers == null) {
             subscribers = new String[0];
         } else {
-            if (Arrays.binarySearch(subscribers, userName) != -1) {
+            if (Arrays.binarySearch(subscribers, userName) >= 0) {
                 String[] old = subscribers;
                 subscribers = new String[old.length - 1];
                 for (int i = 0; i < old.length; i++) {
