@@ -54,8 +54,8 @@ public abstract class AbstractJaxRSImporterExecutor extends
 
     @GET
     @Path("kill")
-    public void kill() {
-        super.kill();
+    public String kill() {
+        return super.kill();
     }
 
 }

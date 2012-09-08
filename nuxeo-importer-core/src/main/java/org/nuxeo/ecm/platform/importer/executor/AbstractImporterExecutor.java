@@ -72,11 +72,13 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
-    public void kill() {
+    public String kill() {
         if (executorMainThread != null) {
             runner.stopImportProcrocess();
             executorMainThread.interrupt();
+            return "Importer killed";
         }
+        return "Importer is not running";
     }
 
     protected void startTask(ImporterRunner runner, boolean interactive) {
