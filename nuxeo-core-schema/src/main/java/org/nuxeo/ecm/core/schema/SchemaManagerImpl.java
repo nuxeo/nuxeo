@@ -524,7 +524,8 @@ public class SchemaManagerImpl implements SchemaManager {
                 log.warn("Undeclared facet: " + facet);
                 // register it with no schemas
                 CompositeType ct = new CompositeTypeImpl(
-                (TypeRef<CompositeType>) null, SchemaNames.FACETS, facet, null);
+                        (TypeRef<CompositeType>) null, SchemaNames.FACETS,
+                        facet, null);
                 registerFacet(ct);
             }
         }
