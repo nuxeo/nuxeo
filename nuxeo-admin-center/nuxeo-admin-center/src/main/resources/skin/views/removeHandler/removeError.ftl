@@ -6,10 +6,10 @@
 <@block name="body">
 
   <div class="errorDownloadBox">
- 	  Removal failed : ${e.message}.
- 
-  	<br/>
-  	<a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
+    <h3>Removal failed : ${e.message}.</h3>
+
+    <br/>
+    <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
   </div>
  
 </@block>

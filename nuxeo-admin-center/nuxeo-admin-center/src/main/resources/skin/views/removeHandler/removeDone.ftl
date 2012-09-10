@@ -6,11 +6,11 @@
 <@block name="body">
 
  <div class="successfulDownloadBox">
-        <h1> Removal of ${pkgId} completed </h1>
+        <h3> Removal of ${pkgId} completed </h3>
 
     <br/>
 
-    <a href="${Root.path}/packages/${source}" class="installButton"> Finish </a>
+    <a href="${Root.path}/packages/${source}" class="button installButton"> Finish </a>
  </div>
 
 </@block>
