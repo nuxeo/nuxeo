@@ -44,6 +44,46 @@ public abstract class AbstractDocumentModelFactory implements
 
     private static final Log log = LogFactory.getLog(AbstractDocumentModelFactory.class);
 
+    /**
+     * By default there is no process bound to a folderish node creation error,
+     * and the global import task will continue.
+     * <p>
+     * You should override this method if you want a specific process to be
+     * executed after such an error and/or if you want the global import task to
+     * stop immediately after the error occurs, in which case the method should
+     * return false.
+     * </p>
+     */
+    @Override
+    public boolean processFolderishNodeCreationError(CoreSession session,
+            DocumentModel parent, SourceNode node) {
+        log.info(String.format(
+                "Nothing to process after error while trying to create the folderish node %s.",
+                node.getSourcePath()));
+        log.info("Global import task will continue.");
+        return true;
+    }
+
+    /**
+     * By default there is no process bound to a leaf node creation error, and
+     * the global import task will continue.
+     * <p>
+     * You should override this method if you want a specific process to be
+     * executed after such an error and/or if you want the global import task to
+     * stop immediately after the error occurs, in which case the method should
+     * return false.
+     * </p>
+     */
+    @Override
+    public boolean processLeafNodeCreationError(CoreSession session,
+            DocumentModel parent, SourceNode node) {
+        log.info(String.format(
+                "Nothing to process after error while trying to create the leaf node %s.",
+                node.getSourcePath()));
+        log.info("Global import task will continue.");
+        return true;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -55,16 +95,15 @@ public abstract class AbstractDocumentModelFactory implements
         return node.isFolderish();
     }
 
-    protected final FilenameNormalizer filenameNormalizer = 
-       "true".equals(Framework.getProperty("nuxeo.importer.compatFilenames"))
-            ? new CompatFilenameNormalizer()
+    protected final FilenameNormalizer filenameNormalizer = "true".equals(Framework.getProperty("nuxeo.importer.compatFilenames")) ? new CompatFilenameNormalizer()
             : new DefaultFilenameNormalizer();
-     
+
     protected interface FilenameNormalizer {
         String normalize(String name) throws ClientException;
     }
-    
-    protected static class CompatFilenameNormalizer implements FilenameNormalizer {
+
+    protected static class CompatFilenameNormalizer implements
+            FilenameNormalizer {
 
         @Override
         public String normalize(String name) {
@@ -75,10 +114,11 @@ public abstract class AbstractDocumentModelFactory implements
             name = name.replace("+", "");
             return name;
         }
-        
+
     }
-    
-    protected static class DefaultFilenameNormalizer implements FilenameNormalizer {
+
+    protected static class DefaultFilenameNormalizer implements
+            FilenameNormalizer {
 
         @Override
         public String normalize(String name) throws ClientException {
@@ -87,13 +127,15 @@ public abstract class AbstractDocumentModelFactory implements
                     fake);
         }
     }
-    
+
     /**
      * Returns a valid Nuxeo name from the given {@code fileName}.
-     * @throws ClientException 
-     * @throws PropertyException 
+     *
+     * @throws ClientException
+     * @throws PropertyException
      */
-    protected String getValidNameFromFileName(String fileName) throws ClientException {
+    protected String getValidNameFromFileName(String fileName)
+            throws ClientException {
         return filenameNormalizer.normalize(fileName);
     }
 

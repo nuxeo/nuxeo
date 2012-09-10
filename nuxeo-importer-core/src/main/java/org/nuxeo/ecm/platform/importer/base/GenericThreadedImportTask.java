@@ -177,7 +177,7 @@ public class GenericThreadedImportTask implements Runnable {
         }
         Stopwatch stopwatch = SimonManager.getStopwatch("org.nuxeo.ecm.platform.importer.create_folder");
         Split split = stopwatch.start();
-        DocumentModel folder;
+        DocumentModel folder = null;
         try {
             folder = getFactory().createFolderishNode(getCoreSession(), parent,
                     node);
@@ -187,18 +187,25 @@ public class GenericThreadedImportTask implements Runnable {
                     + (e.getCause() != null ? e.getCause() : "");
             fslog(errorMsg, true);
             log.error(errorMsg);
+            // Process folderish node creation error and check if the global
+            // import task should continue
+            boolean shouldImportTaskContinue = getFactory().processFolderishNodeCreationError(
+                    getCoreSession(), parent, node);
+            if (!shouldImportTaskContinue) {
+                throw new Exception(e);
+            }
+        } finally {
             split.stop();
-            throw new Exception(e);
         }
         if (folder != null) {
             String parentPath = (parent == null) ? "null"
                     : parent.getPathAsString();
             fslog("Created Folder " + folder.getName() + " at " + parentPath,
                     true);
+
+            // save session if needed
+            commit();
         }
-        split.stop();
-        // save session if needed
-        commit();
         return folder;
 
     }
@@ -210,7 +217,7 @@ public class GenericThreadedImportTask implements Runnable {
         }
         Stopwatch stopwatch = SimonManager.getStopwatch("org.nuxeo.ecm.platform.importer.create_leaf");
         Split split = stopwatch.start();
-        DocumentModel leaf;
+        DocumentModel leaf = null;
         try {
             leaf = getFactory().createLeafNode(getCoreSession(), parent, node);
         } catch (Exception e) {
@@ -219,8 +226,15 @@ public class GenericThreadedImportTask implements Runnable {
                     + (e.getCause() != null ? e.getCause() : "");
             fslog(errMsg, true);
             log.error(errMsg);
+            // Process leaf node creation error and check if the global
+            // import task should continue
+            boolean shouldImportTaskContinue = getFactory().processLeafNodeCreationError(
+                    getCoreSession(), parent, node);
+            if (!shouldImportTaskContinue) {
+                throw new Exception(e);
+            }
+        } finally {
             split.stop();
-            throw new Exception(e);
         }
         if (leaf != null && node.getBlobHolder() != null) {
             long fileSize = node.getBlobHolder().getBlob().getLength();
@@ -235,10 +249,10 @@ public class GenericThreadedImportTask implements Runnable {
             }
 
             uploadedKO += fileSize;
+
+            // save session if needed
+            commit();
         }
-        split.stop();
-        // save session if needed
-        commit();
         return leaf;
     }
 
