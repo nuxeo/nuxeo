@@ -41,10 +41,10 @@ class Repository(object):
 
     Provides recursive Git and Shell functions."""
 
-    def __init__(self, basedir, alias):
+    def __init__(self, basedir, alias, dirmapping):
         assert_git_config()
         (self.basedir, self.driveletter,
-         self.oldbasedir) = long_path_workaround_init(basedir)
+         self.oldbasedir) = long_path_workaround_init(basedir, dirmapping)
         self.alias = alias
         # find the remote URL
         remote_lines = check_output(["git", "remote", "-v"]).split("\n")
@@ -318,12 +318,12 @@ def system_with_retries(cmd, failonerror=True):
             time.sleep(10)
 
 
-def long_path_workaround_init(basedir):
+def long_path_workaround_init(basedir, dirmapping):
     """Windows only. Try to map the 'basedir' to an unused drive letter
     to shorten path names."""
     newdir = basedir
     driveletter = None
-    if platform.system() == "Windows":
+    if platform.system() == "Windows" and dirmapping:
         for letter in "GHIJKLMNOPQRSTUVWXYZ":
             if not os.path.isdir("%s:\\" % (letter,)):
                 system("SUBST %s: \"%s\"" % (letter, basedir))

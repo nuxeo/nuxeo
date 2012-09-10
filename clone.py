@@ -51,9 +51,12 @@ def main():
                           dest='fallback_branch', default=None, help=
 """a branch to fallback on when the wanted branch doesn't exist locally neither
 remotely (default: %default)""")
+        parser.add_option('-n', "--nodrivemapping", action="store_true",
+                          dest='no_drive_mapping', default=False, 
+                          help="desactivate current directory mapping to a virtual drive on Windows")
 
         (options, args) = parser.parse_args()
-        repo = Repository(os.getcwd(), options.remote_alias)
+        repo = Repository(os.getcwd(), options.remote_alias, not options.no_drive_mapping)
         if len(args) == 0:
             version = None
         elif len(args) == 1:
