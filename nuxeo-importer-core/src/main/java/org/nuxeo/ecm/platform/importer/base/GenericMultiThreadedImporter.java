@@ -218,7 +218,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
             }
             if (filters.size() == 0) {
                 log.debug(String.format(
-                        "No filters are registered on the importer with hash code %s, while importing the source node with name ",
+                        "No filters are registered on the importer with hash code %s, while importing the source node with name %s",
                         this.hashCode(), importSource.getName()));
             }
             doRun();
