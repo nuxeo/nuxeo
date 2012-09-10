@@ -39,6 +39,9 @@ public class RepositoryInitializationListener extends
         DocumentModel root = session.getRootDocument();
         ContentTemplateService service = getService();
         service.executeFactoryForType(root);
+        // Allow queries to see changes during
+        // postContentCreationHandler executions
+        session.save();
         service.executePostContentCreationHandlers(session);
         session.save();
     }
