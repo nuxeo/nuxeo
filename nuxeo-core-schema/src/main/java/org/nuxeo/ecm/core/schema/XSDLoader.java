@@ -59,6 +59,7 @@ import com.sun.xml.xsom.XSSchemaSet;
 import com.sun.xml.xsom.XSTerm;
 import com.sun.xml.xsom.XSType;
 import com.sun.xml.xsom.XmlString;
+import com.sun.xml.xsom.impl.ListSimpleTypeImpl;
 import com.sun.xml.xsom.impl.RestrictionSimpleTypeImpl;
 import com.sun.xml.xsom.parser.XSOMParser;
 
@@ -248,6 +249,8 @@ public class XSDLoader {
         }
         if (ecmType != null) {
             schema.registerType(ecmType);
+        } else {
+            log.warn("loadType return null!");
         }
         return ecmType;
     }
@@ -378,11 +381,13 @@ public class XSDLoader {
 
     private Type createComplexType(Schema schema, ComplexType superType,
             String name, XSContentType content) throws TypeBindingException {
-        // System.out.println("DEBUG > defining complex type: " + name);
+
         ComplexType ct = new ComplexTypeImpl(superType, schema.getName(), name);
+
         // -------- Workaround - we register now the complex type - to fix
         // recursive references to the same type
         schema.registerType(ct);
+
         // ------------------------------------------
         XSParticle particle = content.asParticle();
         if (particle == null) {
@@ -392,6 +397,24 @@ public class XSDLoader {
         }
         XSTerm term = particle.getTerm();
         XSModelGroup mg = term.asModelGroup();
+
+        return processModelGroup(schema, superType, name, ct, mg);
+    }
+
+    private Type createFakeComplexType(Schema schema, ComplexType superType,
+            String name, XSModelGroup mg) throws TypeBindingException {
+
+        ComplexType ct = new ComplexTypeImpl(superType, schema.getName(), name);
+        // -------- Workaround - we register now the complex type - to fix
+        // recursive references to the same type
+        schema.registerType(ct);
+
+        return processModelGroup(schema, superType, name, ct, mg);
+    }
+
+    protected Type processModelGroup(Schema schema, ComplexType superType,
+            String name, ComplexType ct, XSModelGroup mg)
+            throws TypeBindingException {
         if (mg == null) {
             // TODO don't know how to handle this for now
             throw new TypeBindingException("unsupported complex type");
@@ -402,14 +425,35 @@ public class XSDLoader {
             return createListType(schema, name, group[0]);
         }
         for (XSParticle child : group) {
-            term = child.getTerm();
+            XSTerm term = child.getTerm();
             XSElementDecl element = term.asElementDecl();
+
             if (element == null) {
-                // TODO don't know how to handle this for now
-                log.warn("Ignoring " + name + " unsupported complex type");
-                return null;
+                // assume this is a xs:choice group
+                // (did not find any other way to detect !
+                //
+                // => make an aggregation of xs:choice subfields
+                int maxOccur = child.getMaxOccurs();
+
+                if (maxOccur < 0) {
+                    // means this is a list
+                    //
+                    // first create a fake complex type
+                    Type fakeType = createFakeComplexType(schema, superType,
+                            name + "#anonymousListItem", term.asModelGroup());
+                    // wrap it as a list
+                    ListType listType = createListType2(schema, name
+                            + "#anonymousListType", fakeType, 0, maxOccur);
+                    // add the listfield to the current CT
+                    String fieldName = ct.getName() + "#anonymousList";
+                    ct.addField(fieldName, listType.getRef(), null, 0);
+                } else {
+                    processModelGroup(schema, superType, name, ct,
+                            term.asModelGroup());
+                }
+            } else {
+                loadComplexTypeElement(schema, ct, element);
             }
-            loadComplexTypeElement(schema, ct, element);
         }
         return ct;
     }
@@ -427,9 +471,19 @@ public class XSDLoader {
             defValue = dv.value;
         }
         Type type = loadType(schema, element.getType(), element.getName());
+        if (type == null) {
+            log.warn("Unable to find type for " + element.getName());
+        }
         return new ListTypeImpl(schema.getName(), name, type,
                 element.getName(), defValue, particle.getMinOccurs(),
                 particle.getMaxOccurs());
+    }
+
+    public ListType createListType2(Schema schema, String name, Type itemType,
+            int min, int max) throws TypeBindingException {
+        String elementName = name + "#item";
+        return new ListTypeImpl(schema.getName(), name, itemType, elementName,
+                null, min, max);
     }
 
     private void loadComplexTypeElement(Schema schema, ComplexType type,
@@ -440,6 +494,17 @@ public class XSDLoader {
         if (fieldType != null) {
             createField(type, element, fieldType);
         }
+    }
+
+    private static Field createListField(ComplexType type, ListType fieldType,
+            String elementName) {
+
+        String defValue = null;
+
+        int flags = 0;
+        Field field = type.addField(elementName, fieldType.getRef(), defValue,
+                flags);
+        return field;
     }
 
     private static Field createField(ComplexType type, XSElementDecl element,

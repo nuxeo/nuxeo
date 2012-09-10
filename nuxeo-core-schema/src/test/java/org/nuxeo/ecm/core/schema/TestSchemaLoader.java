@@ -313,4 +313,92 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     }
 
+    @Test
+    public void testXSChoice() throws Exception {
+        URL url = getResource("schema/advancedSchema.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("advancedSchema", "", url);
+
+        Field choiceField = schema.getField("testChoice");
+        assertNotNull(choiceField);
+        Type choiceFieldType = choiceField.getType();
+        assertTrue(choiceFieldType.isComplexType());
+
+        ComplexType ct = (ComplexType) choiceFieldType;
+
+        assertEquals(4, ct.getFieldsCount());
+
+        assertNotNull(ct.getField("field1"));
+        assertNotNull(ct.getField("field2A"));
+        assertNotNull(ct.getField("field2B"));
+        assertNotNull(ct.getField("field3"));
+    }
+
+    @Test
+    public void testXSNestedChoice() throws Exception {
+        URL url = getResource("schema/advancedSchema.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("advancedSchema", "", url);
+
+        Field choiceField = schema.getField("testNestedChoices");
+        assertNotNull(choiceField);
+        Type choiceFieldType = choiceField.getType();
+        assertTrue(choiceFieldType.isComplexType());
+
+        ComplexType ct = (ComplexType) choiceFieldType;
+
+        assertEquals(5, ct.getFieldsCount());
+
+        assertNotNull(ct.getField("field1"));
+        assertNotNull(ct.getField("field2A"));
+        assertNotNull(ct.getField("field2B"));
+        assertNotNull(ct.getField("field3A"));
+        assertNotNull(ct.getField("field3B"));
+    }
+
+    @Test
+    public void testXSNestedChoiceWithList() throws Exception {
+        URL url = getResource("schema/advancedSchema.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("advancedSchema", "", url);
+
+        Field choiceField = schema.getField("testNestedChoicesWithList");
+        assertNotNull(choiceField);
+        Type choiceFieldType = choiceField.getType();
+        assertTrue(choiceFieldType.isComplexType());
+
+        ComplexType ct = (ComplexType) choiceFieldType;
+
+        assertEquals(4, ct.getFieldsCount());
+
+        assertNotNull(ct.getField("field1"));
+        assertEquals("string", ct.getField("field1").getType().getName());
+        assertNotNull(ct.getField("field2A"));
+        assertEquals("string", ct.getField("field2A").getType().getName());
+        assertNotNull(ct.getField("field2B"));
+        assertEquals("string", ct.getField("field2B").getType().getName());
+        assertNotNull(ct.getField("TestNestedChoicesWithListType#anonymousList"));
+        assertEquals(
+                "TestNestedChoicesWithListType#anonymousListType",
+                ct.getField("TestNestedChoicesWithListType#anonymousList").getType().getName());
+
+        Field listField = ct.getField("TestNestedChoicesWithListType#anonymousList");
+        assertTrue(listField.getType().isListType());
+
+        ListType listType = (ListType) listField.getType();
+
+        Field listItemField = listType.getField();
+        assertEquals("TestNestedChoicesWithListType#anonymousListItem",
+                listItemField.getType().getName());
+
+        assertTrue(listItemField.getType().isComplexType());
+
+        // check 2 subfields
+        ComplexType ctitem = (ComplexType) listItemField.getType();
+        Field field3A = ctitem.getField("field3A");
+        assertNotNull(field3A);
+        Field field3B = ctitem.getField("field3B");
+        assertNotNull(field3B);
+    }
+
 }

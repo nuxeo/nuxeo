@@ -33,4 +33,50 @@
         </xs:simpleType>
   </xs:element>
 
+  <xs:complexType name = "TestChoicesType">
+    <xs:sequence>
+      <xs:element name = "field1" type = "xs:string"/>
+      <xs:choice>
+          <xs:element name = "field2A" type = "xs:string"/>
+          <xs:element name = "field2B" type = "xs:string"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name = "field3" type = "xs:string"/>
+  </xs:complexType>
+
+  <xs:element name="testChoice" type = "nxs:TestChoicesType"/>
+
+  <xs:complexType name = "TestNestedChoicesType">
+    <xs:sequence>
+      <xs:element name = "field1" type = "xs:string"/>
+      <xs:choice>
+          <xs:element name = "field2A" type = "xs:string"/>
+          <xs:element name = "field2B" type = "xs:string"/>
+          <xs:choice>
+              <xs:element name = "field3A" type = "xs:string"/>
+              <xs:element name = "field3B" type = "xs:string"/>
+          </xs:choice>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="testNestedChoices" type = "nxs:TestNestedChoicesType"/>
+
+
+  <xs:complexType name = "TestNestedChoicesWithListType">
+    <xs:sequence>
+      <xs:element name = "field1" type = "xs:string"/>
+      <xs:choice>
+          <xs:element name = "field2A" type = "xs:string"/>
+          <xs:element name = "field2B" type = "xs:string"/>
+          <xs:choice maxOccurs = "unbounded">
+              <xs:element name = "field3A" type = "xs:string"/>
+              <xs:element name = "field3B" type = "xs:string"/>
+          </xs:choice>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="testNestedChoicesWithList" type = "nxs:TestNestedChoicesWithListType"/>
+
 </xs:schema>
