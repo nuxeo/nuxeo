@@ -5,7 +5,7 @@
 
 <@block name="body">
   <div class="errorDownloadBox">
-   <h1> Installation of ${pkg.title} (${pkg.id}) is not possible </h1>
+   <h3> Installation of ${pkg.title} (${pkg.id}) is not possible </h3>
 
     <div class="installErrorTitle">
          Some dependencies can not be resolved.<br/>
@@ -18,7 +18,7 @@
     </ul>
     <br/>
     <br/>
-    <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
+    <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
   </div>
 
 </@block>

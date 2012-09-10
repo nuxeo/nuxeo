@@ -25,8 +25,8 @@
 
        </table>
 
-       <input class="installButton" type="submit" value="Validate">
-       &nbsp; <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
+       <input class="button installButton" type="submit" value="Validate">
+       &nbsp; <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
 
      </form>
    </div>

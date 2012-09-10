@@ -17,8 +17,8 @@
    </div>
 
     <div class="alignCenter">
-      <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a> &nbsp;
-      <a href="${Root.path}/install/start/${pkg.id}/?source=${source}&tacAccepted=true" class="installButton"> Accept </a>
+      <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a> &nbsp;
+      <a href="${Root.path}/install/start/${pkg.id}/?source=${source}&tacAccepted=true" class="button installButton"> Accept </a>
    </div>
 
   </div>

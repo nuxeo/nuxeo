@@ -33,7 +33,7 @@ function closePopup() {
    </ul>
    </#if>
    <br/><br/>
-   <a href="${This.path}/bulkRun/${pkgId}/?source=${source}&confirm=true" class="installButton"> Confirm install </a>
+   <a href="${This.path}/bulkRun/${pkgId}/?source=${source}&confirm=true" class="button installButton"> Confirm install </a>
   </div>
 </@block>
 </@extends>

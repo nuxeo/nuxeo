@@ -104,11 +104,11 @@ function setMode() {
  if (autoMode) {
    $(".manualModeCmd").css("display","none");
    $("#installManualButton").css("display","none");
-   $("#installAutoButton").css("display","inline");
+   $("#installAutoButton").css("display","inline-block");
    $("#manualModeCheckBox").removeAttr("checked");
  } else {
    $(".manualModeCmd").css("display","block");
-   $("#installManualButton").css("display","inline");
+   $("#installManualButton").css("display","inline-block");
    $("#installAutoButton").css("display","none");
    $("#manualModeCheckBox").attr("checked", "true");
  }
@@ -149,7 +149,7 @@ $(document).ready(function() {
         <#list resolution.getRemovePackageIds() as pkgId>
           <tr>
           <td> ${pkgId} </td>
-          <td><A href="javascript:rmPackage('${pkgId}')" class="manualModeCmd">Manual removal</A></td>
+          <td><a href="javascript:rmPackage('${pkgId}')" class="manualModeCmd">Manual removal</a></td>
           </tr>
         </#list>
       </table>
@@ -160,7 +160,7 @@ $(document).ready(function() {
       <table>
         <#list resolution.getUpgradePackageIds() as pkgId>
         <tr><td> ${pkgId} </td>
-            <td><A href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">Manual upgrade</A></td>
+            <td><a href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">Manual upgrade</a></td>
             <td><div id="progress_${pkgId}" class="progressDownloadContainer"> </div></td>
         </tr>
         </#list>
@@ -171,7 +171,7 @@ $(document).ready(function() {
       <h3>Already downloaded packages that need to be installed:</h3>
       <table>
         <#list resolution.getLocalToInstallIds() as pkgId>
-          <tr><td> ${pkgId} </td><td><A href="javascript:installPackage('${pkgId}', false)" class="manualModeCmd">Manual installation</A></td></tr>
+          <tr><td> ${pkgId} </td><td><a</a href="javascript:installPackage('${pkgId}', false)" class="manualModeCmd">Manual installation</a></td></tr>
         </#list>
       </table>
       </#if>
@@ -182,7 +182,7 @@ $(document).ready(function() {
         <#list resolution.getDownloadPackageIds() as pkgId>
           <tr>
           <td> ${pkgId} </td>
-          <td><A href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">Manual download and install</A></td>
+          <td><a href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">Manual download and install</a></td>
           <td><div id="progress_${pkgId}" class="progressDownloadContainer"> </td>
           </tr>
         </#list>
@@ -200,10 +200,10 @@ $(document).ready(function() {
    </div>
 
    <br/>
-   <A href="javascript:downloadAllPackages()" id="downloadAllButton" class="installButton" style="display:none"> Download all packages </A>
-   <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a> &nbsp;
-   <A href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}" class="installButton" id="installAutoButton"> Installation of package ${pkg.id} and dependencies </a>
-   <A href="${Root.path}/install/start/${pkg.id}/?source=${source}" class="installButton" id="installManualButton"> Continue installation of package ${pkg.id} </a>
+   <a href="javascript:downloadAllPackages()" id="downloadAllButton" class="button installButton" style="display:none"> Download all packages </a>
+   <a href="${Root.path}/packages/${source}" class="button"> Cancel </a> &nbsp;
+   <a href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}" class="button installButton" id="installAutoButton"> Installation of package ${pkg.id} and dependencies </a>
+   <a href="${Root.path}/install/start/${pkg.id}/?source=${source}" class="button installButton" id="installManualButton"> Continue installation of package ${pkg.id} </a>
 
   </div>
 

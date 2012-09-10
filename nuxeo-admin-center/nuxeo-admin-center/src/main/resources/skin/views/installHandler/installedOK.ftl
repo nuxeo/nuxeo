@@ -24,9 +24,9 @@ function closePopup() {
 
     <br/>
     <#if source=="installer">
-      <a href="javascript:closePopup()" class="installButton"> Finish </a>
+      <a href="javascript:closePopup()" class="button installButton"> Finish </a>
     <#else>
-      <a href="${Root.path}/packages/${source}" class="installButton"> Finish </a>
+      <a href="${Root.path}/packages/${source}" class="button installButton"> Finish </a>
     </#if>
   </div>
 </@block>

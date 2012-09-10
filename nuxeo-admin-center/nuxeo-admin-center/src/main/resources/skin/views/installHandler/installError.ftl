@@ -5,8 +5,8 @@
 
 <@block name="body">
   <div class="errorDownloadBox">
-    <p>Installation failed : ${e.message}.</p>
-    <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
+    <h3>Installation failed : ${e.message}.</h3>
+    <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
   </div>
 </@block>
 </@extends>

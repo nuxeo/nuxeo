@@ -10,7 +10,7 @@ function closePopup() {
 
 <@block name="body">
   <div class="successfulDownloadBox">
-   <h1> Installation of ${pkg.title} (${pkg.id}) will be done at next restart.</h1>
+   <h3> Installation of ${pkg.title} (${pkg.id}) will be done at next restart.</h3>
     <br/>
     <div>
      To complete the installation of the package, please restart your server.
@@ -20,9 +20,9 @@ function closePopup() {
     </div>
     <br/>
     <#if source=="installer">
-      <a href="javascript:closePopup()" class="installButton"> Finish </a>
+      <a href="javascript:closePopup()" class="button installButton"> Finish </a>
     <#else>
-      <a href="${Root.path}/packages/${source}" class="installButton"> Finish </a>
+      <a href="${Root.path}/packages/${source}" class="button installButton"> Finish </a>
     </#if>
   </div>
 </@block>
