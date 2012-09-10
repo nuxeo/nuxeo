@@ -10,7 +10,6 @@
     <xs:list itemType="xs:string" />
   </xs:simpleType>
 
-
   <xs:complexType name="stringSequence">
     <xs:sequence>
       <xs:element name="item" type="xs:string" minOccurs="0"
@@ -18,6 +17,16 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="complexWithSubList">
+    <xs:sequence>
+      <xs:element name="fieldA" type="xs:string" />
+      <xs:element name="items" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="fieldB" type="xs:string" />
+      <xs:element name="moreitems" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
 
   <xs:complexType name="attachments">
     <xs:sequence>
@@ -26,12 +35,13 @@
     </xs:sequence>
   </xs:complexType>
 
-
   <xs:element name="strings" type="nxs:stringList"
     default="titi toto tata" />
   <xs:element name="participants" type="nxs:stringSequence"
     default="titi toto tata" />
   <xs:element name="attachments" type="nxs:attachments" />
+
+  <xs:element name="cplxWithSubList" type="nxs:complexWithSubList" />
 
 </xs:schema>
 

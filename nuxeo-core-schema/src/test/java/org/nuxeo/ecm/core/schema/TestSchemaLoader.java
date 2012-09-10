@@ -177,6 +177,37 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals("tata", defaultValue.get(2));
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testComplexSubList() throws Exception {
+        URL url = getResource("schema/testList.xsd");
+        assertNotNull(url);
+
+        Schema schema = reader.loadSchema("testList", "", url);
+
+        Field field = schema.getField("cplxWithSubList");
+        assertTrue(field.getType().isComplexType());
+
+        ComplexType ct = (ComplexType) field.getType();
+        assertEquals(4, ct.getFieldsCount());
+
+        Field fieldA = ct.getField("fieldA");
+        assertNotNull(fieldA);
+        assertEquals("string", fieldA.getType().getName());
+        Field fieldB = ct.getField("fieldB");
+        assertNotNull(fieldB);
+        assertEquals("string", fieldB.getType().getName());
+
+        Field items = ct.getField("items");
+        assertNotNull(items);
+        assertTrue(items.getType().isListType());
+
+        Field moreitems = ct.getField("moreitems");
+        assertNotNull(moreitems);
+        assertTrue(moreitems.getType().isListType());
+
+    }
+
     @Test
     public void testComplexSchema() throws Exception {
         URL url = getResource("schema/policy.xsd");

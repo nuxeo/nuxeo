@@ -427,15 +427,14 @@ public class XSDLoader {
         for (XSParticle child : group) {
             XSTerm term = child.getTerm();
             XSElementDecl element = term.asElementDecl();
+            int maxOccur = child.getMaxOccurs();
 
             if (element == null) {
                 // assume this is a xs:choice group
                 // (did not find any other way to detect !
                 //
                 // => make an aggregation of xs:choice subfields
-                int maxOccur = child.getMaxOccurs();
-
-                if (maxOccur < 0) {
+                if (maxOccur < 0 || maxOccur > 1) {
                     // means this is a list
                     //
                     // first create a fake complex type
@@ -452,7 +451,18 @@ public class XSDLoader {
                             term.asModelGroup());
                 }
             } else {
-                loadComplexTypeElement(schema, ct, element);
+                if (maxOccur < 0 || maxOccur > 1) {
+                    Type fieldType = loadType(schema, element.getType(),
+                            element.getName());
+                    ListType listType = createListType2(schema,
+                            element.getName() + "#anonymousListType",
+                            fieldType, 0, maxOccur);
+                    // add the listfield to the current CT
+                    String fieldName = element.getName();
+                    ct.addField(fieldName, listType.getRef(), null, 0);
+                } else {
+                    loadComplexTypeElement(schema, ct, element);
+                }
             }
         }
         return ct;
@@ -494,17 +504,6 @@ public class XSDLoader {
         if (fieldType != null) {
             createField(type, element, fieldType);
         }
-    }
-
-    private static Field createListField(ComplexType type, ListType fieldType,
-            String elementName) {
-
-        String defValue = null;
-
-        int flags = 0;
-        Field field = type.addField(elementName, fieldType.getRef(), defValue,
-                flags);
-        return field;
     }
 
     private static Field createField(ComplexType type, XSElementDecl element,
