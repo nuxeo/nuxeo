@@ -5,7 +5,7 @@
 
 <@block name="body">
   <div class="errorDownloadBox">
-    <h1> Uninstallation of ${pkg.title} (${pkg.id}) is not possible </h1>
+    <h3> Uninstallation of ${pkg.title} (${pkg.id}) is not possible </h3>
 
     <div class="installErrorTitle">
        Some errors were found when checking the package.<br/>
@@ -17,7 +17,7 @@
       </#list>
     </ul>
     <br />
-    <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a>
+    <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
   </div>
 
 </@block>

@@ -34,7 +34,7 @@ function setMode() {
  if (autoMode) {
    $(".manualModeCmd").css("display","none");
    $("#uninstallManualButton").css("display","none");
-   $("#uninstallAutoButton").css("display","inline");
+   $("#uninstallAutoButton").css("display","inline-block");
    $("#manualModeCheckBox").removeAttr("checked");
  } else {
    $(".manualModeCmd").css("display","block");
@@ -67,16 +67,16 @@ $(document).ready(function() {
         <#list pkgToRemove as pkgR>
           <tr>
           <td> ${pkgR.id} </td>
-          <td><A href="javascript:rmPackage('${pkgR.id}')" class="manualModeCmd">Manual removal</A></td>
+          <td><a href="javascript:rmPackage('${pkgR.id}')" class="manualModeCmd">Manual removal</a></td>
           </tr>
         </#list>
       </table>
    </div>
 
    <br/>
-   <a href="${Root.path}/packages/${source}" class="installButton"> Cancel </a> &nbsp;
-   <A href="${Root.path}/uninstall/run/${pkg.id}/?source=${source}"class="installButton" id="uninstallAutoButton"> Uninstallation of package ${pkg.id} and dependent packages </a>
-   <A href="${Root.path}/uninstall/start/${pkg.id}/?source=${source}"class="installButton" id="uninstallManualButton"> Continue uninstallation of package ${pkg.id} </a>
+   <a href="${Root.path}/packages/${source}" class="button"> Cancel </a> &nbsp;
+   <a href="${Root.path}/uninstall/run/${pkg.id}/?source=${source}"class="button installButton" id="uninstallAutoButton"> Uninstallation of package ${pkg.id} and dependent packages </a>
+   <a href="${Root.path}/uninstall/start/${pkg.id}/?source=${source}"class="button installButton" id="uninstallManualButton"> Continue uninstallation of package ${pkg.id} </a>
 
   </div>
 
