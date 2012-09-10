@@ -20,9 +20,9 @@
   <xs:complexType name="simpleconfigurationparameter">
     <xs:sequence>
       <xs:element name="key" type="xs:string"
-        minOccurs="0" maxOccurs="unbounded" />
+        minOccurs="0" maxOccurs="1" />
       <xs:element name="value" type="xs:string"
-        minOccurs="0" maxOccurs="unbounded" />
+        minOccurs="0" maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
