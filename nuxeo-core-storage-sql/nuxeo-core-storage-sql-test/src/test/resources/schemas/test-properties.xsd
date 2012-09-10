@@ -25,9 +25,9 @@
   <xs:complexType name="complexChain">
     <xs:sequence>
       <xs:element name="string" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
       <xs:element name="complex" type="nxs:complexType" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
@@ -35,10 +35,10 @@
   <xs:complexType name="complexType">
     <xs:sequence>
       <xs:element name="string" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
       <xs:element name="date" type="xs:date" minOccurs="0"
-        maxOccurs="unbounded" />
-      <xs:element name="int" type="xs:int" minOccurs="0" maxOccurs="unbounded" />
+        maxOccurs="1" />
+      <xs:element name="int" type="xs:int" minOccurs="0" maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
@@ -69,9 +69,9 @@
   <xs:complexType name="fileComplexType">
     <xs:sequence>
       <xs:element name="blob" type="nxs:content" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
       <xs:element name="filename" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
@@ -97,9 +97,9 @@
   <xs:complexType name="externalFileComplexType">
     <xs:sequence>
       <xs:element name="blob" type="nxs:externalcontent" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
       <xs:element name="filename" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
