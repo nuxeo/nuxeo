@@ -17,7 +17,7 @@ p {
 }
 
 a,a:link, a:active, a:visited {
-  color: #0066CC;
+  color: #06c;
   text-decoration: none;
 }
 
@@ -59,17 +59,22 @@ h3 {
 
 /* Messages */
 .infoMessage {
-  background: url("../images/lightbulb.png") no-repeat scroll 5px 8px #F8FCFF;
-  border: 1px solid #445B71;
-  margin: 15px 70px;
-  padding: 10px 15px 10px 25px;
+  background-color: #e6f1ff;
+  border: 1px solid #c6c6c6;
+  border-radius: 7px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  color: #000;
+  display: block;
+  font-weight: bold;
+  list-style: none;
+  margin: 1em auto;
+  padding: 1em;
+  width: 60%
 }
 
 /* Listing style */
 .packageListing {
   border-bottom: 1px solid #cdcdcd;
-  /*cursor: hand;
-  cursor: pointer;*/
 }
 
 .packageListing td {
@@ -79,6 +84,7 @@ h3 {
 
 .packageListing .detailRow td {
   border-top: none;
+  vertical-align: top;
 }
 
 .packagePic {
@@ -104,11 +110,11 @@ h3 {
 .boldLabel {
   font-size: 11px;
   font-weight: bold;
-  color: #555555;
+  color: #555;
 }
 
 .packageLabel {
-  color: #555555;
+  color: #555;
   display: inline-block;
   font-size: 11px;
   font-weight: bold;
@@ -122,35 +128,39 @@ h3 {
   border-radius: 5px 5px 5px 5px;
 }
 
-.button {
-  -moz-border-radius: 3px 3px 3px 3px;
-  -webkit-border-radius: 3px 3px 3px 3px;
-  border-radius: 3px 3px 3px 3px;
-  background-color: #fff;
-  border: 1px solid #a3a3a3;
+.button, a.button {
+  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset, 1px 1px 0 #efefef;
+  background-color: #EFEFEF;
+  border-radius: 3px;
+  border: 1px solid #bbb;
   color: #333;
-  font-weight: bold;
-  padding: 0 10px;
+  cursor: pointer;
+  display: inline-block;
+  margin: 2px;
+  max-width: 350px;
+  padding:  0 10px;
+  text-decoration: none;
+  text-shadow: 1px 1px 0px #fff;
+  vertical-align: top;
+  word-wrap: break-word
 }
 
-.packageListing .download {
-  color:;
-}
+.button:hover, a.button:hover { background-color: #fff; border-color: #999 }
 
 .packageListing .restartNeeded {
   color: red;
 }
 
-.packageListing .install {
-  color: #00bc66;
+.packageListing .download, .packageListing .install {
+  color: #00bc66; font-weight: bold
 }
 
 .packageListing .uninstall {
-  color: #000;
+  color: #000; font-weight: bold
 }
 
 .packageListing .remove, .packageListing .cancel {
-  color: #e04f00;
+  color: #e04f00; font-weight: bold
 }
 
 .row_odd {
@@ -158,7 +168,7 @@ h3 {
 }
 
 .row_even {
-  background-color: #eeeeff;
+  background-color: #eef;
 }
 
 .opentd {
@@ -178,8 +188,13 @@ h3 {
   padding: 10px 20px;
   text-align: center;
   border: 1px solid #dedede;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
+  border-radius: 5px
+}
+
+.genericBox h1 {
+  border-bottom: 1px dotted #ccc;
+  margin: .3em 0 1em;
+  padding: 0 0 .3em;
 }
 
 .genericBox table {
@@ -191,6 +206,7 @@ h3 {
   margin: 30px auto;
   padding: 20px 30px;
   text-align: center;
+  border-radius: 5px;
   border: 1px solid #dedede;
 }
 
@@ -199,6 +215,7 @@ h3 {
   padding: 20px 30px 20px 50px;
   margin: 50px;
   border: 1px solid #dedede;
+  border-radius: 5px;
   background: url("../images/ok-green.png") no-repeat scroll 20px 18px #fff;
 }
 
@@ -207,6 +224,7 @@ h3 {
   padding: 20px 30px 20px 50px;
   margin: 50px;
   border: 1px solid #dedede;
+  border-radius: 5px;
   background: #fff3f3 url("../images/ko-red.png") no-repeat 20px 18px;
 }
 
@@ -215,7 +233,7 @@ h3 {
   margin: 20px 0px;
   border: 1px solid #dedede;
   background-color: #F7F7F7;
-  border-radius: 3px;
+  border-radius: 5px;
 }
 
 ul.installInfo {
@@ -240,6 +258,7 @@ ul.installInfo li {
 
 .downloadProgressContainer {;
   border: 1px solid #939ba4;
+  border-radius: 3px;
   padding: 2px;
   margin: 20px auto;
   height: 20px;
@@ -252,19 +271,15 @@ ul.installInfo li {
 }
 
 .downloadSize {
-  color: #666666;
+  color: #666;
 }
 
-.installButton {
-  background-color: #fff;
-  border: 1px solid #f1f1f1;
-  margin: 5px 10px;
-  padding: 5px 5px 5px 9px;
-  display: inline-block;
+.installButton, a.installButton {
+  font-weight: bold;
 }
 
-.installButton:hover {
-  border: 1px solid #b5cfff;
+a.installButton:hover {
+ color: #06c;
 }
 
 /* Generic */
@@ -289,7 +304,7 @@ ul.installInfo li {
 }
 
 .pkgDetail {
-  border-color: #CCCCCC;
+  border-color: #ccc;
   border-radius: 0 0 0 10px;
   border-style: solid;
   border-width: 0 1px 1px;
