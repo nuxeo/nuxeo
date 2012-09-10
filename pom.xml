@@ -988,7 +988,7 @@
 
       <!-- Sample project -->
       <dependency>
-        <groupId>nuxeo-sample-project</groupId>
+        <groupId>org.nuxeo.sample</groupId>
         <artifactId>nuxeo-sample-project</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
