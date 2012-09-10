@@ -32,9 +32,11 @@ import org.apache.commons.logging.LogFactory;
 import org.javasimon.SimonManager;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
@@ -236,19 +238,22 @@ public class GenericThreadedImportTask implements Runnable {
         } finally {
             split.stop();
         }
-        if (leaf != null && node.getBlobHolder() != null) {
-            long fileSize = node.getBlobHolder().getBlob().getLength();
-            String fileName = node.getBlobHolder().getBlob().getFilename();
-            if (fileSize > 0) {
-                long kbSize = fileSize / 1024;
-                String parentPath = (parent == null) ? "null"
-                        : parent.getPathAsString();
-                fslog("Created doc " + leaf.getName() + " at " + parentPath
-                        + " with file " + fileName + " of size " + kbSize
-                        + "KB", true);
+        BlobHolder bh = node.getBlobHolder();
+        if (leaf != null && bh != null) {
+            Blob blob = bh.getBlob();
+            if (blob != null) {
+                long fileSize = blob.getLength();
+                String fileName = blob.getFilename();
+                if (fileSize > 0) {
+                    long kbSize = fileSize / 1024;
+                    String parentPath = (parent == null) ? "null"
+                            : parent.getPathAsString();
+                    fslog("Created doc " + leaf.getName() + " at " + parentPath
+                            + " with file " + fileName + " of size " + kbSize
+                            + "KB", true);
+                }
+                uploadedKO += fileSize;
             }
-
-            uploadedKO += fileSize;
 
             // save session if needed
             commit();
