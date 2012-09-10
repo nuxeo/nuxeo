@@ -25,9 +25,10 @@
         <h:form>
                 <h:selectBooleanCheckbox class="dataInputText"
                   value="#{appsViews.platformFilter}"
-                   onchange="Element.next(this).firstChild.click();">
-
-                </h:selectBooleanCheckbox> <h:outputText value="#{messages['label.appcenter.platform.filter']}"/>
+                   onchange="Element.next(Element.next(this)).firstChild.click();"
+                   id="platformFilter">
+                </h:selectBooleanCheckbox>
+                <h:outputLabel for="platformFilter" value="#{messages['label.appcenter.platform.filter']}"/>
                   <div style="display: none;">
                 <a4j:commandButton value="submit"  reRender="connectAppListing" styleClass="button" />
             </div>
