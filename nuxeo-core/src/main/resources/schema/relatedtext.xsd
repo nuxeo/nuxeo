@@ -18,9 +18,9 @@
   <xs:complexType name="relatedtextresource">
     <xs:sequence>
       <xs:element name="relatedtextid" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
       <xs:element name="relatedtext" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
+        maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
