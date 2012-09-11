@@ -34,10 +34,8 @@ public class ImageIdentifier extends MagickExecutor {
 
     public static ImageInfo getInfo(String inputFilePath)
             throws CommandNotAvailable {
-        CmdParameters params = new CmdParameters();
-        params.addNamedParameter("inputFilePath", inputFilePath);
-        ExecResult result = execCommand("identify", params);
 
+        ExecResult result = getIdentifyResult(inputFilePath);
         String out = result.getOutput().get(
                 result.getOutput().size() > 1 ? result.getOutput().size() - 1
                         : 0);
@@ -45,6 +43,14 @@ public class ImageIdentifier extends MagickExecutor {
 
         return new ImageInfo(res[1], res[2], res[0], res[res.length - 1],
                 inputFilePath);
+    }
+
+    public static ExecResult getIdentifyResult(String inputFilePath)
+            throws CommandNotAvailable {
+
+        CmdParameters params = new CmdParameters();
+        params.addNamedParameter("inputFilePath", inputFilePath);
+        return execCommand("identify", params);
     }
 
 }
