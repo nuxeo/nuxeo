@@ -28,6 +28,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Loader;
 import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.util.ServerInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
@@ -37,7 +38,7 @@ import org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class NuxeoLauncher implements LifecycleListener {
 
@@ -91,11 +92,15 @@ public class NuxeoLauncher implements LifecycleListener {
     }
 
     protected void handleEvent(NuxeoWebappLoader loader, LifecycleEvent event) {
+        String type = event.getType();
         try {
             MutableClassLoader cl = (MutableClassLoader)loader.getClassLoader();
             boolean devMode = cl instanceof NuxeoDevWebappClassLoader;
-            String type = event.getType();
-            if (type == Lifecycle.START_EVENT) {
+            if (type == Lifecycle.START_EVENT || // Tomcat 6
+                    type.equals("configure_start")) { // Tomcat 7
+                if (bootstrap != null) {
+                    return; // Tomcat 7 has configure_start then start
+                }
                 File homeDir = resolveHomeDirectory(loader);
                 if (devMode) {
                     bootstrap = new DevFrameworkBootstrap(
@@ -110,21 +115,33 @@ public class NuxeoLauncher implements LifecycleListener {
                             cl,
                             homeDir);
                 }
+                String info = ServerInfo.getServerInfo();
+                int i = info.indexOf('/'); // Apache Tomcat/6.0.35
+                String version;
+                if (i > 0) {
+                    version = info.substring(i + 1);
+                } else {
+                    version = ServerInfo.getServerNumber(); // 6.0.35.0
+                }
                 bootstrap.setHostName("Tomcat");
-                bootstrap.setHostVersion("6.0.20");
+                bootstrap.setHostVersion(version);
                 bootstrap.initialize();
             } else if (type == Lifecycle.AFTER_START_EVENT) {
                 bootstrap.start();
             } else if (type == Lifecycle.STOP_EVENT) {
                 bootstrap.stop();
+                bootstrap = null;
                 if (devMode) {
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
                     server.unregisterMBean(new ObjectName(DEV_BUNDLES_NAME));
-                    server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));                   
+                    server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));
                 }
             }
-        } catch (Throwable e) {
-            log.error("Failed to handle event", e);
+        } catch (InterruptedException e) {
+            // restore interrupted state
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            log.error("Failed to handle event: " + type, e);
         }
     }
 
