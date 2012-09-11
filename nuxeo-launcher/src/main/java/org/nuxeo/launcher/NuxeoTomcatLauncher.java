@@ -60,6 +60,8 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
         String cp = ".";
         cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
         cp = addToClassPath(cp, "bin" + File.separator + "bootstrap.jar");
+        // Tomcat 7 needs tomcat-juli.jar for bootstrap as well
+        cp = addToClassPath(cp, "bin" + File.separator + "tomcat-juli.jar");
         return cp;
     }
 
