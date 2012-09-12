@@ -20,9 +20,9 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -55,6 +55,8 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected String url2;
 
+    protected Error owner;
+
     protected void setProperties() {
         url = String.format(URL_FORMAT, h2Path, databaseName);
         origUrl = setProperty(URL_PROPERTY, url);
@@ -77,9 +79,14 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        if (owner != null) {
+            log.fatal(owner.getMessage(), owner);
+            throw owner;
+        }
+        owner = new Error("Database not released");
         Class.forName(DRIVER);
         File dir = new File(DIRECTORY);
-        FileUtils.deleteTree(dir);
+        FileUtils.deleteQuietly(dir);
         dir.mkdirs();
         h2Path = new File(dir, getId()).getAbsolutePath();
         setProperties();
@@ -95,6 +102,7 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void tearDown() throws SQLException {
+        owner = null;
         if (origUrl == null) {
             System.clearProperty(URL_PROPERTY);
         } else {
