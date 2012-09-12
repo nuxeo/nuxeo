@@ -170,8 +170,13 @@ public class RepositorySettings implements Provider<CoreSession> {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             log.info("Deploying a VCS repo implementation");
+            // DatabaseHelper.DATABASE is already initialized so we should do:
+            // DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
+            // dbHelper.setRepositoryName(repositoryName);
+            // but let's keep the old method and replace DatabaseHelper.DATABASE
             DatabaseHelper dbHelper = databaseFactory.getHelper(type,
                     databaseName, repositoryName);
+            DatabaseHelper.DATABASE = dbHelper;
             dbHelper.setUp();
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle(
@@ -188,22 +193,23 @@ public class RepositorySettings implements Provider<CoreSession> {
     @SuppressWarnings("deprecation")
     public void shutdown() {
         try {
-            DatabaseHelper dbHelper = databaseFactory.getHelper(type,
-                    databaseName, repositoryName);
-            dbHelper.tearDown();
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
-        }
-        if (repo != null) {
-            if (session != null) {
-                repo.releaseSession(session);
-                session = null;
+            if (repo != null) {
+                if (session != null) {
+                    repo.releaseSession(session);
+                    session = null;
+                }
+                for (CoreSession cs : CoreInstance.getInstance().getSessions()) {
+                    CoreInstance.getInstance().close(cs);
+                }
+                repo.releaseRepository();
+                repo = null;
             }
-            for (CoreSession cs : CoreInstance.getInstance().getSessions()) {
-                CoreInstance.getInstance().close(cs);
+        } finally {
+            try {
+                DatabaseHelper.DATABASE.tearDown();
+            } catch (SQLException e) {
+                throw new RuntimeException("Cannot release database", e);
             }
-            repo.releaseRepository();
-            repo = null;
         }
     }
 
