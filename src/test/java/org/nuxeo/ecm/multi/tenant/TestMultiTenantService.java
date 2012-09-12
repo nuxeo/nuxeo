@@ -20,7 +20,6 @@ package org.nuxeo.ecm.multi.tenant;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANTS_DIRECTORY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_PROPERTY;
@@ -37,7 +36,7 @@ import java.util.Map;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -53,6 +52,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -73,7 +73,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@RepositoryConfig
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
         "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
@@ -94,7 +94,7 @@ public class TestMultiTenantService {
     @Inject
     protected UserManager userManager;
 
-    @Before
+    @After
     public void deleteAllUsers() throws ClientException {
         if (userManager.getPrincipal("bender") != null) {
             userManager.deleteUser("bender");
@@ -105,43 +105,17 @@ public class TestMultiTenantService {
         if (userManager.getPrincipal("leela") != null) {
             userManager.deleteUser("leela");
         }
+        Session dir = directoryService.open(TENANTS_DIRECTORY);
+        DocumentModelList docs = dir.getEntries();
+        for (DocumentModel doc : docs) {
+            dir.deleteEntry(doc.getId());
+        }
+        multiTenantService.disableTenantIsolation(session);
     }
 
     @Test
     public void serviceRegistration() {
         assertNotNull(multiTenantService);
-    }
-
-    @Test
-    public void shouldEnableTenantIsolation() throws ClientException {
-        multiTenantService.enableTenantIsolation(session);
-
-        assertTrue(multiTenantService.isTenantIsolationEnabled(session));
-        DocumentModel domain = session.getDocument(new PathRef(
-                "/default-domain"));
-        assertNotNull(domain);
-        assertTrue(domain.hasFacet(TENANT_CONFIG_FACET));
-        assertEquals("default-domain",
-                domain.getPropertyValue(TENANT_ID_PROPERTY));
-
-        ACP acp = domain.getACP();
-        ACL acl = acp.getOrCreateACL();
-        assertNotNull(acl);
-
-        Session session = null;
-        try {
-            session = directoryService.open(TENANTS_DIRECTORY);
-            DocumentModelList docs = session.getEntries();
-            assertEquals(1, docs.size());
-            DocumentModel doc = docs.get(0);
-            assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));
-            assertEquals(domain.getTitle(),
-                    doc.getPropertyValue("tenant:label"));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
     }
 
     @Test
@@ -203,6 +177,38 @@ public class TestMultiTenantService {
             DocumentModel doc = docs.get(1);
             assertEquals(newDomain.getName(), doc.getPropertyValue("tenant:id"));
             assertEquals(newDomain.getTitle(),
+                    doc.getPropertyValue("tenant:label"));
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    @Test
+    public void shouldEnableTenantIsolation() throws ClientException {
+        multiTenantService.enableTenantIsolation(session);
+
+        assertTrue(multiTenantService.isTenantIsolationEnabled(session));
+        DocumentModel domain = session.getDocument(new PathRef(
+                "/default-domain"));
+        assertNotNull(domain);
+        assertTrue(domain.hasFacet(TENANT_CONFIG_FACET));
+        assertEquals("default-domain",
+                domain.getPropertyValue(TENANT_ID_PROPERTY));
+
+        ACP acp = domain.getACP();
+        ACL acl = acp.getOrCreateACL();
+        assertNotNull(acl);
+
+        Session session = null;
+        try {
+            session = directoryService.open(TENANTS_DIRECTORY);
+            DocumentModelList docs = session.getEntries();
+            assertEquals(1, docs.size());
+            DocumentModel doc = docs.get(0);
+            assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));
+            assertEquals(domain.getTitle(),
                     doc.getPropertyValue("tenant:label"));
         } finally {
             if (session != null) {
