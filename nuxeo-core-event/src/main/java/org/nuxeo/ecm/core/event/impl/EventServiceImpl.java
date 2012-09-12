@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -230,24 +231,29 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
                         stats.logSyncExec(desc, System.currentTimeMillis() - t0);
                     }
                 } catch (Throwable t) {
+                    String message;
                     if (event.isMarkedForRollBack()) {
-                        log.error(
-                                "Error during "
-                                        + desc.getName()
-                                        + " sync listener execution, transaction will be rolledback",
-                                t);
+                        message = "Error during "
+                                + desc.getName()
+                                + " sync listener execution, transaction will be rolled back";
                         rollbackException = t;
                     } else {
-                        log.error("Error during "
+                        message = "Error during "
                                 + desc.getName()
-                                + " sync listener execution, transaction won't be rolled back since event.markRollBack() was not called by the Listener");
+                                + " sync listener execution, transaction won't be rolled back "
+                                + "since event.markRollBack() was not called by the Listener";
                     }
-
+                    if (t instanceof RecoverableClientException) {
+                        log.info(message + "\n" + t.getMessage());
+                        log.debug(message, t);
+                    } else {
+                        log.error(message, t);
+                    }
                 } finally {
                     if (event.isMarkedForRollBack()) {
 
                         String message = "Exception during " + desc.getName()
-                                + " sync listener execution, rollingback";
+                                + " sync listener execution, rolling back";
                         if (event.getRollbackMessage() != null) {
                             message = message + " ("
                                     + event.getRollbackMessage() + ")";
