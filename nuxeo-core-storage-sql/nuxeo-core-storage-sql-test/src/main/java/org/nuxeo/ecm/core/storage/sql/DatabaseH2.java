@@ -69,8 +69,10 @@ public class DatabaseH2 extends DatabaseHelper {
     @Override
     public void setUp() throws Exception {
         if (owner != null) {
-            log.fatal(owner.getMessage(), owner);
-            throw owner;
+            Error e = new Error("Second call to setUp() without tearDown()",
+                    owner);
+            log.fatal(e.getMessage(), e);
+            throw e;
         }
         owner = new Error("Database not released");
         Class.forName(DRIVER);
