@@ -51,6 +51,8 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected String url;
 
+    protected Error owner;
+
     protected void setProperties() {
         url = String.format("jdbc:h2:%s/%s", h2Path, databaseName);
         origUrl = setProperty(URL_PROPERTY, url);
@@ -66,6 +68,11 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        if (owner != null) {
+            log.fatal(owner.getMessage(), owner);
+            throw owner;
+        }
+        owner = new Error("Database not released");
         Class.forName(DRIVER);
         File dir = new File(DIRECTORY);
         FileUtils.deleteTree(dir);
@@ -80,6 +87,7 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void tearDown() throws SQLException {
+        owner = null;
         if (origUrl == null) {
             System.clearProperty(URL_PROPERTY);
         } else {
