@@ -113,11 +113,14 @@ public class TemplateInitListener implements EventListener {
                             templatesUids.add(targetTemplateUid);
                         }
 
-                        for (String tuid : tps.getTypeMapping().get(
-                                targetDoc.getType())) {
-                            // let's be paranoid
-                            if (!templatesUids.contains(tuid)) {
-                                templatesUids.add(tuid);
+                        List<String> tuids = tps.getTypeMapping().get(
+                                targetDoc.getType());
+                        if (tuids != null) {
+                            for (String tuid : tuids) {
+                                // let's be paranoid
+                                if (!templatesUids.contains(tuid)) {
+                                    templatesUids.add(tuid);
+                                }
                             }
                         }
 
