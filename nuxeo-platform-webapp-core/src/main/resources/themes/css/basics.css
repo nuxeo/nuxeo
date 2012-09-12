@@ -52,6 +52,7 @@ h5, h6 { color: "title.minor (__FLAVOR__ color)"; font-size: .8em; margin: .2em 
 
 /* width for divs */
 .fullWidth { width:100% }
+.fullMaxWidth { max-width: 100% }
 .threeQuarterWidth{ margin: 0 auto; width: 70% }
 .half { width:45% } /* used in relationship, to be replaced by halfWidth*/
 .halfWidth { width:45% }
