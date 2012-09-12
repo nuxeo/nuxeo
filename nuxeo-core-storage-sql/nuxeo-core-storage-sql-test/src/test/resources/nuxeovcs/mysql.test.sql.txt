@@ -42,7 +42,7 @@ CREATE TABLE nxp_tagging (
 # create old table locks with constraints
 
 CREATE TABLE locks (
-  id ${idType} NOT NULL,
+  id ${idType} BINARY NOT NULL,
   `lock` VARCHAR(255)
 );
 
@@ -57,7 +57,7 @@ ALTER TABLE locks ADD CONSTRAINT locks_pk PRIMARY KEY (id);
 # old foreign keys
 
 ALTER TABLE locks ADD CONSTRAINT locks_id_hierarchy_fk FOREIGN KEY (id)
-  REFERENCES hierarchy ON DELETE CASCADE;
+  REFERENCES hierarchy (id) ON DELETE CASCADE;
 
 # create old values in old tables
 
