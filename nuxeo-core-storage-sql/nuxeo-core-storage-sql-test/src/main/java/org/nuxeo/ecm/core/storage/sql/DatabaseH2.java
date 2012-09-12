@@ -49,11 +49,14 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected String url;
 
+    protected Error owner;
+
     protected void setProperties() {
         url = String.format("jdbc:h2:%s/%s", h2Path, databaseName);
         origUrl = setProperty(URL_PROPERTY, url);
 
-        Framework.getRuntime().getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
+        Framework.getRuntime().getProperties().setProperty(REPOSITORY_PROPERTY,
+                repositoryName);
         setProperty(DATABASE_PROPERTY, databaseName);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
@@ -61,6 +64,11 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        if (owner != null) {
+            log.fatal(owner.getMessage(), owner);
+            throw owner;
+        }
+        owner = new Error("Database not released");
         Class.forName("org.h2.Driver");
         File dir = new File(DIRECTORY);
         FileUtils.deleteTree(dir);
@@ -75,6 +83,7 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void tearDown() throws SQLException {
+        owner = null;
         if (origUrl == null) {
             System.clearProperty(URL_PROPERTY);
         } else {
@@ -117,6 +126,5 @@ public class DatabaseH2 extends DatabaseHelper {
     public boolean supportsClustering() {
         return true;
     }
-
 
 }
