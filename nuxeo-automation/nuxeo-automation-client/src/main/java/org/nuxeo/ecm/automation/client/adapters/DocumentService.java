@@ -176,8 +176,8 @@ public class DocumentService {
     }
 
     public Document getChild(DocRef docRef, String name) throws Exception {
-        return (Document) session.newRequest(GetDocumentChildren).setInput(
-                docRef).set("name", name).execute();
+        return (Document) session.newRequest(GetDocumentChild).setInput(docRef).set(
+                "name", name).execute();
     }
 
     public Document getParent(DocRef docRef) throws Exception {
@@ -287,10 +287,11 @@ public class DocumentService {
     /**
      * @since 5.5
      */
-    public Documents getRelations(DocRef doc, String predicate, boolean outgoing, String graphName)
-            throws Exception {
+    public Documents getRelations(DocRef doc, String predicate,
+            boolean outgoing, String graphName) throws Exception {
         return (Documents) session.newRequest(GetRelations).setInput(doc).set(
-                "predicate", predicate).set("outgoing", outgoing).set("graphName", graphName).execute();
+                "predicate", predicate).set("outgoing", outgoing).set(
+                "graphName", graphName).execute();
     }
 
     public void setBlob(DocRef doc, Blob blob) throws Exception {
@@ -351,7 +352,7 @@ public class DocumentService {
     /**
      * Increment is one of "None", "Major", "Minor". If null the server default
      * will be used.
-     *
+     * 
      * See {@link VersionIncrement}
      */
     public Document createVersion(DocRef doc, String increment)
