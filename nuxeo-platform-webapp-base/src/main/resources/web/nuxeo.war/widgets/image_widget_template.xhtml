@@ -26,7 +26,7 @@
     <nxu:set var="image_url"
      value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}"
      cache="true">
-      <nxu:graphicImage styleClass="fullWidth" value="#{image_url}"
+      <nxu:graphicImage styleClass="fullMaxWidth" value="#{image_url}"
         title="#{field.filename}" alt="#{field.filename}"
         width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
     </nxu:set>
@@ -39,7 +39,7 @@
       <nxu:set var="image_url"
        value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}"
        cache="true">
-      <nxu:graphicImage styleClass="fullWidth" value="#{image_url}"
+      <nxu:graphicImage styleClass="fullMaxWidth" value="#{image_url}"
         title="#{field.filename}" alt="#{field.filename}"
         width="#{widgetProperty_width}" height="#{widgetProperty_height}" />
       </nxu:set>
