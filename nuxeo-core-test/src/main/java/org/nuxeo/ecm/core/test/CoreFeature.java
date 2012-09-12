@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -53,6 +54,8 @@ public class CoreFeature extends SimpleFeature {
     protected int initialOpenSessions;
 
     protected RepositorySettings repository;
+
+    protected boolean cleaned;
 
     public RepositorySettings getRepository() {
         return repository;
@@ -152,10 +155,16 @@ public class CoreFeature extends SimpleFeature {
             CoreScope.INSTANCE.exit();
         }
         repository.releaseSession();
+        cleaned = true;
     }
 
-    protected void initializeSession(FeaturesRunner runner) {
+    protected void initializeSession(FeaturesRunner runner) throws Exception {
         CoreScope.INSTANCE.enter();
+        if (cleaned) {
+            // re-trigger application started
+            NXCore.getRepositoryService().applicationStarted(null);
+            cleaned = false;
+        }
         CoreSession session  = repository.createSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
