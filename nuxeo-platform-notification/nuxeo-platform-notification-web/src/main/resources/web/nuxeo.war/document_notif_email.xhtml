@@ -40,6 +40,11 @@
         <a4j:support event="onkeyup" requestDelay="500" eventsQueue="sendEmailForm"
           ignoreDupResponses="true" reRender="suggestedEntries" />
       </h:inputText>
+      <a4j:status>
+        <f:facet name="start">
+          <h:graphicImage value="/img/standart_waiter.gif" />
+        </f:facet>
+      </a4j:status>
       <h:inputHidden value="#{principalListManager.searchType}">
          <f:attribute name="value" value="USER_GROUP_TYPE" />
       </h:inputHidden>
