@@ -19,10 +19,10 @@ package org.nuxeo.ecm.quota.size;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,8 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -53,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
  * document. This default implementation does not track the space used by
  * versions, or the space used by non-Blob properties
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -64,8 +62,6 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             BEFORE_DOC_UPDATE, DOCUMENT_CREATED);
 
     public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
-
-    protected static final Log log = LogFactory.getLog(QuotaSyncListenerChecker.class);
 
     @Override
     public void computeInitialStatistics(CoreSession unrestrictedSession,
@@ -89,9 +85,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     currentWorker.notifyProgress(idx++, total);
                 }
             } finally {
-                if (res != null) {
-                    res.close();
-                }
+                res.close();
             }
 
         } catch (Exception e) {
@@ -189,7 +183,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             throws ClientException {
         BlobSizeInfo bsi = computeSizeImpact(targetDoc, true);
         log.debug("calling processDocumentBeforeUpdate, bsi=" + bsi.toString());
-        // only process if Blobs where added or removeds
+        // only process if Blobs where added or removed
         if (bsi.getBlobSizeDelta() != 0) {
             checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
@@ -209,9 +203,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             bsi.blobSize = total;
             bsi.blobSizeDelta = total;
             if (total > 0) {
-                // check on parent since Session is not
-                // committed
-                // for now
+                // check on parent since Session is not committed for now
                 checkConstraints(session, targetDoc, targetDoc.getParentRef(),
                         bsi);
                 SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
@@ -235,9 +227,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         bsi.blobSize = total;
         bsi.blobSizeDelta = total;
         if (total > 0) {
-            // check on destination parent since Session is not
-            // committed
-            // for now
+            // check on destination parent since Session is not committed for
+            // now
             checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
                     session, docCtx, bsi, DOCUMENT_MOVED);
@@ -285,19 +276,17 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             return false;
         }
         if (targetDoc.isProxy()) {
-            log.debug("Escape from listener : not precessing proxies");
+            log.debug("Escape from listener: not precessing proxies");
             return false;
         }
 
         Boolean block = (Boolean) targetDoc.getContextData().getScopedValue(
                 ScopeType.REQUEST, DISABLE_QUOTA_CHECK_LISTENER);
         if (block != null && block) {
-            log.debug("Escape from listener to avoid re-entrency");
+            log.debug("Escape from listener to avoid reentrancy");
             // ignore the event - we are blocked by the caller
-            // used to avoid reentrency when the async event handler
-            // do
-            // update
-            // the docs to set the new size !
+            // used to avoid reentrancy when the async event handler
+            // do update the docs to set the new size !
             return false;
         }
         return true;
@@ -349,7 +338,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             QuotaAware qap = parent.getAdapter(QuotaAware.class);
             if (qap != null && qap.getMaxQuota() > 0) {
                 if (qap.getTotalSize() + addition > qap.getMaxQuota()) {
-                    log.error("Raising Quota Exception on "
+                    log.info("Raising Quota Exception on "
                             + doc.getPathAsString());
                     throw new QuotaExceededException(parent, doc,
                             qap.getMaxQuota());
