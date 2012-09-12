@@ -11,39 +11,18 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 
 public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.storage.sql");
-        database.setUp();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
 
     protected Calendar getCalendar(int year, int month, int day, int hours,
             int minutes, int seconds) {
