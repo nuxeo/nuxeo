@@ -10,7 +10,7 @@ author: lkemen@nuxeo.com
 .facesStatusMessage { top: 1em; right: 1em; position: fixed; z-index: 10000 }
 .facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; max-height: 30em;	min-width: 15em; text-align: center }
 
-.errorMessage, .infoMessage, .warningMessage, .infoFeedback  {
+.errorMessage, .infoMessage, .warningMessage, .infoFeedback, .errorFeedback, .warningFeedback  {
   background-color: #e6f1ff;
   border-color: "neutral.medium (__FLAVOR__ border)";
   border-width: 1px;

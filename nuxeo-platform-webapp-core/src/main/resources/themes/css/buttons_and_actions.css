@@ -137,7 +137,7 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 .ctxMenuItemStyle, .ctxMenuItemHoverStyle { margin: 0; display: block; cursor: default; padding: .4em .5em; border-style: none none solid; border-width: 1px; border-color: "neutral.light (__FLAVOR__ border)"; background-color:#fff }
 .ctxMenuItemHoverStyle { cursor: pointer; background-color: "color.major.medium (__FLAVOR__ background)" }
 .ctxMenuItemStyle a, .ctxMenuItemHoverStyle a { display: block; text-decoration: none }
-.ctxMenuImg { vertical-align: middle; padding: 0em .4em 0.1em 0 }
+.ctxMenuImg { vertical-align: middle; padding: 0 .4em 0.1em 0 }
 
 /* =Labels and tags */
 .tag { background: "color.major.stronger (__FLAVOR__ background)"; border-radius: 3px; color: #fff; display: block; margin: .2em; padding: 0 .3em;}
