@@ -66,6 +66,7 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        super.tearDown();
         fileManagerService = null;
         root = null;
     }
