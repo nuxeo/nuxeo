@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.test;
 
 import java.net.URL;
+import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,14 +49,23 @@ public class RepositorySettings implements Provider<CoreSession> {
     private static final Log log = LogFactory.getLog(RepositorySettings.class);
 
     protected FeaturesRunner runner;
+
     protected BackendType type;
+
     protected String repositoryName;
+
     protected String databaseName;
+
     protected String username;
+
     protected RepositoryInit repoInitializer;
+
     protected Granularity granularity;
+
     protected DatabaseHelperFactory databaseFactory;
+
     protected TestRepositoryHandler repo;
+
     protected CoreSession session;
 
     /**
@@ -105,7 +115,8 @@ public class RepositorySettings implements Provider<CoreSession> {
     public void importSettings(RepositorySettings settings) {
         shutdown();
         // override only the user name and the type.
-        // overriding initializer and granularity may broke tests that are using specific initializers
+        // overriding initializer and granularity may broke tests that are using
+        // specific initializers
         RepositoryConfig defaultConfig = Defaults.of(RepositoryConfig.class);
         if (defaultConfig.type() != settings.type) {
             type = settings.type;
@@ -159,12 +170,15 @@ public class RepositorySettings implements Provider<CoreSession> {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             log.info("Deploying a VCS repo implementation");
-            DatabaseHelper dbHelper = databaseFactory.getHelper(type, databaseName, repositoryName);
+            DatabaseHelper dbHelper = databaseFactory.getHelper(type,
+                    databaseName, repositoryName);
             dbHelper.setUp();
             OSGiAdapter osgi = harness.getOSGiAdapter();
-            Bundle bundle = osgi.getRegistry().getBundle("org.nuxeo.ecm.core.storage.sql.test");
+            Bundle bundle = osgi.getRegistry().getBundle(
+                    "org.nuxeo.ecm.core.storage.sql.test");
             URL contribURL = bundle.getEntry(dbHelper.getDeploymentContrib());
-            Contribution contrib = new ContributionLocation(repositoryName, contribURL);
+            Contribution contrib = new ContributionLocation(repositoryName,
+                    contribURL);
             harness.getContext().deploy(contrib);
         } catch (Exception e) {
             log.error(e.toString(), e);
@@ -173,6 +187,13 @@ public class RepositorySettings implements Provider<CoreSession> {
 
     @SuppressWarnings("deprecation")
     public void shutdown() {
+        try {
+            DatabaseHelper dbHelper = databaseFactory.getHelper(type,
+                    databaseName, repositoryName);
+            dbHelper.tearDown();
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
         if (repo != null) {
             if (session != null) {
                 repo.releaseSession(session);
@@ -186,12 +207,10 @@ public class RepositorySettings implements Provider<CoreSession> {
         }
     }
 
-
     public TestRepositoryHandler getRepositoryHandler() {
         if (repo == null) {
             try {
-                repo = new TestRepositoryHandler(
-                        repositoryName);
+                repo = new TestRepositoryHandler(repositoryName);
                 repo.openRepository();
             } catch (Exception e) {
                 log.error(e.toString(), e);
