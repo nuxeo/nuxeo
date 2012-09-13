@@ -85,6 +85,7 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void tearDown() throws SQLException {
+        super.tearDown();
         owner = null;
         if (origUrl == null) {
             System.clearProperty(URL_PROPERTY);

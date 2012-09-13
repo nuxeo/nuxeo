@@ -68,13 +68,17 @@ public abstract class DatabaseHelper {
         return value;
     }
 
-    protected String databaseName = "nuxeojunittests";
+    public static final String DEFAULT_DATABASE_NAME = "nuxeojunittests";
+
+    protected String databaseName = DEFAULT_DATABASE_NAME;
 
     public void setDatabaseName(String name) {
         this.databaseName = name;
     }
 
-    protected String repositoryName = "test";
+    public static final String DEFAULT_REPOSITORY_NAME = "test";
+
+    protected String repositoryName = DEFAULT_REPOSITORY_NAME;
 
     public void setRepositoryName(String name) {
         this.repositoryName = name;
@@ -141,7 +145,12 @@ public abstract class DatabaseHelper {
 
     public abstract void setUp() throws Exception;
 
+    /**
+     * @throws SQLException
+     */
     public void tearDown() throws SQLException {
+        setDatabaseName(DEFAULT_DATABASE_NAME);
+        setRepositoryName(DEFAULT_REPOSITORY_NAME);
     }
 
     public abstract String getDeploymentContrib();
