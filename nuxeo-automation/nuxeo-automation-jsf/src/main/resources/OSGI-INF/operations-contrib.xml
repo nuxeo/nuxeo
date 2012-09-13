@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.automation.jsf.contrib" version="1.0">
+<component name="org.nuxeo.ecm.automation.jsf.contrib"
+  version="1.0">
 
   <documentation>@author Thierry Delprat</documentation>
 
@@ -16,11 +17,14 @@
       class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentDocument" />
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.GetChangeableDocument" />
-    <operation class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentDomain" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentDomain" />
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.GetCurrentWorkspace" />
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.GetSelectedDocuments" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.GetDocumentsFromSelectionList" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.Navigate" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.PushToClipboard" />
     <operation
@@ -29,7 +33,8 @@
     <operation class="org.nuxeo.ecm.automation.jsf.operations.ChangeTab" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.ClearWorklist" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.ClearClipboard" />
-    <operation class="org.nuxeo.ecm.automation.jsf.operations.ClearSelectedDocuments" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.ClearSelectedDocuments" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.DownloadFile" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.AddErrorMessage" />
     <operation class="org.nuxeo.ecm.automation.jsf.operations.AddInfoMessage" />
@@ -41,28 +46,32 @@
       class="org.nuxeo.ecm.automation.jsf.operations.CreateDocumentInUI" />
     <operation
       class="org.nuxeo.ecm.automation.jsf.operations.CancelCreateDocumentInUI" />
-    <operation class="org.nuxeo.ecm.automation.jsf.operations.SaveDocumentInUI" />
+    <operation
+      class="org.nuxeo.ecm.automation.jsf.operations.SaveDocumentInUI" />
 
-    <operation class="org.nuxeo.ecm.automation.seam.operations.InitSeamContext" />
-    <operation class="org.nuxeo.ecm.automation.seam.operations.DestroySeamContext" />
-    <operation class="org.nuxeo.ecm.automation.seam.operations.RunOperationInSeam" />
+    <operation
+      class="org.nuxeo.ecm.automation.seam.operations.InitSeamContext" />
+    <operation
+      class="org.nuxeo.ecm.automation.seam.operations.DestroySeamContext" />
+    <operation
+      class="org.nuxeo.ecm.automation.seam.operations.RunOperationInSeam" />
 
   </extension>
 
- <extension point="chains"
+  <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <chain id="ImportWorklist">
       <operation id="Seam.InitContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
-      <operation id="Document.Save"/>
-      <operation id="Seam.AddToWorklist"/>
+      <operation id="Document.Save" />
+      <operation id="Seam.AddToWorklist" />
       <operation id="Seam.DestroyContext" />
     </chain>
     <chain id="ImportClipboard">
       <operation id="Seam.InitContext" />
       <operation id="UserWorkspace.CreateDocumentFromBlob" />
-      <operation id="Document.Save"/>
-      <operation id="Seam.AddToClipboard"/>
+      <operation id="Document.Save" />
+      <operation id="Seam.AddToClipboard" />
       <operation id="Seam.DestroyContext" />
     </chain>
     <chain id="SeamActions.GET">
@@ -73,10 +82,11 @@
 
     <chain id="FileManager.ImportWithMetaDataInSeam">
       <operation id="FileManager.Import">
-         <param type="boolean" name="overwite">true</param>
+        <param type="boolean" name="overwite">true</param>
       </operation>
       <operation id="Document.Update">
-        <param type="properties" name="properties">expr:Context.get("docMetaData")</param>
+        <param type="properties" name="properties">expr:Context.get("docMetaData")
+        </param>
       </operation>
       <operation id="Seam.RunOperation">
         <param type="string" name="id">Seam.Refresh</param>
@@ -85,7 +95,7 @@
 
     <chain id="FileManager.ImportInSeam">
       <operation id="FileManager.Import">
-         <param type="boolean" name="overwite">true</param>
+        <param type="boolean" name="overwite">true</param>
       </operation>
       <operation id="Seam.RunOperation">
         <param type="string" name="id">Seam.Refresh</param>
