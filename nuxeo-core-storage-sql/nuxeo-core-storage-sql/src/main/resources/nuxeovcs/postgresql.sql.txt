@@ -747,7 +747,7 @@ BEGIN
     FROM (SELECT DISTINCT(hierarchy_id) AS id
         FROM aclr_modified
         WHERE is_new AND
-            EXISTS (SELECT 1 FROM hierarchy WHERE aclr_modified.hierarchy_id=hierarchy.id)) AS uids;
+            EXISTS (SELECT 1 FROM hierarchy WHERE aclr_modified.hierarchy_id=hierarchy.id LIMIT 1)) AS uids;
   GET DIAGNOSTICS update_count = ROW_COUNT;
   RAISE DEBUG 'nx_update_read_acls % entries added.', update_count;
   DELETE FROM aclr_modified WHERE is_new;
