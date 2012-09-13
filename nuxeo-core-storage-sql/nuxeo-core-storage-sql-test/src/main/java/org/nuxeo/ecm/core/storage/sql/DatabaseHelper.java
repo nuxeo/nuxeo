@@ -87,7 +87,7 @@ public abstract class DatabaseHelper {
 
     public static final String DEFAULT_REPOSITORY_NAME = "test";
 
-    protected String repositoryName = DEFAULT_REPOSITORY_NAME;
+    public String repositoryName = DEFAULT_REPOSITORY_NAME;
 
     public void setRepositoryName(String name) {
         this.repositoryName = name;
