@@ -42,7 +42,7 @@ public class GetDocumentsFromSelectionList {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "listName")
+    @Param(name = "listName", required = false)
     protected String listName;
 
     @OperationMethod
