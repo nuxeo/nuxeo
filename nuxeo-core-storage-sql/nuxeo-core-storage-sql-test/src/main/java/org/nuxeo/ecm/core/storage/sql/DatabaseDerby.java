@@ -44,7 +44,8 @@ public class DatabaseDerby extends DatabaseHelper {
     protected String url;
 
     protected void setProperties() {
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
+        Framework.getProperties().setProperty(REPOSITORY_PROPERTY,
+                repositoryName);
         setProperty(DATABASE_PROPERTY, new File(DIRECTORY).getAbsolutePath());
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
