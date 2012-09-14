@@ -26,6 +26,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.UnavailableException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -105,7 +106,12 @@ public class AuthenticationFilterDelayer implements Filter {
         delayedConfig = filterConfig;
         if (hasBeenActivated) {
             // no point in delaying, everybody is already ready
-            delayed.init(filterConfig);
+            try {
+                delayed.init(filterConfig);
+            } catch (UnavailableException e) {
+                log.error(e.getMessage());
+                return;
+            }
             // we are also now in the ready state because no sense in waiting
             ready = true;
         }

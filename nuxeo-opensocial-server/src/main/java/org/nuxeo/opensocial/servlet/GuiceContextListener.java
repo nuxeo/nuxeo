@@ -81,8 +81,7 @@ public class GuiceContextListener implements ServletContextListener {
         try {
             runInjection();
         } catch (Exception e) {
-            throw new RuntimeException("Cannot find opensocial service for "
-                    + "initialization!", e);
+            log.error("Guice failed to initialize", e);
         }
     }
 
