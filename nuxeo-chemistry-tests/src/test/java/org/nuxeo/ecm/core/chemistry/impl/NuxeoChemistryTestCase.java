@@ -106,8 +106,12 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         openSession();
 
         // cmis
-        repository = makeRepository();
-        openConn();
+        try {
+            repository = makeRepository();
+            openConn();
+        } catch (Exception e) {
+            super.tearDown();
+        }
     }
 
     @Override
@@ -450,8 +454,8 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         cs = spi.getContentStream(id, null);
         assertNotNull(cs);
         assertEquals(filename, cs.getFileName());
-        assertEquals("text/plain;charset=UTF-8", cs.getMimeType().replace(" ",
-                ""));
+        assertEquals("text/plain;charset=UTF-8",
+                cs.getMimeType().replace(" ", ""));
 
         InputStream in = cs.getStream();
         assertNotNull(in);
@@ -621,8 +625,8 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
         assertEquals(1, res.size());
         col = spi.query("SELECT * FROM MyDocType", false, null, null);
         assertEquals(1, col.size());
-        assertEquals(BigDecimal.valueOf(123.456), col.get(0).getValue(
-                "my:double"));
+        assertEquals(BigDecimal.valueOf(123.456),
+                col.get(0).getValue("my:double"));
         assertTrue(col.get(0).getValue("my:double") instanceof BigDecimal);
 
         // datetime
@@ -857,8 +861,8 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
 
         // query as someone in group members
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-        parameters.put("principal", new UserPrincipal("a_member",
-                Arrays.asList("members")));
+        parameters.put("principal",
+                new UserPrincipal("a_member", Arrays.asList("members")));
         openConn(parameters);
 
         query = "SELECT * FROM cmis:document";

@@ -91,8 +91,12 @@ public class TestNuxeoChemistryAtomPub extends NuxeoChemistryTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        super.tearDown();
-        stopServer();
+        try {
+            super.tearDown();
+        } catch (Exception e) {
+            stopServer();
+            throw e;
+        }
     }
 
     @Override
