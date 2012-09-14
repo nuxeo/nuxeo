@@ -1,0 +1,119 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<a4j:region>
+  <div style="display:none;">
+  <div id="csvImport_box">
+
+    <a4j:log />
+
+    <h3><h:outputText value="#{messages['label.csv.import.title']}" /></h3>
+
+    <div class="content">
+      <a4j:outputPanel id="csv_import_panel">
+
+        <nxu:set var="importRunning" value="#{csvImportActions.isRunning()}">
+        <nxu:set var="importComplete" value="#{csvImportActions.isComplete()}">
+
+        <a4j:form id="importCsvRichUploadForm" ajaxSingle="true" enctype="multipart/form-data">
+
+          <a4j:outputPanel id="csv_import_form">
+            <c:if test="#{not importRunning and not importComplete}">
+              <rich:fileUpload fileUploadListener="#{csvImportActions.uploadListener}"
+                maxFilesQuantity="1" immediateUpload="true"
+                listHeight="60"
+                ajaxSingle="true"
+                locale="#{localeSelector.localeString}"
+                id="csvFileUpload" />
+              <p class="popUpDescription">
+                <h:outputText value="#{messages['label.csv.import.description']}" />
+              </p>
+            </c:if>
+            <c:if test="#{importRunning}">
+              <a4j:poll interval="2000" eventsQueue="csvImportQueue"
+                reRender="csv_import_panel" ignoreDupResponses="true" />
+              <h4><h:outputText value="#{messages['label.csv.import.importing']} #{csvImportActions.importingCSVFilename}" /></h4>
+              <h:graphicImage value="/img/standart_waiter.gif" />
+            </c:if>
+            <c:if test="#{importComplete}">
+              <h4><h:outputText value="#{messages['label.csv.import.complete']}" /></h4>
+              <nxu:set var="importResult" value="#{csvImportActions.importResult}">
+                <table class="dataOutput">
+                  <tr>
+                    <td><h:outputText value="#{messages['label.csv.import.result.successLine']}" /></td>
+                    <td>#{importResult.successLineCount} / #{importResult.totalLineCount}</td>
+                  </tr>
+                  <tr>
+                    <td><h:outputText value="#{messages['label.csv.import.result.skippedLine']}" /></td>
+                    <td>#{importResult.skippedLineCount} / #{importResult.totalLineCount}</td>
+                  </tr>
+                  <tr>
+                    <td><h:outputText value="#{messages['label.csv.import.result.errorLine']}" /></td>
+                    <td>#{importResult.errorLineCount} / #{importResult.totalLineCount}</td>
+                  </tr>
+                </table>
+              </nxu:set>
+            </c:if>
+          </a4j:outputPanel>
+
+            <c:if test="#{importRunning or importComplete}">
+              <nxu:set var="importLogs" value="#{nxu:test(importRunning, csvImportActions.getLastLogs(500), csvImportActions.getSkippedAndErrorLogs())}">
+              <div style="overflow: scroll;">
+                <table class="dataOutput">
+                  <c:forEach var="importLog" items="#{importLogs}">
+                    <tr>
+                      <td><h:outputText value="#{messages['label.csv.import.line']} #{importLog.line}" /></td>
+                      <td>
+                        <c:if test="#{importLog.success}">
+                          <h:outputText value="#{messages['label.csv.import.success']}" />
+                        </c:if>
+                        <c:if test="#{importLog.skipped}">
+                          <h:outputText value="#{messages['label.csv.import.skipped']}" />
+                        </c:if>
+                        <c:if test="#{importLog.error}">
+                          <h:outputText value="#{messages['label.csv.import.error']}" />
+                        </c:if>
+                      </td>
+                      <td>
+                        <h:outputFormat value="#{messages[importLog.localizedMessage]}">
+                          <c:forEach var="param" items="#{importLog.localizedMessageParams}">
+                            <f:param value="#{param}" />
+                          </c:forEach>
+                        </h:outputFormat>
+                      </td>
+                    </tr>
+                  </c:forEach>
+                </table>
+              </div>
+              </nxu:set>
+            </c:if>
+
+            <p class="buttonsGadget">
+              <a4j:commandButton value="#{messages['command.csv.process']}"
+                action="#{csvImportActions.importCSVFile}"
+                reRender="csv_import_form"
+                styleClass="button" />
+              <a4j:commandButton value="#{messages['command.csv.cancel']}"
+                styleClass="button" immediate="true" oncomplete="jQuery.fancybox.close();" />
+            </p>
+        </a4j:form>
+        </nxu:set>
+        </nxu:set>
+
+      </a4j:outputPanel>
+    </div>
+
+  </div>
+</div>
+</a4j:region>
+
+</c:if>

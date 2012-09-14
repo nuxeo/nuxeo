@@ -1,0 +1,3 @@
+"name","type","dc:description","dc:title","dc:contributors","dc:issued","note:note"
+"myfile","File","a simple file","My File","contributor1|contributor2|contributor3","10/01/2010",""
+"mynote","Note","a simple note","My Note","bender|leela|fry","12/12/2012","note content"
