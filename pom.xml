@@ -59,6 +59,7 @@
     <nuxeo.rating.version>5.7-SNAPSHOT</nuxeo.rating.version>
     <nuxeo.agenda.version>5.7-SNAPSHOT</nuxeo.agenda.version>
     <nuxeo.templates.version>5.7-SNAPSHOT</nuxeo.templates.version>
+    <nuxeo.csv.version>5.7-SNAPSHOT</nuxeo.csv.version>
   </properties>
 
   <modules>
@@ -113,6 +114,7 @@
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-web-mobile</module>
+    <module>nuxeo-csv</module>
   </modules>
 
   <dependencyManagement>
@@ -1030,6 +1032,13 @@
         <version>${nuxeo.templates.version}</version>
       </dependency>
     </dependencies>
+
+    <!-- CSV -->
+    <dependency>
+      <groupId>org.nuxeo.csv</groupId>
+      <artifactId>nuxeo-csv</artifactId>
+      <version>${nuxeo.csv.version}</version>
+    </dependency>
   </dependencyManagement>
 
   <repositories>
