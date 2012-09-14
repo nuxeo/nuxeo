@@ -1,4 +1,3 @@
-syntax:glob
 .checkstyle
 .classpath
 .metadata
