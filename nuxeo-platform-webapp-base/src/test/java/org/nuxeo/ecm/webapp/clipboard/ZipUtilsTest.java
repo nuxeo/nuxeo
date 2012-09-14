@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -40,7 +40,9 @@ public class ZipUtilsTest extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     public void tearDown() throws Exception {
+        super.tearDown();
         session.destroy();
     }
 
@@ -73,7 +75,7 @@ public class ZipUtilsTest extends SQLRepositoryTestCase {
         blob2.setFilename("blob2.raw");
 
         HashMap<String, Serializable> blob = new HashMap<String, Serializable>();
-        blob.put("file", (Serializable) blob2);
+        blob.put("file", blob2);
         blob.put("filename", blob2.getFilename());
 
         ArrayList<HashMap<String, Serializable>> blobs = new ArrayList<HashMap<String, Serializable>>();
