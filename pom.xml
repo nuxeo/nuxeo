@@ -1031,14 +1031,15 @@
         <artifactId>nuxeo-template-rendering-samples</artifactId>
         <version>${nuxeo.templates.version}</version>
       </dependency>
-    </dependencies>
 
-    <!-- CSV -->
-    <dependency>
-      <groupId>org.nuxeo.csv</groupId>
-      <artifactId>nuxeo-csv</artifactId>
-      <version>${nuxeo.csv.version}</version>
-    </dependency>
+      
+      <!-- CSV -->
+      <dependency>
+        <groupId>org.nuxeo.csv</groupId>
+        <artifactId>nuxeo-csv</artifactId>
+        <version>${nuxeo.csv.version}</version>
+      </dependency>
+    </dependencies>
   </dependencyManagement>
 
   <repositories>
