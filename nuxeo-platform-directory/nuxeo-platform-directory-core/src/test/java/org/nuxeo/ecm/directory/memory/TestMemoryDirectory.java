@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.directory.memory;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,21 +39,10 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaNames;
-import org.nuxeo.ecm.core.schema.TypeRef;
-import org.nuxeo.ecm.core.schema.types.QName;
-import org.nuxeo.ecm.core.schema.types.SchemaImpl;
-import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
-import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -68,8 +64,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.core.schema");
-
-        createSchema();
+        deployContrib("org.nuxeo.ecm.directory.core.tests", "test-schema.xml");
 
         Set<String> schemaSet = new HashSet<String>(Arrays.asList("i", "pw",
                 "a", "int", "b"));
@@ -83,24 +78,6 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         e1.put("int", 3);
         e1.put("x", "XYZ"); // shouldn't be put in storage
         entry = dir.createEntry(e1);
-    }
-
-    public void createSchema() throws Exception {
-        // XXX GR fair enough, but why not using an xsd file?
-        SchemaImpl sch = new SchemaImpl(SCHEMA_NAME);
-        sch.addField(QName.valueOf("i"), new TypeRef<Type>(SchemaNames.BUILTIN,
-                StringType.ID));
-        sch.addField(QName.valueOf("pw"), new TypeRef<Type>(
-                SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("a"), new TypeRef<Type>(SchemaNames.BUILTIN,
-                StringType.ID));
-        sch.addField(QName.valueOf("b"), new TypeRef<Type>(SchemaNames.BUILTIN,
-                StringType.ID));
-        sch.addField(QName.valueOf("x"), new TypeRef<Type>(SchemaNames.BUILTIN,
-                StringType.ID));
-        sch.addField(QName.valueOf("int"), new TypeRef<Type>(
-                SchemaNames.BUILTIN, DoubleType.ID));
-        Framework.getService(SchemaManager.class).registerSchema(sch);
     }
 
     @Test

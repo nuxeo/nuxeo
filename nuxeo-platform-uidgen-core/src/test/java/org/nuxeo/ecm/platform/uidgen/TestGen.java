@@ -19,16 +19,16 @@
 
 package org.nuxeo.ecm.platform.uidgen;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -37,15 +37,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaNames;
-import org.nuxeo.ecm.core.schema.TypeRef;
-import org.nuxeo.ecm.core.schema.types.QName;
-import org.nuxeo.ecm.core.schema.types.SchemaImpl;
-import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -62,12 +54,6 @@ public class TestGen extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.uidgen.core");
 
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests", "nxuidgenerator-test-contrib.xml");
-
-        // define geide schema
-        SchemaImpl sch = new SchemaImpl("geide");
-        sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
-        Framework.getLocalService(SchemaManager.class).registerSchema(sch);
     }
 
     /* (non-Javadoc)
