@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://project.nuxeo.com/testschema"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="i" type="xs:string" />
+  <xs:element name="pw" type="xs:string" />
+  <xs:element name="a" type="xs:string" />
+  <xs:element name="b" type="xs:string" />
+  <xs:element name="x" type="xs:string" />
+  <xs:element name="int" type="xs:int" />
+
+</xs:schema>
