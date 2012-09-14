@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.schema.TypeService;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
 import org.nuxeo.runtime.api.Framework;
 
@@ -241,18 +241,8 @@ public abstract class AbstractRootSectionsFinder extends
     }
 
     protected Set<String> getTypeNamesForFacet(String facetName) {
-        TypeService schemaService;
-        try {
-            // XXX should use getService(SchemaManager.class)
-            schemaService = (TypeService) Framework.getRuntime().getComponent(
-                    TypeService.NAME);
-        } catch (Exception e) {
-            log.error("Exception in retrieving publish spaces : ", e);
-            return null;
-        }
-
-        Set<String> publishRoots = schemaService.getTypeManager().getDocumentTypeNamesForFacet(
-                facetName);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        Set<String> publishRoots = schemaManager.getDocumentTypeNamesForFacet(facetName);
         if (publishRoots == null || publishRoots.isEmpty()) {
             return null;
         }
