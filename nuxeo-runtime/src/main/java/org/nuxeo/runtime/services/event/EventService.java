@@ -95,10 +95,6 @@ public class EventService extends DefaultComponent {
         }
     }
 
-    // public void sendEventAsync(Event event) {
-    //
-    // }
-
     public void sendEvent(Event event) {
         ListenerList list = topics.get(event.getTopic());
         if (list == null) {
@@ -109,19 +105,6 @@ public class EventService extends DefaultComponent {
             }
         } else {
             sendEvent(list, event);
-        }
-    }
-
-    public void sendCancelableEvent(Event event) {
-        ListenerList list = topics.get(event.getTopic());
-        if (list == null) {
-            // enqeueEvent(event);
-            if (log.isTraceEnabled()) {
-                log.trace("Event sent to topic " + event.getTopic()
-                        + ". Ingnoring");
-            }
-        } else {
-            sendCancelableEvent(list, event);
         }
     }
 
@@ -149,19 +132,6 @@ public class EventService extends DefaultComponent {
                 topics.remove(topic);
             }
         }
-    }
-
-    private static boolean sendCancelableEvent(ListenerList list, Event event) {
-        Object[] listeners = list.getListeners();
-        for (Object listener : listeners) {
-            if (((EventListener) listener).aboutToHandleEvent(event)) {
-                return false; // event canceled
-            }
-        }
-        for (Object listener1 : listeners) {
-            ((EventListener) listener1).handleEvent(event);
-        }
-        return true;
     }
 
     private static void sendEvent(ListenerList list, Event event) {

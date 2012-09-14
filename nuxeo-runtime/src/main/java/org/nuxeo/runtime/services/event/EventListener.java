@@ -27,7 +27,10 @@ public interface EventListener {
      *
      * @param event the event
      * @return false to cancel the event or true otherwise
+     *
+     * @deprecated since 5.7 (unused)
      */
+    @Deprecated
     boolean aboutToHandleEvent(Event event);
 
     /**
