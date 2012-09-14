@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webapp.search;
 
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
@@ -49,10 +48,8 @@ public final class FieldHelper {
         String schemaName = fullName.substring(0, colonIndex);
         String fieldName = fullName.substring(colonIndex + 1);
 
-        TypeService typeService = (TypeService) Framework.getRuntime().getComponent(
-                TypeService.NAME);
-        SchemaManager typeManager = typeService.getTypeManager();
-        Schema schema = typeManager.getSchema(schemaName);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        Schema schema = schemaManager.getSchema(schemaName);
         if (schema == null) {
             return null;
         }
@@ -72,11 +69,8 @@ public final class FieldHelper {
         if (prefixedName.startsWith("ecm:")) {
             return prefixedName;
         }
-
-        TypeService typeService = (TypeService) Framework.getRuntime().getComponent(
-                TypeService.NAME);
-        SchemaManager typeManager = typeService.getTypeManager();
-        Field field = typeManager.getField(prefixedName);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        Field field = schemaManager.getField(prefixedName);
         String schema = field.getDeclaringType().getName();
         String name = field.getName().getLocalName();
         return schema + ':' + name;
