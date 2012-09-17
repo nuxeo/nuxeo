@@ -35,14 +35,6 @@ public class TomcatConfigurator extends ServerConfigurator {
     @Deprecated
     public static final String TOMCAT_CONFIG = "conf/Catalina/localhost/nuxeo.xml";
 
-    public static final String DEFAULT_DATA_DIR = "nxserver" + File.separator
-            + "data";
-
-    /**
-     * @since 5.4.2
-     */
-    public static final String DEFAULT_TMP_DIR = "tmp";
-
     /**
      * @since 5.4.2
      */
@@ -57,6 +49,7 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
+        log.info("Detected Tomcat server.");
     }
 
     /**
@@ -64,13 +57,12 @@ public class TomcatConfigurator extends ServerConfigurator {
      */
     @Override
     protected boolean isConfigured() {
-        log.info("Detected Tomcat server.");
         return new File(generator.getNuxeoHome(), getTomcatConfig()).exists();
     }
 
     @Override
     protected String getDefaultDataDir() {
-        return DEFAULT_DATA_DIR;
+        return "nxserver" + File.separator + DEFAULT_DATA_DIR;
     }
 
     @Override
@@ -97,11 +89,6 @@ public class TomcatConfigurator extends ServerConfigurator {
                 + System.getProperty("line.separator")
                 + "following http://hg.nuxeo.org/nuxeo/nuxeo-distribution/raw-file/release-5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml";
         checkPath(oldPath, message);
-    }
-
-    @Override
-    public String getDefaultTmpDir() {
-        return DEFAULT_TMP_DIR;
     }
 
     @Override

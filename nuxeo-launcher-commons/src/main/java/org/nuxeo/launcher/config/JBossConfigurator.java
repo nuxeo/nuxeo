@@ -70,6 +70,7 @@ public class JBossConfigurator extends ServerConfigurator {
 
     public JBossConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
+        log.info("Detected JBoss server.");
     }
 
     /**
@@ -77,7 +78,6 @@ public class JBossConfigurator extends ServerConfigurator {
      */
     @Override
     public boolean isConfigured() {
-        log.info("Detected JBoss server.");
         return getConfigDir().exists();
     }
 
@@ -93,8 +93,9 @@ public class JBossConfigurator extends ServerConfigurator {
     @Override
     public String getDefaultDataDir() {
         final String defaultDataDir = "server" + File.separator
-                + getConfiguration() + File.separator + "data" + File.separator
-                + "NXRuntime" + File.separator + "data";
+                + getConfiguration() + File.separator + DEFAULT_DATA_DIR
+                + File.separator + "NXRuntime" + File.separator
+                + DEFAULT_DATA_DIR;
         return defaultDataDir;
     }
 
@@ -144,28 +145,13 @@ public class JBossConfigurator extends ServerConfigurator {
     @Override
     public String getDefaultTmpDir() {
         final String defaultTmpDir = "server" + File.separator
-                + getConfiguration() + File.separator + "tmp";
+                + getConfiguration() + File.separator + DEFAULT_TMP_DIR;
         return defaultTmpDir;
     }
 
     @Override
     public File getConfigDir() {
         return new File(generator.getNuxeoHome(), getConfigPath());
-    }
-
-    @Override
-    public void prepareWizardStart() {
-        // Nothing to do
-    }
-
-    @Override
-    public void cleanupPostWizard() {
-        // Nothing to do
-    }
-
-    @Override
-    public boolean isWizardAvailable() {
-        return false;
     }
 
     @Override

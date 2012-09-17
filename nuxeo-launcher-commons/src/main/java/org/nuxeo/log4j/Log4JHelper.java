@@ -91,10 +91,17 @@ public class Log4JHelper {
         try {
             loggerRepository = new DefaultRepositorySelector(new Hierarchy(
                     new RootLogger(Level.DEBUG))).getLoggerRepository();
-            new DOMConfigurator().doConfigure(
-                    log4jConfigurationFile.toURI().toURL(), loggerRepository);
-            log.debug("Log4j configuration " + log4jConfigurationFile
-                    + " successfully loaded.");
+            if (log4jConfigurationFile == null
+                    || !log4jConfigurationFile.exists()) {
+                log.error("Missing Log4J configuration: "
+                        + log4jConfigurationFile);
+            } else {
+                new DOMConfigurator().doConfigure(
+                        log4jConfigurationFile.toURI().toURL(),
+                        loggerRepository);
+                log.debug("Log4j configuration " + log4jConfigurationFile
+                        + " successfully loaded.");
+            }
         } catch (MalformedURLException e) {
             log.error("Could not load " + log4jConfigurationFile, e);
         }

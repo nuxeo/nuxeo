@@ -40,6 +40,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nuxeo.launcher.commons.text.TextTemplate;
 
@@ -76,6 +77,13 @@ public abstract class ServerConfigurator {
 
     private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES
             + File.separator + "files.list";
+
+    public static final String DEFAULT_DATA_DIR = "data";
+
+    /**
+     * @since 5.4.2
+     */
+    public static final String DEFAULT_TMP_DIR = "tmp";
 
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
@@ -154,6 +162,7 @@ public abstract class ServerConfigurator {
      * @throws IOException
      * @throws ConfigurationException
      */
+    @SuppressWarnings("resource")
     private void deleteTemplateFiles() throws IOException,
             ConfigurationException {
         File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
@@ -228,7 +237,9 @@ public abstract class ServerConfigurator {
      * @return Default data directory path relative to Nuxeo Home
      * @since 5.4.2
      */
-    protected abstract String getDefaultDataDir();
+    protected String getDefaultDataDir() {
+        return DEFAULT_DATA_DIR;
+    }
 
     /**
      * Returns the Home of NuxeoRuntime (same as
@@ -286,10 +297,15 @@ public abstract class ServerConfigurator {
     public void initLogs() {
         File logFile = getLogConfFile();
         try {
-            System.out.println("Try to configure logs with " + logFile);
             System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
                     getLogDir().getPath());
-            DOMConfigurator.configure(logFile.toURI().toURL());
+            if (logFile == null || !logFile.exists()) {
+                System.out.println("No logs configuration, will setup a basic one.");
+                BasicConfigurator.configure();
+            } else {
+                System.out.println("Try to configure logs with " + logFile);
+                DOMConfigurator.configure(logFile.toURI().toURL());
+            }
             log.info("Logs successfully configured.");
         } catch (MalformedURLException e) {
             log.error("Could not initialize logs with " + logFile, e);
@@ -356,7 +372,9 @@ public abstract class ServerConfigurator {
      * @return Default temporary directory path relative to Nuxeo Home
      * @since 5.4.2
      */
-    public abstract String getDefaultTmpDir();
+    public String getDefaultTmpDir() {
+        return DEFAULT_TMP_DIR;
+    }
 
     /**
      * @param tmpDirStr Temporary directory path to set
@@ -471,19 +489,28 @@ public abstract class ServerConfigurator {
     /**
      * @since 5.4.2
      */
-    public abstract void prepareWizardStart();
+    public void prepareWizardStart() {
+        // Nothing to do by default
+    }
 
     /**
      * @since 5.4.2
      */
-
-    public abstract void cleanupPostWizard();
+    public void cleanupPostWizard() {
+        // Nothing to do by default
+    }
 
     /**
+     * Override it to make the wizard available for a given server.
+     *
      * @return true if configuration wizard is required before starting Nuxeo
      * @since 5.4.2
+     * @see #prepareWizardStart()
+     * @see #cleanupPostWizard()
      */
-    public abstract boolean isWizardAvailable();
+    public boolean isWizardAvailable() {
+        return false;
+    }
 
     /**
      * @param userConfig Properties to dump into config directory

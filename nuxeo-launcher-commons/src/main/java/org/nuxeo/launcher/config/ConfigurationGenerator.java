@@ -331,6 +331,8 @@ public class ConfigurationGenerator {
             serverConfigurator = new TomcatConfigurator(this);
         } else if (isJetty) {
             serverConfigurator = new JettyConfigurator(this);
+        } else {
+            serverConfigurator = new UnknownServerConfigurator(this);
         }
         if (Logger.getRootLogger().getAllAppenders() instanceof NullEnumeration) {
             serverConfigurator.initLogs();
@@ -418,13 +420,16 @@ public class ConfigurationGenerator {
      *         false
      */
     public boolean init(boolean forceReload) {
-        if (serverConfigurator == null) {
-            log.warn("Unrecognized server. Considered as already configured.");
+        if (serverConfigurator instanceof UnknownServerConfigurator) {
             configurable = false;
-        } else if (!nuxeoConf.exists()) {
+            forceGeneration = false;
+            log.warn("Server will be considered as not configurable.");
+        }
+        if (!nuxeoConf.exists()) {
             log.info("Missing " + nuxeoConf);
             configurable = false;
-        } else if (userConfig == null || forceReload) {
+            userConfig = new Properties();
+        } else if (userConfig == null || userConfig.size() == 0 || forceReload) {
             try {
                 setBasicConfiguration();
                 configurable = true;

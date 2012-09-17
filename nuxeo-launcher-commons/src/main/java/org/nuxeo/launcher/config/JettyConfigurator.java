@@ -28,13 +28,6 @@ public class JettyConfigurator extends ServerConfigurator {
 
     public static final String JETTY_CONFIG = "config/sql.properties";
 
-    public static final String DEFAULT_DATA_DIR = "data";
-
-    /**
-     * @since 5.4.2
-     */
-    public static final String DEFAULT_TMP_DIR = "tmp";
-
     /**
      * @since 5.4.2
      */
@@ -52,6 +45,7 @@ public class JettyConfigurator extends ServerConfigurator {
 
     public JettyConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
+        log.info("Detected Jetty server.");
     }
 
     /**
@@ -59,24 +53,13 @@ public class JettyConfigurator extends ServerConfigurator {
      */
     @Override
     protected boolean isConfigured() {
-        log.info("Detected Jetty server.");
         return new File(generator.getNuxeoHome(), JETTY_CONFIG).exists();
-    }
-
-    @Override
-    protected String getDefaultDataDir() {
-        return DEFAULT_DATA_DIR;
     }
 
     @Override
     public void checkPaths() throws ConfigurationException {
         super.checkPaths();
         // Currently no check for Jetty.
-    }
-
-    @Override
-    public String getDefaultTmpDir() {
-        return DEFAULT_TMP_DIR;
     }
 
     @Override
@@ -87,21 +70,6 @@ public class JettyConfigurator extends ServerConfigurator {
     @Override
     public File getConfigDir() {
         return new File(generator.getNuxeoHome(), "config");
-    }
-
-    @Override
-    public void prepareWizardStart() {
-        // Nothing to do
-    }
-
-    @Override
-    public void cleanupPostWizard() {
-        // Nothing to do
-    }
-
-    @Override
-    public boolean isWizardAvailable() {
-        return false;
     }
 
     @Override
