@@ -24,11 +24,12 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * User workspace service class that is used to get the document model for the
  * personal workspace of the current user.
- *
+ * 
  * @author btatar
  */
 public interface UserWorkspaceService extends Serializable {
@@ -38,7 +39,7 @@ public interface UserWorkspaceService extends Serializable {
      * <p>
      * If this personal workspace does not exist then a new one will be created
      * for the user who is represented by first argument.
-     *
+     * 
      * @param userName the current user
      * @param currentDocument the current document on which the user was on
      * @return the DocumentModel for the personal workspace of the current user
@@ -47,18 +48,29 @@ public interface UserWorkspaceService extends Serializable {
     DocumentModel getCurrentUserPersonalWorkspace(String userName,
             DocumentModel currentDocument) throws ClientException;
 
-
-    DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context)
-            throws ClientException;
+    DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession,
+            DocumentModel context) throws ClientException;
 
     /**
      * Gets a detached user workspace of a specified user.
-     *
+     * 
      * @param userName is the username of the wanted user's workspace owner
      * @param context is a document to determine the domain
      * @return the DocumentModel for the personal workspace
      * @since 5.5
      */
-    DocumentModel getUserPersonalWorkspace(String userName, DocumentModel context)
-            throws ClientException;
+    DocumentModel getUserPersonalWorkspace(String userName,
+            DocumentModel context) throws ClientException;
+
+    /**
+     * Gets a detached user workspace of a specified user depending of the
+     * passed principal.
+     * 
+     * @param principal of the wanted user's workspace owner
+     * @param context is a document to determine the domain
+     * @return the DocumentModel for the personal workspace
+     * @since 5.7
+     */
+    DocumentModel getUserPersonalWorkspace(NuxeoPrincipal principal,
+            DocumentModel context) throws ClientException;
 }

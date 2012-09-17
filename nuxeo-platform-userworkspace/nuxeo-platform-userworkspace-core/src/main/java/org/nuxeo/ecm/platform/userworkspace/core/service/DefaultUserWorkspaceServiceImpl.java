@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.userworkspace.core.service;
 
+import java.security.Principal;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
@@ -44,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of the {@link UserWorkspaceService}.
- *
+ * 
  * @author tiry
  */
 public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
@@ -109,31 +112,42 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         CoreSession userCoreSession = CoreInstance.getInstance().getSession(
                 currentDocument.getSessionId());
 
-        return getCurrentUserPersonalWorkspace(userName, userCoreSession,
+        return getCurrentUserPersonalWorkspace(null, userName, userCoreSession,
                 currentDocument);
     }
 
     public DocumentModel getCurrentUserPersonalWorkspace(
             CoreSession userCoreSession, DocumentModel context)
             throws ClientException {
-        return getCurrentUserPersonalWorkspace(
-                userCoreSession.getPrincipal().getName(), userCoreSession,
-                context);
+        return getCurrentUserPersonalWorkspace(userCoreSession.getPrincipal(),
+                null, userCoreSession, context);
     }
 
-    protected DocumentModel getCurrentUserPersonalWorkspace(String userName,
-            CoreSession userCoreSession, DocumentModel context)
-            throws ClientException {
+    /**
+     * This method handles the UserWorkspace creation with a Principal or a
+     * username. At least one should be passed. If a principal is passed, the
+     * username is not taken into account.
+     */
+    protected DocumentModel getCurrentUserPersonalWorkspace(
+            Principal principal, String userName, CoreSession userCoreSession,
+            DocumentModel context) throws ClientException {
+        if (principal == null && StringUtils.isEmpty(userName)) {
+            throw new ClientException(
+                    "You should pass at least one principal or one username");
+        }
+
+        String usedUsername = principal != null ? principal.getName()
+                : userName;
 
         PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(
-                userCoreSession, userName, context));
+                userCoreSession, usedUsername, context));
 
         if (!userCoreSession.exists(uwsDocRef)) {
             // do the creation
             PathRef rootRef = new PathRef(computePathUserWorkspaceRoot(
                     userCoreSession, context));
             uwsDocRef = createUserWorkspace(rootRef, uwsDocRef,
-                    userCoreSession, userName);
+                    userCoreSession, principal, usedUsername);
         }
 
         // force Session synchro to process invalidation (in non JCA cases)
@@ -145,14 +159,13 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
     }
 
     protected synchronized PathRef createUserWorkspace(PathRef rootRef,
-            PathRef userWSRef, CoreSession userCoreSession, String userName)
-            throws ClientException {
+            PathRef userWSRef, CoreSession userCoreSession,
+            Principal principal, String userName) throws ClientException {
 
         UnrestrictedUWSCreator creator = new UnrestrictedUWSCreator(rootRef,
-                userWSRef, userCoreSession, userName);
+                userWSRef, userCoreSession, principal, userName);
         creator.runUnrestricted();
         userWSRef = creator.userWSRef;
-        rootRef = creator.rootRef;
         return userWSRef;
     }
 
@@ -189,12 +202,16 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
         String userName;
 
+        Principal principal;
+
         public UnrestrictedUWSCreator(PathRef rootRef, PathRef userWSRef,
-                CoreSession userCoreSession, String userName) {
+                CoreSession userCoreSession, Principal principal,
+                String userName) {
             super(userCoreSession);
             this.rootRef = rootRef;
             this.userWSRef = userWSRef;
             this.userName = userName;
+            this.principal = principal;
         }
 
         @Override
@@ -202,7 +219,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
             // create root if needed
             if (!session.exists(rootRef)) {
-                DocumentModel root = null;
+                DocumentModel root;
                 try {
                     root = createUserWorkspacesRoot(session, rootRef);
                 } catch (Exception e) {
@@ -220,7 +237,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
             // create user WS if needed
             if (!session.exists(userWSRef)) {
                 DocumentModel uw = createUserWorkspace(session, userWSRef,
-                        userName);
+                        principal, userName);
                 assert (uw.getPathAsString().equals(userWSRef.toString()));
             }
 
@@ -254,8 +271,8 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
     }
 
     protected static DocumentModel createUserWorkspace(
-            CoreSession unrestrictedSession, PathRef wsRef, String userName)
-            throws ClientException {
+            CoreSession unrestrictedSession, PathRef wsRef,
+            Principal principal, String userName) throws ClientException {
 
         String parentPath = new Path(wsRef.toString()).removeLastSegments(1).toString();
         String wsName = new Path(wsRef.toString()).lastSegment();
@@ -263,7 +280,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
                 wsName, "Workspace");
 
         doc.setProperty("dublincore", "title",
-                buildUserWorkspaceTitle(userName));
+                buildUserWorkspaceTitle(principal, userName));
         doc.setProperty("dublincore", "description", "");
         doc = unrestrictedSession.createDocument(doc);
 
@@ -276,6 +293,13 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         doc.setACP(acp, true);
 
         return doc;
+    }
+
+    @Override
+    public DocumentModel getUserPersonalWorkspace(NuxeoPrincipal principal,
+            DocumentModel context) throws ClientException {
+        return getCurrentUserPersonalWorkspace(principal, null,
+                context.getCoreSession(), context);
     }
 
     public DocumentModel getUserPersonalWorkspace(String userName,
@@ -291,7 +315,8 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         }
     }
 
-    public static String buildUserWorkspaceTitle(String userName) {
+    public static String buildUserWorkspaceTitle(Principal principal,
+            String userName) {
         if (userName == null) {// avoid looking for UserManager for nothing
             return null;
         }
@@ -307,26 +332,31 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         }
 
         // get nuxeo pricipal
-        NuxeoPrincipal principal = null;
-        try {
-            principal = userManager.getPrincipal(userName);
-        } catch (ClientException e) {
-            log.debug("failed to get principal" + userName, e);
+        NuxeoPrincipal nuxeoPrincipal = null;
+        if (principal == null || !(principal instanceof NuxeoPrincipal)) {
+            try {
+                nuxeoPrincipal = userManager.getPrincipal(userName);
+            } catch (ClientException e) {
+                log.debug("failed to get principal" + userName, e);
+            }
+        } else {
+            nuxeoPrincipal = (NuxeoPrincipal) principal;
         }
 
-        if (principal == null) {
+        // Second check after trying to explictly getting it.
+        if (nuxeoPrincipal == null) {
             return userName;
         }
 
         // compute the title
         StringBuilder title = new StringBuilder();
-        String firstName = principal.getFirstName();
-        if (firstName != null && firstName.trim().length() > 0) {
+        String firstName = nuxeoPrincipal.getFirstName();
+        if (StringUtils.isBlank(firstName)) {
             title.append(firstName);
         }
 
-        String lastName = principal.getLastName();
-        if (lastName != null && lastName.trim().length() > 0) {
+        String lastName = nuxeoPrincipal.getLastName();
+        if (StringUtils.isBlank(lastName)) {
             if (title.length() > 0) {
                 title.append(" ");
             }
@@ -359,8 +389,8 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
         @Override
         public void run() throws ClientException {
-            userWorkspace = getCurrentUserPersonalWorkspace(userName, session,
-                    context);
+            userWorkspace = getCurrentUserPersonalWorkspace(null, userName,
+                    session, context);
             if (userWorkspace != null) {
                 userWorkspace.detach(true);
             }
