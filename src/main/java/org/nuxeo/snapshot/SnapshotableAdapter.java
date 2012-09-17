@@ -305,7 +305,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             if (olddocs.size() > 0) {
                 DocumentModel container = session.createDocumentModel(
                         target.getPath().removeLastSegments(1).toString(),
-                        target.getName() + "_tmp", target.getType());
+                        target.getName() + "_tmp", "Folder");
                 container = session.createDocument(container);
                 for (DocumentModel oldChild : olddocs) {
                     session.move(oldChild.getRef(), container.getRef(),
