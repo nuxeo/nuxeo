@@ -342,11 +342,12 @@ public abstract class NuxeoLauncher {
      * @since 5.6
      */
     public void init() {
-        configurationGenerator.init(true);
+        if (!configurationGenerator.init(true)) {
+            throw new IllegalStateException("Initialization failed");
+        }
         statusServletClient = new StatusServletClient(configurationGenerator);
         statusServletClient.setKey(configurationGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_STATUS_KEY));
-
         processManager = getOSProcessManager();
         processRegex = "^(?!/bin/sh).*"
                 + Pattern.quote(configurationGenerator.getNuxeoConf().getPath())
