@@ -196,6 +196,14 @@ public class CSVImporterWork extends AbstractWork {
                         break; // no more line
                     }
 
+                    if (line.length == 0) {
+                        // empty line
+                        importLogs.add(new CSVImportLog(lineNumber,
+                            CSVImportLog.Status.SKIPPED, "Empty line",
+                            "label.csv.importer.emptyLine"));
+                        continue;
+                    }
+
                     try {
                         if (importLine(session, line, lineNumber, nameIndex,
                                 typeIndex, header)) {
@@ -242,12 +250,12 @@ public class CSVImporterWork extends AbstractWork {
             String[] headerValues) throws ClientException {
         final String name = line[nameIndex];
         final String type = line[typeIndex];
-        if (name == null) {
+        if (StringUtils.isBlank(name)) {
             logError(lineNumber, "Missing 'name' value",
                     "label.csv.importer.missingNameValue");
             return false;
         }
-        if (type == null) {
+        if (StringUtils.isBlank(type)) {
             logError(lineNumber, "Missing 'type' value",
                     "label.csv.importer.missingTypeValue");
             return false;

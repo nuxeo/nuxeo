@@ -1,5 +1,9 @@
 package org.nuxeo.ecm.csv;
 
+import java.util.Locale;
+
+import org.nuxeo.common.utils.i18n.I18NUtils;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
@@ -47,6 +51,11 @@ public class CSVImportLog {
 
     public Object[] getLocalizedMessageParams() {
         return params;
+    }
+
+    public String getI18nMessage(Locale locale) {
+        return I18NUtils.getMessageString("messages", getLocalizedMessage(),
+                getLocalizedMessageParams(), locale);
     }
 
     public boolean isSuccess() {

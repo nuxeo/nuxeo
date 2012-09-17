@@ -84,11 +84,7 @@
                         </c:if>
                       </td>
                       <td>
-                        <h:outputFormat value="#{messages[importLog.localizedMessage]}">
-                          <c:forEach var="param" items="#{importLog.localizedMessageParams}">
-                            <f:param value="#{param}" />
-                          </c:forEach>
-                        </h:outputFormat>
+                        <h:outputText value="#{importLog.getI18nMessage(localeSelector.locale)}" />
                       </td>
                     </tr>
                   </c:forEach>
