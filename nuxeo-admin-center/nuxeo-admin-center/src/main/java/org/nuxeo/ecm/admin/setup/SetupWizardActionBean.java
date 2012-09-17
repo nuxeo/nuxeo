@@ -143,8 +143,9 @@ public class SetupWizardActionBean implements Serializable {
     public ConfigurationGenerator getConfigurationGenerator() {
         if (setupConfigGenerator == null) {
             setupConfigGenerator = new ConfigurationGenerator();
-            setupConfigGenerator.init();
-            setParameters();
+            if (setupConfigGenerator.init()) {
+                setParameters();
+            }
         }
         return setupConfigGenerator;
     }
