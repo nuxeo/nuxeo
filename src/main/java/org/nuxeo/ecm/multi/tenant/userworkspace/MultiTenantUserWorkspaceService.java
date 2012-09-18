@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.multi.tenant.userworkspace;
 
+import java.security.Principal;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -103,30 +105,31 @@ public class MultiTenantUserWorkspaceService extends
      * {@code userCoreSession}.
      */
     @Override
-    protected DocumentModel getCurrentUserPersonalWorkspace(String userName,
+    protected DocumentModel getCurrentUserPersonalWorkspace(Principal principal, String username,
             CoreSession userCoreSession, DocumentModel context)
             throws ClientException {
-        if (isSameUserName(userCoreSession, userName)) {
+        String usedUsername = principal == null ? username : principal.getName();
+        if (isSameUserName(userCoreSession, usedUsername)) {
             // default behavior
-            return super.getCurrentUserPersonalWorkspace(userName,
+            return super.getCurrentUserPersonalWorkspace(principal, usedUsername,
                     userCoreSession, context);
         }
 
-        String tenantId = MultiTenantHelper.getTenantId(userName);
+        String tenantId = MultiTenantHelper.getTenantId(usedUsername);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
-            return super.getCurrentUserPersonalWorkspace(userName,
+            return super.getCurrentUserPersonalWorkspace(principal, usedUsername,
                     userCoreSession, context);
         }
 
         PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(
-                userCoreSession, tenantId, userName));
+                userCoreSession, tenantId, usedUsername));
         if (!userCoreSession.exists(uwsDocRef)) {
             // do the creation
             PathRef rootRef = new PathRef(computePathUserWorkspaceRoot(
                     userCoreSession, tenantId));
             uwsDocRef = createUserWorkspace(rootRef, uwsDocRef,
-                    userCoreSession, userName);
+                    userCoreSession, principal, usedUsername);
         }
         // force Session synchro to process invalidation (in non JCA cases)
         if (userCoreSession.getClass().getSimpleName().equals("LocalSession")) {
