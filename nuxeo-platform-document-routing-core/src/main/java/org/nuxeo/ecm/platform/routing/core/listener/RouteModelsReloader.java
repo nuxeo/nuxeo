@@ -29,10 +29,11 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadEventNames;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Event listener that reloads the contributed route models.
- *
+ * 
  * @since 5.6
  */
 public class RouteModelsReloader implements EventListener {
@@ -58,16 +59,30 @@ public class RouteModelsReloader implements EventListener {
             if (rm == null) {
                 throw new ClientException("Can not acces the RepositoryManager");
             }
-            new UnrestrictedSessionRunner(rm.getDefaultRepository().getName()) {
-                @Override
-                public void run() throws ClientException {
-                    DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
-                    List<URL> routeModelTemplateResouces = service.getRouteModelTemplateResources();
-                    for (URL url : routeModelTemplateResouces) {
-                        service.importRouteModel(url, true, session);
+            // Transaction management
+            final boolean txStarted = !TransactionHelper.isTransactionActive()
+                    && TransactionHelper.startTransaction();
+            boolean txSucceed = false;
+            try {
+                new UnrestrictedSessionRunner(
+                        rm.getDefaultRepository().getName()) {
+                    @Override
+                    public void run() throws ClientException {
+                        DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
+                        List<URL> routeModelTemplateResouces = service.getRouteModelTemplateResources();
+                        for (URL url : routeModelTemplateResouces) {
+                            service.importRouteModel(url, true, session);
+                        }
                     }
+                }.runUnrestricted();
+            } finally {
+                if (txStarted) {
+                    if (!txSucceed) {
+                        TransactionHelper.setTransactionRollbackOnly();
+                    }
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
-            }.runUnrestricted();
+            }
         } catch (Exception e) {
             log.error("Error while reloading the route models", e);
         }
