@@ -1,6 +1,6 @@
-# Nuxeo platform 5.7-SNAPSHOT Release Notes
+# Nuxeo platform 5.7-I20120918_1109 Release Notes
 
-Welcome to the Nuxeo Platform 5.7-SNAPSHOT.
+Welcome to the Nuxeo Platform 5.7-I20120918_1109.
 
 You can always download the latest releases of Nuxeo modules
 on the Nuxeo Platform from
