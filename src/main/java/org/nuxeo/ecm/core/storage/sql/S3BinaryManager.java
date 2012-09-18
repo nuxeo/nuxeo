@@ -309,7 +309,14 @@ public class S3BinaryManager extends AbstractBinaryManager {
             }
         }
         // check transfer went ok
-        if (!etag.equals(digest)) {
+        if (!(amazonS3 instanceof AmazonS3EncryptionClient)
+                && !etag.equals(digest)) {
+            // When the blob is not encrypted by S3, the MD5 remotely computed
+            // by S3 and passed as a Etag should match the locally computed MD5
+            // digest.
+            // This check cannot be done when encryption is enabled unless we
+            // could replicate that encryption locally just for that purpose
+            // which would add further load and complexity on the client.
             throw new IOException("Invalid ETag in S3, ETag=" + etag
                     + " digest=" + digest);
         }
@@ -370,7 +377,8 @@ public class S3BinaryManager extends AbstractBinaryManager {
                         new GetObjectRequest(bucketName, digest), tmp);
                 // check ETag
                 String etag = metadata.getETag();
-                if (!etag.equals(digest)) {
+                if (!(amazonS3 instanceof AmazonS3EncryptionClient)
+                        && !etag.equals(digest)) {
                     log.error("Invalid ETag in S3, ETag=" + etag + " digest="
                             + digest);
                     return false;
@@ -391,7 +399,8 @@ public class S3BinaryManager extends AbstractBinaryManager {
                         bucketName, digest);
                 // check ETag
                 String etag = metadata.getETag();
-                if (!etag.equals(digest)) {
+                if (!(amazonS3 instanceof AmazonS3EncryptionClient)
+                        && !etag.equals(digest)) {
                     log.error("Invalid ETag in S3, ETag=" + etag + " digest="
                             + digest);
                     return null;
