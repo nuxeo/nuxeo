@@ -20,6 +20,8 @@ package org.nuxeo.launcher.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -46,6 +48,11 @@ public class TomcatConfigurator extends ServerConfigurator {
      * @since 5.6
      */
     public static final String TOMCAT_HOME = "tomcat.home";
+
+    /**
+     * @since 5.7
+     */
+    public static final String PARAM_HTTP_TOMCAT_ADMIN_PORT = "nuxeo.server.tomcat_admin.port";
 
     public TomcatConfigurator(ConfigurationGenerator configurationGenerator) {
         super(configurationGenerator);
@@ -197,4 +204,21 @@ public class TomcatConfigurator extends ServerConfigurator {
     public File getServerLibDir() {
         return new File(generator.getNuxeoHome(), "lib");
     }
+
+    @Override
+    protected void checkNetwork() throws ConfigurationException {
+        InetAddress bindAddress = generator.getBindAddress();
+        ConfigurationGenerator.checkPortAvailable(
+                bindAddress,
+                Integer.parseInt(generator.getUserConfig().getProperty(
+                        PARAM_HTTP_TOMCAT_ADMIN_PORT)));
+    }
+
+    @Override
+    protected void addServerSpecificParameters(
+            Map<String, String> parametersmigration) {
+        parametersmigration.put("nuxeo.server.tomcat-admin.port",
+                PARAM_HTTP_TOMCAT_ADMIN_PORT);
+    }
+
 }

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -571,5 +572,39 @@ public abstract class ServerConfigurator {
      * @since 5.4.1
      */
     public abstract File getServerLibDir();
+
+    /**
+     * @throws ConfigurationException
+     * @since 5.7
+     */
+    public void verifyInstallation() throws ConfigurationException {
+        checkPaths();
+        removeExistingLocks();
+        checkNetwork();
+    }
+
+    /**
+     * Perform server specific checks, not already done by
+     * {@link ConfigurationGenerator#checkAddressesAndPorts()}
+     *
+     * @throws ConfigurationException
+     *
+     * @since 5.7
+     * @see ConfigurationGenerator#checkAddressesAndPorts()
+     */
+    protected void checkNetwork() throws ConfigurationException {
+    }
+
+    /**
+     * Override to add server specific parameters to the list of parameters to
+     * migrate
+     *
+     * @param parametersmigration
+     * @since 5.7
+     */
+    protected void addServerSpecificParameters(
+            Map<String, String> parametersmigration) {
+        // Nothing to do
+    }
 
 }

@@ -261,24 +261,22 @@ public class ConfigurationGenerator {
 
     private Environment env;
 
-    private static Map<String, String> parametersMigration;
-    static {
-        Map<String, String> tempPM = new HashMap<String, String>();
-        tempPM.put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS,
-                PARAM_TEMPLATES_PARSING_EXTENSIONS);
-        tempPM.put("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key");
-        tempPM.put("nuxeo.server.tomcat-admin.port",
-                "nuxeo.server.tomcat_admin.port");
-        tempPM.put("mail.pop3.host", "mail.store.host");
-        tempPM.put("mail.pop3.port", "mail.store.port");
-        tempPM.put("mail.smtp.host", "mail.transport.host");
-        tempPM.put("mail.smtp.port", "mail.transport.port");
-        tempPM.put("mail.smtp.username", "mail.transport.user");
-        tempPM.put("mail.smtp.password", "mail.transport.password");
-        tempPM.put("mail.smtp.usetls", "mail.transport.usetls");
-        tempPM.put("mail.smtp.auth", "mail.transport.auth");
-        parametersMigration = tempPM;
-    }
+    @SuppressWarnings("serial")
+    protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
+        {
+            put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS,
+                    PARAM_TEMPLATES_PARSING_EXTENSIONS);
+            put("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key");
+            put("mail.pop3.host", "mail.store.host");
+            put("mail.pop3.port", "mail.store.port");
+            put("mail.smtp.host", "mail.transport.host");
+            put("mail.smtp.port", "mail.transport.port");
+            put("mail.smtp.username", "mail.transport.user");
+            put("mail.smtp.password", "mail.transport.password");
+            put("mail.smtp.usetls", "mail.transport.usetls");
+            put("mail.smtp.auth", "mail.transport.auth");
+        }
+    };
 
     /**
      * @param quiet Suppress info level messages from the console output
@@ -803,6 +801,7 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     protected void checkForDeprecatedParameters(Properties properties) {
+        serverConfigurator.addServerSpecificParameters(parametersMigration);
         @SuppressWarnings("rawtypes")
         Enumeration userEnum = properties.propertyNames();
         while (userEnum.hasMoreElements()) {
@@ -1157,6 +1156,7 @@ public class ConfigurationGenerator {
      * @throws ConfigurationException If a deprecated directory has been
      *             detected.
      * @since 5.4.2
+     * @see ServerConfigurator#verifyInstallation()
      */
     public void verifyInstallation() throws ConfigurationException {
         checkJavaVersion();
@@ -1164,9 +1164,8 @@ public class ConfigurationGenerator {
         ifNotExistsAndIsDirectoryThenCreate(getPidDir());
         ifNotExistsAndIsDirectoryThenCreate(getDataDir());
         ifNotExistsAndIsDirectoryThenCreate(getTmpDir());
-        serverConfigurator.checkPaths();
-        serverConfigurator.removeExistingLocks();
         checkAddressesAndPorts();
+        serverConfigurator.verifyInstallation();
         if (!"default".equals(userConfig.getProperty(PARAM_TEMPLATE_DBTYPE))) {
             try {
                 checkDatabaseConnection(
@@ -1219,6 +1218,7 @@ public class ConfigurationGenerator {
      *
      * @throws ConfigurationException
      * @since 5.5
+     * @see ServerConfigurator#checkNetwork()
      */
     public void checkAddressesAndPorts() throws ConfigurationException {
         InetAddress bindAddress = getBindAddress();
@@ -1232,7 +1232,7 @@ public class ConfigurationGenerator {
                 Integer.parseInt(userConfig.getProperty(PARAM_HTTP_PORT)));
     }
 
-    private InetAddress getBindAddress() throws ConfigurationException {
+    public InetAddress getBindAddress() throws ConfigurationException {
         InetAddress bindAddress;
         try {
             bindAddress = InetAddress.getByName(userConfig.getProperty(PARAM_BIND_ADDRESS));
@@ -1283,8 +1283,8 @@ public class ConfigurationGenerator {
             // socketUDP.setReuseAddress(true);
             // return true;
         } catch (IOException e) {
-            throw new ConfigurationException("Port is unavailable: " + port
-                    + " on address " + address + " (" + e.getMessage() + ")", e);
+            throw new ConfigurationException(e.getMessage() + ": " + address
+                    + ":" + port, e);
         } finally {
             // if (socketUDP != null) {
             // socketUDP.close();
