@@ -3,7 +3,7 @@
   <parent>
     <artifactId>nuxeo-services-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.7-I20120918_1109</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
