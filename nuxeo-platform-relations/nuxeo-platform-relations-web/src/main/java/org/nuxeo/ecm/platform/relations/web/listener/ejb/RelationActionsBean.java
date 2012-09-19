@@ -148,6 +148,10 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
 
     protected Boolean showCreateForm = false;
 
+	// popupDisplayed flag for preventing relation_search content view execution
+	// until search button clicked
+	protected Boolean popupDisplayed = false;
+
     public DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
@@ -477,6 +481,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         objectDocumentTitle = "";
         comment = "";
         showCreateForm = false;
+        popupDisplayed = false;
     }
 
     public String deleteStatement(StatementInfo stmtInfo)
@@ -527,5 +532,13 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
     protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
         resetStatements();
     }
+
+	public Boolean getPopupDisplayed() {
+		return popupDisplayed;
+	}
+
+	public void setPopupDisplayed(Boolean popupDisplayed) {
+		this.popupDisplayed = popupDisplayed;
+	}
 
 }
