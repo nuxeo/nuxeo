@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 
 /**
  * Event implementation.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class EventImpl implements Event {
@@ -88,6 +88,16 @@ public class EventImpl implements Event {
         }
         this.rollbackMessage = message;
         this.rollbackException = exception;
+    }
+
+    @Override
+    public void markBubbleException() {
+        flags |= FLAG_BUBBLE_EXCEPTION;
+    }
+
+    @Override
+    public boolean isBubbleException() {
+        return (flags & FLAG_BUBBLE_EXCEPTION) != 0;
     }
 
     @Override

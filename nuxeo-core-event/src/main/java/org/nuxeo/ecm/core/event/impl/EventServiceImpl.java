@@ -232,7 +232,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
                     }
                 } catch (Throwable t) {
                     String message;
-                    if (event.isMarkedForRollBack()) {
+                    if (event.isBubbleException() || event.isMarkedForRollBack()) {
                         message = "Error during "
                                 + desc.getName()
                                 + " sync listener execution, transaction will be rolled back";
@@ -250,7 +250,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
                         log.error(message, t);
                     }
                 } finally {
-                    if (event.isMarkedForRollBack()) {
+                    if (event.isBubbleException()) {
+                        throw new RuntimeException(rollbackException);
+                    } else if (event.isMarkedForRollBack()) {
 
                         String message = "Exception during " + desc.getName()
                                 + " sync listener execution, rolling back";
