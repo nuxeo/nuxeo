@@ -212,7 +212,7 @@
 
       <artifact:resolveFile key="jboss:javassist" />
       <artifact:resolveFile key="org.eclipse.jdt:core" />
-      <artifact:resolveFile key="opensymphony:quartz-all" />
+      <artifact:resolveFile key="org.quartz-scheduler:quartz" />
     </copy>
   </target>
 
