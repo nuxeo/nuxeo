@@ -482,7 +482,8 @@ public class ConfigurationGenerator {
                             PARAM_FORCE_GENERATION, "false"));
             checkForDeprecatedParameters(userConfig);
 
-            // Synchronize directories between serverConfigurator and userConfig
+            // Synchronize directories between serverConfigurator and
+            // userConfig
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR);
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_PID_DIR);
@@ -553,8 +554,9 @@ public class ConfigurationGenerator {
      * of a file.
      * <p>
      * On 5.6, using the config generator to get the info from the nuxeo.conf
-     * file makes it possible to get the property value this early, so adding an
-     * empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer needed.
+     * file makes it possible to get the property value this early, so adding
+     * an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer
+     * needed.
      *
      * @deprecated since 5.6
      */
@@ -1565,13 +1567,16 @@ public class ConfigurationGenerator {
                 new File(databaseTemplateDir, "lib").listFiles(), //
                 serverConfigurator.getServerLibDir().listFiles());
         List<URL> urlsList = new ArrayList<URL>();
-        for (File file : files) {
-            if (file.getName().endsWith("jar")) {
-                try {
-                    urlsList.add(new URL("jar:file:" + file.getPath() + "!/"));
-                    log.debug("Added " + file.getPath());
-                } catch (MalformedURLException e) {
-                    log.error(e);
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().endsWith("jar")) {
+                    try {
+                        urlsList.add(new URL("jar:file:" + file.getPath()
+                                + "!/"));
+                        log.debug("Added " + file.getPath());
+                    } catch (MalformedURLException e) {
+                        log.error(e);
+                    }
                 }
             }
         }
