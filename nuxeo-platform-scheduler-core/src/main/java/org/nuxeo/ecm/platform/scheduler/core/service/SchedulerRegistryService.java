@@ -19,7 +19,10 @@ package org.nuxeo.ecm.platform.scheduler.core.service;
 import java.io.Serializable;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,21 +37,25 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.impl.triggers.CronTriggerImpl;
 
 /**
  * Schedule registry service.
- * 
+ *
  * Since the cleanup of the quartz job is done when service is activated, ( see
  * see https://jira.nuxeo.com/browse/NXP-7303 ) in cluster mode, the schedules
  * contributions MUST be the same on all nodes. Due the fact that all jobs are
  * removed when service starts on a node it may be a short period with no
  * schedules in quartz table even other node is running.
- * 
+ *
  */
 public class SchedulerRegistryService extends DefaultComponent implements
         SchedulerRegistry {
@@ -81,11 +88,12 @@ public class SchedulerRegistryService extends DefaultComponent implements
 
         // clean up all nuxeo jobs
         // https://jira.nuxeo.com/browse/NXP-7303
-        String[] jobs = scheduler.getJobNames("nuxeo");
-        for (String job : jobs) {
-            unregisterSchedule(job);
-        }
+        GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals("nuxeo") ;
+        Set<JobKey> jobs = scheduler.getJobKeys(matcher );
+        scheduler.deleteJobs(new ArrayList<JobKey>(jobs));
     }
+
+    private Map<String, JobKey> jobKeys = new HashMap<String, JobKey>();
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
@@ -122,7 +130,7 @@ public class SchedulerRegistryService extends DefaultComponent implements
     public void registerSchedule(Schedule schedule,
             Map<String, Serializable> parameters) {
         log.info("Registering " + schedule);
-        JobDetail job = new JobDetail(schedule.getId(), "nuxeo", EventJob.class);
+        JobDetail job = new JobDetailImpl(schedule.getId(), "nuxeo", EventJob.class);
         JobDataMap map = job.getJobDataMap();
         map.put("eventId", schedule.getEventId());
         map.put("eventCategory", schedule.getEventCategory());
@@ -134,7 +142,7 @@ public class SchedulerRegistryService extends DefaultComponent implements
 
         Trigger trigger;
         try {
-            trigger = new CronTrigger(schedule.getId(), "nuxeo",
+            trigger = new CronTriggerImpl(schedule.getId(), "nuxeo",
                     schedule.getCronExpression());
         } catch (ParseException e) {
             log.error(String.format(
@@ -147,6 +155,7 @@ public class SchedulerRegistryService extends DefaultComponent implements
 
         try {
             scheduler.scheduleJob(job, trigger);
+            jobKeys.put(schedule.getId(), job.getKey());
         } catch (ObjectAlreadyExistsException e) {
             ; // when jobs are persisted in a database, the job should already
               // be there
@@ -156,11 +165,10 @@ public class SchedulerRegistryService extends DefaultComponent implements
         }
     }
 
-    @Override
     public boolean unregisterSchedule(String scheduleId) {
         log.info("Unregistering schedule with id" + scheduleId);
         try {
-            return scheduler.deleteJob(scheduleId, "nuxeo");
+            return scheduler.deleteJob(jobKeys.get(scheduleId));
         } catch (SchedulerException e) {
             log.error(String.format("failed to unschedule job with '%s': %s",
                     scheduleId, e.getMessage()), e);

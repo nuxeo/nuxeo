@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.scheduler.core;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.io.Serializable;
+
 import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
@@ -90,7 +94,7 @@ public class EventJob implements Job {
                     false);
             EventContext eventContext = new EventContextImpl(null, principal);
             eventContext.setProperty("category", eventCategory);
-            eventContext.setProperties(dataMap);
+            eventContext.setProperties(getWrappedMap(dataMap));
             Event event = new EventImpl(eventId, eventContext);
 
             // start transaction
@@ -109,6 +113,14 @@ public class EventJob implements Job {
                 loginContext.logout();
             }
         }
+    }
+
+    private Map<String, Serializable> getWrappedMap(JobDataMap jobMap) {
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        for (String key : jobMap.getKeys()) {
+            map.put(key, (Serializable)jobMap.get(key));
+        }
+        return map;
     }
 
 }
