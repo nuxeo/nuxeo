@@ -58,7 +58,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(repositoryName = "default", init = RepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.core"})
+        "org.nuxeo.ecm.platform.filemanager.core" })
 @LocalDeploy({
         FileManagerUTConstants.FILEMANAGER_BUNDLE
                 + ":ecm-types-test-contrib.xml",
@@ -176,6 +176,7 @@ public class TestFileManagerService {
     }
 
     protected static final String SEPARATOR = System.getProperty("line.separator");
+
     protected static final String NOTE_HTML_CONTENT = "<html>" + SEPARATOR + "<body>" + SEPARATOR +
             "  <p>Hello from HTML document</p>" + SEPARATOR + "</body>" + SEPARATOR + "</html>";
 
@@ -248,7 +249,7 @@ public class TestFileManagerService {
 
         FileManagerService fileManagerService = (FileManagerService) service;
 
-        FileImporter plugin = fileManagerService.getPluginByName("pluginWithDocType");
+        FileImporter plugin = fileManagerService.getPluginByName("pluginWithDocType4merge");
         assertNotNull(plugin);
         assertNotNull(plugin.getDocType());
         assertEquals("Picture", plugin.getDocType());
@@ -257,7 +258,7 @@ public class TestFileManagerService {
         assertTrue(filters.contains("image/jpeg"));
         assertTrue(filters.contains("image/png"));
 
-        plugin = fileManagerService.getPluginByName("plug");
+        plugin = fileManagerService.getPluginByName("plug4merge");
         assertNotNull(plugin.getDocType());
         assertEquals("Note", plugin.getDocType());
         assertEquals(3, plugin.getFilters().size());
