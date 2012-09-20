@@ -21,7 +21,6 @@ package org.nuxeo.launcher.connect;
 
 import java.io.Console;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -48,12 +47,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.SimpleLog;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
 import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
-import org.nuxeo.connect.downloads.ConnectDownloadManager;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.packages.PackageManager;
@@ -241,21 +240,63 @@ public class ConnectBroker {
                 NuxeoConnectClient.getPackageManager().listAllPackages());
     }
 
+    /**
+     * Looks for a remote package from its name or id
+     *
+     * @param pkgNameOrId
+     * @return the remote package Id; null if not found
+     * @since 5.7
+     */
+    protected String getRemotePackageId(String pkgNameOrId) {
+        String pkgId = null;
+        if (isRemotePackageId(pkgNameOrId)) {
+            // Check whether this is a remote package ID
+            pkgId = pkgNameOrId;
+        } else {
+            // Check whether this is a remote package name
+            pkgId = getRemotePackageIdFromName(pkgNameOrId);
+        }
+        return pkgId;
+    }
+
+    /**
+     * Looks for a local package from its name or id
+     *
+     * @since 5.7
+     * @param pkgIdOrName
+     * @return the local package Id; null if not found
+     * @throws PackageException
+     */
+    protected LocalPackage getLocalPackage(String pkgIdOrName)
+            throws PackageException {
+        // Try as a package id
+        LocalPackage pkg = service.getPackage(pkgIdOrName);
+        if (pkg == null) {
+            // Check whether this is the name of a local package
+            String pkgId = getLocalPackageIdFromName(pkgIdOrName);
+            if (pkgId != null) {
+                pkg = service.getPackage(pkgId);
+            }
+        }
+        return pkg;
+    }
+
+    /**
+     * Looks for a package file from its path
+     *
+     * @param pkgFile Absolute or relative package file path
+     * @return the file if found, else null
+     */
     protected File getLocalPackageFile(String pkgFile) {
-        boolean foundFile = false;
         if (pkgFile.startsWith("file:")) {
             pkgFile = pkgFile.substring(5);
         }
+        // Try absolute path
         File fileToCheck = new File(pkgFile);
-        if (fileToCheck.exists()) {
-            foundFile = true;
-        } else {
+        if (!fileToCheck.exists()) { // Try relative path
             fileToCheck = new File(env.getServerHome(), pkgFile);
-            if (fileToCheck.exists()) {
-                foundFile = true;
-            }
         }
-        if (foundFile) {
+        if (fileToCheck.exists()) {
             return fileToCheck;
         } else {
             return null;
@@ -336,21 +377,24 @@ public class ConnectBroker {
         return allDefinitions;
     }
 
-    protected void addDistributionPackage(String md5) {
+    protected boolean addDistributionPackage(String md5) {
+        boolean ret = true;
         File distributionFile = new File(distributionMPDir, md5);
         if (distributionFile.exists()) {
             try {
-                pkgAdd(distributionFile.getCanonicalPath());
+                ret = pkgAdd(distributionFile.getCanonicalPath()) != null;
             } catch (IOException e) {
                 log.warn("Could not add distribution file " + md5);
+                ret = false;
             }
         }
+        return ret;
     }
 
-    public void addDistributionPackages() {
+    public boolean addDistributionPackages() {
         Map<String, PackageDefinition> distributionPackages = getDistributionDefinitions(getDistributionFilenames());
         if (distributionPackages.isEmpty()) {
-            return;
+            return true;
         }
         List<LocalPackage> localPackages = getPkgList();
         Map<String, LocalPackage> localPackagesById = new HashMap<String, LocalPackage>();
@@ -359,6 +403,7 @@ public class ConnectBroker {
                 localPackagesById.put(pkg.getId(), pkg);
             }
         }
+        boolean ret = true;
         for (String md5 : distributionPackages.keySet()) {
             PackageDefinition md5Pkg = distributionPackages.get(md5);
             if (localPackagesById.containsKey(md5Pkg.getId())) {
@@ -372,14 +417,15 @@ public class ConnectBroker {
                     // in installed state.
                     if (localPackage.getState() != PackageState.STARTED) {
                         pkgRemove(localPackage.getId());
-                        addDistributionPackage(md5);
+                        ret = addDistributionPackage(md5) && ret;
                     }
                 }
             } else {
                 // No package with this Id is in cache
-                addDistributionPackage(md5);
+                ret = addDistributionPackage(md5) && ret;
             }
         }
+        return ret;
     }
 
     public List<LocalPackage> getPkgList() {
@@ -410,9 +456,7 @@ public class ConnectBroker {
                 NuxeoConnectClient.getPackageManager().sort(packagesList);
                 StringBuilder sb = new StringBuilder();
                 for (Package pkg : packagesList) {
-                    cmdInfo.packages.add(new PackageInfo(pkg.getName(),
-                            pkg.getVersion().toString(), pkg.getId(),
-                            pkg.getState()));
+                    newPackageInfo(cmdInfo, pkg);
                     String packageDescription;
                     switch (pkg.getState()) {
                     case PackageState.DOWNLOADING:
@@ -451,7 +495,6 @@ public class ConnectBroker {
                 }
                 log.info(sb.toString());
             }
-            cmdInfo.exitCode = 0;
         } catch (Exception e) {
             log.error(e);
             cmdInfo.exitCode = 1;
@@ -492,13 +535,10 @@ public class ConnectBroker {
                 localPackage.getUninstallFile().delete();
                 FileUtils.deleteDirectory(localPackage.getData().getEntry(
                         LocalPackage.BACKUP_DIR));
-                cmdInfo.packages.add(new PackageInfo(localPackage.getName(),
-                        localPackage.getVersion().toString(),
-                        localPackage.getId(), localPackage.getState()));
+                newPackageInfo(cmdInfo, localPackage);
             }
             service.getRegistry().delete();
             FileUtils.deleteDirectory(service.getBackupDir());
-            cmdInfo.exitCode = 0;
         } catch (PackageException e) {
             log.error(e);
             cmdInfo.exitCode = 1;
@@ -571,9 +611,7 @@ public class ConnectBroker {
             }
             // Refresh state
             pkg = service.getPackage(pkgId);
-            cmdInfo.packages.add(new PackageInfo(pkg.getName(),
-                    pkg.getVersion().toString(), pkg.getId(), pkg.getState()));
-            cmdInfo.exitCode = 0;
+            newPackageInfo(cmdInfo, pkg);
             return pkg;
         } catch (Exception e) {
             log.error("Failed to uninstall package: " + pkgId, e);
@@ -589,7 +627,8 @@ public class ConnectBroker {
      * @param pkgsToRemove The list can contain package IDs and names
      * @see #pkgRemove(String)
      */
-    public void pkgRemove(List<String> pkgsToRemove) {
+    public boolean pkgRemove(List<String> pkgsToRemove) {
+        boolean cmdOk = true;
         if (pkgsToRemove != null) {
             log.debug("Removing: " + pkgsToRemove);
             for (String pkgNameOrId : pkgsToRemove) {
@@ -605,10 +644,12 @@ public class ConnectBroker {
                     if (pkgRemove(pkgId) == null) {
                         log.warn("Unable to remove " + pkgId);
                         // Don't error out on failed (cache) removal
+                        cmdOk = false;
                     }
                 }
             }
         }
+        return cmdOk;
     }
 
     /**
@@ -646,11 +687,7 @@ public class ConnectBroker {
             }
             log.info("Removing " + pkgId);
             service.removePackage(pkgId);
-            PackageInfo pkgInfo = new PackageInfo(pkg.getName(),
-                    pkg.getVersion().toString(), pkg.getId(), pkg.getState());
-            pkgInfo.state = PackageState.REMOTE;
-            cmdInfo.packages.add(pkgInfo);
-            cmdInfo.exitCode = 0;
+            newPackageInfo(cmdInfo, pkg).state = PackageState.REMOTE;
             return pkg;
         } catch (Exception e) {
             log.error("Failed to remove package: " + pkgId, e);
@@ -660,17 +697,49 @@ public class ConnectBroker {
     }
 
     /**
-     * Add a list of package files into the cache
+     * Add a list of packages into the cache, downloading them if needed and
+     * possible.
      *
      * @param pkgsToAdd
+     * @return true if command succeeded
      * @see #pkgAdd(String)
      */
-    public void pkgAdd(List<String> pkgsToAdd) {
-        if (pkgsToAdd != null) {
-            for (String pkgToAdd : pkgsToAdd) {
-                pkgAdd(pkgToAdd);
+    public boolean pkgAdd(List<String> pkgsToAdd) {
+        boolean cmdOk = true;
+        if (pkgsToAdd == null || pkgsToAdd.isEmpty()) {
+            return cmdOk;
+        }
+        List<String> pkgIdsToDownload = new ArrayList<String>();
+        for (String pkgToAdd : pkgsToAdd) {
+            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
+            cmdInfo.param = pkgToAdd;
+            try {
+                File fileToAdd = getLocalPackageFile(pkgToAdd);
+                if (fileToAdd == null) {
+                    String pkgId = getRemotePackageId(pkgToAdd);
+                    if (pkgId == null) {
+                        throw new PackageException(
+                                "Couldn't find a remote or local (relative to "
+                                        + "current directory or to NUXEO_HOME) package named "
+                                        + pkgToAdd);
+                    } else {
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO,
+                                "Waiting for download");
+                        pkgIdsToDownload.add(pkgId);
+                    }
+                } else {
+                    log.info("Adding " + pkgToAdd);
+                    LocalPackage pkg = service.addPackage(fileToAdd);
+                    newPackageInfo(cmdInfo, pkg);
+                }
+            } catch (PackageException e) {
+                cmdOk = false;
+                cmdInfo.exitCode = 1;
+                cmdInfo.newMessage(e);
             }
         }
+        cmdOk = downloadPackages(pkgIdsToDownload) && cmdOk;
+        return cmdOk;
     }
 
     /**
@@ -682,53 +751,36 @@ public class ConnectBroker {
     public LocalPackage pkgAdd(String packageFileName) {
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
         cmdInfo.param = packageFileName;
+        LocalPackage pkg = null;
         try {
             File fileToAdd = getLocalPackageFile(packageFileName);
             if (fileToAdd == null) {
-                String pkgId = null;
-                if (isRemotePackageId(packageFileName)) {
-                    // Check whether this is a remote package ID
-                    pkgId = packageFileName;
-                } else {
-                    // Check whether this is a remote package name
-                    pkgId = getRemotePackageIdFromName(packageFileName);
-                }
+                String pkgId = getRemotePackageId(packageFileName);
                 if (pkgId == null) {
-                    throw new FileNotFoundException("File not found");
-                }
-                List<String> downloadList = new ArrayList<String>();
-                downloadList.add(pkgId);
-                if (!downloadPackages(downloadList)) {
-                    throw new PackageException("Failed to download package "
+                    throw new PackageException(
+                            "Couldn't find a remote or local (relative to "
+                                    + "current directory or to NUXEO_HOME) package named "
+                                    + packageFileName);
+                } else if (!downloadPackages(Arrays.asList(new String[] { pkgId }))) {
+                    throw new PackageException("Couldn't download package "
                             + pkgId);
-                } else {
-                    LocalPackage pkg = service.getPackage(pkgId);
-                    if (pkg == null) {
-                        throw new PackageException(
-                                "Failed to find downloaded package in cache "
-                                        + pkgId);
-                    }
-                    return pkg;
+                }
+                pkg = service.getPackage(pkgId);
+                if (pkg == null) {
+                    throw new PackageException(
+                            "Couldn't find downloaded package in cache "
+                                    + pkgId);
                 }
             } else {
                 log.info("Adding " + packageFileName);
-                LocalPackage pkg = service.addPackage(fileToAdd);
-                cmdInfo.packages.add(new PackageInfo(pkg.getName(),
-                        pkg.getVersion().toString(), pkg.getId(),
-                        pkg.getState()));
-                cmdInfo.exitCode = 0;
-                return pkg;
+                pkg = service.addPackage(fileToAdd);
             }
-        } catch (FileNotFoundException e) {
-            log.error("Cannot find " + packageFileName
-                    + " relative to current directory or to NUXEO_HOME");
+            newPackageInfo(cmdInfo, pkg);
+        } catch (Exception e) {
             cmdInfo.exitCode = 1;
-            return null;
-        } catch (PackageException e) {
-            log.error("Failed to add package: " + packageFileName, e);
-            cmdInfo.exitCode = 1;
-            return null;
+            cmdInfo.newMessage(e);
         }
+        return pkg;
     }
 
     /**
@@ -763,14 +815,7 @@ public class ConnectBroker {
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
         cmdInfo.param = pkgId;
         try {
-            LocalPackage pkg = service.getPackage(pkgId);
-            if (pkg == null) {
-                // Check whether this is the name of a local package
-                String realPkgId = getLocalPackageIdFromName(pkgId);
-                if (realPkgId != null) {
-                    pkg = service.getPackage(realPkgId);
-                }
-            }
+            LocalPackage pkg = getLocalPackage(pkgId);
             if (pkg == null) {
                 // We don't know this package, try to add it first
                 pkg = pkgAdd(pkgId);
@@ -791,13 +836,13 @@ public class ConnectBroker {
             }
             // Refresh state
             pkg = service.getPackage(pkgId);
-            cmdInfo.packages.add(new PackageInfo(pkg.getName(),
-                    pkg.getVersion().toString(), pkg.getId(), pkg.getState()));
-            cmdInfo.exitCode = 0;
+            newPackageInfo(cmdInfo, pkg);
             return pkg;
         } catch (Exception e) {
-            log.error("Failed to install package: " + pkgId, e);
+            log.error(String.format("Failed to install package: %s (%s)",
+                    pkgId, e.getMessage()));
             cmdInfo.exitCode = 1;
+            cmdInfo.newMessage(e);
             return null;
         }
     }
@@ -842,7 +887,6 @@ public class ConnectBroker {
                             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
                             cmdInfo.param = split[1];
                             cmdInfo.pending = true;
-                            log.info("Pending action: install " + split[1]);
                         }
                     } else if (split[0].equals(CommandInfo.CMD_ADD)) {
                         if (doExecute) {
@@ -855,7 +899,6 @@ public class ConnectBroker {
                             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
                             cmdInfo.param = split[1];
                             cmdInfo.pending = true;
-                            log.info("Pending action: add " + split[1]);
                         }
                     } else if (split[0].equals(CommandInfo.CMD_UNINSTALL)) {
                         if (doExecute) {
@@ -868,7 +911,6 @@ public class ConnectBroker {
                             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_UNINSTALL);
                             cmdInfo.param = split[1];
                             cmdInfo.pending = true;
-                            log.info("Pending action: uninstall " + split[1]);
                         }
                     } else if (split[0].equals(CommandInfo.CMD_REMOVE)) {
                         if (doExecute) {
@@ -881,7 +923,6 @@ public class ConnectBroker {
                             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_REMOVE);
                             cmdInfo.param = split[1];
                             cmdInfo.pending = true;
-                            log.info("Pending action: remove " + split[1]);
                         }
                     } else {
                         errorValue = 1;
@@ -890,7 +931,9 @@ public class ConnectBroker {
                     if (line.length() > 0 && !line.startsWith("#")) {
                         if (doExecute) {
                             if ("init".equals(line)) {
-                                addDistributionPackages();
+                                if (!addDistributionPackages()) {
+                                    errorValue = 1;
+                                }
                             } else {
                                 if (useResolver) {
                                     pkgsToInstall.add(line);
@@ -902,7 +945,6 @@ public class ConnectBroker {
                             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
                             cmdInfo.param = line;
                             cmdInfo.pending = true;
-                            log.info("Pending action: install " + line);
                         }
                     }
                 }
@@ -932,6 +974,8 @@ public class ConnectBroker {
                 } else {
                     commandsFile.delete();
                 }
+            } else {
+                cset.log(true);
             }
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -942,40 +986,66 @@ public class ConnectBroker {
 
     @SuppressWarnings("unused")
     protected boolean downloadPackages(List<String> packagesToDownload) {
-        if (packagesToDownload == null || packagesToDownload.isEmpty()) {
+        if (packagesToDownload == null) {
             return true;
         }
+        List<String> packagesAlreadyDownloaded = new ArrayList<String>();
+        for (String pkg : packagesToDownload) {
+            try {
+                if (getLocalPackage(pkg) != null) {
+                    log.info(String.format(
+                            "Package %s is already in local cache", pkg));
+                    packagesAlreadyDownloaded.add(pkg);
+                }
+            } catch (PackageException e) {
+                log.error(
+                        String.format(
+                                "Looking for package %s in local cache raised an error. Aborting.",
+                                pkg), e);
+                return false;
+            }
+        }
+        packagesToDownload.removeAll(packagesAlreadyDownloaded);
+        if (packagesToDownload.isEmpty()) {
+            return true;
+        }
+        List<DownloadingPackage> pkgs = new ArrayList<DownloadingPackage>();
         // Queue downloads
         log.info("Downloading " + packagesToDownload + "...");
         for (String pkg : packagesToDownload) {
             try {
-                getPackageManager().download(pkg);
+                pkgs.add(getPackageManager().download(pkg));
             } catch (Exception e) {
                 log.error("Cannot download packages", e);
                 return false;
             }
         }
         // Check progress
-        ConnectDownloadManager cdm = NuxeoConnectClient.getDownloadManager();
-        List<DownloadingPackage> pkgs = cdm.listDownloadingPackages();
+        boolean downloadOk = true;
         long startTime = new Date().getTime();
         long deltaTime = 0;
-        boolean downloadOk = true;
         do {
             List<DownloadingPackage> pkgsCompleted = new ArrayList<DownloadingPackage>();
             for (DownloadingPackage pkg : pkgs) {
                 if (pkg.isCompleted()) {
-                    // Digest check not correctly implemented
                     pkgsCompleted.add(pkg);
-                    CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
+                    CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_DOWNLOAD);
                     cmdInfo.param = pkg.getId();
+                    // Digest check not correctly implemented
                     if (false && !pkg.isDigestOk()) {
-                        log.error("Wrong digest for package " + pkg.getName());
-                        cmdInfo.exitCode = 1;
                         downloadOk = false;
+                        cmdInfo.exitCode = 1;
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
+                                "Wrong digest for package " + pkg.getName());
+                    } else if (pkg.getState() == PackageState.DOWNLOADED) {
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG,
+                                "Downloaded " + pkg);
                     } else {
-                        log.debug("Completed " + pkg);
-                        cmdInfo.exitCode = 0;
+                        downloadOk = false;
+                        cmdInfo.exitCode = 1;
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
+                                String.format("Download failed for %s. %s",
+                                        pkg, pkg.getErrorMessage()));
                     }
                 }
             }
@@ -983,15 +1053,17 @@ public class ConnectBroker {
             deltaTime = (new Date().getTime() - startTime) / 1000;
         } while (deltaTime < PACKAGES_DOWNLOAD_TIMEOUT_SECONDS
                 && pkgs.size() > 0);
-        // Did everything get downloaded?
-        for (DownloadingPackage pkg : pkgs) {
-            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
-            cmdInfo.param = pkg.getId();
-            cmdInfo.exitCode = 1;
-        }
+        // Timeout (not everything get downloaded)?
         if (pkgs.size() > 0) {
-            log.error("Timeout while trying to download packages");
             downloadOk = false;
+            log.error("Timeout while trying to download packages");
+            for (DownloadingPackage pkg : pkgs) {
+                CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
+                cmdInfo.param = pkg.getId();
+                cmdInfo.exitCode = 1;
+                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
+                        "Download timeout for " + pkg);
+            }
         }
         return downloadOk;
     }
@@ -1000,8 +1072,9 @@ public class ConnectBroker {
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
+        boolean cmdOk = true;
         // Add local files
-        pkgAdd(pkgsToAdd);
+        cmdOk = pkgAdd(pkgsToAdd);
         // Build solver request
         List<String> solverInstall = new ArrayList<String>();
         List<String> solverRemove = new ArrayList<String>();
@@ -1012,7 +1085,11 @@ public class ConnectBroker {
             for (String pkgToInstall : pkgsToInstall) {
                 if (isLocalPackageFile(pkgToInstall)) {
                     LocalPackage addedPkg = pkgAdd(pkgToInstall);
-                    namesOrIdsToInstall.add(addedPkg.getId());
+                    if (addedPkg != null) {
+                        namesOrIdsToInstall.add(addedPkg.getId());
+                    } else {
+                        cmdOk = false;
+                    }
                     // TODO: set flag to prefer local package
                 } else {
                     namesOrIdsToInstall.add(pkgToInstall);
@@ -1094,7 +1171,7 @@ public class ConnectBroker {
             }
             if (resolution.isEmpty()) {
                 pkgRemove(pkgsToRemove);
-                return true;
+                return cmdOk;
             }
             if ("ask".equalsIgnoreCase(accept)) {
                 accept = readConsole(
@@ -1164,7 +1241,7 @@ public class ConnectBroker {
 
             pkgRemove(pkgsToRemove);
         }
-        return true;
+        return cmdOk;
     }
 
     /**
@@ -1236,6 +1313,18 @@ public class ConnectBroker {
                 setRelax(acceptValue);
             }
         }
+    }
+
+    /*
+     * Helper for adding a new PackageInfo initialized with informations
+     * gathered from the given package. It is not put into CommandInfo to avoid
+     * adding a dependency on Connect Client
+     */
+    private PackageInfo newPackageInfo(CommandInfo cmdInfo, Package pkg) {
+        PackageInfo packageInfo = new PackageInfo(pkg.getName(),
+                pkg.getVersion().toString(), pkg.getId(), pkg.getState());
+        cmdInfo.packages.add(packageInfo);
+        return packageInfo;
     }
 
 }

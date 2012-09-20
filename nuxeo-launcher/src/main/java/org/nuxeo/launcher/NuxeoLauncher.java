@@ -683,8 +683,7 @@ public abstract class NuxeoLauncher {
         return cmdLine;
     }
 
-    public static void main(String[] args) throws ConfigurationException,
-            IOException, PackageException {
+    public static void main(String[] args) {
         try {
             final NuxeoLauncher launcher = createLauncher(args);
             if (Arrays.asList(COMMANDS_NO_GUI).contains(launcher.command)) {
@@ -694,11 +693,11 @@ public abstract class NuxeoLauncher {
                 launcher.setGUI(new NuxeoLauncherGUI(launcher));
             }
             launch(launcher);
-        } catch (IllegalStateException e) {
+        } catch (ParseException e) {
+            System.exit(1);
+        } catch (Exception e) {
             log.error("Cannot execute command. " + e.getMessage());
             log.debug(e, e);
-            System.exit(1);
-        } catch (ParseException e) {
             System.exit(1);
         }
     }
@@ -772,8 +771,10 @@ public abstract class NuxeoLauncher {
             try {
                 launcher.configure();
             } catch (ConfigurationException e) {
-                log.error(e);
                 commandSucceeded = false;
+                launcher.errorValue = 6;
+                log.error("Could not run configuration: " + e.getMessage());
+                log.debug(e, e);
             }
         } else if ("pack".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pack();
@@ -782,9 +783,9 @@ public abstract class NuxeoLauncher {
         } else if ("mp-listall".equalsIgnoreCase(launcher.command)) {
             launcher.pkgListAll();
         } else if ("mp-init".equalsIgnoreCase(launcher.command)) {
-            launcher.pkgInit();
+            commandSucceeded = launcher.pkgInit();
         } else if ("mp-purge".equalsIgnoreCase(launcher.command)) {
-            launcher.pkgPurge();
+            commandSucceeded = launcher.pkgPurge();
         } else if ("mp-add".equalsIgnoreCase(launcher.command)) {
             if (launcher.hasOption(OPTION_NODEPS)) {
                 commandSucceeded = launcher.pkgAdd(params);
@@ -821,9 +822,9 @@ public abstract class NuxeoLauncher {
                 commandSucceeded = launcher.pkgCompoundRequest(Arrays.asList(params));
             }
         } else if ("mp-hotfix".equalsIgnoreCase(launcher.command)) {
-            launcher.pkgHotfix();
+            commandSucceeded = launcher.pkgHotfix();
         } else if ("mp-upgrade".equalsIgnoreCase(launcher.command)) {
-            launcher.pkgUpgrade();
+            commandSucceeded = launcher.pkgUpgrade();
         } else if ("mp-reset".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgReset();
         } else if ("mp-update".equalsIgnoreCase(launcher.command)) {
@@ -838,7 +839,15 @@ public abstract class NuxeoLauncher {
             launcher.printXMLOutput();
         }
         if (!commandSucceeded) {
+            if (!quiet && !debug) {
+                log.error("\nSome commands failed:");
+                launcher.cset.log();
+            }
             exitStatus = launcher.errorValue;
+        }
+        if (debug) {
+            log.debug("\nCommands debug dump:");
+            launcher.cset.log(true);
         }
         if (exitStatus != 0) {
             System.exit(exitStatus);
@@ -1729,6 +1738,7 @@ public abstract class NuxeoLauncher {
             if (cmdLine.hasOption(OPTION_RELAX)) {
                 connectBroker.setRelax(cmdLine.getOptionValue(OPTION_RELAX));
             }
+            cset = connectBroker.getCommandSet();
         }
         return connectBroker;
     }
@@ -1743,7 +1753,6 @@ public abstract class NuxeoLauncher {
         ConnectBroker pkgman = getConnectBroker();
         pkgman.listPending(configurationGenerator.getInstallFile());
         pkgman.pkgList();
-        cset = pkgman.getCommandSet();
     }
 
     /**
@@ -1757,19 +1766,12 @@ public abstract class NuxeoLauncher {
         ConnectBroker pkgman = getConnectBroker();
         pkgman.listPending(configurationGenerator.getInstallFile());
         pkgman.pkgListAll();
-        cset = pkgman.getCommandSet();
     }
 
     protected boolean pkgAdd(String[] pkgNames) throws IOException,
             PackageException {
         ConnectBroker pkgman = getConnectBroker();
-        boolean cmdOK = true;
-        LocalPackage pkg;
-        for (String pkgName : pkgNames) {
-            pkg = pkgman.pkgAdd(pkgName);
-            cmdOK = cmdOK && (pkg != null);
-        }
-        cset = pkgman.getCommandSet();
+        boolean cmdOK = pkgman.pkgAdd(Arrays.asList(pkgNames));
         if (!cmdOK) {
             errorValue = 3;
         }
@@ -1782,14 +1784,10 @@ public abstract class NuxeoLauncher {
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
             cmdOK = pkgman.executePending(
-                    configurationGenerator.getInstallFile(), true, false);
+                    configurationGenerator.getInstallFile(), true,
+                    !hasOption(OPTION_NODEPS));
         }
-        LocalPackage pkg;
-        for (String pkgID : pkgIDs) {
-            pkg = pkgman.pkgInstall(pkgID);
-            cmdOK = cmdOK && (pkg != null);
-        }
-        cset = pkgman.getCommandSet();
+        cmdOK = cmdOK && pkgman.pkgInstall(Arrays.asList(pkgIDs));
         if (!cmdOK) {
             errorValue = 3;
         }
@@ -1799,13 +1797,7 @@ public abstract class NuxeoLauncher {
     protected boolean pkgUninstall(String[] pkgIDs) throws IOException,
             PackageException {
         ConnectBroker pkgman = getConnectBroker();
-        boolean cmdOK = true;
-        LocalPackage pkg;
-        for (String pkgID : pkgIDs) {
-            pkg = pkgman.pkgUninstall(pkgID);
-            cmdOK = cmdOK && (pkg != null);
-        }
-        cset = pkgman.getCommandSet();
+        boolean cmdOK = pkgman.pkgUninstall(Arrays.asList(pkgIDs));
         if (!cmdOK) {
             errorValue = 3;
         }
@@ -1815,13 +1807,7 @@ public abstract class NuxeoLauncher {
     protected boolean pkgRemove(String[] pkgIDs) throws IOException,
             PackageException {
         ConnectBroker pkgman = getConnectBroker();
-        boolean cmdOK = true;
-        LocalPackage pkg;
-        for (String pkgID : pkgIDs) {
-            pkg = pkgman.pkgRemove(pkgID);
-            cmdOK = cmdOK && (pkg != null);
-        }
-        cset = pkgman.getCommandSet();
+        boolean cmdOK = pkgman.pkgRemove(Arrays.asList(pkgIDs));
         if (!cmdOK) {
             errorValue = 3;
         }
@@ -1831,7 +1817,6 @@ public abstract class NuxeoLauncher {
     protected boolean pkgReset() throws IOException, PackageException {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = pkgman.pkgReset();
-        cset = pkgman.getCommandSet();
         if (!cmdOK) {
             errorValue = 3;
         }
@@ -1849,8 +1834,8 @@ public abstract class NuxeoLauncher {
                     KeyValueInfo.class);
             printXMLOutput(jaxbContext, instance);
         } catch (JAXBException e) {
-            e.printStackTrace();
             log.error("Output serialization failed: " + e.getMessage());
+            log.debug(e, e);
             errorValue = 7;
         }
     }
@@ -2026,14 +2011,12 @@ public abstract class NuxeoLauncher {
         ConnectBroker pkgman = getConnectBroker();
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
-            cmdOK = cmdOK
-                    && pkgman.executePending(
-                            configurationGenerator.getInstallFile(), true, true);
+            cmdOK = pkgman.executePending(
+                    configurationGenerator.getInstallFile(), true, true);
         }
         cmdOK = cmdOK
                 && pkgman.pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall,
                         pkgsToRemove);
-        cset = pkgman.getCommandSet();
         if (!cmdOK) {
             errorValue = 3;
         }
@@ -2062,50 +2045,52 @@ public abstract class NuxeoLauncher {
      * @since 5.6
      *
      */
-    protected void pkgInit() throws IOException, PackageException {
+    protected boolean pkgInit() throws IOException, PackageException {
         ConnectBroker pkgman = getConnectBroker();
-        pkgman.addDistributionPackages();
-        cset = pkgman.getCommandSet();
+        return pkgman.addDistributionPackages();
     }
 
     /**
      * Uninstall and remove all packages from the local cache
      *
+     * @return
+     *
      * @throws PackageException
      * @throws IOException
      * @since 5.6
      *
      */
-    protected void pkgPurge() throws PackageException, IOException {
+    protected boolean pkgPurge() throws PackageException, IOException {
         ConnectBroker pkgman = getConnectBroker();
-        pkgman.pkgPurge();
-        cset = pkgman.getCommandSet();
+        return pkgman.pkgPurge();
     }
 
     /**
      * Install the hotfixes available for the instance
      *
-     * @throws PackageException
-     * @throws IOException
-     * @since 5.6
-     */
-    protected void pkgHotfix() throws IOException, PackageException {
-        ConnectBroker pkgman = getConnectBroker();
-        pkgman.pkgHotfix();
-        cset = pkgman.getCommandSet();
-    }
-
-    /**
-     * Upgrade the marketplace packages (addons) available for the instance
+     * @return
      *
      * @throws PackageException
      * @throws IOException
      * @since 5.6
      */
-    protected void pkgUpgrade() throws IOException, PackageException {
+    protected boolean pkgHotfix() throws IOException, PackageException {
         ConnectBroker pkgman = getConnectBroker();
-        pkgman.pkgUpgrade();
-        cset = pkgman.getCommandSet();
+        return pkgman.pkgHotfix();
+    }
+
+    /**
+     * Upgrade the marketplace packages (addons) available for the instance
+     *
+     * @return
+     *
+     * @throws PackageException
+     * @throws IOException
+     * @since 5.6
+     */
+    protected boolean pkgUpgrade() throws IOException, PackageException {
+        ConnectBroker pkgman = getConnectBroker();
+        return pkgman.pkgUpgrade();
     }
 
     /**
@@ -2119,20 +2104,21 @@ public abstract class NuxeoLauncher {
      */
     protected boolean pkgCompoundRequest(List<String> request)
             throws IOException, PackageException {
+        List<String> add = new ArrayList<String>();
         List<String> install = new ArrayList<String>();
         List<String> uninstall = new ArrayList<String>();
         for (String param : request) {
-            for (String subparam : param.split(" ")) {
+            for (String subparam : param.split("[ ,]")) {
                 if (subparam.charAt(0) == '-') {
                     uninstall.add(subparam.substring(1));
                 } else if (subparam.charAt(0) == '+') {
                     install.add(subparam.substring(1));
                 } else {
-                    install.add(subparam);
+                    add.add(subparam);
                 }
             }
         }
-        return pkgRequest(null, install, uninstall, null);
+        return pkgRequest(add, install, uninstall, null);
     }
 
 }
