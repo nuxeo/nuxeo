@@ -5,7 +5,7 @@
     <xa-transaction/>
     <track-connection-by-tx/>
     <adapter-display-name>Nuxeo SQL Repository DataSource</adapter-display-name>
-    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-5.4.2.1-SNAPSHOT.rar</rar-name>
+    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-5.4.2-HF28.rar</rar-name>
     <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
     <config-property name="name">default</config-property>
     <max-pool-size>20</max-pool-size>
