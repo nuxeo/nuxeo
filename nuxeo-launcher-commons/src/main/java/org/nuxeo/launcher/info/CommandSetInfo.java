@@ -48,4 +48,23 @@ public class CommandSetInfo {
         return cmdInfo;
     }
 
+    /**
+     * Log commands in error
+     *
+     * @since 5.7
+     */
+    public void log() {
+        log(false);
+    }
+
+    /**
+     * Log full content of the command set (parse commands and their content)
+     *
+     * @since 5.7
+     */
+    public void log(boolean debug) {
+        for (CommandInfo commandInfo : commands) {
+            commandInfo.log(debug);
+        }
+    }
 }

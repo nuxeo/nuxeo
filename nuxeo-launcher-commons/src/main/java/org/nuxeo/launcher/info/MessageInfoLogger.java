@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.impl.SimpleLog;
 
 public class MessageInfoLogger {
 
@@ -39,11 +40,11 @@ public class MessageInfoLogger {
                 DateFormat.SHORT, DateFormat.SHORT);
         for (MessageInfo message : messages) {
             System.out.println("[" + dateFormat.format(message.time) + "] "
-                    + message.level.toString() + " " + message.message);
+                    + message.level + " " + message.message);
         }
     }
 
-    public void log(String msg, MessageInfo.LOG_LEVEL level) {
+    public void log(String msg, int level) {
         MessageInfo message = new MessageInfo();
         message.time = new Date();
         message.level = level;
@@ -67,7 +68,7 @@ public class MessageInfoLogger {
     }
 
     public void debug(String msg) {
-        log(msg, MessageInfo.LOG_LEVEL.DEBUG);
+        log(msg, SimpleLog.LOG_LEVEL_DEBUG);
     }
 
     public void info(Object... args) {
@@ -86,7 +87,7 @@ public class MessageInfoLogger {
     }
 
     public void info(String msg) {
-        log(msg, MessageInfo.LOG_LEVEL.INFO);
+        log(msg, SimpleLog.LOG_LEVEL_INFO);
     }
 
     public void warn(Object... args) {
@@ -105,7 +106,7 @@ public class MessageInfoLogger {
     }
 
     public void warn(String msg) {
-        log(msg, MessageInfo.LOG_LEVEL.WARN);
+        log(msg, SimpleLog.LOG_LEVEL_WARN);
     }
 
     public void error(Object... args) {
@@ -124,7 +125,7 @@ public class MessageInfoLogger {
     }
 
     public void error(String msg) {
-        log(msg, MessageInfo.LOG_LEVEL.ERROR);
+        log(msg, SimpleLog.LOG_LEVEL_ERROR);
     }
 
 }

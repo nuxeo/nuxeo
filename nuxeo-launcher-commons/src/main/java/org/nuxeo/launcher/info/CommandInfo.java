@@ -27,12 +27,20 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.SimpleLog;
+
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "command")
 /**
  * @since 5.6
  */
 public class CommandInfo {
+
+    static final Log log = LogFactory.getLog(CommandInfo.class);
 
     public static final String CMD_UNKNOWN = "unknown";
 
@@ -48,6 +56,11 @@ public class CommandInfo {
 
     public static final String CMD_RESET = "reset";
 
+    /**
+     * @since 5.7
+     */
+    public static final String CMD_DOWNLOAD = "download";
+
     public CommandInfo() {
     }
 
@@ -62,7 +75,7 @@ public class CommandInfo {
     public String param;
 
     @XmlAttribute()
-    public Integer exitCode;
+    public Integer exitCode = 0;
 
     @XmlAttribute()
     public String id;
@@ -77,5 +90,77 @@ public class CommandInfo {
     @XmlElementWrapper(name = "packages")
     @XmlElement(name = "package")
     public List<PackageInfo> packages = new ArrayList<PackageInfo>();
+
+    /**
+     * @return new {@link MessageInfo} added to messages
+     * @since 5.7
+     */
+    public MessageInfo newMessage() {
+        MessageInfo messageInfo = new MessageInfo();
+        messages.add(messageInfo);
+        return messageInfo;
+    }
+
+    /**
+     * @return new {@link MessageInfo} added to messages
+     * @since 5.7
+     */
+    public MessageInfo newMessage(int level, String message) {
+        MessageInfo messageInfo = new MessageInfo(level, message);
+        messages.add(messageInfo);
+        return messageInfo;
+    }
+
+    /**
+     * @return new {@link MessageInfo} added to messages
+     * @since 5.7
+     */
+    public MessageInfo newMessage(Exception e) {
+        return newMessage(SimpleLog.LOG_LEVEL_ERROR, e);
+    }
+
+    /**
+     * @return new {@link MessageInfo} added to messages
+     * @since 5.7
+     */
+    public MessageInfo newMessage(int level, Exception e) {
+        log.debug(e, e);
+        return newMessage(level, e.getMessage());
+    }
+
+    /**
+     * Log content of the command info
+     *
+     * @since 5.7
+     */
+    public void log(boolean debug) {
+        StringBuilder sb = new StringBuilder();
+        if (pending) {
+            sb.append("* Pending action: " + name);
+        } else {
+            sb.append("* " + name);
+        }
+        if (id != null) {
+            sb.append(" [" + id + "]");
+        }
+        if (param != null) {
+            sb.append(" (" + param + ")");
+        }
+        for (PackageInfo packageInfo : packages) {
+            sb.append("\n\t"
+                    + ReflectionToStringBuilder.toString(packageInfo,
+                            ToStringStyle.SHORT_PREFIX_STYLE));
+        }
+        if (exitCode != 0 || debug) {
+            if (exitCode != 0) {
+                log.error(sb.toString());
+            } else {
+                log.info(sb.toString());
+            }
+            for (MessageInfo messageInfo : messages) {
+                messageInfo.log();
+            }
+        }
+    }
 
 }

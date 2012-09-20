@@ -17,28 +17,74 @@
 
 package org.nuxeo.launcher.info;
 
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.SimpleLog;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "message")
 public class MessageInfo {
 
-    public static enum LOG_LEVEL { DEBUG, INFO, WARN, ERROR};
+    static final Log log = LogFactory.getLog(MessageInfo.class);
 
-    public MessageInfo() {}
+    public MessageInfo() {
+    }
+
+    /**
+     * @since 5.7
+     */
+    public MessageInfo(int level, String message) {
+        this.level = level;
+        this.message = message;
+    }
+
+    /**
+     * @see org.apache.commons.logging.impl.SimpleLog levels
+     */
+    @XmlAttribute()
+    public int level;
 
     @XmlAttribute()
-    public LOG_LEVEL level;
-
-    @XmlAttribute()
-    public Date time;
+    public Date time = new Date();
 
     @XmlAttribute()
     public String message;
+
+    /**
+     * Log content of the message info
+     *
+     * @since 5.7
+     */
+    public void log() {
+        String msg = "\t" + message;
+        switch (level) {
+        case SimpleLog.LOG_LEVEL_TRACE:
+            log.trace(msg);
+            break;
+        case SimpleLog.LOG_LEVEL_DEBUG:
+            log.debug(msg);
+            break;
+        case SimpleLog.LOG_LEVEL_INFO:
+            log.info(msg);
+            break;
+        case SimpleLog.LOG_LEVEL_WARN:
+            log.warn(msg);
+            break;
+        case SimpleLog.LOG_LEVEL_ERROR:
+            log.error(msg);
+            break;
+        case SimpleLog.LOG_LEVEL_FATAL:
+            log.fatal(msg);
+            break;
+        default:
+        }
+    }
 
 }
