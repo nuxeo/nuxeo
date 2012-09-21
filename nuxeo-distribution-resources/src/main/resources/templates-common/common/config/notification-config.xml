@@ -6,7 +6,7 @@
     point="generalSettings">
     <settings>
       <serverPrefix>${nuxeo.url}/</serverPrefix>
-      <eMailSubjectPrefix>${nuxeo.notification.eMailSubjectPrefix}</eMailSubjectPrefix>
+      <eMailSubjectPrefix>${nuxeo.notification.eMailSubjectPrefix} </eMailSubjectPrefix>
       <mailSessionJndiName>${jndi.base}/Mail</mailSessionJndiName>
     </settings>
   </extension>

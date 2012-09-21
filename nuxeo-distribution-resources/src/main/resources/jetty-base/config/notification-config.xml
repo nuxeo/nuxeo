@@ -6,7 +6,7 @@
     point="generalSettings">
     <settings>
       <serverPrefix>http://localhost:8080/nuxeo/</serverPrefix>
-      <eMailSubjectPrefix>[Nuxeo]</eMailSubjectPrefix>
+      <eMailSubjectPrefix>[Nuxeo] </eMailSubjectPrefix>
       <mailSessionJndiName>java:/Mail</mailSessionJndiName>
     </settings>
   </extension>
