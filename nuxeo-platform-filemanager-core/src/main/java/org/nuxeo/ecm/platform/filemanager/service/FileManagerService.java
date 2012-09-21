@@ -148,7 +148,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     private Blob checkMimeType(Blob blob, String fullname)
             throws ClientException {
         final String mimeType = blob.getMimeType();
-        if (mimeType != null && !mimeType.equals("application/octet-stream")
+        if (mimeType != null && !mimeType.isEmpty()
+                && !mimeType.equals("application/octet-stream")
                 && !mimeType.equals("application/octetstream")) {
             return blob;
         }
