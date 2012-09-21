@@ -142,7 +142,7 @@ public class RepositoryService extends DefaultComponent implements EventListener
         boolean started = false;
         boolean ok = false;
         try {
-            started = TransactionHelper.startTransaction();
+            started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
             for (String name : repositoryMgr.getRepositoryNames()) {
                 initializeRepository(handler, name);
             }
