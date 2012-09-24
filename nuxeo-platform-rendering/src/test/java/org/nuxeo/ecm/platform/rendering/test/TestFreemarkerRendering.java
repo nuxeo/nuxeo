@@ -14,6 +14,8 @@
 
 package org.nuxeo.ecm.platform.rendering.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -23,8 +25,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -33,14 +33,10 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.schema.Prefetch;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
-import org.nuxeo.ecm.core.schema.XSDLoader;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.FreemarkerMacro;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
-import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.services.streaming.URLSource;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -52,24 +48,14 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
 
     FreemarkerEngine engine;
 
-    public static void initSchemaManager() throws Exception {
-        SchemaManagerImpl mgr = new SchemaManagerImpl();
-        XSDLoader loader = new XSDLoader(mgr);
-        ClassLoader cl = TestFreemarkerRendering.class.getClassLoader();
-        loader.loadSchema("dublincore", "dc",
-                cl.getResource("schemas/mySchema.xsd"));
-        loader.loadSchema("file", "", cl.getResource("schemas/myFile.xsd"));
-        // set a custom service provider to be able to lookup services without
-        // loading the framework
-        DefaultServiceProvider provider = new DefaultServiceProvider();
-        provider.registerService(SchemaManager.class, mgr);
-        DefaultServiceProvider.setProvider(provider);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        initSchemaManager();
+
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployContrib("org.nuxeo.ecm.platform.rendering.tests",
+                "OSGI-INF/test-schema.xml");
 
         engine = new FreemarkerEngine();
         engine.setResourceLocator(new MyResourceLocator());
