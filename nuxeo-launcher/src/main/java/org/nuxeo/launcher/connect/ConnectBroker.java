@@ -336,21 +336,24 @@ public class ConnectBroker {
         return allDefinitions;
     }
 
-    protected void addDistributionPackage(String md5) {
+    protected boolean addDistributionPackage(String md5) {
+        boolean ret = true;
         File distributionFile = new File(distributionMPDir, md5);
         if (distributionFile.exists()) {
             try {
-                pkgAdd(distributionFile.getCanonicalPath());
+                ret = pkgAdd(distributionFile.getCanonicalPath()) != null;
             } catch (IOException e) {
                 log.warn("Could not add distribution file " + md5);
+                ret = false;
             }
         }
+        return ret;
     }
 
-    public void addDistributionPackages() {
+    public boolean addDistributionPackages() {
         Map<String, PackageDefinition> distributionPackages = getDistributionDefinitions(getDistributionFilenames());
         if (distributionPackages.isEmpty()) {
-            return;
+            return true;
         }
         List<LocalPackage> localPackages = getPkgList();
         Map<String, LocalPackage> localPackagesById = new HashMap<String, LocalPackage>();
@@ -359,6 +362,7 @@ public class ConnectBroker {
                 localPackagesById.put(pkg.getId(), pkg);
             }
         }
+        boolean ret = true;
         for (String md5 : distributionPackages.keySet()) {
             PackageDefinition md5Pkg = distributionPackages.get(md5);
             if (localPackagesById.containsKey(md5Pkg.getId())) {
@@ -372,14 +376,15 @@ public class ConnectBroker {
                     // in installed state.
                     if (localPackage.getState() != PackageState.STARTED) {
                         pkgRemove(localPackage.getId());
-                        addDistributionPackage(md5);
+                        ret = addDistributionPackage(md5) && ret;
                     }
                 }
             } else {
                 // No package with this Id is in cache
-                addDistributionPackage(md5);
+                ret = addDistributionPackage(md5) && ret;
             }
         }
+        return ret;
     }
 
     public List<LocalPackage> getPkgList() {
@@ -521,7 +526,7 @@ public class ConnectBroker {
      * Uninstall a list of packages. If the list contains a package name
      * (versus an ID), only the considered as best matching package is
      * uninstalled.
-     *
+     * 
      * @param packageIdsToRemove The list can contain package IDs and names
      * @see #pkgUninstall(String)
      */
@@ -538,7 +543,7 @@ public class ConnectBroker {
 
     /**
      * Uninstall a local package. The package is not removed from cache.
-     *
+     * 
      * @param pkgId Package ID or Name
      * @return The uninstalled LocalPackage or null if failed
      */
@@ -585,11 +590,12 @@ public class ConnectBroker {
     /**
      * Remove a list of packages from cache. If the list contains a package name
      * (versus an ID), all matching packages are removed.
-     *
+     * 
      * @param pkgsToRemove The list can contain package IDs and names
      * @see #pkgRemove(String)
      */
-    public void pkgRemove(List<String> pkgsToRemove) {
+    public boolean pkgRemove(List<String> pkgsToRemove) {
+        boolean cmdOk = true;
         if (pkgsToRemove != null) {
             log.debug("Removing: " + pkgsToRemove);
             for (String pkgNameOrId : pkgsToRemove) {
@@ -605,16 +611,18 @@ public class ConnectBroker {
                     if (pkgRemove(pkgId) == null) {
                         log.warn("Unable to remove " + pkgId);
                         // Don't error out on failed (cache) removal
+                        cmdOk = false;
                     }
                 }
             }
         }
+        return cmdOk;
     }
 
     /**
      * Remove a package from cache. If it was installed, the package is
      * uninstalled then removed.
-     *
+     * 
      * @param pkgId Package ID or Name
      * @return The removed LocalPackage or null if failed
      */
@@ -661,21 +669,24 @@ public class ConnectBroker {
 
     /**
      * Add a list of package files into the cache
-     *
+     * 
      * @param pkgsToAdd
+     * @return true if command succeeded
      * @see #pkgAdd(String)
      */
-    public void pkgAdd(List<String> pkgsToAdd) {
+    public boolean pkgAdd(List<String> pkgsToAdd) {
+        boolean cmdOk = true;
         if (pkgsToAdd != null) {
             for (String pkgToAdd : pkgsToAdd) {
-                pkgAdd(pkgToAdd);
+                cmdOk = pkgAdd(pkgToAdd) != null && cmdOk;
             }
         }
+        return cmdOk;
     }
 
     /**
      * Add a package file into the cache
-     *
+     * 
      * @param packageFileName
      * @return The added LocalPackage or null if failed
      */
@@ -735,7 +746,7 @@ public class ConnectBroker {
      * Install a list of local packages. If the list contains a package name
      * (versus an ID), only the considered as best matching package is
      * installed.
-     *
+     * 
      * @param packageIdsToInstall The list can contain package IDs and names
      * @see #pkgInstall(String)
      */
@@ -752,7 +763,7 @@ public class ConnectBroker {
 
     /**
      * Install a local package.
-     *
+     * 
      * @param pkgId Package ID or Name
      * @return The installed LocalPackage or null if failed
      */
@@ -890,7 +901,9 @@ public class ConnectBroker {
                     if (line.length() > 0 && !line.startsWith("#")) {
                         if (doExecute) {
                             if ("init".equals(line)) {
-                                addDistributionPackages();
+                                if (!addDistributionPackages()) {
+                                    errorValue = 1;
+                                }
                             } else {
                                 if (useResolver) {
                                     pkgsToInstall.add(line);
@@ -973,9 +986,14 @@ public class ConnectBroker {
                         log.error("Wrong digest for package " + pkg.getName());
                         cmdInfo.exitCode = 1;
                         downloadOk = false;
-                    } else {
+                    } else if (pkg.getState() == PackageState.DOWNLOADED) {
                         log.debug("Completed " + pkg);
                         cmdInfo.exitCode = 0;
+                    } else {
+                        downloadOk = false;
+                        cmdInfo.exitCode = 1;
+                        log.error(String.format("Download failed for %s. %s",
+                                pkg, pkg.getErrorMessage()));
                     }
                 }
             }
@@ -1000,8 +1018,9 @@ public class ConnectBroker {
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
+        boolean cmdOk = true;
         // Add local files
-        pkgAdd(pkgsToAdd);
+        cmdOk = pkgAdd(pkgsToAdd);
         // Build solver request
         List<String> solverInstall = new ArrayList<String>();
         List<String> solverRemove = new ArrayList<String>();
@@ -1012,7 +1031,11 @@ public class ConnectBroker {
             for (String pkgToInstall : pkgsToInstall) {
                 if (isLocalPackageFile(pkgToInstall)) {
                     LocalPackage addedPkg = pkgAdd(pkgToInstall);
-                    namesOrIdsToInstall.add(addedPkg.getId());
+                    if (addedPkg != null) {
+                        namesOrIdsToInstall.add(addedPkg.getId());
+                    } else {
+                        cmdOk = false;
+                    }
                     // TODO: set flag to prefer local package
                 } else {
                     namesOrIdsToInstall.add(pkgToInstall);
@@ -1094,7 +1117,7 @@ public class ConnectBroker {
             }
             if (resolution.isEmpty()) {
                 pkgRemove(pkgsToRemove);
-                return true;
+                return cmdOk;
             }
             if ("ask".equalsIgnoreCase(accept)) {
                 accept = readConsole(
@@ -1164,12 +1187,12 @@ public class ConnectBroker {
 
             pkgRemove(pkgsToRemove);
         }
-        return true;
+        return cmdOk;
     }
 
     /**
      * Prompt user for yes/no answer
-     *
+     * 
      * @param message The message to display
      * @param defaultValue The default answer if there's no console or if
      *            "Enter" key is pressed.
@@ -1216,7 +1239,7 @@ public class ConnectBroker {
     /**
      * Must be called after {@link #setAccept(String)} which overwrites its
      * value.
-     *
+     * 
      * @param relaxValue true, false or ask; ignored if null
      */
     public void setRelax(String relaxValue) {
