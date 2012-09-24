@@ -31,6 +31,37 @@
               id="#{idPrefix}_valueHolder"
               var="actionClicked"
               defaultValue="false">
+             <f:subview id="#{idPrefix}_subview_process_task" rendered="#{!showFirstForm}"> 
+               <a4j:commandButton id="#{idPrefix}_link_cancel"
+                  value="#{messages['label.document.routing.cancel.task']}"
+                  ajaxSingle="true"
+                  ignoreDupResponses="true" requestDelay="100"
+                  styleClass="button floatR"
+                  reRender="#{idPrefix}_ajax_panel">
+                 <f:setPropertyActionListener value="false"
+                   target="#{selectionActions.selectedValue}" />
+                 <f:setPropertyActionListener
+                   value="#{idPrefix}_valueHolder"
+                   target="#{selectionActions.selectedValueHolder}" />
+                 <nxu:actionListenerMethod
+                   value="#{selectionActions.onClick}" />
+   	           </a4j:commandButton>  
+               <a4j:commandButton id="#{idPrefix}_link"
+                 value="#{messages['label.document.routing.process.task']}"
+                 ajaxSingle="true"
+                 ignoreDupResponses="true" requestDelay="100"
+                 styleClass="button floatR"
+                 reRender="#{idPrefix}_ajax_panel">
+                 <f:setPropertyActionListener value="true"
+                   target="#{selectionActions.selectedValue}" />
+                 <f:setPropertyActionListener
+                   value="#{idPrefix}_valueHolder"
+                   target="#{selectionActions.selectedValueHolder}" />
+                 <nxu:actionListenerMethod
+                   value="#{selectionActions.onClick}" />
+   	           </a4j:commandButton>
+              </f:subview>
+              
 
               <f:subview id="#{idPrefix}_subview">
                 <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
@@ -82,7 +113,7 @@
                           <nxl:layout name="#{routingTaskActions.getTaskLayout(task)}" mode="edit" value="#{routingTaskActions.formVariables}"/>
                           <p class="buttonsGadget">
                             <nxu:set var="actions"  value="#{routingTaskActions.getTaskButtons(task)}" cache="true">
-                              <nxu:dataList var="btn_action" value="#{actions}" id="versionActionsTable">
+                              <nxu:dataList var="btn_action" value="#{actions}" id="#{idPrefix}_versionActionsTable">
                                 <span id="#{sel_action.id}">
                                   <h:commandLink action="#{routingTaskActions.endTask(task)}"
                                     value="#{messages[btn_action.label]}" styleClass="button">
