@@ -200,20 +200,17 @@ public class DocumentRoutingActionsBean implements Serializable {
             return relatedRouteElement.getDocumentRoute(documentManager);
         }
         // else we must be in a document attached to a route
-        String relatedRouteModelDocumentId;
-        if (relatedRoutes.size() <= 0) {
-            return null;
-        }
-        relatedRouteModelDocumentId = relatedRoutes.get(0).getId();
-        docWithAttachedRouteId = currentDocument.getId();
-        DocumentModel docRoute;
         try {
-            docRoute = documentManager.getDocument(new IdRef(
-                    relatedRouteModelDocumentId));
+            relatedRoutes = relatedRouteAction.findRelatedRoute();
+            if (relatedRoutes.size() <= 0) {
+                return null;
+            }
+            docWithAttachedRouteId = currentDocument.getId();
+            DocumentModel docRoute = relatedRoutes.get(0);
+            return docRoute.getAdapter(DocumentRoute.class);
         } catch (ClientException e) {
             return null;
         }
-        return docRoute.getAdapter(DocumentRoute.class);
     }
 
     public String cancelRoute() throws ClientException {
@@ -339,6 +336,9 @@ public class DocumentRoutingActionsBean implements Serializable {
      * no
      */
     public boolean hasRelatedRoute() throws ClientException {
+        if (relatedRoutes == null) {
+            relatedRoutes = relatedRouteAction.findRelatedRoute();
+        }
         return !relatedRoutes.isEmpty();
     }
 
