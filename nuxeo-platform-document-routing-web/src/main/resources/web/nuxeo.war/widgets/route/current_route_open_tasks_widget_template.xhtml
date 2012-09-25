@@ -22,31 +22,9 @@
           </h:outputFormat>
           <h:outputText value="#{messages['label.route.task.assigned.to']} " />
           <c:forEach var="actor" items="#{task.actors}">
-            <c:choose>
-              <c:when test="#{fn:startsWith(actor,'group:')}">
-                <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
-                <span class="tag group creator">
-                  <a href="#{baseURL}group/#{group}">
-                    #{group}
-                  </a>
-                </span>
-                </nxu:set>
-              </c:when>
-              <c:when test="#{fn:startsWith(actor, 'user:')}">
-                <nxu:set var="user" value="#{fn:split(actor, ':')[1]}">
-                <span class="tag user creator">
-                  <a href="#{baseURL}user/#{user}">
-                    #{nxu:userFullName(user)}
-                  </a>
-                </span>
-                </nxu:set>
-              </c:when>
-              <c:otherwise>
-                <span class="tag user creator">
-                  #{actor}
-                </span>
-              </c:otherwise>
-            </c:choose>
+            <nxl:widgetType name="template" mode="view"
+              template="/document_routing_widgets/route_assignee_widget_template.xhtml"
+              value="#{actor}" />
           </c:forEach>
           <div class="dueDate warningLabel">
             <h:outputText value=" #{messages['label.route.task.due.date']} " />

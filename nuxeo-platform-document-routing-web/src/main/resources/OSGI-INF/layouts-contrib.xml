@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.platform.routing.layouts">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-       point="widgettypes">
+    point="widgettypes">
 
     <widgetType name="current_route_description">
       <configuration>
@@ -36,7 +36,8 @@
         <description>
           <p>
             This widget displays the graph of the current route in a
-            Fancybox popup.
+            Fancybox
+            popup.
           </p>
         </description>
         <categories>
@@ -61,7 +62,8 @@
         <title>Description</title>
         <description>
           <p>
-            This widget displays an 'Abandon' action to cancel the current route
+            This widget displays an 'Abandon' action to cancel the current
+            route
             started on the current document.
           </p>
         </description>
@@ -88,7 +90,8 @@
         <description>
           <p>
             This widget displays the user tasks of the current route on
-            the current document.
+            the
+            current document.
           </p>
         </description>
         <categories>
@@ -114,7 +117,8 @@
         <description>
           <p>
             This widget displays all the open tasks of the current route
-            on the current document.
+            on the
+            current document.
           </p>
         </description>
         <categories>
@@ -136,7 +140,7 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-      point="widgets">
+    point="widgets">
 
     <widget name="current_route_description" type="current_route_description" />
     <widget name="current_route_show_graph" type="current_route_show_graph" />
@@ -219,7 +223,7 @@
         <property name="localize">true</property>
       </properties>
     </widget>
-    <widget name="task_assignee" type="template">
+    <widget name="task_assignee" type="multiplePrefixedUsersSuggestion">
       <labels>
         <label mode="any">Assignee</label>
       </labels>
@@ -227,13 +231,8 @@
       <fields>
         <field>data.task.actors</field>
       </fields>
-      <properties mode="any">
-        <property name="template">
-          /widgets/user_suggestion_widget_template.xhtml
-        </property>
-      </properties>
     </widget>
-    <widget name="task_comments" type="template">
+    <widget name="task_comments" type="list">
       <labels>
         <label mode="any">Comments</label>
       </labels>
@@ -241,11 +240,16 @@
       <fields>
         <field>data.task.taskComments</field>
       </fields>
-      <properties mode="any">
-        <property name="template">
-          /widgets/user_suggestion_widget_template.xhtml
-        </property>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
       </properties>
+      <subWidgets>
+        <widget name="listItem" type="textarea">
+          <fields>
+            <field></field>
+          </fields>
+        </widget>
+      </subWidgets>
     </widget>
     <widget name="task_start_date" type="datetime">
       <labels>
