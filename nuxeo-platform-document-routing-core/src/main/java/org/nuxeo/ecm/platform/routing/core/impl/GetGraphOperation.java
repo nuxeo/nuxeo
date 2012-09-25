@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
@@ -60,9 +61,9 @@ public class GetGraphOperation {
 
     @OperationMethod
     public Blob run() throws Exception {
-        DocumentModel docRoute = session.getDocument(new IdRef(routeDocId));
-        GraphRoute route = docRoute.getAdapter(GraphRoute.class);
-        String json = toJSON(route);
+        GetRouteAsJsonUnrestricted unrestrictedRunner = new GetRouteAsJsonUnrestricted(
+                session, routeDocId);
+        String json = unrestrictedRunner.getJSON();
         return new InputStreamBlob(new ByteArrayInputStream(
                 json.getBytes("UTF-8")), "application/json");
 
@@ -93,6 +94,29 @@ public class GetGraphOperation {
             return writer.toString();
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
+        }
+    }
+    
+    class GetRouteAsJsonUnrestricted extends UnrestrictedSessionRunner {
+
+        String docId;
+        String json;
+
+        protected GetRouteAsJsonUnrestricted(CoreSession session, String docId) {
+            super(session);
+            this.docId = docId;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentModel doc = session.getDocument(new IdRef(docId));
+            GraphRoute route = doc.getAdapter(GraphRoute.class);
+            json = toJSON(route);
+        }
+
+        public String getJSON() throws ClientException {
+            runUnrestricted();
+            return json;
         }
     }
 }

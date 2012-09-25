@@ -445,12 +445,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             statesString.deleteCharAt(statesString.length() - 1);
             statesString.append(") AND");
         }
-        String RELATED_TOUTES_QUERY = String.format(
+        final String RELATED_TOUTES_QUERY = String.format(
                 " SELECT * FROM DocumentRoute WHERE " + statesString.toString()
                         + " docri:participatingDocuments IN ('%s') ",
                 attachedDocId);
         try {
-            list = session.query(RELATED_TOUTES_QUERY);
+            UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(session, RELATED_TOUTES_QUERY);
+            list = queryRunner.runQuery();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -891,4 +892,28 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 + task.getId();
     }
 
+    class UnrestrictedQueryRunner extends UnrestrictedSessionRunner {
+
+        String query;
+
+        DocumentModelList docs;
+
+        protected UnrestrictedQueryRunner(CoreSession session, String query) {
+            super(session);
+            this.query = query;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            docs = session.query(query);
+            for (DocumentModel documentModel : docs) {
+                documentModel.detach(true);
+            }
+        }
+
+        public DocumentModelList runQuery() throws ClientException {
+            runUnrestricted();
+            return docs;
+        }
+    }
 }
