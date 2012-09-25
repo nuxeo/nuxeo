@@ -272,7 +272,7 @@ public class UserSuggestionActionsBean implements Serializable {
                 res.put(ID_KEY_NAME, groupname);
                 res.put(ENTRY_KEY_NAME, userManager.getGroupModel(groupname));
             } else {
-                res.put(ID_KEY_NAME, id);
+                res.putAll(getUserInfo(id));
             }
         }
         return res;
