@@ -19,7 +19,7 @@ if [ -z "$1" ]; then
   exit 2
 fi
 JARDIR=$1
-STUDIONAME=aescaffre-SANDBOX
+STUDIONAME=nuxeo-routing-default
 BUNDLE=$(cd `dirname $0`; pwd)/..
 
 RES=$BUNDLE/src/main/resources
@@ -34,8 +34,12 @@ find $RES -name extensions.xml -o -name '*.xsd' | while read f; do
       -i '~' $f
 done
 
-# remove theme extensions
-sed -e '/<extension target="org.nuxeo.theme/,/<.extension>/d' \
+# remove require on runtime started
+sed -e 's#  <require>org.nuxeo.runtime.started</require>##' \
+    -i '~' $RES/OSGI-INF/extensions.xml
+
+# remove studio widget types extensions
+sed -e '/<extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes"/,/<.extension>/d' \
     -i '~' $RES/OSGI-INF/extensions.xml
 
 # replace studio name in schema namespaces in ZIP

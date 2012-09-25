@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <component name="studio.extensions.nuxeo-routing-default" version="1.0.0">
+
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
     <chain id="logInAudit">
       <operation id="Audit.Log">
@@ -117,7 +118,6 @@ else if (NodeVariables["button"] == "submit") {
           <property name="orderable">true</property>
           <property name="required">true</property>
         </properties>
-        <properties mode="any"/>
       </widget>
       <widget name="validationOrReview" type="selectOneDirectory">
         <labels>
@@ -139,7 +139,6 @@ else if (NodeVariables["button"] == "submit") {
           <property name="localize">true</property>
           <property name="directoryName">WorkflowType</property>
         </properties>
-        <properties mode="any"/>
       </widget>
       <widget name="initiatorComment" type="textarea">
         <labels>
@@ -149,7 +148,6 @@ else if (NodeVariables["button"] == "submit") {
         <fields>
           <field>['initiatorComment']</field>
         </fields>
-        <properties mode="any"/>
       </widget>
     </layout>
     <layout name="Task6d8@taskLayout">
@@ -176,7 +174,7 @@ else if (NodeVariables["button"] == "submit") {
           <widget>assigneeComment</widget>
         </row>
       </rows>
-      <widget name="participants" type="list">
+      <widget name="participants" type="multiplePrefixedUsersSuggestion">
         <labels>
           <label mode="any">wf.serialDocumentReview.ParticipantsOnTheReview</label>
         </labels>
@@ -187,23 +185,6 @@ else if (NodeVariables["button"] == "submit") {
         <widgetModes>
           <mode value="edit">view</mode>
         </widgetModes>
-        <properties widgetMode="view">
-          <property name="display">table</property>
-          <property name="hideSubLabels">true</property>
-        </properties>
-        <properties mode="any"/>
-        <subWidgets>
-          <widget name="sub0" type="text">
-            <labels>
-              <label mode="any"></label>
-            </labels>
-            <translated>false</translated>
-            <fields>
-              <field></field>
-            </fields>
-            <properties mode="any"/>
-          </widget>
-        </subWidgets>
       </widget>
       <widget name="initiatorComment" type="textarea">
         <labels>
@@ -216,7 +197,6 @@ else if (NodeVariables["button"] == "submit") {
         <widgetModes>
           <mode value="edit">view</mode>
         </widgetModes>
-        <properties mode="any"/>
       </widget>
       <widget name="assigneeComment" type="textarea">
         <labels>
@@ -226,7 +206,6 @@ else if (NodeVariables["button"] == "submit") {
         <fields>
           <field>['assigneeComment']</field>
         </fields>
-        <properties mode="any"/>
       </widget>
     </layout>
     <layout name="Task542@taskLayout">
