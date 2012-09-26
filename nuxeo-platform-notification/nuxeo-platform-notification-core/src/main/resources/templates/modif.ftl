@@ -13,8 +13,9 @@ Author: <a href="${userUrl}">${author}</a>
 </p>
 <p>
 Location: ${docLocation}<br>
-<#if document.dublincore.description != "">
-Description: ${document.dublincore.description}<br>
+<#assign description = document.dublincore.description />
+<#if description?? && description != "" >
+Description: ${description}<br>
 </#if>
 State: ${docState}<br>
 Version: ${docVersion}<br>
