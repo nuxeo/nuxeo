@@ -81,6 +81,13 @@
   cache="true">
 
 <c:if test="#{contentView != null}">
+
+  <c:if test="#{contentView.cacheSize &lt;= 0}">
+    <nxu:set var="forceRefreshSoonEnough"
+      value="#{contentView.refreshPageProvider()}"
+      cache="true" />
+  </c:if>
+
 <nxu:set var="contentViewRenderId"
   value="cv_#{contentView.name}_#{contentViewId}"
   cache="true">
