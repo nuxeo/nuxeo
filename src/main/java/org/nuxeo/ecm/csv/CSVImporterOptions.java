@@ -10,7 +10,7 @@ public class CSVImporterOptions {
 
     public static class Builder {
 
-        private DocumentModelFactory documentModelFactory = new DefaultDocumentModelFactory();
+        private CSVImporterDocumentFactory CSVImporterDocumentFactory = new DefaultCSVImporterDocumentFactory();
 
         private String dateFormat = "MM/dd/yyyy";
 
@@ -22,8 +22,8 @@ public class CSVImporterOptions {
 
         private int batchSize = 50;
 
-        public Builder documentModelFactory(DocumentModelFactory factory) {
-            this.documentModelFactory = factory;
+        public Builder documentModelFactory(CSVImporterDocumentFactory factory) {
+            this.CSVImporterDocumentFactory = factory;
             return this;
         }
 
@@ -53,12 +53,12 @@ public class CSVImporterOptions {
         }
 
         public CSVImporterOptions build() {
-            return new CSVImporterOptions(documentModelFactory, dateFormat,
+            return new CSVImporterOptions(CSVImporterDocumentFactory, dateFormat,
                     listSeparatorRegex, updateExisting, sendEmail, batchSize);
         }
     }
 
-    protected final DocumentModelFactory documentModelFactory;
+    protected final CSVImporterDocumentFactory CSVImporterDocumentFactory;
 
     protected final String dateFormat;
 
@@ -70,10 +70,10 @@ public class CSVImporterOptions {
 
     protected final int batchSize;
 
-    protected CSVImporterOptions(DocumentModelFactory documentModelFactory,
+    protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory,
             String dateFormat, String listSeparatorRegex, boolean updateExisting,
             boolean sendEmail, int batchSize) {
-        this.documentModelFactory = documentModelFactory;
+        this.CSVImporterDocumentFactory = CSVImporterDocumentFactory;
         this.dateFormat = dateFormat;
         this.listSeparatorRegex = listSeparatorRegex;
         this.updateExisting = updateExisting;
@@ -81,8 +81,8 @@ public class CSVImporterOptions {
         this.batchSize = batchSize;
     }
 
-    public DocumentModelFactory getDocumentModelFactory() {
-        return documentModelFactory;
+    public CSVImporterDocumentFactory getCSVImporterDocumentFactory() {
+        return CSVImporterDocumentFactory;
     }
 
     public String getDateFormat() {

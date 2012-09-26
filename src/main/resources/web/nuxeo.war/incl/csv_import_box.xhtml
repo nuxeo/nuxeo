@@ -21,13 +21,15 @@
     <div class="content">
       <a4j:outputPanel id="csv_import_panel">
 
-        <nxu:set var="importRunning" value="#{csvImportActions.isRunning()}">
-        <nxu:set var="importComplete" value="#{csvImportActions.isComplete()}">
+        <nxu:set var="importStatus" value="#{csvImportActions.importStatus}">
+        <nxu:set var="importScheduled" value="#{not empty importStatus and importStatus.isScheduled()}">
+        <nxu:set var="importRunning" value="#{not empty importStatus and importStatus.isRunning()}">
+        <nxu:set var="importComplete" value="#{not empty importStatus and importStatus.isComplete()}">
 
         <a4j:form id="importCsvRichUploadForm" ajaxSingle="true" enctype="multipart/form-data">
 
           <a4j:outputPanel id="csv_import_form">
-            <c:if test="#{not importRunning and not importComplete}">
+            <c:if test="#{not importScheduled and not importRunning and not importComplete}">
               <rich:fileUpload fileUploadListener="#{csvImportActions.uploadListener}"
                 maxFilesQuantity="1" immediateUpload="true"
                 listHeight="60"
@@ -37,6 +39,14 @@
               <p class="popUpDescription">
                 <h:outputText value="#{messages['label.csv.import.description']}" />
               </p>
+            </c:if>
+            <c:if test="#{importScheduled}">
+              <a4j:poll interval="2000" eventsQueue="csvImportQueue"
+                reRender="csv_import_panel" ignoreDupResponses="true" />
+              <h:outputFormat value="#{messages['label.csv.import.scheduled']}">
+                <f:param value="#{importStatus.positionInQueue}" />
+                <f:param value="#{importStatus.queueSize}" />
+              </h:outputFormat>
             </c:if>
             <c:if test="#{importRunning}">
               <a4j:poll interval="2000" eventsQueue="csvImportQueue"
@@ -67,43 +77,65 @@
 
             <c:if test="#{importRunning or importComplete}">
               <nxu:set var="importLogs" value="#{nxu:test(importRunning, csvImportActions.getLastLogs(500), csvImportActions.getSkippedAndErrorLogs())}">
-              <div style="overflow: scroll;">
-                <table class="dataOutput">
-                  <c:forEach var="importLog" items="#{importLogs}">
-                    <tr>
-                      <td><h:outputText value="#{messages['label.csv.import.line']} #{importLog.line}" /></td>
-                      <td>
-                        <c:if test="#{importLog.success}">
-                          <h:outputText value="#{messages['label.csv.import.success']}" />
-                        </c:if>
-                        <c:if test="#{importLog.skipped}">
-                          <h:outputText value="#{messages['label.csv.import.skipped']}" />
-                        </c:if>
-                        <c:if test="#{importLog.error}">
-                          <h:outputText value="#{messages['label.csv.import.error']}" />
-                        </c:if>
-                      </td>
-                      <td>
-                        <h:outputText value="#{importLog.getI18nMessage(localeSelector.locale)}" />
-                      </td>
-                    </tr>
-                  </c:forEach>
-                </table>
-              </div>
+              <c:if test="#{not empty importLogs}">
+                <div class="jsCsvImportResultDiv" style="height: 20em; overflow-y: scroll;">
+                  <table class="dataOutput">
+                    <c:forEach var="importLog" items="#{importLogs}">
+                      <tr>
+                        <td><h:outputText value="#{messages['label.csv.import.line']} #{importLog.line}" /></td>
+                        <td>
+                          <c:if test="#{importLog.success}">
+                            <h:outputText value="#{messages['label.csv.import.success']}" />
+                          </c:if>
+                          <c:if test="#{importLog.skipped}">
+                            <h:outputText value="#{messages['label.csv.import.skipped']}" />
+                          </c:if>
+                          <c:if test="#{importLog.error}">
+                            <h:outputText value="#{messages['label.csv.import.error']}" />
+                          </c:if>
+                        </td>
+                        <td>
+                          <h:outputText value="#{importLog.getI18nMessage(localeSelector.locale)}" />
+                        </td>
+                      </tr>
+                    </c:forEach>
+                  </table>
+                </div>
+              </c:if>
               </nxu:set>
             </c:if>
 
             <p class="buttonsGadget">
-              <a4j:commandButton value="#{messages['command.csv.process']}"
-                action="#{csvImportActions.importCSVFile}"
-                reRender="csv_import_form"
-                styleClass="button" />
-              <a4j:commandButton value="#{messages['command.csv.cancel']}"
-                styleClass="button" immediate="true" oncomplete="jQuery.fancybox.close();" />
+              <c:if test="#{not importScheduled and not importRunning and not importComplete}">
+                <a4j:commandButton value="#{messages['command.csv.process']}"
+                  action="#{csvImportActions.importCSVFile}"
+                  immediate="true"
+                  reRender="csv_import_panel"
+                  eventsQueue="csvImportQueue"
+                  styleClass="button" />
+              </c:if>
+              <c:if test="#{importScheduled or importRunning or importComplete}">
+                <a4j:commandButton value="#{messages['command.csv.start.new']}"
+                  action="#{csvImportActions.resetState()}"
+                  immediate="true"
+                  reRender="csv_import_panel"
+                  eventsQueue="csvImportQueue"
+                  styleClass="button" />
+              </c:if>
             </p>
         </a4j:form>
         </nxu:set>
         </nxu:set>
+        </nxu:set>
+        </nxu:set>
+
+        <script type="text/javascript">
+          var ele = jQuery('.jsCsvImportResultDiv')
+          if (ele.length > 0) {
+            ele = ele.get(0)
+            ele.scrollTop = ele.scrollHeight
+          }
+        </script>
 
       </a4j:outputPanel>
     </div>

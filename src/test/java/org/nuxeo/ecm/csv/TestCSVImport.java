@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -39,11 +40,22 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.runtime.datasource")
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.csv" })
 public class TestCSVImport {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected CSVImporter csvImporter;
+
+    @Inject
+    protected WorkManager workManager;
+
+    @Before
+    public void clearWorkQueue() {
+        workManager.clearCompletedWork(0);
+    }
 
     private Blob getCSVFile(String name) {
         File file = new File(FileUtils.getResourcePathFromContext(name));
@@ -56,14 +68,14 @@ public class TestCSVImport {
     public void shouldCreateAllDocuments() throws InterruptedException,
             ClientException {
         CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
-        CSVImporter importer = new CSVImporter(options);
-        importer.run(session, "/", getCSVFile("docs_ok.csv"));
+        CSVImportId importId = csvImporter.launchImport(session, "/",
+                getCSVFile("docs_ok.csv"), options);
 
-        Framework.getLocalService(WorkManager.class).awaitCompletion(10,
+        workManager.awaitCompletion(10,
                 TimeUnit.SECONDS);
         session.save();
 
-        List<CSVImportLog> importLogs = importer.getWork().getImportLogs();
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(2, importLogs.size());
         CSVImportLog importLog = importLogs.get(0);
         assertEquals(1, importLog.getLine());
@@ -112,14 +124,14 @@ public class TestCSVImport {
 
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(
                 false).build();
-        CSVImporter importer = new CSVImporter(options);
-        importer.run(session, "/", getCSVFile("docs_ok.csv"));
+        CSVImportId importId = csvImporter.launchImport(session, "/",
+                getCSVFile("docs_ok.csv"), options);
 
-        Framework.getLocalService(WorkManager.class).awaitCompletion(10,
+        workManager.awaitCompletion(10,
                 TimeUnit.SECONDS);
         session.save();
 
-        List<CSVImportLog> importLogs = importer.getWork().getImportLogs();
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(2, importLogs.size());
         CSVImportLog importLog = importLogs.get(0);
         assertEquals(1, importLog.getLine());
@@ -146,20 +158,22 @@ public class TestCSVImport {
             ClientException {
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(
                 false).build();
-        CSVImporter importer = new CSVImporter(options);
-        importer.run(session, "/", getCSVFile("docs_not_ok.csv"));
+        CSVImportId importId = csvImporter.launchImport(session, "/",
+                getCSVFile("docs_not_ok.csv"), options);
 
-        Framework.getLocalService(WorkManager.class).awaitCompletion(10,
+        workManager.awaitCompletion(10,
                 TimeUnit.SECONDS);
         session.save();
 
-        List<CSVImportLog> importLogs = importer.getWork().getImportLogs();
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(4, importLogs.size());
 
         CSVImportLog importLog = importLogs.get(0);
         assertEquals(1, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals("Unable to convert field 'dc:issued' with value '10012010'", importLog.getMessage());
+        assertEquals(
+                "Unable to convert field 'dc:issued' with value '10012010'",
+                importLog.getMessage());
         importLog = importLogs.get(1);
         assertEquals(2, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
@@ -167,7 +181,8 @@ public class TestCSVImport {
         importLog = importLogs.get(2);
         assertEquals(3, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals("The type 'NotExistingType' does not exist", importLog.getMessage());
+        assertEquals("The type 'NotExistingType' does not exist",
+                importLog.getMessage());
         importLog = importLogs.get(3);
         assertEquals(4, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());

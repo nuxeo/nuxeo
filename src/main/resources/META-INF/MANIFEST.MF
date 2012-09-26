@@ -4,3 +4,5 @@ Bundle-Version: 1.0.0
 Bundle-Name: Nuxeo CSV
 Bundle-ManifestVersion: 1
 Bundle-SymbolicName: org.nuxeo.ecm.csv;singleton=true
+Nuxeo-Component: OSGI-INF/csv-importer-service.xml,
+ OSGI-INF/csv-workmanager-contrib.xml

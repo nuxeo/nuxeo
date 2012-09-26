@@ -1,34 +1,30 @@
 package org.nuxeo.ecm.csv;
 
+import static org.nuxeo.ecm.csv.CSVImportLog.*;
+
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public class CSVImporter {
+public interface CSVImporter {
 
-    protected final CSVImporterOptions options;
+    CSVImportId launchImport(CoreSession session, String parentPath,
+            Blob csvBlob, CSVImporterOptions options);
 
-    protected CSVImporterWork work;
+    CSVImportStatus getImportStatus(CSVImportId id);
 
-    public CSVImporter(CSVImporterOptions options) {
-        this.options = options;
-    }
+    List<CSVImportLog> getImportLogs(CSVImportId id);
 
-    public void run(CoreSession session, String parentPath, Blob csv) {
-        work = new CSVImporterWork(session.getRepositoryName(), parentPath,
-                session.getPrincipal().getName(), csv, options);
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        workManager.schedule(work,
-                WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
-    }
+    List<CSVImportLog> getImportLogs(CSVImportId id, Status... status);
 
-    public CSVImporterWork getWork() {
-        return work;
-    }
+    List<CSVImportLog> getLastImportLogs(CSVImportId id, int max);
 
+    List<CSVImportLog> getLastImportLogs(CSVImportId id, int max, Status... status);
+
+    CSVImportResult getImportResult(CSVImportId id);
 }

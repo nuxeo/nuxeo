@@ -12,7 +12,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public class DefaultDocumentModelFactory implements DocumentModelFactory {
+public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFactory {
 
     @Override
     public void createDocument(CoreSession session, String parentPath,
