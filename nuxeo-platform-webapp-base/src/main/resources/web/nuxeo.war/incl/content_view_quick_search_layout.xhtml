@@ -33,7 +33,7 @@ empty:
   <nxu:set var="elementsToReRender"
     value="#{cvid}_resultsPanel, #{resetFilterFormId}, #{filterFormId}, #{quickFilterFormId}, #{cvid}_contentViewActionsPanel, #{filterFormId}_panel"
     cache="true">
-  
+
   <a4j:outputPanel id="#{quickFilterFormId}_panel"
     styleClass="contentViewQuickFilterForm">
     <a4j:region id="#{quickFilterFormId}_region">
@@ -61,7 +61,7 @@ empty:
             value="#{selectionActions.onClick}" />
         </h:commandButton>
       </a4j:form>
-  
+
       <a4j:form id="#{quickFilterFormId}_more" ajaxSubmit="true"
         styleClass="action_bar">
         <a4j:commandLink value="..."
@@ -81,7 +81,7 @@ empty:
             value="#{selectionActions.onClick}" />
         </a4j:commandLink>
       </a4j:form>
-  
+
       <a4j:form id="#{resetFilterFormId}" ajaxSubmit="true"
         styleClass="action_bar">
         <a4j:commandLink
@@ -113,7 +113,7 @@ empty:
           </f:facet>
         </a4j:status>
       </div>
-  
+
     </a4j:region>
   </a4j:outputPanel>
 
@@ -121,7 +121,7 @@ empty:
     <a4j:region id="#{filterFormId}_region">
       <nxu:valueHolder id="#{cvid}_showFilterFormBox"
         var="showFilterFormBox" defaultValue="#{nxu:hasMessages(filterFormId)}">
-    
+
         <c:if test="#{showFilterFormBox}">
           <script>
             jQuery('<a href="##{filterFormId}_box"></a>').fancybox({
@@ -137,18 +137,17 @@ empty:
             jQuery('##{filterFormId}').focusFirst();
           </script>
         </c:if>
-    
+
         <div  style="display:none;">
         <div id="#{filterFormId}_box">
-      
+
           <a4j:form id="#{filterFormId}" ajaxSubmit="true"
             reRender="#{elementsToReRender}"
             ignoreDupResponses="true"
             requestDelay="100"
             eventsQueue="contentViewQueue"
-            styleClass="action_bar"
             oncomplete="jQuery.fancybox.close();">
-      
+
             <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
               value="#{contentView.searchDocumentModel}" />
 
@@ -180,16 +179,16 @@ empty:
                   value="#{contentView.resetSearchDocumentModel()}" />
               </a4j:commandButton>
             </p>
-    
+
           </a4j:form>
-    
+
         </div>
         </div>
-    
+
       </nxu:valueHolder>
     </a4j:region>
   </a4j:outputPanel>
-  
+
   </nxu:set>
   </nxu:set>
   </nxu:set>
