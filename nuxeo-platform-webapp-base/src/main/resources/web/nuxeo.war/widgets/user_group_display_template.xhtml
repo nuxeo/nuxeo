@@ -51,7 +51,7 @@
       <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, info.entry[userSchema][firstNameField], info.entry[userSchema][lastNameField])}" />
     </c:otherwise>
   </c:choose>
-  <h:graphicImage value="/icons/user.png" alt="user.png"
+  <h:graphicImage value="/icons/user.gif" alt="user.gif"
     rendered="#{not hideIcon}" />
   <c:if test="#{displayAction == 'nothing' or empty displayAction}">
     <h:outputText value="#{userDisplayName}" />
@@ -70,7 +70,7 @@
   </c:if>
 </h:outputText>
 <h:outputText rendered="#{info.type == 'GROUP_TYPE'}">
-  <h:graphicImage value="/icons/group.png" alt="group.png"
+  <h:graphicImage value="/icons/group.gif" alt="group.gif"
     rendered="#{not hideIcon}" />
   <c:set var="groupDisplayName"
     value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}" />

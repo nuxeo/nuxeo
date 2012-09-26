@@ -53,7 +53,7 @@
         <nxu:set var="info"
           value="#{userSuggestionActions.getUserInfo(item)}">
         <nxu:set var="displayAction"
-          value="view">
+          value="nothing">
           <ui:include src="user_group_display_template.xhtml" />
         </nxu:set>
         </nxu:set>
@@ -147,9 +147,15 @@
                 <h:panelGrid columns="2" columnClasses="iconColumn, ">
                   <h:panelGroup>
                     <c:if test="#{showActions}">
-                      <ui:include src="/widgets/list_widget_template_actions.xhtml">
-                        <ui:param name="forComponentId" value="#{widget.id}_list" />
-                      </ui:include>
+                      <a4j:commandLink immediate="true"
+                        actionListener="#{editableListBean.performAction}"
+                        id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
+                        bypassUpdates="true">
+                        <h:graphicImage value="/icons/action_delete.gif" />
+                        <f:param name="for" value="#{widget.id}_list" />
+                        <f:param name="index" value="#{model.rowIndex}" />
+                        <f:param name="type" value="remove" />
+                      </a4j:commandLink>
                     </c:if>
                   </h:panelGroup>
                   <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(model.rowData)}">
