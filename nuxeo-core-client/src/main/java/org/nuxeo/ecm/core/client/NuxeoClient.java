@@ -37,12 +37,7 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
-import org.nuxeo.ecm.core.schema.TypeProvider;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServiceDescriptor;
-import org.nuxeo.runtime.api.ServiceManager;
 import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.api.login.LoginService;
 import org.nuxeo.runtime.api.login.SecurityDomain;
@@ -228,18 +223,7 @@ public final class NuxeoClient {
         }
     }
 
-    /**
-     * Workaround for being able to load schemas from remote
-     * TODO integrate this in core
-     */
     private static void schemaRemotingWorkaround(String host) throws Exception {
-        ServiceManager serviceManager = Framework.getLocalService(ServiceManager.class);
-        ServiceDescriptor sd = new ServiceDescriptor(TypeProvider.class, "core");
-        sd.setLocator("%TypeProviderBean");
-        serviceManager.registerService(sd);
-        TypeProvider typeProvider = Framework.getService(TypeProvider.class);
-        SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
-        ((SchemaManagerImpl) schemaMgr).importTypes(typeProvider);
     }
 
     public synchronized void disconnect() throws Exception {

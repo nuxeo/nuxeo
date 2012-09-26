@@ -12,15 +12,13 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
-import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -37,16 +35,8 @@ public class TestMediaType extends NXRuntimeTestCase{
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-media-types-contrib.xml");
-        typeMgr = getTypeManager();
+        typeMgr = Framework.getLocalService(SchemaManager.class);
     }
-
-     public static SchemaManagerImpl getTypeManager() {
-            return (SchemaManagerImpl) getTypeService().getTypeManager();
-     }
-
-     public static TypeService getTypeService() {
-            return (TypeService) Framework.getRuntime().getComponent(TypeService.NAME);
-     }
 
     // shema name != prefix name
     @Test

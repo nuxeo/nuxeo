@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.schema;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,9 +38,7 @@ import org.nuxeo.ecm.core.schema.types.TypeBindingException;
 import org.nuxeo.ecm.core.schema.types.TypeException;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.StringLengthConstraint;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -59,7 +56,6 @@ import com.sun.xml.xsom.XSSchemaSet;
 import com.sun.xml.xsom.XSTerm;
 import com.sun.xml.xsom.XSType;
 import com.sun.xml.xsom.XmlString;
-import com.sun.xml.xsom.impl.ListSimpleTypeImpl;
 import com.sun.xml.xsom.impl.RestrictionSimpleTypeImpl;
 import com.sun.xml.xsom.parser.XSOMParser;
 
@@ -74,44 +70,42 @@ public class XSDLoader {
 
     private static final Log log = LogFactory.getLog(XSDLoader.class);
 
-    private final SchemaManagerImpl typeManager;
+    private final SchemaManager schemaManager;
 
-    private XSOMParser parser;
-
-    public XSDLoader(SchemaManagerImpl typeManager) {
-        this.typeManager = typeManager;
-        // initParser();
-        // TODO: all schemas are collected in the schema set when reusing the
-        // parser
+    public XSDLoader(SchemaManager schemaManager) {
+        this.schemaManager = schemaManager;
     }
 
-    protected void initParser() {
-        parser = new XSOMParser();
+    protected XSOMParser getParser() {
+        XSOMParser parser = new XSOMParser();
         ErrorHandler errorHandler = new SchemaErrorHandler();
         parser.setErrorHandler(errorHandler);
-        parser.setEntityResolver(new CustomEntityResolver());
+        return parser;
     }
 
-    // TODO: this type of loading schemas must use a new parser each time
-    // a new schema should be loaded.
-    // When reusing the parser the SchemaSet is collecting all the schemas.
-    public static XSSchema getUserSchema(XSSchemaSet schemaSet) {
-        Collection<XSSchema> schemas = schemaSet.getSchemas();
-        for (XSSchema schema : schemas) {
-            String ns = schema.getTargetNamespace();
-            if (ns.length() > 0 && !ns.equals(NS_XSD)) {
-                return schema;
-            }
+    protected static class SchemaErrorHandler implements ErrorHandler {
+        @Override
+        public void error(SAXParseException e) throws SAXException {
+            log.error("Error: " + e.getMessage());
+            throw e;
         }
-        return null;
+
+        @Override
+        public void fatalError(SAXParseException e) throws SAXException {
+            log.error("FatalError: " + e.getMessage());
+            throw e;
+        }
+
+        @Override
+        public void warning(SAXParseException e) throws SAXException {
+            log.error("Warning: " + e.getMessage());
+        }
     }
 
+    // called by SchemaManagerImpl
     public Schema loadSchema(String name, String prefix, File file,
             boolean override) throws SAXException, IOException, TypeException {
-        initParser();
-        // TODO: after fixing schema loading remove this and put it in the ctor
-        // since we may improve schema loading speed by reusing already parsed
-        // schemas
+        XSOMParser parser = getParser();
         String systemId = file.toURI().toURL().toExternalForm();
         if (file.getPath().startsWith("\\\\")) { // Windows UNC share
             // work around a bug in Xerces due to
@@ -122,97 +116,80 @@ public class XSDLoader {
             systemId = systemId.replace("file://", "file:////");
         }
         parser.parse(systemId);
-        XSSchemaSet schemaSet = parser.getResult();
-        if (schemaSet != null) {
-            XSSchema schema = getUserSchema(schemaSet);
-            if (schema != null) {
-                return loadSchema(name, prefix, schema, override);
-            }
-        }
-        return null;
+        return loadSchema(name, prefix, parser.getResult(), override);
     }
 
+    // called by tests
     public Schema loadSchema(String name, String prefix, URL url)
             throws SAXException, TypeException {
-        initParser();
-        // TODO: after fixing schema loading remove this and put it in the ctor
+        XSOMParser parser = getParser();
         parser.parse(url);
-        XSSchemaSet schemaSet = parser.getResult();
-        if (schemaSet != null) {
-            XSSchema schema = getUserSchema(schemaSet);
-            if (schema != null) {
-                return loadSchema(name, prefix, schema, false);
-            }
-        }
-        return null;
+        return loadSchema(name, prefix, parser.getResult(), false);
     }
 
-    public Schema loadSchema(String name, String prefix, InputStream in)
-            throws SAXException, TypeException {
-        initParser();
-        // TODO: after fixing schema loading remove this and put it in the ctor
-        parser.parse(in);
-        XSSchemaSet schemaSet = parser.getResult();
-        if (schemaSet != null) {
-            XSSchema schema = getUserSchema(schemaSet);
-            if (schema != null) {
-                return loadSchema(name, prefix, schema, false);
+    protected Schema loadSchema(String name, String prefix,
+            XSSchemaSet schemaSet, boolean override) throws SAXException,
+            TypeException {
+        if (schemaSet == null) {
+            return null;
+        }
+        Collection<XSSchema> schemas = schemaSet.getSchemas();
+        XSSchema schema = null;
+        String ns = null;
+        for (XSSchema s : schemas) {
+            ns = s.getTargetNamespace();
+            if (ns.length() > 0 && !ns.equals(NS_XSD)) {
+                schema = s;
+                break;
             }
         }
-        return null;
-    }
-
-    public Schema loadSchema(String name, String prefix, XSSchema schema,
-            boolean override) throws TypeException {
-        String ns = schema.getTargetNamespace();
-        try {
-            Schema ecmSchema = typeManager.getSchema(name);
-            if (ecmSchema != null) {
-                // schema already defined
-                log.info("Schema " + ns + " is already registered");
-                if (!override) {
-                    log.debug("Schema " + ns + " will not be overridden");
-                    return ecmSchema;
-                }
-            }
-            ecmSchema = new SchemaImpl(name, new Namespace(ns, prefix));
-            // load elements
-            Collection<XSElementDecl> elements = schema.getElementDecls().values();
-            for (XSElementDecl el : elements) {
-                // register the type if not yet registered
-                Type ecmType = loadType(ecmSchema, el.getType(), el.getName());
-                if (ecmType != null) {
-                    // add the field to the schema
-                    createField(ecmSchema, el, ecmType);
-                } else {
-                    log.warn("Failed to load field " + el.getName() + " : "
-                            + el.getType());
-                }
-            }
-
-            Collection<XSAttributeDecl> attributes = schema.getAttributeDecls().values();
-            for (XSAttributeDecl att : attributes) {
-                // register the type if not yet registered
-                Type ecmType = loadType(ecmSchema, att.getType(), att.getName());
-                if (ecmType != null) {
-                    // add the field to the schema
-                    createField(ecmSchema, att, ecmType);
-                } else {
-                    log.warn("Failed to load field from attribute "
-                            + att.getName() + " : " + att.getType());
-                }
-            }
-
-            typeManager.registerSchema(ecmSchema);
-            return ecmSchema;
-        } catch (TypeBindingException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new TypeException("Failed to load XSD schema " + ns, t);
+        if (schema == null) {
+            return null;
         }
+        Schema ecmSchema = schemaManager.getSchema(name);
+        if (ecmSchema != null) {
+            // schema already defined
+            log.info("Schema " + ns + " is already registered");
+            if (!override) {
+                log.debug("Schema " + ns + " will not be overridden");
+                return ecmSchema;
+            }
+        }
+        ecmSchema = new SchemaImpl(name, new Namespace(ns, prefix));
+
+        // load elements
+        Collection<XSElementDecl> elements = schema.getElementDecls().values();
+        for (XSElementDecl el : elements) {
+            // register the type if not yet registered
+            Type ecmType = loadType(ecmSchema, el.getType(), el.getName());
+            if (ecmType != null) {
+                // add the field to the schema
+                createField(ecmSchema, el, ecmType);
+            } else {
+                log.warn("Failed to load field " + el.getName() + " : "
+                        + el.getType());
+            }
+        }
+
+        // load attributes
+        Collection<XSAttributeDecl> attributes = schema.getAttributeDecls().values();
+        for (XSAttributeDecl att : attributes) {
+            // register the type if not yet registered
+            Type ecmType = loadType(ecmSchema, att.getType(), att.getName());
+            if (ecmType != null) {
+                // add the field to the schema
+                createField(ecmSchema, att, ecmType);
+            } else {
+                log.warn("Failed to load field from attribute " + att.getName()
+                        + " : " + att.getType());
+            }
+        }
+
+        schemaManager.registerSchema(ecmSchema);
+        return ecmSchema;
     }
 
-    public Type loadType(Schema schema, XSType type, String fieldName)
+    protected Type loadType(Schema schema, XSType type, String fieldName)
             throws TypeBindingException {
         String name;
         if (type.getName() == null || type.isLocal()) {
@@ -224,21 +201,25 @@ public class XSDLoader {
         } else {
             name = type.getName();
         }
-        Type ecmType = typeManager.getType(name);
         // look into global types
-        if (ecmType != null) { // an already registered type
+        Type ecmType = schemaManager.getType(name);
+        if (ecmType != null) {
             return ecmType;
         }
-        // look into user types
+        // look into user types for this schema
         ecmType = schema.getType(name);
-        if (ecmType != null) { // an already registered type
+        if (ecmType != null) {
             return ecmType;
-        } // TODO!!!!!!!
+        }
+        // maybe an alias to a primitive type?
         if (type.getTargetNamespace().equals(NS_XSD)) {
-            ecmType = XSDTypes.getType(name);
-            typeManager.registerType(ecmType);
-            return ecmType; // register the primitive type
-        } else if (type.isSimpleType()) {
+            ecmType = XSDTypes.getType(name); // find alias
+            if (ecmType == null) {
+                log.warn("Cannot use unknown XSD type: " + name);
+            }
+            return ecmType;
+        }
+        if (type.isSimpleType()) {
             if (type instanceof XSListSimpleType) {
                 ecmType = loadListType(schema, (XSListSimpleType) type);
             } else {
@@ -250,27 +231,20 @@ public class XSDLoader {
         if (ecmType != null) {
             schema.registerType(ecmType);
         } else {
-            log.warn("loadType return null!");
+            log.warn("loadType for " + fieldName + " of " + type
+                    + " returns null");
         }
         return ecmType;
     }
 
-    public Type loadLocalType(XSType xsType) {
-        // TODO
-        return null;
-    }
-
     /**
-     * 
-     * @param name the type name (not theat type may have a null name if an
+     * @param name the type name (note, the type may have a null name if an
      *            anonymous type)
      * @param type
      * @return
-     * @throws TypeBindingException
      */
-    private Type loadComplexType(Schema schema, String name, XSType type)
+    protected Type loadComplexType(Schema schema, String name, XSType type)
             throws TypeBindingException {
-        // String name = type.getName();
         XSType baseType = type.getBaseType();
         ComplexType superType = null;
         // the anyType is the basetype of itself
@@ -297,7 +271,7 @@ public class XSDLoader {
         return ret;
     }
 
-    private void loadAttributes(Schema schema, XSComplexType xsct,
+    protected void loadAttributes(Schema schema, XSComplexType xsct,
             ComplexType ct) throws TypeBindingException {
         Collection<? extends XSAttributeUse> attrs = xsct.getAttributeUses();
         for (XSAttributeUse attr : attrs) {
@@ -311,7 +285,7 @@ public class XSDLoader {
         }
     }
 
-    private SimpleType loadSimpleType(Schema schema, XSType type,
+    protected SimpleType loadSimpleType(Schema schema, XSType type,
             String fieldName) throws TypeBindingException {
         String name = type.getName();
         if (name == null) {
@@ -355,7 +329,7 @@ public class XSDLoader {
         return simpleType;
     }
 
-    private ListType loadListType(Schema schema, XSListSimpleType type) {
+    protected ListType loadListType(Schema schema, XSListSimpleType type) {
         String name = type.getName();
         if (name == null) {
             // probably a local type -> ignore it
@@ -370,7 +344,7 @@ public class XSDLoader {
             // TODO: type must be already defined - use a dependency manager or
             // something to
             // support types that are not yet defined
-            itemType = typeManager.getType(xsItemType.getName());
+            itemType = schemaManager.getType(xsItemType.getName());
         }
         if (itemType == null) {
             log.error("list item type was not defined -> you should define first the item type");
@@ -379,7 +353,7 @@ public class XSDLoader {
         return new ListTypeImpl(schema.getName(), name, itemType);
     }
 
-    private Type createComplexType(Schema schema, ComplexType superType,
+    protected Type createComplexType(Schema schema, ComplexType superType,
             String name, XSContentType content) throws TypeBindingException {
 
         ComplexType ct = new ComplexTypeImpl(superType, schema.getName(), name);
@@ -401,7 +375,7 @@ public class XSDLoader {
         return processModelGroup(schema, superType, name, ct, mg);
     }
 
-    private Type createFakeComplexType(Schema schema, ComplexType superType,
+    protected Type createFakeComplexType(Schema schema, ComplexType superType,
             String name, XSModelGroup mg) throws TypeBindingException {
 
         ComplexType ct = new ComplexTypeImpl(superType, schema.getName(), name);
@@ -441,7 +415,7 @@ public class XSDLoader {
                     Type fakeType = createFakeComplexType(schema, superType,
                             name + "#anonymousListItem", term.asModelGroup());
                     // wrap it as a list
-                    ListType listType = createListType2(schema, name
+                    ListType listType = createListType(schema, name
                             + "#anonymousListType", fakeType, 0, maxOccur);
                     // add the listfield to the current CT
                     String fieldName = ct.getName() + "#anonymousList";
@@ -454,7 +428,7 @@ public class XSDLoader {
                 if (maxOccur < 0 || maxOccur > 1) {
                     Type fieldType = loadType(schema, element.getType(),
                             element.getName());
-                    ListType listType = createListType2(schema,
+                    ListType listType = createListType(schema,
                             element.getName() + "#anonymousListType",
                             fieldType, 0, maxOccur);
                     // add the listfield to the current CT
@@ -468,7 +442,7 @@ public class XSDLoader {
         return ct;
     }
 
-    public ListType createListType(Schema schema, String name,
+    protected ListType createListType(Schema schema, String name,
             XSParticle particle) throws TypeBindingException {
         XSElementDecl element = particle.getTerm().asElementDecl();
         if (element == null) {
@@ -489,14 +463,14 @@ public class XSDLoader {
                 particle.getMaxOccurs());
     }
 
-    public ListType createListType2(Schema schema, String name, Type itemType,
-            int min, int max) throws TypeBindingException {
+    protected static ListType createListType(Schema schema, String name,
+            Type itemType, int min, int max) throws TypeBindingException {
         String elementName = name + "#item";
         return new ListTypeImpl(schema.getName(), name, itemType, elementName,
                 null, min, max);
     }
 
-    private void loadComplexTypeElement(Schema schema, ComplexType type,
+    protected void loadComplexTypeElement(Schema schema, ComplexType type,
             XSElementDecl element) throws TypeBindingException {
         XSType elementType = element.getType();
 
@@ -506,7 +480,7 @@ public class XSDLoader {
         }
     }
 
-    private static Field createField(ComplexType type, XSElementDecl element,
+    protected static Field createField(ComplexType type, XSElementDecl element,
             Type fieldType) {
         String elementName = element.getName();
         XmlString dv = element.getDefaultValue();
@@ -543,8 +517,8 @@ public class XSDLoader {
         return field;
     }
 
-    private static Field createField(ComplexType type, XSAttributeDecl element,
-            Type fieldType) {
+    protected static Field createField(ComplexType type,
+            XSAttributeDecl element, Type fieldType) {
         String elementName = element.getName();
         XmlString dv = element.getDefaultValue();
         String defValue = null;
@@ -562,46 +536,7 @@ public class XSDLoader {
         return type.addField(elementName, fieldType.getRef(), defValue, flags);
     }
 
-    static class SchemaErrorHandler implements ErrorHandler {
-
-        @Override
-        public void error(SAXParseException exception) throws SAXException {
-            log.error("Error: " + exception.getMessage());
-            throw exception;
-        }
-
-        @Override
-        public void fatalError(SAXParseException exception) throws SAXException {
-            log.error("FatalError: " + exception.getMessage());
-            throw exception;
-        }
-
-        @Override
-        public void warning(SAXParseException exception) throws SAXException {
-            log.error("Warning: " + exception.getMessage());
-        }
-
-    }
-
-    class CustomEntityResolver implements EntityResolver {
-
-        @Override
-        public InputSource resolveEntity(String publicId, String systemId)
-                throws SAXException, IOException {
-            if (systemId != null) {
-                URL url = typeManager.resolveSchemaLocation(systemId);
-                if (url != null) {
-                    InputSource is = new InputSource(url.openStream());
-                    is.setPublicId(publicId);
-                    return is;
-                }
-            }
-            return null;
-        }
-
-    }
-
-    private static String getAnonymousTypeName(XSType type, String fieldName) {
+    protected static String getAnonymousTypeName(XSType type, String fieldName) {
         if (type.isComplexType()) {
             XSElementDecl container = type.asComplexType().getScope();
             String elName = container.getName();

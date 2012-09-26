@@ -13,6 +13,11 @@
 
 package org.nuxeo.ecm.core.schema;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,10 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
-
+import org.junit.Test;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Constraint;
@@ -42,7 +45,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
 
-    private SchemaManagerImpl typeMgr;
+    private SchemaManager typeMgr;
 
     private XSDLoader reader;
 
@@ -50,17 +53,8 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
-        typeMgr = getTypeManager();
-        reader = new XSDLoader(typeMgr);
-    }
-
-    public static TypeService getTypeService() {
-        return (TypeService) Framework.getRuntime().getComponent(
-                TypeService.NAME);
-    }
-
-    public static SchemaManagerImpl getTypeManager() {
-        return (SchemaManagerImpl) getTypeService().getTypeManager();
+        typeMgr = Framework.getLocalService(SchemaManager.class);
+        reader = new XSDLoader((SchemaManagerImpl) typeMgr);
     }
 
     // FIXME: this tests makes too string assumptions on how the fields will be

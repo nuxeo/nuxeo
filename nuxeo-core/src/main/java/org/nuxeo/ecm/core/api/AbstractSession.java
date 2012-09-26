@@ -100,7 +100,6 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.schema.NXSchema;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -154,19 +153,19 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
 
         private static final long serialVersionUID = 1L;
-        
+
         public final IterableQueryResult result;
-        
+
         public QueryAndFetchExecuteContextException(IterableQueryResult result) {
             super("query and fetch call context");
             this.result = result;
         }
-        
+
     }
-    
+
     protected final Set<QueryAndFetchExecuteContextException> queryResults =
             new HashSet<QueryAndFetchExecuteContextException>();
-    
+
     /**
      * Private access to protected it again direct access since this field is
      * lazy loaded. You must use {@link #getEventService()} to get the service
@@ -256,7 +255,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     @Override
     public DocumentType getDocumentType(String type) {
-        return NXSchema.getSchemaManager().getDocumentType(type);
+        return Framework.getLocalService(SchemaManager.class).getDocumentType(
+                type);
     }
 
     @Override
@@ -1594,7 +1594,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             }
             QueryFilter queryFilter = new QueryFilter(principal, principals,
                     permissions, null, transformers, 0, 0);
-            IterableQueryResult result = 
+            IterableQueryResult result =
              getSession().queryAndFetch(query, queryType, queryFilter,
                     params);
             queryResults.add(new QueryAndFetchExecuteContextException(result));
@@ -1617,13 +1617,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 context.result.close();
             } catch (Exception e) {
                 log.error("Cannot close query result", e);
-            } finally {                
+            } finally {
                 log.warn("Closing a query results for you, check stack trace for allocating point", context);
             }
-            
+
         }
     }
-    
+
     @Override
     public DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException {
@@ -3273,7 +3273,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     protected void loadDataModelsForFacet(DocumentModel docModel, Document doc,
             String facetName) throws ClientException {
         // Load all the data related to facet's schemas
-        SchemaManager schemaManager = NXSchema.getSchemaManager();
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         CompositeType facet = schemaManager.getFacet(facetName);
         if (facet == null) {
             return;

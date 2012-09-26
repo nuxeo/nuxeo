@@ -12,28 +12,25 @@
 
 package org.nuxeo.ecm.core.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
-import org.nuxeo.ecm.core.schema.TypeService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 public class TestBlobExtractor extends NXRuntimeTestCase {
 
@@ -45,7 +42,6 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.core.api.tests",
         "OSGI-INF/test-propmodel-types-contrib.xml");
-        typeMgr = getTypeManager();
     }
 
     @Test
@@ -233,17 +229,6 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
             blob.setMimeType("application/pdf");
         }
         return blob;
-    }
-
-    protected SchemaManager typeMgr;
-
-    public static SchemaManagerImpl getTypeManager() {
-        return (SchemaManagerImpl) getTypeService().getTypeManager();
-    }
-
-    public static TypeService getTypeService() {
-        return (TypeService) Framework.getRuntime().getComponent(
-                TypeService.NAME);
     }
 
 }

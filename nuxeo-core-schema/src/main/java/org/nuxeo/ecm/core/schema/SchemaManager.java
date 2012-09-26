@@ -97,14 +97,14 @@ public interface SchemaManager extends TypeProvider {
     /**
      * Get the schema definition.
      *
-     * @return
+     * @deprecated since 5.7 (unused), will return exception
      */
-    // XXX: This should be refactored to get a serializable InputStream.
+    @Deprecated
     String getXmlSchemaDefinition(String name);
 
     /**
-     * Flush pending registrations 
-     * 
+     * Flush pending registrations
+     *
      * @since 5.7
      */
     void flushPendingsRegistration();

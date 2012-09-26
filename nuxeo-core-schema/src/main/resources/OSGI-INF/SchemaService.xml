@@ -91,14 +91,6 @@
       class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
   </extension-point>
 
-  <extension-point name="provider">
-    <documentation>
-    Extension point to register type providers. Type providsers are usually used to import types
-    defined on remote servers
-    </documentation>
-    <object class="org.nuxeo.ecm.core.schema.TypeProviderDescriptor"/>
-  </extension-point>
-
   <extension target="org.nuxeo.runtime.EventService" point="listeners">
     <listener
       class="org.nuxeo.ecm.core.schema.FlushPendingsRegistrationOnReloadListener">

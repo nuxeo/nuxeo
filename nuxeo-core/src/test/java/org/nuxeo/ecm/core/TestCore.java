@@ -23,11 +23,11 @@ import static org.junit.Assert.*;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.NXSchema;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestCore extends NXRuntimeTestCase {
@@ -41,7 +41,7 @@ public class TestCore extends NXRuntimeTestCase {
         deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
         deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/RepositoryService.xml");
         deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/CoreExtensions.xml");
-        typeManager = NXSchema.getSchemaManager();
+        typeManager = Framework.getLocalService(SchemaManager.class);
     }
 
     @After

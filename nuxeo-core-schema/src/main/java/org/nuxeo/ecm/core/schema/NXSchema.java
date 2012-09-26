@@ -27,6 +27,11 @@ public class NXSchema {
     private NXSchema() {
     }
 
+    /**
+     * @deprecated use {@code Framework.getLocalService(SchemaManager.class)}
+     *             instead
+     */
+    @Deprecated
     public static SchemaManager getSchemaManager() {
         return Framework.getLocalService(SchemaManager.class);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema;
 
 import java.util.Arrays;
@@ -27,8 +25,6 @@ import org.nuxeo.runtime.api.Framework;
  * This class uses lazy loading for schemas and field types.
  * <p>
  * Schemas and fields are cached to improve lookups time.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType {
 
@@ -43,43 +39,27 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
     protected int unstructured;
 
     protected String[] declaredFacets = EMPTY_FACETS;
+
     protected Set<String> facets;
 
+    // unused
     protected String[] subtypes;
 
     protected PrefetchInfo prefetchInfo;
 
-
-    public DocumentTypeImpl(DocumentType superType, String name) {
-        this(superType == null ? null : superType.getRef(), name, null, null, 0);
-    }
-
-    public DocumentTypeImpl(DocumentType superType, String name,
-            String[] declaredSchemas) {
-        this(superType == null ? null : superType.getRef(), name,
-                declaredSchemas, null, 0);
-    }
-
+    // called by registerDocumentType
     public DocumentTypeImpl(DocumentType superType, String name,
             String[] declaredSchemas, String[] declaredFacets) {
         this(superType == null ? null : superType.getRef(), name,
                 declaredSchemas, declaredFacets, 0);
     }
 
-    public DocumentTypeImpl(TypeRef<DocumentType> superType, String name) {
-        this(superType, name, null, null, 0);
+    // called by mock/tests
+    public DocumentTypeImpl(DocumentType superType, String name) {
+        this(superType == null ? null : superType.getRef(), name, null, null, 0);
     }
 
-    public DocumentTypeImpl(TypeRef<DocumentType> superType, String name,
-            String[] declaredSchemas) {
-        this (superType, name, declaredSchemas, null, 0);
-    }
-
-    public DocumentTypeImpl(TypeRef<DocumentType> superType, String name,
-            String[] declaredSchemas, String[] facets) {
-        this (superType, name, declaredSchemas, facets, 0);
-    }
-
+    // called by registerBuiltinTypes, and other ctors
     public DocumentTypeImpl(TypeRef<DocumentType> superType, String name,
             String[] declaredSchemas, String[] facets, int flags) {
         super(superType, SchemaNames.DOCTYPES, name, declaredSchemas);
@@ -88,7 +68,6 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         } else {
             DocumentType stype = (DocumentType) this.superType.get();
             if (stype != null) {
-
                 if (stype.isOrdered()) {
                     setFlags(T_ORDERED | T_FOLDER);
                 } else if (stype.isFolder()) {
@@ -186,6 +165,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         return new TypeRef<DocumentType>(schema, name, this);
     }
 
+    // unused
     @Override
     public String[] getChildrenTypes() {
         return subtypes;
@@ -196,6 +176,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         subtypes = subTypes;
     }
 
+    // unused
     @Override
     public DocumentType[] getResolvedChildrenTypes() {
         SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
@@ -209,6 +190,7 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         return null;
     }
 
+    // unused
     @Override
     public boolean isChildTypeAllowed(String name) {
         if (subtypes != null) {

@@ -15,7 +15,7 @@ package org.nuxeo.ecm.core.schema;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,7 +37,9 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.TypeException;
 import org.nuxeo.runtime.api.Framework;
+import org.xml.sax.SAXException;
 
 /**
  * Schema Manager implementation.
@@ -72,7 +74,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     private static final String FACET_PREFIX = "facet:";
 
-    public SchemaManagerImpl() throws Exception {
+    public SchemaManagerImpl() {
         pendingDocTypes = new HashMap<String, Set<DocumentTypeDescriptor>>();
         schemaDir = new File(Framework.getRuntime().getHome(), "schemas");
         typeReg = new SchemaTypeRegistry();
@@ -86,41 +88,12 @@ public class SchemaManagerImpl implements SchemaManager {
             registerType(type);
         }
         registerBuiltinTypes();
-        TypeProvider provider = Framework.getService(TypeProvider.class);
-        if (provider != this && provider != null) {
-            // should be a remote provider
-            importTypes(provider);
-        }
     }
 
     protected void registerBuiltinTypes() {
         registerDocumentType(new DocumentTypeImpl(null, TypeConstants.DOCUMENT,
                 null, null, DocumentTypeImpl.T_DOCUMENT));
         registerType(AnyType.INSTANCE);
-    }
-
-    /**
-     * Initializes initial types using a remote provider if any was specified.
-     * <p>
-     * Should be called when a provider is registered.
-     */
-    public synchronized void importTypes(TypeProvider provider) {
-        // import remote types
-        DocumentType[] docTypes = provider.getDocumentTypes();
-        for (DocumentType docType : docTypes) {
-            registerDocumentType(docType);
-        }
-        Schema[] schemas = provider.getSchemas();
-        for (Schema schema : schemas) {
-            registerSchema(schema);
-        }
-        Type[] types = provider.getTypes();
-        for (Type type : types) {
-            registerType(type);
-        }
-        for (CompositeType facet : provider.getFacets()) {
-            registerFacet(facet);
-        }
     }
 
     @Override
@@ -199,7 +172,41 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    @Override
+    public void registerSchema(SchemaBindingDescriptor sd) throws IOException,
+            SAXException, TypeException {
+        if (sd.src != null && sd.src.length() > 0) {
+            URL url = sd.context.getLocalResource(sd.src);
+            if (url == null) { // try asking the class loader
+                url = sd.context.getResource(sd.src);
+            }
+            if (url != null) {
+                InputStream in = url.openStream();
+                try {
+                    File file = new File(getSchemaDirectory(),
+                            sd.name + ".xsd");
+                    FileUtils.copyToFile(in, file); // may overwrite
+                    Schema oldschema = getSchema(sd.name);
+                    // loadSchema calls this.registerSchema
+                    XSDLoader schemaLoader = new XSDLoader(this);
+                    schemaLoader.loadSchema(sd.name, sd.prefix, file,
+                            sd.override);
+                    if (oldschema == null) {
+                        log.info("Registered schema: " + sd.name + " from "
+                                + url.toString());
+                    } else {
+                        log.info("Reregistered schema: " + sd.name);
+                    }
+                } finally {
+                    in.close();
+                }
+            } else {
+                log.error("XSD Schema not found: " + sd.src);
+            }
+        } else {
+            log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
+        }
+    }
+
     public Schema unregisterSchema(String name) {
         Schema schema = schemaReg.getSchema(name);
         if (schema == null) {
@@ -454,27 +461,8 @@ public class SchemaManagerImpl implements SchemaManager {
         facetReg.clear();
     }
 
-    public void setSchemaDirectory(File dir) {
-        schemaDir = dir;
-    }
-
-    public File getSchemaDirectory() {
+    protected File getSchemaDirectory() {
         return schemaDir;
-    }
-
-    public File getSchemaFile(String name) {
-        return new File(schemaDir, name + ".xsd");
-    }
-
-    public URL resolveSchemaLocation(String location) {
-        if (location.startsWith("schema://")) {
-            try {
-                return new File(schemaDir, location).toURI().toURL();
-            } catch (MalformedURLException e) {
-                log.error("failed to resolve schema location: " + location, e);
-            }
-        }
-        return null;
     }
 
     /**
@@ -500,19 +488,9 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     @Override
+    @Deprecated
     public String getXmlSchemaDefinition(String name) {
-        File file = getSchemaFile(name);
-        if (file != null) {
-            try {
-                return FileUtils.readFile(file);
-            } catch (IOException e) {
-                log.error(
-                        String.format("Could not read xsd file for '%s'", name),
-                        e);
-                return null;
-            }
-        }
-        return null;
+        throw new UnsupportedOperationException("Deprecated");
     }
 
     @Override

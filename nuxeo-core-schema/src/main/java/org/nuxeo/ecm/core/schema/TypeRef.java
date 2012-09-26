@@ -63,10 +63,6 @@ public class TypeRef<T extends Type> implements Serializable {
         return name;
     }
 
-    public String getSchema() {
-        return schema;
-    }
-
     public T get() {
         if (object == null) {
             try {
@@ -76,24 +72,6 @@ public class TypeRef<T extends Type> implements Serializable {
             }
         }
         return object;
-    }
-
-    public boolean isLoaded() {
-        return object == null;
-    }
-
-    public T reload() {
-        try {
-            object = load();
-            return object;
-        } catch (Exception e) {
-            log.error(e, e);
-            return null;
-        }
-    }
-
-    public void reset() {
-        object = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -124,7 +102,7 @@ public class TypeRef<T extends Type> implements Serializable {
 
     @Override
     public String toString() {
-        return new StringBuffer(128).append(schema).append(':').append(name).toString();
+        return schema + ':' + name;
     }
 
 }
