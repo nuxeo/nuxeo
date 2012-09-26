@@ -47,6 +47,7 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
         Configuration config = new Configuration();
         config.setTemplateLoader(new NuxeoTemplatesLoader());
         config.setDefaultEncoding("UTF-8");
+        config.setClassicCompatible(true);
         return config;
     }
 
