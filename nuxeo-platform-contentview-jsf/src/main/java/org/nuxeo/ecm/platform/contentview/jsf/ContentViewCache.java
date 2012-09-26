@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
 
 /**
@@ -66,6 +67,10 @@ public class ContentViewCache implements Serializable {
     /**
      * Add given content view to the cache, resolving its cache key and
      * initializing it with its cache size.
+     * <p>
+     * Since 5.7, content views with a cache size <= 0 will be cached anyhow to
+     * handle selections, and rendering is in charge of forcing cache reset
+     * when re-displaying the page.
      */
     public void add(ContentView cView) {
         if (cView != null) {
@@ -80,9 +85,21 @@ public class ContentViewCache implements Serializable {
                 cacheSize = DEFAULT_CACHE_SIZE;
             }
             if (cacheSize.intValue() <= 0) {
-                // no cache
-                return;
+                boolean hasSelectionList = !StringUtils.isBlank(cView.getSelectionListName());
+                if (!hasSelectionList) {
+                    // no cache
+                    return;
+                } else {
+                    // if content view has a selection list and cacheSize <= 0,
+                    // selection actions will not behave accurately => behave
+                    // as if cacheSize was 1 in this case, and use a dummy
+                    // cache key. Template rendering will force cache refresh
+                    // when rendering the page, as if content view was not
+                    // cached.
+                    cacheSize = Integer.valueOf(1);
+                }
             }
+
             Map<String, ContentView> cacheEntry = cacheInstances.get(name);
             if (cacheEntry == null) {
                 cacheEntry = new LRUCachingMap<String, ContentView>(

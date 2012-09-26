@@ -141,6 +141,10 @@ public class ContentViewImpl implements ContentView {
         this.flags = flags;
         this.cacheKey = cacheKey;
         this.cacheSize = cacheSize;
+        if (cacheSize != null && cacheSize.intValue() <= 0) {
+            // force a static cache key
+            this.cacheKey = "static_key_no_cache";
+        }
         this.refreshEventNames = refreshEventNames;
         this.resetEventNames = resetEventNames;
         this.useGlobalPageSize = useGlobalPageSize;
