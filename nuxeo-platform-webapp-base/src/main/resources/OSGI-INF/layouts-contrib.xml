@@ -62,7 +62,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">third label field</label>
+        <label mode="any">Third label field</label>
       </labels>
       <helpLabels>
         <label mode="any">
@@ -160,12 +160,12 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">allow email display in user suggestions</label>
+        <label mode="any">Display email for users</label>
       </labels>
       <helpLabels>
         <label mode="any">
-          Boolean indicating if the email should be display in
-          user suggestion. Defaults to false. Available since 5.5.
+          Boolean indicating if the email should be displayed
+          for users. Defaults to false. Available since 5.5.
         </label>
       </helpLabels>
       <fields>
