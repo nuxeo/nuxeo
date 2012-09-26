@@ -358,6 +358,14 @@ public class NotificationEventListener implements
             log.warn("Failed to send notification email to '" + email + "': "
                     + e.getClass().getName() + ": " + e.getMessage());
         } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                StringBuilder sb = new StringBuilder(
+                        "Failed to send email with these properties:\n");
+                for (String key : mail.keySet()) {
+                    sb.append("\t " + key + ": " + mail.get(key) + "\n");
+                }
+                log.debug(sb.toString());
+            }
             throw new ClientException("Failed to send notification email ", e);
         }
     }
