@@ -30,7 +30,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.schema.NXSchema;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -103,7 +103,8 @@ public class SQLDirectory extends AbstractDirectory {
             // setup table and fields maps
             table = SQLHelper.addTable(config.tableName, dialect,
                     useNativeCase());
-            schema = NXSchema.getSchemaManager().getSchema(config.schemaName);
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            schema = schemaManager.getSchema(config.schemaName);
             if (schema == null) {
                 throw new DirectoryException("schema not found: "
                         + config.schemaName);

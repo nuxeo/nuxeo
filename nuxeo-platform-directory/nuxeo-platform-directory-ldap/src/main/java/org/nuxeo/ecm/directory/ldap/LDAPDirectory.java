@@ -38,7 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.schema.NXSchema;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
@@ -101,8 +101,8 @@ public class LDAPDirectory extends AbstractDirectory {
                             + config.getName());
         }
         // computing attributes that will be useful for all sessions
-        Schema schema = NXSchema.getSchemaManager().getSchema(
-                config.getSchemaName());
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        Schema schema = schemaManager.getSchema(config.getSchemaName());
         if (schema == null) {
             throw new DirectoryException(config.getSchemaName()
                     + " is not a registered schema");
