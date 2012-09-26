@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import static org.jboss.seam.ScopeType.*;
+import static org.jboss.seam.ScopeType.PAGE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -238,7 +238,7 @@ public class UserSuggestionActionsBean implements Serializable {
             throws ClientException {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put(PREFIXED_ID_KEY_NAME, id);
-        if (id != null) {
+        if (!StringUtils.isBlank(id)) {
             if (id.startsWith(NuxeoPrincipal.PREFIX)) {
                 res.put(TYPE_KEY_NAME, USER_TYPE);
                 String username = id.substring(NuxeoPrincipal.PREFIX.length());
@@ -265,7 +265,7 @@ public class UserSuggestionActionsBean implements Serializable {
             res.put(PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + id);
             res.put(TYPE_KEY_NAME, GROUP_TYPE);
             res.put(ENTRY_KEY_NAME, userManager.getGroupModel(id));
-        } else {
+        } else if (!StringUtils.isBlank(id)) {
             // user
             res.put(PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + id);
             res.put(TYPE_KEY_NAME, USER_TYPE);

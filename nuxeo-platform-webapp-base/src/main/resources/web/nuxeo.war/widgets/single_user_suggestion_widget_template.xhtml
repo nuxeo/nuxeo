@@ -1,81 +1,51 @@
-<div xmlns:f="http://java.sun.com/jsf/core"
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:rich="http://richfaces.org/rich">
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+<c:set var="firstLabelField"
+  value="#{nxu:test(!empty widgetProperty_firstLabelField, widgetProperty_firstLabelField, 'firstName')}" />
+<c:set var="secondLabelField"
+  value="#{nxu:test(!empty widgetProperty_secondLabelField, widgetProperty_secondLabelField, 'lastName')}" />
+<c:set var="thirdLabelField"
+  value="#{nxu:test(!empty widgetProperty_thirdLabelField, widgetProperty_thirdLabelField, 'email')}" />
+<c:set var="hideFirstLabel"
+  value="#{nxu:test(!empty widgetProperty_hideFirstLabel, widgetProperty_hideFirstLabel, false)}" />
+<c:set var="hideSecondLabel"
+  value="#{nxu:test(!empty widgetProperty_hideSecondLabel, widgetProperty_hideSecondLabel, false)}" />
+<c:set var="hideThirdLabel"
+  value="#{nxu:test(!empty widgetProperty_hideThirdLabel, widgetProperty_hideThirdLabel, false)}" />
+<c:set var="showEmail"
+  value="#{nxu:test(!empty widgetProperty_displayEmailInSuggestion, widgetProperty_displayEmailInSuggestion, false)}" />
+<c:set var="firstNameField" value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
+<c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
+<c:set var="emailField" value="#{nxu:test(hideThirdLabel, null, thirdLabelField)}" />
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}"><nxu:set var="info"
+  value="#{userSuggestionActions.getUserInfo(field)}"><nxu:set var="hideIcon"
+  value="true"><ui:include src="user_group_display_template.xhtml" /></nxu:set></nxu:set>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(field)}"
+      cache="true">
+      <ui:include src="user_group_display_template.xhtml" />
+    </nxu:set>
+  </nxp:html>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
-<c:set var="userSchema" value="#{userManager.userSchemaName}" />
-
-<c:if test="#{widget.mode != 'edit'}">
-
-  <c:set var="searchType"
-    value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
-  <c:set var="firstLabelField"
-    value="#{nxu:test(!empty widgetProperty_firstLabelField, widgetProperty_firstLabelField, 'firstName')}" />
-  <c:set var="secondLabelField"
-    value="#{nxu:test(!empty widgetProperty_secondLabelField, widgetProperty_secondLabelField, 'lastName')}" />
-  <c:set var="hideFirstLabel"
-    value="#{nxu:test(!empty widgetProperty_hideFirstLabel, widgetProperty_hideFirstLabel, false)}" />
-  <c:set var="hideSecondLabel"
-    value="#{nxu:test(!empty widgetProperty_hideSecondLabel, widgetProperty_hideSecondLabel, false)}" />
   <c:set var="displayAction"
     value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'nothing')}" />
 
-  <c:set var="userDirectory" value="#{userManager.userDirectoryName}" />
-  <c:set var="userSchema" value="#{userManager.userSchemaName}" />
-  <c:set var="firstNameField" value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
-  <c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
+  <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(field)}"
+    cache="true">
+    <ui:include src="user_group_display_template.xhtml" />
+  </nxu:set>
 
-  <f:subview rendered="#{displayAction == 'nothing' and searchType == 'USER_TYPE'}">
-    <h:outputText value="#{field_0}"
-      converter="#{userSuggestionActions.userConverter}">
-      <f:attribute name="prefixed" value="false" />
-      <f:attribute name="userDirectory" value="#{userDirectory}" />
-      <f:attribute name="userSchema" value="#{userSchema}" />
-      <f:attribute name="firstNameField" value="#{firstNameField}" />
-      <f:attribute name="lastNameField" value="#{lastNameField}" />
-    </h:outputText>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'nothing' and searchType == 'GROUP_TYPE'}">
-    <h:outputText value="#{field_0}"/>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'view' and searchType == 'USER_TYPE'}">
-    <h:commandLink action="#{userManagementActions.viewUser(field_0)}">
-      <h:outputText value="#{field_0}"
-        converter="#{userSuggestionActions.userConverter}">
-        <f:attribute name="prefixed" value="false" />
-        <f:attribute name="userDirectory" value="#{userDirectory}" />
-        <f:attribute name="userSchema" value="#{userSchema}" />
-        <f:attribute name="firstNameField" value="#{firstNameField}" />
-        <f:attribute name="lastNameField" value="#{lastNameField}" />
-      </h:outputText>
-    </h:commandLink>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'view' and searchType == 'GROUP_TYPE'}">
-    <h:commandLink action="#{groupManagementActions.viewGroup(field_0)}">
-      <h:outputText value="#{field_0}" />
-    </h:commandLink>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'edit' and searchType == 'USER_TYPE'}">
-    <a4j:commandLink action="#{userManagementActions.setSelectedUser(field_0)}" actionListener="#{userManagementActions.toggleShowUserOrGroup}" reRender="usersPanel">
-      <h:outputText value="#{field_0}"
-        converter="#{userSuggestionActions.userConverter}">
-        <f:attribute name="prefixed" value="false" />
-        <f:attribute name="userDirectory" value="#{userDirectory}" />
-        <f:attribute name="userSchema" value="#{userSchema}" />
-        <f:attribute name="firstNameField" value="#{firstNameField}" />
-        <f:attribute name="lastNameField" value="#{lastNameField}" />
-      </h:outputText>
-    </a4j:commandLink>
-  </f:subview>
-  <f:subview rendered="#{displayAction == 'edit' and searchType == 'GROUP_TYPE'}">
-    <a4j:commandLink action="#{groupManagementActions.setSelectedGroup(field_0)}" actionListener="#{groupManagementActions.toggleShowUserOrGroup}" reRender="groupsPanel">
-      <h:outputText value="#{field_0}" />
-    </a4j:commandLink>
-  </f:subview>
 </c:if>
-
 <c:if test="#{widget.mode == 'edit'}">
 
   <c:set var="minChars"
@@ -106,7 +76,7 @@
         <rich:suggestionbox id="#{widget.id}_suggestionBox"
           for="#{widget.id}_suggest" tokens=""
           suggestionAction="#{userSuggestionActions.getSuggestions}"
-          var="result" fetchValue=""
+          var="info" fetchValue=""
           nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
           minChars="#{minChars}" frequency="#{frequency}"
           width="#{suggestionWidth}"
@@ -118,7 +88,7 @@
             focus="#{widget.id}_suggest" bypassUpdates="true"
             reRender="#{widget.id}_selectionGroup"
             id="#{widget.id}_listRegion_select">
-            <f:setPropertyActionListener value="#{result.id}"
+            <f:setPropertyActionListener value="#{info.id}"
               target="#{suggestionActions.selectedValue}" />
             <nxu:actionListenerMethod value="#{suggestionActions.addSingleBoundSelection}" />
             <f:param name="suggestionSelectionOutputId"
@@ -132,20 +102,7 @@
               value="#{maxSearchResults}" />
           </a4j:support>
           <h:column>
-            <f:subview rendered="#{result.type == 'USER_TYPE'}"
-              id="#{widget.id}_user_result">
-              <h:graphicImage value="/icons/user.gif" alt="user.gif" />
-              <h:outputText
-                value="#{nxu:userDisplayName(result.id, result.entry[userSchema].firstName, result.entry[userSchema].lastName)}" />
-            </f:subview>
-            <f:subview rendered="#{result.type == 'GROUP_TYPE'}"
-              id="#{widget.id}_group_result">
-              <h:graphicImage value="/icons/group.gif" alt="group.gif" />
-              <h:outputText value="#{result.id}" />
-            </f:subview>
-            <f:subview rendered="#{empty result.type}" id="#{widget.id}_result">
-              <h:outputText value="#{item}" />
-            </f:subview>
+            <ui:include src="user_group_display_template.xhtml" />
           </h:column>
         </rich:suggestionbox>
         <br />
@@ -159,7 +116,7 @@
           actionListener="#{suggestionActions.clearSingleSelection}"
           ignoreDupResponses="true" ajaxSingle="true" bypassUpdates="true"
           reRender="#{widget.id}_selectionGroup"
-          rendered="#{!empty field_0}">
+          rendered="#{!empty field}">
           <h:graphicImage value="/icons/action_delete.gif" />
           <f:param name="suggestionSelectionOutputId"
             value="#{widget.id}_selectionOutput" />
@@ -168,6 +125,7 @@
           <f:param name="suggestionSelectionDeleteId"
             value="#{widget.id}_selectionReset" />
         </a4j:commandLink>
+
         <h:outputText id="#{widget.id}_selectionOutput" value="#{field_0}"
           converter="#{userSuggestionActions.userConverter}">
           <f:attribute name="prefixed" value="false" />
@@ -176,8 +134,9 @@
           <f:attribute name="firstNameField" value="firstName" />
           <f:attribute name="lastNameField" value="lastName" />
         </h:outputText>
-        <h:inputHidden id="#{widget.id}" value="#{field_0}"
+        <h:inputHidden id="#{widget.id}" value="#{field}"
           required="#{widget.required}" />
+
       </h:panelGroup>
       <h:message for="#{widget.id}" styleClass="errorMessage" />
 
@@ -185,4 +144,5 @@
 
   </a4j:region>
 
-</c:if></div>
+</c:if>
+</c:if>
