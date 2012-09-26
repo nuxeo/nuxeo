@@ -135,6 +135,9 @@ public class PlatformFunctions extends CoreFunctions {
      */
     public StringList getEmails(List<String> usernames, boolean usePrefix)
             throws Exception {
+        if (usernames == null) {
+            return new StringList(0);
+        }
         UserManager userManager = getUserManager();
         StringList result = new StringList(usernames.size());
         String schemaName = getUserManager().getUserSchemaName();
