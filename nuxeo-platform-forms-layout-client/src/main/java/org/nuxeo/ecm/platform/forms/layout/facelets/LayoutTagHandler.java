@@ -288,9 +288,25 @@ public class LayoutTagHandler extends TagHandler {
         layoutInstance.setId(helper.generateLayoutId(layoutInstance.getName()));
 
         // add additional properties put on tag
+        Map<String, Serializable> layoutProps = layoutInstance.getProperties();
         if (additionalProps != null && !additionalProps.isEmpty()) {
             for (Map.Entry<String, Serializable> entry : additionalProps.entrySet()) {
-                layoutInstance.setProperty(entry.getKey(), entry.getValue());
+                // XXX: do not override with empty property values if already
+                // set on the layout properties
+                String key = entry.getKey();
+                Serializable value = entry.getValue();
+                if (layoutProps.containsKey(key)
+                        && (value == null || ((value instanceof String) && StringUtils.isBlank((String) value)))) {
+                    // do not override property on layout
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Do not override property '%s' with "
+                                        + "empty value on layout named '%s'",
+                                key, layoutInstance.getName()));
+                    }
+                } else {
+                    layoutInstance.setProperty(key, value);
+                }
             }
         }
 
