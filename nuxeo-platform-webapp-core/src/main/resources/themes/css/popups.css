@@ -7,7 +7,7 @@ author: lkemen@nuxeo.com
 
 /* =FancyBox */
 #fancybox-overlay { z-index: 10002 }
-#fancybox-wrap { font-family: "default (__FLAVOR__ font)"; font-size: .8em; z-index: 10005 }
+#fancybox-wrap { font-family: "default (__FLAVOR__ font)"; font-size: .75em; z-index: 10005 }
 #fancybox-wrap a, #fancybox-wrap a:link, #fancybox-wrap a:visited { text-decoration: none; color: "link (__FLAVOR__ color)"; }
 #fancybox-wrap a:hover, #fancybox-wrap a:active { text-decoration: underline }
 #fancybox-content h3 { border-bottom: 2px dotted #ddd; margin: 0 0 .5em; padding: .5em 0 }
