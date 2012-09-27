@@ -19,10 +19,13 @@
 package org.nuxeo.ecm.platform.picture.api;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author Max Stepanov
@@ -61,7 +64,15 @@ public interface ImagingService {
     String getImageMimeType(File file);
 
     /**
+     * Returns the mime-type for the given Blob
+     *
+     * @since 5.7
+     */
+    String getImageMimeType(Blob blob);
+
+    /**
      * Returns the mime-type for the given input stream.
+     *
      * @deprecated since 5.5
      */
     @Deprecated
@@ -109,5 +120,38 @@ public interface ImagingService {
      */
     void setConfigurationValue(String configurationName,
             String configurationValue);
+
+    /**
+     * Computes a {@link PictureView} for the given {@code blob} and
+     * {@code pictureTemplate}.
+     *
+     * @return the compute picture view as a Map
+     *
+     * @since 5.7
+     */
+    PictureView computeViewFor(Blob blob, PictureTemplate pictureTemplate)
+            throws IOException, ClientException;
+
+    /**
+     * Computes a List of {@link PictureView}s for the given {@code blob} and
+     * {@code pictureTemplates}.
+     *
+     * @return the compute picture view as a List of Maps
+     *
+     * @since 5.7
+     */
+    List<PictureView> computeViewsFor(Blob blob,
+            List<PictureTemplate> pictureTemplates) throws IOException,
+            ClientException;
+
+    /**
+     * Computes a List of all {@link PictureView}s for each {@link Blob} of
+     * {@code blobs}.
+     *
+     * @since 5.7
+     */
+    List<List<PictureView>> computeViewsFor(List<Blob> blobs,
+            List<PictureTemplate> pictureTemplates) throws IOException,
+            ClientException;
 
 }

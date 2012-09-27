@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.platform.picture.api;
 
+import java.io.Serializable;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.Blob;
+
 public interface PictureView {
 
     String FIELD_TITLE = "title";
@@ -62,5 +67,26 @@ public interface PictureView {
     Object getContent();
 
     void setContent(Object content);
+
+    /**
+     * Returns the {@code Blob} of the picture view.
+     *
+     * @since 5.7
+     */
+    Blob getBlob();
+
+    /**
+     * Sets the {@code Blob} of this picture view.
+     *
+     * @since 5.7
+     */
+    void setBlob(Blob blob);
+
+    /**
+     * Convert this {@code PictureView} as a MAp to be stored inside a document.
+     *
+     * @since 5.7
+     */
+    Map<String, Serializable> asMap();
 
 }

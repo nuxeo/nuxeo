@@ -17,10 +17,22 @@
  */
 package org.nuxeo.ecm.platform.picture;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.CONVERSION_FORMAT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.JPEG_CONVERSATION_FORMAT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPERATION_RESIZE;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_DEPTH;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
@@ -28,12 +40,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
+import org.nuxeo.ecm.platform.picture.api.PictureTemplate;
+import org.nuxeo.ecm.platform.picture.api.PictureView;
+import org.nuxeo.ecm.platform.picture.api.PictureViewImpl;
 import org.nuxeo.ecm.platform.picture.core.libraryselector.LibrarySelector;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.runtime.api.Framework;
@@ -101,6 +121,17 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
             return mimetypeRegistry.getMimetypeFromFile(file);
+        } catch (Exception e) {
+            log.error("Unable to retrieve mime type", e);
+        }
+        return null;
+    }
+
+    @Override
+    public String getImageMimeType(Blob blob) {
+        try {
+            MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+            return mimetypeRegistry.getMimetypeFromBlob(blob);
         } catch (Exception e) {
             log.error("Unable to retrieve mime type", e);
         }
@@ -200,4 +231,190 @@ public class ImagingComponent extends DefaultComponent implements
             String configurationValue) {
         configurationParameters.put(configurationName, configurationValue);
     }
+
+    @Override
+    public PictureView computeViewFor(Blob blob,
+            PictureTemplate pictureTemplate) throws IOException,
+            ClientException {
+        String mimeType = blob.getMimeType();
+        if (mimeType == null) {
+            blob.setMimeType(getImageMimeType(blob));
+        }
+        ImageInfo imageInfo = getImageInfo(blob);
+        return computeViewFor(blob, pictureTemplate, imageInfo);
+    }
+
+    @Override
+    public List<PictureView> computeViewsFor(Blob blob,
+            List<PictureTemplate> pictureTemplates) throws IOException,
+            ClientException {
+        String mimeType = blob.getMimeType();
+        if (mimeType == null) {
+            blob.setMimeType(getImageMimeType(blob));
+        }
+
+        ImageInfo imageInfo = getImageInfo(blob);
+        List<PictureView> views = new ArrayList<PictureView>();
+        for (PictureTemplate pictureTemplate : pictureTemplates) {
+            views.add(computeViewFor(blob, pictureTemplate, imageInfo));
+        }
+        return views;
+    }
+
+    protected PictureView computeViewFor(Blob blob,
+            PictureTemplate pictureTemplate, ImageInfo imageInfo)
+            throws IOException, ClientException {
+        String title = pictureTemplate.getTitle();
+        if ("Original".equals(title)) {
+            return computeOriginalView(blob, pictureTemplate, imageInfo);
+        } else if ("OriginalJpeg".equals(title)) {
+            return computeOriginalJpegView(blob, pictureTemplate, imageInfo);
+        } else {
+            return computeView(blob, pictureTemplate, imageInfo);
+        }
+    }
+
+    protected PictureView computeOriginalView(Blob blob,
+            PictureTemplate pictureTemplate, ImageInfo imageInfo)
+            throws IOException {
+        String filename = blob.getFilename();
+        String title = pictureTemplate.getTitle();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put(PictureView.FIELD_TITLE, pictureTemplate.getTitle());
+        map.put(PictureView.FIELD_DESCRIPTION, pictureTemplate.getDescription());
+        map.put(PictureView.FIELD_FILENAME, filename);
+        map.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
+        map.put(PictureView.FIELD_WIDTH, imageInfo.getWidth());
+        map.put(PictureView.FIELD_HEIGHT, imageInfo.getHeight());
+
+        Blob originalViewBlob = copyBlob(blob);
+        originalViewBlob.setMimeType(blob.getMimeType());
+        originalViewBlob.setFilename(title + "_" + filename);
+        map.put(PictureView.FIELD_CONTENT, (Serializable) originalViewBlob);
+        return new PictureViewImpl(map);
+    }
+
+    protected Blob copyBlob(Blob blob) throws IOException {
+        Blob persistedBlob = blob.persist();
+        return new InputStreamBlob(persistedBlob.getStream());
+    }
+
+    protected PictureView computeOriginalJpegView(Blob blob,
+            PictureTemplate pictureTemplate, ImageInfo imageInfo)
+            throws ClientException, IOException {
+        String filename = blob.getFilename();
+        String title = pictureTemplate.getTitle();
+        int width = imageInfo.getWidth();
+        int height = imageInfo.getHeight();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put(PictureView.FIELD_TITLE, pictureTemplate.getTitle());
+        map.put(PictureView.FIELD_DESCRIPTION, pictureTemplate.getDescription());
+        map.put(PictureView.FIELD_FILENAME, filename);
+        map.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
+        map.put(PictureView.FIELD_WIDTH, width);
+        map.put(PictureView.FIELD_HEIGHT, height);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        options.put(OPTION_RESIZE_WIDTH, width);
+        options.put(OPTION_RESIZE_HEIGHT, height);
+        options.put(OPTION_RESIZE_DEPTH, imageInfo.getDepth());
+        // always convert to jpeg
+        options.put(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
+        BlobHolder bh = new SimpleBlobHolder(blob);
+        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        bh = conversionService.convert(OPERATION_RESIZE, bh, options);
+
+        Blob originalJpegBlob = bh.getBlob();
+        if (originalJpegBlob == null) {
+            originalJpegBlob = copyBlob(blob);
+            originalJpegBlob.setMimeType(blob.getMimeType());
+        }
+        String viewFilename = computeViewFilename(filename,
+                JPEG_CONVERSATION_FORMAT);
+        originalJpegBlob.setFilename(title + "_" + viewFilename);
+        map.put(PictureView.FIELD_CONTENT, (Serializable) blob);
+        return new PictureViewImpl(map);
+    }
+
+    protected String computeViewFilename(String filename, String format) {
+        int index = filename.lastIndexOf(".");
+        if (index == -1) {
+            return filename + "." + format;
+        } else {
+            return filename.substring(0, index + 1) + format;
+        }
+    }
+
+    protected PictureView computeView(Blob blob,
+            PictureTemplate pictureTemplate, ImageInfo imageInfo)
+            throws ClientException, IOException {
+        String filename = blob.getFilename();
+        String title = pictureTemplate.getTitle();
+        int width = imageInfo.getWidth();
+        int height = imageInfo.getHeight();
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put(PictureView.FIELD_TITLE, pictureTemplate.getTitle());
+        map.put(PictureView.FIELD_DESCRIPTION, pictureTemplate.getDescription());
+        map.put(PictureView.FIELD_FILENAME, filename);
+        map.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
+        Point size = new Point(width, height);
+        size = getSize(size, pictureTemplate.getMaxSize());
+        map.put(PictureView.FIELD_WIDTH, size.x);
+        map.put(PictureView.FIELD_HEIGHT, size.y);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        options.put(OPTION_RESIZE_WIDTH, size.x);
+        options.put(OPTION_RESIZE_HEIGHT, size.y);
+        options.put(OPTION_RESIZE_DEPTH, imageInfo.getDepth());
+        // use the registered conversion format for 'Medium' and 'Thumbnail'
+        // views
+        options.put(
+                CONVERSION_FORMAT,
+                getConfigurationValue(CONVERSION_FORMAT,
+                        JPEG_CONVERSATION_FORMAT));
+        BlobHolder bh = new SimpleBlobHolder(blob);
+        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        bh = conversionService.convert(OPERATION_RESIZE, bh, options);
+
+        Blob viewBlob = bh.getBlob();
+        if (viewBlob == null) {
+            viewBlob = copyBlob(blob);
+            viewBlob.setMimeType(blob.getMimeType());
+        }
+        String viewFilename = computeViewFilename(filename,
+                JPEG_CONVERSATION_FORMAT);
+        viewBlob.setFilename(title + "_" + viewFilename);
+        map.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);
+        return new PictureViewImpl(map);
+    }
+
+    protected static Point getSize(Point current, int max) {
+        int x = current.x;
+        int y = current.y;
+        int newX;
+        int newY;
+        if (x > y) { // landscape
+            newY = (y * max) / x;
+            newX = max;
+        } else { // portrait
+            newX = (x * max) / y;
+            newY = max;
+        }
+        if (newX > x || newY > y) {
+            return current;
+        }
+        return new Point(newX, newY);
+    }
+
+    @Override
+    public List<List<PictureView>> computeViewsFor(
+            List<Blob> blobs, List<PictureTemplate> pictureTemplates)
+            throws IOException, ClientException {
+        List<List<PictureView>> allViews = new ArrayList<List<PictureView>>();
+        for (Blob blob : blobs) {
+            List<PictureView> views = computeViewsFor(blob,
+                    pictureTemplates);
+            allViews.add(computeViewsFor(blob, pictureTemplates));
+        }
+        return allViews;
+    }
+
 }

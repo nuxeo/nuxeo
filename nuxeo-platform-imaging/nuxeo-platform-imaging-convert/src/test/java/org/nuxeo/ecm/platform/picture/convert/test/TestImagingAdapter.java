@@ -97,6 +97,7 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
             Blob blob = new FileBlob(
                     ImagingRessourcesHelper.getFileFromPath(path));
             assertNotNull(blob);
+            blob.setFilename(filename);
             boolean ret = adapter.createPicture(blob, filename, "sample",
                     pictureTemplates);
             assertTrue(ret);
@@ -131,6 +132,7 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         try {
             // blob that can be read only once, like HttpServletRequest streams
             Blob blob = new InputStreamBlob(in);
+            blob.setFilename("foo.png");
             adapter.createPicture(blob, "foo.png", "sample", null);
             doc = coreSession.saveDocument(doc);
             MultiviewPicture pic = doc.getAdapter(MultiviewPicture.class);

@@ -80,6 +80,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -98,6 +99,8 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
+import org.nuxeo.ecm.platform.picture.api.PictureTemplate;
+import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
@@ -373,64 +376,30 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             Integer maxsize, String filename, Integer width, Integer height,
             Integer depth, Blob fileContent) throws IOException,
             ClientException {
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("title", title);
-        map.put("description", description);
-        map.put("filename", filename);
-        map.put("tag", tag);
-        if ("Original".equals(title)) {
-            map.put("width", width);
-            map.put("height", height);
-            FileBlob fileBlob = new FileBlob(file, type);
-            fileBlob.setFilename(title + "_" + filename);
-            map.put("content", fileBlob);
-        } else if ("OriginalJpeg".equals(title)) {
-            map.put("width", width);
-            map.put("height", height);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(OPTION_RESIZE_WIDTH, width);
-            options.put(OPTION_RESIZE_HEIGHT, height);
-            options.put(OPTION_RESIZE_DEPTH, depth);
-            // always convert to jpeg
-            options.put(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
-            BlobHolder bh = new SimpleBlobHolder(fileContent);
-            bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
-            Blob blob = bh.getBlob() != null ? bh.getBlob() : new FileBlob(
-                    file, type);
-            String viewFilename = computeViewFilename(filename,
-                    JPEG_CONVERSATION_FORMAT);
-            blob.setFilename(title + "_" + viewFilename);
-            map.put("content", blob);
-        } else {
-            Point size = new Point(width, height);
-            size = getSize(size, maxsize);
-            map.put("width", size.x);
-            map.put("height", size.y);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(OPTION_RESIZE_WIDTH, size.x);
-            options.put(OPTION_RESIZE_HEIGHT, size.y);
-            options.put(OPTION_RESIZE_DEPTH, depth);
-            // use the registered conversion format for 'Medium' and 'Thumbnail'
-            // views
-            options.put(CONVERSION_FORMAT,
-                    imagingService.getConfigurationValue(CONVERSION_FORMAT,
-                            JPEG_CONVERSATION_FORMAT));
-            BlobHolder bh = new SimpleBlobHolder(fileContent);
-            bh = getConversionService().convert(OPERATION_RESIZE, bh, options);
-            Blob blob = bh.getBlob() != null ? bh.getBlob() : new FileBlob(
-                    file, type);
-            String viewFilename = computeViewFilename(filename,
-                    JPEG_CONVERSATION_FORMAT);
-            blob.setFilename(title + "_" + viewFilename);
-            map.put("content", blob);
+        if (fileContent.getFilename() == null) {
+            fileContent.setFilename(filename);
         }
-        Serializable views = doc.getPropertyValue(VIEWS_PROPERTY);
-        List<Map<String, Object>> viewsList = (List<Map<String, Object>>) views;
-        viewsList.add(map);
-        doc.getProperty(VIEWS_PROPERTY).setValue(viewsList);
+        if (maxsize == null) {
+            maxsize = 0;
+        }
+
+        PictureTemplate pictureTemplate = new PictureTemplate(title,
+                description, tag, maxsize);
+        PictureView view = getImagingService().computeViewFor(
+                fileContent, pictureTemplate);
+
+        List<Map<String, Serializable>> views = (List<Map<String, Serializable>>) doc.getPropertyValue(VIEWS_PROPERTY);
+        if (views == null) {
+            views = new ArrayList<Map<String, Serializable>>();
+        }
+        views.add(view.asMap());
+        doc.setPropertyValue(VIEWS_PROPERTY, (Serializable) views);
     }
 
+    /**
+     * @deprecated since 5.7
+     */
+    @Deprecated
     protected static Point getSize(Point current, int max) {
         int x = current.x;
         int y = current.y;
@@ -449,6 +418,10 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         return new Point(newx, newy);
     }
 
+    /**
+     * @deprecated since 5.7
+     */
+    @Deprecated
     protected String computeViewFilename(String filename, String format) {
         int index = filename.lastIndexOf(".");
         if (index == -1) {
