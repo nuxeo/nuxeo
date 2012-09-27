@@ -46,16 +46,16 @@
 </c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
+  <c:set var="displayAction"
+    value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'nothing')}" />
+
   <div class="UserSuggestionInput">
     <h:dataTable value="#{field}"
       var="item" rendered="#{not empty field}">
       <h:column>
         <nxu:set var="info"
           value="#{userSuggestionActions.getPrefixedUserInfo(item)}">
-        <nxu:set var="displayAction"
-          value="view">
           <ui:include src="user_group_display_template.xhtml" />
-        </nxu:set>
         </nxu:set>
       </h:column>
     </h:dataTable>

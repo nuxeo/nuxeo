@@ -62,7 +62,7 @@
     </h:outputLink>
   </c:if>
   <c:if test="#{displayAction == 'edit'}">
-    <a4j:commandLink action="#{userManagementActions.setSelectedUser(field)}"
+    <a4j:commandLink action="#{userManagementActions.setSelectedUser(info.id)}"
       actionListener="#{userManagementActions.toggleShowUserOrGroup}"
       reRender="usersPanel">
       <h:outputText value="#{userDisplayName}" />
@@ -78,12 +78,12 @@
     <h:outputText value="#{groupDisplayName}"/>
   </c:if>
   <c:if test="#{displayAction == 'view'}">
-    <h:commandLink action="#{groupManagementActions.viewGroup(field)}">
+    <h:commandLink action="#{groupManagementActions.viewGroup(info.id)}">
       <h:outputText value="#{groupDisplayName}"/>
     </h:commandLink>
   </c:if>
   <c:if test="#{displayAction == 'edit'}">
-    <a4j:commandLink action="#{groupManagementActions.setSelectedGroup(field)}"
+    <a4j:commandLink action="#{groupManagementActions.setSelectedGroup(info.id)}"
       actionListener="#{groupManagementActions.toggleShowUserOrGroup}"
       reRender="groupsPanel">
       <h:outputText value="#{groupDisplayName}"/>
