@@ -47,6 +47,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Relation service.
@@ -519,9 +520,14 @@ public class RelationService extends DefaultComponent implements
             return;
         }
 
+        boolean isNewTransactionStarted = false;
+
         ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
         ClassLoader nuxeoCL = RelationService.class.getClassLoader();
         try {
+            if (!TransactionHelper.isTransactionActive()) {
+                isNewTransactionStarted = TransactionHelper.startTransaction();
+            }
             Thread.currentThread().setContextClassLoader(nuxeoCL);
             log.info("Relation Service initialization");
 
@@ -537,6 +543,10 @@ public class RelationService extends DefaultComponent implements
         } finally {
             Thread.currentThread().setContextClassLoader(jbossCL);
             log.debug("JBoss ClassLoader restored");
+
+            if (isNewTransactionStarted) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
         }
     }
 
