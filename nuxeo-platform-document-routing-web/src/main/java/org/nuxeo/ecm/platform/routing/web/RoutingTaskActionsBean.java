@@ -159,9 +159,23 @@ public class RoutingTaskActionsBean implements Serializable {
         return getTaskInfo(task, false).layout;
     }
 
-    public List<Button> getTaskButtons(Task task) throws ClientException {
-        return getTaskInfo(task, false).buttons;
-        // TODO evaluate action filter?
+    public List<Action> getTaskButtons(Task task) throws ClientException {
+        List<Button> buttons = getTaskInfo(task, false).buttons;
+        List<Action> actions = new ArrayList<Action>();
+        for (Button button : buttons) {
+            String id = button.getName();
+            Action action = new Action(id, Action.EMPTY_CATEGORIES);
+            action.setLabel(button.getLabel());
+            boolean displayAction = true;
+            if (StringUtils.isNotEmpty(button.getFilter())) {
+                displayAction = getActionService().checkFilter(button.filter,
+                        actionContextProvider.createActionContext());
+            }
+            if (displayAction) {
+                actions.add(action);
+            }
+        }
+        return actions;
     }
 
     public String endTask(Task task) throws ClientException {
