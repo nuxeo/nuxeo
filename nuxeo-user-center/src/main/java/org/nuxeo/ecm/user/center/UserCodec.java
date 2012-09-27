@@ -113,7 +113,7 @@ public class UserCodec extends AbstractDocumentViewCodec {
             docView.removeParameter("username");
             List<String> items = new ArrayList<String>();
             items.add(getPrefix());
-            items.add(username);
+            items.add(URIUtils.quoteURIPathComponent(username, true));
             String viewId = docView.getViewId();
             if (viewId != null) {
                 items.add(viewId);
