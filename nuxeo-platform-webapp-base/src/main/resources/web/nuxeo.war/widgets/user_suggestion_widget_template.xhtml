@@ -48,6 +48,8 @@
 
   <c:set var="displayAction"
     value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'view')}" />
+  <c:set var="hideIcon"
+    value="#{widgetProperty_hideIcon}" />
 
   <div class="UserSuggestionInput">
     <h:dataTable value="#{field}"
@@ -76,6 +78,8 @@
   <c:set var="suggestionWidth" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '400')}" />
   <c:set var="showActions"
     value="#{not widgetProperty_hideDeleteButton or widgetProperty_orderable}" />
+  <c:set var="hideIcon"
+    value="#{widgetProperty_hideIcon}" />
 
   <c:if test="#{!hideSearchTypeText}">
     <h:outputText value="#{messages['label.security.searchUsers']}"
