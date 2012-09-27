@@ -39,6 +39,8 @@
 
   <c:set var="displayAction"
     value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'view')}" />
+  <c:set var="hideIcon"
+    value="#{widgetProperty_hideIcon}" />
 
   <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(field)}"
     cache="true">
@@ -52,16 +54,18 @@
 <c:if test="#{widget.mode == 'edit'}">
 
   <c:set var="minChars"
-    value="#{nxu:test(!empty widget.properties.minChars, widget.properties.minChars, '3')}" />
+    value="#{nxu:test(!empty widgetProperty_minChars, widgetProperty_minChars, '3')}" />
   <c:set var="frequency"
-    value="#{nxu:test(!empty widget.properties.frequency, widget.properties.frequency, '0')}" />
+    value="#{nxu:test(!empty widgetProperty_frequency, widgetProperty_frequency, '0')}" />
   <c:set var="requestDelay"
-    value="#{nxu:test(!empty widget.properties.requestDelay, widget.properties.requestDelay, '100')}" />
+    value="#{nxu:test(!empty widgetProperty_requestDelay, widgetProperty_requestDelay, '100')}" />
   <c:set var="searchType"
-    value="#{nxu:test(!empty widget.properties.userSuggestionSearchType, widget.properties.userSuggestionSearchType, '')}" />
+    value="#{nxu:test(!empty widgetProperty_userSuggestionSearchType, widgetProperty_userSuggestionSearchType, '')}" />
   <c:set var="maxSearchResults"
-    value="#{nxu:test(!empty widget.properties.userSuggestionMaxSearchResults, widget.properties.userSuggestionMaxSearchResults, 0)}" />
-  <c:set var="suggestionWidth" value="${nxu:test(!empty widget.properties.width, widget.properties.width, '400')}" />
+    value="#{nxu:test(!empty widgetProperty_userSuggestionMaxSearchResults, widgetProperty_userSuggestionMaxSearchResults, 0)}" />
+  <c:set var="suggestionWidth" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '400')}" />
+  <c:set var="hideIcon"
+    value="#{widgetProperty_hideIcon}" />
 
   <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
     <h:panelGrid id="#{widget.id}_panel" columns="2">

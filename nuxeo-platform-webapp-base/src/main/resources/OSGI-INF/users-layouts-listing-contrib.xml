@@ -97,10 +97,11 @@
         <property name="hideFirstLabel">true</property>
         <property name="hideSecondLabel">true</property>
         <property name="displayAction">edit</property>
+        <property name="hideIcon">true</property>
       </properties>
     </widget>
 
-    <widget name="listing_firstName" type="singleUserSuggestion">
+    <widget name="listing_firstName" type="text">
       <labels>
         <label mode="any">label.userManager.firstName</label>
       </labels>
@@ -110,15 +111,9 @@
       <widgetModes>
         <mode value="any">view</mode>
       </widgetModes>
-      <properties widgetMode="view">
-        <property name="userSuggestionSearchType">USER_TYPE</property>
-        <property name="firstLabelField">firstName</property>
-        <property name="secondLabelField">lastName</property>
-        <property name="hideSecondLabel">true</property>
-      </properties>
     </widget>
 
-    <widget name="listing_lastName" type="singleUserSuggestion">
+    <widget name="listing_lastName" type="text">
       <labels>
         <label mode="any">label.userManager.lastName</label>
       </labels>
@@ -128,15 +123,9 @@
       <widgetModes>
         <mode value="any">view</mode>
       </widgetModes>
-      <properties widgetMode="view">
-        <property name="userSuggestionSearchType">USER_TYPE</property>
-        <property name="firstLabelField">firstName</property>
-        <property name="secondLabelField">lastName</property>
-        <property name="hideFirstLabel">true</property>
-      </properties>
     </widget>
 
-    <widget name="listing_email" type="singleUserSuggestion">
+    <widget name="listing_email" type="text">
       <labels>
         <label mode="any">email</label>
       </labels>
@@ -146,10 +135,6 @@
       <widgetModes>
         <mode value="any">view</mode>
       </widgetModes>
-      <properties widgetMode="view">
-        <property name="userSuggestionSearchType">USER_TYPE</property>
-        <property name="thirdLabelField">email</property>
-      </properties>
     </widget>
 
     <widget name="listing_groupName" type="singleUserSuggestion">
@@ -165,12 +150,12 @@
       <properties widgetMode="view">
         <property name="userSuggestionSearchType">GROUP_TYPE</property>
         <property name="hideFirstLabel">true</property>
-        <property name="hideSecondLabel">true</property>
         <property name="displayAction">edit</property>
+        <property name="hideIcon">true</property>
       </properties>
     </widget>
 
-    <widget name="listing_groupLabel" type="singleUserSuggestion">
+    <widget name="listing_groupLabel" type="text">
       <labels>
         <label mode="any">label.groupManager.groupLabel</label>
       </labels>
@@ -180,11 +165,6 @@
       <widgetModes>
         <mode value="any">view</mode>
       </widgetModes>
-      <properties widgetMode="view">
-        <property name="userSuggestionSearchType">GROUP_TYPE</property>
-        <property name="hideFirstLabel">true</property>
-        <property name="hideSecondLabel">true</property>
-      </properties>
     </widget>
 
   </extension>
