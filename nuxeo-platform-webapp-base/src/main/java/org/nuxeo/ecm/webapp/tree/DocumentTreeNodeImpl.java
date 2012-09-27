@@ -177,6 +177,28 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         return null;
     }
 
+    public boolean isSelected(DocumentModel currentDocument) {
+        if (currentDocument != null) {
+            if (!currentDocument.isFolder()) {
+                // check if it's the closest parent
+                String currentPath = currentDocument.getPathAsString();
+                String nodePath = getPath();
+                if (currentPath != null
+                        && nodePath != null
+                        && currentPath.startsWith(nodePath)
+                        && !currentPath.substring(nodePath.length() + 1).contains(
+                                "/")) {
+                    // direct parent
+                    return true;
+                }
+            } else {
+                // check equality
+                return currentDocument.getId().equals(getId());
+            }
+        }
+        return false;
+    }
+
     public String getPath() {
         if (document != null) {
             return document.getPathAsString();

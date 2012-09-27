@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.tree;
 import java.io.Serializable;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.quota.QuotaStats;
 
 /**
@@ -44,6 +45,23 @@ public interface DocumentTreeNode extends Serializable {
      */
     QuotaStats getQuotaStats();
 
-    // XXX add icon, url, label methods.
+    /**
+     * Returns true if node represents current document, or if it's the direct
+     * parent of a non-folderish document that is not be represented in the
+     * tree.
+     *
+     * @since 5.7
+     * @param currentDocument
+     */
+    boolean isSelected(DocumentModel currentDocument);
+
+    /**
+     * Returns the document corresponding to this node
+     */
+    DocumentModel getDocument();
+
+    void resetChildren();
+
+    void fetchChildren();
 
 }
