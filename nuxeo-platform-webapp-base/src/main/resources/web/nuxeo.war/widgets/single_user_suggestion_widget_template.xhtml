@@ -38,7 +38,7 @@
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
   <c:set var="displayAction"
-    value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'nothing')}" />
+    value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'view')}" />
 
   <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(field)}"
     cache="true">

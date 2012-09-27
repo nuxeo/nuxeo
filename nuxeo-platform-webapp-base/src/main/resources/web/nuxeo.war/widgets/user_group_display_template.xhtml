@@ -30,28 +30,17 @@
 </c:if>
 <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
-<c:set var="firstNameField" value="#{nxu:test(hideFirstLabel, null, firstLabelField)}" />
-<c:set var="lastNameField" value="#{nxu:test(hideSecondLabel, null, secondLabelField)}" />
-<c:set var="emailField" value="#{nxu:test(hideThirdLabel, null, thirdLabelField)}" />
+<c:set var="firstNameField" value="#{nxu:test(showEmail and hideFirstLabel and hideSecondLabel, thirdLabelField, firstLabelField)}" />
 <h:outputText rendered="#{info.type == 'USER_TYPE'}">
-  <c:choose>
-    <c:when test="#{showEmail}">
-      <c:choose>
-        <c:when test="#{not hideThirdLabel and hideFirstLabel and hideFirstLabel}">
-          <c:set var="userDisplayName"
-            value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema][emailField], null, null)}" />
-        </c:when>
-        <c:otherwise>
-          <c:set var="userDisplayName"
-            value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema][firstNameField], info.entry[userSchema][lastNameField], info.entry[userSchema][emailField])}" />
-        </c:otherwise>
-      </c:choose>
-    </c:when>
-    <c:otherwise>
-      <c:set var="userDisplayName" value="#{nxu:userDisplayName(info.id, info.entry[userSchema][firstNameField], info.entry[userSchema][lastNameField])}" />
-    </c:otherwise>
-  </c:choose>
-  <h:graphicImage value="/icons/user.gif" alt="user.gif"
+  <c:if test="#{showEmail}">
+    <c:set var="userDisplayName"
+      value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema][firstNameField], nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]), nxu:test(hideThirdLabel or not showEmail, null, info.entry[userSchema][thirdLabelField]))}" />
+  </c:if>
+  <c:if test="#{not showEmail}">
+    <c:set var="userDisplayName"
+      value="#{nxu:userDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[userSchema][firstNameField]), nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]))}" />
+  </c:if>
+  <h:graphicImage value="/icons/user.png" alt="user.png"
     rendered="#{not hideIcon}" />
   <c:if test="#{displayAction == 'nothing' or empty displayAction}">
     <h:outputText value="#{userDisplayName}" />
