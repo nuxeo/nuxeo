@@ -42,7 +42,10 @@
 
   <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(field)}"
     cache="true">
+  <nxu:set var="displayAction"
+    value="view">
     <ui:include src="user_group_display_template.xhtml" />
+  </nxu:set>
   </nxu:set>
 
 </c:if>
