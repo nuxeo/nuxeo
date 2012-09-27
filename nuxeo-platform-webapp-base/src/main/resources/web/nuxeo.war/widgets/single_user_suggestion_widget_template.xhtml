@@ -39,6 +39,8 @@
 
   <c:set var="displayAction"
     value="#{nxu:test(!empty widgetProperty_displayAction, widgetProperty_displayAction, 'view')}" />
+  <c:set var="hideIcon"
+    value="#{widgetProperty_hideIcon}" />
 
   <nxu:set var="info" value="#{userSuggestionActions.getUserInfo(field)}"
     cache="true">
@@ -59,6 +61,8 @@
   <c:set var="maxSearchResults"
     value="#{nxu:test(!empty widgetProperty_userSuggestionMaxSearchResults, widgetProperty_userSuggestionMaxSearchResults, 0)}" />
   <c:set var="suggestionWidth" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '400')}" />
+  <c:set var="hideIcon"
+    value="#{widgetProperty_hideIcon}" />
 
   <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
     <h:panelGrid id="#{widget.id}_panel" columns="2">

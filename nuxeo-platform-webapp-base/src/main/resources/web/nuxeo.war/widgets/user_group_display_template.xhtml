@@ -42,6 +42,7 @@
   </c:if>
   <h:graphicImage value="/icons/user.png" alt="user.png"
     rendered="#{not hideIcon}" />
+  <h:outputText value=" " rendered="#{not hideIcon}" />
   <c:if test="#{displayAction == 'nothing' or empty displayAction}">
     <h:outputText value="#{userDisplayName}" />
   </c:if>
@@ -61,8 +62,9 @@
 <h:outputText rendered="#{info.type == 'GROUP_TYPE'}">
   <h:graphicImage value="/icons/group.png" alt="group.png"
     rendered="#{not hideIcon}" />
+  <h:outputText value=" " rendered="#{not hideIcon}" />
   <c:set var="groupDisplayName"
-    value="#{nxu:groupDisplayName(info.id, info.entry[groupSchema].grouplabel)}" />
+    value="#{nxu:groupDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[groupSchema].grouplabel))}" />
   <c:if test="#{displayAction == 'nothing' or empty displayAction}">
     <h:outputText value="#{groupDisplayName}"/>
   </c:if>
