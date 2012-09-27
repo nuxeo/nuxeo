@@ -79,7 +79,8 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(emailInput, email);
         if (group != null) {
             groupInput.sendKeys(group);
-            findElementWaitUntilEnabledAndClick(By.xpath("//td[text()=\""
+            // add a space since there is one just after the icon
+            findElementWaitUntilEnabledAndClick(By.xpath("//td[text()=\" "
                     + group + "\"]"));
         }
         saveButton.click();
