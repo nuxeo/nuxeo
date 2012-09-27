@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
 
 /**
@@ -85,19 +84,12 @@ public class ContentViewCache implements Serializable {
                 cacheSize = DEFAULT_CACHE_SIZE;
             }
             if (cacheSize.intValue() <= 0) {
-                boolean hasSelectionList = !StringUtils.isBlank(cView.getSelectionListName());
-                if (!hasSelectionList) {
-                    // no cache
-                    return;
-                } else {
-                    // if content view has a selection list and cacheSize <= 0,
-                    // selection actions will not behave accurately => behave
-                    // as if cacheSize was 1 in this case, and use a dummy
-                    // cache key. Template rendering will force cache refresh
-                    // when rendering the page, as if content view was not
-                    // cached.
-                    cacheSize = Integer.valueOf(1);
-                }
+                // if cacheSize <= 0, selection actions will not behave
+                // accurately => behave as if cacheSize was 1 in this case, and
+                // use a dummy cache key. Template rendering will force cache
+                // refresh when rendering the page, as if content view was not
+                // cached.
+                cacheSize = Integer.valueOf(1);
             }
 
             Map<String, ContentView> cacheEntry = cacheInstances.get(name);
