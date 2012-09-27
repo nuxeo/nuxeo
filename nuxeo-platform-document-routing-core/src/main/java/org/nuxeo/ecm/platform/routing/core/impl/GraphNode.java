@@ -260,6 +260,9 @@ public interface GraphNode {
             return name;
         }
 
+        public String getFilter(){
+            return filter;
+        }
     }
 
     /**

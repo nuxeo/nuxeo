@@ -38,6 +38,7 @@ import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.plexus.util.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -64,6 +66,7 @@ import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskImpl;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.webapp.action.ActionContextProvider;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -97,6 +100,9 @@ public class RoutingTaskActionsBean implements Serializable {
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
+    
+    @In(create = true, required = false)
+    protected transient ActionContextProvider actionContextProvider;
 
     protected Task currentTask;
 
@@ -104,6 +110,8 @@ public class RoutingTaskActionsBean implements Serializable {
 
     @RequestParameter("button")
     protected String button;
+    
+    protected ActionManager actionService;
 
     public void validateTaskDueDate(FacesContext context,
             UIComponent component, Object value) {
@@ -335,8 +343,15 @@ public class RoutingTaskActionsBean implements Serializable {
                 } else {
                     action.setType("link");
                 }
-                // FIXME: apply filter (?)
-                actions.put(id, action);
+                boolean displayAction = true;
+                if (StringUtils.isNotEmpty(button.getFilter())) {
+                    displayAction = getActionService().checkFilter(
+                            button.filter,
+                            actionContextProvider.createActionContext());
+                }
+                if (displayAction) {
+                    actions.put(id, action);
+                }
             }
         }
         return actions;
@@ -453,6 +468,13 @@ public class RoutingTaskActionsBean implements Serializable {
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         return null;
+    }
+    
+    private ActionManager getActionService() {
+        if (actionService == null) {
+            actionService = Framework.getLocalService(ActionManager.class);
+        }
+        return actionService;
     }
 
 }
