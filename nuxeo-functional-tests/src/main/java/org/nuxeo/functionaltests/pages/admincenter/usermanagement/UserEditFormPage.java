@@ -79,7 +79,8 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(emailInput, email);
         if (group != null) {
             groupInput.sendKeys(group);
-            WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//td[text()=\""
+            // add a space since there is one just after the icon
+            WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//td[text()=\" "
                     + group + "\"]"));
             ajaxUserListElement.click();
         }
