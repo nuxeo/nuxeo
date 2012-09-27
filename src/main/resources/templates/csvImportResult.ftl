@@ -24,7 +24,7 @@
   <tr>
     <td>Line ${importLog.line}</td>
     <td><#if importLog.skipped>SKIPPED<#else>ERROR</#if></td>
-    <td>${importLog.getI18nMessage(Context.locale)}</td>
+    <td>${importLog.getI18nMessage()}</td>
   </tr>
 </#list>
 </table>

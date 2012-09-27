@@ -58,6 +58,10 @@ public class CSVImportLog {
                 getLocalizedMessageParams(), locale);
     }
 
+    public String getI18nMessage() {
+        return getI18nMessage(Locale.ENGLISH);
+    }
+
     public boolean isSuccess() {
         return status == Status.SUCCESS;
     }

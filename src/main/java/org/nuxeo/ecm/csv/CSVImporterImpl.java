@@ -57,7 +57,7 @@ public class CSVImporterImpl implements CSVImporter {
     @Override
     public List<CSVImportLog> getImportLogs(CSVImportId id,
             CSVImportLog.Status... status) {
-        return null;
+        return getLastImportLogs(id, -1, status);
     }
 
     @Override
@@ -80,19 +80,7 @@ public class CSVImporterImpl implements CSVImporter {
     @Override
     public List<CSVImportLog> getLastImportLogs(CSVImportId id, int max,
             CSVImportLog.Status... status) {
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        Work workId = new CSVImporterWork(id);
-        int[] pos = new int[1];
-        Work work = workManager.find(workId, null, true, pos);
-        if (work == null) {
-            work = workManager.find(workId, Work.State.COMPLETED, true, pos);
-            if (work == null) {
-                return Collections.emptyList();
-            }
-        }
-        List<CSVImportLog> importLogs = ((CSVImporterWork) work).getImportLogs();
-        max = (max == -1 || max > importLogs.size()) ? importLogs.size() : max;
-        importLogs = importLogs.subList(importLogs.size() - max, max);
+        List<CSVImportLog> importLogs = getLastImportLogs(id, max);
         return status.length == 0 ? importLogs : filterImportLogs(importLogs,
                 status);
     }
@@ -120,25 +108,7 @@ public class CSVImporterImpl implements CSVImporter {
         }
 
         List<CSVImportLog> importLogs = ((CSVImporterWork) work).getImportLogs();
-        return computeImportResult(importLogs);
-    }
-
-    protected CSVImportResult computeImportResult(List<CSVImportLog> importLogs) {
-        long totalLineCount = importLogs.size();
-        long successLineCount = 0;
-        long skippedLineCount = 0;
-        long errorLineCount = 0;
-        for (CSVImportLog importLog : importLogs) {
-            if (importLog.isSuccess()) {
-                successLineCount++;
-            } else if (importLog.isSkipped()) {
-                skippedLineCount++;
-            } else if (importLog.isError()) {
-                errorLineCount++;
-            }
-        }
-        return new CSVImportResult(totalLineCount, successLineCount,
-                skippedLineCount, errorLineCount);
+        return CSVImportResult.fromImportLogs(importLogs);
     }
 
 }

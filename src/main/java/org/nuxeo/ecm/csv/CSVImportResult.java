@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.csv;
 
+import java.util.List;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
@@ -13,6 +15,24 @@ public class CSVImportResult {
     protected final long skippedLineCount;
 
     protected final long errorLineCount;
+
+    public static final CSVImportResult fromImportLogs(List<CSVImportLog> importLogs) {
+        long totalLineCount = importLogs.size();
+        long successLineCount = 0;
+        long skippedLineCount = 0;
+        long errorLineCount = 0;
+        for (CSVImportLog importLog : importLogs) {
+            if (importLog.isSuccess()) {
+                successLineCount++;
+            } else if (importLog.isSkipped()) {
+                skippedLineCount++;
+            } else if (importLog.isError()) {
+                errorLineCount++;
+            }
+        }
+        return new CSVImportResult(totalLineCount, successLineCount,
+            skippedLineCount, errorLineCount);
+    }
 
     public CSVImportResult(long totalLineCount, long successLineCount,
             long skippedLineCount, long errorLineCount) {

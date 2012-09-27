@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -440,13 +441,12 @@ public class CSVImporterWork extends AbstractWork {
         }
 
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(null);
+        ctx.setInput(session.getRootDocument());
 
         CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
-        CSVImportResult importResult = csvImporter.getImportResult(id);
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(id,
                 CSVImportLog.Status.SKIPPED, CSVImportLog.Status.ERROR);
-        ctx.put("importResult", importResult);
+        ctx.put("importResult", CSVImportResult.fromImportLogs(importLogs));
         ctx.put("importLogs", importLogs);
         ctx.put("csvFilename", csvBlob.getFilename());
 
