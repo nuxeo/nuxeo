@@ -287,8 +287,8 @@ log_misc() {
     df -h >> $file
     echo "## du -shx $DATA_DIR" >> $file
     du -shx $(readlink -e $DATA_DIR) >> $file
-    echo "## java -version" >> $file
-    $JAVA_HOME/bin/java -version >> $file 2>&1
+    echo "## java -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -version" >> $file
+    $JAVA_HOME/bin/java -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -version >> $file 2>&1
     echo "## jps -v" >> $file
     $JAVA_HOME/bin/jps -v >> $file
     echo "## ps aux | grep java" >> $file
