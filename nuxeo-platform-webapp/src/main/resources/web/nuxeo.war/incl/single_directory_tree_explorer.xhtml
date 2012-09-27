@@ -35,7 +35,7 @@
             highlightedClass="treeNodeHighlightedClass"
             id="directoryNavTreeNode"
             selectedClass="treeNodeSelectedClass">
-            <div class="#{nxu:test(node.selected, 'dropInto', '')}">
+            <div class="#{nxu:test(node.selected, 'selected', '')}">
               <a4j:commandLink immediate="true"
                id="directoryNavCommandLink"
                 action="#{node.selectNode}" styleClass="treeLink">
