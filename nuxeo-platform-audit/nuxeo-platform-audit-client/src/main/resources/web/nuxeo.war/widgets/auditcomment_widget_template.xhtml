@@ -11,8 +11,9 @@
   <h:outputText value="#{messages[field_0.comment]}" />
   <c:if test="#{not empty field_0.linkedDoc}">
     <h:outputText value="   "/>
-    <nxu:graphicImage value="/icons/lock.gif"
+    <nxu:graphicImage value="/icons/broken_file.png"
       rendered="#{field_0.linkedDoc.brokenDocument}"
+      title="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']}"
       alt="#{field_0.linkedDoc.documentRef}" />
     <nxd:restDocumentLink
       document="#{field_0.linkedDoc.document}"
@@ -30,7 +31,7 @@
   <h:outputText value="#{messages[field_0.comment]}" />
   <c:if test="#{not empty field_0.linkedDoc}">
     <h:outputText value="   "/>
-    <nxu:graphicImage value="/icons/lock.gif"
+    <nxu:graphicImage value="/icons/broken_file.png"
       rendered="#{field_0.linkedDoc.brokenDocument}"
       alt="#{field_0.linkedDoc.documentRef}" />
     <nxd:restDocumentLink
