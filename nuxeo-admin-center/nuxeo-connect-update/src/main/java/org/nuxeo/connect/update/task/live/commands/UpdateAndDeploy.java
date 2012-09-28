@@ -38,7 +38,7 @@ public class UpdateAndDeploy extends Update {
     }
 
     @Override
-    protected Command getDeployCommand(UpdateManager updateManager, File file,
+    protected Command getDeployCommand(UpdateManager updateManager,
             Command rollbackCommand) {
         // file is the file to be deployed, so it's not in its final place.
         // But deploy should use the final place => extract info from the
