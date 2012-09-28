@@ -266,7 +266,8 @@ public final class FileUtils {
      *             {@link org.apache.commons.io.FileUtils#deleteDirectory(File)}
      *             or
      *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)}
-     *             instead.
+     *             instead. Warning: suggested methods will delete the root
+     *             directory whereas current method doesn't.
      */
     @Deprecated
     public static void emptyDirectory(File dir) {
@@ -414,13 +415,15 @@ public final class FileUtils {
         copyTree(src, dst, new Path("/"), filter);
     }
 
-    public static void copyTree(File src, File dst, Path prefix, PathFilter filter) throws IOException {
+    public static void copyTree(File src, File dst, Path prefix,
+            PathFilter filter) throws IOException {
         if (!prefix.isAbsolute()) {
             prefix = prefix.makeAbsolute();
         }
         int rootIndex = src.getPath().length() + 1;
         for (File file : src.listFiles()) {
-            copyTree(rootIndex, file, new File(dst, file.getName()), prefix, filter);
+            copyTree(rootIndex, file, new File(dst, file.getName()), prefix,
+                    filter);
         }
     }
 
@@ -436,7 +439,8 @@ public final class FileUtils {
                 String pff = prefix.toString();
                 int prefixIndex = path.lastIndexOf(pff);
                 if (prefixIndex > 0) {
-                    path = path.substring(0, prefixIndex) + path.substring(prefixIndex+pff.length());
+                    path = path.substring(0, prefixIndex)
+                            + path.substring(prefixIndex + pff.length());
                     dst = new File(path.toString());
                 }
             }
@@ -445,7 +449,8 @@ public final class FileUtils {
         } else if (src.isDirectory()) {
             File[] files = src.listFiles();
             for (File file : files) {
-                copyTree(rootIndex, file, new File(dst, file.getName()), prefix, filter);
+                copyTree(rootIndex, file, new File(dst, file.getName()),
+                        prefix, filter);
             }
         }
     }
