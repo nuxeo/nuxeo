@@ -324,6 +324,8 @@ public class SimpleBackend extends AbstractCoreBackend {
                 log.warn("Can't move document " + ref.toString()
                         + " to trash. Document did not found.");
             }
+        } catch (ClientException ce) {
+            throw ce;
         } catch (Exception e) {
             throw new ClientException("Error while deleting doc " + ref, e);
         }
