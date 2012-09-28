@@ -15,6 +15,7 @@ package org.nuxeo.ecm.platform.audit.api.comment;
 
 import java.util.List;
 
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -91,21 +92,24 @@ public class CommentProcessorHelper {
         try {
             String repoName = oldComment.split(":")[0];
             String strDocRef = oldComment.split(":")[1];
+            
+            // test if strDocRef is a document uuid to continue
+            if (IdUtils.isValidUUID(strDocRef)) {
+                DocumentRef docRef = new IdRef(strDocRef);
+                RepositoryLocation repoLoc = new RepositoryLocation(repoName);
 
-            DocumentRef docRef = new IdRef(strDocRef);
-            RepositoryLocation repoLoc = new RepositoryLocation(repoName);
+                // create linked doc, broken by default
+                linkedDoc = new LinkedDocument();
+                linkedDoc.setDocumentRef(docRef);
+                linkedDoc.setRepository(repoLoc);
 
-            // create linked doc, broken by default
-            linkedDoc = new LinkedDocument();
-            linkedDoc.setDocumentRef(docRef);
-            linkedDoc.setRepository(repoLoc);
-
-            // try to resolve target document
-            // XXX multi-repository management
-            DocumentModel targetDoc = documentManager.getDocument(docRef);
-            if (targetDoc != null) {
-                linkedDoc.setDocument(targetDoc);
-                linkedDoc.setBrokenDocument(false);
+                // try to resolve target document
+                // XXX multi-repository management
+                DocumentModel targetDoc = documentManager.getDocument(docRef);
+                if (targetDoc != null) {
+                    linkedDoc.setDocument(targetDoc);
+                    linkedDoc.setBrokenDocument(false);
+                }
             }
         } catch (Exception e) {
             // not the expected format or broken document
