@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.task.update;
 
@@ -113,22 +113,17 @@ public class Rollback extends AbstractCommand {
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         UpdateManager mgr = ((AbstractTask) task).getUpdateManager();
-        String entryKey = task.getPackage().getId();
-        RollbackOptions opt = mgr.createRollbackOptions(entryKey, key, version);
-
-        Command undeploy = null;
+        RollbackOptions opt = new RollbackOptions(task.getPackage().getId(),
+                key, version);
         File rollbackTarget = mgr.getRollbackTarget(opt);
         if (rollbackTarget != null) {
-            undeploy = getUndeployCommand(rollbackTarget);
+            Command undeploy = getUndeployCommand(rollbackTarget);
+            if (undeploy != null) {
+                undeploy.run(task, prefs);
+            }
         }
-        if (undeploy != null) {
-            undeploy.run(task, prefs);
-        }
-
         opt.setDeleteOnExit(deleteOnExit);
-
         mgr.rollback(opt);
-
         return null;
     }
 
@@ -137,7 +132,7 @@ public class Rollback extends AbstractCommand {
     }
 
     /**
-     * Method to be overriden by subclasses to provide a undeploy command for
+     * Method to be overridden by subclasses to provide a undeploy command for
      * hot reload
      *
      * @since 5.6

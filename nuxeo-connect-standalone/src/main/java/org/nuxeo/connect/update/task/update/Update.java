@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.task.update;
 
@@ -173,7 +173,7 @@ public class Update extends AbstractCommand {
             rollback = updateFile(task, file, mgr);
         }
 
-        Command deploy = getDeployCommand(mgr, file, rollback);
+        Command deploy = getDeployCommand(mgr, rollback);
         if (deploy != null) {
             deploy.run(task, prefs);
         }
@@ -195,8 +195,8 @@ public class Update extends AbstractCommand {
 
     protected Rollback updateFile(Task task, File fileToUpdate,
             UpdateManager mgr) throws PackageException {
-        UpdateOptions opt = mgr.createUpdateOptions(task.getPackage().getId(),
-                fileToUpdate, todir);
+        UpdateOptions opt = UpdateOptions.newInstance(
+                task.getPackage().getId(), fileToUpdate, todir);
         if (opt == null) {
             return null;
         }
@@ -214,12 +214,12 @@ public class Update extends AbstractCommand {
     }
 
     /**
-     * Method to be overriden by subclasses to provide a deploy command for hot
+     * Method to be overridden by subclasses to provide a deploy command for hot
      * reload
      *
      * @since 5.6
      */
-    protected Command getDeployCommand(UpdateManager updateManager, File file,
+    protected Command getDeployCommand(UpdateManager updateManager,
             Command rollbackCommand) {
         return new DeployPlaceholder(file);
     }

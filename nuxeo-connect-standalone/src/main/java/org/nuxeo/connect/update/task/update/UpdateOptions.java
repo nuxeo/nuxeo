@@ -89,11 +89,11 @@ public class UpdateOptions {
     /**
      * Install only if already installed
      */
-    protected boolean upgradeOnly;
+    protected boolean upgradeOnly = false;
 
     protected boolean deleteOnExit = false;
 
-    private UpdateOptions() {
+    protected UpdateOptions() {
     }
 
     public File getFile() {
@@ -119,14 +119,6 @@ public class UpdateOptions {
     public String getPackageId() {
         return pkgId;
     }
-
-    // public File getExistingFile() {
-    // return existingFile;
-    // }
-    //
-    // public String getExistingVersion() {
-    // return existingVersion;
-    // }
 
     public void setUpgradeOnly(boolean upgradeOnly) {
         this.upgradeOnly = upgradeOnly;

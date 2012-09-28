@@ -66,7 +66,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
         bundles = new File(Environment.getDefault().getHome(), "bundles");
         bundles.mkdirs();
         // cleanup
-        FileUtils.emptyDirectory(bundles);
+        org.apache.commons.io.FileUtils.deleteQuietly(bundles);
         service.getRegistry().delete();
         org.apache.commons.io.FileUtils.deleteDirectory(service.getBackupDir());
     }

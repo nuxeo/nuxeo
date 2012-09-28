@@ -112,8 +112,12 @@ public class TestCopyDir extends AbstractCommandTest {
         assertFalse(deprecatedFilename + " was not replaced",
                 deprecatedFile.exists());
         BufferedReader reader = new BufferedReader(new FileReader(snapshotFile));
-        String line = reader.readLine();
-        assertEquals("new SNAPSHOT content", line);
+        try {
+            String line = reader.readLine();
+            assertEquals("new SNAPSHOT content", line);
+        } finally {
+            org.apache.commons.io.IOUtils.closeQuietly(reader);
+        }
         assertFalse("New feature was copied whereas 'upgradeOnly=true'",
                 new File(bundles, notToDeployFilename).exists());
 
@@ -131,8 +135,12 @@ public class TestCopyDir extends AbstractCommandTest {
         assertTrue(deprecatedFilename + " was not copy back",
                 deprecatedFile.exists());
         BufferedReader reader = new BufferedReader(new FileReader(snapshotFile));
-        String line = reader.readLine();
-        assertEquals("old SNAPSHOT content", line);
+        try {
+            String line = reader.readLine();
+            assertEquals("old SNAPSHOT content", line);
+        } finally {
+            org.apache.commons.io.IOUtils.closeQuietly(reader);
+        }
 
         File templates = new File(Environment.getDefault().getHome(),
                 "templates");

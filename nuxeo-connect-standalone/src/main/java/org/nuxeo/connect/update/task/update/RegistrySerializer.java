@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,16 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.task.update;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -30,6 +29,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Document;
@@ -40,48 +40,56 @@ import org.w3c.dom.Node;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class RegistrySerializer {
+public class RegistrySerializer extends XmlWriter {
 
     private final static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
+    /**
+     * @since 5.7
+     */
+    public RegistrySerializer() {
+        super("  ");
+    }
+
+    /**
+     * Serializes the given registry into the given file.
+     *
+     * @param registry
+     * @param file
+     * @throws IOException
+     */
     public static void store(Map<String, Entry> registry, File file)
             throws IOException {
-        FileOutputStream in = new FileOutputStream(file);
-        try {
-            store(registry, in);
-        } finally {
-            in.close();
-        }
+        RegistrySerializer serializer = new RegistrySerializer();
+        serializer.write(registry);
+        serializer.write(file);
     }
 
-    public static void store(Map<String, Entry> registry, OutputStream out)
-            throws IOException {
-        Writer writer = new OutputStreamWriter(out);
-        store(registry, writer);
-        writer.flush();
-    }
-
-    public static void store(Map<String, Entry> registry, Writer out)
-            throws IOException {
-        XmlWriter writer = new XmlWriter("  ");
-        write(registry, writer);
-        out.write(writer.toString());
-    }
-
+    /**
+     * De-serializes the given file into a Nuxeo packages registry
+     *
+     * @param file
+     * @return The Nuxeo packages registry described by the given file
+     * @throws PackageException
+     * @throws FileNotFoundException
+     */
     public static Map<String, Entry> load(File file) throws PackageException,
-            IOException {
+            FileNotFoundException {
+        RegistrySerializer serializer = new RegistrySerializer();
+        return serializer.read(file);
+    }
+
+    /**
+     * @param file
+     * @return
+     * @throws PackageException
+     * @throws FileNotFoundException
+     */
+    protected Map<String, Entry> read(File file) throws PackageException,
+            FileNotFoundException {
         FileInputStream in = new FileInputStream(file);
         try {
-            return load(in);
-        } finally {
-            in.close();
-        }
-    }
-
-    public static Map<String, Entry> load(InputStream in)
-            throws PackageException {
-        HashMap<String, Entry> registry = new HashMap<String, Entry>();
-        try {
+            HashMap<String, Entry> registry = new HashMap<String, Entry>();
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);
@@ -91,12 +99,13 @@ public class RegistrySerializer {
             throw e;
         } catch (Throwable e) {
             throw new PackageException("Failed to load file update registry", e);
+        } finally {
+            IOUtils.closeQuietly(in);
         }
     }
 
-    public static void read(Element element, Map<String, Entry> registry)
+    protected void read(Element element, Map<String, Entry> registry)
             throws PackageException {
-
         Node node = element.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE
@@ -108,11 +117,8 @@ public class RegistrySerializer {
         }
     }
 
-    public static Entry readEntryElement(Element element)
-            throws PackageException {
-
+    protected Entry readEntryElement(Element element) throws PackageException {
         Entry entry = new Entry(readKeyAttr(element));
-
         Node node = element.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -130,7 +136,7 @@ public class RegistrySerializer {
         return entry;
     }
 
-    public static String readKeyAttr(Element element) throws PackageException {
+    protected String readKeyAttr(Element element) throws PackageException {
         String key = element.getAttribute("key");
         if (key.length() == 0) {
             throw new PackageException(
@@ -139,7 +145,7 @@ public class RegistrySerializer {
         return key;
     }
 
-    public static String readNameAttr(Element element) throws PackageException {
+    protected String readNameAttr(Element element) throws PackageException {
         String version = element.getAttribute("name");
         if (version.length() == 0) {
             throw new PackageException(
@@ -148,7 +154,7 @@ public class RegistrySerializer {
         return version;
     }
 
-    public static String readPathAttr(Element element) throws PackageException {
+    protected String readPathAttr(Element element) throws PackageException {
         String path = element.getAttribute("path");
         if (path.length() == 0) {
             throw new PackageException(
@@ -157,67 +163,86 @@ public class RegistrySerializer {
         return path;
     }
 
-    public static Version readVersionElement(Element element)
+    protected Version readVersionElement(Element element)
             throws PackageException {
         Version v = new Version(readNameAttr(element));
         v.setPath(readPathAttr(element));
-
         Node node = element.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE
                     && "package".equals(node.getNodeName())) {
-                v.addPackage(((Element) node).getTextContent().trim());
+                UpdateOptions opt = new UpdateOptions();
+                opt.pkgId = ((Element) node).getTextContent().trim();
+                opt.upgradeOnly = Boolean.parseBoolean(((Element) node).getAttribute("upgradeOnly"));
+                v.addPackage(opt);
             }
             node = node.getNextSibling();
         }
-
         return v;
     }
 
-    public static void write(Map<String, Entry> registry, XmlWriter writer) {
-        writer.writeXmlDecl();
-        writer.start("registry");
-        writer.startContent();
+    protected void write(Map<String, Entry> registry) {
+        writeXmlDecl();
+        start("registry");
+        startContent();
         for (Entry entry : registry.values()) {
-            writeEntry(entry, writer);
+            writeEntry(entry);
         }
-        writer.end("registry");
+        end("registry");
     }
 
-    public static void writeEntry(Entry entry, XmlWriter writer) {
-        writer.start("entry");
-        writer.attr("key", entry.getKey());
-        writer.startContent();
+    protected void writeEntry(Entry entry) {
+        start("entry");
+        attr("key", entry.getKey());
+        startContent();
         if (entry.hasBaseVersion()) {
-            writeBaseVersion(entry.getBaseVersion(), writer);
+            writeBaseVersion(entry.getBaseVersion());
         }
         for (Version v : entry) {
-            writeVersion(v, writer);
+            writeVersion(v);
         }
-        writer.end("entry");
+        end("entry");
     }
 
-    public static void writeBaseVersion(Version version, XmlWriter writer) {
-        writer.start("base-version");
-        writer.attr("name", version.getVersion());
-        writer.attr("path", version.getPath());
-        writer.end();
-        // writer.startContent();
-        // for (String pkg : version.getPackages()) {
-        // writer.element("package", pkg);
-        // }
-        // writer.end("base-version");
+    protected void writeBaseVersion(Version version) {
+        start("base-version");
+        attr("name", version.getVersion());
+        attr("path", version.getPath());
+        end();
     }
 
-    public static void writeVersion(Version version, XmlWriter writer) {
-        writer.start("version");
-        writer.attr("name", version.getVersion());
-        writer.attr("path", version.getPath());
-        writer.startContent();
-        for (String pkg : version.getPackages()) {
-            writer.element("package", pkg);
+    protected void writeVersion(Version version) {
+        start("version");
+        attr("name", version.getVersion());
+        attr("path", version.getPath());
+        startContent();
+        Map<String, UpdateOptions> packages = version.getPackages();
+        for (UpdateOptions opt : packages.values()) {
+            start("package");
+            if (opt.upgradeOnly) {
+                attr("upgradeOnly", "true");
+            }
+            // Missing methods to properly append the following without indent
+            text(">" + opt.pkgId + "</package>\n");
+            // startContent(false);
+            // text(opt.pkgId);
+            // end("package", false);
         }
-        writer.end("version");
+        end("version");
+    }
+
+    /**
+     * @param file Output file
+     * @throws IOException
+     * @since 5.7
+     */
+    protected void write(File file) throws IOException {
+        Writer writer = new OutputStreamWriter(new FileOutputStream(file));
+        try {
+            writer.write(sb.toString());
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
     }
 
 }

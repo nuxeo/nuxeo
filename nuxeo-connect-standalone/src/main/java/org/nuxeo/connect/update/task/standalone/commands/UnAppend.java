@@ -82,42 +82,46 @@ public class UnAppend extends AbstractCommand {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        BufferedReader brToRemove, brFromFile;
+        BufferedReader brToRemove = null, brFromFile = null;
         File bak;
+        StringBuilder linesToKeep = new StringBuilder();
+        StringBuilder linesToRemove = new StringBuilder();
         try {
-            brToRemove = new BufferedReader(new FileReader(contentToRemove));
-            String lineToRemove = brToRemove.readLine();
-            brFromFile = new BufferedReader(new FileReader(fromFile));
-            String lineToCheck;
-            StringBuilder linesToKeep = new StringBuilder();
-            StringBuilder linesToRemove = new StringBuilder();
-            boolean found = false;
-            while ((lineToCheck = brFromFile.readLine()) != null) {
+            try {
+                brToRemove = new BufferedReader(new FileReader(contentToRemove));
+                String lineToRemove = brToRemove.readLine();
+                brFromFile = new BufferedReader(new FileReader(fromFile));
+                String lineToCheck;
+                boolean found = false;
+                while ((lineToCheck = brFromFile.readLine()) != null) {
 
-                if (lineToCheck.equals(lineToRemove)) {
-                    // Maybe the line to remove, but let's check the next lines
-                    found = true;
-                    linesToRemove.append(lineToCheck + newLine);
-                    lineToRemove = brToRemove.readLine();
-                } else {
-                    if (lineToRemove != null && found) {
-                        // Previously found lines must finally be kept
-                        found = false;
-                        linesToKeep.append(linesToRemove.toString());
-                        linesToRemove = new StringBuilder();
-                        org.apache.commons.io.IOUtils.closeQuietly(brToRemove);
-                        brToRemove = new BufferedReader(new FileReader(
-                                contentToRemove));
+                    if (lineToCheck.equals(lineToRemove)) {
+                        // Maybe the line to remove, but let's check the next
+                        // lines
+                        found = true;
+                        linesToRemove.append(lineToCheck + newLine);
+                        lineToRemove = brToRemove.readLine();
+                    } else {
+                        if (lineToRemove != null && found) {
+                            // Previously found lines must finally be kept
+                            found = false;
+                            linesToKeep.append(linesToRemove.toString());
+                            linesToRemove = new StringBuilder();
+                            org.apache.commons.io.IOUtils.closeQuietly(brToRemove);
+                            brToRemove = new BufferedReader(new FileReader(
+                                    contentToRemove));
+                        }
+                        linesToKeep.append(lineToCheck + newLine);
                     }
-                    linesToKeep.append(lineToCheck + newLine);
                 }
+                if (lineToRemove != null) {
+                    throw new PackageException(
+                            "All lines to remove were not found.");
+                }
+            } finally {
+                org.apache.commons.io.IOUtils.closeQuietly(brToRemove);
+                org.apache.commons.io.IOUtils.closeQuietly(brFromFile);
             }
-            if (lineToRemove != null) {
-                throw new PackageException(
-                        "All lines to remove were not found.");
-            }
-            org.apache.commons.io.IOUtils.closeQuietly(brToRemove);
-            org.apache.commons.io.IOUtils.closeQuietly(brFromFile);
             if (task instanceof UninstallTask) {
                 bak = null;
             } else {
@@ -125,6 +129,8 @@ public class UnAppend extends AbstractCommand {
             }
             FileUtils.writeFile(fromFile, linesToKeep.toString());
             return new Append(bak, fromFile);
+        } catch (PackageException e) {
+            throw e;
         } catch (Exception e) {
             throw new PackageException(e);
         }
