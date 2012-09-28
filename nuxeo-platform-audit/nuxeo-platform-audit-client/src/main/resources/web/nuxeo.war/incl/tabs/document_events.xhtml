@@ -68,7 +68,7 @@
       <h:outputText value="#{messages[logEntriesComments[logEntry.id]]}" />
       <f:subview rendered="#{(logEntriesLinkedDocs[logEntry.id])!=null}">
         <h:outputText value="   "/>
-        <nxu:graphicImage value="/icons/lock.gif"
+        <nxu:graphicImage value="/icons/broken_file.png"
           rendered="#{(logEntriesLinkedDocs[logEntry.id]).brokenDocument}"
           alt="#{(logEntriesLinkedDocs[logEntry.id]).documentRef}" />
         <nxd:restDocumentLink
