@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webdav.resource;
 
 import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -70,6 +71,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
@@ -106,9 +108,10 @@ public class ExistingResource extends AbstractResource {
             backend.saveChanges();
             return Response.status(204).build();
         } catch (ClientException e) {
-            log.error("Can't remove item: " + doc.getPathAsString(), e);
+            log.error("Can't remove item: " + doc.getPathAsString() + e.getMessage());
+            log.debug(e);
             backend.discardChanges();
-            return Response.status(400).build();
+            return Response.status(FORBIDDEN).build();
         }
     }
 
