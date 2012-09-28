@@ -334,6 +334,8 @@ org.nuxeo.distribution.package=zip</echo>
     <copy todir="${distribution.dir}/sdk/sources">
       <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts*.properties"
                              classifier="sources" />
+      <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties"
+                             classifier="sources" />
     </copy>
     <mkdir dir="${distribution.dir}/sdk/tests" />
     <copy todir="${distribution.dir}/sdk/tests">
