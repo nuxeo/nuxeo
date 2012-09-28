@@ -36,6 +36,8 @@ public final class IdUtils {
 
     private static final String WORD_SPLITTING_REGEXP = "[^a-zA-Z0-9]+";
 
+    public static final String UUID_TYPE_4_REGEXP = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+
     // TODO AT: dummy random, does not ensure uniqueness
     private static final Random RANDOM = new Random(new Date().getTime());
 
@@ -145,6 +147,18 @@ public final class IdUtils {
             return generateStringId();
         }
         return s.replace("/", "-");
+    }
+
+    /**
+     * Check if a given string has the pattern for UUID type 4
+     * 
+     * @since 5.7
+     */
+    public static boolean isValidUUID(String uuid) {
+        if (Pattern.compile(UUID_TYPE_4_REGEXP).matcher(uuid).matches()) {
+            return true;
+        }
+        return false;
     }
 
 }
