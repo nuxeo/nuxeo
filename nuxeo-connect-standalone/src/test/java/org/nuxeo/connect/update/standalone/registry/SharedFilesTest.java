@@ -61,12 +61,11 @@ public abstract class SharedFilesTest extends PackageTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        // be sure these directories exists
+        // be sure these directories exists and cleanup if needed
         Environment.getDefault().getConfig().mkdirs();
         bundles = new File(Environment.getDefault().getHome(), "bundles");
-        bundles.mkdirs();
-        // cleanup
         org.apache.commons.io.FileUtils.deleteQuietly(bundles);
+        bundles.mkdirs();
         service.getRegistry().delete();
         org.apache.commons.io.FileUtils.deleteDirectory(service.getBackupDir());
     }
