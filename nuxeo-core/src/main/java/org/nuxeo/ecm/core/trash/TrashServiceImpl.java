@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -228,6 +229,13 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
             if (session.getAllowedStateTransitions(docRef).contains(
                     LifeCycleConstants.DELETE_TRANSITION)
                     && !doc.isProxy()) {
+                if (!session.canRemoveDocument(docRef)) {
+                    throw new DocumentSecurityException(
+                            "User "
+                                    + session.getPrincipal().getName()
+                                    + " does not have the permission to remove the document "
+                                    + doc.getId() + " (" + doc.getPath() + ")");
+                }
                 session.followTransition(docRef,
                         LifeCycleConstants.DELETE_TRANSITION);
             } else {
