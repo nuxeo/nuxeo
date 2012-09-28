@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,13 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.task.update;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class RollbackOptions {
 
@@ -34,6 +37,18 @@ public class RollbackOptions {
         this.pkgId = pkgId;
         this.key = key;
         this.version = version;
+    }
+
+    /**
+     * @param key
+     * @param opt
+     * @since 5.7
+     */
+    public RollbackOptions(String key, UpdateOptions opt) {
+        this.key = key;
+        this.pkgId = opt.pkgId;
+        this.version = opt.version;
+        this.deleteOnExit = opt.deleteOnExit;
     }
 
     public String getPackageId() {
@@ -55,4 +70,14 @@ public class RollbackOptions {
     public void setDeleteOnExit(boolean deleteOnExit) {
         this.deleteOnExit = deleteOnExit;
     }
+
+    /**
+     * @since 5.7
+     */
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this,
+                ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
 }

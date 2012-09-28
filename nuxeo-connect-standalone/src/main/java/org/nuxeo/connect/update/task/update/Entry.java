@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -26,7 +26,7 @@ import org.nuxeo.common.utils.FileVersion;
  * Versions are stored in the same order they are registered (in historical
  * package install order).
  *
- * That means when when rollbacking an update the file system will be modified
+ * That means when rollbacking an update the file system will be modified
  * only if the last version was rollbacked. And the version that will become the
  * current version will be the last version in the version list.
  *
@@ -56,6 +56,25 @@ public class Entry implements Iterable<Version> {
 
     public final Version getLastVersion() {
         return versions.isEmpty() ? null : versions.get(versions.size() - 1);
+    }
+
+    /**
+     * @param includeUpgradeOnly
+     * @return Last version with a package not deploying it in upgradeOnly mode
+     * @since 5.7
+     */
+    public Version getLastVersion(boolean includeUpgradeOnly) {
+        if (includeUpgradeOnly) {
+            return getLastVersion();
+        }
+        for (int i = versions.size() - 1; i >= 0; i--) {
+            for (UpdateOptions opt : versions.get(i).packages.values()) {
+                if (opt.upgradeOnly == false) {
+                    return versions.get(i);
+                }
+            }
+        }
+        return null;
     }
 
     public final String getKey() {
@@ -143,4 +162,5 @@ public class Entry implements Iterable<Version> {
     public String toString() {
         return key;
     }
+
 }
