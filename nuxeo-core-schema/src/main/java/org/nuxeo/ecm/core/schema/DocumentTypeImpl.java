@@ -49,6 +49,9 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
 
     protected PrefetchInfo prefetchInfo;
 
+    public DocumentTypeImpl(String name) {
+        this((DocumentType) null, name);
+    }
 
     public DocumentTypeImpl(DocumentType superType, String name) {
         this(superType == null ? null : superType.getRef(), name, null, null, 0);
