@@ -59,7 +59,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-@SuppressWarnings({ "RedundantArrayCreation" })
 public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private static final String repoName = "demo";
@@ -98,9 +97,11 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private JenaGraph graph;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         // fake repo setup
         deployContrib("org.nuxeo.ecm.relations.io.tests",
@@ -127,6 +128,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         this.graph = (JenaGraph) graph;
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         if (graph != null) {

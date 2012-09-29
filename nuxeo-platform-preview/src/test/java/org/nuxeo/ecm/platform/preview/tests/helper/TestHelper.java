@@ -14,6 +14,7 @@
  */
 package org.nuxeo.ecm.platform.preview.tests.helper;
 
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,6 +35,13 @@ public class TestHelper extends NXRuntimeTestCase {
     private static final String uuid = "f53fc32e-21b3-4640-9917-05e873aa1e53";
     private static final String targetURL1 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/default/";
     private static final String targetURL2 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/file:content/";
+
+    @Before
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
+    }
 
     @Test
     public void testPreviewURLDefault() {
