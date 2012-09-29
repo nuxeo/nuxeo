@@ -42,6 +42,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
         deployContrib("org.nuxeo.ecm.actions.tests", "test-filters-contrib.xml");
         deployContrib("org.nuxeo.ecm.actions.tests",
