@@ -33,6 +33,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestTypes extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -227,7 +228,6 @@ public class TestTypes extends NXRuntimeTestCase {
 
         // Validation tests
         assertTrue(type.validate(new Integer[3]));
-        assertFalse(type.isNotNull());
         assertTrue(type.validate(null));
         assertFalse(type.validate(0));
         assertFalse(type.validate(""));

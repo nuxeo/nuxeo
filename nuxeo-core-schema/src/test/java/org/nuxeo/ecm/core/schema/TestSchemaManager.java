@@ -19,11 +19,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
@@ -33,29 +39,26 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     SchemaManagerImpl schemaManager;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
-        schemaManager = (SchemaManagerImpl) getSchemaManager();
+        schemaManager = (SchemaManagerImpl) Framework.getLocalService(SchemaManager.class);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         schemaManager = null;
         super.tearDown();
     }
 
-    public static SchemaManager getSchemaManager() throws Exception {
-        return Framework.getService(SchemaManager.class);
-    }
-
     @Test
     public void testTrivialTypeManager() {
-        Type[] types = schemaManager.getTypes();
+        Collection<Type> types = schemaManager.getTypes();
         assertNotNull(types);
-        assertEquals(types.length, schemaManager.getTypesCount());
-        assertTrue(types.length > 0);
+        assertTrue(types.size() > 0);
 
         DocumentType[] documentTypes = schemaManager.getDocumentTypes();
         assertNotNull(documentTypes);
@@ -66,7 +69,6 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         Schema[] schemas = schemaManager.getSchemas();
         assertNotNull(schemas);
         assertEquals(0, schemas.length);
-        assertEquals(0, schemaManager.getSchemasCount());
     }
 
     @Test
@@ -112,7 +114,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertTrue(tff.contains("Child"));
 
         // Unregister child
-        schemaManager.unregisterDocumentType("Child");
+        schemaManager.unregisterDocumentType(dtd);
         assertNull(schemaManager.getDocumentType("Child"));
         assertNull(schemaManager.getDocumentTypeNamesForFacet("child"));
         assertEquals(2, schemaManager.getDocumentTypes().length);
@@ -222,6 +224,57 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         schemaManager.registerDocumentType(dtd);
 
         checkInheritanceCache();
+    }
+
+    @Test
+    public void testDynamicChanges() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/CoreTestExtensions.xml");
+        DocumentType t = schemaManager.getDocumentType("myDoc3");
+        Set<String> ts = new HashSet<String>(Arrays.asList(t.getSchemaNames()));
+        assertEquals(new HashSet<String>(Arrays.asList("schema1", "schema2")),
+                ts);
+        assertEquals(Collections.singleton("myfacet"), t.getFacets());
+
+        // add a new schema the myDoc2 and remove a facet
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/test-change-doctype.xml");
+
+        // myDoc3, a child type, sees the change
+        t = schemaManager.getDocumentType("myDoc3");
+        ts = new HashSet<String>(Arrays.asList(t.getSchemaNames()));
+        assertEquals(new HashSet<String>(Arrays.asList("schema1", "common")),
+                ts);
+        assertEquals(0, t.getFacets().size());
+    }
+
+    @Test
+    public void testSupertypeLoop() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/test-supertype-loop.xml");
+        DocumentType t = schemaManager.getDocumentType("someDocInLoop");
+        DocumentType t2 = schemaManager.getDocumentType("someDocInLoop2");
+        assertEquals("someDocInLoop2", t.getSuperType().getName());
+        assertNull(t2.getSuperType());
+    }
+
+    @Test
+    public void testMissingSupertype() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/test-missing-supertype.xml");
+        DocumentType t = schemaManager.getDocumentType("someDoc");
+        DocumentType t2 = schemaManager.getDocumentType("someDoc2");
+        assertNull(t.getSuperType());
+        assertEquals("someDoc", t2.getSuperType().getName());
+    }
+
+    @Test
+    public void testFacetMissingSchema() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/test-facet-missing-schema.xml");
+        CompositeType f = schemaManager.getFacet("someFacet");
+        assertEquals(Collections.singletonList("common"),
+                Arrays.asList(f.getSchemaNames()));
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,65 +7,41 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeProvider;
-import org.nuxeo.ecm.core.schema.TypeRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Abstract (common) implementation for a Type.
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
 public abstract class AbstractType implements Type {
 
-    private static final Log log = LogFactory.getLog(AbstractType.class);
+    private static final long serialVersionUID = 1L;
 
     public static final Type[] EMPTY_SUPERTYPES = new Type[0];
 
-    public static final int F_READONLY = 1;
-
-    public static final int F_NOTNULL = 2;
-
-    private static final long serialVersionUID = -7902736654482518683L;
-
     protected final String name;
-
-    protected final TypeRef<?> superType;
 
     protected final String schema;
 
-    protected int flags;
+    protected final Type superType;
 
-    protected AbstractType(TypeRef<? extends Type> superType, String schema, String name) {
-        assert schema != null;
-        assert name != null;
-
+    protected AbstractType(Type superType, String schema, String name) {
         this.name = name;
         this.schema = schema;
-        this.superType = superType == null ? TypeRef.NULL : superType;
-    }
-
-
-    @Override
-    public TypeRef<? extends Type> getRef() {
-        return new TypeRef<Type>(schema, name, this);
+        this.superType = superType;
     }
 
     @Override
     public Type getSuperType() {
-        return superType.get();
+        return superType;
     }
 
     @Override
@@ -95,7 +71,6 @@ public abstract class AbstractType implements Type {
         return false;
     }
 
-    @SuppressWarnings({ "SameReturnValue" })
     public boolean isAny() {
         return false;
     }
@@ -140,46 +115,8 @@ public abstract class AbstractType implements Type {
     }
 
     @Override
-    public boolean isNotNull() {
-        return isFlagSet(F_NOTNULL);
-    }
-
-    @Override
-    public boolean isReadOnly() {
-        return isFlagSet(F_READONLY);
-    }
-
-    @Override
     public boolean validate(Object object) throws TypeException {
-        return !(object == null && isNotNull());
-    }
-
-    public void setNotNull(boolean val) {
-        if (val) {
-            setFlags(F_NOTNULL);
-        } else {
-            clearFlags(F_NOTNULL);
-        }
-    }
-
-    public void setReadOnly(boolean val) {
-        if (val) {
-            setFlags(F_READONLY);
-        } else {
-            clearFlags(F_READONLY);
-        }
-    }
-
-    protected final void setFlags(int flags) {
-        this.flags |= flags;
-    }
-
-    protected final void clearFlags(int flags) {
-        this.flags &= ~flags;
-    }
-
-    protected final boolean isFlagSet(int flags) {
-        return (this.flags & flags) == flags;
+        return true;
     }
 
     @Override

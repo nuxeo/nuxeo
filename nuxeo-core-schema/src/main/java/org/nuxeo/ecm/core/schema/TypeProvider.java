@@ -15,21 +15,11 @@ package org.nuxeo.ecm.core.schema;
 
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
- * A provider of types (property types, schemas, document types, facets).
+ * A provider of types (schemas, document types, facets).
  */
 public interface TypeProvider {
-
-    /** Low level generic type lookup. */
-    Type getType(String schema, String name);
-
-    /** Gets a property type. */
-    Type getType(String name);
-
-    /** Gets the list of property types. */
-    Type[] getTypes();
 
     /** Gets a schema. */
     Schema getSchema(String schema);

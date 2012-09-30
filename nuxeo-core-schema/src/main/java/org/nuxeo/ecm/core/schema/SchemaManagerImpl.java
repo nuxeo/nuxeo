@@ -17,19 +17,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.schema.registries.DocumentTypeRegistry;
-import org.nuxeo.ecm.core.schema.registries.FacetRegistry;
-import org.nuxeo.ecm.core.schema.registries.SchemaRegistry;
-import org.nuxeo.ecm.core.schema.registries.SchemaTypeRegistry;
 import org.nuxeo.ecm.core.schema.types.AnyType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
@@ -51,198 +54,495 @@ public class SchemaManagerImpl implements SchemaManager {
 
     private static final Log log = LogFactory.getLog(SchemaManagerImpl.class);
 
-    // types reg
+    /**
+     * Whether there have been changes to the registered schemas, facets or
+     * document types that require recomputation of the effective ones.
+     */
+    protected boolean dirty = true;
 
-    private final SchemaTypeRegistry typeReg;
+    /** Basic type registry. */
+    protected Map<String, Type> types = new HashMap<String, Type>();
 
-    private final DocumentTypeRegistry docTypeReg;
+    /** All the registered configurations (prefetch). */
+    protected List<TypeConfiguration> allConfigurations = new ArrayList<TypeConfiguration>();
 
-    private final FacetRegistry facetReg;
+    /** All the registered schemas. */
+    protected List<SchemaBindingDescriptor> allSchemas = new ArrayList<SchemaBindingDescriptor>();
 
-    private final SchemaRegistry schemaReg;
+    /** All the registered facets. */
+    protected List<FacetDescriptor> allFacets = new ArrayList<FacetDescriptor>();
 
-    private final Map<String, Set<DocumentTypeDescriptor>> pendingDocTypes;
+    /** All the registered document types. */
+    protected List<DocumentTypeDescriptor> allDocumentTypes = new ArrayList<DocumentTypeDescriptor>();
 
-    private final Map<String, Field> fields = new HashMap<String, Field>();
+    /** Effective prefetch info. */
+    protected PrefetchInfo prefetchInfo;
+
+    /** Effective schemas. */
+    protected Map<String, Schema> schemas = new HashMap<String, Schema>();
+
+    protected final Map<String, Schema> uriToSchema = new HashMap<String, Schema>();
+
+    protected final Map<String, Schema> prefixToSchema = new HashMap<String, Schema>();
+
+    /** Effective facets. */
+    protected Map<String, CompositeType> facets = new HashMap<String, CompositeType>();
+
+    /** Effective document types. */
+    protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<String, DocumentTypeImpl>();
+
+    protected Map<String, Set<String>> documentTypesExtending = new HashMap<String, Set<String>>();
+
+    protected Map<String, Set<String>> documentTypesForFacet = new HashMap<String, Set<String>>();
+
+    /** Fields computed lazily. */
+    private Map<String, Field> fields = new ConcurrentHashMap<String, Field>();
 
     private File schemaDir;
 
-    // global prefetch info
-    private PrefetchInfo prefetchInfo;
-
-    private static final String SUPER_PREFIX = "super:";
-
-    private static final String FACET_PREFIX = "facet:";
-
     public SchemaManagerImpl() {
-        pendingDocTypes = new HashMap<String, Set<DocumentTypeDescriptor>>();
         schemaDir = new File(Framework.getRuntime().getHome(), "schemas");
-        typeReg = new SchemaTypeRegistry();
-        docTypeReg = new DocumentTypeRegistry();
-        facetReg = new FacetRegistry();
-        schemaReg = new SchemaRegistry();
         if (!schemaDir.isDirectory()) {
             schemaDir.mkdirs();
-        }
-        for (Type type : XSDTypes.getTypes()) {
-            registerType(type);
         }
         registerBuiltinTypes();
     }
 
     protected void registerBuiltinTypes() {
-        registerDocumentType(new DocumentTypeImpl(null, TypeConstants.DOCUMENT,
-                null, null, DocumentTypeImpl.T_DOCUMENT));
+        for (Type type : XSDTypes.getTypes()) {
+            registerType(type);
+        }
         registerType(AnyType.INSTANCE);
     }
 
-    @Override
-    public Type getType(String schema, String name) {
-        if (SchemaNames.BUILTIN.equals(schema)) {
-            return typeReg.getType(name);
-        } else if (SchemaNames.DOCTYPES.equals(schema)) {
-            return docTypeReg.getType(name);
-        } else if (SchemaNames.SCHEMAS.equals(schema)) {
-            return schemaReg.getSchema(name);
-        } else if (SchemaNames.FACETS.equals(schema)) {
-            return facetReg.getFacet(name);
+    protected void registerType(Type type) {
+        types.put(type.getName(), type);
+    }
+
+    // called by XSDLoader
+    protected Type getType(String name) {
+        return types.get(name);
+    }
+
+    // for tests
+    protected Collection<Type> getTypes() {
+        return types.values();
+    }
+
+    public synchronized void registerConfiguration(TypeConfiguration config) {
+        allConfigurations.add(config);
+        dirty = true;
+        log.info("Registered global prefetch: " + config.prefetchInfo);
+    }
+
+    public synchronized void unregisterConfiguration(TypeConfiguration config) {
+        if (allConfigurations.remove(config)) {
+            dirty = true;
+            log.info("Unregistered global prefetch: " + config.prefetchInfo);
         } else {
-            Schema ownerSchema = schemaReg.getSchema(schema);
-            if (ownerSchema != null) {
-                return ownerSchema.getType(name);
-            }
-            return null;
+            log.error("Unregistering unknown prefetch: " + config.prefetchInfo);
+
         }
     }
 
-    @Override
-    public void registerType(Type type) {
-        String schema = type.getSchemaName();
-        if (SchemaNames.BUILTIN.equals(schema)) {
-            typeReg.addContribution(type);
-        } else if (SchemaNames.SCHEMAS.equals(schema)) {
-            schemaReg.addContribution((Schema) type);
-        } else if (SchemaNames.DOCTYPES.equals(schema)) {
-            docTypeReg.addContribution((DocumentType) type);
-        } else if (SchemaNames.FACETS.equals(schema)) {
-            facetReg.addContribution((CompositeType) type);
+    public synchronized void registerSchema(SchemaBindingDescriptor sd) {
+        allSchemas.add(sd);
+        dirty = true;
+        log.info("Registered schema: " + sd.name); // TODO from foo.xsd
+    }
+
+    public synchronized void unregisterSchema(SchemaBindingDescriptor sd) {
+        if (allSchemas.remove(sd)) {
+            dirty = true;
+            log.info("Unregistered schema: " + sd.name);
         } else {
-            Schema ownerSchema = schemaReg.getSchema(schema);
-            if (ownerSchema != null) {
-                ownerSchema.registerType(type);
+            log.error("Unregistering unknown schema: " + sd.name);
+        }
+    }
+
+    public synchronized void registerFacet(FacetDescriptor fd) {
+        allFacets.add(fd);
+        dirty = true;
+        log.info("Registered facet: " + fd.name);
+    }
+
+    public synchronized void unregisterFacet(FacetDescriptor fd) {
+        if (allFacets.remove(fd)) {
+            dirty = true;
+            log.info("Unregistered facet: " + fd.name);
+        } else {
+            log.error("Unregistering unknown facet: " + fd.name);
+        }
+    }
+
+    public synchronized void registerDocumentType(DocumentTypeDescriptor dtd) {
+        allDocumentTypes.add(dtd);
+        dirty = true;
+        log.info("Registered document type: " + dtd.name);
+    }
+
+    public synchronized void unregisterDocumentType(DocumentTypeDescriptor dtd) {
+        if (allDocumentTypes.remove(dtd)) {
+            dirty = true;
+            log.info("Unregistered document type: " + dtd.name);
+        } else {
+            log.error("Unregistering unknown document type: " + dtd.name);
+        }
+    }
+
+    // for tests
+    public DocumentTypeDescriptor getDocumentTypeDescriptor(String name) {
+        DocumentTypeDescriptor last = null;
+        for (DocumentTypeDescriptor dtd : allDocumentTypes) {
+            if (dtd.name.equals(name)) {
+                last = dtd;
             }
         }
+        return last;
     }
 
-    @Override
-    public Type unregisterType(String name) {
-        Type type = getType(name);
-        typeReg.removeContribution(type);
-        return type;
-    }
-
-    @Override
-    public Type getType(String name) {
-        return typeReg.getType(name);
-    }
-
-    @Override
-    public Type[] getTypes() {
-        return typeReg.getTypes();
-    }
-
-    @Override
-    public Type[] getTypes(String schema) {
-        Schema ownerSchema = schemaReg.getSchema(schema);
-        if (schema != null) {
-            return ownerSchema.getTypes();
+    /**
+     * Checks if something has to be recomputed if a dynamic register/unregister
+     * happened.
+     */
+    protected synchronized void checkDirty() {
+        if (!dirty) {
+            return;
         }
-        return null;
+        recompute();
+        dirty = false;
     }
 
-    @Override
-    public int getTypesCount() {
-        return typeReg.size();
+    /**
+     * Recomputes effective registries for schemas, facets and document types.
+     */
+    protected void recompute() {
+        recomputeConfiguration();
+        recomputeSchemas();
+        recomputeFacets(); // depend on schemas
+        recomputeDocumentTypes(); // depend on schemas and facets
+        fields.clear(); // re-filled lazily
     }
 
-    @Override
-    public void registerSchema(Schema schema) {
-        synchronized (schemaReg) {
-            schemaReg.addContribution(schema);
+    /*
+     * ===== Configuration =====
+     */
+
+    protected void recomputeConfiguration() {
+        if (allConfigurations.isEmpty()) {
+            prefetchInfo = null;
+        } else {
+            TypeConfiguration last = allConfigurations.get(allConfigurations.size() - 1);
+            prefetchInfo = new PrefetchInfo(last.prefetchInfo);
         }
     }
 
-    public void registerSchema(SchemaBindingDescriptor sd) throws IOException,
-            SAXException, TypeException {
-        if (sd.src != null && sd.src.length() > 0) {
-            URL url = sd.context.getLocalResource(sd.src);
-            if (url == null) { // try asking the class loader
-                url = sd.context.getResource(sd.src);
-            }
-            if (url != null) {
-                InputStream in = url.openStream();
-                try {
-                    File file = new File(getSchemaDirectory(),
-                            sd.name + ".xsd");
-                    FileUtils.copyToFile(in, file); // may overwrite
-                    Schema oldschema = getSchema(sd.name);
-                    // loadSchema calls this.registerSchema
-                    XSDLoader schemaLoader = new XSDLoader(this);
-                    schemaLoader.loadSchema(sd.name, sd.prefix, file,
-                            sd.override);
-                    if (oldschema == null) {
-                        log.info("Registered schema: " + sd.name + " from "
-                                + url.toString());
-                    } else {
-                        log.info("Reregistered schema: " + sd.name);
-                    }
-                } finally {
-                    in.close();
+    /*
+     * ===== Schemas =====
+     */
+
+    protected void recomputeSchemas() {
+        schemas.clear();
+        uriToSchema.clear();
+        prefixToSchema.clear();
+        for (SchemaBindingDescriptor sd : allSchemas) {
+            try {
+                recomputeSchema(sd);
+            } catch (Exception e) {
+                if (e instanceof InterruptedException) {
+                    // restore interrupted status
+                    Thread.currentThread().interrupt();
                 }
-            } else {
-                log.error("XSD Schema not found: " + sd.src);
+                log.error(e);
             }
-        } else {
-            log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
         }
     }
 
-    public Schema unregisterSchema(String name) {
-        Schema schema = schemaReg.getSchema(name);
-        if (schema == null) {
-            return null;
+    protected void recomputeSchema(SchemaBindingDescriptor sd)
+            throws IOException, SAXException, TypeException {
+        if (sd.src == null || sd.src.length() == 0) {
+            // log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
+            return;
         }
+        URL url = sd.context.getLocalResource(sd.src);
+        if (url == null) {
+            // try asking the class loader
+            url = sd.context.getResource(sd.src);
+        }
+        if (url == null) {
+            log.error("XSD Schema not found: " + sd.src);
+            return;
+        }
+        InputStream in = url.openStream();
+        try {
+            File file = new File(schemaDir, sd.name + ".xsd");
+            FileUtils.copyToFile(in, file); // may overwrite
+            Schema oldschema = schemas.get(sd.name);
+            // loadSchema calls this.registerSchema
+            XSDLoader schemaLoader = new XSDLoader(this);
+            schemaLoader.loadSchema(sd.name, sd.prefix, file, sd.override);
+            if (oldschema == null) {
+                log.info("Registered schema: " + sd.name + " from "
+                        + url.toString());
+            } else {
+                log.info("Reregistered schema: " + sd.name);
+            }
+        } finally {
+            in.close();
+        }
+    }
+
+    // called from XSDLoader, does not do the checkDirty call
+    protected Schema getSchemaInternal(String name) {
+        return schemas.get(name);
+    }
+
+    // called from XSDLoader
+    protected void registerSchema(Schema schema) {
+        schemas.put(schema.getName(), schema);
         Namespace ns = schema.getNamespace();
-        log.info("Unregister schema: " + name);
-        synchronized (schemaReg) {
-            schemaReg.removeContribution(schema);
-            return schema;
-        }
+        uriToSchema.put(ns.uri, schema);
+        prefixToSchema.put(ns.prefix, schema);
+    }
+
+    @Override
+    public Schema[] getSchemas() {
+        checkDirty();
+        return new ArrayList<Schema>(schemas.values()).toArray(new Schema[0]);
     }
 
     @Override
     public Schema getSchema(String name) {
-        synchronized (schemaReg) {
-            return schemaReg.getSchema(name);
-        }
+        checkDirty();
+        return schemas.get(name);
     }
 
     @Override
     public Schema getSchemaFromPrefix(String schemaPrefix) {
-        synchronized (schemaReg) {
-            return schemaReg.getSchemaFromPrefix(schemaPrefix);
-        }
+        checkDirty();
+        return prefixToSchema.get(schemaPrefix);
     }
 
     @Override
     public Schema getSchemaFromURI(String schemaURI) {
-        synchronized (schemaReg) {
-            return schemaReg.getSchemaFromURI(schemaURI);
+        checkDirty();
+        return uriToSchema.get(schemaURI);
+    }
+
+    /*
+     * ===== Facets =====
+     */
+
+    protected void recomputeFacets() {
+        facets.clear();
+        for (FacetDescriptor fd : allFacets) {
+            recomputeFacet(fd);
         }
     }
 
+    protected void recomputeFacet(FacetDescriptor fd) {
+        Set<String> schemas = SchemaDescriptor.getSchemaNames(fd.schemas);
+        registerFacet(fd.name, schemas);
+    }
+
+    // also called when a document type references an unknown facet (WARN)
+    protected CompositeType registerFacet(String name, Set<String> schemaNames) {
+        List<Schema> facetSchemas = new ArrayList<Schema>(schemaNames.size());
+        for (String schemaName : schemaNames) {
+            Schema schema = schemas.get(schemaName);
+            if (schema == null) {
+                log.error("Facet: " + name + " uses unknown schema: " + schemaName);
+                continue;
+            }
+            facetSchemas.add(schema);
+        }
+        CompositeType ct = new CompositeTypeImpl(null, SchemaNames.FACETS,
+                name, facetSchemas);
+        facets.put(name, ct);
+        return ct;
+    }
+
+    @Override
+    public CompositeType[] getFacets() {
+        checkDirty();
+        return new ArrayList<CompositeType>(facets.values()).toArray(new CompositeType[facets.size()]);
+    }
+
+    @Override
+    public CompositeType getFacet(String name) {
+        checkDirty();
+        return facets.get(name);
+    }
+
+    /*
+     * ===== Document types =====
+     */
+
+    protected void recomputeDocumentTypes() {
+        // effective descriptors with override
+        // linked hash map to keep order for reproducibility
+        Map<String, DocumentTypeDescriptor> dtds = new LinkedHashMap<String, DocumentTypeDescriptor>();
+        for (DocumentTypeDescriptor dtd : allDocumentTypes) {
+            String name = dtd.name;
+            dtds.put(name, dtd);
+        }
+        // recompute all types, parents first
+        documentTypes.clear();
+        documentTypesExtending.clear();
+        registerDocumentType(new DocumentTypeImpl(TypeConstants.DOCUMENT)); // Document
+        for (String name : dtds.keySet()) {
+            LinkedHashSet<String> stack = new LinkedHashSet<String>();
+            recomputeDocumentType(name, stack, dtds);
+        }
+
+        // document types having a given facet
+        documentTypesForFacet.clear();
+        for (DocumentType docType : documentTypes.values()) {
+            for (String facet : docType.getFacets()) {
+                Set<String> set = documentTypesForFacet.get(facet);
+                if (set == null) {
+                    documentTypesForFacet.put(facet,
+                            set = new HashSet<String>());
+                }
+                set.add(docType.getName());
+            }
+        }
+
+    }
+
+    protected DocumentType recomputeDocumentType(String name,
+            Set<String> stack, Map<String, DocumentTypeDescriptor> dtds) {
+        DocumentTypeImpl docType = documentTypes.get(name);
+        if (docType != null) {
+            // already done
+            return docType;
+        }
+        if (stack.contains(name)) {
+            log.error("Document type: " + name
+                    + " used in parent inheritance loop: " + stack);
+            return null;
+        }
+        DocumentTypeDescriptor dtd = dtds.get(name);
+        if (dtd == null) {
+            log.error("Document type: " + name
+                    + " does not exist, used as parent by type: " + stack);
+            return null;
+        }
+
+        // find and recompute the parent first
+        DocumentType parent;
+        String parentName = dtd.superTypeName;
+        if (parentName == null) {
+            parent = null;
+        } else {
+            parent = documentTypes.get(parentName);
+            if (parent == null) {
+                stack.add(name);
+                parent = recomputeDocumentType(parentName, stack, dtds);
+                stack.remove(name);
+            }
+        }
+
+        // what it extends
+        for (Type p = parent; p != null; p = p.getSuperType()) {
+            Set<String> set = documentTypesExtending.get(p.getName());
+            set.add(name);
+        }
+
+        return recomputeDocumentType(name, dtd, parent);
+    }
+
+    protected DocumentType recomputeDocumentType(String name,
+            DocumentTypeDescriptor dtd, DocumentType parent) {
+        // find the facets and schemas names
+        Set<String> facetNames = new HashSet<String>();
+        Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
+        facetNames.addAll(Arrays.asList(dtd.facets));
+
+        // inherited
+        if (parent != null) {
+            facetNames.addAll(parent.getFacets());
+            schemaNames.addAll(Arrays.asList(parent.getSchemaNames()));
+        }
+
+        // add schemas names from facets
+        for (String facetName : facetNames) {
+            CompositeType ct = facets.get(facetName);
+            if (ct == null) {
+                log.warn("Undeclared facet: " + facetName
+                        + " used in document type: " + name);
+                // register it with no schemas
+                ct = registerFacet(facetName, Collections.<String> emptySet());
+            }
+            schemaNames.addAll(Arrays.asList(ct.getSchemaNames()));
+        }
+
+        // find the schemas
+        List<Schema> docTypeSchemas = new ArrayList<Schema>();
+        for (String schemaName : schemaNames) {
+            Schema schema = schemas.get(schemaName);
+            if (schema == null) {
+                log.error("Document type: " + name + " uses unknown schema: "
+                        + schemaName);
+                continue;
+            }
+            docTypeSchemas.add(schema);
+        }
+
+        // create doctype
+        PrefetchInfo prefetch = dtd.prefetch == null ? prefetchInfo
+                : new PrefetchInfo(dtd.prefetch);
+        DocumentTypeImpl docType = new DocumentTypeImpl(name, parent,
+                docTypeSchemas, facetNames, prefetch);
+        registerDocumentType(docType);
+
+        return docType;
+    }
+
+    protected void registerDocumentType(DocumentTypeImpl docType) {
+        String name = docType.getName();
+        documentTypes.put(name, docType);
+        documentTypesExtending.put(name,
+                new HashSet<String>(Collections.singleton(name)));
+    }
+
+    @Override
+    public DocumentType getDocumentType(String name) {
+        checkDirty();
+        return documentTypes.get(name);
+    }
+
+    @Override
+    public Set<String> getDocumentTypeNamesForFacet(String facet) {
+        checkDirty();
+        return documentTypesForFacet.get(facet);
+    }
+
+    @Override
+    public Set<String> getDocumentTypeNamesExtending(String docTypeName) {
+        checkDirty();
+        return documentTypesExtending.get(docTypeName);
+    }
+
+    @Override
+    public DocumentType[] getDocumentTypes() {
+        checkDirty();
+        return new ArrayList<DocumentType>(documentTypes.values()).toArray(new DocumentType[0]);
+    }
+
+    @Override
+    public int getDocumentTypesCount() {
+        checkDirty();
+        return documentTypes.size();
+    }
+
+    /*
+     * ===== Fields =====
+     */
+
     @Override
     public Field getField(String prefixedName) {
+        checkDirty();
         Field field = fields.get(prefixedName);
         if (field == null) {
             QName qname = QName.valueOf(prefixedName);
@@ -255,6 +555,7 @@ public class SchemaManagerImpl implements SchemaManager {
             if (schema != null) {
                 field = schema.getField(qname.getLocalName());
                 if (field != null) {
+                    // map is concurrent so parallelism is ok
                     fields.put(prefixedName, field);
                 }
             }
@@ -262,251 +563,8 @@ public class SchemaManagerImpl implements SchemaManager {
         return field;
     }
 
-    @Override
-    public Schema[] getSchemas() {
-        synchronized (schemaReg) {
-            return schemaReg.getSchemas();
-        }
-    }
-
-    @Override
-    public int getSchemasCount() {
-        synchronized (schemaReg) {
-            return schemaReg.size();
-        }
-    }
-
-    public void setPrefetchInfo(PrefetchInfo prefetchInfo) {
-        this.prefetchInfo = prefetchInfo;
-    }
-
-    public PrefetchInfo getPrefetchInfo() {
-        return prefetchInfo;
-    }
-
-    // Document Types
-
-    @Override
-    public void registerDocumentType(DocumentType docType) {
-        log.info("Register document type: " + docType.getName());
-        synchronized (docTypeReg) {
-            docTypeReg.addContribution(docType);
-        }
-    }
-
-    public void registerDocumentType(DocumentTypeDescriptor dtd) {
-        synchronized (docTypeReg) {
-            // check for super type
-            DocumentType superType = null;
-            if (dtd.superTypeName != null) {
-                superType = docTypeReg.getType(dtd.superTypeName);
-                if (superType == null) {
-                    postponeDocTypeRegistration(dtd, SUPER_PREFIX
-                            + dtd.superTypeName);
-                    return;
-                }
-            }
-            // check for known facets
-            boolean knownFacets = true;
-            for (String facetName : dtd.facets) {
-                if (facetReg.getFacet(facetName) == null) {
-                    postponeDocTypeRegistration(dtd, FACET_PREFIX + facetName);
-                    knownFacets = false;
-                }
-            }
-            if (!knownFacets) {
-                return;
-            }
-            registerDocumentType(superType, dtd);
-        }
-    }
-
-    private DocumentType registerDocumentType(DocumentType superType,
-            DocumentTypeDescriptor dtd) {
-        synchronized (docTypeReg) {
-            try {
-                Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
-                // add schemas from facets
-                for (String facetName : dtd.facets) {
-                    CompositeType facet = getFacet(facetName);
-                    schemaNames.addAll(Arrays.asList(facet.getSchemaNames()));
-                }
-                DocumentType docType = new DocumentTypeImpl(superType,
-                        dtd.name, schemaNames.toArray(new String[0]),
-                        dtd.facets);
-                docType.setChildrenTypes(dtd.childrenTypes);
-                // use global prefetch info if not a local one was defined
-                docType.setPrefetchInfo(dtd.prefetch != null ? new PrefetchInfo(
-                        dtd.prefetch) : prefetchInfo);
-                docTypeReg.addContribution(docType);
-                log.info("Registered document type: " + dtd.name);
-                registerPendingDocTypes(SUPER_PREFIX + docType.getName());
-                return docType;
-            } catch (Exception e) {
-                log.error("Error registering document type: " + dtd.name, e);
-                // TODO: use component dependencies instead?
-            }
-            return null;
-        }
-    }
-
-    private void registerPendingDocTypes(String why) {
-        Set<DocumentTypeDescriptor> types = pendingDocTypes.remove(why);
-        if (types == null) {
-            return;
-        }
-        for (DocumentTypeDescriptor dtd : types) {
-            registerDocumentType(dtd);
-        }
-    }
-
-    @Override
-    public DocumentType unregisterDocumentType(String name) {
-        log.info("Unregister document type: " + name);
-        // TODO handle the case when the doctype to unreg is in the reg.
-        // pending queue
-        synchronized (docTypeReg) {
-            DocumentType docType = docTypeReg.getType(name);
-            // could be null (never registered) if was still pending
-            if (docType != null) {
-                docTypeReg.removeContribution(docType);
-            }
-            return docType;
-        }
-    }
-
-    private void postponeDocTypeRegistration(DocumentTypeDescriptor dtd,
-            String why) {
-        Set<DocumentTypeDescriptor> types = pendingDocTypes.get(why);
-        if (types == null) {
-            types = new HashSet<DocumentTypeDescriptor>();
-            pendingDocTypes.put(why, types);
-        }
-        types.add(dtd);
-    }
-
-    @Override
-    public DocumentType getDocumentType(String name) {
-        synchronized (docTypeReg) {
-            return docTypeReg.getType(name);
-        }
-    }
-
-    @Override
-    public DocumentType[] getDocumentTypes() {
-        synchronized (docTypeReg) {
-            return docTypeReg.getDocumentTypes();
-        }
-    }
-
-    @Override
-    public int getDocumentTypesCount() {
-        synchronized (docTypeReg) {
-            return docTypeReg.size();
-        }
-    }
-
-    @Override
-    public void registerFacet(CompositeType facet) {
-        final String name = facet.getName();
-        synchronized (facetReg) {
-            facetReg.addContribution(facet);
-            registerPendingDocTypes(FACET_PREFIX + name);
-            log.info("Registered facet: " + name);
-        }
-    }
-
-    public void registerFacet(FacetDescriptor fd) {
-        Set<String> schemas = SchemaDescriptor.getSchemaNames(fd.schemas);
-        CompositeType ct = new CompositeTypeImpl((TypeRef<CompositeType>) null,
-                SchemaNames.FACETS, fd.name, schemas.toArray(new String[0]));
-        registerFacet(ct);
-    }
-
-    @Override
-    public CompositeType unregisterFacet(String name) {
-        synchronized (facetReg) {
-            log.info("Unregistered facet: " + name);
-            CompositeType facet = facetReg.getFacet(name);
-            facetReg.removeContribution(facet);
-            return facet;
-        }
-    }
-
-    @Override
-    public CompositeType getFacet(String name) {
-        synchronized (facetReg) {
-            return facetReg.getFacet(name);
-        }
-    }
-
-    @Override
-    public CompositeType[] getFacets() {
-        synchronized (facetReg) {
-            return facetReg.getFacets();
-        }
-    }
-
-    // Misc
-
-    @Override
-    public void clear() {
-        synchronized (docTypeReg) {
-            docTypeReg.clear();
-        }
-        synchronized (schemaReg) {
-            schemaReg.clear();
-        }
-        typeReg.clear();
-        facetReg.clear();
-    }
-
-    protected File getSchemaDirectory() {
-        return schemaDir;
-    }
-
-    /**
-     * Implementation details: there is a cache on each server for this.
-     * <p>
-     * Assumes that types never change in the lifespan of this server process
-     * and that the Core server has finished loading its types.
-     */
-    @Override
-    public Set<String> getDocumentTypeNamesForFacet(String facet) {
-        return docTypeReg.getDocumentTypeNamesForFacet(facet);
-    }
-
-    /**
-     * Implementation details: there is a cache on each server for this.
-     * <p>
-     * Assumes that types never change in the lifespan of this server process
-     * and that the Core server has finished loading its types.
-     */
-    @Override
-    public Set<String> getDocumentTypeNamesExtending(String docTypeName) {
-        return docTypeReg.getDocumentTypeNamesExtending(docTypeName);
-    }
-
-    @Override
-    @Deprecated
-    public String getXmlSchemaDefinition(String name) {
-        throw new UnsupportedOperationException("Deprecated");
-    }
-
-    @Override
     public void flushPendingsRegistration() {
-        Set<String> whiches = new HashSet<String>(pendingDocTypes.keySet());
-        for (String which : whiches) {
-            if (which.startsWith(FACET_PREFIX)) {
-                String facet = which.substring(FACET_PREFIX.length());
-                log.warn("Undeclared facet: " + facet);
-                // register it with no schemas
-                CompositeType ct = new CompositeTypeImpl(
-                        (TypeRef<CompositeType>) null, SchemaNames.FACETS,
-                        facet, null);
-                registerFacet(ct);
-            }
-        }
+        checkDirty();
     }
 
 }

@@ -36,7 +36,7 @@ public class FlushPendingsRegistrationOnReloadListener implements EventListener 
             return;
         }
         SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
-        mgr.flushPendingsRegistration();
+        ((SchemaManagerImpl) mgr).flushPendingsRegistration();
     }
 
 }

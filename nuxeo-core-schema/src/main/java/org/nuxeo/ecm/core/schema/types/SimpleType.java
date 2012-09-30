@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,19 +7,16 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types;
 
-import org.nuxeo.ecm.core.schema.TypeRef;
-
-
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Simple Type.
+ * <p>
+ * May be primitive or not (in which case it has additional constraints over a
+ * primitive type).
  */
 public interface SimpleType extends Type {
 
@@ -31,8 +28,5 @@ public interface SimpleType extends Type {
     boolean isPrimitive();
 
     SimpleType getPrimitiveType();
-
-    @Override
-    TypeRef<? extends SimpleType> getRef();
 
 }

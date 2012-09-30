@@ -66,7 +66,7 @@ public class MockDocument implements Document {
 
     @Override
     public DocumentType getType() {
-        return new DocumentTypeImpl((DocumentType) null, "FakeDocument");
+        return new DocumentTypeImpl("FakeDocument");
     }
 
     @Override

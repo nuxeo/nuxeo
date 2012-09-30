@@ -72,8 +72,10 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
+import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
@@ -3646,8 +3648,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
 
         // remove MyDocType from known types
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        schemaManager.unregisterDocumentType("MyDocType");
+        SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
+        DocumentTypeDescriptor dtd = schemaManager.getDocumentTypeDescriptor("MyDocType");
+        schemaManager.unregisterDocumentType(dtd);
 
         assertEquals(0, session.getChildren(rootRef).size());
         try {

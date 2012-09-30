@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types.primitives;
 
 import java.io.ByteArrayInputStream;
@@ -24,18 +22,16 @@ import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 
 /**
  * The binary type handles values of type InputStream.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public final class BinaryType extends PrimitiveType {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(BinaryType.class);
 
     public static final String ID = "binary";
 
     public static final BinaryType INSTANCE = new BinaryType();
-
-    private static final long serialVersionUID = 3424217422110579879L;
 
     private BinaryType() {
         super(ID);

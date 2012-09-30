@@ -49,6 +49,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     private XSDLoader reader;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -103,8 +104,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     @Test
     public void testContribs() throws Exception {
         deployContrib("org.nuxeo.ecm.core.schema.tests",
-                "CoreTestExtensions.xml");
-        Framework.getLocalService(SchemaManager.class).flushPendingsRegistration();
+                "OSGI-INF/CoreTestExtensions.xml");
         DocumentType docType = typeMgr.getDocumentType("myDoc");
 
         assertNotNull(docType);
@@ -171,7 +171,6 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals("tata", defaultValue.get(2));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testComplexSubList() throws Exception {
         URL url = getResource("schema/testList.xsd");

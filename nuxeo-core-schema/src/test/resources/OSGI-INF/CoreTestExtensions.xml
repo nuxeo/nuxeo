@@ -4,6 +4,7 @@
     <schema name="schema-lib" src="schema/schema-lib.xsd"/> <!-- includes first -->
     <schema name="schema1" src="schema/schema.xsd"/>
     <schema name="schema2" src="schema/schema2.xsd"/>
+    <schema name="common" src="schema/common.xsd"/>
   </extension>
 
 
@@ -21,6 +22,8 @@
     <facet name="myfacet">
       <schema name="schema2"/>
     </facet>
+    <doctype name="myDoc3" extends="myDoc2">
+    </doctype>
   </extension>
 
 

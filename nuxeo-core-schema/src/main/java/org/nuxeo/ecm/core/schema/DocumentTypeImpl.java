@@ -12,78 +12,46 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.schema.types.Schema;
 
 /**
  * Implementation of a document type.
- * <p>
- * This class uses lazy loading for schemas and field types.
- * <p>
- * Schemas and fields are cached to improve lookups time.
  */
 public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType {
 
-    public static final int T_DOCUMENT = 1 << 8;
-    public static final int T_FOLDER   = 2 << 8;
-    public static final int T_ORDERED  = 4 << 8;
-
-    private static final long serialVersionUID = 4257192861843860742L;
-
-    private static final String[] EMPTY_FACETS = {};
-
-    protected int unstructured;
-
-    protected String[] declaredFacets = EMPTY_FACETS;
+    private static final long serialVersionUID = 1L;
 
     protected Set<String> facets;
 
-    // unused
-    protected String[] subtypes;
-
     protected PrefetchInfo prefetchInfo;
 
-    // called by registerDocumentType
-    public DocumentTypeImpl(DocumentType superType, String name,
-            String[] declaredSchemas, String[] declaredFacets) {
-        this(superType == null ? null : superType.getRef(), name,
-                declaredSchemas, declaredFacets, 0);
-    }
-
-    // called by mock/tests
-    public DocumentTypeImpl(DocumentType superType, String name) {
-        this(superType == null ? null : superType.getRef(), name, null, null, 0);
-    }
-
-    // called by registerBuiltinTypes, and other ctors
-    public DocumentTypeImpl(TypeRef<DocumentType> superType, String name,
-            String[] declaredSchemas, String[] facets, int flags) {
-        super(superType, SchemaNames.DOCTYPES, name, declaredSchemas);
-        if (flags != 0) {
-            setFlags(flags);
+    /**
+     * Constructs a document type. Schemas and facets must include those from
+     * the super type.
+     */
+    public DocumentTypeImpl(String name, DocumentType superType,
+            List<Schema> schemas, Collection<String> facets, PrefetchInfo prefetchInfo) {
+        super(superType, SchemaNames.DOCTYPES, name, schemas);
+        if (facets == null) {
+            this.facets = Collections.emptySet();
         } else {
-            DocumentType stype = (DocumentType) this.superType.get();
-            if (stype != null) {
-                if (stype.isOrdered()) {
-                    setFlags(T_ORDERED | T_FOLDER);
-                } else if (stype.isFolder()) {
-                    setFlags(T_FOLDER);
-                } else {
-                    setFlags(T_DOCUMENT);
-                }
-            } else {
-                setFlags(T_DOCUMENT);
-            }
+            this.facets = new HashSet<String>(facets);
         }
-        declaredFacets = facets == null ? EMPTY_FACETS : facets;
-        subtypes = null;
+        this.prefetchInfo = prefetchInfo;
     }
 
-    @Override
+    public DocumentTypeImpl(String name) {
+        this(name, null, Collections.<Schema> emptyList(),
+                Collections.<String> emptySet(), null);
+    }
+
     public void setPrefetchInfo(PrefetchInfo prefetchInfo) {
         this.prefetchInfo = prefetchInfo;
     }
@@ -94,116 +62,23 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
     }
 
     @Override
-    public boolean isUnstructured() {
-        if (unstructured == F_UNSTRUCT_DEFAULT) {
-            unstructured = hasSchemas() ? F_UNSTRUCT_FALSE : F_UNSTRUCT_TRUE;
-        }
-        return unstructured == F_UNSTRUCT_TRUE;
-    }
-
-    @Override
     public boolean isFile() {
-        return !getFacets().contains(FacetNames.FOLDERISH);
+        return !facets.contains(FacetNames.FOLDERISH);
     }
 
     @Override
     public boolean isFolder() {
-        return getFacets().contains(FacetNames.FOLDERISH);
+        return facets.contains(FacetNames.FOLDERISH);
     }
 
     @Override
     public boolean isOrdered() {
-        Set<String> facets = getFacets();
         return facets.contains(FacetNames.ORDERABLE);
-        //return isFolder() && isFlagSet(T_ORDERED | T_FOLDER);
     }
 
     @Override
     public Set<String> getFacets() {
-        if (facets == null) {
-            facets = buildFacets();
-        }
         return facets;
-    }
-
-    @Override
-    public void addSchemas(String[] schemas) {
-        if (schemas != null) {
-            for (String schema : schemas) {
-                addSchema(schema);
-            }
-        }
-    }
-
-    @Override
-    public void setDeclaredFacets(String[] facets) {
-        declaredFacets = facets == null ? EMPTY_FACETS : facets;
-        this.facets = null;
-    }
-
-    protected Set<String> buildFacets() {
-        Set<String> facets = new HashSet<String>();
-        DocumentTypeImpl stype = (DocumentTypeImpl) superType.get();
-        if (stype == null) {
-            facets.addAll(Arrays.asList(declaredFacets));
-        } else {
-            Set<String> inheritedFacets = stype.buildFacets();
-            if (declaredFacets.length == 0) {
-                facets = inheritedFacets;
-            } else {
-                for (String facet : inheritedFacets) {
-                    facets.add(facet);
-                }
-                facets.addAll(Arrays.asList(declaredFacets));
-            }
-        }
-        return facets;
-    }
-
-    @Override
-    public TypeRef<DocumentType> getRef() {
-        return new TypeRef<DocumentType>(schema, name, this);
-    }
-
-    // unused
-    @Override
-    public String[] getChildrenTypes() {
-        return subtypes;
-    }
-
-    @Override
-    public void setChildrenTypes(String[] subTypes) {
-        subtypes = subTypes;
-    }
-
-    // unused
-    @Override
-    public DocumentType[] getResolvedChildrenTypes() {
-        SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
-        if (subtypes != null) {
-            DocumentType[] result = new DocumentType[subtypes.length];
-            for (int i = 0; i < subtypes.length; i++) {
-                result[i] = mgr.getDocumentType(subtypes[i]);
-            }
-            return result;
-        }
-        return null;
-    }
-
-    // unused
-    @Override
-    public boolean isChildTypeAllowed(String name) {
-        if (subtypes != null) {
-            for (String subtype : subtypes) {
-                if (subtype.equals(name)) {
-                    return true;
-                }
-            }
-
-            // TODO: expand *
-            return false;
-        }
-        return false;
     }
 
 }

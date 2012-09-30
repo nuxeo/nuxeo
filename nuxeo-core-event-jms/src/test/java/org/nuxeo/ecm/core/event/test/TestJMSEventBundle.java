@@ -71,9 +71,11 @@ public class TestJMSEventBundle extends NXRuntimeTestCase {
             new Class<?>[] { CoreSession.class },
             new CoreSessionInvocationHandler());
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
     }
 

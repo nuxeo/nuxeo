@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,25 +7,23 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types.primitives;
 
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * The Boolean type.
  */
 public final class BooleanType extends PrimitiveType {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String ID = "boolean";
 
     public static final BooleanType INSTANCE = new BooleanType();
-
-    private static final long serialVersionUID = 6734833141342781661L;
 
     private BooleanType() {
         super(ID);
@@ -44,7 +42,7 @@ public final class BooleanType extends PrimitiveType {
             return ((Number) value).intValue() != 0 ? Boolean.TRUE
                     : Boolean.FALSE;
         } else {
-            return Boolean.parseBoolean((String) value);
+            return Boolean.valueOf((String) value);
         }
     }
 
@@ -53,7 +51,7 @@ public final class BooleanType extends PrimitiveType {
         if (str == null) {
             return null;
         }
-        return Boolean.parseBoolean(str);
+        return Boolean.valueOf(str);
     }
 
     @Override
@@ -71,7 +69,7 @@ public final class BooleanType extends PrimitiveType {
 
     @Override
     public Object newInstance() {
-        return false;
+        return Boolean.FALSE;
     }
 
     protected Object readResolve() {

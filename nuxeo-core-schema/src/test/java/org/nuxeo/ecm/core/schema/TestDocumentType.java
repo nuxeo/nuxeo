@@ -14,14 +14,21 @@
 
 package org.nuxeo.ecm.core.schema;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestDocumentType {
 
     @Test
     public void testTrivialDocumentType() {
-        DocumentType docType = new DocumentTypeImpl((DocumentType) null, "doc type");
+        DocumentType docType = new DocumentTypeImpl("doc type");
 
         assertEquals("doc type", docType.getName());
 
@@ -32,8 +39,7 @@ public class TestDocumentType {
 
     @Test
     public void testFileDocumentType() {
-        DocumentType docType = new DocumentTypeImpl((DocumentType) null, "doc type", null,
-                null);
+        DocumentType docType = new DocumentTypeImpl("doc type");
 
         assertTrue(docType.isFile());
         assertFalse(docType.isFolder());
@@ -42,8 +48,8 @@ public class TestDocumentType {
 
     @Test
     public void testFolderDocumentType() {
-        DocumentType docType = new DocumentTypeImpl((DocumentType) null, "doc type", null,
-                new String[]{"Folderish"});
+        DocumentType docType = new DocumentTypeImpl("doc type", null, null,
+                Collections.singleton("Folderish"), null);
 
         assertFalse(docType.isFile());
         assertTrue(docType.isFolder());
@@ -52,8 +58,9 @@ public class TestDocumentType {
 
     @Test
     public void testOrderedFolderDocumentType() {
-        DocumentType docType = new DocumentTypeImpl((DocumentType) null, "doc type", null,
-                new String[]{"Folderish", "Orderable"});
+        DocumentType docType = new DocumentTypeImpl("doc type", null, null,
+                new HashSet<String>(Arrays.asList("Folderish", "Orderable")),
+                null);
 
         assertFalse(docType.isFile());
         assertTrue(docType.isFolder());

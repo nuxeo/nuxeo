@@ -64,16 +64,28 @@ import com.sun.xml.xsom.parser.XSOMParser;
  */
 public class XSDLoader {
 
-    private static final String ANONYMOUS_TYPE_SUFFIX = "#anonymousType";
-
-    public static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
-
     private static final Log log = LogFactory.getLog(XSDLoader.class);
 
-    private final SchemaManager schemaManager;
+    private static final String ANONYMOUS_TYPE_SUFFIX = "#anonymousType";
 
-    public XSDLoader(SchemaManager schemaManager) {
+    private static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
+
+    protected final SchemaManagerImpl schemaManager;
+
+    public XSDLoader(SchemaManagerImpl schemaManager) {
         this.schemaManager = schemaManager;
+    }
+
+    protected Schema getSchema(String name) {
+        return schemaManager.getSchemaInternal(name);
+    }
+
+    protected void registerSchema(Schema schema) {
+        schemaManager.registerSchema(schema);
+    }
+
+    protected Type getType(String name) {
+        return schemaManager.getType(name);
     }
 
     protected XSOMParser getParser() {
@@ -146,7 +158,7 @@ public class XSDLoader {
         if (schema == null) {
             return null;
         }
-        Schema ecmSchema = schemaManager.getSchema(name);
+        Schema ecmSchema = getSchema(name);
         if (ecmSchema != null) {
             // schema already defined
             log.info("Schema " + ns + " is already registered");
@@ -185,7 +197,7 @@ public class XSDLoader {
             }
         }
 
-        schemaManager.registerSchema(ecmSchema);
+        registerSchema(ecmSchema);
         return ecmSchema;
     }
 
@@ -202,7 +214,7 @@ public class XSDLoader {
             name = type.getName();
         }
         // look into global types
-        Type ecmType = schemaManager.getType(name);
+        Type ecmType = getType(name);
         if (ecmType != null) {
             return ecmType;
         }
@@ -344,7 +356,7 @@ public class XSDLoader {
             // TODO: type must be already defined - use a dependency manager or
             // something to
             // support types that are not yet defined
-            itemType = schemaManager.getType(xsItemType.getName());
+            itemType = getType(xsItemType.getName());
         }
         if (itemType == null) {
             log.error("list item type was not defined -> you should define first the item type");
@@ -419,7 +431,7 @@ public class XSDLoader {
                             + "#anonymousListType", fakeType, 0, maxOccur);
                     // add the listfield to the current CT
                     String fieldName = ct.getName() + "#anonymousList";
-                    ct.addField(fieldName, listType.getRef(), null, 0);
+                    ct.addField(fieldName, listType, null, 0);
                 } else {
                     processModelGroup(schema, superType, name, ct,
                             term.asModelGroup());
@@ -433,7 +445,7 @@ public class XSDLoader {
                             fieldType, 0, maxOccur);
                     // add the listfield to the current CT
                     String fieldName = element.getName();
-                    ct.addField(fieldName, listType.getRef(), null, 0);
+                    ct.addField(fieldName, listType, null, 0);
                 } else {
                     loadComplexTypeElement(schema, ct, element);
                 }
@@ -501,8 +513,7 @@ public class XSDLoader {
             flags |= Field.NILLABLE;
         }
 
-        Field field = type.addField(elementName, fieldType.getRef(), defValue,
-                flags);
+        Field field = type.addField(elementName, fieldType, defValue, flags);
 
         // set the max field length from the constraints
         if (fieldType instanceof SimpleTypeImpl) {
@@ -533,7 +544,7 @@ public class XSDLoader {
                 flags |= Field.CONSTANT;
             }
         }
-        return type.addField(elementName, fieldType.getRef(), defValue, flags);
+        return type.addField(elementName, fieldType, defValue, flags);
     }
 
     protected static String getAnonymousTypeName(XSType type, String fieldName) {

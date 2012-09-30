@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types;
 
 import java.io.Serializable;
@@ -20,8 +18,6 @@ import java.io.Serializable;
  * A field is a member of a complex type.
  * <p>
  * It is defined by a name and a type.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Field extends Serializable {
 
@@ -43,7 +39,7 @@ public interface Field extends Serializable {
     Type getType();
 
     /**
-     * Gets the complex type that declared this field.
+     * Gets the complex type or list type that declared this field.
      * <p>
      * The declaring type may differ from the complex type owning this field.
      * <p>
@@ -53,7 +49,7 @@ public interface Field extends Serializable {
      *
      * @return the complex that declared this field
      */
-    ComplexType getDeclaringType();
+    Type getDeclaringType();
 
     /**
      * Gets this field default value or null if none.

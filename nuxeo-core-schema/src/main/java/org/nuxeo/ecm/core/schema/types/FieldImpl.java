@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,46 +7,37 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types;
 
-import org.nuxeo.ecm.core.schema.TypeRef;
-
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * The implementation for a field, which is the association of a type, a name,
+ * and default values.
  */
 public class FieldImpl implements Field {
 
-    private static final long serialVersionUID = 1031109949712043501L;
+    private static final long serialVersionUID = 1L;
 
     private QName name;
-    private TypeRef<? extends Type> type;
-    private TypeRef<? extends Type> declaringType;
+
+    private Type type;
+
+    private Type declaringType;
+
     private int flags;
 
     private int maxOccurs = 1;
+
     private int minOccurs = 1;
 
     private String defaultValue;
 
     private int maxLength = -1;
 
-    public FieldImpl(QName name, Type declaringType, Type type) {
-        this(name, declaringType.getRef(), type.getRef(), null, 0);
-    }
-
-    public FieldImpl(QName name, TypeRef<? extends Type> declaringType,
-            TypeRef<? extends Type> type) {
-        this(name, declaringType, type, null, 0);
-    }
-
-    public FieldImpl(QName name, TypeRef<? extends Type> declaringType,
-            TypeRef<? extends Type> type, String defaultValue, int flags) {
+    public FieldImpl(QName name, Type declaringType, Type type,
+            String defaultValue, int flags) {
         this.name = name;
         this.type = type;
         this.declaringType = declaringType;
@@ -54,10 +45,13 @@ public class FieldImpl implements Field {
         this.flags = flags;
     }
 
+    public FieldImpl(QName name, Type declaringType, Type type) {
+        this(name, declaringType, type, null, 0);
+    }
 
     @Override
-    public ComplexType getDeclaringType() {
-        return (ComplexType) declaringType.get();
+    public Type getDeclaringType() {
+        return declaringType;
     }
 
     @Override
@@ -67,12 +61,12 @@ public class FieldImpl implements Field {
 
     @Override
     public Type getType() {
-        return type.get();
+        return type;
     }
 
     @Override
     public Object getDefaultValue() {
-        return type.get().decode(defaultValue);
+        return type.decode(defaultValue);
     }
 
     @Override

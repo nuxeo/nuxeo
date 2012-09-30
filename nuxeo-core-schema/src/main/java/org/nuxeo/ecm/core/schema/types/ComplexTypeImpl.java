@@ -10,29 +10,21 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.TypeConstants;
-import org.nuxeo.ecm.core.schema.TypeRef;
 
 /**
  * A Complex Type holds several fields.
  */
 public class ComplexTypeImpl extends AbstractType implements ComplexType {
-
-    public static final int F_UNSTRUCT_DEFAULT = 0;
-
-    public static final int F_UNSTRUCT_FALSE = 1;
-
-    public static final int F_UNSTRUCT_TRUE = 2;
 
     private static final long serialVersionUID = 1L;
 
@@ -42,66 +34,44 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
     /** The map of name or prefixed name to field. */
     protected volatile Map<String, Field> fieldsByName = new HashMap<String, Field>();
 
-    /** The collection of fields, unmodifiable. */
-    protected Collection<Field> fieldsCollection = Collections.emptySet();
-
     protected final Namespace ns;
 
-    protected int unstructured; // 0 - inherit, 1 - structured, 2 - unstructured
-
-    public ComplexTypeImpl(TypeRef<? extends ComplexType> superType,
-            String schema, String name, Namespace ns, int struct) {
+    public ComplexTypeImpl(ComplexType superType, String schema, String name,
+            Namespace ns) {
         super(superType, schema, name);
-        ComplexType stype = (ComplexType) getSuperType();
-        if (stype != null) {
-            for (Field field : stype.getFields()) {
-                addField(field);
-            }
-        }
-        unstructured = struct;
+// for composite types, they already include schemas from supertypes
+//        if (superType != null) {
+//            for (Field field : superType.getFields()) {
+//                addField(field);
+//            }
+//        }
         this.ns = ns;
     }
 
+    public ComplexTypeImpl(ComplexType superType, String schema, String name) {
+        this(superType, schema, name, Namespace.DEFAULT_NS);
+    }
+
+    // also called by CompositeTypeImpl
     protected void addField(Field field) {
         QName name = field.getName();
         fields.put(name, field);
         fieldsByName.put(name.getLocalName(), field);
         fieldsByName.put(name.getPrefixedName(), field);
-        fieldsCollection = Collections.unmodifiableCollection(fields.values());
     }
 
-    public ComplexTypeImpl(ComplexType superType, String schema, String name) {
-        this(superType == null ? null : superType.getRef(), schema, name,
-                Namespace.DEFAULT_NS, F_UNSTRUCT_DEFAULT);
-    }
-
-    public ComplexTypeImpl(ComplexType superType, String schema, String name,
-            Namespace ns) {
-        this(superType == null ? null : superType.getRef(), schema, name, ns,
-                F_UNSTRUCT_DEFAULT);
-    }
-
-    public ComplexTypeImpl(TypeRef<? extends ComplexType> superType,
-            String schema, String name) {
-        this(superType, schema, name, Namespace.DEFAULT_NS, F_UNSTRUCT_DEFAULT);
-    }
-
-    public ComplexTypeImpl(TypeRef<? extends ComplexType> superType,
-            String schema, String name, Namespace ns) {
-        this(superType, schema, name, Namespace.DEFAULT_NS, F_UNSTRUCT_DEFAULT);
+    // called by XSDLoader
+    @Override
+    public Field addField(String name, Type type, String defaultValue, int flags) {
+        QName qname = QName.valueOf(name, ns.prefix);
+        FieldImpl field = new FieldImpl(qname, this, type, defaultValue, flags);
+        addField(field);
+        return field;
     }
 
     @Override
     public Namespace getNamespace() {
         return ns;
-    }
-
-    @Override
-    public boolean isUnstructured() {
-        if (unstructured == F_UNSTRUCT_DEFAULT) {
-            unstructured = hasFields() ? F_UNSTRUCT_FALSE : F_UNSTRUCT_TRUE;
-        }
-        return unstructured == F_UNSTRUCT_TRUE;
     }
 
     @Override
@@ -116,7 +86,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
     @Override
     public Collection<Field> getFields() {
-        return fieldsCollection;
+        return fields.values();
     }
 
     @Override
@@ -125,39 +95,8 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
     }
 
     @Override
-    public Field addField(String name, TypeRef<? extends Type> type) {
-        return addField(QName.valueOf(name, ns.prefix), type, null, 0);
-    }
-
-    @Override
-    public Field addField(QName name, TypeRef<? extends Type> type) {
-        return addField(name, type, null, 0);
-    }
-
-    @Override
-    public Field addField(String name, TypeRef<? extends Type> type,
-            String defaultValue, int flags) {
-        return addField(QName.valueOf(name, ns.prefix), type, defaultValue,
-                flags);
-    }
-
-    @Override
-    public Field addField(QName name, TypeRef<? extends Type> type,
-            String defaultValue, int flags) {
-        FieldImpl field = new FieldImpl(name, getRef(), type, defaultValue,
-                flags);
-        addField(field);
-        return field;
-    }
-
-    @Override
     public boolean hasField(String name) {
         return fieldsByName.containsKey(name);
-    }
-
-    @Override
-    public boolean hasField(QName name) {
-        return fields.containsKey(name);
     }
 
     @Override
@@ -170,21 +109,19 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean validate(Object object) throws TypeException {
-        if (object == null && isNotNull()) {
-            return false;
-        }
         if (object == null) {
             return true;
         }
         if (object instanceof Map) {
-            return validateMap((Map) object);
+            return validateMap((Map<Object, Object>) object);
         }
         return false;
     }
 
-    protected boolean validateMap(Map map) {
+    protected boolean validateMap(Map<Object, Object> map) {
         return true;
     }
 
@@ -223,7 +160,7 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
     public Object convert(Object object) throws TypeException {
         if (object instanceof Map) {
             Map<Object, Object> map = (Map<Object, Object>) object;
-            for (Map.Entry entry : map.entrySet()) {
+            for (Entry<Object, Object> entry : map.entrySet()) {
                 String key = entry.getKey().toString();
                 Field field = getField(key);
                 if (field == null) {
@@ -237,11 +174,6 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         }
         throw new TypeException("Incompatible object: " + object.getClass()
                 + " for type " + this);
-    }
-
-    @Override
-    public TypeRef<? extends ComplexType> getRef() {
-        return new TypeRef<ComplexType>(schema, name, this);
     }
 
     /**

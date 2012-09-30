@@ -80,7 +80,6 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void deactivate(ComponentContext context) {
-        schemaManager.clear();
         schemaManager = null;
     }
 
@@ -111,8 +110,8 @@ public class TypeService extends DefaultComponent {
             }
         } else if (XP_CONFIGURATION.equals(xp)) {
             Object[] contribs = extension.getContributions();
-            if (contribs.length > 0) {
-                setConfiguration((TypeConfiguration) contribs[0]);
+            for (Object contrib : contribs) {
+                schemaManager.registerConfiguration((TypeConfiguration) contrib);
             }
         }
     }
@@ -124,25 +123,21 @@ public class TypeService extends DefaultComponent {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 if (contrib instanceof DocumentTypeDescriptor) {
-                    schemaManager.unregisterDocumentType(((DocumentTypeDescriptor) contrib).name);
+                    schemaManager.unregisterDocumentType((DocumentTypeDescriptor) contrib);
                 } else if (contrib instanceof FacetDescriptor) {
-                    schemaManager.unregisterFacet(((FacetDescriptor) contrib).name);
+                    schemaManager.unregisterFacet((FacetDescriptor) contrib);
                 }
             }
         } else if (XP_SCHEMA.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                schemaManager.unregisterSchema(((SchemaBindingDescriptor) contrib).name);
+                schemaManager.unregisterSchema((SchemaBindingDescriptor) contrib);
             }
         } else if (XP_CONFIGURATION.equals(xp)) {
-            // TODO XXX
-        }
-    }
-
-    protected void setConfiguration(TypeConfiguration configuration) {
-        if (schemaManager != null) {
-            schemaManager.setPrefetchInfo(new PrefetchInfo(
-                    configuration.prefetchInfo));
+            Object[] contribs = extension.getContributions();
+            for (Object contrib : contribs) {
+                schemaManager.unregisterConfiguration((TypeConfiguration) contrib);
+            }
         }
     }
 

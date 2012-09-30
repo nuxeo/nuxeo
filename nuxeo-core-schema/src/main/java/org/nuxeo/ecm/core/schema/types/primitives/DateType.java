@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types.primitives;
 
 import java.util.Calendar;
@@ -20,17 +18,16 @@ import java.util.Date;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 
-// TODO this should be renamed to TimestampType
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * The date (actually timestamp) type.
  */
 public class DateType extends PrimitiveType {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String ID = "date";
 
     public static final DateType INSTANCE = new DateType();
-
-    private static final long serialVersionUID = 4406485984077086898L;
 
     public DateType() {
         super(ID);
@@ -50,7 +47,7 @@ public class DateType extends PrimitiveType {
         } else {
             // TODO
             try {
-                return Integer.parseInt((String) value);
+                return Integer.valueOf((String) value);
             } catch (NumberFormatException e) {
                 return null;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,26 +7,23 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types.primitives;
 
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * The long type.
  */
 public final class LongType extends PrimitiveType {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String ID = "long";
 
     public static final LongType INSTANCE = new LongType();
-
-    private static final long serialVersionUID = 5638497847182758981L;
-
 
     private LongType() {
         super(ID);
@@ -42,10 +39,10 @@ public final class LongType extends PrimitiveType {
         if (value instanceof Long) {
             return value;
         } else if (value instanceof Number) {
-            return ((Number) value).longValue();
+            return Long.valueOf(((Number) value).longValue());
         } else {
             try {
-                return Long.parseLong((String) value);
+                return Long.valueOf((String) value);
             } catch (NumberFormatException e) {
                 return null;
             }
@@ -58,9 +55,9 @@ public final class LongType extends PrimitiveType {
             return null;
         }
         try {
-            return Long.parseLong(str);
+            return Long.valueOf(str);
         } catch (NumberFormatException e) {
-            return 0L;
+            return Long.valueOf(0);
         }
     }
 

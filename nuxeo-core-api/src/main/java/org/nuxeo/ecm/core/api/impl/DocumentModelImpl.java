@@ -64,10 +64,8 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaNames;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.TypeProvider;
-import org.nuxeo.ecm.core.schema.TypeRef;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -98,7 +96,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected DocumentRef ref;
 
-    protected TypeRef<DocumentType> type;
+    protected DocumentType type;
+
+    // for tests, keep the type name even if no actual type is registered
+    protected String typeName;
 
     /** Schemas including those from instance facets. */
     protected Set<String> schemas;
@@ -207,8 +208,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * <p>
      * It must at least contain the type.
      */
-    public DocumentModelImpl(String type) {
-        this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
+    public DocumentModelImpl(String typeName) {
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        if (schemaManager == null) {
+            throw new NullPointerException("No registered SchemaManager");
+        }
+        type = schemaManager.getDocumentType(typeName);
+        this.typeName = typeName;
         dataModels = new DataModelMapImpl();
         contextData = new ScopedMap();
         instanceFacets = new HashSet<String>();
@@ -300,7 +306,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public DocumentType getDocumentType() {
-        return type.get();
+        return type;
     }
 
     /**
@@ -829,7 +835,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String getType() {
-        return type != null ? type.getName() : null;
+        return typeName;
     }
 
     @Override
@@ -1572,6 +1578,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
     }
 
+    @Override
     public String getChangeToken() {
         if (!hasSchema("dublincore")) {
             return null;

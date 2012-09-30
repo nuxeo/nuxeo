@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,31 +7,25 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.nuxeo.ecm.core.schema.TypeRef;
-
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * The implementation for a List type.
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
 public class ListTypeImpl extends AbstractType implements ListType {
 
-    private static final long serialVersionUID = 6443946870580167862L;
+    private static final long serialVersionUID = 1L;
 
     protected static final String DEFAULT_VALUE_SEPARATOR = " ";
 
-    protected final TypeRef<? extends Type> type;
+    protected final Type type;
 
     protected final Field field;
 
@@ -44,8 +38,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
 
     protected boolean isArray = false;
 
-
-    public ListTypeImpl(String schema, String name, TypeRef<? extends Type> type,
+    public ListTypeImpl(String schema, String name, Type type,
             String fieldName, String defaultValue, int minOccurs, int maxOccurs) {
         super(null, schema, name);
         if (fieldName == null) {
@@ -53,34 +46,15 @@ public class ListTypeImpl extends AbstractType implements ListType {
             fieldName = "item";
         }
         this.type = type;
-        field = new FieldImpl(QName.valueOf(fieldName), getRef(), type);
+        field = new FieldImpl(QName.valueOf(fieldName), this, type);
         this.minOccurs = minOccurs;
         this.maxOccurs = maxOccurs;
         this.defaultValue = defaultValue;
     }
 
     public ListTypeImpl(String schema, String name, Type type) {
-        this(schema, name, type.getRef(), null, null, 0, -1);
-    }
-
-    public ListTypeImpl(String schema, String name, Type type, String defaultValue) {
-        this(schema, name, type.getRef(), null, defaultValue, 0, -1);
-    }
-
-    public ListTypeImpl(String schema, String name, Type type, String fieldName,
-            String defaultValue, int minOccurs, int maxOccurs) {
-        this(schema, name, type.getRef(), fieldName, defaultValue, minOccurs, maxOccurs);
-    }
-
-    public ListTypeImpl(String schema, String name, TypeRef<? extends Type> type) {
         this(schema, name, type, null, null, 0, -1);
     }
-
-    public ListTypeImpl(String schema, String name, TypeRef<? extends Type> type,
-            String defaultValue) {
-        this(schema, name, type, null, defaultValue, 0, -1);
-    }
-
 
     @Override
     public void setLimits(int minOccurs, int maxOccurs) {
@@ -110,11 +84,11 @@ public class ListTypeImpl extends AbstractType implements ListType {
 
     @Override
     public Object getDefaultValue() {
-        return type.get().decode(defaultValue);
+        return type.decode(defaultValue);
     }
 
     public Type getType() {
-        return type.get();
+        return type;
     }
 
     @Override
@@ -141,9 +115,8 @@ public class ListTypeImpl extends AbstractType implements ListType {
         // value
         if (string != null) {
             List<Object> decoded = new ArrayList<Object>();
-            Type t = type.get();
             for (String component : string.split(DEFAULT_VALUE_SEPARATOR)) {
-                decoded.add(t.decode(component));
+                decoded.add(type.decode(component));
             }
             return decoded;
         } else {
@@ -154,9 +127,6 @@ public class ListTypeImpl extends AbstractType implements ListType {
     @Override
     @SuppressWarnings("rawtypes")
     public boolean validate(Object object) throws TypeException {
-        if (object == null && isNotNull()) {
-            return false;
-        }
         if (object == null) {
             return true;
         }
@@ -192,21 +162,15 @@ public class ListTypeImpl extends AbstractType implements ListType {
     @SuppressWarnings("unchecked")
     public Object convert(Object object) throws TypeException {
         if (object instanceof List) {
-            List list = (List) object;
-            Type t = type.get();
+            List<Object> list = (List<Object>) object;
             for (int i = 0, len = list.size(); i < len; i++) {
                 Object value = list.get(i);
-                list.set(i, t.convert(value));
+                list.set(i, type.convert(value));
             }
             return object;
         }
         throw new TypeException("Incompatible object: " + object.getClass()
                 + " for type " + getName());
-    }
-
-    @Override
-    public TypeRef<ListType> getRef() {
-        return new TypeRef<ListType>(schema, name, this);
     }
 
     @Override

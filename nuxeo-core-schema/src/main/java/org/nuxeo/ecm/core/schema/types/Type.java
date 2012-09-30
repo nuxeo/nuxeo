@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,16 +7,12 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema.types;
 
 import java.io.Serializable;
-
-import org.nuxeo.ecm.core.schema.TypeRef;
 
 /**
  * A Type object is used to describe some ECM content.
@@ -64,8 +60,6 @@ import org.nuxeo.ecm.core.schema.TypeRef;
  * Type names must not contains a <code>:</code> character. This character may
  * be used internally to prefix the type name so it must not be used in the type
  * name.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Type extends Serializable {
 
@@ -91,13 +85,6 @@ public interface Type extends Serializable {
      * @return
      */
     Schema getSchema();
-
-    /**
-     * Gets a proxy (or reference to this type).
-     *
-     * @return a reference to the type
-     */
-    TypeRef<? extends Type> getRef();
 
     /**
      * Gets the super type.
@@ -165,21 +152,6 @@ public interface Type extends Serializable {
      * @return true if this is a composite type, false otherwise
      */
     boolean isCompositeType();
-
-    /**
-     * Tests whether this type supports null values.
-     *
-     * @return false if an object of this type can be null, true otherwise
-     */
-    boolean isNotNull();
-
-    /**
-     * Tests whether this type is read-only.
-     *
-     * @return true if an object of this type cannot be modified, false
-     *         otherwise
-     */
-    boolean isReadOnly();
 
     /**
      * Tests whether the given object is of this type.
