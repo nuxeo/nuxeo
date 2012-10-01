@@ -48,8 +48,8 @@ table.dataOutput th a img { margin: 0 0 0 .2em; padding: 0; vertical-align: bott
   width: 8px }
 .iconColumn { text-align: center; width: 1.8em }
 .iconColumn .cell { background: none; width: 40px }
-.iconColumn .dropInto { background-color: "neutral.light (__FLAVOR__ background)" }
 .iconColumn img { background: none; position: relative; z-index: 25 }
+.dataOutput .iconColumn .nxDraggable { cursor: move }
 .twoColumns { width: 50% }
 .fieldColumn { padding-left: .5em }
 .fieldColumn img { margin: 0 .4em; vertical-align: top }

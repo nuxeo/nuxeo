@@ -44,8 +44,8 @@ author: lkemen@nuxeo.com
   margin: 0 0 .2em;
   padding: .7em .2em .2em }
 
-.dropInto { background-color: "neutral.lighter (__FLAVOR__ background)" }
-.dropIntoClipboardCopy { background: transparent url("${basePath}/icons/action_clipboard_copy.gif") no-repeat 98% 3%; background-color: "color.major.dark (__FLAVOR__ background)" }
+.dropInto, .dropIntoClipboardCopy { background-color: "neutral.lighter (__FLAVOR__ background)";
+  border: 1px dashed; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px }
 
 #clipboardCopy { padding: .3em }
 
