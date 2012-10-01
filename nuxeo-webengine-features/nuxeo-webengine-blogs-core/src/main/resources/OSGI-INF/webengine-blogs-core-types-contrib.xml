@@ -3,6 +3,7 @@
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
   <require>org.nuxeo.ecm.core.schema.TypeService</require>
+  <require>org.nuxeo.ecm.webengine.sites.core.types</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="blog" prefix="blog" src="schemas/blog.xsd" />
