@@ -5,7 +5,7 @@ author: lkemen@nuxeo.com
 
 body { color: #000; font-family: Arial, Helvetica, sans-serif }
 h1,h2,h3,h4,h5,h6 { font-weight: bold; margin: .2em 0 .6em; padding: 0 }
-h1 { font-size: 140% }
+h1 { font-size: 150% }
 h2 { font-size: 130% }
 h3 { font-size: 120% }
 h4, h5, h6 { font-size: 110% }
@@ -28,9 +28,10 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .fieldColumn { line-height: 160%; padding: .4em }
 .labelColumn, .fieldColumn { border-bottom: 1px solid #eee }
 .fieldColumn img { margin-bottom: -4px }
+.dataInput, .buttonsGadget { display: none }
 .dataOutput th, .dataList th { background-color: #eee; padding: .4em .5em; text-align: left;  }
 .dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img { display: block }
-.dataInput, .dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse }
+.dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse }
 .dataOutput td, .dataList td, .dataInput td { border-width: 1px; border-style: solid none; border-color: #dbdbdb; padding: .5em .3em }
 .dataOutput2Columns td { padding: .5em .3em; vertical-align: top }
 .dataOutput thead th { white-space: nowrap }
@@ -39,24 +40,26 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .smallIcon { height: 16px; width: 16px }
 
 /* Document view*/
-.tabsContent { padding: 1.5em 0 }
+.tabsContent { padding: 0 0 1em }
 .currentDocumentDescription { padding: .3em 0}
-.summary_div_0 img { max-width: 15cm; max-height: 15cm }
-.note_content_block { border: 1px solid #ddd; padding: 1em }
-.content_block, .metadata_block, .comments_block, .entitiesBlock, .relation_block, .summary_div_2, .summary_div_3 { margin: 1em 0 }
-.content_block { page-break-after: always /* Flute Parser remove it */}
+.gridBox img { max-width: 15cm; max-height: 15cm }
+.metadata_block, .comments_block, .entitiesBlock, .relation_block, .widgetPanel { margin: 1em 0 2em }
+.content_block { margin: 1em 0 3em;	page-break-after: always /* Flute Parser remove it */}
 .content_block table { width: 100% }
+.content_block .fieldColumn { font-weight: bold }
 
 .metadata_block .dataInput { width: 100% }
-.summary_div_1 > div, .content_block .actionsColumn, .globalActionBar { display: none }
+.content_block .actionsColumn, .globalActionBar { display: none }
 
-.summary_div_1 .description_block { border: 1px solid #ddd; display: block;	font-size: 110%; font-weight: bold; line-height: 130%; padding: 1em; margin-top: 2em }
+.description_block { background-color: #f1f2f3; border: 1px solid #ddd; font-size: 110%; font-weight: bold; line-height: 130%; margin: 1em 0; padding: .5em }
 .description_block .documentDescription { display: block; padding: 0 0 1em }
 .description_block .createdBy, .description_block .creationDate, .description_block .versionNumber { padding-right: 1em }
 .description_block .creationDate {  color: #888; font-weight: normal }
 
 /* Note view */
-.note_content_block span, .note_content_block div, .note_content_block p { font-size: 1.05em; line-height: 170% }
+.note_content_block { border: 1px solid #ddd; border-radius: 3px; font-size: 110%;
+    margin-bottom: 2em; padding: 1em; }
+.note_content_block span, .note_content_block div, .note_content_block p { line-height: 170% }
 .note_content_block i, .note_content_block cite, .note_content_block em, .note_content_block var, .note_content_block dfn { font-style: italic }
 .note_content_block div, .note_content_block p { padding: .2em 0 .9em }
 .note_content_block h1, .note_content_block h2, .note_content_block h3, .note_content_block h4, .note_content_block h5, .note_content_block h6 { font-weight: bold; line-height: normal; margin: 0 }
@@ -85,11 +88,15 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .commentBlock .commentCreationDate { font-weight: normal }
 .commentBlock .commentQuote { line-height: 150% }
 
-
 /* Workflow */
 .reviewers, .reviewTable .dataInput, .abandonProcess { display: none }
 .reviewTable { padding-top: 1em }
 .reviewTable .dataOutput table td { border: none }
+
+/* Tags */
+.tagLink { background-color: #f1f2f3; border: 1px solid #aaa; border-radius: 3px; margin: 0 .5em 0 0;
+    padding: 0 .2em .1em .3em }
+.tagLink img, .summaryTitle img { display: none }
 
 /* Display:none :) for inputs, tabs, actions, tips, layout selector, rss links, filter, action icons, ... */
 input, .tabsBar, .action_bar, .tooltip, .listingLayoutSelector, .syndicationLinks, .foldableLightBox, .contentViewHeaderSortTooltip img, h1 img, .pageNavigationControls, .popupTarget img { display: none }
