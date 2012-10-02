@@ -6,7 +6,7 @@ author: lkemen@nuxeo.com
 */
 
 /* =Forms elements */
-textarea { font-family: "default (__FLAVOR__ font)"; padding: .4em; font-size: .95em }
+textarea { font-family: "default (__FLAVOR__ font)"; font-size: .95em; min-height: 5em; padding: .4em }
 .selectDocumentType { margin-top: 1em }
 .checkBox { margin-right: .3em; border: none }
 .required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 1em 0 0 }
