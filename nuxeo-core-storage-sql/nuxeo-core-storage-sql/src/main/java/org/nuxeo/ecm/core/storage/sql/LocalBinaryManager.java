@@ -202,6 +202,8 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             // which would occur if we tried to overwrite it anyway.
             // Note that this doesn't try to protect from the case where
             // two identical files are uploaded at the same time.
+            // Update date for the GC.
+            dest.setLastModified(source.lastModified());
             return;
         }
         if (!source.renameTo(dest)) {
