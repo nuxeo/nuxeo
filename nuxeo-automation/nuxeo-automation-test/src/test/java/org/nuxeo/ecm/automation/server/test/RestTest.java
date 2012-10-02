@@ -745,6 +745,9 @@ public class RestTest {
     @Test
     public void testSendMail() throws Exception {
 
+        // Set bad SMTP configuration
+        SendMail.COMPOSER.getMailer().setServer("badHostName", "0000");
+
         Document rootDoc = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
         assertNotNull(rootDoc);
