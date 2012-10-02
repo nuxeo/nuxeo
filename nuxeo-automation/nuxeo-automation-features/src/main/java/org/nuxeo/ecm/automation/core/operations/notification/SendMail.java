@@ -76,7 +76,7 @@ public class SendMail {
     @Param(name = "viewId", required = false, values = "view_documents")
     protected String viewId = "view_documents";
 
-    @Param(name = "rollbackOnError", required = false)
+    @Param(name = "rollbackOnError", required = false, values = "true")
     protected boolean rollbackOnError = true;
 
     @OperationMethod(collector = DocumentModelCollector.class)
