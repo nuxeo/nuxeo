@@ -17,12 +17,23 @@
 
 package org.nuxeo.ecm.user.center.profile;
 
+import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_EVENT;
+import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_SELECTED_EVENT;
+import static org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement.MAIN_TABS_CATEGORY;
+import static org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement.NUXEO_ADMIN_CATEGORY;
+import static org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement.USERS_GROUPS_HOME_SUB_TAB;
+import static org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement.USERS_GROUPS_MANAGER_SUB_TAB;
+import static org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement.USER_CENTER_CATEGORY;
+import static org.nuxeo.ecm.webapp.security.UserManagementActions.USERS_LISTING_CHANGED;
+import static org.nuxeo.ecm.webapp.security.UserManagementActions.USER_SELECTED_CHANGED;
+
 import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -35,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component to manage user profile editing
- *
+ * 
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
@@ -73,11 +84,16 @@ public class UserProfileActions implements Serializable {
     protected DocumentModel userProfileDocument;
 
     public void updateUser() throws ClientException {
-        userManagementActions.updateUser();
         if (userProfileDocument != null) {
             documentManager.saveDocument(userProfileDocument);
             documentManager.save();
         }
+
+        // Update selected user after profile to prevent from
+        // org.nuxeo.ecm.webapp.security.UserManagementActions.USER_SELECTED_CHANGED
+        // event to reset userProfileDocument field.
+        userManagementActions.updateUser();
+
         mode = PROFILE_VIEW_MODE;
     }
 
@@ -137,8 +153,11 @@ public class UserProfileActions implements Serializable {
         if (selectedUser == null) {
             return null;
         }
-        return getUserProfileService().getUserProfile(selectedUser,
-                documentManager);
+        if (userProfileDocument == null) {
+            userProfileDocument = getUserProfileService().getUserProfile(
+                    selectedUser, documentManager);
+        }
+        return userProfileDocument;
     }
 
     protected UserProfileService getUserProfileService() throws ClientException {
@@ -152,4 +171,18 @@ public class UserProfileActions implements Serializable {
         return userProfileService;
     }
 
+    @Observer(value = { CURRENT_TAB_CHANGED_EVENT + "_" + MAIN_TABS_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USER_CENTER_CATEGORY,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
+            CURRENT_TAB_CHANGED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB,
+            CURRENT_TAB_SELECTED_EVENT + "_" + MAIN_TABS_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USER_CENTER_CATEGORY,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
+            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB,
+            USERS_LISTING_CHANGED, USER_SELECTED_CHANGED })
+    public void resetState() {
+        userProfileDocument = null;
+    }
 }
