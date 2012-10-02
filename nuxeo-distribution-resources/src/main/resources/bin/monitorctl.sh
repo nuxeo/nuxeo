@@ -299,7 +299,7 @@ log_misc() {
         # NXP-6636
         #NXPID=`cat "$PID"`
         NXPID=`jps -v | grep "nuxeo.home=$NUXEO_HOME" | cut -f1 -d" "`
-        echo "## jmap -v" >> $file
+        echo "## jmap -heap" >> $file
         $JAVA_HOME/bin/jmap -heap $NXPID >> $file 2> /dev/null
         echo "## jstat -gc" >> $file
         $JAVA_HOME/bin/jstat -gc $NXPID >> $file
@@ -464,6 +464,26 @@ FROM
 WHERE
  indisunique IS false
 ORDER BY idx_scan,pg_relation_size(i.indexrelid) DESC LIMIT 10;
+SELECT
+  sum(heap_blks_read) as heap_read,
+  sum(heap_blks_hit)  as heap_hit,
+  (sum(heap_blks_hit) - sum(heap_blks_read)) / sum(heap_blks_hit) as ratio
+FROM
+  pg_statio_user_tables;
+SELECT
+  relname,
+  100 * idx_scan / (seq_scan + idx_scan) percent_of_times_index_used,
+  n_live_tup rows_in_table
+FROM
+  pg_stat_user_tables
+ORDER BY
+  n_live_tup DESC LIMIT 50;
+SELECT
+  sum(idx_blks_read) as idx_read,
+  sum(idx_blks_hit)  as idx_hit,
+  (sum(idx_blks_hit) - sum(idx_blks_read)) / sum(idx_blks_hit) as ratio
+FROM
+  pg_statio_user_indexes;
 \di+
 SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
 EXPLAIN ANALYZE SELECT sum(generate_series) AS "speedTest" FROM generate_series(1,1000000);
