@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.output.NullOutputStream;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
@@ -34,11 +33,11 @@ import org.nuxeo.runtime.services.streaming.FileSource;
  * <li><em>tmp/</em> temporary storage during creation,</li>
  * <li><em>config.xml</em> a file containing the configuration used.</li>
  * </ul>
- * 
+ *
  * This class includes optimizations that make it unsuitable for use with a
  * binary scrambler. Extend {@link LocalBinaryManager} instead to make use of a
  * scrambler.
- * 
+ *
  * @author Florent Guillaume
  */
 public class DefaultBinaryManager extends LocalBinaryManager implements
@@ -54,8 +53,7 @@ public class DefaultBinaryManager extends LocalBinaryManager implements
 
     @Override
     public Binary getBinary(FileSource source) throws IOException {
-        String  digest = storeAndDigest(source);
-
+        String digest = storeAndDigest(source);
         File file = getFileForDigest(digest, false);
         /*
          * Now we can build the Binary.
@@ -76,10 +74,7 @@ public class DefaultBinaryManager extends LocalBinaryManager implements
             out.close();
         }
         File digestFile = getFileForDigest(digest, true);
-        if (!sourceFile.renameTo(digestFile)) {
-            FileUtils.copy(sourceFile, digestFile);
-            sourceFile.delete();
-        }
+        atomicMove(sourceFile, digestFile);
         source.setFile(digestFile);
         return digest;
     }
