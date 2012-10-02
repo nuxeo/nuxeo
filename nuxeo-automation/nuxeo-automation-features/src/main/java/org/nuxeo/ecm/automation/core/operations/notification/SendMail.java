@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -44,6 +46,8 @@ import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 @Operation(id = SendMail.ID, category = Constants.CAT_NOTIFICATION, label = "Send E-Mail", description = "Send an email using the input document to the specified recipients. You can use the HTML parameter to spoecify whether you message is in HTML format or in plain text. Also you can attach any blob on the current document to the message by using the comma separated list of xpath expressions 'files'. If you xpath points to a blob list all blobs in the list will be attached. Return back the input document(s).")
 public class SendMail {
 
+    protected static final Log log = LogFactory.getLog(SendMail.class);
+
     public static final Composer COMPOSER = new Composer();
 
     public static final String ID = "Notification.SendMail";
@@ -63,14 +67,17 @@ public class SendMail {
     @Param(name = "to")
     protected StringList to; // a comma separated list of emails
 
-    @Param(name = "HTML", required = false, values="false")
+    @Param(name = "HTML", required = false, values = "false")
     protected boolean asHtml = false;
 
     @Param(name = "files", required = false)
     protected StringList blobXpath;
 
-    @Param(name = "viewId", required = false, values="view_documents")
+    @Param(name = "viewId", required = false, values = "view_documents")
     protected String viewId = "view_documents";
+
+    @Param(name = "rollbackOnError", required = false)
+    protected boolean rollbackOnError = true;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
@@ -100,22 +107,34 @@ public class SendMail {
     protected void send(DocumentModel doc) throws Exception {
         // TODO should sent one by one to each recipient? and have the template
         // rendered for each recipient? Use: "mailto" var name?
-        Map<String, Object> map = Scripting.initBindings(ctx);
-        // do not use document wrapper which is working only in mvel.
-        map.put("Document", doc);
-        map.put("docUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
-        map.put("subject", subject);
-        map.put("to", to);
-        map.put("from", from);
-        map.put("viewId", viewId);
-        map.put("baseUrl", NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
-        Mailer.Message msg = createMessage(doc, getContent(), map);
-        msg.setFrom(from);
-        msg.setSubject(subject);
-        for (String r : getRecipients()) {
-            msg.addTo(r);
+        try {
+            Map<String, Object> map = Scripting.initBindings(ctx);
+            // do not use document wrapper which is working only in mvel.
+            map.put("Document", doc);
+            map.put("docUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
+            map.put("subject", subject);
+            map.put("to", to);
+            map.put("from", from);
+            map.put("viewId", viewId);
+            map.put("baseUrl",
+                    NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
+            Mailer.Message msg = createMessage(doc, getContent(), map);
+            msg.setFrom(from);
+            msg.setSubject(subject);
+            for (String r : getRecipients()) {
+                msg.addTo(r);
+            }
+            msg.send();
+        } catch (Exception e) {
+            if (rollbackOnError) {
+                throw e;
+            } else {
+                log.warn(
+                        String.format(
+                                "An error occured while trying to execute the %s operation, see complete stack trace below. Continuing chain since 'rollbackOnError' was set to false.",
+                                ID), e);
+            }
         }
-        msg.send();
     }
 
     protected Mailer.Message createMessage(DocumentModel doc, String message,
