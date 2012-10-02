@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -25,6 +26,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
  * Integration Tests for NetBackend. Assumes a {@link NuxeoServerRunner} has
  * been started.
  */
+@Ignore
 public class ITSQLBackendNet extends TestSQLBackend {
 
     @Override

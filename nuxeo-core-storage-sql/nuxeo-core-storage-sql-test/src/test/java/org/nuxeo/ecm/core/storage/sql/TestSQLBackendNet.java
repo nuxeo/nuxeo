@@ -27,6 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Before;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 /**
  * Tests for NetBackend.
  */
+@Ignore
 public class TestSQLBackendNet extends TestSQLBackend {
 
     // defined in repo XML config as well
