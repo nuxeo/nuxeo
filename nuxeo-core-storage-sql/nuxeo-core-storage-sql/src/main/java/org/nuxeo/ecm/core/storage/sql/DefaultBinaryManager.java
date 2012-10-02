@@ -22,15 +22,14 @@ import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
@@ -154,8 +153,7 @@ public class DefaultBinaryManager implements BinaryManager, BinaryManagerStreamS
 
     @Override
     public Binary getBinary(FileSource source) throws IOException {
-        String  digest = storeAndDigest(source);
-
+        String digest = storeAndDigest(source);
         File file = getFileForDigest(digest, false);
         /*
          * Now we can build the Binary.
@@ -164,6 +162,7 @@ public class DefaultBinaryManager implements BinaryManager, BinaryManagerStreamS
                 repositoryName);
     }
 
+    @Override
     public Binary getBinary(InputStream in) throws IOException {
         String digest = storeAndDigest(in);
         File file = getFileForDigest(digest, false);
@@ -224,11 +223,8 @@ public class DefaultBinaryManager implements BinaryManager, BinaryManagerStreamS
             in.close();
             out.close();
         }
-        File  digestFile = getFileForDigest(digest, true);
-        if (!sourceFile.renameTo(digestFile)) {
-            FileUtils.copy(sourceFile, digestFile);
-            sourceFile.delete();
-        }
+        File digestFile = getFileForDigest(digest, true);
+        atomicMove(sourceFile, digestFile);
         source.setFile(digestFile);
         return digest;
     }
@@ -252,10 +248,7 @@ public class DefaultBinaryManager implements BinaryManager, BinaryManagerStreamS
              * Move the tmp file to its destination.
              */
             File file = getFileForDigest(digest, true);
-            tmp.renameTo(file); // atomic move, fails if already there
-            if (!file.exists()) {
-                throw new IOException("Could not create file: " + file);
-            }
+            atomicMove(tmp, file);
             return digest;
         } finally {
             tmp.delete();
@@ -310,6 +303,58 @@ public class DefaultBinaryManager implements BinaryManager, BinaryManagerStreamS
             buf.append(HEX_DIGITS[0x0F & b]);
         }
         return buf.toString();
+    }
+
+    /**
+     * Does an atomic move of the tmp (or source) file to the final file.
+     * <p>
+     * Tries to work well with NFS mounts and different filesystems.
+     */
+    protected void atomicMove(File source, File dest) throws IOException {
+        if (dest.exists()) {
+            // The file with the proper digest is already there so don't do
+            // anything. This is to avoid "Stale NFS File Handle" problems
+            // which would occur if we tried to overwrite it anyway.
+            // Note that this doesn't try to protect from the case where
+            // two identical files are uploaded at the same time.
+            // Update date for the GC.
+            dest.setLastModified(source.lastModified());
+            return;
+        }
+        if (!source.renameTo(dest)) {
+            // Failed to rename, probably a different filesystem.
+            // Do *NOT* use Apache Commons IO's FileUtils.moveFile()
+            // because it rewrites the destination file so is not atomic.
+            // Do a copy through a tmp file on the same filesystem then
+            // atomic rename.
+            File tmp = File.createTempFile(dest.getName(), ".tmp",
+                    dest.getParentFile());
+            try {
+                InputStream in = null;
+                OutputStream out = null;
+                try {
+                    in = new FileInputStream(source);
+                    out = new FileOutputStream(tmp);
+                    IOUtils.copy(in, out);
+                } finally {
+                    if (in != null) {
+                        in.close();
+                    }
+                    if (out != null) {
+                        out.close();
+                    }
+                }
+                // then do the atomic rename
+                tmp.renameTo(dest);
+            } finally {
+                tmp.delete();
+            }
+            // finally remove the original source
+            source.delete();
+        }
+        if (!dest.exists()) {
+            throw new IOException("Could not create file: " + dest);
+        }
     }
 
     protected void createGarbageCollector() {
