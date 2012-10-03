@@ -125,8 +125,11 @@ public abstract class ServerConfigurator {
         // add included templates directories
         List<String> newFilesList = new ArrayList<String>();
         for (File includedTemplate : generator.getIncludedTemplates()) {
-            if (includedTemplate.listFiles(filter) != null) {
+            File[] listFiles = includedTemplate.listFiles(filter);
+            if (listFiles != null) {
                 String templateName = includedTemplate.getName();
+                log.debug(String.format("Parsing %s... %s", templateName,
+                        listFiles));
                 // Check for deprecation
                 Boolean isDeprecated = Boolean.valueOf(config.getProperty(templateName
                         + ".deprecated"));
@@ -145,7 +148,7 @@ public abstract class ServerConfigurator {
                 File outputDirectory = (outputDirectoryStr != null) ? new File(
                         generator.getNuxeoHome(), outputDirectoryStr)
                         : getOutputDirectory();
-                for (File in : includedTemplate.listFiles(filter)) {
+                for (File in : listFiles) {
                     // copy template(s) directories parsing properties
                     newFilesList.addAll(templateParser.processDirectory(in,
                             new File(outputDirectory, in.getName())));

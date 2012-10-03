@@ -355,8 +355,10 @@ public class TextTemplate {
                 newFiles.add(out.getPath());
             }
             if (processAsFreemarker) {
+                log.debug("Process as FreeMarker " + in.getPath());
                 processFreemarker(in, out);
             } else if (processAsText) {
+                log.debug("Process as Text " + in.getPath());
                 InputStream is = null;
                 OutputStream os = null;
                 try {
@@ -368,6 +370,7 @@ public class TextTemplate {
                     IOUtils.closeQuietly(os);
                 }
             } else {
+                log.debug("Process as copy " + in.getPath());
                 FileUtils.copyFile(in, out);
             }
         } else if (in.isDirectory()) {
