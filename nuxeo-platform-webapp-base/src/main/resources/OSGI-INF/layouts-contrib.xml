@@ -1638,7 +1638,10 @@
                     not. Defaults to an EL expression checking permission
                     'Write' on the document. Examples: false,
                     #{nxd:hasPermission(value, 'Write') and
-                    currentUser.isMemberOf('togglers_groups')}
+                    currentUser.isMemberOf('togglers_groups')}.
+                    Default
+                    expression used:
+                    #{webActions.checkFilter('canToggleLayoutToEditMode')}
                   </label>
                 </helpLabels>
                 <fields>

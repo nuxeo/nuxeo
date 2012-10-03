@@ -21,7 +21,7 @@
       value="#{nxu:test(empty widgetProperty_toggledMode, 'edit', widgetProperty_toggledMode)}"
       cache="true">
     <nxu:set var="canToggleMode"
-      value="#{nxu:test(empty widgetProperty_canToggleMode, nxd:hasPermission(fieldOrValue, 'Write'), widgetProperty_canToggleMode)}"
+      value="#{nxu:test(empty widgetProperty_canToggleMode, webActions.checkFilter('canToggleLayoutToEditMode'), widgetProperty_canToggleMode)}"
       cache="true">
     <nxu:set var="initialActionLabel"
       value="#{nxu:test(empty widgetProperty_initialActionLabel, messages['action.view.modification'], nxu:test(widget.translated, messages[widgetProperty_initialActionLabel], widgetProperty_initialActionLabel))}"

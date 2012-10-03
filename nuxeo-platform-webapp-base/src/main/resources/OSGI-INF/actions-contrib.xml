@@ -169,6 +169,33 @@
       </rule>
     </filter>
 
+    <filter id="canToggleLayoutToEditMode">
+      <documentation>
+        <p>
+          Filter used by the "toggleableLayoutWithForms" widget type
+          to check
+          wether the "edit" button should be displayed.
+        </p>
+        <p>
+          This filter is a combination of default filters "edit" and
+          "mutable_document" usually used to control rendering of the "edit" tab
+          on document views.
+        </p>
+        @since 5.6
+      </documentation>
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+      <rule grant="false">
+        <facet>Immutable</facet>
+      </rule>
+      <rule grant="false">
+        <condition>
+          document.getCurrentLifeCycleState().equals("deleted")
+        </condition>
+      </rule>
+    </filter>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
