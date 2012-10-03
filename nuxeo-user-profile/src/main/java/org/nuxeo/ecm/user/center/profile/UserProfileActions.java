@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component to manage user profile editing
- * 
+ *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
@@ -181,7 +182,8 @@ public class UserProfileActions implements Serializable {
             CURRENT_TAB_SELECTED_EVENT + "_" + USER_CENTER_CATEGORY,
             CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
             CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB,
-            USERS_LISTING_CHANGED, USER_SELECTED_CHANGED })
+            USERS_LISTING_CHANGED, USER_SELECTED_CHANGED }, create = false)
+    @BypassInterceptors
     public void resetState() {
         userProfileDocument = null;
     }
