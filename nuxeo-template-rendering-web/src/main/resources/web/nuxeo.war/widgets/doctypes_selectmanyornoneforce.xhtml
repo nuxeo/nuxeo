@@ -14,7 +14,7 @@
      </c:when>
      <c:otherwise>
       <nxu:repeat value="#{field_0}" var="targetType">
-        <h:outputText value="#{targetType}"/> <br/>
+        <h:outputText value="#{messages[targetType]}"/> <br/>
       </nxu:repeat>
      </c:otherwise>
    </c:choose>
@@ -29,7 +29,7 @@
       <f:selectItem id="noneForceType" itemLabel="None" itemValue="none" />
       <nxu:selectItems var="doc" value="#{templateActions.getForcableTypes()}"
         itemValue="#{doc.id}"
-        itemLabel="#{doc.label}" />
+        itemLabel="#{messages[doc.label]}" />
     </h:selectManyListbox>
     <h:message for="#{widget.id}" styleClass="errorMessage" />
   </c:if>
