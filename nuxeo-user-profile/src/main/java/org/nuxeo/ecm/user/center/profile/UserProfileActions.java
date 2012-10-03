@@ -112,8 +112,11 @@ public class UserProfileActions implements Serializable {
     }
 
     public DocumentModel getCurrentUserModel() {
+        DocumentModel selectedUser = userManagementActions.getSelectedUser();
         DocumentModel currentUserModel = currentUser.getModel();
-        userManagementActions.setSelectedUser(currentUserModel);
+        if (selectedUser == null || !selectedUser.getId().equals(currentUserModel.getId())) {
+            userManagementActions.setSelectedUser(currentUserModel);
+        }
         return currentUserModel;
     }
 
