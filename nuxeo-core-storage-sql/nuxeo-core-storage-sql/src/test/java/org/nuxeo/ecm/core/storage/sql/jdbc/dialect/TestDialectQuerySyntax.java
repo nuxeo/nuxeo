@@ -12,9 +12,11 @@
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.jmock.Mockery;
 import org.jmock.Expectations;
@@ -47,30 +49,83 @@ public class TestDialectQuerySyntax {
 
     @Before
     public void setUp() throws SQLException {
-        metadata = getDatabaseMetaData();
+        metadata = getMockDatabaseMetaData();
         // binaryManager = null;
         repositoryDescriptor = new RepositoryDescriptor();
     }
 
-    public DatabaseMetaData getDatabaseMetaData() throws SQLException {
+    protected DatabaseMetaData getMockDatabaseMetaData() throws SQLException {
         final DatabaseMetaData m = jmcontext.mock(DatabaseMetaData.class);
-        jmcontext.checking(new Expectations() {{
-            allowing (m).storesUpperCaseIdentifiers(); will(returnValue(false));
-            allowing (m).getDatabaseMajorVersion(); will(returnValue(9));
-            allowing (m).getDatabaseMinorVersion(); will(returnValue(0));
-            allowing (m).getColumns(with(any(String.class)),
-                                 with(any(String.class)),
-                                 with(any(String.class)),
-                                 with(any(String.class))); will(returnValue(getEmptyResultSet()));
-        }});
+        jmcontext.checking(new Expectations() {
+            {
+                allowing(m).storesUpperCaseIdentifiers();
+                will(returnValue(false));
+
+                allowing(m).getDatabaseMajorVersion();
+                will(returnValue(9));
+
+                allowing(m).getDatabaseMinorVersion();
+                will(returnValue(0));
+
+                allowing(m).getColumns(with(any(String.class)),
+                        with(any(String.class)), with(any(String.class)),
+                        with(any(String.class)));
+                will(returnValue(getMockEmptyResultSet()));
+
+                allowing(m).getConnection();
+                will(returnValue(getMockConnection()));
+            }
+        });
         return m;
     }
 
-    public ResultSet getEmptyResultSet() throws SQLException {
-        final ResultSet m = jmcontext.mock(ResultSet.class);
-        jmcontext.checking(new Expectations() {{
-            allowing (m).next(); will(returnValue(false));
-        }});
+    protected ResultSet getMockEmptyResultSet() throws SQLException {
+        final ResultSet m = jmcontext.mock(ResultSet.class, "empty");
+        jmcontext.checking(new Expectations() {
+            {
+                allowing(m).next();
+                will(returnValue(false));
+            }
+        });
+        return m;
+    }
+
+    protected Connection getMockConnection() throws SQLException {
+        final Connection m = jmcontext.mock(Connection.class);
+        jmcontext.checking(new Expectations() {
+            {
+                allowing(m).createStatement();
+                will(returnValue(getMockStatement()));
+            }
+        });
+        return m;
+    }
+
+    protected Statement getMockStatement() throws SQLException {
+        final Statement m = jmcontext.mock(Statement.class);
+        jmcontext.checking(new Expectations() {
+            {
+                allowing(m).executeQuery(with(any(String.class)));
+                will(returnValue(getMockResultSet()));
+
+                allowing(m).close();
+                will(returnValue(null));
+            }
+        });
+        return m;
+    }
+
+    protected ResultSet getMockResultSet() throws SQLException {
+        final ResultSet m = jmcontext.mock(ResultSet.class, "EngineEdition");
+        jmcontext.checking(new Expectations() {
+            {
+                allowing(m).next();
+                will(returnValue(true));
+
+                allowing(m).getInt(with(any(Integer.class)));
+                will(returnValue(2));
+            }
+        });
         return m;
     }
 
