@@ -11,6 +11,14 @@
 
 # Variables used:
 # ${idType} VARCHAR(36)
+# ${clusteredIndex} CLUSTERED when clustered indexes are required (Azure)
+# ${md5HashString} 
+#   for SQL Server 2005:
+#     SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', @string)), 3, 32)
+#   for SQL Server 2008/2012/Azure:
+#     SUBSTRING(CONVERT(VARCHAR(34), HashBytes('MD5', @string), 1), 3, 32)
+# ${reseedAclrModified}
+#   when not Azure: DBCC CHECKIDENT('aclr_modified', RESEED, 0);
 # ${fulltextCatalog} configured catalog
 # ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
 # ${usersSeparator} Used to store aclr default is "|", but it depends on the configuration. Note that array parameters always use "|" separator.
@@ -221,13 +229,13 @@ CREATE TABLE ancestors (
 );
 
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'ancestors_hierarchy_id_idx'
+SELECT 1 FROM sys.indexes WHERE name = 'ancestors_hierarchy_id_idx'
 
 #IF: emptyResult
-CREATE INDEX [ancestors_hierarchy_id_idx] ON [dbo].[ancestors] ([hierarchy_id])
+CREATE ${clusteredIndex} INDEX [ancestors_hierarchy_id_idx] ON [dbo].[ancestors] ([hierarchy_id])
 
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'ancestors_ancestor_idx'
+SELECT 1 FROM sys.indexes WHERE name = 'ancestors_ancestor_idx'
 
 #IF: emptyResult
 CREATE INDEX [ancestors_ancestor_idx] ON [dbo].[ancestors] ([ancestor])
@@ -446,10 +454,10 @@ CREATE TABLE aclr (
 )
 
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'aclr_acl_id_idx'
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_acl_id_idx'
 
 #IF: emptyResult
-CREATE INDEX [aclr_acl_id_idx] ON [dbo].[aclr] ([acl_id])
+CREATE ${clusteredIndex} INDEX [aclr_acl_id_idx] ON [dbo].[aclr] ([acl_id])
 
 
 # -- Known users table
@@ -466,10 +474,10 @@ CREATE TABLE aclr_user (
 
 
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'aclr_user_user_id_idx'
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_user_id_idx'
 
 #IF: emptyResult
-CREATE INDEX [aclr_user_user_id_idx] ON [dbo].[aclr_user] ([user_id])
+CREATE ${clusteredIndex} INDEX [aclr_user_user_id_idx] ON [dbo].[aclr_user] ([user_id])
 
 
 # -- Jonction between aclr and aclr_user
@@ -484,14 +492,14 @@ CREATE TABLE aclr_user_map (
 
 
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'aclr_user_map_user_id_idx'
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_map_user_id_idx'
 
 #IF: emptyResult
-CREATE INDEX [aclr_user_map_user_id_idx] ON [dbo].[aclr_user_map] ([user_id])
+CREATE ${clusteredIndex} INDEX [aclr_user_map_user_id_idx] ON [dbo].[aclr_user_map] ([user_id])
 
 
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'aclr_user_map_acl_id_idx'
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_map_acl_id_idx'
 
 #IF: emptyResult
 CREATE INDEX [aclr_user_map_acl_id_idx] ON [dbo].[aclr_user_map] ([acl_id], [user_id])
@@ -510,10 +518,10 @@ CREATE TABLE hierarchy_read_acl (
 
 # add index
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'hierarchy_read_acl_acl_id_idx'
+SELECT 1 FROM sys.indexes WHERE name = 'hierarchy_read_acl_acl_id_idx'
 
 #IF: emptyResult
-CREATE INDEX [hierarchy_read_acl_acl_id_idx] ON [dbo].[hierarchy_read_acl] ([acl_id])
+CREATE ${clusteredIndex} INDEX [hierarchy_read_acl_acl_id_idx] ON [dbo].[hierarchy_read_acl] ([acl_id])
 
 
 # -- Log modified document that require an aclr update
@@ -529,16 +537,16 @@ CREATE TABLE aclr_modified (
 
 # add index
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'aclr_modified_is_new_idx';
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_modified_is_new_idx';
 
 #IF: emptyResult
 CREATE INDEX [aclr_modified_is_new_idx] ON [dbo].[aclr_modified] ([is_new])
 
 #TEST:
-SELECT 1 FROM sysindexes WHERE name = 'aclr_modified_id_idx';
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_modified_id_idx';
 
 #IF: emptyResult
-CREATE INDEX [aclr_modified_id_idx] ON [dbo].[aclr_modified] ([id])
+CREATE ${clusteredIndex} INDEX [aclr_modified_id_idx] ON [dbo].[aclr_modified] ([id])
 
 
 #-- List of permission that grant the read access
@@ -549,6 +557,13 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_permission' AN
 CREATE TABLE aclr_permission (
   permission VARCHAR(256)
 )
+
+# add index
+#TEST:
+SELECT 1 FROM sys.indexes WHERE name = 'aclr_permission_idx';
+
+#IF: emptyResult
+CREATE ${clusteredIndex} INDEX [aclr_permission_idx] ON [dbo].[aclr_permission] ([permission])
 
 
 # dump browse permissions into table
@@ -640,7 +655,7 @@ CREATE FUNCTION nx_md5(@string NVARCHAR(4000))
 RETURNS CHAR(32) AS
 BEGIN
   DECLARE @hash CHAR(32);
-  SET @hash = (SELECT SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', @string)), 3, 32));
+  SET @hash = (${md5HashString});
   RETURN @hash;
 END;
 
@@ -855,7 +870,7 @@ BEGIN
   TRUNCATE TABLE aclr_user;
   TRUNCATE TABLE aclr_user_map;
   TRUNCATE TABLE aclr_modified;
-  DBCC CHECKIDENT('aclr_modified', RESEED, 0);
+  ${reseedAclrModified}
 END;
 
 

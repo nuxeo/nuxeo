@@ -64,8 +64,14 @@ public class DialectSQLServer extends Dialect {
 
     protected boolean pathOptimizationsEnabled;
 
-    /** 9 = SQL Server 2005, 10 = SQL Server 2008 */
+    /** 9 = SQL Server 2005, 10 = SQL Server 2008, 11 = SQL Server 2012 / Azure */
     protected int majorVersion;
+
+    // http://msdn.microsoft.com/en-us/library/ms174396.aspx
+    /** 5 = Azure */
+    protected int engineEdition;
+
+    protected boolean azure;
 
     public DialectSQLServer(DatabaseMetaData metadata,
             BinaryManager binaryManager,
@@ -73,8 +79,15 @@ public class DialectSQLServer extends Dialect {
         super(metadata, binaryManager, repositoryDescriptor);
         try {
             majorVersion = metadata.getDatabaseMajorVersion();
+            engineEdition = getEngineEdition(metadata.getConnection());
+
         } catch (SQLException e) {
             throw new StorageException(e);
+        }
+        if (engineEdition == 5) { // 5 = SQL Azure
+            azure = true;
+            fulltextDisabled = true;
+            repositoryDescriptor.fulltextDisabled = true;
         }
         fulltextAnalyzer = repositoryDescriptor == null ? null
                 : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
@@ -87,6 +100,18 @@ public class DialectSQLServer extends Dialect {
                         : repositoryDescriptor.usersSeparatorKey;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.pathOptimizationsEnabled;
+    }
+
+    protected int getEngineEdition(Connection connection)
+            throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("SELECT CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            st.close();
+        }
     }
 
     @Override
@@ -187,6 +212,9 @@ public class DialectSQLServer extends Dialect {
         if (expected == Types.CLOB && actual == Types.VARCHAR) {
             return true;
         }
+        if (expected == Types.CLOB && actual == Types.NVARCHAR) {
+            return true;
+        }
         if (expected == Types.CLOB && actual == Types.LONGNVARCHAR) {
             return true;
         }
@@ -252,6 +280,19 @@ public class DialectSQLServer extends Dialect {
     @Override
     protected int getMaxNameSize() {
         return 128;
+    }
+
+    @Override
+    public String getCreateIndexSql(String indexName, String tableName,
+            List<String> columnNames) {
+        if (columnNames.size() == 1 && columnNames.get(0).equals("[id]")
+                && azure) {
+            // creates index on id for collection tables
+            // as there is no primary key, create a clustered index for this one
+            return String.format("CREATE CLUSTERED INDEX %s ON %s (%s)",
+                    indexName, tableName, StringUtils.join(columnNames, ", "));
+        }
+        return super.getCreateIndexSql(indexName, tableName, columnNames);
     }
 
     @Override
@@ -415,6 +456,10 @@ public class DialectSQLServer extends Dialect {
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("idType", "VARCHAR(36)");
+        properties.put("clusteredIndex", azure ? "CLUSTERED" : "");
+        properties.put("md5HashString", getMd5HashString());
+        properties.put("reseedAclrModified", azure ? ""
+                : "DBCC CHECKIDENT('aclr_modified', RESEED, 0);");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextCatalog", fulltextCatalog);
         properties.put("aclOptimizationsEnabled",
@@ -431,6 +476,16 @@ public class DialectSQLServer extends Dialect {
                 " UNION ALL "));
         properties.put("usersSeparator", getUsersSeparator());
         return properties;
+    }
+
+    protected String getMd5HashString() {
+        if (majorVersion <= 9) {
+            // this is an internal function and doesn't work on Azure
+            return "SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', @string)), 3, 32)";
+        } else {
+            // this doesn't work on SQL Server 2005
+            return "SUBSTRING(CONVERT(VARCHAR(34), HashBytes('MD5', @string), 1), 3, 32)";
+        }
     }
 
     @Override
@@ -540,6 +595,5 @@ public class DialectSQLServer extends Dialect {
         }
         return super.getDateCast();
     }
-
 
 }

@@ -59,9 +59,9 @@ public class DatabaseSQLServer extends DatabaseHelper {
         // for sql directory tests
         setProperty(DRIVER_PROPERTY, DRIVER);
         String url;
-        if (MSFT) {
+        if (DRIVER.startsWith("com.microsoft")) {
             url = String.format(
-                    "jdbc:sqlserver://%s:%s;database=%s;user=%s;password=%s",
+                    "jdbc:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
                     System.getProperty(SERVER_PROPERTY),
                     System.getProperty(PORT_PROPERTY),
                     System.getProperty(DATABASE_PROPERTY),
@@ -70,7 +70,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
         } else {
             url = String.format(
-                    "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s",
+                    "jdbc:jtds:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
                     System.getProperty(SERVER_PROPERTY),
                     System.getProperty(PORT_PROPERTY),
                     System.getProperty(DATABASE_PROPERTY),
