@@ -20,6 +20,7 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -87,6 +88,42 @@ public class NuxeoJBossLauncher extends NuxeoLauncher {
     @Override
     protected String getServerPrint() {
         return JBossConfigurator.STARTUP_CLASS;
+    }
+
+    @Override
+    protected String getInstallClassPath(File tmpDir) throws IOException {
+        String cp = ".";
+        tmpDir.delete();
+        tmpDir.mkdirs();
+        File baseDir = new File(configurationGenerator.getRuntimeHome(),
+                "bundles");
+        String[] filenames = new String[] { "nuxeo-runtime-osgi",
+                "nuxeo-runtime", "nuxeo-common", "nuxeo-connect-update",
+                "nuxeo-connect-client", "nuxeo-connect-offline-update",
+                "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload",
+                "nuxeo-launcher-commons" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        baseDir = configurationGenerator.getServerConfigurator().getNuxeoLibDir();
+        filenames = new String[] { "commons-io", "commons-jexl", "groovy-all",
+                "osgi-core", "xercesImpl" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        baseDir = configurationGenerator.getServerConfigurator().getServerLibDir();
+        filenames = new String[] { "commons-collections", "commons-logging",
+                "log4j" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+
+        baseDir = new File(
+                configurationGenerator.getNuxeoHome(),
+                "server"
+                        + File.separator
+                        + ((JBossConfigurator) configurationGenerator.getServerConfigurator()).getConfiguration()
+                        + File.separator + "lib");
+        filenames = new String[] { "commons-lang" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        baseDir = new File(configurationGenerator.getNuxeoHome(), "bin");
+        filenames = new String[] { "nuxeo-launcher" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        return cp;
     }
 
 }

@@ -932,30 +932,8 @@ public abstract class NuxeoLauncher {
      * @param tmpDir temporary directory hosting classpath
      * @throws IOException If temporary directory could not be created.
      */
-    private String getInstallClassPath(File tmpDir) throws IOException {
-        String cp = ".";
-        tmpDir.delete();
-        tmpDir.mkdirs();
-        File baseDir = new File(configurationGenerator.getRuntimeHome(),
-                "bundles");
-        String[] filenames = new String[] { "nuxeo-runtime-osgi",
-                "nuxeo-runtime", "nuxeo-common", "nuxeo-connect-update",
-                "nuxeo-connect-client", "nuxeo-connect-offline-update",
-                "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload",
-                "nuxeo-launcher-commons" };
-        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        baseDir = configurationGenerator.getServerConfigurator().getNuxeoLibDir();
-        filenames = new String[] { "commons-io", "commons-jexl", "groovy-all",
-                "osgi-core", "xercesImpl", "commons-collections" };
-        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        baseDir = configurationGenerator.getServerConfigurator().getServerLibDir();
-        filenames = new String[] { "commons-lang", "commons-logging", "log4j" };
-        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        baseDir = new File(configurationGenerator.getNuxeoHome(), "bin");
-        filenames = new String[] { "nuxeo-launcher" };
-        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
-        return cp;
-    }
+    protected abstract String getInstallClassPath(File tmpDir)
+            throws IOException;
 
     /**
      * Build a temporary classpath directory, copying inside filenames from
@@ -975,10 +953,16 @@ public abstract class NuxeoLauncher {
         targetDir.mkdirs();
         for (final String filePattern : filenames) {
             File[] files = getFilename(baseDir, filePattern);
-            FileUtils.copyFileToDirectory(files[0], targetDir);
-            File classPathEntry = new File(targetDir, files[0].getName());
-            classpath += System.getProperty("path.separator")
-                    + classPathEntry.getPath();
+            if (files.length > 0) {
+                FileUtils.copyFileToDirectory(files[0], targetDir);
+                File classPathEntry = new File(targetDir, files[0].getName());
+                classpath += System.getProperty("path.separator")
+                        + classPathEntry.getPath();
+            } else {
+                log.warn(String.format(
+                        "Couldn't find file with pattern %s in %s",
+                        filePattern, baseDir.getPath()));
+            }
         }
         return classpath;
     }

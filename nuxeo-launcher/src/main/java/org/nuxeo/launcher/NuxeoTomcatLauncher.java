@@ -20,6 +20,7 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,6 +79,32 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
     @Override
     protected String getServerPrint() {
         return TomcatConfigurator.STARTUP_CLASS;
+    }
+
+    @Override
+    protected String getInstallClassPath(File tmpDir) throws IOException {
+        String cp = ".";
+        tmpDir.delete();
+        tmpDir.mkdirs();
+        File baseDir = new File(configurationGenerator.getRuntimeHome(),
+                "bundles");
+        String[] filenames = new String[] { "nuxeo-runtime-osgi",
+                "nuxeo-runtime", "nuxeo-common", "nuxeo-connect-update",
+                "nuxeo-connect-client", "nuxeo-connect-offline-update",
+                "nuxeo-connect-client-wrapper", "nuxeo-runtime-reload",
+                "nuxeo-launcher-commons" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        baseDir = configurationGenerator.getServerConfigurator().getNuxeoLibDir();
+        filenames = new String[] { "commons-io", "commons-jexl", "groovy-all",
+                "osgi-core", "xercesImpl", "commons-collections" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        baseDir = configurationGenerator.getServerConfigurator().getServerLibDir();
+        filenames = new String[] { "commons-lang", "commons-logging", "log4j" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        baseDir = new File(configurationGenerator.getNuxeoHome(), "bin");
+        filenames = new String[] { "nuxeo-launcher" };
+        cp = getTempClassPath(tmpDir, cp, baseDir, filenames);
+        return cp;
     }
 
 }
