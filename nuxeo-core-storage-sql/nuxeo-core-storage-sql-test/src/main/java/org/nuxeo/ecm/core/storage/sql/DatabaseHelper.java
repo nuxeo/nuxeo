@@ -56,6 +56,9 @@ public abstract class DatabaseHelper {
     public static final String DRIVER_PROPERTY = "nuxeo.test.vcs.driver";
 
     // available for JDBC tests
+    public static final String XA_DATASOURCE_PROPERTY = "nuxeo.test.vcs.xadatasource";
+
+    // available for JDBC tests
     public static final String URL_PROPERTY = "nuxeo.test.vcs.url";
 
     public static final String SERVER_PROPERTY = "nuxeo.test.vcs.server";

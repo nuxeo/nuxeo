@@ -38,7 +38,15 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mssql-contrib.xml";
 
-    private static final String DRIVER = "net.sourceforge.jtds.jdbc.Driver";
+    // true for the Microsoft JDBC driver
+    // false for the jTDS JDBC driver (open source)
+    private static final boolean MSFT = false;
+
+    private static final String DRIVER = MSFT ? "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+            : "net.sourceforge.jtds.jdbc.Driver";
+
+    private static final String XA_DATASOURCE = MSFT ? "com.microsoft.sqlserver.jdbc.SQLServerXADataSource"
+            : "net.sourceforge.jtds.jdbcx.JtdsDataSource";
 
     private void setProperties() {
         Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
@@ -47,15 +55,28 @@ public class DatabaseSQLServer extends DatabaseHelper {
         setProperty(DATABASE_PROPERTY, DEF_DATABASE);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+        setProperty(XA_DATASOURCE_PROPERTY, XA_DATASOURCE);
         // for sql directory tests
         setProperty(DRIVER_PROPERTY, DRIVER);
-        String url = String.format(
-                "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s",
-                System.getProperty(SERVER_PROPERTY),
-                System.getProperty(PORT_PROPERTY),
-                System.getProperty(DATABASE_PROPERTY),
-                System.getProperty(USER_PROPERTY),
-                System.getProperty(PASSWORD_PROPERTY));
+        String url;
+        if (MSFT) {
+            url = String.format(
+                    "jdbc:sqlserver://%s:%s;database=%s;user=%s;password=%s",
+                    System.getProperty(SERVER_PROPERTY),
+                    System.getProperty(PORT_PROPERTY),
+                    System.getProperty(DATABASE_PROPERTY),
+                    System.getProperty(USER_PROPERTY),
+                    System.getProperty(PASSWORD_PROPERTY));
+
+        } else {
+            url = String.format(
+                    "jdbc:jtds:sqlserver://%s:%s/%s;user=%s;password=%s",
+                    System.getProperty(SERVER_PROPERTY),
+                    System.getProperty(PORT_PROPERTY),
+                    System.getProperty(DATABASE_PROPERTY),
+                    System.getProperty(USER_PROPERTY),
+                    System.getProperty(PASSWORD_PROPERTY));
+        }
         setProperty(URL_PROPERTY, url);
     }
 
@@ -76,7 +97,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
     @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        descriptor.xaDataSourceName = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
+        descriptor.xaDataSourceName = XA_DATASOURCE;
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("ServerName", System.getProperty(SERVER_PROPERTY));
         properties.put("PortNumber", System.getProperty(PORT_PROPERTY));

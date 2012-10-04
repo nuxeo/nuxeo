@@ -363,7 +363,46 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    public void testSmallText() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-restriction-contrib.xml");
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "Restriction", false);
+        nodea.setSimpleProperty("restr:shortstring", "this-is-short");
+        session.save();
+
+        // now read from another session
+        session.close();
+        session = repository.getConnection();
+        root = session.getRootNode();
+        nodea = session.getChildNode(root, "foo", false);
+        String readtext = nodea.getSimpleProperty("restr:shortstring").getString();
+        assertEquals("this-is-short", readtext);
+    }
+
+    @Test
     public void testBigText() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-restriction-big-contrib.xml");
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "RestrictionBig",
+                false);
+        nodea.setSimpleProperty("restrbg:bigstring", "this-is-not-short");
+        session.save();
+
+        // now read from another session
+        session.close();
+        session = repository.getConnection();
+        root = session.getRootNode();
+        nodea = session.getChildNode(root, "foo", false);
+        String readtext = nodea.getSimpleProperty("restrbg:bigstring").getString();
+        assertEquals("this-is-not-short", readtext);
+    }
+
+    @Test
+    public void testClobText() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
@@ -1054,7 +1093,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         /*
          * rollback before save (underlying XAResource saw no updates)
          */
-        Xid xid = new XidImpl("1");
+        Xid xid = new XidImpl("11111111111111111111111111111111");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         nodea = session.getNodeByPath("/foo", null);
         nodea.setSimpleProperty("tst:title", "new");
@@ -1067,7 +1106,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         /*
          * rollback after save (underlying XAResource does a rollback too)
          */
-        xid = new XidImpl("2");
+        xid = new XidImpl("22222222222222222222222222222222");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         nodea = session.getNodeByPath("/foo", null);
         nodea.setSimpleProperty("tst:title", "new");
@@ -1087,7 +1126,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         XAResource xaresource = ((SessionImpl) session).getXAResource();
 
         // first transaction
-        Xid xid = new XidImpl("1");
+        Xid xid = new XidImpl("11111111111111111111111111111111");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         Node root = session.getRootNode();
         assertNotNull(root);
@@ -1101,7 +1140,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         ((SessionImpl) session).clearCaches();
 
         // second transaction
-        xid = new XidImpl("2");
+        xid = new XidImpl("22222222222222222222222222222222");
         xaresource.start(xid, XAResource.TMNOFLAGS);
         Node foo = session.getNodeByPath("/foo", null);
         assertNotNull(foo);
