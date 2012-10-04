@@ -14,8 +14,6 @@
   <div style="display:none;">
   <div id="csvImport_box">
 
-    <a4j:log />
-
     <h3><h:outputText value="#{messages['label.csv.import.title']}" /></h3>
 
     <div class="content">
@@ -36,8 +34,14 @@
                 ajaxSingle="true"
                 locale="#{localeSelector.localeString}"
                 id="csvFileUpload" />
+              <h:selectBooleanCheckbox styleClass="dataInputText"
+                value="#{csvImportActions.notifyUserByEmail}"
+                id="csv_import_notifyUserByEmail">
+              </h:selectBooleanCheckbox>
+              <h:outputLabel for="csv_import_notifyUserByEmail"
+                value="#{messages['label.csv.import.notifyUserByEmail']}" />
               <p class="popUpDescription">
-                <h:outputText value="#{messages['label.csv.import.description']}" />
+                <h:outputText value="#{messages['label.csv.import.launch.description']}" />
               </p>
             </c:if>
             <c:if test="#{importScheduled}">
@@ -109,7 +113,6 @@
               <c:if test="#{not importScheduled and not importRunning and not importComplete}">
                 <a4j:commandButton value="#{messages['command.csv.process']}"
                   action="#{csvImportActions.importCSVFile}"
-                  immediate="true"
                   reRender="csv_import_panel"
                   eventsQueue="csvImportQueue"
                   styleClass="button" />
@@ -117,7 +120,6 @@
               <c:if test="#{importScheduled or importRunning or importComplete}">
                 <a4j:commandButton value="#{messages['command.csv.start.new']}"
                   action="#{csvImportActions.resetState()}"
-                  immediate="true"
                   reRender="csv_import_panel"
                   eventsQueue="csvImportQueue"
                   styleClass="button" />

@@ -1,6 +1,6 @@
 package org.nuxeo.ecm.csv;
 
-import static org.nuxeo.ecm.csv.CSVImportLog.*;
+import static org.nuxeo.ecm.csv.CSVImportLog.Status;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -14,9 +14,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -43,7 +41,17 @@ public class CSVImportActions implements Serializable {
 
     protected Blob csvBlob;
 
+    protected boolean notifyUserByEmail = false;
+
     protected CSVImportId csvImportId;
+
+    public boolean getNotifyUserByEmail() {
+        return notifyUserByEmail;
+    }
+
+    public void setNotifyUserByEmail(boolean notifyUserByEmail) {
+        this.notifyUserByEmail = notifyUserByEmail;
+    }
 
     public void uploadListener(UploadEvent event) throws Exception {
         UploadItem item = event.getUploadItem();
@@ -53,10 +61,12 @@ public class CSVImportActions implements Serializable {
 
     public void importCSVFile() {
         if (csvBlob != null) {
+            CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(
+                    notifyUserByEmail).build();
             CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
             csvImportId = csvImporter.launchImport(documentManager,
                     navigationContext.getCurrentDocument().getPathAsString(),
-                    csvBlob, CSVImporterOptions.DEFAULT_OPTIONS);
+                    csvBlob, options);
         }
     }
 
@@ -77,8 +87,7 @@ public class CSVImportActions implements Serializable {
             return Collections.emptyList();
         }
         CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
-        return csvImporter.getLastImportLogs(csvImportId,
-                maxLogs);
+        return csvImporter.getLastImportLogs(csvImportId, maxLogs);
     }
 
     public List<CSVImportLog> getSkippedAndErrorLogs() {
@@ -86,8 +95,8 @@ public class CSVImportActions implements Serializable {
             return Collections.emptyList();
         }
         CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
-        return csvImporter.getImportLogs(csvImportId,
-                Status.SKIPPED, Status.ERROR);
+        return csvImporter.getImportLogs(csvImportId, Status.SKIPPED,
+                Status.ERROR);
     }
 
     public CSVImportResult getImportResult() {
@@ -102,5 +111,6 @@ public class CSVImportActions implements Serializable {
     public void resetState() {
         csvBlob = null;
         csvImportId = null;
+        notifyUserByEmail = false;
     }
 }

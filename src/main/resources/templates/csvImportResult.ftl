@@ -1,6 +1,7 @@
 <html>
 
-<p>Here is the result of the import of ${csvFilename}:</p>
+<p>Import result of ${csvFilename}</p>
+<p>Started at ${startDate} by ${username}</p>
 
 <table>
   <tr>
@@ -17,10 +18,11 @@
   </tr>
 </table>
 
+<#if skippedAndErrorImportLogs?has_content>
 <p>Skipped and error lines:</p>
 
 <table>
-<#list importLogs as importLog>
+<#list skippedAndErrorImportLogs as importLog>
   <tr>
     <td>Line ${importLog.line}</td>
     <td><#if importLog.skipped>SKIPPED<#else>ERROR</#if></td>
@@ -28,5 +30,6 @@
   </tr>
 </#list>
 </table>
+</#if>
 
 </html>
