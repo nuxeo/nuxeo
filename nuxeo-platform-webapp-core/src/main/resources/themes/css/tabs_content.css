@@ -34,6 +34,7 @@ A .gridBox may contain several .actionsWidgetPanel vertically. */
 /*The .gridStyle** classes represent the width of each .gridBox container.
 The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .gridStyle12 { width: 100% }
+.gridStyle10 { width: 84% }
 .gridStyle9 { width: 75% }
 .gridStyle8 { width: 66% }
 .gridStyle7 { width: 58% }
