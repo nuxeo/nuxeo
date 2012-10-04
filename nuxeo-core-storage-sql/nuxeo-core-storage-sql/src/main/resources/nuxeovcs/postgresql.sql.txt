@@ -912,6 +912,13 @@ SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dublincore')
 #IF: ! emptyResult
 CREATE INDEX dublincore_modified_idx ON dublincore USING btree(modified);
 
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'fulltext')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='fulltext_jobid_idx');
+
+#IF: ! emptyResult
+CREATE INDEX fulltext_jobid_idx ON fulltext USING btree(jobid);
+
 
 ############################################################
 
