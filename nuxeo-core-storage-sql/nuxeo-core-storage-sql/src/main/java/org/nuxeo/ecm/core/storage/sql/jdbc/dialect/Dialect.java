@@ -105,7 +105,7 @@ public abstract class Dialect {
 
     protected final boolean storesUpperCaseIdentifiers;
 
-    protected final boolean fulltextDisabled;
+    protected boolean fulltextDisabled;
 
     protected final boolean aclOptimizationsEnabled;
 
