@@ -772,4 +772,31 @@ public class RestTest {
         Object result = operationRequest.set("rollbackOnError", "false").execute();
         assertNotNull(result);
     }
+
+    @Test
+    @Ignore
+    public void testLock() throws Exception {
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Folder").set("name", "myfolder").set(
+                "properties", "dc:title=My Folder").execute();
+
+        // Getting the document
+        Document doc = (Document) session.newRequest("Document.Fetch").setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value", folder.getPath()).execute();
+
+        session.newRequest("Document.Lock").setHeader(
+                Constants.HEADER_NX_VOIDOP, "*").setInput(
+                doc).execute();
+
+        doc = (Document) session.newRequest("Document.Fetch").setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value", doc.getPath()).execute();
+
+        String lock = doc.getLock();
+        
+        assertEquals(lock, "me");
+    }
+
 }
