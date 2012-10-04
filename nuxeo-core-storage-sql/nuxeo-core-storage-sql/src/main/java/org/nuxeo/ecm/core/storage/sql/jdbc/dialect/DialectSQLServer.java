@@ -173,14 +173,23 @@ public class DialectSQLServer extends Dialect {
     @Override
     public boolean isAllowedConversion(int expected, int actual,
             String actualName, int actualSize) {
-        // CLOB vs VARCHAR compatibility
+        // The jTDS JDBC driver uses VARCHAR / CLOB
+        // The Microsoft JDBC driver uses NVARCHAR / LONGNVARCHAR
         if (expected == Types.VARCHAR && actual == Types.CLOB) {
+            return true;
+        }
+        if (expected == Types.VARCHAR && actual == Types.NVARCHAR) {
+            return true;
+        }
+        if (expected == Types.VARCHAR && actual == Types.LONGNVARCHAR) {
             return true;
         }
         if (expected == Types.CLOB && actual == Types.VARCHAR) {
             return true;
         }
-        // INTEGER vs BIGINT compatibility
+        if (expected == Types.CLOB && actual == Types.LONGNVARCHAR) {
+            return true;
+        }
         if (expected == Types.BIGINT && actual == Types.INTEGER) {
             return true;
         }

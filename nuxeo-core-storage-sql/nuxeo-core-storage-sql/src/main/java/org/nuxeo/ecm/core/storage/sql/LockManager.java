@@ -209,7 +209,7 @@ public class LockManager {
             // PostgreSQL: duplicate key value violates unique constraint
             return true;
         }
-        if ("S0005".equals(sqlState)) {
+        if ("S0003".equals(sqlState) || "S0005".equals(sqlState)) {
             // SQL Server: Snapshot isolation transaction aborted due to update
             // conflict
             return true;

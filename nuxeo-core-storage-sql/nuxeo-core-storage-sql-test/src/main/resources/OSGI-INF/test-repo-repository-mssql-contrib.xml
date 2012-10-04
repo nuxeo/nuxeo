@@ -16,7 +16,7 @@
         <indexing>
           <fulltext catalog="nuxeo" analyzer="french"/>
         </indexing>
-        <xa-datasource>net.sourceforge.jtds.jdbcx.JtdsDataSource</xa-datasource>
+        <xa-datasource>${nuxeo.test.vcs.xadatasource}</xa-datasource>
         <property name="ServerName">${nuxeo.test.vcs.server}</property>
         <property name="PortNumber">${nuxeo.test.vcs.port}</property>
         <property name="DatabaseName">${nuxeo.test.vcs.database}</property>
