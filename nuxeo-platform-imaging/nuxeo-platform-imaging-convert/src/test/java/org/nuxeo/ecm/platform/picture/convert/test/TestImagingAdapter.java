@@ -18,24 +18,30 @@
  */
 package org.nuxeo.ecm.platform.picture.convert.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.platform.picture.api.ImagingService;
+import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestImagingAdapter extends RepositoryOSGITestCase {
 
@@ -92,6 +98,9 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         PictureResourceAdapter adapter = child.getAdapter(PictureResourceAdapter.class);
         assertNotNull(adapter);
 
+        String conversionFormat = Framework.getLocalService(
+                ImagingService.class).getConfigurationValue("conversionFormat",
+                "jpg");
         for (String filename : ImagingRessourcesHelper.TEST_IMAGE_FILENAMES) {
             String path = ImagingRessourcesHelper.TEST_DATA_FOLDER + filename;
             Blob blob = new FileBlob(
@@ -103,6 +112,7 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
             assertTrue(ret);
             child = coreSession.saveDocument(child);
             coreSession.save();
+            adapter = child.getAdapter(PictureResourceAdapter.class);
             DocumentModel documentModel = coreSession.getChildren(
                     document1.getRef()).get(0);
             MultiviewPicture multiview = documentModel.getAdapter(MultiviewPicture.class);
@@ -110,8 +120,29 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
             assertEquals(child, documentModel);
             MultiviewPicture adaptedChild = child.getAdapter(MultiviewPicture.class);
             assertNotNull(adaptedChild);
-            assertNotNull(adaptedChild.getView("Thumbnail"));
-            assertNotNull(multiview.getView("Thumbnail"));
+            PictureView pictureView = adaptedChild.getView("Thumbnail");
+            assertNotNull(pictureView);
+            String computedFilename = FilenameUtils.getBaseName(filename) + "."
+                    + conversionFormat;
+            assertEquals("Thumbnail_" + computedFilename,
+                    pictureView.getFilename());
+            assertEquals("Thumbnail_" + computedFilename,
+                    pictureView.getBlob().getFilename());
+            pictureView = multiview.getView("Thumbnail");
+            assertEquals("Thumbnail_" + computedFilename,
+                    pictureView.getFilename());
+            assertEquals("Thumbnail_" + computedFilename,
+                    pictureView.getBlob().getFilename());
+            pictureView = adaptedChild.getView("Original");
+            assertNotNull(pictureView);
+            assertEquals("Original_" + filename, pictureView.getFilename());
+            assertEquals("Original_" + filename,
+                    pictureView.getBlob().getFilename());
+            pictureView = multiview.getView("Original");
+            assertEquals("Original_" + filename, pictureView.getFilename());
+            assertEquals("Original_" + filename,
+                    pictureView.getBlob().getFilename());
+            assertNotNull(pictureView);
         }
     }
 

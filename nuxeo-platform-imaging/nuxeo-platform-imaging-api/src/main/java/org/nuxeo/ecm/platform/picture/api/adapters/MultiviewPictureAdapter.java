@@ -105,7 +105,9 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
             view.setHeight(((Number) o).intValue());
         }
         view.setFilename((String) map.get(PictureView.FIELD_FILENAME));
-        view.setContent(map.get(PictureView.FIELD_CONTENT));
+        Blob blob = (Blob) map.get(PictureView.FIELD_CONTENT);
+        view.setContent(blob);
+        view.setBlob(blob);
         return view;
     }
 

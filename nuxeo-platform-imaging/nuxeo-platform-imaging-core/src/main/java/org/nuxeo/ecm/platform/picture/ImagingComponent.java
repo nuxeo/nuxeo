@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
@@ -233,9 +231,8 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public PictureView computeViewFor(Blob blob,
-            PictureTemplate pictureTemplate) throws IOException,
-            ClientException {
+    public PictureView computeViewFor(Blob blob, PictureTemplate pictureTemplate)
+            throws IOException, ClientException {
         String mimeType = blob.getMimeType();
         if (mimeType == null) {
             blob.setMimeType(getImageMimeType(blob));
@@ -279,17 +276,18 @@ public class ImagingComponent extends DefaultComponent implements
             throws IOException {
         String filename = blob.getFilename();
         String title = pictureTemplate.getTitle();
+        String viewFilename = title + "_" + filename;
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(PictureView.FIELD_TITLE, pictureTemplate.getTitle());
         map.put(PictureView.FIELD_DESCRIPTION, pictureTemplate.getDescription());
-        map.put(PictureView.FIELD_FILENAME, filename);
+        map.put(PictureView.FIELD_FILENAME, viewFilename);
         map.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
         map.put(PictureView.FIELD_WIDTH, imageInfo.getWidth());
         map.put(PictureView.FIELD_HEIGHT, imageInfo.getHeight());
 
         Blob originalViewBlob = copyBlob(blob);
         originalViewBlob.setMimeType(blob.getMimeType());
-        originalViewBlob.setFilename(title + "_" + filename);
+        originalViewBlob.setFilename(viewFilename);
         map.put(PictureView.FIELD_CONTENT, (Serializable) originalViewBlob);
         return new PictureViewImpl(map);
     }
@@ -309,7 +307,6 @@ public class ImagingComponent extends DefaultComponent implements
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(PictureView.FIELD_TITLE, pictureTemplate.getTitle());
         map.put(PictureView.FIELD_DESCRIPTION, pictureTemplate.getDescription());
-        map.put(PictureView.FIELD_FILENAME, filename);
         map.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
         map.put(PictureView.FIELD_WIDTH, width);
         map.put(PictureView.FIELD_HEIGHT, height);
@@ -330,8 +327,10 @@ public class ImagingComponent extends DefaultComponent implements
         }
         String viewFilename = computeViewFilename(filename,
                 JPEG_CONVERSATION_FORMAT);
-        originalJpegBlob.setFilename(title + "_" + viewFilename);
-        map.put(PictureView.FIELD_CONTENT, (Serializable) blob);
+        viewFilename = title + "_" + viewFilename;
+        map.put(PictureView.FIELD_FILENAME, viewFilename);
+        originalJpegBlob.setFilename(viewFilename);
+        map.put(PictureView.FIELD_CONTENT, (Serializable) originalJpegBlob);
         return new PictureViewImpl(map);
     }
 
@@ -354,7 +353,6 @@ public class ImagingComponent extends DefaultComponent implements
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(PictureView.FIELD_TITLE, pictureTemplate.getTitle());
         map.put(PictureView.FIELD_DESCRIPTION, pictureTemplate.getDescription());
-        map.put(PictureView.FIELD_FILENAME, filename);
         map.put(PictureView.FIELD_TAG, pictureTemplate.getTag());
         Point size = new Point(width, height);
         size = getSize(size, pictureTemplate.getMaxSize());
@@ -366,10 +364,9 @@ public class ImagingComponent extends DefaultComponent implements
         options.put(OPTION_RESIZE_DEPTH, imageInfo.getDepth());
         // use the registered conversion format for 'Medium' and 'Thumbnail'
         // views
-        options.put(
-                CONVERSION_FORMAT,
-                getConfigurationValue(CONVERSION_FORMAT,
-                        JPEG_CONVERSATION_FORMAT));
+        String conversionFormat = getConfigurationValue(CONVERSION_FORMAT,
+                JPEG_CONVERSATION_FORMAT);
+        options.put(CONVERSION_FORMAT, conversionFormat);
         BlobHolder bh = new SimpleBlobHolder(blob);
         ConversionService conversionService = Framework.getLocalService(ConversionService.class);
         bh = conversionService.convert(OPERATION_RESIZE, bh, options);
@@ -379,9 +376,10 @@ public class ImagingComponent extends DefaultComponent implements
             viewBlob = copyBlob(blob);
             viewBlob.setMimeType(blob.getMimeType());
         }
-        String viewFilename = computeViewFilename(filename,
-                JPEG_CONVERSATION_FORMAT);
-        viewBlob.setFilename(title + "_" + viewFilename);
+        String viewFilename = computeViewFilename(filename, conversionFormat);
+        viewFilename = title + "_" + viewFilename;
+        map.put(PictureView.FIELD_FILENAME, viewFilename);
+        viewBlob.setFilename(viewFilename);
         map.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);
         return new PictureViewImpl(map);
     }
@@ -405,13 +403,11 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public List<List<PictureView>> computeViewsFor(
-            List<Blob> blobs, List<PictureTemplate> pictureTemplates)
-            throws IOException, ClientException {
+    public List<List<PictureView>> computeViewsFor(List<Blob> blobs,
+            List<PictureTemplate> pictureTemplates) throws IOException,
+            ClientException {
         List<List<PictureView>> allViews = new ArrayList<List<PictureView>>();
         for (Blob blob : blobs) {
-            List<PictureView> views = computeViewsFor(blob,
-                    pictureTemplates);
             allViews.add(computeViewsFor(blob, pictureTemplates));
         }
         return allViews;
