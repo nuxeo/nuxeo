@@ -76,7 +76,13 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(className = "creator")
     public WebElement currentDocumentContributor;
-    
+
+    @FindBy(linkText = "Document Management")
+    public WebElement documentManagementLink;
+
+    @FindBy(linkText = "Workflow")
+    public WebElement workflowLink;
+
     public ContextualActions contextualActions;
 
     public DocumentBasePage(WebDriver driver) {
@@ -85,7 +91,7 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * Click on the content tab and return the subpage of this page.
-     *
+     * 
      */
     public ContentTabSubPage getContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
@@ -125,7 +131,7 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * For workspace type, the content tab is a bit different.
-     *
+     * 
      */
     public WorkspacesContentTabSubPage getWorkspacesContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
@@ -135,7 +141,7 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * Check if the user is connected by looking for the text: You are logged as
      * Username
-     *
+     * 
      * @param username
      * @throws UserNotConnectedException
      */
@@ -149,7 +155,7 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * Check if the title of the current document page is equal to the
      * {@code expectedTitle}.
-     *
+     * 
      * @param expectedTitle the expected title
      */
     public void checkDocTitle(String expectedTitle) {
@@ -171,7 +177,7 @@ public class DocumentBasePage extends AbstractPage {
     public List<String> getCurrentStates() {
         List<WebElement> states = findElementsWithTimeout(By.className("sticker"));
         List<String> stateLabels = new ArrayList<String>();
-        for(WebElement state:states){
+        for (WebElement state : states) {
             stateLabels.add(state.getText());
         }
         return stateLabels;
@@ -188,7 +194,7 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * Exception occurred a user is expected to be connected but it isn't.
-     *
+     * 
      */
     public class UserNotConnectedException extends Exception {
         /**
@@ -211,4 +217,13 @@ public class DocumentBasePage extends AbstractPage {
         return asPage(ContextualActions.class);
     }
 
+    public DocumentBasePage getDocumentManagement() {
+        documentManagementLink.click();
+        return asPage(DocumentBasePage.class);
+    }
+
+    public DocumentBasePage getWorkflow() {
+        workflowLink.click();
+        return asPage(DocumentBasePage.class);
+    }
 }

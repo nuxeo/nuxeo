@@ -54,7 +54,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     /**
      * Clicking on one of the child with the title.
-     *
+     * 
      * @param documentTitle
      */
     public DocumentBasePage goToDocument(String documentTitle) {
@@ -64,7 +64,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     /**
      * Clicks on the new button and select the type of document to create
-     *
+     * 
      * @param docType the document type to create
      * @param pageClassToProxy The page object type to return
      * @return The create form page object
