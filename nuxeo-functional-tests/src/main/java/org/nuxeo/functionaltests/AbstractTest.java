@@ -118,6 +118,7 @@ public abstract class AbstractTest {
     @Rule
     public MethodRule watchman = new TestWatchman() {
 
+        @Override
         public void starting(FrameworkMethod method) {
             String message = String.format("Starting test '%s#%s'",
                     getTestClassName(method), method.getName());
@@ -330,8 +331,9 @@ public abstract class AbstractTest {
             }
         }
         if (xpi == null || !xpi.exists()) {
-            throw new RuntimeException(FIREBUG_XPI
+            log.warn(FIREBUG_XPI
                     + " not found in classloader or local M2 repository");
+            return;
         }
         profile.addExtension(xpi);
 
