@@ -131,8 +131,10 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
     }
 
     protected void closeConn() {
-        conn.close();
-        conn = null;
+        if (conn != null) {
+            conn.close();
+            conn = null;
+        }
         spi = null;
     }
 
