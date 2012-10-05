@@ -42,30 +42,33 @@ public class TestMediaStreamingUpdaterListener extends SQLRepositoryTestCase {
         openSession();
     }
 
-//    public void testMediaUpdateInCreationWithServiceActivated() throws Exception {
-//        deployContrib("org.nuxeo.ecm.platform.video.core.test",
-//                "OSGI-INF/test-streaming-contrib.xml");
-//
-//        DocumentModel testDoc = session.createDocumentModel("/", "my-doc",
-//                "TestStreamableDocument");
-//        // needed to generate digests
-//        testDoc.setPropertyValue("dc:modified", new GregorianCalendar());
-//        FileBlob video = new FileBlob(new File(
-//                this.getClass().getClassLoader().getResource(
-//                        "test-data/sample.mpg").toURI()));
-//
-//        testDoc.setPropertyValue("file:content", video);
-//        session.createDocument(testDoc);
-//        session.save();
-//
-//        testDoc = session.getDocument(testDoc.getRef());
-//        Blob stream = (Blob) testDoc.getPropertyValue(MediaStreamingConstants.STREAM_MEDIA_FIELD);
-//        assertNotNull(stream);
-//        assertTrue(((SQLBlob) stream).getFilename().endsWith("mp4"));
-//
-//    }
+    // public void testMediaUpdateInCreationWithServiceActivated() throws
+    // Exception {
+    // deployContrib("org.nuxeo.ecm.platform.video.core.test",
+    // "OSGI-INF/test-streaming-contrib.xml");
+    //
+    // DocumentModel testDoc = session.createDocumentModel("/", "my-doc",
+    // "TestStreamableDocument");
+    // // needed to generate digests
+    // testDoc.setPropertyValue("dc:modified", new GregorianCalendar());
+    // FileBlob video = new FileBlob(new File(
+    // this.getClass().getClassLoader().getResource(
+    // "test-data/sample.mpg").toURI()));
+    //
+    // testDoc.setPropertyValue("file:content", video);
+    // session.createDocument(testDoc);
+    // session.save();
+    //
+    // testDoc = session.getDocument(testDoc.getRef());
+    // Blob stream = (Blob)
+    // testDoc.getPropertyValue(MediaStreamingConstants.STREAM_MEDIA_FIELD);
+    // assertNotNull(stream);
+    // assertTrue(((SQLBlob) stream).getFilename().endsWith("mp4"));
+    //
+    // }
 
-    public void testMediaUpdateInCreationWithServiceNotActivated() throws Exception {
+    public void testMediaUpdateInCreationWithServiceNotActivated()
+            throws Exception {
         deployContrib("org.nuxeo.ecm.platform.video.core.test",
                 "OSGI-INF/test-streaming-desactivated-contrib.xml");
 
@@ -100,6 +103,7 @@ public class TestMediaStreamingUpdaterListener extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        super.tearDown();
         closeSession();
     }
 

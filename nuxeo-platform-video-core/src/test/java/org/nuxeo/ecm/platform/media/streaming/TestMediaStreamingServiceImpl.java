@@ -67,7 +67,7 @@ public class TestMediaStreamingServiceImpl extends SQLRepositoryTestCase {
 
     public void testGetVideoURLFromDocumentModelBlobNullServiceActivated()
             throws Exception {
-        log.info("Test that streaming service activated, and streamable blob field null return null");
+        log.info("Test that streaming service activated, and stream-able blob field null return null");
         deployContrib("org.nuxeo.ecm.platform.video.core.test",
                 "OSGI-INF/test-streaming-contrib.xml");
         assertTrue(service.isServiceActivated());
@@ -78,7 +78,7 @@ public class TestMediaStreamingServiceImpl extends SQLRepositoryTestCase {
 
     public void testGetVideoURLFromDocumentModelBlobNullServiceDesactivated()
             throws Exception {
-        log.info("Test that empty field + streaming service desactivated return null URL");
+        log.info("Test that empty field + streaming service deactivated return null URL");
         deployContrib("org.nuxeo.ecm.platform.video.core.test",
                 "OSGI-INF/test-streaming-contrib.xml");
         assertTrue(service.isServiceActivated());
@@ -93,7 +93,7 @@ public class TestMediaStreamingServiceImpl extends SQLRepositoryTestCase {
 
     public void testGetVideoURLFromDocumentModelBlobNotNullServiceDesactivated()
             throws Exception {
-        log.info("Test that streaming service desactivated, url return is null");
+        log.info("Test that streaming service deactivated, url return is null");
         deployContrib("org.nuxeo.ecm.platform.video.core.test",
                 "OSGI-INF/test-streaming-contrib.xml");
         assertTrue(service.isServiceActivated());
@@ -118,7 +118,7 @@ public class TestMediaStreamingServiceImpl extends SQLRepositoryTestCase {
 
     public void testGetVideoURLFromDocumentModelBlobNotNullServiceActivated()
             throws Exception {
-        log.info("Test that streaming service activated, and streamable blob return the url to the straeming server");
+        log.info("Test that streaming service activated, and stream-able blob return the url to the streaming server");
         deployContrib("org.nuxeo.ecm.platform.video.core.test",
                 "OSGI-INF/test-streaming-contrib.xml");
         assertTrue(service.isServiceActivated());
@@ -128,8 +128,7 @@ public class TestMediaStreamingServiceImpl extends SQLRepositoryTestCase {
                 this.getClass().getClassLoader().getResource(
                         "test-data/sample.mpg").toURI()));
 
-        videoDoc.setPropertyValue("file:content",
-                video);
+        videoDoc.setPropertyValue("file:content", video);
         videoDoc.setPropertyValue(MediaStreamingConstants.STREAM_MEDIA_FIELD,
                 video);
         session.saveDocument(videoDoc);
@@ -156,8 +155,8 @@ public class TestMediaStreamingServiceImpl extends SQLRepositoryTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        super.tearDown();
         closeSession();
     }
-
 
 }
