@@ -38,7 +38,9 @@ import org.jboss.seam.annotations.Scope;
  *
  * @author DM
  * @deprecated since 5.6: this is useless and does not play well with hot
- *             reload enabled
+ *             reload enabled because component has scope "Application". Just
+ *             inject the component named "messages" in components needing
+ *             translation features, instead of making them extend this class.
  */
 @Name("resourcesAccessor")
 @Scope(ScopeType.APPLICATION)
