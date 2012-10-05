@@ -10,7 +10,6 @@
     <#include "default-oauth-prefs.ftl"/>
   </ModulePrefs>
   <#include "context-prefs.ftl"/>
-  <UserPref name="title" display_name="Title" required="false" default_value="My Tasks"/>
 
   <Content type="html">
     <![CDATA[
