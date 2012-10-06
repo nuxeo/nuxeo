@@ -1375,9 +1375,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             while (children.hasNext()) {
                 Document child = children.next();
                 if (child.isFolder() && hasPermission(child, READ)) {
-                    DocumentModel docModel = readModel(doc);
-                    if (filter == null || filter.accept(docModel)) {
-                        docs.add(readModel(child));
+                    DocumentModel childModel = readModel(child);
+                    if (filter == null || filter.accept(childModel)) {
+                        docs.add(childModel);
                     }
                 }
             }
