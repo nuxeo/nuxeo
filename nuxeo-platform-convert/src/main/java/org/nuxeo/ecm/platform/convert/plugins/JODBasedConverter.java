@@ -217,12 +217,17 @@ public class JODBasedConverter implements ExternalConverter {
                     for (File file : files) {
                         Blob blob = StreamingBlob.createFromByteArray(new FileSource(
                                 file).getBytes());
+                        blob.setFilename(file.getName());
+                        blobs.add(blob);
+                        // add a blob for the index
                         if (file.getName().equals(outFile.getName())) {
-                            blob.setFilename("index.html");
-                            blobs.add(0, blob);
-                        } else {
-                            blob.setFilename(file.getName());
-                            blobs.add(blob);
+                            File indexFile = File.createTempFile("idx-", file.getName());
+                            FileUtils.copy(file, indexFile);
+                            Blob indexBlob = StreamingBlob.createFromByteArray(new FileSource(
+                                    indexFile).getBytes());
+                            indexBlob.setFilename("index.html");
+                            blobs.add(0, indexBlob);
+                            indexFile.delete();
                         }
                     }
 
