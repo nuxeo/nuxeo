@@ -66,18 +66,6 @@ BEGIN
 END;
 
 
-# needs: GRANT SELECT ON SYS.GV_$SESSION TO nuxeo;
-CREATE OR REPLACE FUNCTION NX_NODEID
-RETURN VARCHAR
-IS
-  cursid NUMBER := SYS_CONTEXT('USERENV', 'SID');
-  curser NUMBER;
-BEGIN
-  SELECT SERIAL# INTO curser FROM GV$SESSION WHERE SID = cursid;
-  RETURN cursid || ',' || curser;
-END;
-
-
 ############################################################
 
 
@@ -134,9 +122,10 @@ BEGIN
 END;
 
 
-CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i ${argIdType}, f VARCHAR2, k INTEGER)
+# For Oracle running on Amazon RDS, stored procedures and functions are not allowed
+# to access GV$SESSION, so the cluster nodeid has to be passed in.
+CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i ${argIdType}, f VARCHAR2, k INTEGER, nid VARCHAR)
 IS
-  nid VARCHAR(4000) := NX_NODEID();
 BEGIN
   FOR c IN (SELECT nodeid FROM cluster_nodes WHERE nodeid <> nid) LOOP
     INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (c.nodeid, i, f, k);
@@ -966,7 +955,7 @@ DROP PROCEDURE nx_upgrade_versions
 #CATEGORY: addClusterNode
 
 # delete nodes for sessions that don't exist anymore
-# NOTE this needs permissions on SYS.GV_$SESSION
+# NOTE this needs permissions on SYS.GV_$SESSION (aliased GV$SESSION)
 # i.e. GRANT SELECT ON SYS.GV_$SESSION TO someuser;
 #      SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'GV_$SESSION';
 DELETE FROM "CLUSTER_NODES" N WHERE
@@ -976,12 +965,17 @@ DELETE FROM "CLUSTER_NODES" N WHERE
 DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN
   (SELECT NODEID FROM CLUSTER_NODES n WHERE n.NODEID = i.NODEID)
 
-INSERT INTO "CLUSTER_NODES" (NODEID, CREATED) VALUES (NX_NODEID() , CURRENT_TIMESTAMP)
+INSERT INTO "CLUSTER_NODES" (NODEID, CREATED) VALUES
+  ((SELECT SYS_CONTEXT('USERENV', 'SID') || ',' || SERIAL#
+     FROM GV$SESSION WHERE SID = SYS_CONTEXT('USERENV', 'SID')),
+   CURRENT_TIMESTAMP)
 
 
 #CATEGORY: removeClusterNode
 
-DELETE FROM "CLUSTER_NODES" WHERE NODEID = NX_NODEID()
+DELETE FROM "CLUSTER_NODES" WHERE NODEID =
+ (SELECT SYS_CONTEXT('USERENV', 'SID') || ',' || SERIAL#
+   FROM GV$SESSION WHERE SID = SYS_CONTEXT('USERENV', 'SID'))
 
 # Remove orphan invalidations
 DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN

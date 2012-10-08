@@ -379,12 +379,42 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void createClusterNode() throws StorageException {
+    public String createClusterNode() throws StorageException {
+        Statement st = null;
         try {
+            // get the cluster node id from the database, if necessary
+            String sql = sqlInfo.dialect.getClusterNodeIdSql();
+            String nodeId;
+            if (sql == null) {
+                nodeId = null;
+            } else {
+                st = connection.createStatement();
+                if (logger.isLogEnabled()) {
+                    logger.log(sql);
+                }
+                ResultSet rs = st.executeQuery(sql);
+                if (!rs.next()) {
+                    throw new StorageException("Cannot get cluster node id");
+                }
+                nodeId = rs.getString(1);
+                if (logger.isLogEnabled()) {
+                    logger.log("  -> cluster node id: " + nodeId);
+                }
+            }
+            // add the cluster node
             sqlInfo.executeSQLStatements("addClusterNode", this);
+            return nodeId;
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException(e);
+        } finally {
+            if (st != null) {
+                try {
+                    closeStatement(st);
+                } catch (SQLException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -399,9 +429,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void insertClusterInvalidations(Invalidations invalidations)
-            throws StorageException {
+    public void insertClusterInvalidations(Invalidations invalidations,
+            String nodeId) throws StorageException {
         String sql = sqlInfo.dialect.getClusterInsertInvalidations();
+        if (nodeId != null) {
+            sql = String.format(sql, nodeId);
+        }
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         PreparedStatement ps = null;
         try {
@@ -484,10 +517,15 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Invalidations getClusterInvalidations() throws StorageException {
+    public Invalidations getClusterInvalidations(String nodeId)
+            throws StorageException {
         Invalidations invalidations = new Invalidations();
         String sql = sqlInfo.dialect.getClusterGetInvalidations();
         String sqldel = sqlInfo.dialect.getClusterDeleteInvalidations();
+        if (nodeId != null) {
+            sql = String.format(sql, nodeId);
+            sqldel = String.format(sqldel, nodeId);
+        }
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         Statement st = null;
         try {
