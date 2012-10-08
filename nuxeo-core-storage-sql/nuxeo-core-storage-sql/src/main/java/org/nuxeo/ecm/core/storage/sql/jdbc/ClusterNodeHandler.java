@@ -41,10 +41,13 @@ public class ClusterNodeHandler {
     /** Propagator of invalidations to the cluster node's mappers. */
     public final InvalidationsPropagator propagator;
 
+    /** Cluster node id, needed at the Java level for some databases. */
+    private String nodeId;
+
     public ClusterNodeHandler(Mapper clusterNodeMapper,
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         this.clusterNodeMapper = clusterNodeMapper;
-        clusterNodeMapper.createClusterNode();
+        nodeId = clusterNodeMapper.createClusterNode();
         clusteringDelay = repositoryDescriptor.clusteringDelay;
         processClusterInvalidationsNext();
         propagator = new InvalidationsPropagator();
@@ -69,7 +72,7 @@ public class ClusterNodeHandler {
         synchronized (clusterNodeMapper) {
             // cannot remove, old connection is gone
             // create should do a cleanup anyway
-            clusterNodeMapper.createClusterNode();
+            nodeId = clusterNodeMapper.createClusterNode();
             // but all invalidations queued for us have been lost
             // so reset all
             propagator.propagateInvalidations(new Invalidations(true), null);
@@ -94,10 +97,10 @@ public class ClusterNodeHandler {
             }
             Invalidations invalidations;
             try {
-                invalidations = clusterNodeMapper.getClusterInvalidations();
+                invalidations = clusterNodeMapper.getClusterInvalidations(nodeId);
             } catch (ConnectionResetException e) {
                 // retry once
-                invalidations = clusterNodeMapper.getClusterInvalidations();
+                invalidations = clusterNodeMapper.getClusterInvalidations(nodeId);
             }
             clusterNodeLastInvalidationTimeMillis = System.currentTimeMillis();
             return invalidations;
@@ -113,7 +116,7 @@ public class ClusterNodeHandler {
             return;
         }
         synchronized (clusterNodeMapper) {
-            clusterNodeMapper.insertClusterInvalidations(invalidations);
+            clusterNodeMapper.insertClusterInvalidations(invalidations, nodeId);
         }
     }
 
