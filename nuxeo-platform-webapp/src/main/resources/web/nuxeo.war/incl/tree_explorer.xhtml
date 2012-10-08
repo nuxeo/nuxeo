@@ -11,23 +11,23 @@
 
 <c:if test="#{!empty treeActions.treeRoots}">
 
-  <a4j:region renderRegionOnly="true">
-     <a4j:form ajaxSubmit="true">
-     <div style="float:right">
-         <a4j:commandLink action="#{treeActions.reset}" reRender="treeNav">
-           <h:graphicImage value="/icons/refresh.png"
-            alt="#{messages['label.refresh']}"
-            title="#{messages['label.refresh']}" />
-         </a4j:commandLink>
-     </div>
-    <dl>
-      <dd class="menuForm">
+  <a4j:region renderRegionOnly="true" id="treeExplorerRegion">
+    <a4j:form ajaxSubmit="true" id="treeExplorer">
+      <div style="float:right">
+        <a4j:commandLink action="#{treeActions.reset}" reRender="treeNav">
+         <h:graphicImage value="/icons/refresh.png"
+          alt="#{messages['label.refresh']}"
+          title="#{messages['label.refresh']}" />
+        </a4j:commandLink>
+      </div>
+      <dl>
+        <dd class="menuForm">
           <h:panelGroup id="treeNav">
             <rich:tree
               adviseNodeOpened="#{treeActions.adviseNodeOpened}"
               changeExpandListener="#{treeActions.changeExpandListener}"
-              icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
               iconLeaf="#{nxd:iconPath(node.document)}"
+              icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
               iconExpanded="/icons/toggle_minus.png"
               iconCollapsed="/icons/toggle_plus.png"
               rowKeyVar="rowKey"
@@ -62,9 +62,9 @@
               </rich:recursiveTreeNodesAdaptor>
             </rich:tree>
           </h:panelGroup>
-      </dd>
-    </dl>
-   </a4j:form>
+        </dd>
+      </dl>
+    </a4j:form>
   </a4j:region>
 
 </c:if>
