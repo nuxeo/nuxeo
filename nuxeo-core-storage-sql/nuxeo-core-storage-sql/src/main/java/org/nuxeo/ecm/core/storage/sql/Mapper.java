@@ -180,8 +180,10 @@ public interface Mapper extends RowMapper, XAResource {
 
     /**
      * Informs the cluster that this node exists.
+     *
+     * @return the cluster node id, if relevant for this database
      */
-    void createClusterNode() throws StorageException;
+    String createClusterNode() throws StorageException;
 
     /**
      * Removes this node from the cluster.
@@ -191,13 +193,14 @@ public interface Mapper extends RowMapper, XAResource {
     /**
      * Inserts the invalidation rows for the other cluster nodes.
      */
-    void insertClusterInvalidations(Invalidations invalidations)
+    void insertClusterInvalidations(Invalidations invalidations, String nodeId)
             throws StorageException;
 
     /**
      * Gets the invalidations from other cluster nodes.
      */
-    Invalidations getClusterInvalidations() throws StorageException;
+    Invalidations getClusterInvalidations(String nodeId)
+            throws StorageException;
 
     /*
      * ----- Locking -----

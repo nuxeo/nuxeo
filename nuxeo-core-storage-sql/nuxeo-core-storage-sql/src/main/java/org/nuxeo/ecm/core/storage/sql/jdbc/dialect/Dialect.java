@@ -1078,6 +1078,14 @@ public abstract class Dialect {
     }
 
     /**
+     * Returns the cluster node id, for some databases where this info is needed
+     * at the Java level.
+     */
+    public String getClusterNodeIdSql() {
+        return null;
+    }
+
+    /**
      * Does clustering fetch of invalidations (
      * {@link #getClusterGetInvalidations}) need a separate delete for them (
      * {@link #getClusterDeleteInvalidations}).
