@@ -968,6 +968,25 @@ DROP FUNCTION nx_upgrade_versions();
 #CATEGORY: addClusterNode
 
 # delete nodes for sessions that don't exist anymore
+
+# PostgreSQL 9.2 renamed pg_stat_activity.procpid to pg_stat_activity.pid
+# so we must use conditions
+
+#TEST:
+SELECT attname FROM pg_attribute
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity') 
+    AND attname = 'pid';
+
+#IF: ! emptyResult
+DELETE FROM cluster_nodes N WHERE
+  NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.nodeid = S.pid);
+
+#TEST:
+SELECT attname FROM pg_attribute
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity') 
+    AND attname = 'procpid';
+
+#IF: ! emptyResult
 DELETE FROM cluster_nodes N WHERE
   NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.nodeid = S.procpid);
 
