@@ -29,7 +29,7 @@ import org.openqa.selenium.support.FindBy;
 public class NavigationSubPage extends AbstractPage {
 
     @Required
-    @FindBy(xpath = "//div[@class=\"userClipboardContent\"]/div[@class=\"menu\"]")
+    @FindBy(xpath = "//dd[@class=\"menuForm\"]")
     WebElement navigationTree;
 
     /**
