@@ -193,23 +193,13 @@ public class Update extends AbstractCommand {
         }
         opt.setAllowDowngrade(allowDowngrade);
         opt.setUpgradeOnly(upgradeOnly);
-        computeRemoveOnExit(opt);
+        opt.deleteOnExit = removeOnExit;
         try {
             RollbackOptions r = mgr.update(opt);
             return new Rollback(r);
         } catch (VersionAlreadyExistException e) {
             // should never happens
             return null;
-        }
-    }
-
-    public void computeRemoveOnExit(UpdateOptions opt) {
-        boolean force = ArrayUtils.contains(FILES_TO_DELETE_ONLY_ON_EXIT,
-                opt.nameWithoutVersion);
-        if (force) {
-            opt.deleteOnExit = true;
-        } else {
-            opt.deleteOnExit = removeOnExit;
         }
     }
 

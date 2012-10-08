@@ -46,8 +46,6 @@ public abstract class AbstractCommand implements Command {
      * 
      * @since 5.5
      */
-    public static final String[] FILES_TO_DELETE_ONLY_ON_EXIT = { "nuxeo-core-storage-sql" };
-
     protected final String id;
 
     protected final Map<String, Object> guardVars;

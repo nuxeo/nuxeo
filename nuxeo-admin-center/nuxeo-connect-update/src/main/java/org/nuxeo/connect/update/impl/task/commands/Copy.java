@@ -192,12 +192,7 @@ public class Copy extends AbstractCommand {
                         rollbackCommand.addCommand(new Copy(backup, oldDst,
                                 null, false));
                         // Delete old dst as its name differs from new version
-                        if (!ArrayUtils.contains(FILES_TO_DELETE_ONLY_ON_EXIT,
-                                filenameWithoutVersion)) {
-                            oldDst.delete();
-                        } else {
-                            oldDst.deleteOnExit();
-                        }
+                        oldDst.delete();
                     } else if (fileToCopyVersion.isSnapshot()
                             && fileToCopyVersion.equals(dstVersion)) {
                         doOverwrite = true;
