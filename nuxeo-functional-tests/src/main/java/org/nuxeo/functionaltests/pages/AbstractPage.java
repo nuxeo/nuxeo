@@ -59,7 +59,7 @@ public abstract class AbstractPage {
 
     /**
      * Gets the info feedback message.
-     * 
+     *
      * @return the message if any or an empty string.
      */
     public String getFeedbackMessage() {
@@ -75,7 +75,6 @@ public abstract class AbstractPage {
 
     /**
      * Gets the top bar navigation sub page.
-     * 
      */
     public HeaderLinksSubPage getHeaderLinks() {
         assertNotNull(userServicesForm);
@@ -85,7 +84,7 @@ public abstract class AbstractPage {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
@@ -99,7 +98,7 @@ public abstract class AbstractPage {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @param parentElement find from the element
@@ -114,7 +113,7 @@ public abstract class AbstractPage {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
@@ -136,7 +135,7 @@ public abstract class AbstractPage {
     /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @param parentElement find from the element
      * @return the first matching element on the current page, if found
@@ -149,7 +148,7 @@ public abstract class AbstractPage {
 
     /**
      * Waits until an element is enabled, with a timeout.
-     * 
+     *
      * @param element the element
      * @param timeout the timeout in milliseconds
      */
@@ -160,7 +159,7 @@ public abstract class AbstractPage {
 
     /**
      * Waits until an element is enabled, with a timeout.
-     * 
+     *
      * @param element the element
      */
     public static void waitUntilEnabled(WebElement element)
@@ -170,9 +169,9 @@ public abstract class AbstractPage {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}.
-     * 
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}.
+     *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in
@@ -191,7 +190,7 @@ public abstract class AbstractPage {
      * Finds the first {@link WebElement} using the given method, with the
      * default timeout. Then waits until the element is enabled, with the
      * default timeout.
-     * 
+     *
      * @param by the locating mechanism
      * @return the first matching element on the current page, if found
      * @throws NotFoundException if the element is not found or not enabled
@@ -203,9 +202,9 @@ public abstract class AbstractPage {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
-     * 
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in
@@ -223,7 +222,7 @@ public abstract class AbstractPage {
      * Finds the first {@link WebElement} using the given method, with the
      * default timeout. Then waits until the element is enabled, with the
      * default timeout. Then clicks on the element.
-     * 
+     *
      * @param by the locating mechanism
      * @throws NotFoundException if the element is not found or not enabled
      */
@@ -235,7 +234,7 @@ public abstract class AbstractPage {
     /**
      * Waits until the URL is different from the one given in parameter, with a
      * timeout
-     * 
+     *
      * @param url the URL to compare to
      */
     public void waitUntilURLDifferentFrom(String url) {
