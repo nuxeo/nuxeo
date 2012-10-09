@@ -46,7 +46,7 @@ import org.junit.rules.MethodRule;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.functionaltests.forms.FileWidgetWebElement;
+import org.nuxeo.functionaltests.forms.FileWidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -398,8 +398,7 @@ public abstract class AbstractTest {
      *
      * @since 5.7
      */
-    public static <T> T fillElement(Class<T> pageClassToProxy,
-            T page) {
+    public static <T> T fillElement(Class<T> pageClassToProxy, T page) {
         PageFactory.initElements(new VariableElementLocatorFactory(driver,
                 AJAX_TIMEOUT_SECONDS), page);
         // check all required WebElements on the page and wait for their
@@ -888,14 +887,14 @@ public abstract class AbstractTest {
     }
 
     /**
-     * @deprecated since 5.7, use a {@link FileWidgetWebElement} instead.
+     * @deprecated since 5.7, use a {@link FileWidgetElement} instead.
      */
     @Deprecated
     protected String getTmpFileToUploadPath(String filePrefix,
             String fileSuffix, String fileContent) throws IOException {
         throw new UnsupportedOperationException(
                 "Method is deprecated since 5.7,"
-                        + " use a FileWidgetWebElement instead");
+                        + " use a FileWidgetElement instead");
     }
 
 }

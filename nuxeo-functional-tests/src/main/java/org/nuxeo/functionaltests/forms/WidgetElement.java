@@ -22,12 +22,12 @@ import org.openqa.selenium.WebDriver;
  * Represents a widget element.
  * <p>
  * Needs a constructor accepting {@link WebDriver} and {@link String} as id to
- * be instantiated by the {@link LayoutWebElement#getWidget(String, Class)}
+ * be instantiated by the {@link LayoutElement#getWidget(String, Class)}
  * method.
  *
  * @since 5.7
  */
-public class WidgetElement extends LayoutWebElement {
+public class WidgetElement extends LayoutElement {
 
     public WidgetElement(WebDriver driver, String id) {
         super(driver, id);

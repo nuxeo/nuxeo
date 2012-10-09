@@ -33,11 +33,11 @@ import org.testng.Assert;
  *
  * @since 5.7
  */
-public class LayoutWebElement extends AbstractPage {
+public class LayoutElement extends AbstractPage {
 
     protected String id;
 
-    public LayoutWebElement(WebDriver driver, String id) {
+    public LayoutElement(WebDriver driver, String id) {
         super(driver);
         this.id = id;
     }

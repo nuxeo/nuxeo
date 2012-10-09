@@ -33,9 +33,9 @@ import org.openqa.selenium.WebElement;
  *
  * @since 5.7
  */
-public class FileWidgetWebElement extends WidgetElement {
+public class FileWidgetElement extends WidgetElement {
 
-    public FileWidgetWebElement(WebDriver driver, String id) {
+    public FileWidgetElement(WebDriver driver, String id) {
         super(driver, id);
     }
 
