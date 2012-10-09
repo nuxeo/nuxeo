@@ -21,6 +21,7 @@
     <module>nuxeo-platform-login-shibboleth</module>
     <module>nuxeo-platform-login-digest</module>
     <module>nuxeo-platform-login-deputy</module>
+    <module>nuxeo-platform-login-token</module>
   </modules>
 
   <repositories>
