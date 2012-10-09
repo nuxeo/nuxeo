@@ -21,7 +21,7 @@ strong { font-weight: bold }
 a, a:link, a:visited { color: "link (__FLAVOR__ color)"; text-decoration: none }
 a:hover { color: "link.hover (__FLAVOR__ color)"; text-decoration: underline }
 
-h1, h2, h3 { color: "title.major (__FLAVOR__ color)"; font-weight: bold; line-height: normal }
+h1, h2, h3, h4 { color: "title.major (__FLAVOR__ color)"; font-weight: bold; line-height: normal }
 h1 { font-size: 1.6em; padding: .4em 0 .6em; word-wrap: break-word }
 h2 { font-size: 1.3em; padding: .5em 1em .5em 0 }
 h3 { font-size: 1.2em; padding: .8em 0 1em }

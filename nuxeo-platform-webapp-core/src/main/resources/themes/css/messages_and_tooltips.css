@@ -28,10 +28,23 @@ author: lkemen@nuxeo.com
 .warningMessage, .warningFeedback { background-color: "info (__FLAVOR__ background)"; border-color:"warning (__FLAVOR__ border)" }
 
 .success { color: "normal.status (__FLAVOR__ color)"; font-weight: bold }
+.avert { color: "gray.dark (__FLAVOR__ color)"; font-weight: bold }
 .error, .warning { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
 
 .successLink { color: "normal.status (__FLAVOR__ color)" }
 .errorLink, .warningLink { color: "warning.status (__FLAVOR__ color)" }
+
+.processMessage { background: url("${basePath}/icons/bullet.png") no-repeat scroll 0 center #fff;
+  display: inline-block;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: .1em 0 .3em;
+  padding: .2em 0 .2em 1.7em }
+.completeSuccess { background-image: url("${basePath}/icons/checked.gif") }
+.completeError { background-image: url("${basePath}/icons/action_delete_mini_over.png") }
+.completeWarning { background-image: url("${basePath}/icons/warning.gif") }
+.running { background-image: url("${basePath}/img/standart_waiter.gif") }
+.scheduled { background-image: url("${basePath}/icons/clock.png") }
 
 /* =Small help messages */
 .detail, .help { color: "gray.medium (__FLAVOR__ color)"; font-size: .9em }
