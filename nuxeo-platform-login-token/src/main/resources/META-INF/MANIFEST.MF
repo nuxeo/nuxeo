@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo token authentication plugin
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.token;singleton:=true
+Bundle-Version: 1.0.0
+Require-Bundle: org.nuxeo.ecm.platform.login
+Nuxeo-Component: OSGI-INF/token-authentication-framework.xml,
+ OSGI-INF/token-authentication-directory-types.xml,
+ OSGI-INF/token-authentication-directory-contrib.xml,
+ OSGI-INF/token-authentication-plugin-contrib.xml

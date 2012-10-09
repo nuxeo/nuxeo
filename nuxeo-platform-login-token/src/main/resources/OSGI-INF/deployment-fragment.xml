@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <!-- Token Authentication Servlet -->
+  <extension target="web#SERVLET">
+
+    <servlet>
+      <servlet-name>Nuxeo Token Authentication Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Token Authentication Servlet</servlet-name>
+      <url-pattern>/authentication/token</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+</fragment>
+

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.login.token.directory.types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="authtoken" src="directoryschema/authtoken.xsd" />
+  </extension>
+
+</component>
