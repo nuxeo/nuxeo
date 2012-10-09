@@ -1585,9 +1585,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             Collection<Transformer> transformers;
             if (NXQL.NXQL.equals(queryType)) {
                 String repoName = getRepositoryName();
-                if (!securityService.arePoliciesExpressibleInQuery(repoName)) {
-                    log.warn("Security policy cannot be expressed in query");
-                }
                 transformers = securityService.getPoliciesQueryTransformers(repoName);
             } else {
                 transformers = Collections.emptyList();
