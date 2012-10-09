@@ -49,6 +49,22 @@ public abstract class AbstractPage {
         this.driver = driver;
     }
 
+    /**
+     * Returns true if corresponding element is found in the test page.
+     *
+     * @since 5.7
+     */
+    public boolean hasElement(By by) {
+        boolean present;
+        try {
+            driver.findElement(by);
+            present = true;
+        } catch (NoSuchElementException e) {
+            present = false;
+        }
+        return present;
+    }
+
     public <T> T get(String url, Class<T> pageClassToProxy) {
         return AbstractTest.get(url, pageClassToProxy);
     }

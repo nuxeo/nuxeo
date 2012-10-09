@@ -20,8 +20,6 @@
 package org.nuxeo.functionaltests;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,8 +45,8 @@ import org.junit.Rule;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.functionaltests.forms.FileWidgetWebElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -392,6 +390,16 @@ public abstract class AbstractTest {
 
     public static <T> T asPage(Class<T> pageClassToProxy) {
         T page = instantiatePage(pageClassToProxy);
+        return fillElement(pageClassToProxy, page);
+    }
+
+    /**
+     * Fills an instantiated page/form/widget attributes
+     *
+     * @since 5.7
+     */
+    public static <T> T fillElement(Class<T> pageClassToProxy,
+            T page) {
         PageFactory.initElements(new VariableElementLocatorFactory(driver,
                 AJAX_TIMEOUT_SECONDS), page);
         // check all required WebElements on the page and wait for their
@@ -456,6 +464,22 @@ public abstract class AbstractTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Returns true if corresponding element is found in the test page.
+     *
+     * @since 5.7
+     */
+    public boolean hasElement(By by) {
+        boolean present;
+        try {
+            driver.findElement(by);
+            present = true;
+        } catch (NoSuchElementException e) {
+            present = false;
+        }
+        return present;
     }
 
     /**
@@ -856,41 +880,22 @@ public abstract class AbstractTest {
         FileCreationFormPage fileCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
                 "File", FileCreationFormPage.class);
 
-        // Get file to upload path if needed
-        String fileToUploadPath = null;
-        if (uploadBlob) {
-            fileToUploadPath = getTmpFileToUploadPath(filePrefix, fileSuffix,
-                    fileContent);
-        }
-
         // Create File
         FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(
-                fileTitle, fileDescription, fileToUploadPath);
+                fileTitle, fileDescription, uploadBlob, filePrefix, fileSuffix,
+                fileDescription);
         return filePage;
     }
 
     /**
-     * Creates a temporary file and returns its absolute path.
-     *
-     * @param tmpFilePrefix the file prefix
-     * @param fileSuffix the file suffix
-     * @param fileContent the file content
-     * @return the temporary file to upload path
-     * @throws IOException if temporary file creation fails
+     * @deprecated since 5.7, use a {@link FileWidgetWebElement} instead.
      */
+    @Deprecated
     protected String getTmpFileToUploadPath(String filePrefix,
             String fileSuffix, String fileContent) throws IOException {
-
-        // Create tmp file, deleted on exit
-        File tmpFile = File.createTempFile(filePrefix, fileSuffix);
-        tmpFile.deleteOnExit();
-        FileUtils.writeFile(tmpFile, fileContent);
-        assertTrue(tmpFile.exists());
-
-        // Check file URI protocol
-        assertEquals("file", tmpFile.toURI().toURL().getProtocol());
-
-        // Return file absolute path
-        return tmpFile.getAbsolutePath();
+        throw new UnsupportedOperationException(
+                "Method is deprecated since 5.7,"
+                        + " use a FileWidgetWebElement instead");
     }
+
 }

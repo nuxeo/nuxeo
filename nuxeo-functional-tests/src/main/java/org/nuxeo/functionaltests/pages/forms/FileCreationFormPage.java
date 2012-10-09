@@ -17,6 +17,10 @@
  */
 package org.nuxeo.functionaltests.pages.forms;
 
+import java.io.IOException;
+
+import org.nuxeo.functionaltests.forms.FileWidgetWebElement;
+import org.nuxeo.functionaltests.forms.LayoutWebElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.WebDriver;
@@ -25,7 +29,6 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class FileCreationFormPage extends AbstractPage {
 
@@ -38,12 +41,6 @@ public class FileCreationFormPage extends AbstractPage {
     @FindBy(id = "document_create:create_doc_CREATE_DOCUMENT")
     public WebElement createButton;
 
-    @FindBy(id = "document_create:nxl_file:nxw_file:nxw_file_file:upload")
-    public WebElement fileInput;
-
-    @FindBy(id = "document_create:nxl_file:nxw_file:nxw_file_file:choiceupload")
-    public WebElement uploadFileRadioButton;
-
     /**
      * @param driver
      */
@@ -52,15 +49,23 @@ public class FileCreationFormPage extends AbstractPage {
     }
 
     public FileDocumentBasePage createFileDocument(String title,
-            String description, String fileToUploadPath) {
+            String description, boolean uploadBlob, String filePrefix,
+            String fileSuffix, String fileContent) throws IOException {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
-        if (fileToUploadPath != null) {
-            uploadFileRadioButton.click();
-            fileInput.sendKeys(fileToUploadPath);
+
+        if (uploadBlob) {
+            LayoutWebElement layout = new LayoutWebElement(driver,
+                    "document_create:nxl_file");
+            // on file document, a widget template is used => standard file
+            // widget
+            // is wrapped, hence the duplicate nxw_file id
+            FileWidgetWebElement fileWidget = layout.getWidget(
+                    "nxw_file:nxw_file_file", FileWidgetWebElement.class);
+            fileWidget.uploadTestFile(filePrefix, fileSuffix, fileContent);
         }
+
         createButton.click();
         return asPage(FileDocumentBasePage.class);
     }
-
 }
