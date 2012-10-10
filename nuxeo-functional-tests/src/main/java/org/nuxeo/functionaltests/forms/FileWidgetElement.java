@@ -33,10 +33,20 @@ import org.openqa.selenium.WebElement;
  *
  * @since 5.7
  */
-public class FileWidgetElement extends WidgetElement {
+public class FileWidgetElement extends AbstractWidgetElement {
 
     public FileWidgetElement(WebDriver driver, String id) {
         super(driver, id);
+    }
+
+    public String getFilename(boolean isEdit) {
+        WebElement link;
+        if (isEdit) {
+            link = getSubElement("default_download:download");
+        } else {
+            link = getSubElement("download");
+        }
+        return link.getText();
     }
 
     public void uploadTestFile(String prefix, String suffix, String content)

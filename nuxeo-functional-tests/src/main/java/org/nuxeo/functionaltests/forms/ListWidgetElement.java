@@ -16,8 +16,6 @@
  */
 package org.nuxeo.functionaltests.forms;
 
-import org.nuxeo.functionaltests.AbstractTest;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -27,10 +25,19 @@ import org.openqa.selenium.WebElement;
  *
  * @since 5.7
  */
-public class ListWidgetElement extends WidgetElement {
+public class ListWidgetElement extends AbstractWidgetElement {
 
     public ListWidgetElement(WebDriver driver, String id) {
         super(driver, id);
+    }
+
+    protected String getListElementId() {
+        return String.format("%s_input", getWidgetId());
+    }
+
+    protected String getListSubElementId(String subId, int index) {
+        return String.format("%s:%s:%s", getListElementId(),
+                Integer.valueOf(index), subId);
     }
 
     public void addNewElement() {
@@ -39,22 +46,31 @@ public class ListWidgetElement extends WidgetElement {
         addElement.click();
     }
 
-    public void addElement(String subId, String value) {
-        addNewElement();
-        WebElement elt = AbstractTest.findElementWithTimeout(By.id(getSubElementId(subId)));
-        if (value == null) {
-            elt.sendKeys("");
-        } else {
-            elt.sendKeys(value);
-        }
-    }
-
     public void removeElement(int index) {
         String wid = getWidgetId();
-        String delId = String.format("%s_input:%s:%s_delete", wid,
+        String delId = String.format("%s:%s:%s_delete", getListElementId(),
                 Integer.valueOf(index), wid);
         WebElement delElement = getSubElement(delId);
         delElement.click();
+    }
+
+    public void waitForSubWidget(String id, int index) {
+        getSubElement(getListSubElementId(id, index), true);
+    }
+
+    public WidgetElement getSubWidget(String id, int index, boolean wait) {
+        if (wait) {
+            waitForSubWidget(id, index);
+        }
+        return getWidget(getListSubElementId(id, index));
+    }
+
+    public <T> T getSubWidget(String id, int index,
+            Class<T> widgetClassToProxy, boolean wait) {
+        if (wait) {
+            waitForSubWidget(id, index);
+        }
+        return getWidget(getListSubElementId(id, index), widgetClassToProxy);
     }
 
 }

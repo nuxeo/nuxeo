@@ -20,43 +20,19 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Represents a simple widget element, with helper methods to set/get values on
- * it, depending on the mode.
+ * Represents a date widget element.
  *
  * @since 5.7
  */
-public class WidgetElement extends AbstractWidgetElement {
+public class DateWidgetElement extends WidgetElement {
 
-    public WidgetElement(WebDriver driver, String id) {
+    public DateWidgetElement(WebDriver driver, String id) {
         super(driver, id);
     }
 
+    @Override
     public WebElement getInputElement() {
-        return getElement(id);
-    }
-
-    public WebElement getOutputElement() {
-        return getElement(id);
-    }
-
-    public String getValue(boolean isEdit) {
-        if (isEdit) {
-            return getInputValue();
-        } else {
-            return getOutputValue();
-        }
-    }
-
-    public String getOutputValue() {
-        return getOutputElement().getText();
-    }
-
-    public void setInputValue(String value) {
-        setInput(getInputElement(), value);
-    }
-
-    public String getInputValue() {
-        return getInputElement().getAttribute("value");
+        return getElement(getId() + "InputDate");
     }
 
 }

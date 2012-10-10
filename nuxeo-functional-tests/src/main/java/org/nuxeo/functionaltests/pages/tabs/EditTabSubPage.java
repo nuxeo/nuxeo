@@ -27,7 +27,6 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class EditTabSubPage extends AbstractPage {
 
@@ -35,11 +34,9 @@ public class EditTabSubPage extends AbstractPage {
 
     public static final String MINOR_VERSION_INCREMENT_VALUE = "ACTION_INCREMENT_MINOR";
 
-    @Required
     @FindBy(id = "document_edit:nxl_heading:nxw_title")
     WebElement titleInputText;
 
-    @Required
     @FindBy(id = "document_edit:nxl_heading:nxw_description")
     WebElement descriptionInputText;
 
