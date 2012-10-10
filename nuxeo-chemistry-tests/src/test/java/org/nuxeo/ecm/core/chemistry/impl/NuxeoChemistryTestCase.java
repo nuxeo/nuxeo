@@ -110,7 +110,7 @@ public abstract class NuxeoChemistryTestCase extends SQLRepositoryTestCase {
             repository = makeRepository();
             openConn();
         } catch (Exception e) {
-            super.tearDown();
+            tearDown();
         }
     }
 
