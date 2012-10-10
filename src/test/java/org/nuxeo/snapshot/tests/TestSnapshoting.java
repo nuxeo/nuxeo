@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -314,5 +315,56 @@ public class TestSnapshoting extends SQLRepositoryTestCase {
             dumpDBContent();
         }
 
+    }
+
+    @Test
+    public void testSnapshotableListener() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc1", "SnapshotableFolder");
+        doc = session.createDocument(doc);
+        session.save();
+        assertEquals("", doc.getVersionLabel());
+        assertEquals(null, doc.getPropertyValue("dc:title"));
+
+        doc.setPropertyValue("dc:title", "without versioning");
+        doc = session.saveDocument(doc);
+        session.save();
+        assertEquals("", doc.getVersionLabel());
+        assertEquals("without versioning", doc.getPropertyValue("dc:title"));
+
+        doc.setPropertyValue("dc:title", "with minor versioning");
+        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption",
+                        "MINOR");
+        doc = session.saveDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
+        assertEquals("0.1", doc.getVersionLabel());
+        assertEquals("with minor versioning", doc.getPropertyValue("dc:title"));
+
+        doc.setPropertyValue("dc:title", "with major versioning");
+        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption",
+                        "MAJOR");
+        doc = session.saveDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
+        assertEquals("1.0", doc.getVersionLabel());
+        assertEquals("with major versioning", doc.getPropertyValue("dc:title"));
+
+        doc.setPropertyValue("dc:title", "with none versioning");
+        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption",
+                        "NONE");
+        doc = session.saveDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
+        assertEquals("1.0+", doc.getVersionLabel());
+        assertEquals("with none versioning", doc.getPropertyValue("dc:title"));
+
+        doc.setPropertyValue("dc:title", "with non existing versioning value");
+        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption",
+                        "NON_EXISTING VALUE");
+        doc = session.saveDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
+        assertEquals("1.0+", doc.getVersionLabel());
+        assertEquals("with non existing versioning value", doc.getPropertyValue("dc:title"));
     }
 }
