@@ -64,6 +64,9 @@ public class LDAPServerDescriptor {
     @XNode("poolingEnabled")
     public boolean poolingEnabled = true;
 
+    @XNode("verifyServerCert")
+    public boolean verifyServerCert = true;
+
     protected LinkedHashSet<LdapEntry> ldapEntries;
 
     protected boolean isDynamicServerList = false;
@@ -301,6 +304,10 @@ public class LDAPServerDescriptor {
 
     public boolean isPoolingEnabled() {
         return poolingEnabled;
+    }
+
+    public boolean isVerifyServerCert() {
+        return verifyServerCert;
     }
 
     public int getConnectionTimeout() {

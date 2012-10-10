@@ -19,6 +19,15 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -33,6 +42,12 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -199,6 +214,12 @@ public class LDAPDirectory extends AbstractDirectory {
             props.put("com.sun.jndi.ldap.connect.pool.timeout", "1800000"); // 30
             // min
         }
+        
+        if (!serverConfig.isVerifyServerCert() && serverConfig.useSsl) {
+            props.put("java.naming.ldap.factory.socket", 
+                    "org.nuxeo.ecm.directory.ldap.LDAPDirectory$TrustingSSLSocketFactory");
+        }
+        
         return props;
     }
 
@@ -379,6 +400,99 @@ public class LDAPDirectory extends AbstractDirectory {
 
     public void setTestServer(ContextProvider testServer) {
         this.testServer = testServer;
+    }
+    
+    /**
+     * SSLSocketFactory implementation that verifies all certificates.
+     */
+    public static class TrustingSSLSocketFactory extends SSLSocketFactory {
+
+        private SSLSocketFactory factory;
+
+        /**
+         * Create a new SSLSocketFactory that creates a Socket regardless of the certificate used.
+         * @throws SSLException if initialization fails.
+         */
+        public TrustingSSLSocketFactory() {
+            try {
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, new TrustManager[] { new TrustingX509TrustManager() }, 
+                        new SecureRandom());
+                factory = sslContext.getSocketFactory();
+            } catch (NoSuchAlgorithmException nsae) {
+                throw new RuntimeException("Unable to initialize the SSL context:  ", nsae);
+            } catch (KeyManagementException kme) {
+                throw new RuntimeException("Unable to register a trust manager:  ", kme);
+            }
+        }
+        
+        public static SocketFactory getDefault() {
+            return new TrustingSSLSocketFactory();
+        }
+
+        @Override
+        public String[] getDefaultCipherSuites() {
+            return factory.getDefaultCipherSuites();
+        }
+
+        @Override
+        public String[] getSupportedCipherSuites() {
+            return factory.getSupportedCipherSuites();
+        }
+
+        @Override
+        public Socket createSocket(Socket s, String host, int port, boolean autoClose)
+                throws IOException {
+            return factory.createSocket(s, host, port, autoClose);
+        }
+
+        @Override
+        public Socket createSocket(String host, int port) 
+                throws IOException, UnknownHostException {
+            return factory.createSocket(host, port);
+        }
+
+        @Override
+        public Socket createSocket(InetAddress host, int port)
+                throws IOException {
+            return factory.createSocket(host, port);
+        }
+
+        @Override
+        public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
+                throws IOException, UnknownHostException {
+            return factory.createSocket(host, port, localHost, localPort);
+        }
+
+        @Override
+        public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort)
+                throws IOException {
+            return factory.createSocket(address, port, localAddress, localPort);
+        }
+        
+        /**
+         * Insecurely trusts everyone.
+         */
+        private class TrustingX509TrustManager implements X509TrustManager {
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] arg0, String arg1)
+                    throws CertificateException {
+                return;
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] arg0, String arg1)
+                    throws CertificateException {
+                return;
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new java.security.cert.X509Certificate[0];
+            }
+        }
+
     }
 
 }
