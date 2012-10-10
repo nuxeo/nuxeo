@@ -21,6 +21,7 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
+import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
 import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 
 /**
@@ -46,12 +47,14 @@ public interface TokenAuthenticationService extends Serializable {
      * and stores it in the back-end with the triplet attributes and the
      * specified permission.
      *
-     * @throws ClientRuntimeException if one of the parameters is null or empty
-     *             as they are all mandatory or if multiple tokens were found
-     *             for the same triplet
+     * @throws TokenAuthenticationException if one of the parameters is null or
+     *             empty as they are all mandatory
+     * @throws ClientRuntimeException if multiple tokens are found for the same
+     *             triplet
+     *
      */
     String getToken(String userName, String applicationName, String deviceName,
-            String permission);
+            String permission) throws TokenAuthenticationException;
 
     /**
      * Gets the user name bound to the specified token.

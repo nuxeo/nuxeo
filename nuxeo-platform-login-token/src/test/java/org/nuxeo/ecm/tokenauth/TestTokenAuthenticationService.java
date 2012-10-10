@@ -25,7 +25,6 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
@@ -60,10 +59,10 @@ public class TestTokenAuthenticationService {
             tokenAuthenticationService.getToken("joe", "myFavoriteApp", null,
                     null);
             fail("Getting token should have failed since required parameters are missing.");
-        } catch (ClientRuntimeException cre) {
+        } catch (TokenAuthenticationException e) {
             assertEquals(
                     "All parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.",
-                    cre.getMessage());
+                    e.getMessage());
         }
 
         // Test token generation
@@ -105,7 +104,7 @@ public class TestTokenAuthenticationService {
     }
 
     @Test
-    public void testGetUserName() {
+    public void testGetUserName() throws TokenAuthenticationException {
 
         // Test invalid token
         String token = "invalidToken";
@@ -120,7 +119,7 @@ public class TestTokenAuthenticationService {
     }
 
     @Test
-    public void testRevokeToken() {
+    public void testRevokeToken() throws TokenAuthenticationException {
 
         // Test revoking an unexisting token, should not fail
         tokenAuthenticationService.revokeToken("unexistingToken");
