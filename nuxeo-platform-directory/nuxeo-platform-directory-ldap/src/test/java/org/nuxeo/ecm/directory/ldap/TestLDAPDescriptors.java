@@ -222,6 +222,12 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testIsVerifyServerCert() {
+        assertTrue(server1.isVerifyServerCert());
+        assertFalse(server2.isVerifyServerCert());
+    }
+
+    @Test
     public void testGetEmptyRefMarker() {
         assertEquals("cn=emptyRef", directory.getEmptyRefMarker());
     }
