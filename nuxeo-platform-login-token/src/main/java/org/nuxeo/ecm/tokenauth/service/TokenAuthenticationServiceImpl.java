@@ -34,6 +34,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -70,13 +71,14 @@ public class TokenAuthenticationServiceImpl implements
 
     @Override
     public String getToken(String userName, String applicationName,
-            String deviceName, String permission) {
+            String deviceName, String permission)
+            throws TokenAuthenticationException {
 
         if (StringUtils.isEmpty(userName)
                 || StringUtils.isEmpty(applicationName)
                 || StringUtils.isEmpty(deviceName)
                 || StringUtils.isEmpty(permission)) {
-            throw new ClientRuntimeException(
+            throw new TokenAuthenticationException(
                     "All parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.");
         }
 
