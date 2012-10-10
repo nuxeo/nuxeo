@@ -3,4 +3,3 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo token authentication plugin test
 Bundle-SymbolicName: org.nuxeo.ecm.platform.login.token.test;singleton:=true
 Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/test-token-authentication-directory-contrib.xml
