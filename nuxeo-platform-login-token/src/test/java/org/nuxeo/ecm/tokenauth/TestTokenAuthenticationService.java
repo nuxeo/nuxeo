@@ -28,13 +28,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -44,14 +40,10 @@ import com.google.inject.Inject;
  * Tests the {@link TokenAuthenticationService}.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
+ * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({
-        "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-directory-types.xml",
-        "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-framework.xml",
-        "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-directory-contrib.xml" })
+@Features(TokenAuthenticationServiceFeature.class)
 public class TestTokenAuthenticationService {
 
     @Inject
