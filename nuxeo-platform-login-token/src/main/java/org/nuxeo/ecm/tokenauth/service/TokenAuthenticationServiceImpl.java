@@ -18,6 +18,7 @@ package org.nuxeo.ecm.tokenauth.service;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -210,7 +211,10 @@ public class TokenAuthenticationServiceImpl implements
 
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put(USERNAME_FIELD, userName);
-            return session.query(filter);
+            Map<String, String> orderBy = new HashMap<String, String>();
+            orderBy.put(CREATION_DATE_FIELD, "desc");
+            return session.query(filter, Collections.<String> emptySet(),
+                    orderBy);
 
         } catch (ClientException ce) {
             throw new ClientRuntimeException(ce);
