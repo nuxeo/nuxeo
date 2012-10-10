@@ -57,6 +57,8 @@ public class TokenAuthenticationServiceImpl implements
 
     protected static final String USERNAME_FIELD = "userName";
 
+    protected static final String TOKEN_FIELD = "token";
+
     protected static final String APPLICATION_NAME_FIELD = "applicationName";
 
     protected static final String DEVICE_NAME_FIELD = "deviceName";
@@ -112,7 +114,8 @@ public class TokenAuthenticationServiceImpl implements
             UUID uuid = UUID.randomUUID();
             String token = uuid.toString();
 
-            DocumentModel entry = getBareAuthTokenModel(directoryService, token);
+            DocumentModel entry = getBareAuthTokenModel(directoryService);
+            entry.setProperty(DIRECTORY_SCHEMA, TOKEN_FIELD, token);
             entry.setProperty(DIRECTORY_SCHEMA, USERNAME_FIELD, userName);
             entry.setProperty(DIRECTORY_SCHEMA, APPLICATION_NAME_FIELD,
                     applicationName);
@@ -223,11 +226,10 @@ public class TokenAuthenticationServiceImpl implements
     }
 
     protected DocumentModel getBareAuthTokenModel(
-            DirectoryService directoryService, String token)
-            throws ClientException {
+            DirectoryService directoryService) throws ClientException {
 
         String directorySchema = directoryService.getDirectorySchema(DIRECTORY_NAME);
-        return BaseSession.createEntryModel(null, directorySchema, token, null);
+        return BaseSession.createEntryModel(null, directorySchema, null, null);
     }
 
 }
