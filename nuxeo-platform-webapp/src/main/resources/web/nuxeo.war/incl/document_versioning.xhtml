@@ -3,7 +3,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-<c:if test="#{currentDocument.isVersionable()}">
+<c:if test="#{currentDocument.isVersionable() and !currentDocument.isFolder()}">
 
   <table class="dataInput">
     <tr>
