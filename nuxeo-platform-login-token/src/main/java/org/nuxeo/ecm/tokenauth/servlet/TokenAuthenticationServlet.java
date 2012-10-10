@@ -24,12 +24,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Servlet that allows to get a unique authentication token given some user
- * information passed as request parameters.
+ * information passed as request parameters: user name, application name, device
+ * name, permission. As all parameters are required, an error response will be
+ * sent with a 404 status code if one of them is null or empty.
  * <p>
  * The token is provided by the {@link TokenAuthenticationService}.
  *
@@ -52,15 +58,38 @@ public class TokenAuthenticationServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        // Get request parameters
         String userName = req.getParameter(USERNAME_PARAM);
         String applicationName = req.getParameter(APPLICATION_NAME_PARAM);
         String deviceName = req.getParameter(DEVICE_NAME_PARAM);
         String permission = req.getParameter(PERMISSION_PARAM);
 
-        TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
-        String token = tokenAuthService.getToken(userName, applicationName,
-                deviceName, permission);
-        sendTextResponse(resp, token);
+        // As all parameters are required, if one is null or empty, send an
+        // error with the 404 status
+        if (StringUtils.isEmpty(userName)
+                || StringUtils.isEmpty(applicationName)
+                || StringUtils.isEmpty(deviceName)
+                || StringUtils.isEmpty(permission)) {
+            resp.sendError(HttpStatus.SC_NOT_FOUND);
+            return;
+        }
+
+        // Decode parameters
+        userName = URIUtil.decode(userName);
+        applicationName = URIUtil.decode(applicationName);
+        deviceName = URIUtil.decode(deviceName);
+        permission = URIUtil.decode(permission);
+
+        // Get token and write it to the response body
+        try {
+            TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
+            String token = tokenAuthService.getToken(userName, applicationName,
+                    deviceName, permission);
+            sendTextResponse(resp, token);
+        } catch (TokenAuthenticationException e) {
+            // Should never happen as parameters have already been checked
+            resp.sendError(HttpStatus.SC_NOT_FOUND);
+        }
     }
 
     protected void sendTextResponse(HttpServletResponse resp,
