@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -26,34 +26,35 @@ import java.net.URL;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @Deploy("org.nuxeo.runtime.jetty")
 @Features(RuntimeFeature.class)
-public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
+public class JettyFeature extends SimpleFeature implements
+        WorkingDirectoryConfigurator {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        Jetty jetty = FeaturesRunner.getScanner().getFirstAnnotation(runner.getTargetTestClass(), Jetty.class);
+        Jetty jetty = runner.getConfig(Jetty.class);
         if (jetty == null) {
             jetty = Defaults.of(Jetty.class);
         }
         configureJetty(jetty);
 
-        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(this);
+        runner.getFeature(RuntimeFeature.class).getHarness().addWorkingDirectoryConfigurator(
+                this);
     }
 
-    protected void configureJetty(Jetty jetty){
+    protected void configureJetty(Jetty jetty) {
         int p = jetty.port();
         try {
             String s = System.getenv("JETTY_PORT");
-            if ( s != null) {
+            if (s != null) {
                 p = Integer.parseInt(s);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             // do nothing ; the jetty.port
         }
         if (p > 0) {
@@ -61,7 +62,7 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         }
 
         String host = System.getenv("JETTY_HOST");
-        if ( host == null ){
+        if (host == null) {
             host = jetty.host();
         }
         if (host.length() > 0) {
@@ -69,7 +70,7 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         }
 
         String config = System.getenv("JETTY_CONFIG");
-        if ( config == null ){
+        if (config == null) {
             config = jetty.config();
         }
         if (config.length() > 0) {
@@ -77,9 +78,9 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         }
     }
 
-
     @Override
-    public void configure(RuntimeHarness harness, File workingDir) throws IOException {
+    public void configure(RuntimeHarness harness, File workingDir)
+            throws IOException {
         File dest = new File(workingDir, "config");
         dest.mkdirs();
 
@@ -101,7 +102,8 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
     }
 
     private static URL getResource(String resource) {
-        //return Thread.currentThread().getContextClassLoader().getResource(resource);
+        // return
+        // Thread.currentThread().getContextClassLoader().getResource(resource);
         return Jetty.class.getClassLoader().getResource(resource);
     }
 
