@@ -84,7 +84,7 @@ public class DataSourceComponent extends DefaultComponent {
 
     @Override
     public int getApplicationStartedOrder() {
-        return super.getApplicationStartedOrder() * 2;
+        return 0;
     }
 
     @Override
