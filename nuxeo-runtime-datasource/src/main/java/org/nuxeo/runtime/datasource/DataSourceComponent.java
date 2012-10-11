@@ -17,14 +17,20 @@
 
 package org.nuxeo.runtime.datasource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingException;
+import javax.naming.NoInitialContextException;
+import javax.naming.NotContextException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -36,11 +42,15 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class DataSourceComponent extends DefaultComponent {
 
-    private static final Log log = LogFactory.getLog(DataSourceComponent.class);
+    private final Log log = LogFactory.getLog(DataSourceComponent.class);
 
     public static final String DATASOURCES_XP = "datasources";
 
     public static final String ENV_CTX_NAME = "java:comp/env";
+
+    protected final Map<String, DataSourceDescriptor> datasources = new HashMap<String, DataSourceDescriptor>();
+
+    protected boolean started = false;
 
     @Override
     public void registerContribution(Object contrib, String extensionPoint,
@@ -72,7 +82,44 @@ public class DataSourceComponent extends DefaultComponent {
         }
     }
 
-    protected void addDataSource(DataSourceDescriptor descr) {
+    @Override
+    public int getApplicationStartedOrder() {
+        return super.getApplicationStartedOrder() * 2;
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        started = true;
+        for (DataSourceDescriptor datasourceDesc : datasources.values()) {
+            bindDataSource(datasourceDesc);
+        }
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        super.deactivate(context);
+        for (DataSourceDescriptor desc : datasources.values()) {
+            log.warn(desc.name + " datasource still referenced");
+            unbindDataSource(desc);
+        }
+        datasources.clear();
+        started = false;
+    }
+
+    protected void addDataSource(DataSourceDescriptor contrib) {
+        datasources.put(contrib.name, contrib);
+        bindDataSource(contrib);
+    }
+
+    protected void removeDataSource(DataSourceDescriptor contrib) {
+        unbindDataSource(contrib);
+        datasources.remove(contrib.name);
+    }
+
+    protected void bindDataSource(DataSourceDescriptor descr) {
+        if (!started) {
+            return;
+        }
         log.info("Registering datasource: " + descr.name);
         try {
             Name name = new CompositeName(ENV_CTX_NAME + "/" + descr.name);
@@ -91,11 +138,18 @@ public class DataSourceComponent extends DefaultComponent {
         }
     }
 
-    protected void removeDataSource(DataSourceDescriptor descr) {
+    protected void unbindDataSource(DataSourceDescriptor descr) {
+        if (!started) {
+            return;
+        }
         log.info("Unregistering datasource: " + descr.name);
         try {
             Context ctx = new InitialContext();
             ctx.unbind(ENV_CTX_NAME + "/" + descr.name);
+        } catch (NotContextException e) {
+            log.warn(e);
+        } catch (NoInitialContextException e) {
+            ;
         } catch (NamingException e) {
             log.error("Cannot unbind datasource '" + descr.name + "' in JNDI",
                     e);

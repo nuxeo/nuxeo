@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.junit.After;
@@ -57,11 +58,14 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         Framework.getProperties().put(PROP_NAME, dir.getPath());
 
         deployBundle("org.nuxeo.runtime.datasource");
+        fireFrameworkStarted();
     }
 
     @After
     public void tearDown() throws Exception {
-        NuxeoContainer.uninstallNaming();
+        if (NuxeoContainer.isInstalled()) {
+            NuxeoContainer.uninstallNaming();
+        }
         super.tearDown();
     }
 
@@ -123,6 +127,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
+        NuxeoContainer.uninstall();
     }
 
 }
