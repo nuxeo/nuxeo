@@ -174,6 +174,10 @@ public class RepositoryDescriptor {
     @XNode("pathOptimizations@enabled")
     public boolean pathOptimizationsEnabled = true;
 
+    /* @since 5.7 */
+    @XNode("pathOptimizations@version")
+    public int pathOptimizationsVersion = 2;
+
     @XNode("aclOptimizations@enabled")
     public boolean aclOptimizationsEnabled = true;
 
