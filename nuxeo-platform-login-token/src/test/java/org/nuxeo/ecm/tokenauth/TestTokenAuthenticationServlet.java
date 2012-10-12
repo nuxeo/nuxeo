@@ -27,7 +27,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -47,54 +46,42 @@ public class TestTokenAuthenticationServlet {
 
         HttpClient httpClient = new HttpClient();
 
-        // Test bad authentication
-        HttpMethod httpMethod = new GetMethod(
-                "http://localhost:18080/authentication/token?userName=joe&applicationName=myFavoriteApp&deviceName=Ubuntu&permission=rw");
-        String basicAuthHeader = "Basic "
-                + Base64.encode("Administrator:badPassword");
-        httpMethod.setRequestHeader("Authorization", basicAuthHeader);
+        HttpMethod getMethod = null;
         try {
-            int status = httpClient.executeMethod(httpMethod);
+            // ------------ Test bad authentication ----------------
+            getMethod = new GetMethod(
+                    "http://localhost:18080/authentication/token?userName=joe&applicationName=myFavoriteApp&deviceName=Ubuntu&permission=rw");
+            int status = TokenAuthenticationTestHelper.executeGetMethod(
+                    httpClient, getMethod, "Administrator", "badPassword");
             // Should receive 401 (?)
             assertEquals(404, status);
-        } finally {
-            httpMethod.releaseConnection();
-        }
 
-        // Test omitting required parameters
-        httpMethod = new GetMethod(
-                "http://localhost:18080/authentication/token?userName=joe");
-        basicAuthHeader = "Basic "
-                + Base64.encode("Administrator:Administrator");
-        httpMethod.setRequestHeader("Authorization", basicAuthHeader);
-        try {
-            int status = httpClient.executeMethod(httpMethod);
+            // ------------ Test omitting required parameters ----------------
+            getMethod = new GetMethod(
+                    "http://localhost:18080/authentication/token?userName=joe");
+            status = TokenAuthenticationTestHelper.executeGetMethod(httpClient,
+                    getMethod, "Administrator", "Administrator");
             assertEquals(404, status);
-        } finally {
-            httpMethod.releaseConnection();
-        }
 
-        // Test acquiring token
-        String queryParams = URIUtil.encodeQuery("userName=joe&applicationName=myFavoriteApp&deviceName=Ubuntu box 64 bits&permission=rw");
-        URI uri = new URI("http", null, "localhost", 18080,
-                "/authentication/token", queryParams, null);
-        httpMethod = new GetMethod(uri.toString());
-        // Don't need to set authentication header thanks to session cookie
-        try {
+            // ------------ Test acquiring token ----------------
+            String queryParams = URIUtil.encodeQuery("userName=joe&applicationName=myFavoriteApp&deviceName=Ubuntu box 64 bits&permission=rw");
+            URI uri = new URI("http", null, "localhost", 18080,
+                    "/authentication/token", queryParams, null);
+            getMethod = new GetMethod(uri.toString());
             // Acquire new token
-            int status = httpClient.executeMethod(httpMethod);
+            status = TokenAuthenticationTestHelper.executeGetMethod(httpClient,
+                    getMethod, "Administrator", "Administrator");
             assertEquals(200, status);
-            String token = httpMethod.getResponseBodyAsString();
+            String token = getMethod.getResponseBodyAsString();
             assertNotNull(token);
 
             // Acquire existing token
-            status = httpClient.executeMethod(httpMethod);
+            status = httpClient.executeMethod(getMethod);
             assertEquals(200, status);
-            String existingToken = httpMethod.getResponseBodyAsString();
+            String existingToken = getMethod.getResponseBodyAsString();
             assertEquals(token, existingToken);
         } finally {
-            httpMethod.releaseConnection();
+            getMethod.releaseConnection();
         }
     }
-
 }
