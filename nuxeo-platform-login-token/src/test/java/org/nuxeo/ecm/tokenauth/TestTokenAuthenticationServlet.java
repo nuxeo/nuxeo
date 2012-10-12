@@ -27,6 +27,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
 import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -46,9 +47,26 @@ public class TestTokenAuthenticationServlet {
 
         HttpClient httpClient = new HttpClient();
 
-        // Test omitting required parameters
+        // Test bad authentication
         HttpMethod httpMethod = new GetMethod(
+                "http://localhost:18080/authentication/token?userName=joe&applicationName=myFavoriteApp&deviceName=Ubuntu&permission=rw");
+        String basicAuthHeader = "Basic "
+                + Base64.encode("Administrator:badPassword");
+        httpMethod.setRequestHeader("Authorization", basicAuthHeader);
+        try {
+            int status = httpClient.executeMethod(httpMethod);
+            // Should receive 401 (?)
+            assertEquals(404, status);
+        } finally {
+            httpMethod.releaseConnection();
+        }
+
+        // Test omitting required parameters
+        httpMethod = new GetMethod(
                 "http://localhost:18080/authentication/token?userName=joe");
+        basicAuthHeader = "Basic "
+                + Base64.encode("Administrator:Administrator");
+        httpMethod.setRequestHeader("Authorization", basicAuthHeader);
         try {
             int status = httpClient.executeMethod(httpMethod);
             assertEquals(404, status);
@@ -61,6 +79,7 @@ public class TestTokenAuthenticationServlet {
         URI uri = new URI("http", null, "localhost", 18080,
                 "/authentication/token", queryParams, null);
         httpMethod = new GetMethod(uri.toString());
+        // Don't need to set authentication header thanks to session cookie
         try {
             // Acquire new token
             int status = httpClient.executeMethod(httpMethod);
