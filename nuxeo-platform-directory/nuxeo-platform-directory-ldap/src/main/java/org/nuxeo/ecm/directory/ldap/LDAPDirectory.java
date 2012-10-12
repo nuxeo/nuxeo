@@ -426,8 +426,17 @@ public class LDAPDirectory extends AbstractDirectory {
             }
         }
         
+        /**
+        * TrustingSSLSocketFactoryHolder is loaded on the first execution of 
+        * TrustingSSLSocketFactory.getDefault() or the first access to 
+        * TrustingSSLSocketFactoryHolder.INSTANCE, not before.
+        */
+        private static class TrustingSSLSocketFactoryHolder { 
+            public static final TrustingSSLSocketFactory INSTANCE = new TrustingSSLSocketFactory();
+        }
+        
         public static SocketFactory getDefault() {
-            return new TrustingSSLSocketFactory();
+            return TrustingSSLSocketFactoryHolder.INSTANCE;
         }
 
         @Override
