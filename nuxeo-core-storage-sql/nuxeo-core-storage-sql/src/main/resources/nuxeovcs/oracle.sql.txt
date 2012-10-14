@@ -459,7 +459,7 @@ LOG.INFO Initializing ancestors table for pathOptimizations, this can take a lon
 
 #IF: pathOptimizationsEnabled
 #IF: emptyResult
-{oCALL nx_init_ancestors}
+{CALL nx_init_ancestors}
 
 
 # -- ancestors ids (since Nuxeo 5.5)
