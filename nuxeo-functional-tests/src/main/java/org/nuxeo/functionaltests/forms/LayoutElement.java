@@ -123,7 +123,7 @@ public class LayoutElement extends AbstractPage {
      * <p>
      * The layout id is concatenated to the sub element id for retrieval.
      */
-    protected WebElement getSubElement(String id) {
+    public WebElement getSubElement(String id) {
         return getElement(getSubElementId(id));
     }
 
@@ -135,7 +135,7 @@ public class LayoutElement extends AbstractPage {
      * @param wait if true, waits for a default timeout (useful when element is
      *            added to the page after an ajax call).
      */
-    protected WebElement getSubElement(String id, boolean wait) {
+    public WebElement getSubElement(String id, boolean wait) {
         return getElement(getSubElementId(id), wait);
     }
 
