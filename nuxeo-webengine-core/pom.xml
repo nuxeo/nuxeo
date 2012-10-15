@@ -89,10 +89,6 @@
       <artifactId>freemarker</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.script</groupId>
-      <artifactId>script-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
     </dependency>
