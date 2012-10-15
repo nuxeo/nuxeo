@@ -1420,11 +1420,6 @@
         <artifactId>jta</artifactId>
         <version>1.1</version>
       </dependency>
-      <dependency>
-        <groupId>javax.script</groupId>
-        <artifactId>script-api</artifactId>
-        <version>1.0</version>
-      </dependency>
 
       <!-- commons -->
       <dependency>
