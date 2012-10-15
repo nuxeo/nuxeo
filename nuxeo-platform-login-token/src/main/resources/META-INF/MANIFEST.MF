@@ -7,4 +7,4 @@ Require-Bundle: org.nuxeo.ecm.platform.login
 Nuxeo-Component: OSGI-INF/token-authentication-framework.xml,
  OSGI-INF/token-authentication-directory-types.xml,
  OSGI-INF/token-authentication-directory-contrib.xml,
- OSGI-INF/token-authentication-plugin-contrib.xml
+ OSGI-INF/token-authentication-contrib.xml

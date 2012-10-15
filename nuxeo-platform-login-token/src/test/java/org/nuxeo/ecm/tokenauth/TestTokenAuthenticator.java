@@ -48,9 +48,7 @@ import com.google.inject.Inject;
 @Features({ TokenAuthenticationServiceFeature.class, RestFeature.class })
 @Jetty(port = 18080)
 @RepositoryConfig(init = TokenAuthenticationRepositoryInit.class)
-@Deploy({
-        "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-plugin-contrib.xml",
-        "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-chain.xml" })
+@Deploy("org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-contrib.xml")
 public class TestTokenAuthenticator {
 
     @Inject
