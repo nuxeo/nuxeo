@@ -81,7 +81,7 @@ public class TokenAuthenticationServiceImpl implements
                 || StringUtils.isEmpty(deviceName)
                 || StringUtils.isEmpty(permission)) {
             throw new TokenAuthenticationException(
-                    "All parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.");
+                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.");
         }
 
         Session session = null;

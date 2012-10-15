@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -46,6 +48,8 @@ import org.nuxeo.runtime.api.Framework;
 public class TokenAuthenticationServlet extends HttpServlet {
 
     private static final long serialVersionUID = 7792388601558509103L;
+
+    private static final Log log = LogFactory.getLog(TokenAuthenticationServlet.class);
 
     protected static final String USERNAME_PARAM = "userName";
 
@@ -74,6 +78,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
                 || StringUtils.isEmpty(applicationName)
                 || StringUtils.isEmpty(deviceName)
                 || StringUtils.isEmpty(permission)) {
+            log.error("The following request parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.");
             resp.sendError(HttpStatus.SC_NOT_FOUND);
             return;
         }
