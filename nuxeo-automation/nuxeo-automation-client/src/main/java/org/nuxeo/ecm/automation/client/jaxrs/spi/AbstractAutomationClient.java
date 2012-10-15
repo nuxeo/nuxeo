@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     ataillefer
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
@@ -25,7 +26,9 @@ import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginCallback;
 import org.nuxeo.ecm.automation.client.LoginInfo;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.TokenCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.BasicAuthInterceptor;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.TokenAuthInterceptor;
 import org.nuxeo.ecm.automation.client.model.OperationRegistry;
 
 /**
@@ -46,10 +49,9 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         this.url = url.endsWith("/") ? url : url + "/";
     }
 
-
     /**
-     * Can be used for intercepting requests before they are being sent
-     * to the server.
+     * Can be used for intercepting requests before they are being sent to the
+     * server.
      */
     public void setRequestInterceptor(RequestInterceptor interceptor) {
         requestInterceptor = interceptor;
@@ -130,8 +132,25 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     }
 
     public Session getSession(final String username, final String password) {
-        setRequestInterceptor(new BasicAuthInterceptor(username, password));
+        return getSession(new BasicAuthInterceptor(username, password));
+    }
+
+    public Session getSession(final String token) {
+        return getSession(new TokenAuthInterceptor(token));
+    }
+
+    protected Session getSession(RequestInterceptor interceptor) {
+        setRequestInterceptor(interceptor);
         return getSession();
+    }
+
+    public Session getSession(TokenCallback cb) {
+        String token = cb.getLocalToken();
+        if (token == null) {
+            token = cb.getRemoteToken(cb.getTokenParams());
+            cb.saveToken(token);
+        }
+        return getSession(token);
     }
 
     public void getSession(final String username, final String password,
@@ -164,7 +183,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         });
     }
 
-    protected Session login(Connector connector)  {
+    protected Session login(Connector connector) {
         Request request = new Request(Request.POST, url
                 + getRegistry().getPath("login"));
         request.put("Accept", CTYPE_ENTITY);

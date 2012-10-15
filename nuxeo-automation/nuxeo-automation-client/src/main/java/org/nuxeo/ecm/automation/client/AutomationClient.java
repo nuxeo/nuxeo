@@ -8,16 +8,16 @@
  *
  * Contributors:
  *     bstefanescu
+ *     ataillefer
  */
 package org.nuxeo.ecm.automation.client;
 
-
 /**
  * The connection to the automation service is done the first time you create a
- * session. To create a session you need to pass the authentication
- * information. If null is passed as the user name an anonymous session will be
- * created. Note that anonymous sessions are not always accepted by a Nuxeo
- * Server (it depends on the server configuration).
+ * session. To create a session you need to pass the authentication information.
+ * If null is passed as the user name an anonymous session will be created. Note
+ * that anonymous sessions are not always accepted by a Nuxeo Server (it depends
+ * on the server configuration).
  * <p>
  * When you attempt to create a new session using the same authentication info
  * as an already created session the session will be reused (TODO this is
@@ -36,14 +36,12 @@ public interface AutomationClient {
     String getBaseUrl();
 
     /**
-     * Creates a new session. If no interceptors configured connect
-     * anonymously.
+     * Creates a new session. If no interceptors configured connect anonymously.
      */
     Session getSession();
 
     /**
-     * Creates a new session. If no interceptors configured connect
-     * anonymously.
+     * Creates a new session. If no interceptors configured connect anonymously.
      */
     void getSession(AsyncCallback<Session> cb);
 
@@ -54,8 +52,9 @@ public interface AutomationClient {
     Session getSession(LoginCallback loginCb);
 
     /**
-     * Create asynchronously a new session using the given login callback to gather login info.
-     * The given callback will be notified after the session is created.
+     * Create asynchronously a new session using the given login callback to
+     * gather login info. The given callback will be notified after the session
+     * is created.
      */
     void getSession(LoginCallback loginCb, AsyncCallback<Session> cb);
 
@@ -65,14 +64,35 @@ public interface AutomationClient {
     Session getSession(String username, String password);
 
     /**
+     * Creates a new session using the given token.
+     */
+    Session getSession(String token);
+
+    /**
+     * Creates a new session using the given token callback by following these
+     * steps:
+     * <ul>
+     * <li>Look for a token saved locally using
+     * {@link TokenCallback#getLocalToken()}</li>
+     * <li>If it doesn't exist, use
+     * {@link TokenCallback#getRemoteToken(java.util.Map))} to acquire a token
+     * remotely using the information gathered by
+     * {@link TokenCallback#getTokenParams()}, and save the token locally using
+     * {@link TokenCallback#saveToken(String)}</li>
+     * <li>Get a session with the token using {@link #getSession(String)}</li>
+     * </ul>
+     */
+    Session getSession(TokenCallback cb);
+
+    /**
      * Creates asynchronously a new session using the given login. The given
      * callback will be notified after the session is created.
      */
     void getSession(String username, String password, AsyncCallback<Session> cb);
 
     /**
-     * Adapts the given object to the given type. Return the adapter instance
-     * if any, otherwise null.
+     * Adapts the given object to the given type. Return the adapter instance if
+     * any, otherwise null.
      * <p>
      * Optional operation. Framework that doesn't supports reflection like GWT
      * must throw {@link UnsupportedOperationException}
@@ -91,10 +111,9 @@ public interface AutomationClient {
     void registerAdapter(AdapterFactory<?> factory);
 
     /**
-     * Cleanup any resources held by this client. After a shutdown the client
-     * is no more usable.
+     * Cleanup any resources held by this client. After a shutdown the client is
+     * no more usable.
      */
     void shutdown();
-
 
 }
