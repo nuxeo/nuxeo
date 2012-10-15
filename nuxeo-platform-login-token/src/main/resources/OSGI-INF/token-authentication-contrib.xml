@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.login.token.authentication.contrib">
 
-  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <!-- Replace auth chains -->
+  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
   <require>org.nuxeo.ecm.automation.server.auth.config</require>
 
   <extension
@@ -52,6 +53,7 @@
         <plugin>BASIC_AUTH</plugin>
         <plugin>TOKEN_AUTH</plugin>
         <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>
         <plugin>ANONYMOUS_AUTH</plugin>
         <plugin>WEBSERVICES_AUTH</plugin>
       </plugins>
