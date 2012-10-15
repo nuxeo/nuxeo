@@ -65,13 +65,15 @@ public class TokenAuthenticationServiceImpl implements
 
     protected static final String DEVICE_NAME_FIELD = "deviceName";
 
+    protected static final String DEVICE_DESCRIPTION_FIELD = "deviceDescription";
+
     protected static final String PERMISSION_FIELD = "permission";
 
     protected static final String CREATION_DATE_FIELD = "creationDate";
 
     @Override
     public String getToken(String userName, String applicationName,
-            String deviceName, String permission)
+            String deviceName, String deviceDescription, String permission)
             throws TokenAuthenticationException {
 
         if (StringUtils.isEmpty(userName)
@@ -123,6 +125,10 @@ public class TokenAuthenticationServiceImpl implements
             entry.setProperty(DIRECTORY_SCHEMA, APPLICATION_NAME_FIELD,
                     applicationName);
             entry.setProperty(DIRECTORY_SCHEMA, DEVICE_NAME_FIELD, deviceName);
+            if (!StringUtils.isEmpty(deviceDescription)) {
+                entry.setProperty(DIRECTORY_SCHEMA, DEVICE_DESCRIPTION_FIELD,
+                        deviceDescription);
+            }
             entry.setProperty(DIRECTORY_SCHEMA, PERMISSION_FIELD, permission);
             Calendar creationDate = Calendar.getInstance();
             creationDate.setTimeInMillis(System.currentTimeMillis());

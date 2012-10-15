@@ -34,8 +34,9 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Servlet that allows to get a unique authentication token given some user
  * information passed as request parameters: user name, application name, device
- * name, permission. As all parameters are required, an error response will be
- * sent with a 404 status code if one of them is null or empty.
+ * name, device description, permission. An error response will be sent with a
+ * 404 status code if one of the required parameters is null or empty. All
+ * parameters are required except for the device description.
  * <p>
  * The token is provided by the {@link TokenAuthenticationService}.
  *
@@ -52,6 +53,8 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
     protected static final String DEVICE_NAME_PARAM = "deviceName";
 
+    protected static final String DEVICE_DESCRIPTION_PARAM = "deviceDescription";
+
     protected static final String PERMISSION_PARAM = "permission";
 
     @Override
@@ -62,6 +65,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
         String userName = req.getParameter(USERNAME_PARAM);
         String applicationName = req.getParameter(APPLICATION_NAME_PARAM);
         String deviceName = req.getParameter(DEVICE_NAME_PARAM);
+        String deviceDescription = req.getParameter(DEVICE_DESCRIPTION_PARAM);
         String permission = req.getParameter(PERMISSION_PARAM);
 
         // As all parameters are required, if one is null or empty, send an
@@ -78,13 +82,16 @@ public class TokenAuthenticationServlet extends HttpServlet {
         userName = URIUtil.decode(userName);
         applicationName = URIUtil.decode(applicationName);
         deviceName = URIUtil.decode(deviceName);
+        if (!StringUtils.isEmpty(deviceDescription)) {
+            deviceDescription = URIUtil.decode(deviceDescription);
+        }
         permission = URIUtil.decode(permission);
 
         // Get token and write it to the response body
         try {
             TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
             String token = tokenAuthService.getToken(userName, applicationName,
-                    deviceName, permission);
+                    deviceName, deviceDescription, permission);
             sendTextResponse(resp, token);
         } catch (TokenAuthenticationException e) {
             // Should never happen as parameters have already been checked

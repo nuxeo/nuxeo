@@ -57,7 +57,7 @@ public class TestTokenAuthenticationService {
         // Test omitting required parameters
         try {
             tokenAuthenticationService.getToken("joe", "myFavoriteApp", null,
-                    null);
+                    null, null);
             fail("Getting token should have failed since required parameters are missing.");
         } catch (TokenAuthenticationException e) {
             assertEquals(
@@ -67,7 +67,8 @@ public class TestTokenAuthenticationService {
 
         // Test token generation
         String token = tokenAuthenticationService.getToken("joe",
-                "myFavoriteApp", "Ubuntu box 64 bits", "rw");
+                "myFavoriteApp", "Ubuntu box 64 bits",
+                "This is my personal box", "rw");
         assertNotNull(token);
 
         // Test token binding persistence
@@ -83,6 +84,8 @@ public class TestTokenAuthenticationService {
                     tokenModel.getPropertyValue("authtoken:applicationName"));
             assertEquals("Ubuntu box 64 bits",
                     tokenModel.getPropertyValue("authtoken:deviceName"));
+            assertEquals("This is my personal box",
+                    tokenModel.getPropertyValue("authtoken:deviceDescription"));
             assertEquals("rw",
                     tokenModel.getPropertyValue("authtoken:permission"));
             assertNotNull(tokenModel.getPropertyValue("authtoken:creationDate"));
@@ -94,12 +97,14 @@ public class TestTokenAuthenticationService {
 
         // Test existing token retrieval
         String sameToken = tokenAuthenticationService.getToken("joe",
-                "myFavoriteApp", "Ubuntu box 64 bits", "rw");
+                "myFavoriteApp", "Ubuntu box 64 bits",
+                "This is my personal box", "rw");
         assertEquals(token, sameToken);
 
         // Test token uniqueness
         String otherToken = tokenAuthenticationService.getToken("jack",
-                "myFavoriteApp", "Ubuntu box 64 bits", "rw");
+                "myFavoriteApp", "Ubuntu box 64 bits",
+                "This is my personal box", "rw");
         assertTrue(!otherToken.equals(token));
     }
 
@@ -113,7 +118,7 @@ public class TestTokenAuthenticationService {
 
         // Test valid token
         token = tokenAuthenticationService.getToken("joe", "myFavoriteApp",
-                "Ubuntu box 64 bits", "rw");
+                "Ubuntu box 64 bits", "This is my personal box", "rw");
         userName = tokenAuthenticationService.getUserName(token);
         assertEquals("joe", userName);
     }
@@ -126,7 +131,8 @@ public class TestTokenAuthenticationService {
 
         // Test revoking an existing token
         String token = tokenAuthenticationService.getToken("joe",
-                "myFavoriteApp", "Ubuntu box 64 bits", "rw");
+                "myFavoriteApp", "Ubuntu box 64 bits",
+                "This is my personal box", "rw");
         assertEquals("joe", tokenAuthenticationService.getUserName(token));
 
         tokenAuthenticationService.revokeToken(token);
@@ -142,11 +148,13 @@ public class TestTokenAuthenticationService {
 
         // Test existing token bindings
         String token1 = tokenAuthenticationService.getToken("joe",
-                "myFavoriteApp", "Ubuntu box 64 bits", "rw");
+                "myFavoriteApp", "Ubuntu box 64 bits",
+                "This is my personal Linux box", "rw");
         String token2 = tokenAuthenticationService.getToken("joe",
-                "myFavoriteApp", "Windows box 32 bits", "rw");
+                "myFavoriteApp", "Windows box 32 bits",
+                "This is my personal Windows box", "rw");
         String token3 = tokenAuthenticationService.getToken("joe",
-                "nuxeoDrive", "Mac OSX VM", "rw");
+                "nuxeoDrive", "Mac OSX VM", "This is my personal Mac box", "rw");
 
         DocumentModelList tokenBindings = tokenAuthenticationService.getTokenBindings("joe");
         assertEquals(3,
@@ -160,6 +168,8 @@ public class TestTokenAuthenticationService {
                 tokenBinding.getPropertyValue("authtoken:applicationName"));
         assertEquals("Mac OSX VM",
                 tokenBinding.getPropertyValue("authtoken:deviceName"));
+        assertEquals("This is my personal Mac box",
+                tokenBinding.getPropertyValue("authtoken:deviceDescription"));
         assertEquals("rw",
                 tokenBinding.getPropertyValue("authtoken:permission"));
         assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
@@ -171,6 +181,8 @@ public class TestTokenAuthenticationService {
                 tokenBinding.getPropertyValue("authtoken:applicationName"));
         assertEquals("Windows box 32 bits",
                 tokenBinding.getPropertyValue("authtoken:deviceName"));
+        assertEquals("This is my personal Windows box",
+                tokenBinding.getPropertyValue("authtoken:deviceDescription"));
         assertEquals("rw",
                 tokenBinding.getPropertyValue("authtoken:permission"));
         assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
@@ -182,6 +194,8 @@ public class TestTokenAuthenticationService {
                 tokenBinding.getPropertyValue("authtoken:applicationName"));
         assertEquals("Ubuntu box 64 bits",
                 tokenBinding.getPropertyValue("authtoken:deviceName"));
+        assertEquals("This is my personal Linux box",
+                tokenBinding.getPropertyValue("authtoken:deviceDescription"));
         assertEquals("rw",
                 tokenBinding.getPropertyValue("authtoken:permission"));
         assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));

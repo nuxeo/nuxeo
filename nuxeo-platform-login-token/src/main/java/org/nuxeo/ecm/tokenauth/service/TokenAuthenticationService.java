@@ -27,7 +27,8 @@ import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 /**
  * Service to manage generation and storage of authentication tokens. Each token
  * must be unique and persisted in the back-end with the user information it is
- * bound to: user name, application name, device name, permission.
+ * bound to: user name, application name, device name, device description,
+ * permission.
  * <p>
  * Typically, the service is called by the {@link TokenAuthenticationServlet} to
  * get a token from the user information passed as request parameters, and it
@@ -44,17 +45,19 @@ public interface TokenAuthenticationService extends Serializable {
      * <p>
      * If such a token exist in the back-end for the specified (userName,
      * applicationName, deviceName) triplet, just returns it, else generates it
-     * and stores it in the back-end with the triplet attributes and the
-     * specified permission.
+     * and stores it in the back-end with the triplet attributes, the specified
+     * device description and permission.
      *
-     * @throws TokenAuthenticationException if one of the parameters is null or
-     *             empty as they are all mandatory
+     * @throws TokenAuthenticationException if one of the required parameters is
+     *             null or empty (all parameters are required except for the
+     *             device description)
      * @throws ClientRuntimeException if multiple tokens are found for the same
      *             triplet
      *
      */
     String getToken(String userName, String applicationName, String deviceName,
-            String permission) throws TokenAuthenticationException;
+            String deviceDescription, String permission)
+            throws TokenAuthenticationException;
 
     /**
      * Gets the user name bound to the specified token.
