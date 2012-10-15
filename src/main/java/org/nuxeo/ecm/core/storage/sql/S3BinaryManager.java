@@ -37,6 +37,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.javasimon.SimonManager;
+import org.javasimon.Split;
 import org.nuxeo.common.file.FileCache;
 import org.nuxeo.common.file.LRUFileCache;
 import org.nuxeo.common.utils.SizeUtils;
@@ -165,7 +167,6 @@ public class S3BinaryManager extends AbstractBinaryManager {
         if (isBlank(awsSecret)) {
             awsSecret = System.getenv(AWS_SECRET_ENV_KEY);
         }
-
         if (isBlank(bucketName)) {
             throw new RuntimeException("Missing conf: " + BUCKET_NAME_KEY);
         }
@@ -248,7 +249,13 @@ public class S3BinaryManager extends AbstractBinaryManager {
                     cryptoConfiguration);
         }
         try {
+            log.trace(String.format(
+                    "Checking the existence of bucket '%s' in region '%s'",
+                    bucketName, bucketRegion));
             if (!amazonS3.doesBucketExist(bucketName)) {
+                log.debug(String.format(
+                        "Creating missing bucket '%s' in region '%s'",
+                        bucketName, bucketRegion));
                 amazonS3.createBucket(bucketName, bucketRegion);
                 amazonS3.setBucketAcl(bucketName,
                         CannedAccessControlList.Private);
@@ -292,6 +299,9 @@ public class S3BinaryManager extends AbstractBinaryManager {
         // Store the blob in the S3 bucket if not already there
         String etag;
         try {
+            log.trace(String.format(
+                    "Looking up existence of blob with digest '%s' in bucket '%s'",
+                    digest, bucketName));
             ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName,
                     digest);
             etag = metadata.getETag();
@@ -301,8 +311,18 @@ public class S3BinaryManager extends AbstractBinaryManager {
             }
             // no data, store the blob
             try {
+                log.trace(String.format(
+                        "Uploading blob with digest '%s' in bucket '%s'",
+                        digest, bucketName));
+                Split split = SimonManager.getStopwatch(
+                        this.getClass().getName() + ".upload").start();
                 PutObjectResult result = amazonS3.putObject(bucketName, digest,
                         tmp);
+                Double duration = split.stop() / 1e9;
+                log.debug(String.format(
+                        "Uploaded blob with digest '%s' in bucket '%s' in %fs",
+                        digest, bucketName, duration));
+                log.trace(split.getStopwatch());
                 etag = result.getETag();
             } catch (AmazonClientException ee) {
                 throw new IOException(ee);
@@ -339,6 +359,9 @@ public class S3BinaryManager extends AbstractBinaryManager {
     }
 
     protected void removeBinary(String digest) {
+        log.trace(String.format(
+                "Deleting blob with digest '%s' in bucket '%s'", digest,
+                bucketName));
         amazonS3.deleteObject(bucketName, digest);
     }
 
@@ -373,8 +396,18 @@ public class S3BinaryManager extends AbstractBinaryManager {
         @Override
         protected boolean fetchFile(File tmp) {
             try {
+                log.trace(String.format(
+                        "Fetching blob with digest '%s' in bucket '%s'",
+                        digest, bucketName));
+                Split split = SimonManager.getStopwatch(
+                        this.getClass().getName() + ".download").start();
                 ObjectMetadata metadata = amazonS3.getObject(
                         new GetObjectRequest(bucketName, digest), tmp);
+                Double duration = split.stop() / 1e9;
+                log.debug(String.format(
+                        "Downloaded blob with digest '%s' in bucket '%s' in %fs",
+                        digest, bucketName, duration));
+                log.trace(split.getStopwatch());
                 // check ETag
                 String etag = metadata.getETag();
                 if (!(amazonS3 instanceof AmazonS3EncryptionClient)
@@ -395,6 +428,9 @@ public class S3BinaryManager extends AbstractBinaryManager {
         @Override
         protected Long fetchLength() {
             try {
+                log.trace(String.format(
+                        "Looking up length of blob with digest '%s' in bucket '%s'",
+                        digest, bucketName));
                 ObjectMetadata metadata = amazonS3.getObjectMetadata(
                         bucketName, digest);
                 // check ETag
@@ -458,6 +494,9 @@ public class S3BinaryManager extends AbstractBinaryManager {
             startTime = System.currentTimeMillis();
             status = new BinaryManagerStatus();
             marked = new HashSet<String>();
+            log.trace(String.format(
+                    "Starting Garbage Collection on bucket '%s'",
+                    binaryManager.bucketName));
         }
 
         @Override
@@ -517,6 +556,10 @@ public class S3BinaryManager extends AbstractBinaryManager {
 
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
+            log.debug(String.format(
+                    "Collected %d blobs with total size %d bytes in %fs in bucket '%s'",
+                    status.numBinariesGC, status.sizeBinariesGC,
+                    status.gcDuration / 1000., binaryManager.bucketName));
         }
     }
 
