@@ -319,9 +319,10 @@ public class S3BinaryManager extends AbstractBinaryManager {
                 PutObjectResult result = amazonS3.putObject(bucketName, digest,
                         tmp);
                 Double duration = split.stop() / 1e9;
+                Double sizeMB = tmp.length() / 1e6;
                 log.debug(String.format(
-                        "Uploaded blob with digest '%s' in bucket '%s' in %fs",
-                        digest, bucketName, duration));
+                        "Uploaded blob with digest '%s' of size %fMB to bucket '%s' in %fs",
+                        digest, sizeMB, bucketName, duration));
                 log.trace(split.getStopwatch());
                 etag = result.getETag();
             } catch (AmazonClientException ee) {
@@ -404,9 +405,10 @@ public class S3BinaryManager extends AbstractBinaryManager {
                 ObjectMetadata metadata = amazonS3.getObject(
                         new GetObjectRequest(bucketName, digest), tmp);
                 Double duration = split.stop() / 1e9;
+                Double sizeMB = tmp.length() / 1e6;
                 log.debug(String.format(
-                        "Downloaded blob with digest '%s' in bucket '%s' in %fs",
-                        digest, bucketName, duration));
+                        "Downloaded blob with digest '%s' of size %fMB from bucket '%s' in %fs",
+                        digest, sizeMB, bucketName, duration));
                 log.trace(split.getStopwatch());
                 // check ETag
                 String etag = metadata.getETag();
