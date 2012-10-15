@@ -27,11 +27,6 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.script</groupId>
-      <artifactId>script-api</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>commons-jexl</groupId>
       <artifactId>commons-jexl</artifactId>
     </dependency>
