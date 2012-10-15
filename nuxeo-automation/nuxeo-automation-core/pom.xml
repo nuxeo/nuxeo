@@ -66,12 +66,6 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
-    <!-- TODO this should use maven conditional dependencies. If java 6 we don't
-      need it since scripting is part of java 6 -->
-    <dependency>
-      <groupId>javax.script</groupId>
-      <artifactId>script-api</artifactId>
-    </dependency>
     <!-- only for jsonnodetoproperties adapter shoul be moved in server module -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
