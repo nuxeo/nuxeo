@@ -41,14 +41,6 @@
       <groupId>opensymphony</groupId>
       <artifactId>quartz-all</artifactId>
     </dependency>
-    <!--
-      TODO this should use maven conditional dependencies. If java 6 we don't
-      need it since scripting is part of java 6
-    -->
-    <dependency>
-      <groupId>javax.script</groupId>
-      <artifactId>script-api</artifactId>
-    </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
