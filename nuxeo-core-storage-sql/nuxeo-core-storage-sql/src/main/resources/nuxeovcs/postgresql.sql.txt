@@ -17,6 +17,7 @@
 #   NEW.fulltextSFX := COALESCE(NEW.simpletextSFX}, ''::TSVECTOR) || COALESCE(NEW.binarytextSFX, ''::TSVECTOR);
 # ${readPermissions} ('Browse'), ('Read'), ('ReadProperties'), ('ReadRemove'), ('ReadWrite'), ('Everything')
 # ${usersSeparator} default is ",", but it depends on the configuration
+# ${unlogged} empty or "UNLOGGED" if postgresql >= 9.1
 
 # Conditions used:
 # fulltextEnabled
@@ -335,7 +336,7 @@ DROP TABLE read_acls_cache;
 SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user';
 
 #IF: emptyResult
-CREATE TABLE aclr_user (
+CREATE ${unlogged} TABLE aclr_user (
   user_id varchar(34) NOT NULL,
   users varchar(250)[]
 );
@@ -353,7 +354,7 @@ CREATE INDEX aclr_user_user_id_idx ON aclr_user USING btree(user_id);
 SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user_map';
 
 #IF: emptyResult
-CREATE TABLE aclr_user_map (
+CREATE ${unlogged} TABLE aclr_user_map (
   user_id varchar(34) NOT NULL,
   acl_id varchar(34) NOT NULL
 );
@@ -420,7 +421,7 @@ DROP TABLE hierarchy_modified_acl;
 SELECT 1 FROM pg_tables WHERE tablename='aclr_modified';
 
 #IF: emptyResult
-CREATE TABLE aclr_modified (
+CREATE ${unlogged} TABLE aclr_modified (
   hierarchy_id character varying(36),
   is_new boolean
 );

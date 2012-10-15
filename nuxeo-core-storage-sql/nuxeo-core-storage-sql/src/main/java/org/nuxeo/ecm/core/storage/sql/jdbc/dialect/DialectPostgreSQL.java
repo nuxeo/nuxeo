@@ -75,6 +75,8 @@ public class DialectPostgreSQL extends Dialect {
     private static final String[] RESERVED_COLUMN_NAMES = { "xmin", "xmax",
             "cmin", "cmax", "ctid", "oid", "tableoid" };
 
+    private static final String UNLOGGED_KEYWORD = "UNLOGGED";
+
     protected final String fulltextAnalyzer;
 
     protected final boolean supportsWith;
@@ -86,6 +88,8 @@ public class DialectPostgreSQL extends Dialect {
     protected String usersSeparator;
 
     protected boolean compatibilityFulltextTable;
+
+    protected final String unloggedKeyword;
 
     public DialectPostgreSQL(DatabaseMetaData metadata,
             BinaryManager binaryManager,
@@ -104,6 +108,11 @@ public class DialectPostgreSQL extends Dialect {
             throw new StorageException(e);
         }
         supportsWith = major > 8 || (major == 8 && minor >= 4);
+        if ((major == 9 && minor >= 1) || (major > 9)) {
+            unloggedKeyword = UNLOGGED_KEYWORD;
+        } else {
+            unloggedKeyword = "";
+        }
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
@@ -877,6 +886,7 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("usersSeparator", getUsersSeparator());
         properties.put("everyone", SecurityConstants.EVERYONE);
         properties.put("readAclMaxSize", Integer.toString(readAclMaxSize));
+        properties.put("unlogged", unloggedKeyword);
         return properties;
     }
 
