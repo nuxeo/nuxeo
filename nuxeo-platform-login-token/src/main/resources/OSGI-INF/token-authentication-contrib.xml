@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.login.token.authentication.contrib">
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <require>org.nuxeo.ecm.automation.server.auth.config</require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+
+    <documentation>
+      Authentication plugin using a token to validate
+      identity. This token is sent as a HTTP request header.
+
+      The user is
+      retrieved looking into a directory mapping unique tokens to user
+      names.
+
+      This Authentication Plugin is configured to be
+      used with the
+      Trusting_LM LoginModule plugin
+      => no password check will
+      be done, a
+      principal will be created
+      from the userName if the user exists in
+      the
+      user directory.
+
+      @author
+      Antoine Taillefer (ataillefer@nuxeo.com)
+    </documentation>
+
+    <authenticationPlugin name="TOKEN_AUTH"
+      enabled="true"
+      class="org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="chain">
+
+    <documentation>
+      Override authentication chain to use token
+      authentication just after basic one.
+    </documentation>
+
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>TOKEN_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="specificChains">
+
+    <documentation>
+      Override automation specific authentication chain to
+      use token authentication just after basic one.
+    </documentation>
+
+    <specificAuthenticationChain name="Automation">
+      <urlPatterns>
+        <url>(.*)/automation.*</url>
+      </urlPatterns>
+      <replacementChain>
+        <plugin>AUTOMATION_BASIC_AUTH</plugin>
+        <plugin>TOKEN_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>
