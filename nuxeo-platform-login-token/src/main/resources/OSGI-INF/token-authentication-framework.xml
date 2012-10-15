@@ -7,7 +7,7 @@
     is unique and persisted in the
     back-end with the user information it
     is bound to: user name,
-    application name, device name, permission.
+    application name, device name, device description, permission.
 
     @author Antoine Taillefer
     (ataillefer@nuxeo.com)

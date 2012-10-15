@@ -6,6 +6,7 @@
   <xs:element name="userName" type="xs:string" />
   <xs:element name="applicationName" type="xs:string" />
   <xs:element name="deviceName" type="xs:string" />
+  <xs:element name="deviceDescription" type="xs:string" />
   <xs:element name="permission" type="xs:string" />
   <xs:element name="creationDate" type="xs:date" />
 

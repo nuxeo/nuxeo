@@ -26,6 +26,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Callback for token authentication.
+ * <p>
+ * The remote token retrieval is done using directly the
+ * {@link TokenAuthenticationService} with the following parameters: userName,
+ * applicationName, deviceName, deviceDescription and permission. The parameters
+ * are passed to the default constructor. The token local storage is done in
+ * memory.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
@@ -38,6 +44,8 @@ public class TokenAuthenticationCallback implements TokenCallback {
 
     protected static final String DEVICE_NAME_KEY = "deviceName";
 
+    protected static final String DEVICE_DESCRIPTION_KEY = "deviceDescription";
+
     protected static final String PERMISSION_KEY = "permission";
 
     protected String token;
@@ -48,13 +56,16 @@ public class TokenAuthenticationCallback implements TokenCallback {
 
     protected String deviceName;
 
+    protected String deviceDescription;
+
     protected String permission;
 
     public TokenAuthenticationCallback(String userName, String applicationName,
-            String deviceName, String permission) {
+            String deviceName, String deviceDescription, String permission) {
         this.userName = userName;
         this.applicationName = applicationName;
         this.deviceName = deviceName;
+        this.deviceDescription = deviceDescription;
         this.permission = permission;
     }
 
@@ -69,12 +80,13 @@ public class TokenAuthenticationCallback implements TokenCallback {
         String userName = tokenParams.get(USERNAME_KEY);
         String applicationName = tokenParams.get(APPLICATION_NAME_KEY);
         String deviceName = tokenParams.get(DEVICE_NAME_KEY);
+        String deviceDescription = tokenParams.get(DEVICE_DESCRIPTION_KEY);
         String permission = tokenParams.get(PERMISSION_KEY);
 
         try {
             TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
             return tokenAuthenticationService.getToken(userName,
-                    applicationName, deviceName, permission);
+                    applicationName, deviceName, deviceDescription, permission);
         } catch (TokenAuthenticationException e) {
             throw new ClientRuntimeException(
                     "Error while trying to get remote token.", e);
@@ -87,6 +99,7 @@ public class TokenAuthenticationCallback implements TokenCallback {
         tokenParams.put(USERNAME_KEY, userName);
         tokenParams.put(APPLICATION_NAME_KEY, applicationName);
         tokenParams.put(DEVICE_NAME_KEY, deviceName);
+        tokenParams.put(DEVICE_DESCRIPTION_KEY, deviceDescription);
         tokenParams.put("permission", permission);
         return tokenParams;
     }

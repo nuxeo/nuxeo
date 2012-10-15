@@ -66,7 +66,8 @@ public class TestTokenAuthenticator {
 
         // Mock token authentication callback
         TokenAuthenticationCallback cb = new TokenAuthenticationCallback(
-                "Administrator", "myFavoriteApp", "Ubuntu box 64 bits", "rw");
+                "Administrator", "myFavoriteApp", "Ubuntu box 64 bits",
+                "This is my personal Linux box", "rw");
         assertNull(cb.getLocalToken());
 
         // Get client session using callback, should acquire a remote token,
