@@ -61,7 +61,7 @@ public class TestTokenAuthenticationService {
             fail("Getting token should have failed since required parameters are missing.");
         } catch (TokenAuthenticationException e) {
             assertEquals(
-                    "All parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.",
+                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.",
                     e.getMessage());
         }
 
