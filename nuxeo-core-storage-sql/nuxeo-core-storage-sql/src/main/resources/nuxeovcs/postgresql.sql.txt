@@ -337,7 +337,7 @@ SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user';
 #IF: emptyResult
 CREATE TABLE aclr_user (
   user_id varchar(34) NOT NULL,
-  users varchar(127)[]
+  users varchar(250)[]
 );
 
 
