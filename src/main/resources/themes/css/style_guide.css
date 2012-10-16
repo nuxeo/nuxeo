@@ -1,0 +1,56 @@
+/* --
+Custom CSS for the Nuxeo Styles guide
+-- */
+
+/* Specific styles for the Style Guide demo, maybe missing in the platform by default */
+.demoGrid {
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
+
+  .demoGrid .gridStyle2:first-child {
+    position: relative;
+    z-index: 100 }
+
+.mainWrapper {
+  background-color: #fff;
+  box-shadow: -2px 0 2px rgba(0, 0, 0, 0.3);
+	padding: 2% 10% 8% }
+
+.verticalTabs {
+	font-weight: bold;
+  margin: 0;
+	padding: 2em 0 }
+
+	.verticalTabs li {
+		box-shadow: -5px 2px 5px rgba(0, 0, 0, 0.5);
+	  margin: 0 0 .2em;
+	  padding: 0 }
+
+	.verticalTabs li a {
+	    color: #000;
+	    display: block;
+	    padding: .6em 0 .6em .8em;
+	    text-decoration: none }
+
+	.verticalTabs li.selected,
+	.verticalTabs li:hover {
+	    background-color: "color.major.stronger (__FLAVOR__ background)";
+	    border-radius: 0 20px 20px 0;
+	    margin: 0 -1em .2em 0 }
+
+	.verticalTabs li:hover {
+	    background-color: "color.major.strong (__FLAVOR__ background)" }
+
+	.verticalTabs li:hover a {
+	    color: #000 }
+
+	.verticalTabs li.selected a {
+	    color: #fff }
+
+
+/* Missing styles in the platform for sure */
+.code {
+  border: 1px solid #cde;
+  border-radius: 3px;
+  color: #1358AE;
+  font-family: monospace,sans-serif;
+  padding: .1em }

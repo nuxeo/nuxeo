@@ -1,6 +1,6 @@
 # Nuxeo Style Guide
 
-The Nuxeo Style Guide provides a set of simple rules, common usages and good practices to help developers to design features for [the Nuxeo Patform](http://www.nuxeo.com/en/products/content-management-platform). 
+The Nuxeo Style Guide provides a set of classes, common usages, good practices and simple rules to help developers design features for [the Nuxeo Patform](http://www.nuxeo.com/en/products/content-management-platform). 
 
   
 ## About Nuxeo
