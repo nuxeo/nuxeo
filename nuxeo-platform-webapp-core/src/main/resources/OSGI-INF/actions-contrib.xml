@@ -533,6 +533,12 @@
       <category>EDIT_DOCUMENT_FORM</category>
     </action>
 
+    <action id="EDIT_CURRENT_DOCUMENT_AND_STAY" enabled="false"
+      link="#{documentActions.updateDocument(currentDocument, true)}"
+      order="10" label="command.save.and.stay">
+      <category>EDIT_DOCUMENT_FORM</category>
+    </action>
+
     <!-- end of actions on document create and edit pages -->
 
     <!-- footer links -->
