@@ -754,14 +754,13 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
         if (countUpTo == 0 && limit > 0 && sqlInfo.dialect.supportsPaging()) {
             // full result set not needed for counting
-            sql += " " + sqlInfo.dialect.getPagingClause(limit, offset);
+            sql = sqlInfo.dialect.addPagingClause(sql, limit, offset);
             limit = 0;
             offset = 0;
         } else if (countUpTo > 0 && sqlInfo.dialect.supportsPaging()) {
             // ask one more row
-            sql += " "
-                    + sqlInfo.dialect.getPagingClause(
-                            Math.max(countUpTo + 1, limit + offset), 0);
+            sql = sqlInfo.dialect.addPagingClause(sql,
+                    Math.max(countUpTo + 1, limit + offset), 0);
         }
 
         PreparedStatement ps = null;
