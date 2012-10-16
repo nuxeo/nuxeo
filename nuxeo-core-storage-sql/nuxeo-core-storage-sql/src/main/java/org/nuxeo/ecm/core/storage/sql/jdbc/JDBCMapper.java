@@ -718,7 +718,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
         if (!countTotal && limit > 0 && sqlInfo.dialect.supportsPaging()) {
             // full result set not needed for counting
-            sql += " " + sqlInfo.dialect.getPagingClause(limit, offset);
+            sql = sqlInfo.dialect.addPagingClause(sql, limit, offset);
             limit = 0;
             offset = 0;
         } else if (countTotal && sqlInfo.dialect.supportsPaging() && limitedResults) {
@@ -726,7 +726,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             if (offset >= maxResults) {
                 specialLimit += offset;
             }
-            sql += " " + sqlInfo.dialect.getPagingClause(specialLimit, 0);
+            sql = sqlInfo.dialect.addPagingClause(sql, specialLimit, 0);
         }
 
         PreparedStatement ps = null;

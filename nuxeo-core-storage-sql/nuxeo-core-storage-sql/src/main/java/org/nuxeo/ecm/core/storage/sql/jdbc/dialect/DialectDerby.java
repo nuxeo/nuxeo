@@ -270,8 +270,8 @@ public class DialectDerby extends Dialect {
     }
 
     @Override
-    public String getPagingClause(long limit, long offset) {
-        return String.format("OFFSET %d ROWS FETCH FIRST %d ROWS ONLY", offset,
+    public String addPagingClause(String sql, long limit, long offset) {
+        return sql + String.format(" OFFSET %d ROWS FETCH FIRST %d ROWS ONLY", offset,
                 limit); // available from 10.5
     }
 

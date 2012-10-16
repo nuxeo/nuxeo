@@ -824,9 +824,11 @@ public abstract class Dialect {
     }
 
     /**
-     * Gets paging clause to be appended at the end of select statement
+     * Returns the SQL query with a paging clause
+     *
+     * @since 5.7 (replacing getPagingClause)
      */
-    public String getPagingClause(long limit, long offset) {
+    public String addPagingClause(String sql, long limit, long offset) {
         throw new UnsupportedOperationException("paging is not supported");
     }
 

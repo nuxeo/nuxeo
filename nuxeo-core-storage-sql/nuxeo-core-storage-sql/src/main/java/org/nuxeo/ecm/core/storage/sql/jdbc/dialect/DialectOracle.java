@@ -461,6 +461,17 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public boolean supportsPaging() {
+        return true;
+    }
+
+    @Override
+    public String addPagingClause(String sql, long limit, long offset) {
+        return String.format("SELECT * FROM (SELECT /*+ FIRST_ROWS(%d) */  a.*, ROWNUM rnum FROM (%s) a WHERE ROWNUM <= %d) WHERE rnum  > %d",
+                    limit, sql, limit + offset, offset);
+    }
+
+    @Override
     public boolean supportsWith() {
         return false;
     }
