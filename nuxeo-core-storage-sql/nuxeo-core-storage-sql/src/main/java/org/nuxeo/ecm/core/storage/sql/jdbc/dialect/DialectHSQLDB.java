@@ -288,8 +288,8 @@ public class DialectHSQLDB extends Dialect {
 
     @SuppressWarnings("boxing")
     @Override
-    public String getPagingClause(long limit, long offset) {
-        return String.format("LIMIT %d OFFSET %d", limit, offset);
+    public String addPagingClause(String sql, long limit, long offset) {
+        return sql + String.format(" LIMIT %d OFFSET %d", limit, offset);
     }
 
 }
