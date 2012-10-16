@@ -15,19 +15,19 @@
           <widget>authToken</widget>
         </row>
         <row>
-          <widget>applicationName</widget>
+          <widget>authTokenApplicationName</widget>
         </row>
         <row>
-          <widget>deviceName</widget>
+          <widget>authTokenDeviceName</widget>
         </row>
         <row>
-          <widget>deviceDescription</widget>
+          <widget>authTokenDeviceDescription</widget>
         </row>
         <row>
-          <widget>tokenPermission</widget>
+          <widget>authTokenPermission</widget>
         </row>
         <row>
-          <widget>tokenCreationDate</widget>
+          <widget>authTokenCreationDate</widget>
         </row>
       </rows>
     </layout>
@@ -50,7 +50,7 @@
       </widgetModes>
     </widget>
 
-    <widget name="applicationName" type="text">
+    <widget name="authTokenApplicationName" type="text">
       <labels>
         <label mode="any">label.tokenauth.applicationName</label>
       </labels>
@@ -63,7 +63,7 @@
       </widgetModes>
     </widget>
 
-    <widget name="deviceName" type="text">
+    <widget name="authTokenDeviceName" type="text">
       <labels>
         <label mode="any">label.tokenauth.deviceName</label>
       </labels>
@@ -76,7 +76,7 @@
       </widgetModes>
     </widget>
 
-    <widget name="deviceDescription" type="text">
+    <widget name="authTokenDeviceDescription" type="text">
       <labels>
         <label mode="any">label.tokenauth.deviceDescription</label>
       </labels>
@@ -86,7 +86,7 @@
       </fields>
     </widget>
 
-    <widget name="tokenPermission" type="text">
+    <widget name="authTokenPermission" type="text">
       <labels>
         <label mode="any">label.tokenauth.permission</label>
       </labels>
@@ -99,7 +99,7 @@
       </widgetModes>
     </widget>
 
-    <widget name="tokenCreationDate" type="datetime">
+    <widget name="authTokenCreationDate" type="datetime">
       <labels>
         <label mode="any">label.tokenauth.creationDate</label>
       </labels>
