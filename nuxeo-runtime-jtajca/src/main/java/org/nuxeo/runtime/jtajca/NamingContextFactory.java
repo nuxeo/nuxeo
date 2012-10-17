@@ -23,8 +23,6 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 
-import org.apache.xbean.naming.context.WritableContext;
-
 /**
  * Provides access to the nuxeo container naming context
  *
@@ -39,6 +37,5 @@ public class NamingContextFactory implements InitialContextFactory {
         }
         return NuxeoContainer.rootContext;
     }
-
 
 }
