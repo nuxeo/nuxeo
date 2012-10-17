@@ -53,9 +53,9 @@ public class Binary implements Serializable {
         this.repoName = repoName;
     }
 
-    protected Binary(String digest) {
+    protected Binary(String digest, String reponame) {
         this.digest = digest;
-        this.repoName = null;
+        this.repoName = reponame;
     }
 
     /**
