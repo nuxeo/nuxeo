@@ -78,7 +78,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audit-core</artifactId>
       <classifier>tests</classifier>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
