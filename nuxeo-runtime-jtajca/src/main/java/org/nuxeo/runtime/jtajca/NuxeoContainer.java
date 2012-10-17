@@ -266,6 +266,16 @@ public class NuxeoContainer {
     }
 
     /**
+     * Exposes the {@link #rootContext}.
+     *
+     * @since 5.7
+     * @see https://jira.nuxeo.com/browse/NXP-10331
+     */
+    public static Context getRootContext() {
+        return rootContext;
+    }
+
+    /**
      * set naming context factory to nuxeo implementation, backup original
      * settings
      *
