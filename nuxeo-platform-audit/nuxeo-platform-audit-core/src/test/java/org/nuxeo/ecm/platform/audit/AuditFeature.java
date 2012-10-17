@@ -28,8 +28,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features({ TransactionalFeature.class, PlatformFeature.class })
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.audit.tests"})
-@LocalDeploy("org.nuxeo.ecm.platform.audit.tests:nxaudit-ds.xml")
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit"})
+@LocalDeploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
 public class AuditFeature extends SimpleFeature {
 
     protected static final String DIRECTORY = "target/test/nxaudit";
