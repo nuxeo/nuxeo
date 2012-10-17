@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
@@ -84,12 +86,15 @@ public class DefaultFileImporter extends AbstractFileImporter {
         // Determining if we need to create or update an existing one
         if (overwrite && docModel != null) {
 
-            // save changes the user might have made to the current version
-            documentManager.saveDocument(docModel);
-            documentManager.save();
+            // Do a snapshot of the current version first
+            if (documentManager.isCheckedOut(docModel.getRef())) {
+                docModel.checkIn(VersioningOption.MINOR, null);
+            }
+            docModel.checkOut();
 
-            docModel.setProperty("file", "content", input);
-            docModel = overwriteAndIncrementversion(documentManager, docModel);
+            docModel.setPropertyValue("file:content",
+                    (Serializable) input.persist());
+            documentManager.saveDocument(docModel);
 
         } else {
             // new
@@ -121,7 +126,8 @@ public class DefaultFileImporter extends AbstractFileImporter {
         return docModel;
     }
 
-    protected static UITypesConfiguration getConfiguration(DocumentModel currentDoc) {
+    protected static UITypesConfiguration getConfiguration(
+            DocumentModel currentDoc) {
         UITypesConfiguration configuration = null;
         try {
             LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
