@@ -17,9 +17,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,8 +34,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.file.FileCache;
-import org.nuxeo.common.file.LRUFileCache;
 import org.nuxeo.common.utils.SizeUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -58,6 +53,9 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 /**
  * A Binary Manager that stores binaries as S3 BLOBs
  * <p>
@@ -66,7 +64,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
  * Because the BLOB length can be accessed independently of the binary stream,
  * it is also cached in a simple text file if accessed before the stream.
  */
-public class S3BinaryManager extends AbstractBinaryManager {
+public class S3BinaryManager extends BinaryCachingManager  {
 
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
 
@@ -121,7 +119,7 @@ public class S3BinaryManager extends AbstractBinaryManager {
 
     protected String repositoryName;
 
-    protected FileCache fileCache;
+    protected BinaryFileCache fileCache;
 
     protected AmazonS3 amazonS3;
 
@@ -265,7 +263,7 @@ public class S3BinaryManager extends AbstractBinaryManager {
         dir.mkdir();
         dir.deleteOnExit();
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
-        fileCache = new LRUFileCache(dir, cacheSize);
+        fileCache = new S3BinaryFileCache(dir, cacheSize);
         log.info("Using binary cache directory: " + dir.getPath() + " size: "
                 + cacheSizeStr);
 
@@ -327,17 +325,6 @@ public class S3BinaryManager extends AbstractBinaryManager {
         return new Binary(file, digest, repositoryName);
     }
 
-    @Override
-    public Binary getBinary(String digest) {
-        // Check in the cache
-        File file = fileCache.getFile(digest);
-        if (file == null) {
-            return new S3LazyBinary(digest, fileCache, amazonS3, bucketName);
-        } else {
-            return new Binary(file, digest, repositoryName);
-        }
-    }
-
     protected void removeBinary(String digest) {
         amazonS3.deleteObject(bucketName, digest);
     }
@@ -355,23 +342,14 @@ public class S3BinaryManager extends AbstractBinaryManager {
         return MD5_RE.matcher(digest).matches();
     }
 
-    public static class S3LazyBinary extends LazyBinary {
+    public class S3BinaryFileCache extends BinaryFileCache {
 
-        private static final long serialVersionUID = 1L;
-
-        protected final AmazonS3 amazonS3;
-
-        protected final String bucketName;
-
-        public S3LazyBinary(String digest, FileCache fileCache,
-                AmazonS3 amazonS3, String bucketName) {
-            super(digest, fileCache);
-            this.amazonS3 = amazonS3;
-            this.bucketName = bucketName;
+        public S3BinaryFileCache(File dir, long maxSize) {
+            super(dir, maxSize);
         }
 
         @Override
-        protected boolean fetchFile(File tmp) {
+        public boolean fetchFile(String digest, File tmp) {
             try {
                 ObjectMetadata metadata = amazonS3.getObject(
                         new GetObjectRequest(bucketName, digest), tmp);
@@ -390,10 +368,11 @@ public class S3BinaryManager extends AbstractBinaryManager {
                 }
                 return false;
             }
+
         }
 
         @Override
-        protected Long fetchLength() {
+        public Long fetchLength(String digest) {
             try {
                 ObjectMetadata metadata = amazonS3.getObjectMetadata(
                         bucketName, digest);
@@ -412,7 +391,9 @@ public class S3BinaryManager extends AbstractBinaryManager {
                 }
                 return null;
             }
+
         }
+
     }
 
     /**
@@ -518,6 +499,11 @@ public class S3BinaryManager extends AbstractBinaryManager {
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
+    }
+
+    @Override
+    public BinaryFileCache fileCache() {
+        return fileCache;
     }
 
 }
