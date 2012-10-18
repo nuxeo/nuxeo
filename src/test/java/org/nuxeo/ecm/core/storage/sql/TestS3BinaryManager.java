@@ -22,16 +22,19 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import static org.junit.Assert.*;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.nuxeo.ecm.core.storage.sql.S3BinaryManager.S3LazyBinary;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
@@ -97,7 +100,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         }
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
-        assertTrue(binary instanceof S3LazyBinary);
+        assertTrue(binary instanceof LazyBinary);
         if (binary.getStream() != null) {
             // the tests have already been run
             // make sure we delete it from the bucket first
@@ -134,7 +137,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         }
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
-        assertTrue(binary instanceof S3LazyBinary);
+        assertTrue(binary instanceof LazyBinary);
 
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
