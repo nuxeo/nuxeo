@@ -224,4 +224,8 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         return false;
     }
 
+    public boolean hasFacet(String facetName) {
+        return facets.contains(facetName);
+    }
+
 }
