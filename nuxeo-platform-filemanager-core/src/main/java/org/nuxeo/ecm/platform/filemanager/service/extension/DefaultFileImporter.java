@@ -86,11 +86,8 @@ public class DefaultFileImporter extends AbstractFileImporter {
         // Determining if we need to create or update an existing one
         if (overwrite && docModel != null) {
 
-            // Do a snapshot of the current version first
-            if (documentManager.isCheckedOut(docModel.getRef())) {
-                docModel.checkIn(VersioningOption.MINOR, null);
-            }
-            docModel.checkOut();
+            // now save the uploaded file as another new version
+            docModel = overwriteAndIncrementversion(documentManager, docModel);
 
             docModel.setPropertyValue("file:content",
                     (Serializable) input.persist());
