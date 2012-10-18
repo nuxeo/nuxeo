@@ -20,7 +20,6 @@
       <schema name="publishing"/>
       <schema name="files" />
       <facet name="SuperSpace"/>
-      <facet name="WebView"/>
       <facet name="ThemeLocalConfiguration"/>
       <subtypes>
         <type>Workspace</type>
