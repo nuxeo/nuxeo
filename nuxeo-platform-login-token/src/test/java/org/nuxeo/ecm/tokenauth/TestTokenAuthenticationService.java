@@ -61,7 +61,7 @@ public class TestTokenAuthenticationService {
             fail("Getting token should have failed since required parameters are missing.");
         } catch (TokenAuthenticationException e) {
             assertEquals(
-                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.",
+                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceId, permission.",
                     e.getMessage());
         }
 
@@ -83,7 +83,7 @@ public class TestTokenAuthenticationService {
             assertEquals("myFavoriteApp",
                     tokenModel.getPropertyValue("authtoken:applicationName"));
             assertEquals("Ubuntu box 64 bits",
-                    tokenModel.getPropertyValue("authtoken:deviceName"));
+                    tokenModel.getPropertyValue("authtoken:deviceId"));
             assertEquals("This is my personal box",
                     tokenModel.getPropertyValue("authtoken:deviceDescription"));
             assertEquals("rw",
@@ -167,7 +167,7 @@ public class TestTokenAuthenticationService {
         assertEquals("nuxeoDrive",
                 tokenBinding.getPropertyValue("authtoken:applicationName"));
         assertEquals("Mac OSX VM",
-                tokenBinding.getPropertyValue("authtoken:deviceName"));
+                tokenBinding.getPropertyValue("authtoken:deviceId"));
         assertEquals("This is my personal Mac box",
                 tokenBinding.getPropertyValue("authtoken:deviceDescription"));
         assertEquals("rw",
@@ -180,7 +180,7 @@ public class TestTokenAuthenticationService {
         assertEquals("myFavoriteApp",
                 tokenBinding.getPropertyValue("authtoken:applicationName"));
         assertEquals("Windows box 32 bits",
-                tokenBinding.getPropertyValue("authtoken:deviceName"));
+                tokenBinding.getPropertyValue("authtoken:deviceId"));
         assertEquals("This is my personal Windows box",
                 tokenBinding.getPropertyValue("authtoken:deviceDescription"));
         assertEquals("rw",
@@ -193,7 +193,7 @@ public class TestTokenAuthenticationService {
         assertEquals("myFavoriteApp",
                 tokenBinding.getPropertyValue("authtoken:applicationName"));
         assertEquals("Ubuntu box 64 bits",
-                tokenBinding.getPropertyValue("authtoken:deviceName"));
+                tokenBinding.getPropertyValue("authtoken:deviceId"));
         assertEquals("This is my personal Linux box",
                 tokenBinding.getPropertyValue("authtoken:deviceDescription"));
         assertEquals("rw",

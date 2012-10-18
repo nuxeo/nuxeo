@@ -44,7 +44,7 @@ public interface TokenAuthenticationService extends Serializable {
      * Gets a unique token for the specified user, application, and device.
      * <p>
      * If such a token exist in the back-end for the specified (userName,
-     * applicationName, deviceName) triplet, just returns it, else generates it
+     * applicationName, deviceId) triplet, just returns it, else generates it
      * and stores it in the back-end with the triplet attributes, the specified
      * device description and permission.
      *
@@ -55,7 +55,7 @@ public interface TokenAuthenticationService extends Serializable {
      *             triplet
      *
      */
-    String getToken(String userName, String applicationName, String deviceName,
+    String getToken(String userName, String applicationName, String deviceId,
             String deviceDescription, String permission)
             throws TokenAuthenticationException;
 

@@ -18,7 +18,7 @@
           <widget>authTokenApplicationName</widget>
         </row>
         <row>
-          <widget>authTokenDeviceName</widget>
+          <widget>authTokenDeviceId</widget>
         </row>
         <row>
           <widget>authTokenDeviceDescription</widget>
@@ -63,13 +63,13 @@
       </widgetModes>
     </widget>
 
-    <widget name="authTokenDeviceName" type="text">
+    <widget name="authTokendeviceId" type="text">
       <labels>
-        <label mode="any">label.tokenauth.deviceName</label>
+        <label mode="any">label.tokenauth.deviceId</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>authtoken:deviceName</field>
+        <field>authtoken:deviceId</field>
       </fields>
       <widgetModes>
         <mode value="edit">view</mode>

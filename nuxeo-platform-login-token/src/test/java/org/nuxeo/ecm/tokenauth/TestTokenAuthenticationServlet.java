@@ -53,7 +53,7 @@ public class TestTokenAuthenticationServlet {
         try {
             // ------------ Test bad authentication ----------------
             getMethod = new GetMethod(
-                    "http://localhost:18080/authentication/token?userName=joe&applicationName=myFavoriteApp&deviceName=Ubuntu&permission=rw");
+                    "http://localhost:18080/authentication/token?userName=joe&applicationName=myFavoriteApp&deviceId=dead-beaf-cafe-babe&permission=rw");
             int status = executeGetMethod(httpClient, getMethod,
                     "Administrator", "badPassword");
             // Should receive 401 (?)
@@ -67,7 +67,7 @@ public class TestTokenAuthenticationServlet {
             assertEquals(404, status);
 
             // ------------ Test acquiring token ----------------
-            String queryParams = URIUtil.encodeQuery("userName=joe&applicationName=Nuxeo Drive&deviceName=Ubuntu box 64 bits&permission=rw");
+            String queryParams = URIUtil.encodeQuery("userName=joe&applicationName=Nuxeo Drive&deviceId=dead-beaf-cafe-babe&permission=rw");
             URI uri = new URI("http", null, "localhost", 18080,
                     "/authentication/token", queryParams, null);
             getMethod = new GetMethod(uri.toString());

@@ -55,7 +55,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
     protected static final String APPLICATION_NAME_PARAM = "applicationName";
 
-    protected static final String DEVICE_NAME_PARAM = "deviceName";
+    protected static final String DEVICE_ID_PARAM = "deviceId";
 
     protected static final String DEVICE_DESCRIPTION_PARAM = "deviceDescription";
 
@@ -68,7 +68,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
         // Get request parameters
         String userName = req.getParameter(USERNAME_PARAM);
         String applicationName = req.getParameter(APPLICATION_NAME_PARAM);
-        String deviceName = req.getParameter(DEVICE_NAME_PARAM);
+        String deviceId = req.getParameter(DEVICE_ID_PARAM);
         String deviceDescription = req.getParameter(DEVICE_DESCRIPTION_PARAM);
         String permission = req.getParameter(PERMISSION_PARAM);
 
@@ -76,9 +76,9 @@ public class TokenAuthenticationServlet extends HttpServlet {
         // error with the 404 status
         if (StringUtils.isEmpty(userName)
                 || StringUtils.isEmpty(applicationName)
-                || StringUtils.isEmpty(deviceName)
+                || StringUtils.isEmpty(deviceId)
                 || StringUtils.isEmpty(permission)) {
-            log.error("The following request parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.");
+            log.error("The following request parameters are mandatory to get an authentication token: userName, applicationName, deviceId, permission.");
             resp.sendError(HttpStatus.SC_NOT_FOUND);
             return;
         }
@@ -86,7 +86,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
         // Decode parameters
         userName = URIUtil.decode(userName);
         applicationName = URIUtil.decode(applicationName);
-        deviceName = URIUtil.decode(deviceName);
+        deviceId = URIUtil.decode(deviceId);
         if (!StringUtils.isEmpty(deviceDescription)) {
             deviceDescription = URIUtil.decode(deviceDescription);
         }
@@ -96,7 +96,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
         try {
             TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
             String token = tokenAuthService.getToken(userName, applicationName,
-                    deviceName, deviceDescription, permission);
+                    deviceId, deviceDescription, permission);
             sendTextResponse(resp, token);
         } catch (TokenAuthenticationException e) {
             // Should never happen as parameters have already been checked
