@@ -81,4 +81,9 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         return facets;
     }
 
+    @Override
+    public boolean hasFacet(String facetName) {
+        return facets.contains(facetName);
+    }
+
 }

@@ -12,15 +12,15 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import java.util.Set;
-
 import org.nuxeo.ecm.core.schema.types.CompositeType;
+
+import java.util.Set;
 
 /**
  * Document types are composite types made of several schemas.
  * <p>
- * Sample document types are Workspace, Section, Domain,... The list of
- * builtin document type is visible at NXCore/OSGI-INF/CoreExtensions.xml.
+ * Sample document types are Workspace, Section, Domain,... The list of builtin
+ * document type is visible at NXCore/OSGI-INF/CoreExtensions.xml.
  */
 public interface DocumentType extends CompositeType {
 
@@ -41,7 +41,8 @@ public interface DocumentType extends CompositeType {
     /**
      * Tests whether this type describes a document (not a folder!) or not.
      *
-     * @return true if the type describes a document folder, otherwise returns false
+     * @return true if the type describes a document folder, otherwise returns
+     *         false
      */
     boolean isFile();
 
@@ -55,7 +56,8 @@ public interface DocumentType extends CompositeType {
     /**
      * Tests whether this type describe an ordered folder or not.
      *
-     * @return true if the type describes an ordered folder, otherwise returns false
+     * @return true if the type describes an ordered folder, otherwise returns
+     *         false
      */
     boolean isOrdered();
 
@@ -67,5 +69,13 @@ public interface DocumentType extends CompositeType {
      * @return the facets
      */
     Set<String> getFacets();
+
+    /**
+     * Returns {@code true} if this document type has the given
+     * {@code facetName} facet, {@code false otherwise}.
+     *
+     * @since 5.7
+     */
+    boolean hasFacet(String facetName);
 
 }
