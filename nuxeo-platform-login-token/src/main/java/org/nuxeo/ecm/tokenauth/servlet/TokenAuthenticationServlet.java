@@ -34,11 +34,12 @@ import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Servlet that allows to get a unique authentication token given some user
- * information passed as request parameters: user name, application name, device
- * name, device description, permission. An error response will be sent with a
- * 404 status code if one of the required parameters is null or empty. All
- * parameters are required except for the device description.
+ * Servlet that allows to get a unique authentication token given the request
+ * Principal and some device information passed as request parameters:
+ * application name, device id, device description, permission. An error
+ * response will be sent with a 400 status code if one of the required
+ * parameters is null or empty. All parameters are required except for the
+ * device description.
  * <p>
  * The token is provided by the {@link TokenAuthenticationService}.
  *
@@ -50,8 +51,6 @@ public class TokenAuthenticationServlet extends HttpServlet {
     private static final long serialVersionUID = 7792388601558509103L;
 
     private static final Log log = LogFactory.getLog(TokenAuthenticationServlet.class);
-
-    protected static final String USERNAME_PARAM = "userName";
 
     protected static final String APPLICATION_NAME_PARAM = "applicationName";
 
@@ -66,7 +65,6 @@ public class TokenAuthenticationServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Get request parameters
-        String userName = req.getParameter(USERNAME_PARAM);
         String applicationName = req.getParameter(APPLICATION_NAME_PARAM);
         String deviceId = req.getParameter(DEVICE_ID_PARAM);
         String deviceDescription = req.getParameter(DEVICE_DESCRIPTION_PARAM);
@@ -74,23 +72,24 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
         // If one of the required parameters is null or empty, send an
         // error with the 400 status
-        if (StringUtils.isEmpty(userName)
-                || StringUtils.isEmpty(applicationName)
+        if (StringUtils.isEmpty(applicationName)
                 || StringUtils.isEmpty(deviceId)
                 || StringUtils.isEmpty(permission)) {
-            log.error("The following request parameters are mandatory to get an authentication token: userName, applicationName, deviceId, permission.");
+            log.error("The following request parameters are mandatory to get an authentication token: applicationName, deviceId, permission.");
             resp.sendError(HttpStatus.SC_BAD_REQUEST);
             return;
         }
 
         // Decode parameters
-        userName = URIUtil.decode(userName);
         applicationName = URIUtil.decode(applicationName);
         deviceId = URIUtil.decode(deviceId);
         if (!StringUtils.isEmpty(deviceDescription)) {
             deviceDescription = URIUtil.decode(deviceDescription);
         }
         permission = URIUtil.decode(permission);
+
+        // Get user name from request Principal
+        String userName = req.getUserPrincipal().getName();
 
         // Get token and write it to the response body
         try {
