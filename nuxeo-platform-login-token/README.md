@@ -21,13 +21,13 @@ The associated JIRA issue is: [NXP-10268] [1]
 ## Goal
 
 The main goal of this module is to allow a client device to authenticate against a Nuxeo server using a token acquired during a handshake phase and then stored locally for a regular use.
-This way, the client does not need to store any user secret information such as login / password that could be found easily on a file system for example.
+This way, the client does not need to store any user secret information such as login / password that could be found easily on a file system for example. If a specific device token is compromised (e.g. laptop theft), the user can revoke the device token in the web interface and generate a new one independent token for new device with their usual user credentials.
 
 A token is bound on the server to a triplet defined by:
 
 - a user name
 - an application name
-- a device name
+- a device identifier
 
 This way a single user can have multiple tokens for different applications on different devices.
 
@@ -37,15 +37,15 @@ For example: the user _joe_ could have 3 tokens:
 - one for the Nuxeo Drive client on his Windows box
 - one for a Nuxeo Automation client application on his Linux box
 
-The module includes a UI for the user to manage its tokens.
-For now a token can only be revoked, but for later we are thinking of setting an expiration date on tokens with a possibility to renew them.
+The module includes a UI for the user to manage their tokens.
+For now a token can only be revoked, but for later we are planning of setting an expiration date on tokens with a possibility to renew them.
 
 ## Implementation
 
 ### Handshake phase
 
 The ``TokenAuthenticationServlet``, protected by basic authentication and mapped on the ``/authentication/token`` URL pattern, allows to get a unique token given some user information passed as request parameters:
-``userName``, ``applicationName``, ``deviceName``, ``deviceDescription`` and ``permission``.
+``userName``, ``applicationName``, ``deviceId``, ``deviceDescription`` and ``permission``.
 
 The token is sent as plain text in the response body.
 
@@ -54,7 +54,9 @@ All parameters are required except for the device description. The parameters ar
 
 For example, you could execute the following command to acquire a token:
 
-    curl -H 'Authorization:Basic **********************' -G 'http://server:port/nuxeo/authentication/token?userName=joe&applicationName=Nuxeo%20Drive&deviceName=Ubuntu%2064%20bits&deviceDescription=My%20Linux%20box&permission=rw'
+    curl -H 'Authorization:Basic **********************' -G 'http://server:port/nuxeo/authentication/token?userName=joe&applicationName=Nuxeo%20Drive&deviceId=device-1&deviceDescription=My%20Linux%20box&permission=rw'
+
+While the device description can typically be edited by the user (for instance in the JSF UI), both the Application Name and the device identifier should not change once the token has been generated.
 
 ### Token bindings
 
@@ -65,9 +67,9 @@ The ``TokenAuthenticationService`` handles the token generation and storage of t
 
 Looking back at the example of _joe_ and his 3 tokens, the server would hold these 3 token bindings:
 
-- {'tokenA', 'joe', 'Nuxeo Drive', 'Linux'}
-- {'tokenB', 'joe', 'Nuxeo Drive', 'Windows'}
-- {'tokenC', 'joe', 'Automation client', 'Linux'}
+- {'tokenA', 'joe', 'Nuxeo Drive', 'device-1'}
+- {'tokenB', 'joe', 'Nuxeo Drive', 'device-2'}
+- {'tokenC', 'joe', 'Automation client', 'device-1'}
 
 ### Authentication plugin
 

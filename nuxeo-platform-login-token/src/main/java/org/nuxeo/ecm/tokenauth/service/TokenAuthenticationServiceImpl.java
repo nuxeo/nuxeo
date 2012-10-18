@@ -63,7 +63,7 @@ public class TokenAuthenticationServiceImpl implements
 
     protected static final String APPLICATION_NAME_FIELD = "applicationName";
 
-    protected static final String DEVICE_NAME_FIELD = "deviceName";
+    protected static final String DEVICE_ID_FIELD = "deviceId";
 
     protected static final String DEVICE_DESCRIPTION_FIELD = "deviceDescription";
 
@@ -73,15 +73,15 @@ public class TokenAuthenticationServiceImpl implements
 
     @Override
     public String getToken(String userName, String applicationName,
-            String deviceName, String deviceDescription, String permission)
+            String deviceId, String deviceDescription, String permission)
             throws TokenAuthenticationException {
 
         if (StringUtils.isEmpty(userName)
                 || StringUtils.isEmpty(applicationName)
-                || StringUtils.isEmpty(deviceName)
+                || StringUtils.isEmpty(deviceId)
                 || StringUtils.isEmpty(permission)) {
             throw new TokenAuthenticationException(
-                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceName, permission.");
+                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceId, permission.");
         }
 
         Session session = null;
@@ -91,12 +91,12 @@ public class TokenAuthenticationServiceImpl implements
             session = directoryService.open(DIRECTORY_NAME);
 
             // Look for a token bound to the (userName,
-            // applicationName, deviceName) triplet, if it exists return it,
+            // applicationName, deviceId) triplet, if it exists return it,
             // else generate a unique one
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put(USERNAME_FIELD, userName);
             filter.put(APPLICATION_NAME_FIELD, applicationName);
-            filter.put(DEVICE_NAME_FIELD, deviceName);
+            filter.put(DEVICE_ID_FIELD, deviceId);
             DocumentModelList tokens = session.query(filter);
             if (!tokens.isEmpty()) {
                 // Multiple tokens found for the same triplet, this is
@@ -104,13 +104,13 @@ public class TokenAuthenticationServiceImpl implements
                 if (tokens.size() > 1) {
                     throw new ClientRuntimeException(
                             String.format(
-                                    "Found multiple tokens for the (userName, applicationName, deviceName) triplet: ('%s', '%s', '%s'), this is inconsistent.",
-                                    userName, applicationName, deviceName));
+                                    "Found multiple tokens for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), this is inconsistent.",
+                                    userName, applicationName, deviceId));
                 }
                 // Return token
                 log.info(String.format(
-                        "Found token for the (userName, applicationName, deviceName) triplet: ('%s', '%s', '%s'), returning it.",
-                        userName, applicationName, deviceName));
+                        "Found token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
+                        userName, applicationName, deviceId));
                 DocumentModel tokenModel = tokens.get(0);
                 return tokenModel.getId();
             }
@@ -124,7 +124,7 @@ public class TokenAuthenticationServiceImpl implements
             entry.setProperty(DIRECTORY_SCHEMA, USERNAME_FIELD, userName);
             entry.setProperty(DIRECTORY_SCHEMA, APPLICATION_NAME_FIELD,
                     applicationName);
-            entry.setProperty(DIRECTORY_SCHEMA, DEVICE_NAME_FIELD, deviceName);
+            entry.setProperty(DIRECTORY_SCHEMA, DEVICE_ID_FIELD, deviceId);
             if (!StringUtils.isEmpty(deviceDescription)) {
                 entry.setProperty(DIRECTORY_SCHEMA, DEVICE_DESCRIPTION_FIELD,
                         deviceDescription);
@@ -137,8 +137,8 @@ public class TokenAuthenticationServiceImpl implements
             session.createEntry(entry);
 
             log.info(String.format(
-                    "Generated unique token for the (userName, applicationName, deviceName) triplet: ('%s', '%s', '%s'), returning it.",
-                    userName, applicationName, deviceName));
+                    "Generated unique token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
+                    userName, applicationName, deviceId));
             return token;
 
         } catch (ClientException ce) {
