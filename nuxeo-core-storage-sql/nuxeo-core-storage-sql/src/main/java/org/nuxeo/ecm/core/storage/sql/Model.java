@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -51,9 +52,9 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
  * (entity tables, collections). It defines all policies relating to the choice
- * of structure (what schema are grouped together in for optimization) and
- * names in the SQL database (table names, column names), and to what entity
- * names (type name, field name) they correspond.
+ * of structure (what schema are grouped together in for optimization) and names
+ * in the SQL database (table names, column names), and to what entity names
+ * (type name, field name) they correspond.
  * <p>
  * A Nuxeo schema or type is mapped to a SQL-level table. Several types can be
  * aggregated in the same table. In theory, a type could even be split into
@@ -425,8 +426,7 @@ public class Model {
     }
 
     /**
-     * Fixup an id that has been turned into a string for high-level Nuxeo
-     * APIs.
+     * Fixup an id that has been turned into a string for high-level Nuxeo APIs.
      *
      * @param id the id to fixup
      * @return the fixed up id
@@ -669,7 +669,7 @@ public class Model {
      * Infers fulltext info for all schemas.
      */
     @SuppressWarnings("unchecked")
-    private void inferFulltextInfo() {
+    private void inferFulltextInfo(SchemaManager schemaManager) {
         List<FulltextIndexDescriptor> descs = repositoryDescriptor.fulltextIndexes;
         if (descs == null) {
             descs = new ArrayList<FulltextIndexDescriptor>(1);
@@ -765,6 +765,13 @@ public class Model {
                     }
                     paths.add(path);
                 }
+            }
+        }
+
+        // Add document types with the NotFulltextIndexable facet
+        for (DocumentType documentType : schemaManager.getDocumentTypes()) {
+            if (documentType.hasFacet(FacetNames.NOT_FULLTEXT_INDEXABLE)) {
+                fulltextInfo.excludedTypes.add(documentType.getName());
             }
         }
     }
@@ -1194,7 +1201,7 @@ public class Model {
 
         if (!repositoryDescriptor.fulltextDisabled) {
             // infer fulltext info
-            inferFulltextInfo();
+            inferFulltextInfo(schemaManager);
         }
 
         // mixins
@@ -1488,7 +1495,8 @@ public class Model {
                     }
                     if (fragmentName.equals(UID_SCHEMA_NAME)
                             && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
-                        // workaround: special-case the "uid" schema, put major/minor
+                        // workaround: special-case the "uid" schema, put
+                        // major/minor
                         // in the hierarchy table
                         fragmentKey = fragmentKey.equals(UID_MAJOR_VERSION_KEY) ? MAIN_MAJOR_VERSION_KEY
                                 : MAIN_MINOR_VERSION_KEY;

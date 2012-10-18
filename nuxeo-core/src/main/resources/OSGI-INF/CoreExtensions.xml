@@ -64,6 +64,7 @@
     <facet name="SuperSpace" />
     <facet name="HiddenInNavigation" />
     <facet name="SystemDocument" />
+    <facet name="NotFulltextIndexable" />
 
     <!-- facet to be used for full-text indexing of related text content
       (e.g. comments, annotations, tags...) -->
