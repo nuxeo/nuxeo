@@ -31,7 +31,7 @@
         <event>documentCreated</event>
       </refresh>
       <cacheSize>10</cacheSize>
-      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}</cacheKey>
+      <cacheKey>#{currentDocument.id}-#{templateActions.showVersions}</cacheKey>
 
       <resultLayouts>
         <layout name="document_listing_ajax" title="document_listing"
