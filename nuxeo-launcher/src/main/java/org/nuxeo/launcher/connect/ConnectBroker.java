@@ -1109,6 +1109,10 @@ public class ConnectBroker {
                 log.error(e);
                 return false;
             }
+
+            log.debug("solverInstall: " + solverInstall);
+            log.debug("solverRemove: " + solverRemove);
+            log.debug("solverUpgrade: " + solverUpgrade);
             DependencyResolution resolution = getPackageManager().resolveDependencies(
                     solverInstall, solverRemove, solverUpgrade, requestPlatform);
             log.info(resolution);
@@ -1129,10 +1133,9 @@ public class ConnectBroker {
             }
 
             List<String> packageIdsToRemove = resolution.getOrderedPackageIdsToRemove();
-            Map<String, Version> packagesToUpgrade = resolution.getLocalPackagesToUpgrade();
             List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
             List<String> packageIdsToInstall = resolution.getOrderedPackageIdsToInstall();
-            List<String> packagesIdsUninstalledBecauseOfUpgrade = new ArrayList<String>();
+            List<String> packagesIdsToReInstall = new ArrayList<String>();
 
             // Download remote packages
             if (!downloadPackages(resolution.getDownloadPackageIds())) {
@@ -1141,40 +1144,32 @@ public class ConnectBroker {
             }
 
             // Uninstall
-            if (!packagesToUpgrade.isEmpty()) {
+            if (!packageIdsToUpgrade.isEmpty()) {
                 // Add packages to upgrade to uninstall list
-                List<String> uninstallList = new ArrayList<String>();
-                List<String> uninstallIdsList = new ArrayList<String>();
-                uninstallList.addAll(packageIdsToRemove);
-                uninstallIdsList.addAll(packageIdsToRemove);
-                for (String pkg : packagesToUpgrade.keySet()) {
-                    uninstallList.add(pkg);
-                    uninstallIdsList.add(getInstalledPackageIdFromName(pkg));
-                }
+                // Don't use IDs to avoid downgrade instead of uninstall
+                packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
                 DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
-                        null, uninstallList, null, requestPlatform);
+                        null, packageIdsToRemove, null, requestPlatform);
                 log.debug("Sub-resolution (uninstall) " + uninstallResolution);
                 if (uninstallResolution.isFailed()) {
                     return false;
                 }
-                packageIdsToRemove = uninstallResolution.getOrderedPackageIdsToRemove();
-                packagesIdsUninstalledBecauseOfUpgrade = ListUtils.subtract(
-                        packageIdsToRemove, uninstallIdsList);
+                List<String> newPackageIdsToRemove = uninstallResolution.getOrderedPackageIdsToRemove();
+                packagesIdsToReInstall = ListUtils.subtract(
+                        newPackageIdsToRemove, packageIdsToRemove);
+                packagesIdsToReInstall.removeAll(packageIdsToUpgrade);
+                packageIdsToRemove = newPackageIdsToRemove;
             }
             if (!pkgUninstall(packageIdsToRemove)) {
                 return false;
             }
 
             // Install
-            if (!packagesToUpgrade.isEmpty()) {
-                // Add to install list the packages to upgrade + the packages
-                // uninstalled because of upgrade
-                List<String> installList = new ArrayList<String>();
-                installList.addAll(solverInstall);
-                installList.addAll(packageIdsToUpgrade);
-                installList.addAll(packagesIdsUninstalledBecauseOfUpgrade);
+            if (!packagesIdsToReInstall.isEmpty()) {
+                // Add list of packages uninstalled because of upgrade
+                packageIdsToInstall.addAll(packagesIdsToReInstall);
                 DependencyResolution installResolution = getPackageManager().resolveDependencies(
-                        installList, null, null, requestPlatform);
+                        packageIdsToInstall, null, null, requestPlatform);
                 log.debug("Sub-resolution (install) " + installResolution);
                 if (installResolution.isFailed()) {
                     return false;
