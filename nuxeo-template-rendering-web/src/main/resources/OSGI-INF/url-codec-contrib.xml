@@ -31,4 +31,16 @@
     </urlPattern>
 
   </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>nxtemplate/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
 </component>
