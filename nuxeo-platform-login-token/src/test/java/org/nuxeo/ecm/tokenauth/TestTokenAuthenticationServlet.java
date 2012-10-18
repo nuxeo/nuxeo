@@ -64,7 +64,7 @@ public class TestTokenAuthenticationServlet {
                     "http://localhost:18080/authentication/token?userName=joe");
             status = executeGetMethod(httpClient, getMethod, "Administrator",
                     "Administrator");
-            assertEquals(404, status);
+            assertEquals(400, status);
 
             // ------------ Test acquiring token ----------------
             String queryParams = URIUtil.encodeQuery("userName=joe&applicationName=Nuxeo Drive&deviceId=dead-beaf-cafe-babe&permission=rw");

@@ -72,14 +72,14 @@ public class TokenAuthenticationServlet extends HttpServlet {
         String deviceDescription = req.getParameter(DEVICE_DESCRIPTION_PARAM);
         String permission = req.getParameter(PERMISSION_PARAM);
 
-        // As all parameters are required, if one is null or empty, send an
-        // error with the 404 status
+        // If one of the required parameters is null or empty, send an
+        // error with the 400 status
         if (StringUtils.isEmpty(userName)
                 || StringUtils.isEmpty(applicationName)
                 || StringUtils.isEmpty(deviceId)
                 || StringUtils.isEmpty(permission)) {
             log.error("The following request parameters are mandatory to get an authentication token: userName, applicationName, deviceId, permission.");
-            resp.sendError(HttpStatus.SC_NOT_FOUND);
+            resp.sendError(HttpStatus.SC_BAD_REQUEST);
             return;
         }
 
