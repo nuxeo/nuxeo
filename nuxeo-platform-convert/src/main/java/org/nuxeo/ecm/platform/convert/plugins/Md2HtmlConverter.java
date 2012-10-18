@@ -32,7 +32,7 @@ import com.cforcoding.jmd.MarkDownParserAndSanitizer;
 
 /**
  * Markdown to HTML converter
- *
+ * 
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
@@ -49,6 +49,9 @@ public class Md2HtmlConverter implements Converter {
         Boolean bodyContentOnly = Boolean.FALSE;
         if (parameters != null) {
             bodyContentOnly = (Boolean) parameters.get(BODY_CONTENT_ONLY);
+        }
+        if (bodyContentOnly == null) {
+            bodyContentOnly = Boolean.FALSE;
         }
         try {
             Blob inputBlob = blobHolder.getBlob();
