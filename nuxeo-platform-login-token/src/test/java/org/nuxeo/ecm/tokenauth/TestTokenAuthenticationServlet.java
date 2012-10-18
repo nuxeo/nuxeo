@@ -53,7 +53,7 @@ public class TestTokenAuthenticationServlet {
         try {
             // ------------ Test bad authentication ----------------
             getMethod = new GetMethod(
-                    "http://localhost:18080/authentication/token?userName=joe&applicationName=myFavoriteApp&deviceId=dead-beaf-cafe-babe&permission=rw");
+                    "http://localhost:18080/authentication/token?applicationName=myFavoriteApp&deviceId=dead-beaf-cafe-babe&permission=rw");
             int status = executeGetMethod(httpClient, getMethod,
                     "Administrator", "badPassword");
             // Receives 404 because of redirection to error page
@@ -61,13 +61,13 @@ public class TestTokenAuthenticationServlet {
 
             // ------------ Test omitting required parameters ----------------
             getMethod = new GetMethod(
-                    "http://localhost:18080/authentication/token?userName=joe");
+                    "http://localhost:18080/authentication/token?applicationName=myFavoriteApp");
             status = executeGetMethod(httpClient, getMethod, "Administrator",
                     "Administrator");
             assertEquals(400, status);
 
             // ------------ Test acquiring token ----------------
-            String queryParams = URIUtil.encodeQuery("userName=joe&applicationName=Nuxeo Drive&deviceId=dead-beaf-cafe-babe&permission=rw");
+            String queryParams = URIUtil.encodeQuery("applicationName=Nuxeo Drive&deviceId=dead-beaf-cafe-babe&permission=rw");
             URI uri = new URI("http", null, "localhost", 18080,
                     "/authentication/token", queryParams, null);
             getMethod = new GetMethod(uri.toString());

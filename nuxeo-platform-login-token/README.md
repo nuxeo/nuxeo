@@ -45,16 +45,16 @@ For now a token can only be revoked, but for later we are planning of setting an
 ### Handshake phase
 
 The ``TokenAuthenticationServlet``, protected by basic authentication and mapped on the ``/authentication/token`` URL pattern, allows to get a unique token given some user information passed as request parameters:
-``userName``, ``applicationName``, ``deviceId``, ``deviceDescription`` and ``permission``.
+``applicationName``, ``deviceId``, ``deviceDescription`` and ``permission``.
 
 The token is sent as plain text in the response body.
 
-An error response will be sent with a 404 status code if one of the required parameters is null or empty.
+An error response will be sent with a 400 status code if one of the required parameters is null or empty.
 All parameters are required except for the device description. The parameters are URI decoded by the Servlet.
 
 For example, you could execute the following command to acquire a token:
 
-    curl -H 'Authorization:Basic **********************' -G 'http://server:port/nuxeo/authentication/token?userName=joe&applicationName=Nuxeo%20Drive&deviceId=device-1&deviceDescription=My%20Linux%20box&permission=rw'
+    curl -H 'Authorization:Basic **********************' -G 'http://server:port/nuxeo/authentication/token?applicationName=Nuxeo%20Drive&deviceId=device-1&deviceDescription=My%20Linux%20box&permission=rw'
 
 While the device description can typically be edited by the user (for instance in the JSF UI), both the Application Name and the device identifier should not change once the token has been generated.
 
@@ -63,7 +63,7 @@ While the device description can typically be edited by the user (for instance i
 The ``TokenAuthenticationService`` handles the token generation and storage of the token bindings.
 
 - A token is randomly generated using the ``UUID`` class from the JDK which ensures that it is unique and secure.
-- Token bindings are persisted in a SQL directory, using the token as a primary key. 
+- Token bindings are persisted in a SQL directory, using the token as a primary key.
 
 Looking back at the example of _joe_ and his 3 tokens, the server would hold these 3 token bindings:
 
@@ -81,29 +81,13 @@ no password check is done, a principal will be created from the user name if the
 
 The token must be put in a request header called ``X-Authentication-Token``.
 
-The regular and automation-specific authentication chains are overridden to use the ``TOKEN_AUTH`` plugin just after the basic authentication one:
+The automation-specific authentication chain is overridden to use the ``TOKEN_AUTH`` plugin just after the basic authentication one.
+A specific authentication chain is also mapped on the token request header.
 
-    <extension
-      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-      point="chain">
-
-      <authenticationChain>
-        <plugins>
-          <plugin>BASIC_AUTH</plugin>
-          <plugin>TOKEN_AUTH</plugin>
-          <plugin>FORM_AUTH</plugin>
-          <plugin>WEBENGINE_FORM_AUTH</plugin>
-          <plugin>ANONYMOUS_AUTH</plugin>
-          <plugin>WEBSERVICES_AUTH</plugin>
-        </plugins>
-      </authenticationChain>
-    
-    </extension>
-    
     <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="specificChains">
-    
+
       <specificAuthenticationChain name="Automation">
         <urlPatterns>
           <url>(.*)/automation.*</url>
@@ -114,7 +98,16 @@ The regular and automation-specific authentication chains are overridden to use 
           <plugin>ANONYMOUS_AUTH</plugin>
         </replacementChain>
       </specificAuthenticationChain>
-      
+
+      <specificAuthenticationChain name="TokenAuth">
+        <headers>
+          <header name="X-Authentication-Token">.*</header>
+        </headers>
+        <replacementChain>
+          <plugin>TOKEN_AUTH</plugin>
+        </replacementChain>
+      </specificAuthenticationChain>
+
     </extension>
 
 ### UI
