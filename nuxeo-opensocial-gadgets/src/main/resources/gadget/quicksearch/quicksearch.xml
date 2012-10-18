@@ -10,16 +10,16 @@
   </ModulePrefs>
   <UserPref name="documentLinkBuilder" datatype="hidden" default_value="" />
   <#include "context-prefs.ftl"/>
-  <UserPref name="savedQuery" datatype="string"></UserPref>
-  <UserPref name="queryType" display_name="__MSG_label.search.queryType__"
+  <UserPref name="savedQuery" display_name="Saved query" datatype="string"></UserPref>
+  <UserPref name="queryType" display_name="Query type"
           default_value="TEXT"  datatype="enum" required="true">
-       <EnumValue value="TEXT" display_value="__MSG_label.search.TEXT__" />
-       <EnumValue value="NXQL" display_value="__MSG_label.search.NXQL__" />
+       <EnumValue value="TEXT" display_value="Full text" />
+       <EnumValue value="NXQL" display_value="NXQL" />
   </UserPref>
-  <UserPref name="displayMode" display_name="__MSG_label.search.displayMode__"
+  <UserPref name="displayMode" display_name="Display mode"
           default_value="STD"  datatype="enum" required="true">
-       <EnumValue value="STD" display_value="__MSG_label.search.stdMode__" />
-       <EnumValue value="COMPACT" display_value="__MSG_label.search.compactMode__" />
+       <EnumValue value="STD" display_value="Standard" />
+       <EnumValue value="COMPACT" display_value="Compact" />
   </UserPref>
   <Content type="html">
 
