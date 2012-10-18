@@ -46,6 +46,8 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     protected boolean showUsageListing = false;
 
+    protected boolean showVersions = false;
+
     public String createTemplate() throws Exception {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         TemplateSourceDocument sourceTemplate = changeableDocument.getAdapter(TemplateSourceDocument.class);
@@ -210,8 +212,10 @@ public class TemplatesActionBean extends BaseTemplateAction {
             List<String> uuids = new ArrayList<String>();
             uuids.add(currentDocument.getId());
 
-            for (DocumentModel version : documentManager.getVersions(currentDocument.getRef())) {
-                uuids.add(version.getId());
+            if (showVersions) {
+                for (DocumentModel version : documentManager.getVersions(currentDocument.getRef())) {
+                    uuids.add(version.getId());
+                }
             }
             return uuids;
         }
@@ -229,6 +233,14 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     public void setShowUsageListing(boolean showUsageListing) {
         this.showUsageListing = showUsageListing;
+    }
+
+    public boolean isShowVersions() {
+        return showVersions;
+    }
+
+    public void setShowVersions(boolean showVersions) {
+        this.showVersions = showVersions;
     }
 
 }

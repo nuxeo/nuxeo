@@ -85,10 +85,17 @@
     <c:if test="#{templateActions.showUsageListing}">
      <div style="padding:4px">
       <a4j:outputPanel id="templateUsageListing">
+
+       <h:selectBooleanCheckbox value="#{templateActions.showVersions}">
+        <a4j:support event="onclick" reRender="templateUsageListing" />
+       </h:selectBooleanCheckbox>
+       <h:outputText value="#{messages['label.template.usage.showVersions']}"/>
+
         <nxu:set var="contentViewName" value="TEMPLATE_USAGE">
           <ui:decorate template="/incl/content_view.xhtml">
             <ui:define name="content_view_title" />
             <ui:define name="content_view_syndication_buttons" />
+            <ui:define name="content_view_compat_actions"/>
           </ui:decorate>
         </nxu:set>
        </a4j:outputPanel>
