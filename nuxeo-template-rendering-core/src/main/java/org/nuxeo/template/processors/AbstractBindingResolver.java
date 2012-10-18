@@ -165,14 +165,15 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                                 context.put(param.getName(), "");
                             } else if (pType.getName().equals(InputType.Content)) {
                                 context.put(param.getName(), "");
-                            } else if (pType.getName().equals(
-                                    InputType.PictureProperty)) {
+                            } else {
+                                context.put(param.getName(), "!NOVALUE!");
+                            }
+                            // handle special case for pictures
+                            if (param.getType() == InputType.PictureProperty) {
                                 context.put(
                                         param.getName(),
                                         handlePictureField(param.getName(),
                                                 null));
-                            } else {
-                                context.put(param.getName(), "!NOVALUE!");
                             }
                         } else {
                             if (param.getType().equals(
