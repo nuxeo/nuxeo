@@ -221,4 +221,34 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
     }
 
+    @Test
+    public void testNotFulltextIndexableFacet() throws Exception {
+        if (!(database instanceof DatabaseH2)) {
+            return;
+        }
+        // deploy contrib where only Note and File are not fulltext indexed
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
+                "OSGI-INF/test-repo-repository-h2-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-repo-core-types-note-not-indexable-contrib.xml");
+        openSession();
+        DocumentModelList dml;
+        createDocs();
+
+        // query test for all types
+        String query = "SELECT * FROM Document WHERE ecm:fulltext = 'test'";
+        dml = session.query(query);
+        assertEquals(5, dml.size());
+
+        // query for Note only
+        query = "SELECT * FROM Note WHERE ecm:fulltext = 'test'";
+        dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        // query for File only
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'test'";
+        dml = session.query(query);
+        assertEquals(3, dml.size());
+    }
+
 }

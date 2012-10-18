@@ -87,6 +87,13 @@ public final class FacetNames {
      */
     public static final String SYSTEM_DOCUMENT = "SystemDocument";
 
+    /**
+     * The document won't be full-text indexed.
+     *
+     * @since 5.7
+     */
+    public static final String NOT_FULLTEXT_INDEXABLE = "NotFulltextIndexable";
+
     @Deprecated
     public static final String BROWSE_VIA_SEARCH = "BrowseViaSearch";
 
