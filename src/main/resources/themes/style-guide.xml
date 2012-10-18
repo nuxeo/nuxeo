@@ -54,7 +54,7 @@
       <view>Nuxeo DM logo (Galaxy Theme)</view>
     </widget>
     <widget element="page[1]/section[1]/cell[2]/fragment[1]">
-      <view>Nuxeo header</view>
+      <view>Nuxeo styleGuide header</view>
     </widget>
     <widget element="page[1]/section[1]/cell[3]/fragment[1]">
       <view>nuxeo5 includes</view>
@@ -63,7 +63,7 @@
       <view>facelet region</view>
     </widget>
     <widget element="page[1]/section[3]/cell[1]/fragment[1]">
-      <view>Nuxeo footer</view>
+      <view>Nuxeo styleGuide footer</view>
     </widget>
   </formats>
 </theme>

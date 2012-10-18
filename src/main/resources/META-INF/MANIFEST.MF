@@ -4,4 +4,7 @@ Bundle-Name: Nuxeo Style Guide
 Bundle-SymbolicName: org.nuxeo.styleguide;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/theme-contrib.xml
+Nuxeo-Component: OSGI-INF/theme-contrib.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/url-contrib.xml,
+ OSGI-INF/actions-contrib.xml,

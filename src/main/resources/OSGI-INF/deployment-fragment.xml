@@ -2,8 +2,6 @@
 <fragment version="1">
 
   <require>org.nuxeo.ecm.platform.lang</require>
-  <require>org.nuxeo.ecm.webapp.core</require>
-  <require>org.nuxeo.ecm.webapp.ui</require>
 
   <install>
     <!--  unzip the war template -->
@@ -16,7 +14,7 @@
   <extension target="faces-config#NAVIGATION">
     <navigation-case>
       <from-outcome>style_guide</from-outcome>
-      <to-view-id>/style_guide.xhtml</to-view-id>
+      <to-view-id>/styleGuide/style_guide.xhtml</to-view-id>
       <redirect />
     </navigation-case>
   </extension>

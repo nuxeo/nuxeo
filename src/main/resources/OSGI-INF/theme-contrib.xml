@@ -15,6 +15,21 @@
 
   </extension>
 
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="Nuxeo styleGuide header" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>styleGuide/incl/nuxeo_header.xhtml</template>
+      <resource>screen.css</resource>
+    </view>
+
+    <view name="Nuxeo styleGuide footer" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>styleGuide/incl/nuxeo_footer.xhtml</template>
+    </view>
+
+  </extension>
+
   <!-- Register mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
@@ -50,18 +65,17 @@
     </style>
   </extension>
 
-    <!-- application settings -->
+  <!-- application settings -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
 
-    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
 
-      <view id="/style_guide.xhtml">
+      <view id="/styleGuide/style_guide.xhtml">
         <theme>styleGuide/default</theme>
       </view>
 
     </application>
-
   </extension>
-
 
 </component>

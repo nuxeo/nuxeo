@@ -15,22 +15,17 @@
     <div class="gridRow demoGrid">
 
       <div class="gridBox gridStyle2">
-        <ui:include src="/incl/sections.xhtml" />
+        <ui:include src="./incl/sections.xhtml" />
       </div>
 
       <div class="gridBox gridStyle10">
+
         <div class="mainWrapper">
-         <ui:include src="/incl/intro.xhtml" />
-         <ui:include src="/incl/advices.xhtml" />
-         <ui:include src="/incl/grid_layout.xhtml" />
-         <ui:include src="/incl/tables.xhtml" />
-         <ui:include src="/incl/messages.xhtml" />
-         <ui:include src="/incl/titles.xhtml" />
-         <ui:include src="/incl/dialogs.xhtml" />
-         <ui:include src="/incl/buttons.xhtml" />
-         <ui:include src="/incl/tabs.xhtml" />
-         <ui:include src="/incl/helpers.xhtml" />
+          <c:if test="#{styleGuideActions.currentPage != null}">
+            <ui:include src="#{styleGuideActions.currentPage.link}" />
+          </c:if>
         </div>
+
       </div>
 
       <div class="clear" />

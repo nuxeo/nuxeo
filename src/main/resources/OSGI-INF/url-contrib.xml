@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.styleguide.url.contrib">
+
+  <documentation>
+    Define a specific codec for rest-like navigation
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
+    point="codecs">
+
+    <documentViewCodec name="styleGuide" default="false"
+      prefix="styleGuide" class="org.nuxeo.ecm.styleguide.StyleGuideURLCodec" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
+    point="urlpatterns">
+
+    <urlPattern name="styleGuide" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>styleGuide</codecName>
+      <bindings>
+        <binding name="menuId">#{styleGuideActions.currentPageId}</binding>
+        <!--
+          <binding name="tabId">#{styleGuideActions.currentTabId}</binding>
+          <binding name="subTabId">#{styleGuideActions.currentSubTabId}</binding>
+        -->
+      </bindings>
+    </urlPattern>
+
+  </extension>
+
+</component>
