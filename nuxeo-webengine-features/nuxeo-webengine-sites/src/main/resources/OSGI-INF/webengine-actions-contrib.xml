@@ -38,9 +38,6 @@
    	  <rule grant="true">
         <facet>WebView</facet>
       </rule>
-      <rule grant="false">
-        <type>Workspace</type>
-      </rule>
     </filter>
 
   </extension>
