@@ -9,7 +9,6 @@
       <schema name="publishing"/>
       <schema name="files" />
       <facet name="SuperSpace"/>
-      <facet name="WebView"/>
       <facet name="SearchLocalConfiguration"/>
       <subtypes>
         <type>Workspace</type>
