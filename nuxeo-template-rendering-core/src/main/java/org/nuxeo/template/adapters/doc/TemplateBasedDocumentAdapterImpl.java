@@ -250,9 +250,16 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
                 return blob;
             }
         } else {
-            throw new ClientException(
-                    "No template processor found for template type="
-                            + getTemplateType(templateName));
+            String templateType = getTemplateType(templateName);
+            if (templateType == null) {
+                throw new ClientException(
+                        "Template type is null : if you don't set it explicitly, your template file should have an extension or a mimietype so that it can be automatically determined"
+                                + templateType);
+            } else {
+                throw new ClientException(
+                        "No template processor found for template type="
+                                + templateType);
+            }
         }
     }
 
