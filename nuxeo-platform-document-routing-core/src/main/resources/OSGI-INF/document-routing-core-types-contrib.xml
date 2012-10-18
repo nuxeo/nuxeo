@@ -98,6 +98,7 @@
 
     <doctype name="RouteNode" extends="Document">
       <facet name="SystemDocument" />
+      <facet name="NotFulltextIndexable" />
       <schema name="dublincore" />
       <schema name="route_node" />
     </doctype>
