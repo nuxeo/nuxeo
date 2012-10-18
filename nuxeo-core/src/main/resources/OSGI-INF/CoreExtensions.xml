@@ -127,7 +127,6 @@
       <!-- the content of webcontainer -->
       <schema name="files" />
       <facet name="SuperSpace"/>
-      <facet name="WebView"/>
       <subtypes>
         <type>Workspace</type>
         <type>Folder</type>
