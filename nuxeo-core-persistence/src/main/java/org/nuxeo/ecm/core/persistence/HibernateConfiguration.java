@@ -137,6 +137,8 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         } else if (txType.equals(RESOURCE_LOCAL)) {
             properties.put(Environment.TRANSACTION_STRATEGY, JDBCTransactionFactory.class.getName());
         }
+        properties.put(Environment.CONNECTION_PROVIDER,
+                NuxeoConnectionProvider.class.getName());
         if (cfg == null) {
             setupConfiguration(properties);
         }

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,6 +43,8 @@ public class JDBCBackend implements RepositoryBackend {
     private static final Log log = LogFactory.getLog(JDBCBackend.class);
 
     private RepositoryImpl repository;
+
+    private String pseudoDataSourceName;
 
     private XADataSource xadatasource;
 
@@ -61,8 +64,22 @@ public class JDBCBackend implements RepositoryBackend {
     public void initialize(RepositoryImpl repository) throws StorageException {
         this.repository = repository;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+        pseudoDataSourceName = JDBCConnection.getPseudoDataSourceName(repositoryDescriptor.name);
 
-        // instantiate the datasource
+        // try single-datasource non-XA mode
+        Connection connection = null;
+        try {
+            connection = ConnectionHelper.getConnection(pseudoDataSourceName);
+            if (connection != null) {
+                connection.close();
+                return;
+            }
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+
+        // standard XA mode
+        // instantiate the XA datasource
         String className = repositoryDescriptor.xaDataSourceName;
         Class<?> klass;
         try {
@@ -113,10 +130,15 @@ public class JDBCBackend implements RepositoryBackend {
     public void initializeModelSetup(ModelSetup modelSetup)
             throws StorageException {
         try {
-            XAConnection xaconnection = xadatasource.getXAConnection();
-            Connection connection = null;
+            XAConnection xaconnection = null;
+            // try single-datasource non-XA mode
+            Connection connection = ConnectionHelper.getConnection(pseudoDataSourceName);
             try {
-                connection = xaconnection.getConnection();
+                if (connection == null) {
+                    // standard XA mode
+                    xaconnection = xadatasource.getXAConnection();
+                    connection = xaconnection.getConnection();
+                }
                 dialect = Dialect.createDialect(connection,
                         repository.getBinaryManager(),
                         repository.getRepositoryDescriptor());
@@ -124,7 +146,9 @@ public class JDBCBackend implements RepositoryBackend {
                 if (connection != null) {
                     connection.close();
                 }
-                xaconnection.close();
+                if (xaconnection != null) {
+                    xaconnection.close();
+                }
             }
         } catch (SQLException e) {
             throw new StorageException(e);

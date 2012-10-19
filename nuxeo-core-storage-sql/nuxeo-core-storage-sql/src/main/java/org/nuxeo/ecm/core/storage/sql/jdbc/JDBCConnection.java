@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.runtime.api.ConnectionHelper;
 
 /**
  * Holds a connection to a JDBC database.
@@ -112,13 +113,33 @@ public class JDBCConnection {
 
     private void openConnections() throws StorageException {
         try {
-            int tryNo = 0;
-            for (;;) {
+            openBaseConnection();
+            supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
+            sqlInfo.dialect.performPostOpenStatements(connection);
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    /**
+     * Gets the fake name we use to pass to ConnectionHelper.getConnection, in
+     * order for exclusions on these connections to be possible.
+     */
+    protected static String getPseudoDataSourceName(String repositoryName) {
+        return "VCS_" + repositoryName;
+    }
+
+    protected void openBaseConnection() throws SQLException {
+        // try single-datasource non-XA mode
+        connection = ConnectionHelper.getConnection(getPseudoDataSourceName(model.getRepositoryDescriptor().name));
+        if (connection == null) {
+            // standard XA mode
+            for (int tryNo = 0;; tryNo++) {
                 try {
                     xaconnection = xadatasource.getXAConnection();
                     break;
                 } catch (SQLException e) {
-                    if (++tryNo >= MAX_CONNECTION_TRIES) {
+                    if (tryNo >= MAX_CONNECTION_TRIES) {
                         throw e;
                     }
                     if (e.getErrorCode() != 12519) {
@@ -142,11 +163,11 @@ public class JDBCConnection {
                 }
             }
             connection = xaconnection.getConnection();
-            supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
             xaresource = xaconnection.getXAResource();
-            sqlInfo.dialect.performPostOpenStatements(connection);
-        } catch (SQLException e) {
-            throw new StorageException(e);
+        } else {
+            // single-datasource non-XA mode
+            xaconnection = null;
+            xaresource = new XAResourceConnectionAdapter(connection);
         }
     }
 
