@@ -151,7 +151,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     private void acquireConnection() throws DirectoryException {
         try {
             if (sqlConnection == null || sqlConnection.isClosed()) {
-                sqlConnection = directory.getDataSource().getConnection();
+                sqlConnection = directory.getConnection();
                 if (!managedSQLSession) {
                     sqlConnection.setAutoCommit(true);
                 }

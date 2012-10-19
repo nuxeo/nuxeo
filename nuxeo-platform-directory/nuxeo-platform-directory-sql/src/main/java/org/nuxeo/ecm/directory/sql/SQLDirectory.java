@@ -45,6 +45,7 @@ import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -179,7 +180,8 @@ public class SQLDirectory extends AbstractDirectory {
         return config;
     }
 
-    public DataSource getDataSource() throws DirectoryException {
+    /** DO NOT USE, use getConnection() instead. */
+    protected DataSource getDataSource() throws DirectoryException {
         if (dataSource != null) {
             return dataSource;
         }
@@ -203,9 +205,15 @@ public class SQLDirectory extends AbstractDirectory {
         }
     }
 
-    private Connection getConnection() throws DirectoryException {
+    protected Connection getConnection() throws DirectoryException {
         try {
-            return getDataSource().getConnection();
+            // try single-datasource non-XA mode
+            Connection connection = ConnectionHelper.getConnection(config.dataSourceName);
+            if (connection == null) {
+                // standard datasource usage
+                connection = getDataSource().getConnection();
+            }
+            return connection;
         } catch (SQLException e) {
             throw new DirectoryException("Cannot connect to SQL directory '"
                     + getName() + "': " + e.getMessage(), e);
