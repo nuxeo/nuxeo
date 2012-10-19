@@ -29,8 +29,6 @@
   <Listener className="org.apache.catalina.mbeans.ServerLifecycleListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
 
-
-
   <!-- Global JNDI resources
        Documentation at /docs/jndi-resources-howto.html
   -->
@@ -120,7 +118,6 @@
     <Engine name="Catalina" defaultHost="localhost" jvmRoute="jvm1">
     -->
     <Engine name="Catalina" defaultHost="localhost" jvmRoute="${nuxeo.server.jvmRoute}">
-
 
       <!--For clustering, please take a look at documentation at:
           /docs/cluster-howto.html  (simple how to)
