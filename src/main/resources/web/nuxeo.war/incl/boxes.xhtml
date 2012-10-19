@@ -1,0 +1,68 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3 id="" alt="Boxes">Boxes</h3>
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle5">
+      <div class="foldableBox">
+        <h3 class="unfolded">
+          <a onclick="return toggleBox(this)" href="#nologo">Foldable box h3 title class <span class="code">.unfolded</span></a>
+        </h3>
+        <div class="boxBody">The foldable box content, include in a div <span class="code">.boxBody</span></div>
+      </div>
+      <div class="foldableBox">
+        <h3 class="foldedDisabled">
+          <a onclick="return toggleBox(this)" href="#nologo">Foldable box h3 title class <span class="code">.foldedDisabled</span></a>
+        </h3>
+        <div class="boxBody">The foldable box content, include in a div <span class="code">.boxBody</span></div>
+      </div>
+      <div class="foldableLightBox">
+        <h3 class="unfolded">
+          <a onclick="return toggleBox(this)" href="#nologo">Foldable box h3 title class <span class="code">.foldedDisabled</span></a>
+        </h3>
+        <div class="boxBody">The foldable box content, include in a div <span class="code">.boxBody</span></div>
+      </div>
+      <div class="bubbleBox">
+        <div class="bubbleHeader">
+          <h3>H3 title</h3>
+        </div>
+        <div class="boxBody">A <span class="code">.bubbleBox</span> container.</div>
+      </div>
+      <div class="bubbleBox">
+        <div class="bubbleHeader">
+          <input class="button" value="X" type="button" />
+          <h3>H3 title</h3>
+        </div>
+        <table class="dataTable">
+          <tbody>
+            <tr>
+              <th>Truc</th>
+              <th>Chouette</th>
+            </tr>
+            <tr>
+              <td>Truc</td>
+              <td>Chouette</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="gridBox gridStyle7">
+      <div class=""></div> 
+    </div>
+    
+    <div class="clear" />
+  </div>
+
+</c:if>
+
