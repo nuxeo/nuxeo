@@ -137,13 +137,19 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         } else if (txType.equals(RESOURCE_LOCAL)) {
             properties.put(Environment.TRANSACTION_STRATEGY, JDBCTransactionFactory.class.getName());
         }
-        properties.put(Environment.CONNECTION_PROVIDER,
-                NuxeoConnectionProvider.class.getName());
         if (cfg == null) {
             setupConfiguration(properties);
         }
+        Properties props = cfg.getProperties();
+        if (props.get(Environment.URL) == null) {
+            // don't set up our connection provider for unit tests
+            // that use an explicit driver + connection URL and so use
+            // a DriverManagerConnectionProvider
+            props.put(Environment.CONNECTION_PROVIDER,
+                    NuxeoConnectionProvider.class.getName());
+        }
         if (txType.equals(RESOURCE_LOCAL)) {
-            cfg.getProperties().remove(Environment.DATASOURCE);
+            props.remove(Environment.DATASOURCE);
         }
         return createEntityManagerFactory(properties);
     }
