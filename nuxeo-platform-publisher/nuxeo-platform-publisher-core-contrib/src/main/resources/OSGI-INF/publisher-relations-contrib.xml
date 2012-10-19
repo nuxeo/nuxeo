@@ -3,13 +3,8 @@
 
   <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
     point="graphs">
-    <graph name="publication" type="jena-or-core">
+    <graph name="publication" type="core">
       <option name="doctype">PublicationRelation</option>
-      <option name="backend">sql</option>
-      <option name="databaseType">
-        ${org.nuxeo.ecm.sql.jena.databaseType}
-      </option>
-      <option name="datasource">java:/nxrelations-default-jena</option>
       <namespaces>
         <namespace name="rdf">
           http://www.w3.org/1999/02/22-rdf-syntax-ns#
