@@ -23,7 +23,7 @@
   </appender>
 
   <root>
-    <priority value="WARN" />
+    <priority value="TRACE" />
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="FILE" />
   </root>

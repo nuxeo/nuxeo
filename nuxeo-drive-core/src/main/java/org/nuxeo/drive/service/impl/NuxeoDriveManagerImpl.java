@@ -13,12 +13,18 @@
  *
  * Contributors:
  *     Olivier Grisel <ogrisel@nuxeo.com>
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -157,6 +163,67 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             cache.put(userName, references);
         }
         return references;
+    }
+
+    /**
+     * Uses the {@link AuditDocumentChangeFinder} to get the summary of document
+     * changes for the given user and last successful synchronization date.
+     * <p>
+     * Sets the status code to
+     * {@link DocumentChangeSummary#STATUS_TOO_MANY_CHANGES} if the audit log
+     * query returns too many results.
+     * <p>
+     * TODO: use a Framework property for the hard-coded limit (1000) of
+     * document changes fetched from the audit logs.
+     */
+    @Override
+    public DocumentChangeSummary getDocumentChangeSummary(String userName,
+            CoreSession session, Calendar lastSuccessfulSync)
+            throws ClientException {
+
+        List<AuditDocumentChange> docChanges = new ArrayList<AuditDocumentChange>();
+        Map<String, DocumentModel> changedDocModels = new HashMap<String, DocumentModel>();
+        String statusCode = DocumentChangeSummary.STATUS_NO_CHANGES;
+
+        // Get sync root paths
+        Set<String> syncRootPaths = getSynchronizationRootPaths(userName,
+                session);
+        if (!syncRootPaths.isEmpty()) {
+            try {
+                // Get document changes
+                docChanges = AuditDocumentChangeFinder.getDocumentChanges(
+                        session.getRepositoryName(), syncRootPaths,
+                        lastSuccessfulSync, 1000);
+                if (!docChanges.isEmpty()) {
+                    // Build map of document models that have changed
+                    for (AuditDocumentChange docChange : docChanges) {
+                        String docUuid = docChange.getDocUuid();
+                        if (!changedDocModels.containsKey(docUuid)) {
+                            changedDocModels.put(docUuid,
+                                    session.getDocument(new IdRef(docUuid)));
+                        }
+                    }
+                    statusCode = DocumentChangeSummary.STATUS_FOUND_CHANGES;
+                }
+            } catch (TooManyDocumentChangesException e) {
+                statusCode = DocumentChangeSummary.STATUS_TOO_MANY_CHANGES;
+            }
+        }
+
+        return new DocumentChangeSummary(docChanges, changedDocModels,
+                statusCode);
+    }
+
+    protected Set<String> getSynchronizationRootPaths(String userName,
+            CoreSession session) throws ClientException {
+        Set<String> syncRootPaths = new HashSet<String>();
+        Set<IdRef> syncRootRefs = getSynchronizationRootReferences(userName,
+                session);
+        for (IdRef syncRootRef : syncRootRefs) {
+            // TODO: check if doc exists?
+            syncRootPaths.add(session.getDocument(syncRootRef).getPathAsString());
+        }
+        return syncRootPaths;
     }
 
 }

@@ -13,11 +13,14 @@
  *
  * Contributors:
  *     Olivier Grisel <ogrisel@nuxeo.com>
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.drive.service;
 
+import java.util.Calendar;
 import java.util.Set;
 
+import org.nuxeo.drive.service.impl.DocumentChangeSummary;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,7 +56,7 @@ public interface NuxeoDriveManager {
      * Fetch the list of synchronization root ids for a given user. This list is
      * assumed to be short enough (in the order of 100 folder max) so that no
      * paging API is required.
-     * 
+     *
      * @param userName the id of the Nuxeo Drive user
      * @param session active CoreSession instance to the repository hosting the
      *            roots.
@@ -69,5 +72,27 @@ public interface NuxeoDriveManager {
      * invalidate the caches.
      */
     public void handleFolderDeletion(IdRef ref) throws ClientException;
+
+    /**
+     * Gets a summary of document changes on the given user's synchronization
+     * roots since the user's device last successful synchronization date.
+     * <p>
+     * The summary includes:
+     * <ul>
+     * <li>A list of document changes</li>
+     * <li>The document models that have changed</li>
+     * <li>A status code</li>
+     * </ul>
+     *
+     * @param userName the id of the Nuxeo Drive user
+     * @param session active CoreSession instance to the repository hosting the
+     *            user's synchronization roots
+     * @param lastSuccessfulSync the last successful synchronization date of the
+     *            user's device
+     * @return the summary of document changes
+     */
+    public DocumentChangeSummary getDocumentChangeSummary(String userName,
+            CoreSession session, Calendar lastSuccessfulSync)
+            throws ClientException;
 
 }
