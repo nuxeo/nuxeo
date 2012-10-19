@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JenaGraph.java 29588 2008-01-23 23:32:14Z fguillaume $
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.relations.jena;
@@ -53,6 +52,7 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.NodeFactory;
 import org.nuxeo.ecm.platform.relations.api.impl.QueryResultImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
+import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.DataSourceHelper;
 
 import com.hp.hpl.jena.datatypes.BaseDatatype;
@@ -84,8 +84,6 @@ import com.hp.hpl.jena.shared.Lock;
  * <p>
  * Graph implementation using the <a href="http://jena.sourceforge.net/"
  * target="_blank">Jena</a> framework.
- *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class JenaGraph implements Graph {
 
@@ -110,10 +108,6 @@ public class JenaGraph implements Graph {
      */
     private String datasource;
     private String databaseType;
-    private String databaseUrl;
-    private String databaseUser;
-    private String databasePassword;
-    private String databaseDriverClass;
     private boolean databaseDoCompressUri;
     private boolean databaseTransactionEnabled;
 
@@ -201,45 +195,39 @@ public class JenaGraph implements Graph {
             }
             return new GraphConnection((Connection) null, memoryGraph);
         } else if (backend.equals("sql")) {
-            DBConnection connection;
-            Connection baseConnection = null;
-            // create a database connection
-            if (datasource != null) {
-                try {
-                    DataSource dataSource = DataSourceHelper.getDataSource(datasource);
-                    baseConnection = dataSource.getConnection();
-                    /*
-                     * We have to wrap the connection to disallow any commit()
-                     * or setAutoCommit() on it. Jena calls these methods
-                     * without regard to the fact that the connection may be
-                     * managed by an external transaction.
-                     */
-                    Connection wrappedConnection = (Connection) Proxy.newProxyInstance(
-                            Connection.class.getClassLoader(),
-                            new Class[] { Connection.class },
-                            new ConnectionFixInvocationHandler(baseConnection));
-
-                    connection = new DBConnection(wrappedConnection,
-                            databaseType);
-                } catch (NamingException e) {
-                    throw new IllegalArgumentException(String.format(
-                            "Datasource %s not found", datasource), e);
-                } catch (SQLException e) {
-                    throw new IllegalArgumentException(String.format(
-                            "SQLException while opening %s", datasource), e);
-                }
-            } else {
-                // load the driver class
-                try {
-                    Class.forName(databaseDriverClass);
-                } catch (ClassNotFoundException e) {
-                    throw new IllegalArgumentException(String.format(
-                            "Database driver class %s not found",
-                            databaseDriverClass), e);
-                }
-                connection = new DBConnection(databaseUrl, databaseUser,
-                        databasePassword, databaseType);
+            if (datasource == null) {
+                throw new IllegalArgumentException(
+                        "Missing datasource for sql graph : " + name);
             }
+            // create a database connection
+            Connection baseConnection;
+            try {
+                // try single-datasource non-XA mode
+                baseConnection = ConnectionHelper.getConnection(datasource);
+                if (baseConnection == null) {
+                    // standard datasource usage
+                    DataSource ds = DataSourceHelper.getDataSource(datasource);
+                    baseConnection = ds.getConnection();
+                }
+            } catch (NamingException e) {
+                throw new IllegalArgumentException(String.format(
+                        "Datasource %s not found", datasource), e);
+            } catch (SQLException e) {
+                throw new IllegalArgumentException(String.format(
+                        "SQLException while opening %s", datasource), e);
+            }
+            /*
+             * We have to wrap the connection to disallow any commit() or
+             * setAutoCommit() on it. Jena calls these methods without regard to
+             * the fact that the connection may be managed by an external
+             * transaction.
+             */
+            Connection wrappedConnection = (Connection) Proxy.newProxyInstance(
+                    Connection.class.getClassLoader(),
+                    new Class[] { Connection.class },
+                    new ConnectionFixInvocationHandler(baseConnection));
+            DBConnection connection = new DBConnection(wrappedConnection,
+                    databaseType);
             // check if named model already exists
             Model graph;
             if (connection.containsModel(name)) {
@@ -498,14 +486,6 @@ public class JenaGraph implements Graph {
                 datasource = value;
             } else if (key.equals("databaseType")) {
                 databaseType = value;
-            } else if (key.equals("databaseUrl")) {
-                databaseUrl = value;
-            } else if (key.equals("databaseUser")) {
-                databaseUser = value;
-            } else if (key.equals("databasePassword")) {
-                databasePassword = value;
-            } else if (key.equals("databaseDriverClass")) {
-                databaseDriverClass = value;
             } else if (key.equals("databaseDoCompressUri")) {
                 if (value.equals("true")) {
                     databaseDoCompressUri = true;
