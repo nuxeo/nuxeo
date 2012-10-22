@@ -64,7 +64,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             10, TimeUnit.MINUTES).makeMap();
 
     @Override
-    public void synchronizeRoot(String userName, DocumentModel newRootContainer)
+    public void registerSynchronizationRoot(String userName,
+            DocumentModel newRootContainer, CoreSession session)
             throws PropertyException, ClientException, SecurityException {
         if (!newRootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             newRootContainer.addFacet(NUXEO_DRIVE_FACET);
@@ -77,7 +78,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                             + " proxy or archived version.",
                     newRootContainer.getTitle(), newRootContainer.getRef()));
         }
-        CoreSession session = newRootContainer.getCoreSession();
         UserManager userManager = Framework.getLocalService(UserManager.class);
         if (!session.hasPermission(userManager.getPrincipal(userName),
                 newRootContainer.getRef(), SecurityConstants.ADD_CHILDREN)) {
@@ -108,7 +108,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unsynchronizeRoot(String userName, DocumentModel rootContainer)
+    public void unregisterSynchronizationRoot(String userName,
+            DocumentModel rootContainer, CoreSession session)
             throws PropertyException, ClientException {
         if (!rootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             rootContainer.addFacet(NUXEO_DRIVE_FACET);
@@ -129,7 +130,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         }
         rootContainer.setPropertyValue(DRIVE_SUBSCRIBERS_PROPERTY,
                 (Serializable) subscribers);
-        CoreSession session = rootContainer.getCoreSession();
         session.saveDocument(rootContainer);
         session.save();
         cache.clear();

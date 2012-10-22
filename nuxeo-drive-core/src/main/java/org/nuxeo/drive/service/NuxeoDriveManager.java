@@ -41,7 +41,8 @@ public interface NuxeoDriveManager {
      * @throws SecurityException if the user does not have write permissions to
      *             the container.
      */
-    public void synchronizeRoot(String userName, DocumentModel newRootContainer)
+    public void registerSynchronizationRoot(String userName,
+            DocumentModel newRootContainer, CoreSession session)
             throws ClientException, SecurityException;
 
     /**
@@ -49,8 +50,8 @@ public interface NuxeoDriveManager {
      * @param rootContainer the folderish document that should no longer be used
      *            as a synchronization root
      */
-    public void unsynchronizeRoot(String userName, DocumentModel rootContainer)
-            throws ClientException;
+    public void unregisterSynchronizationRoot(String userName, DocumentModel rootContainer,
+            CoreSession session) throws ClientException;
 
     /**
      * Fetch the list of synchronization root ids for a given user. This list is
