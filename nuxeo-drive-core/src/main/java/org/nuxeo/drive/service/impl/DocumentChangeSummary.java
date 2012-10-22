@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -49,11 +50,15 @@ public class DocumentChangeSummary implements Serializable {
 
     protected String statusCode;
 
+    protected Calendar syncDate;
+
     public DocumentChangeSummary(List<AuditDocumentChange> documentChanges,
-            Map<String, DocumentModel> changedDocModels, String statusCode) {
+            Map<String, DocumentModel> changedDocModels, String statusCode,
+            Calendar syncDate) {
         this.documentChanges = documentChanges;
         this.changedDocModels = changedDocModels;
         this.statusCode = statusCode;
+        this.syncDate = syncDate;
     }
 
     public List<AuditDocumentChange> getDocumentChanges() {
@@ -66,6 +71,10 @@ public class DocumentChangeSummary implements Serializable {
 
     public String getStatusCode() {
         return statusCode;
+    }
+
+    public Calendar getSyncDate() {
+        return syncDate;
     }
 
 }
