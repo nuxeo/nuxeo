@@ -62,6 +62,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
+import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 
@@ -383,7 +384,22 @@ public class SQLSession extends BaseSession implements EntrySource {
                 fieldMap.put(fieldName, value);
             }
 
+            if (isMultiTenant()) {
+                // check that the entry is from the current tenant, or no tenant
+                // at all
+                String tenantId = getCurrentTenantId();
+                if (!StringUtils.isBlank(tenantId)) {
+                    String entryTenantId = (String) fieldMap.get(TENANT_ID_FIELD);
+                    if (!StringUtils.isBlank(entryTenantId)) {
+                        if (!entryTenantId.equals(tenantId)) {
+                            return null;
+                        }
+                    }
+                }
+            }
+
             DocumentModel entry = fieldMapToDocumentModel(fieldMap);
+
             // fetch the reference fields
             if (fetchReferences) {
                 for (Reference reference : directory.getReferences()) {
@@ -428,6 +444,26 @@ public class SQLSession extends BaseSession implements EntrySource {
         List<Column> storedColumnList = new LinkedList<Column>();
         List<String> referenceFieldList = new LinkedList<String>();
         DataModel dataModel = docModel.getDataModel(schemaName);
+
+        if (isMultiTenant()) {
+            // can only update entry from the current tenant
+            String tenantId = getCurrentTenantId();
+            if (!StringUtils.isBlank(tenantId)) {
+                String entryTenantId = (String) dataModel.getValue(TENANT_ID_FIELD);
+                if (StringUtils.isBlank(entryTenantId)
+                        || !entryTenantId.equals(tenantId)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Trying to update entry '%s' not part of current tenant '%s'",
+                                docModel.getId(), tenantId));
+                    }
+                    throw new OperationNotAllowedException(
+                            "Operation not allowed in the current tenant context",
+                            "label.directory.error.multi.tenant.operationNotAllowed",
+                            null);
+                }
+            }
+        }
 
         // collect fields to update
         for (String fieldName : schemaFieldMap.keySet()) {
@@ -530,6 +566,13 @@ public class SQLSession extends BaseSession implements EntrySource {
             return;
         }
 
+        if (!canDeleteMultiTenantEntry(id)) {
+            throw new OperationNotAllowedException(
+                    "Operation not allowed in the current tenant context",
+                    "label.directory.error.multi.tenant.operationNotAllowed",
+                    null);
+        }
+
         // first step: remove references for this entry
         for (Reference reference : getDirectory().getReferences()) {
             if (reference instanceof TableReference) {
@@ -569,6 +612,33 @@ public class SQLSession extends BaseSession implements EntrySource {
         directory.invalidateCaches();
     }
 
+    protected boolean canDeleteMultiTenantEntry(String entryId)
+            throws DirectoryException {
+        if (isMultiTenant()) {
+            // can only delete entry from the current tenant
+            String tenantId = getCurrentTenantId();
+            if (!StringUtils.isBlank(tenantId)) {
+                try {
+                    DocumentModel entry = getEntry(entryId);
+                    DataModel dataModel = entry.getDataModel(schemaName);
+                    String entryTenantId = (String) dataModel.getValue(TENANT_ID_FIELD);
+                    if (StringUtils.isBlank(entryTenantId)
+                            || !entryTenantId.equals(tenantId)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "Trying to delete entry '%s' not part of current tenant '%s'",
+                                    entryId, tenantId));
+                        }
+                        return false;
+                    }
+                } catch (ClientException e) {
+                    throw new DirectoryException(e);
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public void deleteEntry(String id, Map<String, String> map)
             throws DirectoryException {
@@ -579,6 +649,11 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
 
         acquireConnection();
+
+        if (!canDeleteMultiTenantEntry(id)) {
+            throw new DirectoryException(
+                    "Operation not allowed in the current tenant context");
+        }
 
         // Assume in this case that there are no References to this entry.
         PreparedStatement ps = null;
