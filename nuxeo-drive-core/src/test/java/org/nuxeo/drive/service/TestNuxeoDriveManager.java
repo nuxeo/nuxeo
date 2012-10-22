@@ -17,10 +17,12 @@
 package org.nuxeo.drive.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -177,6 +179,32 @@ public class TestNuxeoDriveManager {
     public DocumentModel doc(CoreSession session, String path)
             throws ClientException {
         return session.getDocument(new PathRef(path));
+    }
+
+    @Test
+    public void testGetSynchronizationRoots() throws Exception {
+
+        // Register synchronization roots
+        nuxeoDriveManager.registerSynchronizationRoot("user1",
+                user1Session.getDocument(user1Workspace), user1Session);
+        nuxeoDriveManager.registerSynchronizationRoot("user1",
+                doc(user1Session, "/default-domain/workspaces/workspace-2"),
+                user1Session);
+
+        // Check synchronization root references
+        Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(
+                "user1", user1Session);
+        assertEquals(2, rootRefs.size());
+        assertTrue(rootRefs.contains(user1Workspace));
+        assertTrue(rootRefs.contains(new IdRef(user1Session.getDocument(
+                new PathRef("/default-domain/workspaces/workspace-2")).getId())));
+
+        // Check synchronization root paths
+        Set<String> rootPaths = nuxeoDriveManager.getSynchronizationRootPaths(
+                "user1", user1Session);
+        assertEquals(2, rootPaths.size());
+        assertTrue(rootPaths.contains("/default-domain/UserWorkspaces/user1"));
+        assertTrue(rootPaths.contains("/default-domain/workspaces/workspace-2"));
     }
 
     @Test

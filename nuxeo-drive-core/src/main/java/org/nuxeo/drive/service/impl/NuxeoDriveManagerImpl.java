@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,7 @@ import org.nuxeo.drive.service.TooManyDocumentChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -60,10 +60,15 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     public static final String DRIVE_SUBSCRIBERS_PROPERTY = "drv:subscribers";
 
+    /**
+     * Cache holding the synchronization roots as a 2 dimension array: the first
+     * element is a set of root references of type {@link DocumentRef}, the
+     * second one a set of root paths of type {@link String}.
+     */
     // TODO: upgrade to latest version of google collections to be able to limit
     // the size with a LRU policy
-    ConcurrentMap<String, Set<IdRef>> cache = new MapMaker().concurrencyLevel(4).softKeys().softValues().expiration(
-            10, TimeUnit.MINUTES).makeMap();
+    ConcurrentMap<String, Serializable[]> cache = new MapMaker().concurrencyLevel(
+            4).softKeys().softValues().expiration(10, TimeUnit.MINUTES).makeMap();
 
     // TODO: make this overridable with an extension point
     protected DocumentChangeFinder documentChangeFinder = new AuditDocumentChangeFinder();
@@ -141,33 +146,22 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void handleFolderDeletion(IdRef deleted) throws ClientException {
-        cache.clear();
+    @SuppressWarnings("unchecked")
+    public Set<IdRef> getSynchronizationRootReferences(String userName,
+            CoreSession session) throws ClientException {
+        return (Set<IdRef>) getSynchronizationRoots(userName, session)[0];
     }
 
     @Override
-    public Set<IdRef> getSynchronizationRootReferences(String userName,
+    @SuppressWarnings("unchecked")
+    public Set<String> getSynchronizationRootPaths(String userName,
             CoreSession session) throws ClientException {
-        // cache uses soft keys hence physical equality: intern key before
-        // lookup
-        userName = userName.intern();
-        Set<IdRef> references = cache.get(userName);
-        if (references == null) {
-            references = new LinkedHashSet<IdRef>();
-            String q = String.format(
-                    "SELECT ecm:uuid FROM Document WHERE %s = %s"
-                            + " AND ecm:currentLifeCycleState <> 'deleted'"
-                            + " ORDER BY dc:title, dc:created DESC",
-                    DRIVE_SUBSCRIBERS_PROPERTY,
-                    NXQLQueryBuilder.prepareStringLiteral(userName, true, true));
-            IterableQueryResult results = session.queryAndFetch(q, NXQL.NXQL);
-            for (Map<String, Serializable> result : results) {
-                references.add(new IdRef(result.get("ecm:uuid").toString()));
-            }
-            results.close();
-            cache.put(userName, references);
-        }
-        return references;
+        return (Set<String>) getSynchronizationRoots(userName, session)[1];
+    }
+
+    @Override
+    public void handleFolderDeletion(IdRef deleted) throws ClientException {
+        cache.clear();
     }
 
     /**
@@ -219,16 +213,34 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 statusCode);
     }
 
-    protected Set<String> getSynchronizationRootPaths(String userName,
+    protected Serializable[] getSynchronizationRoots(String userName,
             CoreSession session) throws ClientException {
-        Set<String> syncRootPaths = new HashSet<String>();
-        Set<IdRef> syncRootRefs = getSynchronizationRootReferences(userName,
-                session);
-        for (IdRef syncRootRef : syncRootRefs) {
-            // TODO: check if doc exists?
-            syncRootPaths.add(session.getDocument(syncRootRef).getPathAsString());
+        // cache uses soft keys hence physical equality: intern key before
+        // lookup
+        userName = userName.intern();
+        Serializable[] syncRoots = cache.get(userName);
+        if (syncRoots == null) {
+            syncRoots = new Serializable[2];
+            Set<IdRef> references = new LinkedHashSet<IdRef>();
+            Set<String> paths = new LinkedHashSet<String>();
+            String q = String.format(
+                    "SELECT ecm:uuid FROM Document WHERE %s = %s"
+                            + " AND ecm:currentLifeCycleState <> 'deleted'"
+                            + " ORDER BY dc:title, dc:created DESC",
+                    DRIVE_SUBSCRIBERS_PROPERTY,
+                    NXQLQueryBuilder.prepareStringLiteral(userName, true, true));
+            IterableQueryResult results = session.queryAndFetch(q, NXQL.NXQL);
+            for (Map<String, Serializable> result : results) {
+                IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
+                references.add(docRef);
+                paths.add(session.getDocument(docRef).getPathAsString());
+            }
+            results.close();
+            syncRoots[0] = (Serializable) references;
+            syncRoots[1] = (Serializable) paths;
+            cache.put(userName, syncRoots);
         }
-        return syncRootPaths;
+        return syncRoots;
     }
 
 }

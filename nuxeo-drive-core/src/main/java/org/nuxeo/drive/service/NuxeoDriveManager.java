@@ -50,8 +50,9 @@ public interface NuxeoDriveManager {
      * @param rootContainer the folderish document that should no longer be used
      *            as a synchronization root
      */
-    public void unregisterSynchronizationRoot(String userName, DocumentModel rootContainer,
-            CoreSession session) throws ClientException;
+    public void unregisterSynchronizationRoot(String userName,
+            DocumentModel rootContainer, CoreSession session)
+            throws ClientException;
 
     /**
      * Fetch the list of synchronization root ids for a given user. This list is
@@ -61,10 +62,26 @@ public interface NuxeoDriveManager {
      * @param userName the id of the Nuxeo Drive user
      * @param session active CoreSession instance to the repository hosting the
      *            roots.
-     * @return the ordered set of non deleted synchronization roots for that
-     *         user
+     * @return the ordered set of non deleted synchronization root references
+     *         for that user
+     * @see #getSynchronizationRootPaths(String, CoreSession)
      */
     public Set<IdRef> getSynchronizationRootReferences(String userName,
+            CoreSession session) throws ClientException;
+
+    /**
+     * Fetch the list of synchronization root paths for a given user. This list
+     * is assumed to be short enough (in the order of 100 folder max) so that no
+     * paging API is required.
+     *
+     * @param userName the id of the Nuxeo Drive user
+     * @param session active CoreSession instance to the repository hosting the
+     *            roots.
+     * @return the ordered set of non deleted synchronization root paths for
+     *         that user
+     * @see #getSynchronizationRootReferences(String, CoreSession)
+     */
+    public Set<String> getSynchronizationRootPaths(String userName,
             CoreSession session) throws ClientException;
 
     /**
