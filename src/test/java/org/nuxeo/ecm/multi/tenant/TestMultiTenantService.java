@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANTS_DIRECTORY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_PROPERTY;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -339,6 +341,67 @@ public class TestMultiTenantService {
         assertFalse(leelaSession.hasPermission(domain.getRef(), "Write"));
 
         CoreInstance.getInstance().close(leelaSession);
+        loginContext.logout();
+    }
+
+    @Test
+    public void tenantManagerShouldModifyOnlyTenantGroups()
+            throws ClientException, LoginException {
+        multiTenantService.enableTenantIsolation(session);
+
+        NuxeoGroup noTenantGroup = createGroup("noTenantGroup");
+        assertEquals("noTenantGroup", noTenantGroup.getName());
+
+        DocumentModel domain = session.getDocument(new PathRef(
+                "/default-domain"));
+
+        createUser("fry", domain.getName());
+        LoginContext loginContext = Framework.loginAsUser("fry");
+
+        NuxeoGroup testGroup = createGroup("testGroup");
+        assertEquals("tenant_" + domain.getName() + "_testGroup",
+                testGroup.getName());
+
+        List<DocumentModel> groups = userManager.searchGroups(null);
+        assertEquals(1, groups.size());
+        DocumentModel group = groups.get(0);
+        assertEquals("tenant_" + domain.getName() + "_testGroup",
+                group.getPropertyValue("group:groupname"));
+        assertEquals(domain.getName(), group.getPropertyValue("group:tenantId"));
+
+        // cannot delete
+        try {
+            userManager.deleteGroup(noTenantGroup.getName());
+            fail();
+        } catch (OperationNotAllowedException e) {
+            // OK
+        }
+
+        // cannot modify
+        try {
+            assertEquals("noTenantGroup", noTenantGroup.getLabel());
+            DocumentModel noTenantGroupModel = userManager.getGroupModel(noTenantGroup.getName());
+            noTenantGroupModel.setPropertyValue("group:grouplabel", "new label");
+            userManager.updateGroup(noTenantGroupModel);
+            fail();
+        } catch (OperationNotAllowedException e) {
+            // OK
+        }
+
+        noTenantGroup = userManager.getGroup(noTenantGroup.getName());
+        assertEquals("noTenantGroup", noTenantGroup.getLabel());
+
+        // can modify and delete tenant groups
+        DocumentModel testGroupModel = userManager.getGroupModel(testGroup.getName());
+        testGroupModel.setPropertyValue("group:grouplabel", "new label");
+        userManager.updateGroup(testGroupModel);
+        testGroup = userManager.getGroup(testGroup.getName());
+        assertEquals("new label", testGroup.getLabel());
+
+        userManager.deleteGroup(testGroup.getName());
+        testGroup = userManager.getGroup(testGroup.getName());
+        assertNull(testGroup);
+
         loginContext.logout();
     }
 
