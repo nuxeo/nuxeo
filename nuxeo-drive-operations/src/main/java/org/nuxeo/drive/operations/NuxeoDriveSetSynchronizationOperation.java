@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 
 package org.nuxeo.drive.operations;
@@ -35,10 +35,11 @@ public class NuxeoDriveSetSynchronizationOperation {
             SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         if (enable) {
-            driveManager.synchronizeRoot(session.getPrincipal().getName(), doc);
+            driveManager.registerSynchronizationRoot(
+                    session.getPrincipal().getName(), doc, session);
         } else {
-            driveManager.unsynchronizeRoot(session.getPrincipal().getName(),
-                    doc);
+            driveManager.unregisterSynchronizationRoot(
+                    session.getPrincipal().getName(), doc, session);
 
         }
     }
