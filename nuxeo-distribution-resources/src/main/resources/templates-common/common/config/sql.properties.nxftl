@@ -8,5 +8,6 @@ org.nuxeo.ecm.sql.jena.databaseType=MsSQL
 <#elseif "${nuxeo.db.type}" == "mysql">
 org.nuxeo.ecm.sql.jena.databaseType=MySQL
 <#else>
+# We tell Jena we're using Derby even if the database is actually h2. This works.
 org.nuxeo.ecm.sql.jena.databaseType=Derby 
 </#if>

@@ -7,5 +7,5 @@ nuxeo.db.type=default
 nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
-nuxeo.db.jdbc.url=jdbc:derby:${nuxeo.data.dir}/derby/${nuxeo.db.name};create=true
-nuxeo.db.driver=org.apache.derby.jdbc.EmbeddedDriver
+nuxeo.db.jdbc.url=jdbc:h2:${nuxeo.db.name}
+nuxeo.db.driver=org.h2.Driver

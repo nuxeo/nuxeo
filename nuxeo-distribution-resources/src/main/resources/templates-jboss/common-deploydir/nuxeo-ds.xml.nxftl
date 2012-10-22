@@ -63,9 +63,9 @@
   <local-tx-datasource>
     <jndi-name>NuxeoDS</jndi-name>
     <connection-url>
-      jdbc:derby:${nuxeo.data.dir}/derby/${nuxeo.db.name};create=true
+      jdbc:h2:${nuxeo.db.name}
     </connection-url>
-    <driver-class>org.apache.derby.jdbc.EmbeddedDriver</driver-class>
+    <driver-class>org.h2.Driver</driver-class>
     <max-pool-size>${nuxeo.db["max-pool-size"]}</max-pool-size>
     <min-pool-size>${nuxeo.db["min-pool-size"]}</min-pool-size>
     <user-name>${nuxeo.db.user}</user-name>
