@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditDocumentChange;
 import org.nuxeo.drive.service.impl.AuditDocumentChangeFinder;
 import org.nuxeo.drive.service.impl.DocumentChangeSummary;
-import org.nuxeo.drive.service.impl.TooManyDocumentChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -72,6 +71,8 @@ public class TestAuditDocumentChangeFinder {
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
 
+    protected DocumentChangeFinder documentChangeFinder;
+
     protected String repoName;
 
     protected Calendar lastSuccessfulSync;
@@ -85,6 +86,7 @@ public class TestAuditDocumentChangeFinder {
     @Before
     public void init() throws Exception {
 
+        documentChangeFinder = new AuditDocumentChangeFinder();
         repoName = session.getRepositoryName();
         lastSuccessfulSync = Calendar.getInstance();
         syncRootPaths = new HashSet<String>();
@@ -224,7 +226,7 @@ public class TestAuditDocumentChangeFinder {
      */
     protected List<AuditDocumentChange> getDocumentChanges()
             throws TooManyDocumentChangesException {
-        List<AuditDocumentChange> docChanges = AuditDocumentChangeFinder.getDocumentChanges(
+        List<AuditDocumentChange> docChanges = documentChangeFinder.getDocumentChanges(
                 repoName, syncRootPaths, lastSuccessfulSync,
                 DOCUMENT_CHANGES_LIMIT);
         lastSuccessfulSync.setTimeInMillis(System.currentTimeMillis());

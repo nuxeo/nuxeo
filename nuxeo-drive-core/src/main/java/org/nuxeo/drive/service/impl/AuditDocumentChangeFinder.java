@@ -27,26 +27,31 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.drive.service.DocumentChangeFinder;
+import org.nuxeo.drive.service.TooManyDocumentChangesException;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Finds document changes using the {@link AuditReader}.
+ * Implementation of {@link DocumentChangeFinder} using the {@link AuditReader}.
  *
  * @author Antoine Taillefer
  */
-public final class AuditDocumentChangeFinder {
+public class AuditDocumentChangeFinder implements DocumentChangeFinder {
+
+    private static final long serialVersionUID = 1963018967324857522L;
 
     private static final Log log = LogFactory.getLog(AuditDocumentChangeFinder.class);
 
-    private static final String blackListedDocTypes = getBlackListedDocTypes();
+    protected String blackListedDocTypes;
 
-    // final class
-    private AuditDocumentChangeFinder() {
+    public AuditDocumentChangeFinder() {
+        initBlackListedDocTypes();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-    public static List<AuditDocumentChange> getDocumentChanges(String repoName,
+    public List<AuditDocumentChange> getDocumentChanges(String repoName,
             Set<String> rootPaths, Calendar lastSuccessfulSync, int limit)
             throws TooManyDocumentChangesException {
 
@@ -94,7 +99,15 @@ public final class AuditDocumentChangeFinder {
         return docChanges;
     }
 
-    private static String getBlackListedDocTypes() {
+    public String getBlackListedDocTypes() {
+        return blackListedDocTypes;
+    }
+
+    public void setBlackListedDocTypes(String blackListedDocTypes) {
+        this.blackListedDocTypes = blackListedDocTypes;
+    }
+
+    protected void initBlackListedDocTypes() {
         StringBuilder sb = new StringBuilder();
         for (BlackListedDocTypesEnum blackListedDocType : BlackListedDocTypesEnum.values()) {
             if (sb.length() > 0) {
@@ -104,10 +117,10 @@ public final class AuditDocumentChangeFinder {
             sb.append(blackListedDocType.name());
             sb.append("'");
         }
-        return sb.toString();
+        blackListedDocTypes = sb.toString();
     }
 
-    private static String getRootPathClause(Set<String> rootPaths) {
+    protected String getRootPathClause(Set<String> rootPaths) {
         StringBuilder rootPathClause = new StringBuilder();
         for (String rootPath : rootPaths) {
             if (rootPathClause.length() > 0) {
@@ -119,7 +132,7 @@ public final class AuditDocumentChangeFinder {
         return rootPathClause.toString();
     }
 
-    private static String getLastSuccessfulSyncDate(Calendar lastSuccessfulSync) {
+    protected String getLastSuccessfulSyncDate(Calendar lastSuccessfulSync) {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         return sdf.format(new Date(lastSuccessfulSync.getTimeInMillis()));
     }

@@ -30,7 +30,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import org.nuxeo.drive.service.DocumentChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.TooManyDocumentChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,6 +64,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     // the size with a LRU policy
     ConcurrentMap<String, Set<IdRef>> cache = new MapMaker().concurrencyLevel(4).softKeys().softValues().expiration(
             10, TimeUnit.MINUTES).makeMap();
+
+    // TODO: make this overridable with an extension point
+    protected DocumentChangeFinder documentChangeFinder = new AuditDocumentChangeFinder();
 
     @Override
     public void registerSynchronizationRoot(String userName,
@@ -191,7 +196,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (!syncRootPaths.isEmpty()) {
             try {
                 // Get document changes
-                docChanges = AuditDocumentChangeFinder.getDocumentChanges(
+                docChanges = documentChangeFinder.getDocumentChanges(
                         session.getRepositoryName(), syncRootPaths,
                         lastSuccessfulSync, 1000);
                 if (!docChanges.isEmpty()) {
