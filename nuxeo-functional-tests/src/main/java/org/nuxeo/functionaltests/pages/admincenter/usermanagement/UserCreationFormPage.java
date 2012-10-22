@@ -69,7 +69,7 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     WebElement createButton;
 
     @Required
-    @FindBy(xpath = "//input[@value=\"Cancel\"]")
+    @FindBy(xpath = "//div[@class=\"tabsContent\"]//input[@value=\"Cancel\"]")
     WebElement cancelButton;
 
     public UserCreationFormPage(WebDriver driver) {
