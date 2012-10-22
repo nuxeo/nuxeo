@@ -26,6 +26,7 @@ import java.lang.reflect.Proxy;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -55,6 +56,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
+// We handle transaction start and commit manually to make it possible to have
+// several consecutive transactions in a test method
 @TransactionalConfig(autoStart = false)
 @Deploy("org.nuxeo.drive.core")
 public class TestAuditDocumentChangeFinder {
@@ -197,27 +200,86 @@ public class TestAuditDocumentChangeFinder {
         assertEquals(doc1.getId(), docChange.getDocUuid());
     }
 
+    // TODO: test "too_many_changes" status
     @Test
     public void testGetDocumentChangeSummary() throws Exception {
 
-        // No sync roots
-        DocumentChangeSummary docChangeSummary = getDocumentChangeSummary("Administator");
+        // No sync roots => shouldn't find any changes
+        DocumentChangeSummary docChangeSummary = getDocumentChangeSummary("Administrator");
         assertNotNull(docChangeSummary);
         assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
         assertTrue(docChangeSummary.getChangedDocModels().isEmpty());
         assertEquals("no_changes", docChangeSummary.getStatusCode());
 
-        // Sync roots but no changes
-        nuxeoDriveManager.synchronizeRoot("Administrator", folder1);
-        nuxeoDriveManager.synchronizeRoot("Administrator", folder2);
-        docChangeSummary = getDocumentChangeSummary("Administator");
-        assertNotNull(docChangeSummary);
+        // Register sync roots => should find changes: the newly
+        // synchronized root folders as they are updated by the synchronization
+        // registration process
+        // TODO: uncomment if not needed
+        // TransactionHelper.startTransaction();
+        nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
+                session);
+        nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder2,
+                session);
+        // commitAndWaitForAsyncCompletion();
+
+        docChangeSummary = getDocumentChangeSummary("Administrator");
+        assertEquals(2, docChangeSummary.getDocumentChanges().size());
+        assertEquals(2, docChangeSummary.getChangedDocModels().size());
+        assertEquals("found_changes", docChangeSummary.getStatusCode());
+
+        // Create 3 documents, only 2 in sync roots => should find 2 changes
+        TransactionHelper.startTransaction();
+        DocumentModel doc1 = session.createDocument(session.createDocumentModel(
+                "/folder1", "doc1", "File"));
+        DocumentModel doc2 = session.createDocument(session.createDocumentModel(
+                "/folder2", "doc2", "File"));
+        session.createDocument(session.createDocumentModel("/folder3", "doc3",
+                "File"));
+        commitAndWaitForAsyncCompletion();
+
+        docChangeSummary = getDocumentChangeSummary("Administrator");
+
+        List<AuditDocumentChange> docChanges = docChangeSummary.getDocumentChanges();
+        assertEquals(2, docChanges.size());
+        AuditDocumentChange docChange = docChanges.get(0);
+        assertEquals("documentCreated", docChange.getEventId());
+        // TODO: understand why the life cycle is not good
+        // assertEquals("project", docChange.getDocLifeCycleState());
+        assertEquals("/folder2/doc2", docChange.getDocPath());
+        assertEquals(doc2.getId(), docChange.getDocUuid());
+        docChange = docChanges.get(1);
+        assertEquals("documentCreated", docChange.getEventId());
+        // TODO: understand why the life cycle is not good
+        // assertEquals("project", docChange.getDocLifeCycleState());
+        assertEquals("/folder1/doc1", docChange.getDocPath());
+        assertEquals(doc1.getId(), docChange.getDocUuid());
+
+        Map<String, DocumentModel> changedDocModels = docChangeSummary.getChangedDocModels();
+        assertEquals(2, changedDocModels.size());
+        DocumentModel changedDoc = changedDocModels.get(doc1.getId());
+        assertNotNull(changedDoc);
+        assertEquals(doc1.getId(), changedDoc.getId());
+        assertEquals("/folder1/doc1", changedDoc.getPathAsString());
+        assertEquals("doc1", changedDoc.getName());
+        assertEquals("doc1", changedDoc.getTitle());
+        assertEquals("File", changedDoc.getType());
+        assertEquals("project", changedDoc.getCurrentLifeCycleState());
+        changedDoc = changedDocModels.get(doc2.getId());
+        assertNotNull(changedDoc);
+        assertEquals(doc2.getId(), changedDoc.getId());
+        assertEquals("/folder2/doc2", changedDoc.getPathAsString());
+        assertEquals("doc2", changedDoc.getName());
+        assertEquals("doc2", changedDoc.getTitle());
+        assertEquals("File", changedDoc.getType());
+        assertEquals("project", changedDoc.getCurrentLifeCycleState());
+
+        assertEquals("found_changes", docChangeSummary.getStatusCode());
+
+        // No changes since last successful sync
+        docChangeSummary = getDocumentChangeSummary("Administrator");
         assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
         assertTrue(docChangeSummary.getChangedDocModels().isEmpty());
         assertEquals("no_changes", docChangeSummary.getStatusCode());
-
-        // Create 3 documents, only 2 in sync roots
-        // TODO
     }
 
     /**
