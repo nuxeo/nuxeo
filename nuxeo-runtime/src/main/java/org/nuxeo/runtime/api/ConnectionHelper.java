@@ -92,7 +92,8 @@ public class ConnectionHelper {
             threadConnectionInfo.set(this);
             if (log.isDebugEnabled()) {
                 log.debug("Opening single connection to: "
-                        + Framework.getProperty(SINGLE_DS));
+                        + Framework.getProperty(SINGLE_DS) + " " + this + " "
+                        + connection);
             }
             if (log.isTraceEnabled()) {
                 log.trace("Opening single connection stacktrace",
@@ -105,6 +106,9 @@ public class ConnectionHelper {
          */
         public void ref() {
             ref++;
+            if (log.isDebugEnabled()) {
+                log.debug("Reference added (" + ref + ") for " + this);
+            }
             if (ref >= LEAK_REF_MIN && ref < LEAK_REF_MAX) {
                 if (stacktraces == null) {
                     stacktraces = new ArrayList<Exception>();
@@ -126,12 +130,15 @@ public class ConnectionHelper {
          */
         public void unref() throws SQLException {
             ref--;
+            if (log.isDebugEnabled()) {
+                log.debug("Reference removed (" + ref + ") for " + this);
+            }
             if (ref == 0) {
                 threadConnectionInfo.remove();
                 connection.close();
                 if (log.isDebugEnabled()) {
                     log.debug("Closing single connection to: "
-                            + Framework.getProperty(SINGLE_DS));
+                            + Framework.getProperty(SINGLE_DS) + " " + this);
                 }
                 if (log.isTraceEnabled()) {
                     log.trace("Closing single connection stacktrace",
@@ -148,6 +155,12 @@ public class ConnectionHelper {
                     Connection.class.getClassLoader(),
                     new Class[] { Connection.class },
                     new ConnectionInvocationHandler(this));
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "@"
+                    + Integer.toHexString(System.identityHashCode(this));
         }
     }
 
@@ -213,6 +226,9 @@ public class ConnectionHelper {
             return getConnection();
         }
         String excludes = Framework.getProperty(EXCLUDE_DS);
+        if ("*".equals(excludes)) {
+            return null;
+        }
         if (StringUtils.isBlank(excludes)) {
             return getConnection();
         }
