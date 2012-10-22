@@ -363,16 +363,9 @@ public class TestMultiTenantService {
         createUser("fry", domain.getName());
         LoginContext loginContext = Framework.loginAsUser("fry");
 
-        NuxeoGroup testGroup = createGroup("testGroup");
-        assertEquals("tenant_" + domain.getName() + "_testGroup",
-                testGroup.getName());
-
-        List<DocumentModel> groups = userManager.searchGroups(null);
-        assertEquals(1, groups.size());
-        DocumentModel group = groups.get(0);
-        assertEquals("tenant_" + domain.getName() + "_testGroup",
-                group.getPropertyValue("group:groupname"));
-        assertEquals(domain.getName(), group.getPropertyValue("group:tenantId"));
+        NuxeoGroup tenantGroup = createGroup("tenantGroup");
+        assertEquals("tenant_" + domain.getName() + "_tenantGroup",
+                tenantGroup.getName());
 
         // cannot delete
         try {
@@ -397,15 +390,15 @@ public class TestMultiTenantService {
         assertEquals("noTenantGroup", noTenantGroup.getLabel());
 
         // can modify and delete tenant groups
-        DocumentModel testGroupModel = userManager.getGroupModel(testGroup.getName());
+        DocumentModel testGroupModel = userManager.getGroupModel(tenantGroup.getName());
         testGroupModel.setPropertyValue("group:grouplabel", "new label");
         userManager.updateGroup(testGroupModel);
-        testGroup = userManager.getGroup(testGroup.getName());
-        assertEquals("new label", testGroup.getLabel());
+        tenantGroup = userManager.getGroup(tenantGroup.getName());
+        assertEquals("new label", tenantGroup.getLabel());
 
-        userManager.deleteGroup(testGroup.getName());
-        testGroup = userManager.getGroup(testGroup.getName());
-        assertNull(testGroup);
+        userManager.deleteGroup(tenantGroup.getName());
+        tenantGroup = userManager.getGroup(tenantGroup.getName());
+        assertNull(tenantGroup);
 
         loginContext.logout();
     }
