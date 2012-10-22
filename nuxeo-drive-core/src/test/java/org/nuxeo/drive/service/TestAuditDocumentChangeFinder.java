@@ -19,6 +19,7 @@ package org.nuxeo.drive.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -61,9 +63,6 @@ import com.google.inject.Inject;
 @TransactionalConfig(autoStart = false)
 @Deploy("org.nuxeo.drive.core")
 public class TestAuditDocumentChangeFinder {
-
-    // TODO: use Framework property instead
-    protected static final int DOCUMENT_CHANGES_LIMIT = 1000;
 
     @Inject
     protected CoreSession session;
@@ -93,6 +92,8 @@ public class TestAuditDocumentChangeFinder {
         repoName = session.getRepositoryName();
         lastSuccessfulSync = Calendar.getInstance();
         syncRootPaths = new HashSet<String>();
+        Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
+                "10");
 
         dispose(session);
         TransactionHelper.startTransaction();
@@ -198,9 +199,23 @@ public class TestAuditDocumentChangeFinder {
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());
         assertEquals(doc1.getId(), docChange.getDocUuid());
+
+        // Too many changes
+        TransactionHelper.startTransaction();
+        session.followTransition(doc1.getRef(), "delete");
+        session.followTransition(doc2.getRef(), "delete");
+        commitAndWaitForAsyncCompletion();
+
+        Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
+                "1");
+        try {
+            getDocumentChanges();
+            fail("An exception of type TooManyDocumentChangesException should have been thrown since the document change limit is exceeded.");
+        } catch (TooManyDocumentChangesException e) {
+            // Expected
+        }
     }
 
-    // TODO: test "too_many_changes" status
     @Test
     public void testGetDocumentChangeSummary() throws Exception {
 
@@ -238,7 +253,6 @@ public class TestAuditDocumentChangeFinder {
         commitAndWaitForAsyncCompletion();
 
         docChangeSummary = getDocumentChangeSummary("Administrator");
-
         List<AuditDocumentChange> docChanges = docChangeSummary.getDocumentChanges();
         assertEquals(2, docChanges.size());
         AuditDocumentChange docChange = docChanges.get(0);
@@ -280,6 +294,19 @@ public class TestAuditDocumentChangeFinder {
         assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
         assertTrue(docChangeSummary.getChangedDocModels().isEmpty());
         assertEquals("no_changes", docChangeSummary.getStatusCode());
+
+        // Too many changes
+        TransactionHelper.startTransaction();
+        session.followTransition(doc1.getRef(), "delete");
+        session.followTransition(doc2.getRef(), "delete");
+        commitAndWaitForAsyncCompletion();
+
+        Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
+                "1");
+        docChangeSummary = getDocumentChangeSummary("Administrator");
+        assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
+        assertTrue(docChangeSummary.getChangedDocModels().isEmpty());
+        assertEquals("too_many_changes", docChangeSummary.getStatusCode());
     }
 
     /**
@@ -289,8 +316,10 @@ public class TestAuditDocumentChangeFinder {
     protected List<AuditDocumentChange> getDocumentChanges()
             throws TooManyDocumentChangesException {
         List<AuditDocumentChange> docChanges = documentChangeFinder.getDocumentChanges(
-                repoName, syncRootPaths, lastSuccessfulSync,
-                DOCUMENT_CHANGES_LIMIT);
+                repoName,
+                syncRootPaths,
+                lastSuccessfulSync,
+                Integer.parseInt(Framework.getProperty("org.nuxeo.drive.document.change.limit")));
         lastSuccessfulSync.setTimeInMillis(System.currentTimeMillis());
         return docChanges;
 

@@ -60,6 +60,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     public static final String DRIVE_SUBSCRIBERS_PROPERTY = "drv:subscribers";
 
+    public static final String DOCUMENT_CHANGE_LIMIT_PROPERTY = "org.nuxeo.drive.document.change.limit";
+
     /**
      * Cache holding the synchronization roots as a 2 dimension array: the first
      * element is a set of root references of type {@link DocumentRef}, the
@@ -170,10 +172,14 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * <p>
      * Sets the status code to
      * {@link DocumentChangeSummary#STATUS_TOO_MANY_CHANGES} if the audit log
-     * query returns too many results.
+     * query returns too many results, to
+     * {@link DocumentChangeSummary#STATUS_NO_CHANGES} if no results are
+     * returned and to {@link DocumentChangeSummary#STATUS_FOUND_CHANGES}
+     * otherwise.
      * <p>
-     * TODO: use a Framework property for the hard-coded limit (1000) of
-     * document changes fetched from the audit logs.
+     * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
+     * a limit of document changes to fetch from the audit logs. Default value
+     * is 1000.
      */
     @Override
     public DocumentChangeSummary getDocumentChangeSummary(String userName,
@@ -190,9 +196,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (!syncRootPaths.isEmpty()) {
             try {
                 // Get document changes
+                int limit = Integer.parseInt(Framework.getProperty(
+                        DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
                 docChanges = documentChangeFinder.getDocumentChanges(
                         session.getRepositoryName(), syncRootPaths,
-                        lastSuccessfulSync, 1000);
+                        lastSuccessfulSync, limit);
                 if (!docChanges.isEmpty()) {
                     // Build map of document models that have changed
                     for (AuditDocumentChange docChange : docChanges) {
