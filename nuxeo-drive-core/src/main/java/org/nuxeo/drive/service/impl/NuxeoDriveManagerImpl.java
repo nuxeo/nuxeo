@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
@@ -193,6 +194,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         // Get sync root paths
         Set<String> syncRootPaths = getSynchronizationRootPaths(userName,
                 session);
+        // Update sync date
+        Calendar syncDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         if (!syncRootPaths.isEmpty()) {
             try {
                 // Get document changes
@@ -218,7 +221,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         }
 
         return new DocumentChangeSummary(docChanges, changedDocModels,
-                statusCode);
+                statusCode, syncDate);
     }
 
     protected Serializable[] getSynchronizationRoots(String userName,

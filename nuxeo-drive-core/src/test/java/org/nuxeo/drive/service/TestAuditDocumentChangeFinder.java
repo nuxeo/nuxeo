@@ -333,7 +333,7 @@ public class TestAuditDocumentChangeFinder {
             throws ClientException {
         DocumentChangeSummary docChangeSummary = nuxeoDriveManager.getDocumentChangeSummary(
                 userName, session, lastSuccessfulSync);
-        lastSuccessfulSync.setTimeInMillis(System.currentTimeMillis());
+        lastSuccessfulSync.setTimeInMillis(docChangeSummary.getSyncDate().getTimeInMillis());
         return docChangeSummary;
     }
 
