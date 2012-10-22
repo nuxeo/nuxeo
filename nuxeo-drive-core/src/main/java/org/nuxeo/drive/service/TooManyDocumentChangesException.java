@@ -14,12 +14,12 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service.impl;
+package org.nuxeo.drive.service;
 
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Exception thrown by {@link AuditDocumentChangeFinder} when too many document
+ * Exception thrown by {@link DocumentChangeFinder} when too many document
  * changes are found in the audit logs.
  *
  * @author Antoine Taillefer
