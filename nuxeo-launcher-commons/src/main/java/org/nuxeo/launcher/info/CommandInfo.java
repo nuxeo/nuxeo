@@ -61,6 +61,8 @@ public class CommandInfo {
      */
     public static final String CMD_DOWNLOAD = "download";
 
+    public static final String CMD_INIT = "init";
+
     public CommandInfo() {
     }
 
