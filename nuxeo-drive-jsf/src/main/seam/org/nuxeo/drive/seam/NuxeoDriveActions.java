@@ -1,7 +1,28 @@
+/*
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Olivier Grisel
+ *
+ */
+
 package org.nuxeo.drive.seam;
 
 import java.io.Serializable;
 import java.util.Set;
+
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletRequest;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
@@ -18,21 +39,28 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * @since 5.7
+ */
 @Name("nuxeoDriveActions")
 @Scope(ScopeType.CONVERSATION)
 @Install(precedence = Install.FRAMEWORK)
 public class NuxeoDriveActions implements Serializable {
 
-    protected static final String IS_UNDER_SYNCHRONIZATION_ROOT = "nuxeoDriveIsCurrentDocumentUnderSynchronizationRoot";
+    protected static final String IS_UNDER_SYNCHRONIZATION_ROOT = "nuxeoDriveIsUnderSynchronizationRoot";
 
     protected static final String CURRENT_SYNCHRONIZATION_ROOT = "nuxeoDriveCurrentSynchronizationRoot";
 
     private static final long serialVersionUID = 1L;
+
+    private static final Object NXDRIVE_EDIT_PROTOCOL = "nxdriveedit://";
 
     @In(required = false)
     NavigationContext navigationContext;
@@ -66,6 +94,38 @@ public class NuxeoDriveActions implements Serializable {
             cache.set(IS_UNDER_SYNCHRONIZATION_ROOT, root != null);
         }
         return (DocumentModel) cache.get(CURRENT_SYNCHRONIZATION_ROOT);
+    }
+
+    @Factory(value = "canEditCurrentDocument", scope = ScopeType.EVENT)
+    public boolean canEditCurrentDocument() throws ClientException {
+        if (getCurrentSynchronizationRoot() == null
+                || navigationContext == null || documentManager == null
+                || navigationContext.getCurrentDocument() == null) {
+            return false;
+        }
+        BlobHolder blobHolder = navigationContext.getCurrentDocument().getAdapter(
+                BlobHolder.class);
+        return (blobHolder != null && blobHolder.getBlob() != null);
+    }
+
+    /**
+     * {@link #NXDRIVE_EDIT_PROTOCOL} must be handled by a protocol handler
+     * configured on the client side (either on the browser, or on the OS).
+     *
+     * @return Drive edit URL in the form "{@link #NXDRIVE_EDIT_PROTOCOL}
+     *         /protocol/server[:port]/webappName/nxdoc/repoName/docRef"
+     *
+     */
+    public String getDriveEditURL() {
+        ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
+        StringBuffer sb = new StringBuffer();
+        sb.append(NXDRIVE_EDIT_PROTOCOL);
+        sb.append(baseURL.replaceAll("://", "/"));
+        sb.append("nxdoc/");
+        sb.append(documentManager.getRepositoryName()).append("/");
+        sb.append(navigationContext.getCurrentDocument().getId());
+        return sb.toString();
     }
 
     @Factory(value = "canSynchronizeCurrentDocument", scope = ScopeType.EVENT)
@@ -113,7 +173,8 @@ public class NuxeoDriveActions implements Serializable {
         return !currentDocRef.equals(currentSyncRoot.getRef());
     }
 
-    public void synchronizeCurrentDocument() throws ClientException, SecurityException {
+    public void synchronizeCurrentDocument() throws ClientException,
+            SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         String userName = documentManager.getPrincipal().getName();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
