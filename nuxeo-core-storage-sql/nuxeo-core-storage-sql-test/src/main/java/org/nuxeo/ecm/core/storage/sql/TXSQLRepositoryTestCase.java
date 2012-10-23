@@ -12,8 +12,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.junit.Ignore;
 import org.nuxeo.common.Environment;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -22,7 +22,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <p>
  * The tests are run with a session that is open in a transaction.
  */
-public class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
+public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
 
     @Override
     public void setUp() throws Exception {
