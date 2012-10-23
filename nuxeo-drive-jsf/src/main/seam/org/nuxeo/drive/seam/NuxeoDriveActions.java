@@ -60,7 +60,9 @@ public class NuxeoDriveActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Object NXDRIVE_EDIT_PROTOCOL = "nxdriveedit://";
+    public static final String NXDRIVE_PROTOCOL = "nxdrive";
+
+    public static final String PROTOCOL_COMMAND_EDIT = "edit";
 
     @In(required = false)
     NavigationContext navigationContext;
@@ -109,19 +111,22 @@ public class NuxeoDriveActions implements Serializable {
     }
 
     /**
-     * {@link #NXDRIVE_EDIT_PROTOCOL} must be handled by a protocol handler
+     * {@link #NXDRIVE_PROTOCOL} must be handled by a protocol handler
      * configured on the client side (either on the browser, or on the OS).
      *
-     * @return Drive edit URL in the form "{@link #NXDRIVE_EDIT_PROTOCOL}
+     * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}://
+     *         {@link #PROTOCOL_COMMAND_EDIT}
      *         /protocol/server[:port]/webappName/nxdoc/repoName/docRef"
      *
      */
     public String getDriveEditURL() {
+
         ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
         StringBuffer sb = new StringBuffer();
-        sb.append(NXDRIVE_EDIT_PROTOCOL);
-        sb.append(baseURL.replaceAll("://", "/"));
+        sb.append(NXDRIVE_PROTOCOL).append("://");
+        sb.append(PROTOCOL_COMMAND_EDIT).append("/");
+        sb.append(baseURL.replaceFirst("://", "/"));
         sb.append("nxdoc/");
         sb.append(documentManager.getRepositoryName()).append("/");
         sb.append(navigationContext.getCurrentDocument().getId());
