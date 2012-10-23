@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.google.common.collect.MapMaker;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo

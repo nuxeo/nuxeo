@@ -19,6 +19,7 @@ package org.nuxeo.drive.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +55,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Tests for {@link NuxeoDriveManager}
