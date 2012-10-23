@@ -942,9 +942,14 @@ public class ConnectBroker {
                                 }
                             }
                         } else {
-                            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
-                            cmdInfo.param = line;
-                            cmdInfo.pending = true;
+                            if ("init".equals(line)) {
+                                CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INIT);
+                                cmdInfo.pending = true;
+                            } else {
+                                CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
+                                cmdInfo.param = line;
+                                cmdInfo.pending = true;
+                            }
                         }
                     }
                 }
