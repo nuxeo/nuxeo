@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.counters.CounterManager;
 
 /**
  * A {@link RowMapper} that has an internal cache.
@@ -109,17 +110,17 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * Cache statistics
      */
     // JavaSimpon Counter Names
-    private static final String CN_ACCESS = "org.nuxeo.ecm.core.storage.sql.row.cache.access";
+    private static final String CN_ACCESS = "storage.sql.row.cache.access";
 
-    private static final String CN_HITS = "org.nuxeo.ecm.core.storage.sql.row.cache.hits";
+    private static final String CN_HITS = "storage.sql.row.cache.hits";
 
-    private static final String CN_SIZE = "org.nuxeo.ecm.core.storage.sql.row.cache.size";
+    private static final String CN_SIZE = "storage.sql.row.cache.size";
 
     // Stop watch for cache access
-    private static final String SW_CACHE = "org.nuxeo.ecm.core.storage.sql.cache.get";
+    private static final String SW_CACHE = "storage.sql.cache.get";
 
     // Stop watch for SOR access (System Of Record i.e the db access)
-    private static final String SW_SOR = "org.nuxeo.ecm.core.storage.sql.sor.gets";
+    private static final String SW_SOR = "storage.sql.sor.gets";
 
     // Property to enable stop watch
     private static final String CACHE_STATS_PROP = "org.nuxeo.vcs.cache.statistics";
@@ -132,6 +133,8 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     private boolean cacheStatistics;
 
+    protected final CounterManager counters;
+
     @SuppressWarnings("unchecked")
     public SoftRefCachingRowMapper() {
         cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
@@ -140,6 +143,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
         forRemoteClient = false;
         String prop = Framework.getProperty(CACHE_STATS_PROP, "false");
         cacheStatistics = Boolean.parseBoolean(prop);
+        counters = Framework.getLocalService(CounterManager.class);
     }
 
     public void initialize(Model model, RowMapper rowMapper,
@@ -233,19 +237,12 @@ public class SoftRefCachingRowMapper implements RowMapper {
             hitsCount++;
         }
         if ((++accessCount % 200) == 0) {
-            Counter accessCounter = SimonManager.getCounter(CN_ACCESS);
-            accessCounter.increase(accessCount);
-            accessCount = 0;
-            Counter hitsCounter = SimonManager.getCounter(CN_HITS);
-            hitsCounter.increase(hitsCount);
-            hitsCount = 0;
-            Counter sizeCounter = SimonManager.getCounter(CN_SIZE);
             long delta = cache.size() - cacheSize;
-            if (delta > 0) {
-                sizeCounter.increase(delta);
-            } else if (delta < 0) {
-                sizeCounter.decrease(-1 * delta);
-            }
+            counters.increaseCounter(CN_ACCESS, accessCount);
+            counters.increaseCounter(CN_HITS, hitsCount);
+            counters.increaseCounter(CN_SIZE, delta);
+            accessCount = 0;;
+            hitsCount = 0;
             cacheSize = cache.size();
         }
     }

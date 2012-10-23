@@ -12,7 +12,6 @@
 package org.nuxeo.ecm.core.management.probes;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,9 +32,9 @@ public class ProbeManagerImpl implements ProbeManager {
 
     protected final Map<Class<? extends Probe>, ProbeInfo> infosByTypes = new HashMap<Class<? extends Probe>, ProbeInfo>();
 
-    protected final Map<String, ProbeInfo> infosByShortcuts = new HashMap<String, ProbeInfo>();
+    protected final Map<String, ProbeInfo> infosByNames = new HashMap<String, ProbeInfo>();
 
-    protected final Map<String, Probe> probesByShortcuts = new HashMap<String, Probe>();
+    protected final Map<String, Probe> probesByNames = new HashMap<String, Probe>();
 
     protected final Set<ProbeInfo> failed = new HashSet<ProbeInfo>();
 
@@ -44,29 +43,29 @@ public class ProbeManagerImpl implements ProbeManager {
     protected Set<String> doExtractProbesName(Collection<ProbeInfo> runners) {
         Set<String> names = new HashSet<String>();
         for (ProbeInfo runner : runners) {
-            names.add(runner.getShortcutName());
+            names.add(runner.getQualifiedName());
         }
         return names;
     }
 
     @Override
-    public Collection<ProbeInfo> getAllProbeInfos() {
-        return Collections.unmodifiableCollection(infosByTypes.values());
+    public ProbeInfo[] getAllProbeInfos() {
+        return infosByTypes.values().toArray(new ProbeInfo[infosByTypes.size()]);
     }
 
     @Override
-    public Collection<ProbeInfo> getInSuccessProbeInfos() {
-        return Collections.unmodifiableCollection(succeed);
+    public ProbeInfo[] getInSuccessProbeInfos() {
+        return succeed.toArray(new ProbeInfo[succeed.size()]);
     }
 
     @Override
-    public Collection<ProbeInfo> getInFailureProbeInfos() {
-        return Collections.unmodifiableCollection(failed);
+    public ProbeInfo[] getInFailureProbeInfos() {
+        return failed.toArray(new ProbeInfo[failed.size()]);
     }
 
     @Override
     public Collection<String> getProbeNames() {
-        return infosByShortcuts.keySet();
+        return infosByNames.keySet();
     }
 
     @Override
@@ -128,7 +127,7 @@ public class ProbeManagerImpl implements ProbeManager {
 
     @Override
     public ProbeInfo getProbeInfo(String name) {
-        return infosByShortcuts.get(name);
+        return infosByNames.get(name);
     }
 
     public void registerProbe(ProbeDescriptor descriptor) {
@@ -143,14 +142,14 @@ public class ProbeManagerImpl implements ProbeManager {
 
         ProbeInfoImpl info = new ProbeInfoImpl(descriptor);
         infosByTypes.put(probeClass, info);
-        infosByShortcuts.put(descriptor.getShortcut(), info);
-        probesByShortcuts.put(descriptor.getShortcut(), probe);
+        infosByNames.put(descriptor.getShortcut(), info);
+        probesByNames.put(descriptor.getShortcut(), probe);
     }
 
     public void unregisterProbe(ProbeDescriptor descriptor) {
         Class<? extends Probe> probeClass = descriptor.getProbeClass();
         infosByTypes.remove(probeClass);
-        infosByShortcuts.remove(descriptor.getShortcut());
+        infosByNames.remove(descriptor.getShortcut());
     }
 
     protected void doRun() {
@@ -175,7 +174,7 @@ public class ProbeManagerImpl implements ProbeManager {
             probeInfoImpl.lastRunnedDate = new Date();
             probeInfoImpl.runnedCount += 1;
             try {
-                Probe runnableProbe = probesByShortcuts.get(probe.getShortcutName());
+                Probe runnableProbe = probesByNames.get(probe.getShortcutName());
                 probeInfoImpl.lastStatus = runnableProbe.run();
                 if (probeInfoImpl.lastStatus.isSuccess()) {
                     probeInfoImpl.lastSucceedDate = probeInfoImpl.lastRunnedDate;
