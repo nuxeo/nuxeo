@@ -51,39 +51,42 @@
   <c:set var="editorSelector"
     value="#{nxu:test(!empty widgetProperty_editorSelector, widgetProperty_editorSelector, 'mceEditor')}" />
 
-  <c:choose>
-    <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
+  <nxu:valueHolder id="#{widget.id}_disableHtmlInit"
+    var="disableHtmlInit"
+    defaultValue="#{field_1 != null and field_1 != 'text/html'}">
+    <nxu:set var="disableBinding" value="#{disableHtmlInit}">
       <nxu:editor id="#{widget.id}_editor" value="#{field_0}" width="#{width}"
         cols="#{cols}" height="#{height}" rows="#{rows}"
-        editorSelector="#{editorSelector}" />
-    </c:when>
-    <c:otherwise>
-      <nxu:editor id="#{widget.id}_editor" value="#{field_0}" width="#{width}"
-        cols="#{cols}" height="#{height}" rows="#{rows}"
-        editorSelector="#{editorSelector}" disableHtmlInit="true" />
-    </c:otherwise>
-  </c:choose>
-
+        editorSelector="#{editorSelector}"
+        disableHtmlInit="#{disableBinding}" />
+    </nxu:set>
+  </nxu:valueHolder>
   <br />
 
-  <h:outputText value="#{messages['label.richtext.format']} : " />
+  <h:outputText value="#{messages['label.richtext.format']} " />
   <h:selectOneMenu value="#{field_1}" onchange="changeEditorType(this)"
     id="#{widget.id}_editorselector" styleClass="#{widget.id}">
-    <f:selectItem itemLabel="#{messages['mimetype.html']}" itemValue="text/html" />
+    <f:selectItem itemLabel="#{messages['mimetype.html']}"
+      itemValue="text/html" />
     <f:selectItem itemLabel="#{messages['mimetype.text']}"
       itemValue="text/plain" />
-    <f:selectItem itemLabel="#{messages['mimetype.xml']}" itemValue="text/xml" />
-    <f:selectItem itemLabel="#{messages['mimetype.markdown']}" itemValue="text/x-web-markdown" />
+    <f:selectItem itemLabel="#{messages['mimetype.xml']}"
+      itemValue="text/xml" />
+    <f:selectItem itemLabel="#{messages['mimetype.markdown']}"
+      itemValue="text/x-web-markdown" />
   </h:selectOneMenu>
 
 <script>
 function changeEditorType(cbo) {
   var value = cbo.value;
-  var id = cbo.id.replace("_editorselector", "_editor");
+  var id = cbo.id.replace("_editorselector", "");
+  var disableElt = document.getElementById(id + '_disableHtmlInit');
   if (value == "text/html") {
-    addTinyMCE(id);
+    addTinyMCE(id + '_editor');
+    disableElt.value = 'false';
   } else {
-    removeTinyMCE(id);
+    removeTinyMCE(id + '_editor');
+    disableElt.value = 'true';
   }
 }
 </script>

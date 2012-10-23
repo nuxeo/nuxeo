@@ -2664,8 +2664,12 @@
             edit mode, depending on the mimetype defined.
           </p>
           <p>
-            Widgets using this type can provide properties accepted on a
-            &lt;nxu:editor /&gt; tag in create or edit mode.
+            It accepts two fields bindings:
+            <ul>
+              <li>first field holds the text content</li>
+              <li>second field holds the text mimetype (text/plain,
+                text/html...)</li>
+            </ul>
           </p>
         </description>
         <categories>
@@ -2707,8 +2711,12 @@
               </widget>
               <widget name="translatedHtml" type="text">
                 <labels>
-                  <label mode="any">Translate HTML (?)</label>
+                  <label mode="any">Translated HTML</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">Binding to the translated HTML content.
+                    Example: #{noteActions.translateImageLinks(field_0)}</label>
+                </helpLabels>
                 <fields>
                   <field>translatedHtml</field>
                 </fields>
