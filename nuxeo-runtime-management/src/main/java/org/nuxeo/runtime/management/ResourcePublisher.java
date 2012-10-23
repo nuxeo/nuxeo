@@ -16,24 +16,20 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.util.Set;
-
-import javax.management.ObjectName;
-
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
 public interface ResourcePublisher {
 
-    Set<String> getShortcutsName();
-
-    Set<ObjectName> getResourcesName();
-
-    ObjectName lookupName(String name);
-    
-     void registerResource(String shortName, String qualifiedName,
+    @Deprecated
+    void registerResource(String shortName, String qualifiedName,
             Class<?> managementClass, Object instance);
-     
-     void unregisterResource(String shortName, String qualifiedName);
+
+    void registerResource(String name, Class<?> info, Object instance);
+
+    @Deprecated
+    void unregisterResource(String shortName, String qualifiedName);
+
+    void unregisterResource(String qualifiedName);
 }

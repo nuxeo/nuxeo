@@ -20,6 +20,11 @@ package org.nuxeo.runtime.management.counters;
 
 import org.javasimon.SimonManager;
 import org.javasimon.SimonState;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.metrics.MetricAttributes;
+import org.nuxeo.runtime.management.metrics.MetricAttributesProvider;
+import org.nuxeo.runtime.management.metrics.MetricHistoryProvider;
+import org.nuxeo.runtime.management.metrics.MetricHistoryStack;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -34,71 +39,63 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class CounterManagerImpl extends DefaultComponent implements
         CounterManager {
 
-    public static final String COUNTER_PREFIX = "org.nuxeo";
+    public static final String SIMON_ROOT = "org.nuxeo.counters";
 
-    protected CounterHistoryRecorder history = new CounterHistoryRecorder(50);
+    protected static final String simonName(String name) {
+        return SIMON_ROOT + "." + name;
+    }
 
+    @Override
     public void enableCounters() {
-        SimonManager.getCounter(COUNTER_PREFIX).setState(SimonState.ENABLED,
+        SimonManager.getCounter(SIMON_ROOT).setState(SimonState.ENABLED,
                 true);
     }
 
+    @Override
     public void disableCounters() {
-        SimonManager.getCounter(COUNTER_PREFIX).setState(SimonState.DISABLED,
+        SimonManager.getCounter(SIMON_ROOT).setState(SimonState.DISABLED,
                 true);
     }
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         // create the root counter
-        SimonManager.getCounter(COUNTER_PREFIX);
-        // register call back for history management
-        SimonManager.callback().addCallback(history);
+        SimonManager.getCounter(SIMON_ROOT);
     }
 
     @Override
     public void decreaseCounter(String counterName) {
-        if (SimonManager.getCounter(counterName).isEnabled()) {
-            SimonManager.getCounter(counterName).decrease();
-        }
+        SimonManager.getCounter(simonName(counterName)).decrease();
     }
 
     @Override
     public void increaseCounter(String counterName) {
-        if (SimonManager.getCounter(counterName).isEnabled()) {
-            SimonManager.getCounter(counterName).increase();
-        }
+        SimonManager.getCounter(simonName(counterName)).increase();
     }
 
     @Override
     public void decreaseCounter(String counterName, long value) {
-        if (SimonManager.getCounter(counterName).isEnabled()) {
-            SimonManager.getCounter(counterName).decrease(value);
-        }
+        SimonManager.getCounter(simonName(counterName)).decrease(value);
     }
 
     @Override
     public void increaseCounter(String counterName, long value) {
-        if (SimonManager.getCounter(counterName).isEnabled()) {
-            SimonManager.getCounter(counterName).increase(value);
-        }
+        SimonManager.getCounter(simonName(counterName)).increase(value);
     }
 
     @Override
     public void setCounterValue(String counterName, long value) {
-        if (SimonManager.getCounter(counterName).isEnabled()) {
-            SimonManager.getCounter(counterName).set(value);
-        }
+        SimonManager.getCounter(simonName(counterName)).set(value);
     }
 
-    public CounterHistoryStack getCounterHistory(String counterName) {
-
-        CounterHistoryStack stack = history.getCounterHistory(counterName);
-        if (stack == null) {
-            return new CounterHistoryStack(50);
-        } else {
-            return stack;
-        }
+    @Override
+    public MetricHistoryStack getCounterHistory(String counterName) {
+        return Framework.getLocalService(MetricHistoryProvider.class).getStack(simonName(counterName));
     }
 
-}
+    @Override
+    public MetricAttributes getAttributes(String name) {
+        return Framework.getLocalService(MetricAttributesProvider.class).getAttributes(simonName(name));
+    }
+
+ }

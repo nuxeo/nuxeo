@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.metrics.MetricHistoryStack;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -22,7 +23,6 @@ public class TestCounters {
 
     @Test
     public void verifyServiceBinding() {
-
         CounterManager cm = Framework.getLocalService(CounterManager.class);
         assertNotNull(cm);
     }
@@ -109,7 +109,7 @@ public class TestCounters {
         CounterHelper.increaseCounter(myCounter); //2
         CounterHelper.increaseCounter(myCounter); //3
 
-        CounterHistoryStack history = cm.getCounterHistory(myCounter);
+        MetricHistoryStack history = cm.getCounterHistory(myCounter);
         assertNotNull(history);
 
         System.out.println(history.toString());

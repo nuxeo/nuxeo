@@ -21,10 +21,12 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.javasimon.CallbackSkeleton;
 import org.javasimon.Counter;
+import org.javasimon.CounterSample;
 import org.javasimon.Sample;
 import org.javasimon.Split;
+import org.javasimon.StopwatchSample;
+import org.javasimon.callback.CallbackSkeleton;
 
 public class MetricSerializingCallback extends CallbackSkeleton {
 
@@ -36,14 +38,16 @@ public class MetricSerializingCallback extends CallbackSkeleton {
         this.serializer = serializer;
     }
 
-    @Override
-    public void stopwatchStop(Split split) {
-       toStream(split.getStopwatch().sample());
-    }
+    
 
     @Override
-    public void counterSet(Counter counter, long val) {
-      toStream(counter.sample());
+    public void onStopwatchStop(Split split, StopwatchSample sample) {
+        toStream(sample);
+    }
+   
+    @Override
+    public void onCounterSet(Counter counter, long val, CounterSample sample) {
+      toStream(sample);
     }
 
     protected void toStream(Sample sample) {

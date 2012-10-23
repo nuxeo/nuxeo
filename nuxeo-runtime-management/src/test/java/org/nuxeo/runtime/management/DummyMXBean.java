@@ -16,44 +16,18 @@
  */
 package org.nuxeo.runtime.management;
 
-import javax.management.ObjectName;
-import javax.management.modelmbean.RequiredModelMBean;
+import javax.management.MXBean;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
  */
-public class Resource {
+@MXBean
+public interface DummyMXBean {
 
-    protected final Object instance;
+    String getManagedMessage();
 
-    protected final ObjectName managementName;
+    void setManagedMessage(String message);
 
-    protected final Class<?> clazz;
-
-    protected RequiredModelMBean mbean;
-
-    public Resource(ObjectName managementName,
-            Class<?> managementClass, Object serviceInstance) {
-        this.managementName = managementName;
-        clazz = managementClass;
-        instance = serviceInstance;
-    }
-
-    public Object getInstance() {
-        return instance;
-    }
-
-    public ObjectName getManagementName() {
-        return managementName;
-    }
-
-    public Class<?> getClazz() {
-        return clazz;
-    }
-
-    public boolean isRegistered() {
-        return mbean != null;
-    }
+    String sayManagedHelloWorld();
 
 }

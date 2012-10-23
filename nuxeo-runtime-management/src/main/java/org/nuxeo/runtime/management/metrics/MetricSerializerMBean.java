@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,17 +12,31 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
+ *     Nuxeo - initial API and implementation
  */
-package org.nuxeo.runtime.management;
 
+package org.nuxeo.runtime.management.metrics;
 
-/**
- * @author Stephane Lacoin (Nuxeo EP Software Engineer)
- *
- */
-public interface Dummy  {
-    String getMessage();
-    void setMessage(String message);
-    String sayHelloWorld();
+import java.io.File;
+import java.io.IOException;
+
+import javax.management.MXBean;
+
+@MXBean
+public interface MetricSerializerMBean {
+
+    int getCount();
+
+    long getLastUsage();
+
+    void closeOutput() throws IOException;
+
+    void resetOutput() throws IOException;
+
+    void resetOutput(String path) throws IOException;
+
+    void flushOuput() throws IOException;
+
+    File getOutputFile();
+
 }

@@ -16,7 +16,6 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,38 +33,30 @@ public class ObjectNameFactory {
     private ObjectNameFactory() {
     }
 
-    public static String formatQualifiedName(String domainName,
-            String typeName, String instanceName) {
+    public static String formatQualifiedName(String domainName, String instanceName) {
         int lastDotIndex = instanceName.lastIndexOf('.');
         if (lastDotIndex > 0) {
             String packageName = instanceName.substring(0, lastDotIndex);
             instanceName = instanceName.substring(lastDotIndex + 1);
-            return formatQualifiedName(domainName, typeName, packageName, instanceName);
+            return formatQualifiedName(domainName, packageName, instanceName);
         }
-        return String.format("%s:name=%s,type=%s", domainName, instanceName,
-                typeName);
+        return String.format("%s:name=%s", domainName, instanceName);
     }
 
-    public static String formatQualifiedName(String domainName,
-            String typeName, String packageName, String instanceName) {
-        return String.format("%s:package=%s,name=%s,type=%s", domainName, packageName, instanceName,
-                typeName);
+    public static String formatQualifiedName(String domainName, String packageName, String instanceName) {
+        return String.format("%s:package=%s,name=%s", domainName, packageName, instanceName);
     }
-    public static String formatQualifiedName(String typeName,
-            String instanceName) {
-        return formatQualifiedName(NUXEO_DOMAIN_NAME, typeName, instanceName);
+
+    public static String formatQualifiedName(String name) {
+        return formatQualifiedName(NUXEO_DOMAIN_NAME, name);
     }
 
     public static String formatQualifiedName(ComponentName componentName) {
         return formatQualifiedName(componentName.getType(), componentName.getName());
     }
 
-    public static String formatQualifiedName(String instanceName) {
-        return formatQualifiedName("service", instanceName);
-    }
-
     public static String formatMetricQualifiedName(ComponentName name, String metricName) {
-        return formatQualifiedName(name) + ",metric=" + metricName + ",management=metric";
+        return formatQualifiedName(name) + ",metric=" + metricName;
     }
 
     public static String formatMetricQualifiedName(String name, String type) {
@@ -75,7 +66,7 @@ public class ObjectNameFactory {
         if (name.startsWith(NUXEO_DOMAIN_NAME)) {
             name = name.substring(NUXEO_DOMAIN_NAME.length()+1);
         }
-        return String.format("%s:name=%s,type=%s,management=metric", NUXEO_DOMAIN_NAME, name, type);
+        return String.format("%s:name=%s,type=%s", NUXEO_DOMAIN_NAME, name, type);
     }
 
     public static String formatAVAs(String... avas) {
@@ -89,13 +80,6 @@ public class ObjectNameFactory {
         return buffer.toString();
     }
 
-    public static String formatInventoryQualifiedName(ComponentName name) {
-        return formatQualifiedName(name) + ",management=inventory";
-    }
-
-    public static String formatProbeQualifiedName(ComponentName name) {
-        return formatQualifiedName(name) + ",management=probe";
-    }
 
     public static String removeDotPart(String name) {
         int lastDotPos = name.lastIndexOf('.');
@@ -105,39 +89,10 @@ public class ObjectNameFactory {
         return name;
     }
 
-    public static String formatShortName(ObjectName name) {
-        String shortName = removeDotPart(name.getKeyProperty("name"));
-        String typeName = name.getKeyProperty("type");
-        if (!typeName.equals("service")) {
-            shortName += "-" + typeName;
-        }
-        Map<String, String> keys = name.getKeyPropertyList();
-        for (Map.Entry<String, String> keyEntry : keys.entrySet()) {
-            String key = keyEntry.getKey();
-            String value = keyEntry.getValue();
-            if (key.equals("name")) {
-                continue;
-            }
-            if (key.equals("type") && value.equals("service")) {
-                continue;
-            }
-            shortName += "-" + keyEntry.getValue();
-        }
-        return shortName;
+    public static String formatQuery(String domainName) {
+        return String.format("%s:name=*,*", domainName);
     }
 
-    public static String formatShortName(String name) {
-        ObjectName objectName = getObjectName(name);
-        return formatShortName(objectName);
-    }
-
-    public static String formatTypeQuery(String typeName) {
-        return formatTypeQuery(NUXEO_DOMAIN_NAME, typeName);
-    }
-
-    public static String formatTypeQuery(String domainName, String typeName) {
-        return String.format("%s:type=%s,*", domainName, typeName);
-    }
 
     private static final Pattern namePattern = Pattern.compile(".*:.*");
 
@@ -166,7 +121,7 @@ public class ObjectNameFactory {
     public static String getQualifiedName(String name) {
         String qualifiedName = name;
         if (!hasAttributeValueAssertion(qualifiedName)) {
-            qualifiedName = NUXEO_DOMAIN_NAME + ":name=" + name + ",type=service";
+            qualifiedName = NUXEO_DOMAIN_NAME + ":name=" + name;
         } else if (!hasDomain(qualifiedName)) {
             qualifiedName = NUXEO_DOMAIN_NAME + ":" + qualifiedName;
         }
@@ -189,18 +144,6 @@ public class ObjectNameFactory {
         } catch (Exception e) {
             throw ManagementRuntimeException.wrap(name + " is not correct", e);
         }
-    }
-
-    public static String formatMetricShortName(String name) {
-        return name + "-metric";
-    }
-
-    public static String formatInventoryShortName(String name) {
-        return name + "-inventory";
-    }
-
-    public static String formatProbeShortName(String name) {
-        return name + "-probe";
     }
 
 }

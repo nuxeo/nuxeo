@@ -19,8 +19,10 @@ package org.nuxeo.runtime.management.stopwatchs;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.javasimon.Sample;
 import org.javasimon.Stopwatch;
 import org.javasimon.StopwatchSample;
 
@@ -32,6 +34,10 @@ public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl i
 
 	public StopwatchMXBeanImpl(Stopwatch stopwatch) {
 		super(stopwatch);
+	}
+
+	public long getCounter() {
+	    return stopwatch.getCounter();
 	}
 
     @Override
@@ -56,7 +62,7 @@ public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl i
         }
         doFillMap(sample, map, clazz.getSuperclass());
     }
-        
+
     @Override
     public Map<String, Serializable> sampleAsMap() {
         Map<String,Serializable> map = new HashMap<String,Serializable>();
@@ -65,5 +71,23 @@ public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl i
         return map;
     }
 
-	
+
+    @Override
+    public Sample getSample() {
+        return sample();
+    }
+
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        Map<String,Object> attributes = new HashMap<String,Object>();
+        Iterator<String> it = stopwatch.getAttributeNames();
+        while (it.hasNext()) {
+            final String name = it.next();
+            attributes.put(name, stopwatch.getAttribute(name));
+        }
+        return attributes;
+    }
+
+
 }

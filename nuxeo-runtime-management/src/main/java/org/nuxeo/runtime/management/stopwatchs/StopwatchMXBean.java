@@ -19,12 +19,23 @@ package org.nuxeo.runtime.management.stopwatchs;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.management.MXBean;
+
+import org.javasimon.Sample;
+
 
 /**
  * @author matic
  *
  */
+@MXBean
 public interface StopwatchMXBean  extends org.javasimon.jmx.StopwatchMXBean  {
+
+    long getCounter();
+
+    Sample getSample();
+
+    Map<String,Object> getAttributes();
 
 	String sampleAsString();
 

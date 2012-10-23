@@ -17,10 +17,10 @@
 
 package org.nuxeo.runtime.management.metrics;
 
-import org.javasimon.CallbackSkeleton;
 import org.javasimon.Counter;
 import org.javasimon.Simon;
 import org.javasimon.Stopwatch;
+import org.javasimon.callback.CallbackSkeleton;
 import org.javasimon.jmx.SimonSuperMXBean;
 import org.nuxeo.runtime.management.counters.CounterMXBeanImpl;
 import org.nuxeo.runtime.management.stopwatchs.StopwatchMXBeanImpl;
@@ -41,7 +41,7 @@ public class MetricRegisteringCallback extends CallbackSkeleton {
 
 
     @Override
-    public void simonCreated(Simon simon) {
+    public void onSimonCreated(Simon simon) {
         if (simon.getName() == null) {
             return;
         }
@@ -50,12 +50,12 @@ public class MetricRegisteringCallback extends CallbackSkeleton {
 
 
     @Override
-    public void simonDestroyed(Simon simon) {
+    public void onSimonDestroyed(Simon simon) {
         register.unregisterMXBean(simon.getName());
     }
 
     @Override
-    public void clear() {
+    public void onManagerClear() {
         register.unregisterAll();
     }
 

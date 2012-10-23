@@ -22,37 +22,30 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-public class DummyService extends DefaultComponent implements Dummy,
-        DummyMBean {
+public class DummyService extends DefaultComponent implements Dummy, DummyMXBean {
 
     protected String message = "hello world";
 
-    @Override
     public String getMessage() {
         return message;
     }
 
-    @Override
     public String sayHelloWorld() {
         return message;
     }
 
-    @Override
     public void setMessage(String message) {
         this.message = message;
     }
 
-    @Override
     public String getManagedMessage() {
         return message;
     }
 
-    @Override
     public String sayManagedHelloWorld() {
         return message;
     }
 
-    @Override
     public void setManagedMessage(String message) {
         this.message = message;
     }

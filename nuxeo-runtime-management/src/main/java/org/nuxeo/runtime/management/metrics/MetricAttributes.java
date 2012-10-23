@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,23 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
+ *     "Stephane Lacoin (aka matic) slacoin@nuxeo.com"
  */
-package org.nuxeo.runtime.management;
+package org.nuxeo.runtime.management.metrics;
 
-import java.util.Set;
-
-import javax.management.ObjectName;
+import java.util.Map;
 
 /**
- * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ * @author "Stephane Lacoin (aka matic) slacoin@nuxeo.com"
+ *
  */
-public interface ResourcePublisherMBean {
+public interface MetricAttributes {
 
-    Set<ObjectName> getResourcesName();
+    void clear();
 
-    void bindResources();
+    void put(String key, Object value);
 
-    void unbindResources();
+    void putAll(Map<String,Object> values);
+
+    Map<String,String> get();
 
 }

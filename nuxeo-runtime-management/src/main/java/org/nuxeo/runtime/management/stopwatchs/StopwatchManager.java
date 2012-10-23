@@ -16,67 +16,54 @@
  *
  * $Id$
  */
-package org.nuxeo.runtime.management.counters;
+package org.nuxeo.runtime.management.stopwatchs;
 
 import org.nuxeo.runtime.management.metrics.MetricAttributesProvider;
 import org.nuxeo.runtime.management.metrics.MetricHistoryStack;
 
+
 /**
  * Service interface to manage Counters.
  *
- * This services hides the Counters implementation so that Counters's updated
+ * This services hides the Stopwatch implementation so that Stopwatch's updated
  * don't have to be dependent on Simon
  *
  * @author Tiry (tdelprat@nuxeo.com)
  *
  */
-public interface CounterManager extends MetricAttributesProvider {
+public interface StopwatchManager extends MetricAttributesProvider {
+
+    public interface Split {
+        String getName();
+        void stop();
+    }
 
     /**
-     * Increase a counter
+     * Acquire a split
      *
-     * @param counterName
-     */
-    void increaseCounter(String counterName);
-
-
-    void increaseCounter(String counterName, long value);
-
-    /**
-     * Set the value of a counter
-     *
-     * @param counterName
-     * @param value
-     */
-    void setCounterValue(String counterName, long value);
-
-    /**
-     * Decrease a counter
-     *
-     * @param counterName
-     */
-    void decreaseCounter(String counterName);
-
-    void decreaseCounter(String counterName, long value);
-
-    /**
-     * Get recorder values of the counter over time
-     * @param counterName
+     * @param name
      * @return
      */
-    MetricHistoryStack getCounterHistory(String counterName);
-
-
-    /**
-     * Enables all counters
-     *
-     */
-    void enableCounters();
+    Split start(String name);
 
     /**
-     * Desable all couters
+     * Watch history
+     *
+     * @param name
+     * @return
+     */
+    MetricHistoryStack getStack(String name);
+
+    /**
+     * Enables all
      *
      */
-    void disableCounters();
+    void enableStopwatchs();
+
+    /**
+     * Disable all
+     *
+     */
+    void disableStopwatchs();
 
 }
