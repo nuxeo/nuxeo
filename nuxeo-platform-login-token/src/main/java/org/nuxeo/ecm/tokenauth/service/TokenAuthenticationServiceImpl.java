@@ -108,7 +108,7 @@ public class TokenAuthenticationServiceImpl implements
                                     userName, applicationName, deviceId));
                 }
                 // Return token
-                log.info(String.format(
+                log.debug(String.format(
                         "Found token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
                         userName, applicationName, deviceId));
                 DocumentModel tokenModel = tokens.get(0);
@@ -136,7 +136,7 @@ public class TokenAuthenticationServiceImpl implements
                     creationDate);
             session.createEntry(entry);
 
-            log.info(String.format(
+            log.debug(String.format(
                     "Generated unique token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
                     userName, applicationName, deviceId));
             return token;
@@ -163,12 +163,12 @@ public class TokenAuthenticationServiceImpl implements
             session = directoryService.open(DIRECTORY_NAME);
             DocumentModel entry = session.getEntry(token);
             if (entry == null) {
-                log.info(String.format(
+                log.debug(String.format(
                         "Found no user name bound to the token: '%s', returning null.",
                         token));
                 return null;
             }
-            log.info(String.format(
+            log.debug(String.format(
                     "Found a user name bound to the token: '%s', returning it.",
                     token));
             return (String) entry.getProperty(DIRECTORY_SCHEMA, USERNAME_FIELD);
