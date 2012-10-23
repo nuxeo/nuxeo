@@ -5,6 +5,7 @@
 package org.nuxeo.drive.operations;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.core.Constants;
@@ -15,7 +16,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Fetch the list of the repositories registered on the server.
