@@ -29,7 +29,7 @@
           <property name="display">table</property>
         </properties>
         <subWidgets>
-          <widget name="stringComplexItem" type="text">
+          <widget name="stringComplexItem" type="htmltext">
             <fields>
               <field>stringComplexItem</field>
             </fields>
