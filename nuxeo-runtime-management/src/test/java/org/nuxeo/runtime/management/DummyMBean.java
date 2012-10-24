@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,19 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     "Stephane Lacoin (aka matic) slacoin@nuxeo.com"
+ *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
  */
-package org.nuxeo.runtime.management.metrics;
+package org.nuxeo.runtime.management;
 
 /**
- * @author "Stephane Lacoin (aka matic) slacoin@nuxeo.com"
- *
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public interface MetricHistoryProvider {
+public interface DummyMBean {
 
-    MetricHistoryStack getStack(String name);
+    String getManagedMessage();
+
+    void setManagedMessage(String message);
+
+    String sayManagedHelloWorld();
+
 }

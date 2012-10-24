@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.management.MXBean;
-
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.collection.TransformedCollection;
 import org.apache.commons.collections.map.TransformedMap;
@@ -39,18 +37,18 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  *
  */
-@MXBean
-public class RuntimeServiceMBeanAdapter {
+public class RuntimeServiceMBeanAdapter implements RuntimeServiceMBean {
 
     protected RuntimeService doGetRuntime() {
         return Framework.getRuntime();
     }
 
+    @Override
     public String getDescription() {
         return doGetRuntime().getDescription();
     }
 
-   
+    @Override
     public String getHomeLocation() {
         try {
             return doGetRuntime().getHome().getCanonicalPath();
@@ -59,10 +57,12 @@ public class RuntimeServiceMBeanAdapter {
         }
     }
 
+    @Override
     public String getName() {
         return doGetRuntime().getName();
     }
 
+    @Override
     public String getVersion() {
         return doGetRuntime().getVersion().toString();
     }
@@ -91,6 +91,7 @@ public class RuntimeServiceMBeanAdapter {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Map<String, Set<String>> getPendingComponents() {
         Map<String, Set<String>> returnedMap = new HashMap<String, Set<String>>();
@@ -116,6 +117,7 @@ public class RuntimeServiceMBeanAdapter {
 
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Set<String> getResolvedComponents() {
         Collection<RegistrationInfo> registrations = doGetRuntime().getComponentManager().getRegistrations();

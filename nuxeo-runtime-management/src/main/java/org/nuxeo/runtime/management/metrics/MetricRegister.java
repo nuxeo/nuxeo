@@ -44,7 +44,7 @@ public class MetricRegister {
     public void registerMXBean(Object mbean, String name, Class<?> itf, String type) {
         ResourcePublisher srv = Framework.getLocalService(ResourcePublisher.class);
         String cname = canonicalName(name, type);
-        srv.registerResource(cname, itf, mbean);
+        srv.registerResource(name, cname, itf, mbean);
         cnames.put(name, cname);
     }
 
@@ -59,7 +59,7 @@ public class MetricRegister {
         }
         String cname = cnames.remove(name);
         if (cname!=null) {
-            srv.unregisterResource(cname);
+            srv.unregisterResource(name, cname);
         }
     }
 

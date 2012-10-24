@@ -29,7 +29,7 @@ public class TestObjectNameFactory {
     @Test
     public void testSimpleForm() {
         ObjectName name = ObjectNameFactory.getObjectName("simple");
-        assertEquals("org.nuxeo:name=simple", name.getCanonicalName());
+        assertEquals("org.nuxeo:name=simple,type=service", name.getCanonicalName());
     }
 
     @Test
@@ -44,5 +44,11 @@ public class TestObjectNameFactory {
         assertEquals("foo:name=value", name.getCanonicalName());
     }
 
+    @Test
+    public void testShortName() {
+        ObjectName name = ObjectNameFactory.getObjectName("foo:name=value,type=service,info=metric");
+        String shortName = ObjectNameFactory.formatShortName(name);
+        assertEquals("value-metric", shortName);
+    }
 
 }

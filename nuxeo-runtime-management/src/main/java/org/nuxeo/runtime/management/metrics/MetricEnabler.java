@@ -23,46 +23,38 @@ import java.util.logging.Logger;
 
 import org.javasimon.Simon;
 import org.javasimon.SimonManager;
+import org.javasimon.jmx.JmxRegisterCallback;
 import org.javasimon.utils.LoggingCallback;
 
-public class MetricEnabler implements MetricEnablerMBean {;
+public class MetricEnabler implements MetricEnablerMXBean {;
 
     protected MetricSerializer serializer;
 
-    protected MetricRegister register;
-
-    protected MetricRegisteringCallback regCb;
-
-    protected MetricSerializingCallback srzCb;
-
     protected LoggingCallback lgCB;
 
+    protected final JmxRegisterCallback jmxCB = new JmxRegisterCallback();
 
-    protected MetricEnabler(MetricSerializer serializer, MetricRegister register) {
+    protected void setSerializer(MetricSerializer serializer) {
         this.serializer = serializer;
-        this.register = register;
     }
 
     @Override
     public void enable() {
         SimonManager.enable();
-        regCb = new MetricRegisteringCallback(register);
-        SimonManager.callback().addCallback(regCb);
-        for (String name : SimonManager.getSimonNames()) {
+        SimonManager.callback().addCallback(jmxCB);
+        for (String name : SimonManager.simonNames()) {
             Simon simon = SimonManager.getSimon(name);
-            regCb.onSimonCreated(simon);
+            jmxCB.simonCreated(simon);
         }
-        enableLogging();
     }
 
     @Override
     public void disable() {
-        SimonManager.callback().removeCallback(regCb);
-        for (String name : SimonManager.getSimonNames()) {
+        SimonManager.callback().removeCallback(jmxCB);
+        for (String name : SimonManager.simonNames()) {
             Simon simon = SimonManager.getSimon(name);
-            regCb.onSimonDestroyed(simon);
+            jmxCB.simonDestroyed(simon);
         }
-        regCb = null;
         SimonManager.disable();
     }
 
@@ -73,10 +65,6 @@ public class MetricEnabler implements MetricEnablerMBean {;
 
     @Override
     public void enableLogging() {
-        Logger logger = Logger.getLogger("org.javasimon");
-        if (!logger.isLoggable(Level.FINE)) {
-            return;
-        }
         lgCB = new LoggingCallback();
         lgCB.setLogger(Logger.getLogger("org.javasimon"));
         lgCB.setLevel(Level.FINEST);
@@ -85,10 +73,6 @@ public class MetricEnabler implements MetricEnablerMBean {;
 
     @Override
     public void disableLogging() {
-        Logger logger = Logger.getLogger("org.javasimon");
-        if (!logger.isLoggable(Level.FINE)) {
-            return;
-        }
         SimonManager.callback().removeCallback(lgCB);
         lgCB = null;
     }

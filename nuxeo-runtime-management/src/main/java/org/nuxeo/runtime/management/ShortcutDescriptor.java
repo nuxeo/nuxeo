@@ -16,14 +16,37 @@
  */
 package org.nuxeo.runtime.management;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
+
 /**
  * @author matic
+ *
  */
-public class DummyFactory extends AbstractResourceFactory {
+@XObject("shortcut")
+public class ShortcutDescriptor {
 
-    @Override
-    public void registerResources() {
-        service.registerResource("dummy", "org.nuxeo:name=dummy", DummyMBean.class, new DummyService());
+    public ShortcutDescriptor() {
+    }
+
+    public ShortcutDescriptor(String shortName, String qualifiedName) {
+        this.shortName = shortName;
+        this.qualifiedName = qualifiedName;
+    }
+
+    @XNode("@name")
+    private String shortName;
+
+    @XNode("@qualifiedName")
+    private String qualifiedName;
+
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public String getQualifiedName() {
+        return qualifiedName;
     }
 
 }

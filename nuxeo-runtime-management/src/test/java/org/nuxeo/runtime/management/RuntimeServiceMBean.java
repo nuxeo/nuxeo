@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,34 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *    Stephane Lacoin (Nuxeo EP Software Engineer)ne Lacoin (Nuxeo EP Software Engineer)
  */
+package org.nuxeo.runtime.management;
 
-package org.nuxeo.runtime.management.metrics;
+import java.util.Map;
+import java.util.Set;
 
-import java.io.IOException;
+/**
+ * @author Stephane Lacoin (Nuxeo EP Software Engineer)
+ *
+ */
+public interface RuntimeServiceMBean {
 
-import javax.management.MXBean;
+    String getDescription();
 
-@MXBean
-public interface MetricEnablerMBean {
+    String getHomeLocation();
 
-    void enable();
+    String getName();
 
-    void disable();
+    String getVersion();
 
-    boolean isEnabled();
+    Map<String, Set<String>> getPendingComponents();
 
-    void enableLogging();
-
-    void disableLogging();
-
-    boolean isLogging();
-
-    void enableSerializing() throws IOException;
-
-    void disableSerializing() throws IOException;
-
-    boolean isSerializing();
+    Set<String> getResolvedComponents();
 
 }

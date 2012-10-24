@@ -16,7 +16,7 @@
  *
  * $Id$
  */
-package org.nuxeo.runtime.management.metrics;
+package org.nuxeo.runtime.management.counters;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,13 +29,13 @@ import java.util.LinkedList;
  * @author Tiry (tdelprat@nuxeo.com)
  *
  */
-public class MetricHistoryStack implements Iterable<long[]> {
+public class CounterHistoryStack implements Iterable<long[]> {
 
     protected final LinkedList<long[]> list = new LinkedList<long[]>();
 
     protected final int maxSize;
 
-    public MetricHistoryStack(int size) {
+    public CounterHistoryStack(int size) {
         maxSize = size;
     }
 

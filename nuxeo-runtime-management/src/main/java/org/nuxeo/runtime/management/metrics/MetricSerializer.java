@@ -28,7 +28,7 @@ import org.javasimon.SimonManager;
 
 import com.thoughtworks.xstream.XStream;
 
-public class MetricSerializer implements MetricSerializerMBean  {
+public class MetricSerializer implements MetricSerializerMXBean {
 
     protected File file;
 
@@ -38,7 +38,7 @@ public class MetricSerializer implements MetricSerializerMBean  {
 
     protected long lastUsage;
 
-    protected void toStream(Sample... samples) throws IOException {
+    public void toStream(Sample... samples) throws IOException {
         if (outputStream == null) {
             return;
         }
@@ -49,7 +49,15 @@ public class MetricSerializer implements MetricSerializerMBean  {
         lastUsage = Calendar.getInstance().getTimeInMillis();
     }
 
+
     @Override
+    public String getOutputLocation() {
+        if (file == null) {
+            return "/dev/null";
+        }
+        return file.getAbsolutePath();
+    }
+
     public File getOutputFile() {
         return file;
     }
@@ -67,12 +75,11 @@ public class MetricSerializer implements MetricSerializerMBean  {
         }
         closeOutput();
         outputStream = new XStream().createObjectOutputStream(new FileWriter(file));
-        for (String name : SimonManager.getSimonNames()) {
+        for (String name : SimonManager.simonNames()) {
             SimonManager.getSimon(name).reset();
         }
     }
 
-    @Override
     public void flushOuput() throws IOException {
         outputStream.flush();
     }

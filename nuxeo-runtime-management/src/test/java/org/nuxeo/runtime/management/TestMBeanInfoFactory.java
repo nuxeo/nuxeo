@@ -35,7 +35,7 @@ public class TestMBeanInfoFactory {
     @Test
     public void testInterfaceProperty() {
         ModelMBeanInfo ifaceInfo =
-                factoryUnderTest.getModelMBeanInfo(DummyMXBean.class);
+                factoryUnderTest.getModelMBeanInfo(DummyMBean.class);
         MBeanAttributeInfo ifaceAttribute = ifaceInfo.getAttributes()[0];
         assertEquals("managedMessage", ifaceAttribute.getName());
 

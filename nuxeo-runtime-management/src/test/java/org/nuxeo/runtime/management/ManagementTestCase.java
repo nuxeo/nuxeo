@@ -18,11 +18,15 @@ package org.nuxeo.runtime.management;
 
 import java.util.Set;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
-import org.junit.After;
 import org.junit.Before;
+import org.junit.After;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -65,6 +69,14 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
     public void tearDown() throws Exception {
         Framework.getRuntime().stop();
         super.tearDown();
+    }
+
+    protected void doBindResources() throws InstanceNotFoundException,
+            ReflectionException, MBeanException {
+        String qualifiedName = ObjectNameFactory.formatQualifiedName(ResourcePublisherService.NAME);
+        ObjectName objectName = ObjectNameFactory.getObjectName(qualifiedName);
+        MBeanServer server = locatorService.lookupServer(objectName.getDomain());
+        server.invoke(objectName, "bindResources", null, null);
     }
 
     protected Set<ObjectName> doQuery(String name) {

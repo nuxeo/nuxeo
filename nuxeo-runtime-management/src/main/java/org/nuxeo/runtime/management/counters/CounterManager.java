@@ -18,9 +18,6 @@
  */
 package org.nuxeo.runtime.management.counters;
 
-import org.nuxeo.runtime.management.metrics.MetricAttributesProvider;
-import org.nuxeo.runtime.management.metrics.MetricHistoryStack;
-
 /**
  * Service interface to manage Counters.
  *
@@ -30,7 +27,7 @@ import org.nuxeo.runtime.management.metrics.MetricHistoryStack;
  * @author Tiry (tdelprat@nuxeo.com)
  *
  */
-public interface CounterManager extends MetricAttributesProvider {
+public interface CounterManager {
 
     /**
      * Increase a counter
@@ -64,7 +61,7 @@ public interface CounterManager extends MetricAttributesProvider {
      * @param counterName
      * @return
      */
-    MetricHistoryStack getCounterHistory(String counterName);
+    CounterHistoryStack getCounterHistory(String counterName);
 
 
     /**

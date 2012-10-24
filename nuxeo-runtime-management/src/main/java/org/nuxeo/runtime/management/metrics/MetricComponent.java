@@ -17,36 +17,29 @@
 
 package org.nuxeo.runtime.management.metrics;
 
-import org.javasimon.Simon;
 import org.javasimon.SimonManager;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.BundleContext;
 
 
-public class MetricComponent extends DefaultComponent implements MetricAttributesProvider, MetricHistoryProvider {
+public class MetricComponent extends DefaultComponent {
 
     protected final MetricSerializer serializer = new MetricSerializer();
 
-    protected final MetricRegister register = new MetricRegister();
-
-    protected final MetricEnabler enabler = new MetricEnabler(serializer, register);
-
-    protected final MetricHistoryRecorder history = new MetricHistoryRecorder(50);
-
+    protected final MetricEnabler enabler = new MetricEnabler();
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (MetricSerializer.class.isAssignableFrom(adapter)) {
+        if (MetricSerializerMXBean.class.isAssignableFrom(adapter)) {
             return adapter.cast(serializer);
-        }
-        if (MetricEnabler.class.isAssignableFrom(adapter)) {
-            return adapter.cast(enabler);
-        }
-        if (MetricRegister.class.isAssignableFrom(adapter)) {
-            return adapter.cast(register);
         }
         return super.getAdapter(adapter);
     }
+
+    protected final MetricRegister register = new MetricRegister();
+
+    protected final MetricRegisteringCallback registeringCB = new  MetricRegisteringCallback(register);
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -61,33 +54,28 @@ public class MetricComponent extends DefaultComponent implements MetricAttribute
     }
 
 
+    public void start(BundleContext context) {
+        doStart();
+    }
+
+    public void stop(BundleContext context) {
+        doStop();
+    }
+
     protected void doStart() {
-        enabler.enable();
-        register.registerMXBean(enabler,  "enabler", MetricEnabler.class, "Feature");
-        register.registerMXBean(serializer, "serializer", MetricSerializer.class, "Feature");
-        SimonManager.manager().callback().addCallback(history);
+        enabler.setSerializer(serializer);
+        SimonManager.enable();
+        SimonManager.callback().addCallback(registeringCB);
+        register.registerMXBean(enabler,  "enabler", MetricEnablerMXBean.class, "Feature");
+        register.registerMXBean(serializer, "serializer", MetricSerializerMXBean.class, "Feature");
     }
 
     protected void doStop() {
-        enabler.disable();
-        register.unregisterMXBean("enabler");
-        register.unregisterMXBean("serializer");
-        SimonManager.manager().callback().removeCallback(history);
-        history.clearStacks();
+        SimonManager.disable();
+        if (SimonManager.callback()!=null) {
+            SimonManager.callback().removeCallback(registeringCB);
+        }
+        register.unregisterAll();
     }
-
-
-    @Override
-    public MetricHistoryStack getStack(String name) {
-        return history.getStack(name);
-    }
-
-
-    @Override
-    public MetricAttributes getAttributes(String name) {
-        Simon simon = SimonManager.getSimon(name);
-        return new SimonAttributes(simon);
-    }
-
 
 }

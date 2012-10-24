@@ -44,7 +44,8 @@ public class TestResourcePublisherService extends ManagementTestCase {
     @Test
     public void testRegisterResource() {
         publisherService.registerResource("dummy", "org.nuxeo:name=dummy",
-                DummyMXBean.class, new DummyService());
+                DummyMBean.class, new DummyService());
+        publisherService.bindResources();
         Set<ObjectName> registeredNames = doQuery("org.nuxeo:name=dummy");
         assertNotNull(registeredNames);
         assertEquals(1, registeredNames.size());
@@ -65,7 +66,8 @@ public class TestResourcePublisherService extends ManagementTestCase {
     public void testServerLocator() throws Exception {
         MBeanServer testServer = MBeanServerFactory.createMBeanServer("test");
         ObjectName testName = new ObjectName("test:test=test");
-        testServer.registerMBean(new DummyService(), testName);
+        publisherService.bindForTest(testServer, testName, new DummyService(), DummyMBean.class);
+        publisherService.bindResources();
         locatorService.registerLocator("test", true);
         MBeanServer locatedServer = locatorService.lookupServer(testName);
         assertNotNull(locatedServer);
@@ -77,14 +79,17 @@ public class TestResourcePublisherService extends ManagementTestCase {
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-service.xml");
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-contrib.xml");
 
-        fireFrameworkStarted();
-
-        String qualifiedName = ObjectNameFactory.formatQuery("org.nuxeo");
+        publisherService.bindResources();
+        String qualifiedName = ObjectNameFactory.formatTypeQuery("service");
 
         Set<ObjectName> registeredNames = doQuery(qualifiedName);
         assertNotNull(registeredNames);
-        assertEquals(1, registeredNames.size());
+        assertEquals(4, registeredNames.size());
 
+        Set<String> shortcutsName = publisherService.getShortcutsName();
+        assertNotNull(shortcutsName);
+        assertEquals(5, shortcutsName.size());
+        assertTrue(shortcutsName.contains("dummy"));
     }
 
 }

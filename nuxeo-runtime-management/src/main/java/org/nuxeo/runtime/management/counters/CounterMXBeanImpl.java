@@ -35,10 +35,6 @@ public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl imple
         super(counter);
     }
 
-    public long getCounter() {
-        return counter.getCounter();
-    }
-    
     public String sampleAsString() {
         CounterSample sample = sample();
         return sample.toString();
