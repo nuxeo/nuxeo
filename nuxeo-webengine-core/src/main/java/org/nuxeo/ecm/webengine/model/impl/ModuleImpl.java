@@ -356,13 +356,20 @@ public class ModuleImpl implements Module {
         dirStack = new DirectoryStack();
         try {
             File skin = getSkinDir(configuration.directory);
-            if (skin.isDirectory()) {
-                dirStack.addDirectory(skin);
+            if (!configuration.allowHostOverride) {
+                if (skin.isDirectory()) {
+                    dirStack.addDirectory(skin);
+                }
             }
             for (File fragmentDir:configuration.fragmentDirectories) {
                 File fragmentSkin = getSkinDir(fragmentDir);
                 if (fragmentSkin.isDirectory()) {
                     dirStack.addDirectory(fragmentSkin);
+                }
+            }
+            if (configuration.allowHostOverride) {
+                if (skin.isDirectory()) {
+                    dirStack.addDirectory(skin);
                 }
             }
             if (superModule != null) {

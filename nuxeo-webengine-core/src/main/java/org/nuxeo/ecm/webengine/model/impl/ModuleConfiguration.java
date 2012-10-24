@@ -161,6 +161,8 @@ public class ModuleConfiguration implements Cloneable {
 
     private ModuleImpl module;
 
+    public boolean allowHostOverride;
+
     public ModuleConfiguration() {
     }
 
