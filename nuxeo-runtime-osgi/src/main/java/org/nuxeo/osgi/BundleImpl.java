@@ -70,6 +70,8 @@ public class BundleImpl implements Bundle {
 
     protected double startupTime;
 
+    protected boolean allowHostOverride;
+
     public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader)
             throws BundleException {
         this(osgi, file, loader, false);
@@ -95,6 +97,7 @@ public class BundleImpl implements Bundle {
                     + " : " + e.getMessage(), e);
         }
         symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
+        allowHostOverride = Boolean.parseBoolean(headers.get(BundleManifestReader.ALLOW_HOST_OVERRIDE));
         id = isSystemBundle ? 0 : osgi.getBundleId(symbolicName);
         context = createContext();
         state = UNINSTALLED;
@@ -192,12 +195,21 @@ public class BundleImpl implements Bundle {
         if (fragments.length == 0) {
             return hostEntries;
         }
-        CompoundEnumerationBuilder builder = new CompoundEnumerationBuilder().add(hostEntries);
-        
+
+        CompoundEnumerationBuilder builder = new CompoundEnumerationBuilder();
+        if (!allowHostOverride) {
+            builder.add(hostEntries);
+        }
+
         for (Bundle fragment:fragments) {
             Enumeration<URL> fragmentEntries = fragment.findEntries(path, filePattern, recurse);
             builder.add(fragmentEntries);
         }
+
+        if (allowHostOverride) {
+            builder.add(hostEntries);
+        }
+
         return builder.build();
     }
 

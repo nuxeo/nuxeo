@@ -42,12 +42,19 @@ import org.osgi.framework.Constants;
  */
 public final class BundleManifestReader {
 
+
     private static final Log log = LogFactory.getLog(BundleManifestReader.class);
 
     private static final Pattern PARAMS_PATTERN
             = Pattern.compile("\\s*([^:\\s]+)\\s*:=\\s*([^;\\s]+)\\s*;?");
 
-    public static String[] CUSTOM_HEADERS = {"Nuxeo-Component", "Nuxeo-WebModule"};
+    public static final String COMPONENT_HEADER = "Nuxeo-Component";
+
+    public static final String ALLOW_HOST_OVERRIDE = "Nuxeo-AllowOverride";
+
+    public static final String WEB_MODULE = "Nuxeo-WebModule";
+
+    public static String[] CUSTOM_HEADERS = {COMPONENT_HEADER, WEB_MODULE, ALLOW_HOST_OVERRIDE };
 
     static { // we can add dynamically new headers through system properties
         String h = System.getProperty("org.nuxeo.manifest.headers");
