@@ -5,21 +5,21 @@
     point="actions">
 
     <action id="driveSynchronize" link="#{nuxeoDriveActions.synchronizeCurrentDocument}"
-      order="50" label="command.driveSynchronizeFolder" type="link"
+      order="25" label="command.driveSynchronizeFolder" type="link"
       icon="/icons/drive_unsynced.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>can_sync</filter-id>
     </action>
 
     <action id="driveUnsynchronizeCurrentDocument" link="#{nuxeoDriveActions.unsynchronizeCurrentDocument}"
-      order="50" label="command.driveUnsynchronizeFolder" type="link"
+      order="25" label="command.driveUnsynchronizeFolder" type="link"
       icon="/icons/drive_synced.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>can_unsync_current_doc</filter-id>
     </action>
 
     <action id="driveUnsynchronizeRoot"
-      link="#{nuxeoDriveActions.navigateToCurrentSynchronizationRoot}" order="50"
+      link="#{nuxeoDriveActions.navigateToCurrentSynchronizationRoot}" order="25"
       label="command.navigateToSynchronizationRoot" type="link"
       icon="/icons/drive_synced_under_root.png">
       <category>DOCUMENT_UPPER_ACTION</category>
@@ -27,7 +27,7 @@
     </action>
 
     <action id="driveEdit" link="#{nuxeoDriveActions.driveEditURL}"
-      order="51" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      order="26" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>can_drive_edit</filter-id>
     </action>
