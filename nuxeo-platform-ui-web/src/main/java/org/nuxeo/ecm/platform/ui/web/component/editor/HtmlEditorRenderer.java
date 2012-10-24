@@ -61,32 +61,10 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         ResponseWriter writer = context.getResponseWriter();
         Locale locale = context.getViewRoot().getLocale();
 
-        // tiny mce scripts
-        writer.startElement("script", editorComp);
-        writer.writeAttribute("type", "text/javascript", null);
-        writer.writeAttribute("src", "tiny_mce/tiny_mce.js", null);
-        // force the script tag to be opened and then closed to avoid IE bug.
-        writer.write(" ");
-        writer.endElement("script");
+        // tiny MCE generic scripts now included in every page header
 
+        // script to actually init tinyMCE with configured options
         String editorSelector = editorComp.getEditorSelector();
-
-        // declare variables for tinyMCE init
-        writer.startElement("script", editorComp);
-        writer.writeAttribute("type", "text/javascript", null);
-        writer.writeText(
-                String.format("var lang = \"%s\";\n", locale.getLanguage()),
-                null);
-        writer.writeText(
-                String.format("var editorSelector = \"%s\";\n", editorSelector),
-                null);
-        writer.writeText(
-                String.format("var width = \"%s\";\n", editorComp.getWidth()),
-                null);
-        writer.writeText(
-                String.format("var height = \"%s\";\n", editorComp.getHeight()),
-                null);
-
         // plugins registration
         if (pluginsOptions == null) {
             final HtmlEditorPluginService pluginService = Framework.getLocalService(HtmlEditorPluginService.class);
@@ -97,19 +75,15 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             toolbarPluginsOptions.put("toolbar",
                     pluginService.getFormattedToolbarsButtonsNames());
         }
-        writer.writeText(
-                String.format("var plugins = \"%s\";\n",
-                        pluginsOptions.get("plugins")), null);
-        writer.writeText(
-                String.format("var toolbar = \"%s\";\n",
-                        toolbarPluginsOptions.get("toolbar")), null);
-        writer.endElement("script");
 
-        // init tinyMCE
         writer.startElement("script", editorComp);
         writer.writeAttribute("type", "text/javascript", null);
-        writer.writeAttribute("src", "tiny_mce/tiny_mce_init.js", null);
-        writer.write(" ");
+        String scriptContent = String.format(
+                "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s')",
+                editorComp.getWidth(), editorComp.getHeight(), editorSelector,
+                pluginsOptions.get("plugins"), locale.getLanguage(),
+                toolbarPluginsOptions.get("toolbar"));
+        writer.writeText(scriptContent, null);
         writer.endElement("script");
 
         // input text area
