@@ -27,6 +27,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilter;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.osgi.BundleManifestReader;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -76,6 +77,8 @@ public class WebEngineModuleFactory {
             File fragmentDir = locateModuleDir(fragment, engine, explode);
             app.cfg.fragmentDirectories.add(fragmentDir);
         }
+        app.cfg.allowHostOverride = Boolean.parseBoolean((String)bundle.getHeaders().get(
+                BundleManifestReader.ALLOW_HOST_OVERRIDE));
         engine.addApplication(app);
 
         log.info("Deployed web module found in bundle: " + bundle.getSymbolicName());
