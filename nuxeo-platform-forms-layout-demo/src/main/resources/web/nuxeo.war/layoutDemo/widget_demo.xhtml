@@ -50,7 +50,8 @@ Needed parameters:
             </c:if>
             <c:if test="#{not useMultipartForm}">
               <a4j:form id="#{demoLayout.name}_edit_form"
-                ajaxSubmit="true">
+                ajaxSubmit="true"
+                onsubmit="removeAllTinyMCEEditors(); return true;">
                 <span class="infoMessage">
                   Fill the form and click on 'Submit' to display the widget
                   rendering in view mode.
