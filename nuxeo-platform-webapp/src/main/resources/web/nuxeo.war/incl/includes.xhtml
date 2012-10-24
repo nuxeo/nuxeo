@@ -26,6 +26,12 @@
   src="#{baseURL}js/?scripts=confirmAlerts.js%7CDragAndDrop.js%7CtableSelections.js%7CcustomSeamRemotingWaiter.js%7Ccustom-javascript.js%7Cdefault-contextmenu-actions.js%7Ccustom-contextmenu-actions.js%7Ctooltip.js">
 </script>
 
+<!-- FIXME: tiny mce scripts inclusion is not ok when using theme resources -->
+<script type="text/javascript" src="tiny_mce/tiny_mce.js">
+</script>
+<script type="text/javascript" src="tiny_mce/tiny_mce_init.js">
+</script>
+
 <ui:include src="/incl/dnd/dnd-common.xhtml" />
 
 <c:if test="#{useHtml5DragAndDrop}">
