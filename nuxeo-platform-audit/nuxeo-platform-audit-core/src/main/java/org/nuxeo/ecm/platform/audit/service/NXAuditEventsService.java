@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.audit.service;
 
+import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -769,6 +771,11 @@ public class NXAuditEventsService extends DefaultComponent implements
     protected void logDocumentEvent(EntityManager em, String eventName,
             DocumentEventContext docCtx, Date eventDate) {
         DocumentModel document = docCtx.getSourceDocument();
+        if (document.hasFacet(SYSTEM_DOCUMENT)) {
+            // do not log event on System documents
+            return;
+        }
+
         Principal principal = docCtx.getPrincipal();
         Map<String, Serializable> properties = docCtx.getProperties();
 
