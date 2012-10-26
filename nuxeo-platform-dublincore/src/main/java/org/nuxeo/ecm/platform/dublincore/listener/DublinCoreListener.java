@@ -19,6 +19,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
+import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.dublincore.NXDublinCore;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 
@@ -90,6 +92,11 @@ public class DublinCoreListener implements EventListener {
 
         if (doc.isVersion()) {
             log.debug("No DublinCore update on versions except for the issued date");
+            return;
+        }
+
+        if (doc.hasFacet(SYSTEM_DOCUMENT)) {
+            // ignore the event for System documents
             return;
         }
 
