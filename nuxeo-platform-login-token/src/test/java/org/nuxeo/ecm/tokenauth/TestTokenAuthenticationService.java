@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -51,6 +52,19 @@ public class TestTokenAuthenticationService {
     @Inject
     protected DirectoryService directoryService;
 
+    @After
+    public void cleanDirectories() throws Exception {
+        Session tokenDirSession = directoryService.open("authTokens");
+        try {
+            DocumentModelList entries = tokenDirSession.getEntries();
+            for (DocumentModel entry : entries) {
+                tokenDirSession.deleteEntry(entry);
+            }
+        } finally {
+            tokenDirSession.close();
+        }
+    }
+
     @Test
     public void testGetToken() throws ClientException {
 
@@ -72,9 +86,8 @@ public class TestTokenAuthenticationService {
         assertNotNull(token);
 
         // Test token binding persistence
-        Session directorySession = null;
+        Session directorySession = directoryService.open("authTokens");
         try {
-            directorySession = directoryService.open("authTokens");
             DocumentModel tokenModel = directorySession.getEntry(token);
             assertNotNull(tokenModel);
             assertEquals(token, tokenModel.getPropertyValue("authtoken:token"));
@@ -90,9 +103,7 @@ public class TestTokenAuthenticationService {
                     tokenModel.getPropertyValue("authtoken:permission"));
             assertNotNull(tokenModel.getPropertyValue("authtoken:creationDate"));
         } finally {
-            if (directorySession != null) {
-                directorySession.close();
-            }
+            directorySession.close();
         }
 
         // Test existing token retrieval
@@ -199,7 +210,6 @@ public class TestTokenAuthenticationService {
         assertEquals("rw",
                 tokenBinding.getPropertyValue("authtoken:permission"));
         assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
-
     }
 
 }

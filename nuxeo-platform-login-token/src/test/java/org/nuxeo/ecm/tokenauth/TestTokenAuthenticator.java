@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -47,7 +48,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TokenAuthenticationServiceFeature.class, RestFeature.class })
 @Jetty(port = 18080)
-@RepositoryConfig(init = TokenAuthenticationRepositoryInit.class)
+@RepositoryConfig(init = TokenAuthenticationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-contrib.xml")
 public class TestTokenAuthenticator {
 

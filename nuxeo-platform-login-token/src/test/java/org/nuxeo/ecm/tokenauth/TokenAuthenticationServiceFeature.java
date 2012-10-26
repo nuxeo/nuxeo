@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.tokenauth;
 
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -31,7 +29,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 5.7
  */
 @Features(PlatformFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({
         "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-directory-types.xml",
         "org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-framework.xml",
