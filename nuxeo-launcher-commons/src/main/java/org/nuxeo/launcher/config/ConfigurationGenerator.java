@@ -496,11 +496,7 @@ public class ConfigurationGenerator {
         // Override default configuration with specific configuration(s) of
         // the chosen template(s) which can be outside of server filesystem
         try {
-            if (templates == null) {
-                templates = getUserTemplates();
-            }
-            includedTemplates.clear();
-            includeTemplates(templates);
+            includeTemplates();
             checkForDeprecatedParameters(defaultConfig);
             extractDatabaseTemplateName();
         } catch (FileNotFoundException e) {
@@ -543,6 +539,17 @@ public class ConfigurationGenerator {
 
         // Could be useful to initialize DEFAULT env...
         // initEnv();
+    }
+
+    protected void includeTemplates() throws IOException {
+        if (templates == null) {
+            templates = getUserTemplates();
+        }
+        includedTemplates.clear();
+        List<File> orderedTemplates = includeTemplates(templates);
+        includedTemplates.clear();
+        includedTemplates.addAll(orderedTemplates);
+        log.debug(includedTemplates);
     }
 
     /**
@@ -741,7 +748,9 @@ public class ConfigurationGenerator {
         writeConfiguration(configuration, null);
     }
 
-    private void includeTemplates(String templatesList) throws IOException {
+    private List<File> includeTemplates(String templatesList)
+            throws IOException {
+        List<File> orderedTemplates = new ArrayList<File>();
         StringTokenizer st = new StringTokenizer(templatesList, ",");
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
@@ -777,10 +786,11 @@ public class ConfigurationGenerator {
             Properties subTemplateConf = loadTrimmedProperties(chosenTemplateConf);
             String subTemplatesList = subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES);
             if (subTemplatesList != null && subTemplatesList.length() > 0) {
-                includeTemplates(subTemplatesList);
+                orderedTemplates.addAll(includeTemplates(subTemplatesList));
             }
             // Load configuration from chosen templates
             defaultConfig.putAll(subTemplateConf);
+            orderedTemplates.add(chosenTemplate);
             String templateInfo = "Include template: "
                     + chosenTemplate.getPath();
             if (quiet) {
@@ -789,6 +799,7 @@ public class ConfigurationGenerator {
                 log.info(templateInfo);
             }
         }
+        return orderedTemplates;
     }
 
     /**
