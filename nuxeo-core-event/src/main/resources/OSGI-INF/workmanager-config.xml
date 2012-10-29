@@ -19,7 +19,6 @@
   <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
     point="schedule">
     <schedule id="workManagerCleanup">
-      <username>Administrator</username>
       <event>workManagerCleanup</event>
       <!-- cleanup every 5 minutes -->
       <cronExpression>0 0/5 * * * ?</cronExpression>
