@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Antoine Taillefer
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.drive.service;
 
@@ -21,7 +21,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-import org.nuxeo.drive.service.impl.AuditDocumentChange;
+import org.nuxeo.drive.service.impl.DocumentChange;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * Allows to find document changes.
@@ -31,11 +32,12 @@ import org.nuxeo.drive.service.impl.AuditDocumentChange;
 public interface DocumentChangeFinder extends Serializable {
 
     /**
-     * Gets the document changes on the given repository, for the given
-     * synchronization root paths, since the given last successful
-     * synchronization date and without exceeding the given limit.
+     * Gets the document changes in the repository against which the given
+     * session is bound, for the given synchronization root paths, since the
+     * given last successful synchronization date and without exceeding the
+     * given limit.
      *
-     * @param repoName the repository name
+     * @param session the session bound to the repository
      * @param rootPaths the synchronization root paths
      * @param lastSuccessfulSync the last successful synchronization date of the
      *            user's device
@@ -44,7 +46,7 @@ public interface DocumentChangeFinder extends Serializable {
      * @throws TooManyDocumentChangesException if the number of changes found
      *             has exceeded the limit
      */
-    public List<AuditDocumentChange> getDocumentChanges(String repoName,
+    public List<DocumentChange> getDocumentChanges(CoreSession session,
             Set<String> rootPaths, Calendar lastSuccessfulSync, int limit)
             throws TooManyDocumentChangesException;
 

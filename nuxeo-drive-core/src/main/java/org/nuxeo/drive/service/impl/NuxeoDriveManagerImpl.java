@@ -187,7 +187,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             CoreSession session, Calendar lastSuccessfulSync)
             throws ClientException {
 
-        List<AuditDocumentChange> docChanges = new ArrayList<AuditDocumentChange>();
+        List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
         Map<String, DocumentModel> changedDocModels = new HashMap<String, DocumentModel>();
         String statusCode = DocumentChangeSummary.STATUS_NO_CHANGES;
 
@@ -201,12 +201,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 // Get document changes
                 int limit = Integer.parseInt(Framework.getProperty(
                         DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
-                docChanges = documentChangeFinder.getDocumentChanges(
-                        session.getRepositoryName(), syncRootPaths,
-                        lastSuccessfulSync, limit);
+                docChanges = documentChangeFinder.getDocumentChanges(session,
+                        syncRootPaths, lastSuccessfulSync, limit);
                 if (!docChanges.isEmpty()) {
                     // Build map of document models that have changed
-                    for (AuditDocumentChange docChange : docChanges) {
+                    for (DocumentChange docChange : docChanges) {
                         String docUuid = docChange.getDocUuid();
                         if (!changedDocModels.containsKey(docUuid)) {
                             changedDocModels.put(docUuid,
@@ -252,6 +251,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             cache.put(userName, syncRoots);
         }
         return syncRoots;
+    }
+
+    // TODO: make documentChangeFinder overridable with an extension point and
+    // remove setter
+    public void setDocumentChangeFinder(
+            DocumentChangeFinder documentChangeFinder) {
+        this.documentChangeFinder = documentChangeFinder;
     }
 
 }

@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.DocumentChangeFinder;
 import org.nuxeo.drive.service.TooManyDocumentChangesException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,11 +52,11 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<AuditDocumentChange> getDocumentChanges(String repoName,
+    public List<DocumentChange> getDocumentChanges(CoreSession session,
             Set<String> rootPaths, Calendar lastSuccessfulSync, int limit)
             throws TooManyDocumentChangesException {
 
-        List<AuditDocumentChange> docChanges = new ArrayList<AuditDocumentChange>();
+        List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
         if (!rootPaths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
@@ -74,7 +75,7 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
             auditQuerySb.append("order by log.eventDate desc");
 
             String auditQuery = String.format(auditQuerySb.toString(),
-                    repoName, blackListedDocTypes,
+                    session.getRepositoryName(), blackListedDocTypes,
                     getRootPathClause(rootPaths),
                     getLastSuccessfulSyncDate(lastSuccessfulSync));
             log.debug("Querying audit logs for document changes: " + auditQuery);
@@ -92,8 +93,8 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
                 eventDate.setTimeInMillis(((Timestamp) auditEntry[2]).getTime());
                 String docPath = (String) auditEntry[3];
                 String docUuid = (String) auditEntry[4];
-                docChanges.add(new AuditDocumentChange(eventId,
-                        docLifeCycleState, eventDate, docPath, docUuid));
+                docChanges.add(new DocumentChange(eventId, docLifeCycleState,
+                        eventDate, docPath, docUuid));
             }
         }
         return docChanges;

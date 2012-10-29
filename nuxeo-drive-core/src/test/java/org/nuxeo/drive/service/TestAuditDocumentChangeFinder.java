@@ -33,8 +33,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.drive.service.impl.AuditDocumentChange;
 import org.nuxeo.drive.service.impl.AuditDocumentChangeFinder;
+import org.nuxeo.drive.service.impl.DocumentChange;
 import org.nuxeo.drive.service.impl.DocumentChangeSummary;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -75,8 +75,6 @@ public class TestAuditDocumentChangeFinder {
 
     protected DocumentChangeFinder documentChangeFinder;
 
-    protected String repoName;
-
     protected Calendar lastSuccessfulSync;
 
     protected Set<String> syncRootPaths;
@@ -89,7 +87,6 @@ public class TestAuditDocumentChangeFinder {
     public void init() throws Exception {
 
         documentChangeFinder = new AuditDocumentChangeFinder();
-        repoName = session.getRepositoryName();
         lastSuccessfulSync = Calendar.getInstance();
         syncRootPaths = new HashSet<String>();
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
@@ -110,7 +107,7 @@ public class TestAuditDocumentChangeFinder {
     public void testFindDocumentChanges() throws Exception {
 
         // No sync roots
-        List<AuditDocumentChange> docChanges = getDocumentChanges();
+        List<DocumentChange> docChanges = getDocumentChanges();
         assertNotNull(docChanges);
         assertTrue(docChanges.isEmpty());
 
@@ -132,7 +129,7 @@ public class TestAuditDocumentChangeFinder {
 
         docChanges = getDocumentChanges();
         assertEquals(2, docChanges.size());
-        AuditDocumentChange docChange = docChanges.get(0);
+        DocumentChange docChange = docChanges.get(0);
         assertEquals("documentCreated", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder2/doc2", docChange.getDocPath());
@@ -253,9 +250,9 @@ public class TestAuditDocumentChangeFinder {
         commitAndWaitForAsyncCompletion();
 
         docChangeSummary = getDocumentChangeSummary("Administrator");
-        List<AuditDocumentChange> docChanges = docChangeSummary.getDocumentChanges();
+        List<DocumentChange> docChanges = docChangeSummary.getDocumentChanges();
         assertEquals(2, docChanges.size());
-        AuditDocumentChange docChange = docChanges.get(0);
+        DocumentChange docChange = docChanges.get(0);
         assertEquals("documentCreated", docChange.getEventId());
         // TODO: understand why the life cycle is not good
         // assertEquals("project", docChange.getDocLifeCycleState());
@@ -313,10 +310,10 @@ public class TestAuditDocumentChangeFinder {
      * Gets the document changes using the {@link AuditDocumentChangeFinder} and
      * updates the {@link #lastSuccessfulSync} date.
      */
-    protected List<AuditDocumentChange> getDocumentChanges()
+    protected List<DocumentChange> getDocumentChanges()
             throws TooManyDocumentChangesException {
-        List<AuditDocumentChange> docChanges = documentChangeFinder.getDocumentChanges(
-                repoName,
+        List<DocumentChange> docChanges = documentChangeFinder.getDocumentChanges(
+                session,
                 syncRootPaths,
                 lastSuccessfulSync,
                 Integer.parseInt(Framework.getProperty("org.nuxeo.drive.document.change.limit")));

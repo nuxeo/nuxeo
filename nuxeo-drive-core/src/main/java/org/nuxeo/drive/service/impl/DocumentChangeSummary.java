@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * <li>A map of document models that have changed</li>
  * <li>A status code</li>
  * </ul>
- * A document change is implemented by {@link AuditDocumentChange}.
+ * A document change is implemented by {@link DocumentChange}.
  *
  * @author Antoine Taillefer
  */
@@ -44,7 +44,7 @@ public class DocumentChangeSummary implements Serializable {
 
     public static final String STATUS_NO_CHANGES = "no_changes";
 
-    protected List<AuditDocumentChange> documentChanges;
+    protected List<DocumentChange> documentChanges;
 
     protected Map<String, DocumentModel> changedDocModels;
 
@@ -52,7 +52,7 @@ public class DocumentChangeSummary implements Serializable {
 
     protected Calendar syncDate;
 
-    public DocumentChangeSummary(List<AuditDocumentChange> documentChanges,
+    public DocumentChangeSummary(List<DocumentChange> documentChanges,
             Map<String, DocumentModel> changedDocModels, String statusCode,
             Calendar syncDate) {
         this.documentChanges = documentChanges;
@@ -61,7 +61,7 @@ public class DocumentChangeSummary implements Serializable {
         this.syncDate = syncDate;
     }
 
-    public List<AuditDocumentChange> getDocumentChanges() {
+    public List<DocumentChange> getDocumentChanges() {
         return documentChanges;
     }
 

@@ -20,11 +20,11 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 /**
- * Representation of a document change in the audit logs.
+ * Representation of a document change.
  *
  * @author Antoine Taillefer
  */
-public class AuditDocumentChange implements Serializable {
+public class DocumentChange implements Serializable {
 
     private static final long serialVersionUID = -5697869523880291618L;
 
@@ -38,7 +38,7 @@ public class AuditDocumentChange implements Serializable {
 
     protected String docUuid;
 
-    public AuditDocumentChange(String eventId, String docLifeCycleState,
+    public DocumentChange(String eventId, String docLifeCycleState,
             Calendar eventDate, String docPath, String docUuid) {
         this.eventId = eventId;
         this.docLifeCycleState = docLifeCycleState;

@@ -113,4 +113,12 @@ public interface NuxeoDriveManager {
             CoreSession session, Calendar lastSuccessfulSync)
             throws ClientException;
 
+    /**
+     * Sets the {@link DocumentChangeFinder} member.
+     * <p>
+     * TODO: make it overridable with an extension point and remove setter.
+     */
+    public void setDocumentChangeFinder(
+            DocumentChangeFinder documentChangeFinder);
+
 }
