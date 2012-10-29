@@ -26,9 +26,9 @@ else if (NodeVariables["button"] == "submit") {
     <chain id="notifyInitiatorEndOfWorkflow">
       <operation id="Context.FetchDocument"/>
       <operation id="Notification.SendMail">
-        <param type="string" name="from">contact@noadress.com</param>
+        <param type="string" name="from">expr:Env["mail.from"]</param>
         <param type="string" name="message">The document was approved by every participant.</param>
-        <param type="string" name="subject">Document approved</param>
+        <param type="string" name="subject">expr:@{Env["nuxeo.notification.eMailSubjectPrefix"]} Document approved</param>
         <param type="stringlist" name="to">expr:Fn.getEmail(workflowInitiator)</param>
         <param type="boolean" name="HTML">false</param>
         <param type="string" name="viewId">view_documents</param>
