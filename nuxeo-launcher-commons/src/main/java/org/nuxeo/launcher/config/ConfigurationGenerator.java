@@ -500,11 +500,7 @@ public class ConfigurationGenerator {
         // Override default configuration with specific configuration(s) of
         // the chosen template(s) which can be outside of server filesystem
         try {
-            if (templates == null) {
-                templates = getUserTemplates();
-            }
-            includedTemplates.clear();
-            includeTemplates(templates);
+            includeTemplates();
             checkForDeprecatedParameters(defaultConfig);
             extractDatabaseTemplateName();
         } catch (FileNotFoundException e) {
@@ -549,14 +545,24 @@ public class ConfigurationGenerator {
         // initEnv();
     }
 
+    protected void includeTemplates() throws IOException {
+        if (templates == null) {
+            templates = getUserTemplates();
+        }
+        includedTemplates.clear();
+        List<File> orderedTemplates = includeTemplates(templates);
+        includedTemplates.clear();
+        includedTemplates.addAll(orderedTemplates);
+        log.debug(includedTemplates);
+    }
+
     /**
      * Old way of detecting if seam debug is set, by checking for the presence
      * of a file.
      * <p>
      * On 5.6, using the config generator to get the info from the nuxeo.conf
-     * file makes it possible to get the property value this early, so adding
-     * an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer
-     * needed.
+     * file makes it possible to get the property value this early, so adding an
+     * empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer needed.
      *
      * @deprecated since 5.6
      */
@@ -746,7 +752,9 @@ public class ConfigurationGenerator {
         writeConfiguration(configuration, null);
     }
 
-    private void includeTemplates(String templatesList) throws IOException {
+    private List<File> includeTemplates(String templatesList)
+            throws IOException {
+        List<File> orderedTemplates = new ArrayList<File>();
         StringTokenizer st = new StringTokenizer(templatesList, ",");
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
@@ -782,10 +790,11 @@ public class ConfigurationGenerator {
             Properties subTemplateConf = loadTrimmedProperties(chosenTemplateConf);
             String subTemplatesList = subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES);
             if (subTemplatesList != null && subTemplatesList.length() > 0) {
-                includeTemplates(subTemplatesList);
+                orderedTemplates.addAll(includeTemplates(subTemplatesList));
             }
             // Load configuration from chosen templates
             defaultConfig.putAll(subTemplateConf);
+            orderedTemplates.add(chosenTemplate);
             String templateInfo = "Include template: "
                     + chosenTemplate.getPath();
             if (quiet) {
@@ -794,6 +803,7 @@ public class ConfigurationGenerator {
                 log.info(templateInfo);
             }
         }
+        return orderedTemplates;
     }
 
     /**
