@@ -71,6 +71,10 @@ public class ImageFilenameUpdater implements EventListener {
             return;
         }
         String filenameUpdated = (String) viewsList.get(0).get(FILENAME);
+        if (filenameUpdated == null) {
+            // nothing to update
+            return;
+        }
         boolean differenceFound = false;
         for (int i = 1; i < viewsList.size(); i++) {
             if (!filenameUpdated.equals(viewsList.get(i).get(FILENAME))) {
