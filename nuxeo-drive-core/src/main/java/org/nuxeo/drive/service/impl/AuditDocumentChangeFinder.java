@@ -20,7 +20,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +52,7 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
     @Override
     @SuppressWarnings("unchecked")
     public List<DocumentChange> getDocumentChanges(CoreSession session,
-            Set<String> rootPaths, Calendar lastSuccessfulSync, int limit)
+            Set<String> rootPaths, long lastSuccessfulSync, int limit)
             throws TooManyDocumentChangesException {
 
         List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
@@ -89,8 +88,7 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
             for (Object[] auditEntry : queryResult) {
                 String eventId = (String) auditEntry[0];
                 String docLifeCycleState = (String) auditEntry[1];
-                Calendar eventDate = Calendar.getInstance();
-                eventDate.setTimeInMillis(((Timestamp) auditEntry[2]).getTime());
+                Long eventDate = ((Timestamp) auditEntry[2]).getTime();
                 String docPath = (String) auditEntry[3];
                 String docUuid = (String) auditEntry[4];
                 docChanges.add(new DocumentChange(eventId, docLifeCycleState,
@@ -133,9 +131,9 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
         return rootPathClause.toString();
     }
 
-    protected String getLastSuccessfulSyncDate(Calendar lastSuccessfulSync) {
+    protected String getLastSuccessfulSyncDate(long lastSuccessfulSync) {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        return sdf.format(new Date(lastSuccessfulSync.getTimeInMillis()));
+        return sdf.format(new Date(lastSuccessfulSync));
     }
 
 }

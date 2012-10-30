@@ -17,7 +17,6 @@
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 /**
  * Representation of a document change.
@@ -32,14 +31,14 @@ public class DocumentChange implements Serializable {
 
     protected String docLifeCycleState;
 
-    protected Calendar eventDate;
+    protected Long eventDate;
 
     protected String docPath;
 
     protected String docUuid;
 
     public DocumentChange(String eventId, String docLifeCycleState,
-            Calendar eventDate, String docPath, String docUuid) {
+            long eventDate, String docPath, String docUuid) {
         this.eventId = eventId;
         this.docLifeCycleState = docLifeCycleState;
         this.eventDate = eventDate;
@@ -63,11 +62,11 @@ public class DocumentChange implements Serializable {
         this.docLifeCycleState = docLifeCycleState;
     }
 
-    public Calendar getEventDate() {
+    public Long getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(Calendar eventDate) {
+    public void setEventDate(Long eventDate) {
         this.eventDate = eventDate;
     }
 

@@ -184,7 +184,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      */
     @Override
     public DocumentChangeSummary getDocumentChangeSummary(String userName,
-            CoreSession session, Calendar lastSuccessfulSync)
+            CoreSession session, long lastSuccessfulSync)
             throws ClientException {
 
         List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
@@ -195,7 +195,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         Set<String> syncRootPaths = getSynchronizationRootPaths(userName,
                 session);
         // Update sync date
-        Calendar syncDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        long syncDate = cal.getTimeInMillis();
         if (!syncRootPaths.isEmpty()) {
             try {
                 // Get document changes

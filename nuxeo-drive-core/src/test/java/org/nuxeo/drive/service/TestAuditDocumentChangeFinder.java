@@ -75,7 +75,7 @@ public class TestAuditDocumentChangeFinder {
 
     protected DocumentChangeFinder documentChangeFinder;
 
-    protected Calendar lastSuccessfulSync;
+    protected long lastSuccessfulSync;
 
     protected Set<String> syncRootPaths;
 
@@ -87,7 +87,7 @@ public class TestAuditDocumentChangeFinder {
     public void init() throws Exception {
 
         documentChangeFinder = new AuditDocumentChangeFinder();
-        lastSuccessfulSync = Calendar.getInstance();
+        lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
         syncRootPaths = new HashSet<String>();
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "10");
@@ -317,7 +317,8 @@ public class TestAuditDocumentChangeFinder {
                 syncRootPaths,
                 lastSuccessfulSync,
                 Integer.parseInt(Framework.getProperty("org.nuxeo.drive.document.change.limit")));
-        lastSuccessfulSync.setTimeInMillis(System.currentTimeMillis());
+        assertNotNull(docChanges);
+        lastSuccessfulSync = System.currentTimeMillis();
         return docChanges;
 
     }
@@ -330,7 +331,8 @@ public class TestAuditDocumentChangeFinder {
             throws ClientException {
         DocumentChangeSummary docChangeSummary = nuxeoDriveManager.getDocumentChangeSummary(
                 userName, session, lastSuccessfulSync);
-        lastSuccessfulSync.setTimeInMillis(docChangeSummary.getSyncDate().getTimeInMillis());
+        assertNotNull(docChangeSummary);
+        lastSuccessfulSync = docChangeSummary.getSyncDate();
         return docChangeSummary;
     }
 

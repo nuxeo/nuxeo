@@ -17,7 +17,6 @@
  */
 package org.nuxeo.drive.service;
 
-import java.util.Calendar;
 import java.util.Set;
 
 import org.nuxeo.drive.service.impl.DocumentChangeSummary;
@@ -110,7 +109,7 @@ public interface NuxeoDriveManager {
      * @return the summary of document changes
      */
     public DocumentChangeSummary getDocumentChangeSummary(String userName,
-            CoreSession session, Calendar lastSuccessfulSync)
+            CoreSession session, long lastSuccessfulSync)
             throws ClientException;
 
     /**

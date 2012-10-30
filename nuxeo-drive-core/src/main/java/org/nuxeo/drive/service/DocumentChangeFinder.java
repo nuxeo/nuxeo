@@ -17,7 +17,6 @@
 package org.nuxeo.drive.service;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +46,7 @@ public interface DocumentChangeFinder extends Serializable {
      *             has exceeded the limit
      */
     public List<DocumentChange> getDocumentChanges(CoreSession session,
-            Set<String> rootPaths, Calendar lastSuccessfulSync, int limit)
+            Set<String> rootPaths, long lastSuccessfulSync, int limit)
             throws TooManyDocumentChangesException;
 
 }
