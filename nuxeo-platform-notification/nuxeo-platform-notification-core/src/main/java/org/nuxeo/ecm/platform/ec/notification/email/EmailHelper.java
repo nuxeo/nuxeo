@@ -115,6 +115,7 @@ public class EmailHelper {
         context.remove("doc");
         context.putAll(mail);
         context.setDocument((DocumentModel) mail.get("document"));
+        context.put("Runtime", Framework.getRuntime());
 
         String customSubjectTemplate = (String) mail.get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
         if (customSubjectTemplate == null) {

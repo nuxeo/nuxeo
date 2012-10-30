@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Save the session - TODO remove this?
@@ -118,6 +119,7 @@ public class SendMail {
             map.put("viewId", viewId);
             map.put("baseUrl",
                     NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
+            map.put("Runtime", Framework.getRuntime());
             Mailer.Message msg = createMessage(doc, getContent(), map);
             msg.setFrom(from);
             msg.setSubject(subject);
