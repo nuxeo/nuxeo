@@ -18,9 +18,11 @@
         <td>
           <table style="border: 3px solid #eee; border-radius: 8px; -moz-border-radius:8px; -webkit-border-radius:8px; padding: 20px; " bgcolor="white" border="0" cellpadding="0" cellspacing="0">
             <tbody>
-            <td style="border-bottom: 2px dotted #f1f1f1; font-size: 18px; font-family: Lucida Grande, Arial, sans-serif; font-weight:bold; padding-bottom: 10px;">
-              ${Runtime.getProperty('org.nuxeo.ecm.product.name')}
-            </td>
+            <tr>
+              <td style="border-bottom: 2px dotted #f1f1f1; font-size: 18px; font-family: Lucida Grande, Arial, sans-serif; font-weight:bold; padding-bottom: 10px;">
+                ${Runtime.getProperty('org.nuxeo.ecm.product.name')}
+              </td>
+            </tr>
             <tr height="20"></tr>
             <tr>
               <td style="font-size: 15px; font-family: Lucida Grande, Arial, sans-serif; font-weight:bold;">Hello,</td>
@@ -28,7 +30,7 @@
             <tr height="10"></tr>
             <tr>
               <td style="font-weight:bold; font-size:16px; line-height: 24px;">
-                Here is your import report of the ${csvFilename} in the <a href="${importFolderUrl}" style="color: #4783de;">${importFolderTitle}</a> folder, launched at ${startDate} by <a href="${userUrl}">${username}</a>.
+                Here is your import report of the ${csvFilename} in the <a href="${importFolderUrl}" style="color: #4783de;">${importFolderTitle}</a> folder, launched at ${startDate} by <a href="${userUrl}" style="color: #4783de;">${username}</a>.
               </td>
             </tr>
             <tr height="10"></tr>
@@ -79,13 +81,14 @@
             <tr height="30"></tr>
             <tr>
                 <td style="font-weight:bold; font-size:16px; line-height: 24px;">
-                    Thanks,
+                  Thanks,
                 </td>
+            </tr>
+            <tr>
                 <td style="font-weight:bold; font-size:16px; line-height: 24px;">
                   ${Runtime.getProperty('nuxeo.notification.eMailSignatory')}
                 </td>
             </tr>
-            <tr>
             </tbody>
           </table>
         </td>
