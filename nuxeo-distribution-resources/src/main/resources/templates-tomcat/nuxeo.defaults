@@ -38,6 +38,7 @@ nuxeo.vcs.max-pool-size=20
 nuxeo.db.transactiontimeout=300
 
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
+nuxeo.notification.eMailSignatory=The Nuxeo team
 
 # The protocol used to connect to OpenOffice
 # Can be either SOCKET or PIPE, default is SOCKET

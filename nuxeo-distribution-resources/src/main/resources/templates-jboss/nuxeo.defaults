@@ -35,6 +35,7 @@ nuxeo.vcs.min-pool-size=0
 nuxeo.vcs.max-pool-size=20
 
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
+nuxeo.notification.eMailSignatory=The Nuxeo team
 
 # SMTP gateway server
 mail.transport.host=localhost
