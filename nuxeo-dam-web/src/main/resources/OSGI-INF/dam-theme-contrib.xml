@@ -84,6 +84,7 @@
         <style>forms</style>
         <style>popups</style>
         <style>messages_and_tooltips</style>
+        <style>helpers</style>
         <style>nuxeo_dam_specific</style>
       </styles>
     </themePage>
