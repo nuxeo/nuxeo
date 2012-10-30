@@ -22,12 +22,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
@@ -45,6 +49,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(TokenAuthenticationServiceFeature.class)
 public class TestTokenAuthenticationService {
+
+    private static final Log log = LogFactory.getLog(TestTokenAuthenticationService.class);
 
     @Inject
     protected TokenAuthenticationService tokenAuthenticationService;
@@ -161,55 +167,74 @@ public class TestTokenAuthenticationService {
         String token1 = tokenAuthenticationService.getToken("joe",
                 "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal Linux box", "rw");
+        log.debug("token1 = " + token1);
         String token2 = tokenAuthenticationService.getToken("joe",
                 "myFavoriteApp", "Windows box 32 bits",
                 "This is my personal Windows box", "rw");
+        log.debug("token2 = " + token2);
         String token3 = tokenAuthenticationService.getToken("joe",
                 "nuxeoDrive", "Mac OSX VM", "This is my personal Mac box", "rw");
+        log.debug("token3 = " + token3);
 
         DocumentModelList tokenBindings = tokenAuthenticationService.getTokenBindings("joe");
         assertEquals(3,
                 tokenAuthenticationService.getTokenBindings("joe").size());
 
         // Bindings should be sorted by descendant creation date
-        DocumentModel tokenBinding = tokenBindings.get(0);
-        assertEquals(token3, tokenBinding.getPropertyValue("authtoken:token"));
-        assertEquals("joe", tokenBinding.getPropertyValue("authtoken:userName"));
-        assertEquals("nuxeoDrive",
-                tokenBinding.getPropertyValue("authtoken:applicationName"));
-        assertEquals("Mac OSX VM",
-                tokenBinding.getPropertyValue("authtoken:deviceId"));
-        assertEquals("This is my personal Mac box",
-                tokenBinding.getPropertyValue("authtoken:deviceDescription"));
-        assertEquals("rw",
-                tokenBinding.getPropertyValue("authtoken:permission"));
-        assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
+        if (!(DatabaseHelper.DATABASE instanceof DatabaseMySQL)) {
+            DocumentModel tokenBinding = tokenBindings.get(0);
+            String binding1Token = (String) tokenBinding.getPropertyValue("authtoken:token");
+            log.debug("binding1Token = " + binding1Token);
+            assertEquals(token3, binding1Token);
+            assertEquals("joe",
+                    tokenBinding.getPropertyValue("authtoken:userName"));
+            assertEquals("nuxeoDrive",
+                    tokenBinding.getPropertyValue("authtoken:applicationName"));
+            assertEquals("Mac OSX VM",
+                    tokenBinding.getPropertyValue("authtoken:deviceId"));
+            assertEquals(
+                    "This is my personal Mac box",
+                    tokenBinding.getPropertyValue("authtoken:deviceDescription"));
+            assertEquals("rw",
+                    tokenBinding.getPropertyValue("authtoken:permission"));
+            assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
 
-        tokenBinding = tokenBindings.get(1);
-        assertEquals(token2, tokenBinding.getPropertyValue("authtoken:token"));
-        assertEquals("joe", tokenBinding.getPropertyValue("authtoken:userName"));
-        assertEquals("myFavoriteApp",
-                tokenBinding.getPropertyValue("authtoken:applicationName"));
-        assertEquals("Windows box 32 bits",
-                tokenBinding.getPropertyValue("authtoken:deviceId"));
-        assertEquals("This is my personal Windows box",
-                tokenBinding.getPropertyValue("authtoken:deviceDescription"));
-        assertEquals("rw",
-                tokenBinding.getPropertyValue("authtoken:permission"));
-        assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
+            tokenBinding = tokenBindings.get(1);
+            String binding2Token = (String) tokenBinding.getPropertyValue("authtoken:token");
+            log.debug("binding2Token = " + binding2Token);
+            assertEquals(token2, binding2Token);
+            assertEquals("joe",
+                    tokenBinding.getPropertyValue("authtoken:userName"));
+            assertEquals("myFavoriteApp",
+                    tokenBinding.getPropertyValue("authtoken:applicationName"));
+            assertEquals("Windows box 32 bits",
+                    tokenBinding.getPropertyValue("authtoken:deviceId"));
+            assertEquals(
+                    "This is my personal Windows box",
+                    tokenBinding.getPropertyValue("authtoken:deviceDescription"));
+            assertEquals("rw",
+                    tokenBinding.getPropertyValue("authtoken:permission"));
+            assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
 
-        tokenBinding = tokenBindings.get(2);
-        assertEquals(token1, tokenBinding.getPropertyValue("authtoken:token"));
-        assertEquals("joe", tokenBinding.getPropertyValue("authtoken:userName"));
-        assertEquals("myFavoriteApp",
-                tokenBinding.getPropertyValue("authtoken:applicationName"));
-        assertEquals("Ubuntu box 64 bits",
-                tokenBinding.getPropertyValue("authtoken:deviceId"));
-        assertEquals("This is my personal Linux box",
-                tokenBinding.getPropertyValue("authtoken:deviceDescription"));
-        assertEquals("rw",
-                tokenBinding.getPropertyValue("authtoken:permission"));
-        assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
+            tokenBinding = tokenBindings.get(2);
+            String binding3Token = (String) tokenBinding.getPropertyValue("authtoken:token");
+            log.debug("binding3Token = " + binding3Token);
+            assertEquals(token1, binding3Token);
+            assertEquals("joe",
+                    tokenBinding.getPropertyValue("authtoken:userName"));
+            assertEquals("myFavoriteApp",
+                    tokenBinding.getPropertyValue("authtoken:applicationName"));
+            assertEquals("Ubuntu box 64 bits",
+                    tokenBinding.getPropertyValue("authtoken:deviceId"));
+            assertEquals(
+                    "This is my personal Linux box",
+                    tokenBinding.getPropertyValue("authtoken:deviceDescription"));
+            assertEquals("rw",
+                    tokenBinding.getPropertyValue("authtoken:permission"));
+            assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
+        } else {
+            log.debug("Not testing token bindings order since running on MySQL that does not support milliseconds in dates.");
+        }
     }
 
 }
