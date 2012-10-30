@@ -97,6 +97,9 @@
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToInteger"
       accept="java.lang.String"
       produce="java.lang.Integer" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToLong"
+      accept="java.lang.String"
+      produce="java.lang.Long" />
   </extension>
 
 
