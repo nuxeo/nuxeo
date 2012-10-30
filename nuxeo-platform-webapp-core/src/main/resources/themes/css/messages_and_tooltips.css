@@ -1,6 +1,7 @@
 /*
 For all status messages, tooltips and tips paragraphs.
 =Messages -> feedback, info, warning and error messages
+=Quote -> style for description, blockquote, comments
 =Small help messages -> for small help words, e.g. in forms
 =Tips -> tooltips on rollovers, and tips paragraphs
 author: lkemen@nuxeo.com
@@ -32,7 +33,7 @@ author: lkemen@nuxeo.com
 .error, .warning { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
 
 .successLink { color: "normal.status (__FLAVOR__ color)" }
-.errorLink, .warningLink { color: "warning.status (__FLAVOR__ color)" }
+.errorLink, .warningLink, .warningLabel { color: "warning.status (__FLAVOR__ color)" }
 
 .processMessage { background: url("${basePath}/icons/bullet.png") no-repeat scroll 0 center #fff;
   display: inline-block;
@@ -45,6 +46,9 @@ author: lkemen@nuxeo.com
 .completeWarning { background-image: url("${basePath}/icons/warning.gif") }
 .running { background-image: url("${basePath}/img/standart_waiter.gif") }
 .scheduled { background-image: url("${basePath}/icons/clock.png") }
+
+/* =Quote */
+.quote { background: url("${basePath}/icons/quote.png") no-repeat scroll 0 1px transparent; color: "gray.dark (__FLAVOR__ color)"; margin: .3em 0; text-indent: 1.7em }
 
 /* =Small help messages */
 .detail, .help { color: "gray.medium (__FLAVOR__ color)"; font-size: .9em }
