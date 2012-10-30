@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -45,11 +46,19 @@ public class DocumentChangeSummary implements Serializable {
 
     protected List<DocumentChange> documentChanges;
 
+    // Ignored from JSON serialization for the moment as we need to define
+    // exactly which fields from the DocumentModel are needed by the client
+    // device
+    @JsonIgnore
     protected Map<String, DocumentModel> changedDocModels;
 
     protected String statusCode;
 
     protected Long syncDate;
+
+    public DocumentChangeSummary() {
+        // Needed for JSON deserialization
+    }
 
     public DocumentChangeSummary(List<DocumentChange> documentChanges,
             Map<String, DocumentModel> changedDocModels, String statusCode,
@@ -64,16 +73,34 @@ public class DocumentChangeSummary implements Serializable {
         return documentChanges;
     }
 
+    public void setDocumentChanges(List<DocumentChange> documentChanges) {
+        this.documentChanges = documentChanges;
+    }
+
+    @JsonIgnore
     public Map<String, DocumentModel> getChangedDocModels() {
         return changedDocModels;
+    }
+
+    @JsonIgnore
+    public void setChangedDocModels(Map<String, DocumentModel> changedDocModels) {
+        this.changedDocModels = changedDocModels;
     }
 
     public String getStatusCode() {
         return statusCode;
     }
 
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
     public Long getSyncDate() {
         return syncDate;
+    }
+
+    public void setSyncDate(Long syncDate) {
+        this.syncDate = syncDate;
     }
 
 }

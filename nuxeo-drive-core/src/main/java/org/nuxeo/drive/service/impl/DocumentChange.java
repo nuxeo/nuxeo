@@ -37,6 +37,10 @@ public class DocumentChange implements Serializable {
 
     protected String docUuid;
 
+    public DocumentChange() {
+        // Needed for JSON deserialization
+    }
+
     public DocumentChange(String eventId, String docLifeCycleState,
             long eventDate, String docPath, String docUuid) {
         this.eventId = eventId;
