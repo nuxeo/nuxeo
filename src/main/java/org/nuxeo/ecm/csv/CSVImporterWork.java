@@ -1,10 +1,11 @@
 package org.nuxeo.ecm.csv;
 
-import static org.nuxeo.ecm.csv.CSVImportLog.*;
+import static org.nuxeo.ecm.csv.CSVImportLog.Status;
 import static org.nuxeo.ecm.csv.CSVImportLog.Status.ERROR;
 import static org.nuxeo.ecm.csv.Constants.CSV_NAME_COL;
 import static org.nuxeo.ecm.csv.Constants.CSV_TYPE_COL;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,13 +36,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -55,13 +56,10 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
-import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -78,6 +76,8 @@ public class CSVImporterWork extends AbstractWork {
     private static final String TEMPLATE_IMPORT_RESULT = "templates/csvImportResult.ftl";
 
     public static final String CATEGORY_CSV_IMPORTER = "csvImporter";
+
+    public static final String CONTENT_FILED_TYPE_NAME = "content";
 
     protected final CSVImportId id;
 
@@ -298,6 +298,7 @@ public class CSVImporterWork extends AbstractWork {
         for (int col = 0; col < headerValues.length; col++) {
             String headerValue = headerValues[col];
             String lineValue = line[col];
+            lineValue = lineValue.trim();
 
             String fieldName = headerValue;
             if (!CSV_NAME_COL.equals(headerValue)
@@ -328,7 +329,24 @@ public class CSVImporterWork extends AbstractWork {
                     Serializable fieldValue = null;
                     Type fieldType = field.getType();
                     if (fieldType.isComplexType()) {
-                        // not supported
+                        if (fieldType.getName().equals(CONTENT_FILED_TYPE_NAME)) {
+                            String blobsFolderPath = Framework.getProperty("nuxeo.csv.blobs.folder");
+                            String path = FilenameUtils.normalize(blobsFolderPath
+                                    + "/" + stringValue);
+                            File file = new File(path);
+                            if (file.exists()) {
+                                FileBlob blob = new FileBlob(file);
+                                blob.setFilename(file.getName());
+                                fieldValue = blob;
+                            } else {
+                                logError(lineNumber,
+                                        "The file '%s' does not exist",
+                                        "label.csv.importer.notExistingFile",
+                                        stringValue);
+                                return null;
+                            }
+                        }
+                        // other types not supported
                     } else {
                         if (fieldType.isListType()) {
                             Type listFieldType = ((ListType) fieldType).getFieldType();
@@ -400,9 +418,8 @@ public class CSVImporterWork extends AbstractWork {
         try {
             options.getCSVImporterDocumentFactory().createDocument(session,
                     parentPath, name, type, properties);
-            importLogs.add(new CSVImportLog(lineNumber,
-                    Status.SUCCESS, "Document created",
-                    "label.csv.importer.documentCreated"));
+            importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS,
+                    "Document created", "label.csv.importer.documentCreated"));
             return true;
         } catch (Exception e) {
             Throwable unwrappedException = unwrapException(e);
@@ -420,8 +437,8 @@ public class CSVImporterWork extends AbstractWork {
             try {
                 options.getCSVImporterDocumentFactory().updateDocument(session,
                         docRef, properties);
-                importLogs.add(new CSVImportLog(lineNumber,
-                        Status.SUCCESS, "Document updated",
+                importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS,
+                        "Document updated",
                         "label.csv.importer.documentUpdated"));
                 return true;
             } catch (Exception e) {
@@ -432,8 +449,8 @@ public class CSVImporterWork extends AbstractWork {
                 log.debug(unwrappedException, unwrappedException);
             }
         } else {
-            importLogs.add(new CSVImportLog(lineNumber,
-                    Status.SKIPPED, "Document already exists",
+            importLogs.add(new CSVImportLog(lineNumber, Status.SKIPPED,
+                    "Document already exists",
                     "label.csv.importer.documentAlreadyExists"));
         }
         return false;
@@ -465,7 +482,8 @@ public class CSVImporterWork extends AbstractWork {
         CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(id);
         CSVImportResult importResult = CSVImportResult.fromImportLogs(importLogs);
-        List<CSVImportLog> skippedAndErrorImportLogs = csvImporter.getImportLogs(id, Status.SKIPPED, Status.ERROR);
+        List<CSVImportLog> skippedAndErrorImportLogs = csvImporter.getImportLogs(
+                id, Status.SKIPPED, Status.ERROR);
         ctx.put("importResult", importResult);
         ctx.put("skippedAndErrorImportLogs", skippedAndErrorImportLogs);
         ctx.put("csvFilename", csvBlob.getFilename());
