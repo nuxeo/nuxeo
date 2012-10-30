@@ -2,7 +2,6 @@
 Starting CSS who define the very basic styles.
 =Reset and default values -> reduce browser inconsistencies in styles and define the default font
 =Links and Titles -> generic styles for links and titles
-=Helpers -> small styles to help developers to adjust small details
 author: lkemen@nuxeo.com
 */
 
@@ -27,49 +26,3 @@ h2 { font-size: 1.3em; padding: .5em 1em .5em 0 }
 h3 { font-size: 1.2em; padding: .8em 0 1em }
 h4 { font-size: 1.1em; padding: .7em 0 1em }
 h5, h6 { color: "title.minor (__FLAVOR__ color)"; font-size: .8em; margin: .2em 0 .2em 0 }
-
-/* =Helpers */
-.boldLabel, .bold { font-weight: bold }
-.nowrap { white-space: nowrap }
-.warningLabel { color: "warning.status (__FLAVOR__ color)" }
-
-.textAlignR { text-align: right }
-.textAlignC { text-align: center }
-.textAlignL { text-align: left }
-.floatR { float: right }
-.floatL { float: left }
-.clear { clear:both }
-
-.displayN { display: none }
-.displayI { display: inline }
-.displayIB { display: inline-block }
-.displayB { display: block }
-.visibilityH { visibility: hidden }
-.visibilityV { visibility: visible }
-
-.left { float: left } /* used in relationship, to be replaced by floatL*/
-.right { float: right } /* used in relationship, to be replaced by floatR*/
-
-/* width for divs */
-.fullWidth { width:100% }
-.fullMaxWidth { max-width: 100% }
-.threeQuarterWidth{ margin: 0 auto; width: 70% }
-.half { width:45% } /* used in relationship, to be replaced by halfWidth*/
-.halfWidth { width:45% }
-.quarterWidth { width: 22% }
-
-/* width for tables & columns */
-.10percent { width: 10% }
-.20percent { width: 20% }
-.30percent { width: 30% }
-.40percent { width: 40% }
-.50percent { width: 50% }
-.60percent { width: 60% }
-.70percent { width: 70% }
-.80percent { width: 80% }
-.90percent { width: 90% }
-
-/* reset width class */
-.autoWidth { width: auto }
-
-.quote { background: url("${basePath}/icons/quote.png") no-repeat scroll 0 1px transparent; color: "gray.dark (__FLAVOR__ color)"; margin: .3em 0; text-indent: 1.7em }
