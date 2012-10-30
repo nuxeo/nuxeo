@@ -21,14 +21,10 @@ author: lkemen@nuxeo.com
 .visibilityH { visibility: hidden }
 .visibilityV { visibility: visible }
 
-.left { float: left } /* used in relationship, to be replaced by floatL*/
-.right { float: right } /* used in relationship, to be replaced by floatR*/
-
 /* width for divs */
 .fullWidth { width:100% }
 .fullMaxWidth { max-width: 100% }
 .threeQuarterWidth{ margin: 0 auto; width: 70% }
-.half { width:45% } /* used in relationship, to be replaced by halfWidth*/
 .halfWidth { width:45% }
 .quarterWidth { width: 22% }
 
