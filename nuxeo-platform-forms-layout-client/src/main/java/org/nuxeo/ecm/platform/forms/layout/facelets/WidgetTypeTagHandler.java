@@ -85,6 +85,11 @@ public class WidgetTypeTagHandler extends TagHandler {
     protected final TagAttribute properties;
 
     /**
+     * @since 5.7
+     */
+    protected final TagAttribute widgetName;
+
+    /**
      * Convenient attribute to remove the "template" property from widget
      * properties (and avoid stack overflow errors when using another widget
      * type in a widget template, for compatibility code for instance).
@@ -101,7 +106,7 @@ public class WidgetTypeTagHandler extends TagHandler {
     protected final TagAttribute[] vars;
 
     protected final String[] reservedVarsArray = { "id", "mode", "type",
-            "properties", "ignoreTemplateProperty", "subWidgets" };
+            "properties", "ignoreTemplateProperty", "subWidgets", "widgetName" };
 
     public WidgetTypeTagHandler(TagConfig config) {
         super(config);
@@ -111,6 +116,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         value = getAttribute("value");
         field = getAttribute("field");
         fields = getAttribute("fields");
+        widgetName = getAttribute("widgetName");
         label = getAttribute("label");
         helpLabel = getAttribute("helpLabel");
         translated = getAttribute("translated");
@@ -120,6 +126,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         vars = tag.getAttributes().getAll();
     }
 
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, ELException {
@@ -191,6 +198,10 @@ public class WidgetTypeTagHandler extends TagHandler {
                 }
             }
         }
+        String widgetNameValue = null;
+        if (widgetName != null) {
+            widgetNameValue = widgetName.getValue(ctx);
+        }
         String labelValue = null;
         if (label != null) {
             labelValue = label.getValue(ctx);
@@ -211,8 +222,8 @@ public class WidgetTypeTagHandler extends TagHandler {
         }
 
         Widget widget = layoutService.createWidget(ctx, typeValue, modeValue,
-                valueName, fieldsValue, labelValue, helpLabelValue,
-                translatedValue, widgetProps, subWidgetsValue);
+                valueName, fieldsValue, widgetNameValue, labelValue,
+                helpLabelValue, translatedValue, widgetProps, subWidgetsValue);
 
         // expose widget variable
         VariableMapper orig = ctx.getVariableMapper();

@@ -248,6 +248,30 @@ public interface WebLayoutManager extends LayoutManager {
             String valueName, List<FieldDefinition> fieldDefinitions,
             String label, String helpLabel, Boolean translated,
             Map<String, Serializable> properties, Widget[] subWidgets);
+    
+    /**
+     * Returns a widget computed from given information.
+     *
+     * @param ctx the facelet context this layout will be computed in. If
+     *            context is null, no expressions can be resolved during
+     *            computing.
+     * @param type the widget type name.
+     * @param mode the mode.
+     * @param valueName the value name to use when computing tag attributes.
+     * @param fieldDefinitions
+     * @param widgetName the widget name
+     * @param label the widget label
+     * @param helpLabel the widget help label
+     * @param translated if true, the labels will be translated
+     * @param properties optional properties to use when computing the widget.
+     * @param subWidgets optional sub widgets for this widget.
+     * @return a widget computed in this context.
+     * @since 5.7
+     */
+    Widget createWidget(FaceletContext ctx, String type, String mode,
+            String valueName, List<FieldDefinition> fieldDefinitions,
+            String widgetName, String label, String helpLabel, Boolean translated,
+            Map<String, Serializable> properties, Widget[] subWidgets);
 
     /**
      * Returns true if property with given name and value should be referenced

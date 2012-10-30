@@ -147,6 +147,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         return JSF_CATEGORY;
     }
 
+    @Override
     public WidgetTypeHandler getWidgetTypeHandler(String typeName)
             throws WidgetException {
         WidgetType type = getWidgetType(typeName);
@@ -169,8 +170,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * Evaluates an EL expression in given context.
      * <p>
-     * If the expression resolves to an EL expression, evaluate it again this
-     * is useful when retrieving the expression from a configuration file.
+     * If the expression resolves to an EL expression, evaluate it again this is
+     * useful when retrieving the expression from a configuration file.
      * <p>
      * If given context is null, do no try to evaluate it and return the
      * expression itself.
@@ -264,8 +265,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * Computes a widget from a definition for a mode in a given context.
      * <p>
-     * If the widget is configured not to be rendered in the given mode,
-     * returns null.
+     * If the widget is configured not to be rendered in the given mode, returns
+     * null.
      * <p>
      * Sub widgets are also computed recursively.
      */
@@ -338,11 +339,13 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         return widget;
     }
 
+    @Override
     public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName) throws LayoutException {
         return getLayout(ctx, layoutName, mode, valueName, null, false);
     }
 
+    @Override
     public Layout getLayout(FaceletContext ctx, String layoutName, String mode,
             String valueName, List<String> selectedRows,
             boolean selectAllRowsByDefault) {
@@ -350,6 +353,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 selectAllRowsByDefault);
     }
 
+    @Override
     public Layout getLayout(FaceletContext ctx, String layoutName,
             String layoutCategory, String mode, String valueName,
             List<String> selectedRows, boolean selectAllRowsByDefault) {
@@ -367,6 +371,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 selectAllRowsByDefault);
     }
 
+    @Override
     public Layout getLayout(FaceletContext ctx, LayoutDefinition layoutDef,
             String mode, String valueName, List<String> selectedRows,
             boolean selectAllRowsByDefault) {
@@ -474,11 +479,13 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         return wDef;
     }
 
+    @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig config, Widget widget) {
         return getFaceletHandler(ctx, config, widget, null);
     }
 
+    @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig config, Widget widget, FaceletHandler nextHandler) {
         String widgetTypeName = widget.getType();
@@ -524,8 +531,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     @Override
     public Widget createWidget(FaceletContext ctx, String type, String mode,
             String valueName, List<FieldDefinition> fieldDefinitions,
-            String label, String helpLabel, Boolean translated,
-            Map<String, Serializable> properties, Widget[] subWidgets) {
+            String widgetName, String label, String helpLabel,
+            Boolean translated, Map<String, Serializable> properties,
+            Widget[] subWidgets) {
         Serializable requiredProp = properties.get(WidgetDefinition.REQUIRED_PROPERTY_NAME);
         boolean required = false;
         if (requiredProp != null) {
@@ -539,15 +547,27 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                         WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
             }
         }
-        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(type, type,
-                label, helpLabel, Boolean.TRUE.equals(translated), null,
+        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(type, type, label,
+                helpLabel, Boolean.TRUE.equals(translated), null,
                 fieldDefinitions, properties, null);
-        Widget widget = new WidgetImpl("layout", wDef.getName(), mode,
+        if (StringUtils.isEmpty(widgetName)) {
+            widgetName = wDef.getName();
+        }
+        Widget widget = new WidgetImpl("layout", widgetName, mode,
                 wDef.getType(), valueName, wDef.getFieldDefinitions(), label,
                 helpLabel, wDef.isTranslated(), properties, required,
                 subWidgets, 0, null,
                 LayoutFunctions.computeWidgetDefinitionId(wDef));
         return widget;
+    }
+
+    @Override
+    public Widget createWidget(FaceletContext ctx, String type, String mode,
+            String valueName, List<FieldDefinition> fieldDefinitions,
+            String label, String helpLabel, Boolean translated,
+            Map<String, Serializable> properties, Widget[] subWidgets) {
+        return createWidget(ctx, type, mode, valueName, fieldDefinitions, null,
+                label, helpLabel, translated, properties, subWidgets);
     }
 
     /**
