@@ -222,6 +222,7 @@
         <style>foldable_boxes</style>
         <style>richfaces_components</style>
         <style>tabs_content</style>
+        <style>helpers</style>
         <style>nuxeo_dm_specific</style>
       </styles>
     </themePage>
@@ -248,6 +249,7 @@
         <style>drag_and_drop</style>
         <style>richfaces_components</style>
         <style>tabs_content</style>
+        <style>helpers</style>
         <style>nuxeo_dm_specific</style>
       </styles>
     </themePage>
@@ -360,6 +362,9 @@
     </style>
     <style name="tabs_content">
       <src>themes/css/tabs_content.css</src>
+    </style>
+    <style name="helpers">
+      <src>themes/css/helpers.css</src>
     </style>
     <!-- Header and Footer -->
     <style name="header">
