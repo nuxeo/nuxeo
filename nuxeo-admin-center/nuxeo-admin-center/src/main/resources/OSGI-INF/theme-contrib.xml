@@ -56,6 +56,7 @@
         <style>foldable_boxes</style>
         <style>richfaces_components</style>
         <style>tabs_content</style>
+        <style>helpers</style>
         <style>nuxeo_admincenter_specific</style>
       </styles>
     </themePage>
