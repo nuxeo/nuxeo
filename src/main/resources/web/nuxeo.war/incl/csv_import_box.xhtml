@@ -93,18 +93,30 @@
                   <table class="dataTable">
                     <c:forEach var="importLog" items="#{importLogs}">
                       <tr>
-                        <td><h:outputText value="#{messages['label.csv.import.line']} #{importLog.line}" /></td>
-                        <td>
                           <c:if test="#{importLog.success}">
-                            <h:outputText styleClass="success" value="#{messages['label.csv.import.success']}" />
+                            <td>
+                              <h:outputText styleClass="success" value="#{messages['label.csv.import.line']} #{importLog.line}" />
+                            </td>
+                            <td>
+                              <h:outputText styleClass="success" value="#{messages['label.csv.import.success']}" />
+                            </td>
                           </c:if>
                           <c:if test="#{importLog.skipped}">
-                            <h:outputText styleClass="avert" value="#{messages['label.csv.import.skipped']}" />
+                            <td>
+                              <h:outputText styleClass="avert" value="#{messages['label.csv.import.line']} #{importLog.line}" />
+                            </td>
+                            <td>
+                              <h:outputText styleClass="avert" value="#{messages['label.csv.import.skipped']}" />
+                            </td>
                           </c:if>
                           <c:if test="#{importLog.error}">
-                            <h:outputText styleClass="error" value="#{messages['label.csv.import.error']}" />
+                            <td>
+                              <h:outputText styleClass="error" value="#{messages['label.csv.import.line']} #{importLog.line}" />
+                            </td>
+                            <td>
+                              <h:outputText styleClass="error" value="#{messages['label.csv.import.error']}" />
+                            </td>
                           </c:if>
-                        </td>
                         <td>
                           <h:outputText value="#{importLog.getI18nMessage(localeSelector.locale)}" />
                         </td>

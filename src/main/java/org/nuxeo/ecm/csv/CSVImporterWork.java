@@ -25,6 +25,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.operations.notification.MailTemplateHelper;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
@@ -33,10 +34,13 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -49,7 +53,15 @@ import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -460,6 +472,12 @@ public class CSVImporterWork extends AbstractWork {
         ctx.put("startDate", DateFormat.getInstance().format(startDate));
         ctx.put("username", username);
 
+        DocumentModel importFolder = session.getDocument(new PathRef(parentPath));
+        String importFolderUrl = getDocumentUrl(importFolder);
+        ctx.put("importFolderTitle", importFolder.getTitle());
+        ctx.put("importFolderUrl", importFolderUrl);
+        ctx.put("userUrl", getUserUrl(principal.getName()));
+
         StringList to = buildRecipientsList(email);
         Expression from = Scripting.newExpression("Env[\"mail.from\"]");
         String subject = "CSV Import result of " + csvBlob.getFilename();
@@ -476,6 +494,24 @@ public class CSVImporterWork extends AbstractWork {
                     username, csvBlob.getFilename(), e.getMessage()));
             log.debug(e, e);
         }
+    }
+
+    protected String getDocumentUrl(DocumentModel doc) throws ClientException {
+        try {
+            return MailTemplateHelper.getDocumentUrl(doc, null);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    protected String getUserUrl(String username) {
+        NotificationService notificationService = NotificationServiceHelper.getNotificationService();
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("username", username);
+        DocumentView docView = new DocumentViewImpl(null, null, params);
+        URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
+        return urlPolicyService.getUrlFromDocumentView("user", docView,
+                notificationService.getServerUrlPrefix());
     }
 
     protected StringList buildRecipientsList(String userEmail) {
