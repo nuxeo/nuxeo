@@ -73,8 +73,8 @@
   <c:set var="maxSearchResults" value="#{nxu:test(!empty widgetProperty_userSuggestionMaxSearchResults, widgetProperty_userSuggestionMaxSearchResults, 0)}" />
   <c:set var="hideVirtualGroups" value="#{nxu:test(!empty widgetProperty_hideVirtualGroups, widgetProperty_hideVirtualGroups, false)}" />
   <c:set var="hideSearchTypeText" value="#{nxu:test(!empty widgetProperty_hideSearchTypeText, widgetProperty_hideSearchTypeText, false)}" />
-  <c:set var="displayHorizontally" value="#{nxu:test(!empty widgetProperty_displayHorizontally, widgetProperty_displayHorizontally, true)}" />
-  <c:set var="displayHelpLabel" value="#{nxu:test(!empty widgetProperty_displayHelpLabel, widgetProperty_displayHelpLabel, true)}" />
+  <c:set var="displaySuggestionOnTop" value="#{nxu:test(!empty widgetProperty_displaySuggestionOnTop, widgetProperty_displaySuggestionOnTop, false)}" />
+  <c:set var="hideHelpLabel" value="#{nxu:test(!empty widgetProperty_hideHelpLabel, widgetProperty_hideHelpLabel, false)}" />
   <c:set var="suggestionWidth" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '400')}" />
   <c:set var="showActions"
     value="#{not widgetProperty_hideDeleteButton or widgetProperty_orderable}" />
@@ -87,7 +87,7 @@
       class="rightsAddLabel" />
     <h:outputText value="#{messages['label.security.searchGroups']}"
       rendered="#{searchType =='GROUP_TYPE'}"
-      class="rightsAddLabel" />
+      class="rightsAddLabel" /> 
     <h:outputText value="#{messages['label.security.search']}"
       rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
       class="rightsAddLabel" />
@@ -95,7 +95,7 @@
 
   <div class="UserSuggestionInput">
     <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
-      <h:panelGrid id="#{widget.id}_panel" columns="#{nxu:test(displayHorizontally, 2, 1)}">
+      <h:panelGrid id="#{widget.id}_panel" columns="#{nxu:test(displaySuggestionOnTop, 1, 2)}">
 
         <h:panelGroup id="#{widget.id}_panelGroup">
           <span id="#{widget.id}_suggestDiv">
@@ -135,7 +135,7 @@
               <ui:include src="user_group_display_template.xhtml" />
             </h:column>
           </rich:suggestionbox>
-          <c:if test="#{displayHelpLabel}">
+          <c:if test="#{!hideHelpLabel}">
             <br />
             <h:outputFormat value="#{messages['label.suggestion.help.minChars']}">
               <f:param value="#{minChars}" />

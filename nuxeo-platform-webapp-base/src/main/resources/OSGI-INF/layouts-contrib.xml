@@ -670,6 +670,15 @@
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displaySuggestionOnTop</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideSearchTypeText</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -729,6 +738,15 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_orderable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displaySuggestionOnTop</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_hideSearchTypeText</widget>
                 </row>
               </rows>
             </layout>
