@@ -3,6 +3,8 @@
 
   <extension target="org.nuxeo.ecm.styleguide.service" point="icons">
 
+    <icon path="/icons/index.jsp" enabled="false" />
+
     <icon path="/icons/action_add_file.gif">
       <label>Add file</label>
       <description>

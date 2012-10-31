@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.serialize.OutputFormat;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -41,6 +42,9 @@ public class IconDescriptor {
     @XNode("@path")
     protected String path;
 
+    @XNode("@enabled")
+    protected Boolean enabled = Boolean.TRUE;
+
     @XNode("label")
     protected String label;
 
@@ -55,6 +59,10 @@ public class IconDescriptor {
 
     public String getPath() {
         return path;
+    }
+
+    public String getFilename() {
+        return FileUtils.getFileName(path);
     }
 
     public String getLabel() {
@@ -103,6 +111,14 @@ public class IconDescriptor {
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

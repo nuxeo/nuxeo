@@ -101,6 +101,9 @@ public class StyleGuideServiceImpl extends DefaultComponent implements
                     desc.setLabel(FileUtils.getFileName(path));
                     desc.setCategories(Arrays.asList("unknown"));
                 }
+                if (Boolean.FALSE.equals(desc.getEnabled())) {
+                    continue;
+                }
                 List<String> cats = desc.getCategories();
                 if (cats != null) {
                     for (String cat : cats) {

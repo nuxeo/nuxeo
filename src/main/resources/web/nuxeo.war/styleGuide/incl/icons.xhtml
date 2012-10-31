@@ -26,7 +26,7 @@
           <div class="styleGuideIcon">
             <h:graphicImage value="#{icon.path}" alt="#{icon.label}" title="#{icon.label}" width="16px" />
             <br />
-            #{icon.path}
+            #{icon.filename}
             <c:if test="#{not empty icon.description or true}">
               <br />
               <h:outputText value="#{icon.description}" escape="false" />
