@@ -1944,6 +1944,14 @@
     
     <widgetType name="date_range">
       <configuration>
+       <title>Date range</title>
+       <documentation>Widget used to search on a date range.
+         Two fields are required :
+          <ul>
+            <li>A field to map the min date</li>
+            <li>A field to map the max date</li>
+          </ul>
+       </documentation>
        <sinceVersion>5.7</sinceVersion>
        <categories>
          <category>document</category>
@@ -1958,14 +1966,17 @@
           <supportedTypes>
             <type>date</type>
           </supportedTypes>
-          <defaultTypes>
-            <type>date</type>
-          </defaultTypes>
         </fields>
         <properties>
           <layouts mode="view">
-            <layout name="datetime_widget_type_properties_view">
+            <layout name="daterange_widget_type_properties_view">
               <rows>
+                <row>
+                  <widget category="widgetTypeConf">datetime_pattern</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_timeZone</widget>
+                </row>
                 <row>
                   <widget category="widgetTypeConf">styleClass</widget>
                 </row>
@@ -1973,7 +1984,7 @@
             </layout>
           </layouts>
           <layouts mode="edit">
-            <layout name="datetime_widget_type_properties_edit">
+            <layout name="daterange_widget_type_properties_edit">
               <rows>
                <row>
                   <widget category="widgetTypeConf">required</widget>
@@ -2007,13 +2018,6 @@
           </layouts>
         </properties> 
       </configuration>
-      <documentation>Widget used to search on a date range.
-         Two fields are required :
-          <ul>
-            <li>A field to map the min date</li>
-            <li>A field to map the max date</li>
-          </ul>
-      </documentation>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>

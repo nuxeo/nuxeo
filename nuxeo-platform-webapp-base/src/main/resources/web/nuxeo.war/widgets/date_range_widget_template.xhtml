@@ -4,7 +4,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+  <c:if test="#{widget.mode != 'edit'}">
    <div>
      <span class="tinyLabel"> 
       <h:outputText value="#{messages['label.search.between']} " /> 
@@ -19,7 +19,7 @@
      </div>
   </c:if>
 
-  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+  <c:if test="#{widget.mode == 'edit'}">
     <div>
      <span class="tinyLabel"> 
        <h:outputText value="#{messages['label.search.between']} " /> 

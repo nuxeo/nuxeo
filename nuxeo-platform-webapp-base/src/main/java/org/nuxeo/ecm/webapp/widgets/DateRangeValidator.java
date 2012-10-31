@@ -81,7 +81,7 @@ public class DateRangeValidator implements Serializable {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     String.format(
-                            messages.get("error.dateRangeVlaidator.invalidDateRange"),
+                            messages.get("error.dateRangeValidator.invalidDateRange"),
                             stratDate, endDate), null);
             throw new ValidatorException(message);
         }
