@@ -1941,6 +1941,86 @@
         /widgets/user_vgoups_widget_template.xhtml
       </property>
     </widgetType>
+    
+    <widgetType name="date_range">
+      <configuration>
+       <sinceVersion>5.7</sinceVersion>
+       <categories>
+         <category>document</category>
+       </categories>
+       <supportedModes>
+        <mode>edit</mode>
+        <mode>view</mode>
+       </supportedModes>
+       <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>date</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>date</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="datetime_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="datetime_widget_type_properties_edit">
+              <rows>
+               <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_format</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_showsTime</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_locale</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_timeZone</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerImg</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">datetime_triggerStyleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties> 
+      </configuration>
+      <documentation>Widget used to search on a date range.
+         Two fields are required :
+          <ul>
+            <li>A field to map the min date</li>
+            <li>A field to map the max date</li>
+          </ul>
+      </documentation>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/date_range_widget_template.xhtml
+      </property>
+    </widgetType>
 
   </extension>
 
