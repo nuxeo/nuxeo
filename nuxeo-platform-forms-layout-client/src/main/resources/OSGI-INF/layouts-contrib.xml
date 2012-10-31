@@ -1189,13 +1189,14 @@
 
     <widgetType name="double">
       <configuration>
-        <title>Decimal number</title>
+        <title>Floating point</title>
         <sinceVersion>5.4.2</sinceVersion>
         <description>
           <p>
-            The double widget displays an input text in create or edit mode,
-            with additional message tag for errors, and a regular text output in
-            any other mode. It uses a double converter.
+            The floating point (aka "double") widget displays an input text in
+            create or edit mode, with additional message tag for errors, and a
+            regular text output in any other mode. It uses a JSF double
+            converter.
           </p>
           <p>
             Widgets using this type can provide properties accepted on a
