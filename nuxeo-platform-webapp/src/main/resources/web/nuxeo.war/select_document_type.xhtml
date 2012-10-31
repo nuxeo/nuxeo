@@ -7,26 +7,29 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxthemes="http://nuxeo.org/nxthemes">
 
-<c:if test="#{! empty typesMap.entrySet}">
-  <h:form id="selectDocumentTypeForCreationForm">
-    <rich:modalPanel id="selectDocTypePanel"  autosized="true"
-      onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
+<h:form id="selectDocumentTypeForCreationForm">
+  <rich:modalPanel id="selectDocTypePanel"  autosized="true"
+    onmaskclick="Richfaces.hideModalPanel('selectDocTypePanel')">
 
-      <f:facet name="header">
-        <h:outputText value="#{messages['title.availableDocumentTypes']}" />
-      </f:facet>
+    <f:facet name="header">
+      <h:outputText value="#{messages['title.availableDocumentTypes']}" />
+    </f:facet>
 
-      <f:facet name="controls">
-        <h:panelGroup>
-          <h:graphicImage value="/icons/action_delete_mini_over.png"
-            id="hideDocTypePanel" />
-          <rich:componentControl for="selectDocTypePanel"
-            attachTo="hideDocTypePanel" operation="hide" event="onclick" />
-        </h:panelGroup>
-      </f:facet>
+    <f:facet name="controls">
+      <h:panelGroup>
+        <h:graphicImage value="/icons/action_delete_mini_over.png"
+          id="hideDocTypePanel" />
+        <rich:componentControl for="selectDocTypePanel"
+          attachTo="hideDocTypePanel" operation="hide" event="onclick" />
+      </h:panelGroup>
+    </f:facet>
 
+    <c:if test="#{empty typesMap.entrySet}">
+      <h:outputText value="#{messages['label.availableDocumentTypes.noTypeAvailable']}" />
+    </c:if>
+
+    <c:if test="#{not empty typesMap.entrySet}">
       <h:outputText value="#{messages['help.chooseDocumentType']}" />
-
       <table cellspacing="2">
         <tr>
         <nxu:dataList var="typesList" value="#{typesMap.entrySet}"
@@ -66,8 +69,9 @@
         </nxu:dataList>
         </tr>
       </table>
-    </rich:modalPanel>
-  </h:form>
-</c:if>
+    </c:if>
+
+  </rich:modalPanel>
+</h:form>
 
 </div>
