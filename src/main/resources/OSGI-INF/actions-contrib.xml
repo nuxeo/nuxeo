@@ -58,6 +58,11 @@
       <category>STYLE_GUIDE_PAGE</category>
     </action>
 
+    <action id="Icons" link="/styleGuide/incl/icons.xhtml" order="100"
+      label="Icons">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
   </extension>
 
 </component>

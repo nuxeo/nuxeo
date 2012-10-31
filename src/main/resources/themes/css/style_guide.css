@@ -54,3 +54,7 @@ Custom CSS for the Nuxeo Styles guide
   color: #1358AE;
   font-family: monospace,sans-serif;
   padding: .1em }
+
+.styleGuideIcon {
+  display: inline-block;
+}

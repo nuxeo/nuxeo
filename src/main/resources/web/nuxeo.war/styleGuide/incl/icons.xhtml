@@ -1,0 +1,41 @@
+<c:if test="true"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3 id="icons" alt="Icons">Icons</h3>
+
+  <div class="gridRow">
+
+      <c:forEach var="styleGuideCat" items="#{styleGuideIcons.keySet()}">
+        <c:if test="#{styleGuideCat == 'unknown'}">
+          <h1>Unknown category</h1>
+        </c:if>
+        <c:if test="#{styleGuideCat != 'unknown'}">
+          <h1>Category "#{styleGuideCat}"</h1>
+        </c:if>
+        <c:forEach var="icon" items="#{styleGuideIcons.get(styleGuideCat)}"
+          varStatus="status">
+          <div class="styleGuideIcon">
+            <h:graphicImage value="#{icon.path}" alt="#{icon.label}" title="#{icon.label}" width="16px" />
+            <br />
+            #{icon.path}
+            <c:if test="#{not empty icon.description or true}">
+              <br />
+              <h:outputText value="#{icon.description}" escape="false" />
+            </c:if>
+          </div>
+        </c:forEach>
+      </c:forEach>
+
+    </div>
+
+</c:if>
+

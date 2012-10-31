@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.styleguide.contrib">
+
+  <extension target="org.nuxeo.ecm.styleguide.service" point="icons">
+
+    <icon path="/icons/action_add_file.gif">
+      <label>Add file</label>
+      <description>
+        <h2>lalala</h2>
+        <p>Oui oui oui</p>
+        <ul>
+          <li>ah oui</li>
+          <li>et puis aussi</li>
+        </ul>
+        voila :)
+      </description>
+      <categories>
+        <category>Widget</category>
+      </categories>
+    </icon>
+
+  </extension>
+
+</component>
