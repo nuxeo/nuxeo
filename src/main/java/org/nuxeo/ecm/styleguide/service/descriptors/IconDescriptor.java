@@ -121,4 +121,8 @@ public class IconDescriptor {
         this.enabled = enabled;
     }
 
+    public String toString() {
+        return getPath();
+    }
+
 }

@@ -21,10 +21,8 @@ import static org.jboss.seam.ScopeType.APPLICATION;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -47,12 +45,10 @@ public class StyleGuideIconActions {
             throws MalformedURLException, IOException, URISyntaxException,
             Exception {
         FacesContext ctx = FacesContext.getCurrentInstance();
-        Set<String> res = ctx.getExternalContext().getResourcePaths("/icons");
         StyleGuideService service = Framework.getService(StyleGuideService.class);
-        if (res != null) {
-            return service.getIconsByCat(new ArrayList<String>(res));
-        }
-        return null;
+        Map<String, List<IconDescriptor>> res = service.getIconsByCat(
+                ctx.getExternalContext(), "/icons");
+        return res;
     }
 
 }

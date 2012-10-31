@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.ExternalContext;
+
 import org.nuxeo.ecm.styleguide.service.descriptors.IconDescriptor;
 
 /**
@@ -31,6 +33,6 @@ public interface StyleGuideService extends Serializable {
      * Returns a map of all icons given a path, creating descriptors from them
      * and putting all unknown icons in the "unknown" category.
      */
-    Map<String, List<IconDescriptor>> getIconsByCat(List<String> allIconsPaths);
+    Map<String, List<IconDescriptor>> getIconsByCat(ExternalContext cts, String path);
 
 }

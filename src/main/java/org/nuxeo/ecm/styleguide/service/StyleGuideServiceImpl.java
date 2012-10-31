@@ -21,6 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.faces.context.ExternalContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,19 +89,20 @@ public class StyleGuideServiceImpl extends DefaultComponent implements
     // Service API
 
     @Override
-    public Map<String, List<IconDescriptor>> getIconsByCat(
-            List<String> allIconsPaths) {
+    public Map<String, List<IconDescriptor>> getIconsByCat(ExternalContext ctx,
+            String path) {
+        List<String> iconPaths = resolvePaths(ctx, path);
         Map<String, List<IconDescriptor>> res = new HashMap<String, List<IconDescriptor>>();
         // add "unknown" cat by default
         List<IconDescriptor> unknownCat = new ArrayList<IconDescriptor>();
         res.put("unknown", unknownCat);
-        if (allIconsPaths != null) {
-            for (String path : allIconsPaths) {
-                IconDescriptor desc = iconsReg.getIcon(path);
+        if (iconPaths != null) {
+            for (String iconPath : iconPaths) {
+                IconDescriptor desc = iconsReg.getIcon(iconPath);
                 if (desc == null) {
                     desc = new IconDescriptor();
-                    desc.setPath(path);
-                    desc.setLabel(FileUtils.getFileName(path));
+                    desc.setPath(iconPath);
+                    desc.setLabel(FileUtils.getFileName(iconPath));
                     desc.setCategories(Arrays.asList("unknown"));
                 }
                 if (Boolean.FALSE.equals(desc.getEnabled())) {
@@ -113,6 +117,22 @@ public class StyleGuideServiceImpl extends DefaultComponent implements
                         }
                         res.get(cat).add(desc);
                     }
+                }
+            }
+        }
+        return res;
+    }
+
+    protected List<String> resolvePaths(ExternalContext ctx, String basePath) {
+        List<String> res = new ArrayList<String>();
+        Set<String> paths = ctx.getResourcePaths(basePath);
+        if (paths != null) {
+            for (String path : paths) {
+                if (path.endsWith("/")) {
+                    // resolve sub resources
+                    res.addAll(resolvePaths(ctx, path));
+                } else {
+                    res.add(path);
                 }
             }
         }
