@@ -63,7 +63,7 @@
       </widgetModes>
     </widget>
 
-    <widget name="authTokendeviceId" type="text">
+    <widget name="authTokenDeviceId" type="text">
       <labels>
         <label mode="any">label.tokenauth.deviceId</label>
       </labels>
