@@ -218,8 +218,7 @@ public class NuxeoDriveActions implements Serializable {
             throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         String userName = documentManager.getPrincipal().getName();
-        driveManager.unregisterSynchronizationRoot(userName, syncRoot,
-                documentManager);
+        driveManager.unsynchronizeRoot(userName, syncRoot);
     }
 
 }
