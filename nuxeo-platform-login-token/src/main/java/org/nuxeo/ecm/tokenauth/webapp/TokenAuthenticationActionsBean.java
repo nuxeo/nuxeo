@@ -73,6 +73,10 @@ public class TokenAuthenticationActionsBean implements Serializable {
                 messages.get("label.tokenauth.revoked"));
     }
 
+    public void refreshAuthTokenBindings() {
+        reset();
+    }
+
     protected void reset() {
         currentUserAuthTokenBindings = null;
     }
