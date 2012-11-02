@@ -32,6 +32,12 @@
       <filter-id>can_drive_edit</filter-id>
     </action>
 
+    <action id="userCenterNuxeoDrive" link="/incl/nuxeodrive/user_center_nuxeo_drive.xhtml"
+      label="user.center.nuxeoDrive" icon="/icons/drive_unsynced.png"
+      order="100">
+      <category>USER_CENTER</category>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Olivier Grisel
- *
+ *     Olivier Grisel <ogrisel@nuxeo.com>
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 
 package org.nuxeo.drive.seam;
@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -199,6 +200,26 @@ public class NuxeoDriveActions implements Serializable {
             return "";
         }
         return navigationContext.navigateToDocument(currentRoot);
+    }
+
+    public DocumentModelList getSynchronizationRoots() throws ClientException {
+        DocumentModelList syncRoots = new DocumentModelListImpl();
+        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        String userName = documentManager.getPrincipal().getName();
+        Set<IdRef> syncRootRefs = driveManager.getSynchronizationRootReferences(
+                userName, documentManager);
+        for (IdRef syncRootRef : syncRootRefs) {
+            syncRoots.add(documentManager.getDocument(syncRootRef));
+        }
+        return syncRoots;
+    }
+
+    public void unsynchronizeRoot(DocumentModel syncRoot)
+            throws ClientException {
+        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        String userName = documentManager.getPrincipal().getName();
+        driveManager.unregisterSynchronizationRoot(userName, syncRoot,
+                documentManager);
     }
 
 }
