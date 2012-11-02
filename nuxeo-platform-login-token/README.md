@@ -112,7 +112,7 @@ A specific authentication chain is also mapped on the token request header.
 
 ### UI
 
-The module provides the ``view_auth_token_bindings.xhtml`` view that includes the ``authTokenBindings`` layout to display the list of token bindings for the current user, with a _Revoke_ action on each token.
+The module provides the ``auth_token_bindings.xhtml`` view that includes the ``authTokenBindings`` layout to display the list of token bindings for the current user, with a _Revoke_ action on each token.
 
 For now, as this module is mostly dedicated to [Nuxeo Drive] [2] (also see [NXP-10269] [3]), it only provides a layout and XHTML view for listing token bindings,
 but does not include this view by default in the User Center. It will be used in the specific _Nuxeo Drive_ tab of the User Center.
