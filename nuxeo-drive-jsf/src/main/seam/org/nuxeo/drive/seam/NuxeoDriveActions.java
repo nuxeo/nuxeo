@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Olivier Grisel <ogrisel@nuxeo.com>
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
+ */
+
 package org.nuxeo.drive.seam;
 
 import java.io.Serializable;
@@ -18,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -136,6 +155,26 @@ public class NuxeoDriveActions implements Serializable {
             return "";
         }
         return navigationContext.navigateToDocument(currentRoot);
+    }
+
+    public DocumentModelList getSynchronizationRoots() throws ClientException {
+        DocumentModelList syncRoots = new DocumentModelListImpl();
+        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        String userName = documentManager.getPrincipal().getName();
+        Set<IdRef> syncRootRefs = driveManager.getSynchronizationRootReferences(
+                userName, documentManager);
+        for (IdRef syncRootRef : syncRootRefs) {
+            syncRoots.add(documentManager.getDocument(syncRootRef));
+        }
+        return syncRoots;
+    }
+
+    public void unsynchronizeRoot(DocumentModel syncRoot)
+            throws ClientException {
+        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        String userName = documentManager.getPrincipal().getName();
+        driveManager.unregisterSynchronizationRoot(userName, syncRoot,
+                documentManager);
     }
 
 }
