@@ -273,6 +273,8 @@ log_misc() {
     uname -a >> $file
     echo "## os" >> $file
     lsb_release -a >> $file 2> /dev/null 
+    echo "## lscpu" >> $file
+    lscpu >> $file
     echo "## CPUs list" >> $file
     cat /proc/cpuinfo  | grep "model name" >> $file
     echo "## CPU speed" >> $file
