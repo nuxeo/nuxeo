@@ -13,19 +13,167 @@
   <h3 id="" alt="Buttons">Buttons</h3>
 
   <div class="gridRow">
-    <div class="gridBox gridStyle3">
-    <a href="#" class="button">Link class button</a>
-    <input class="button" type="button" value="Input class button" />
-    <input class="button smallButton" type="button" value="Input class button smallButton" />
-    <input class="button" type="button" disabled="disabled" value="Input button disabled" />
-    <input class="button smallButton" type="button" disabled="disabled" value="Input class button smallButton disabled" />
-    <input class="button major" type="button" value="Input button" />
-    <input class="button smallButton major" type="button" value="Input smallButton button" />
-    <a href="#" class="button dropdown">Link class button dropdown</a>
+    <div class="gridBox gridStyle7">
+	    <a href="#" class="button" onclick="return false;">Link class button</a>
+	    <input class="button" type="button" value="Input class button" onclick="return false;" />
+	    <input class="button smallButton" type="button" value="Input class button smallButton" onclick="return false;" />
+	    <input class="button" type="button" disabled="disabled" value="Input button disabled" onclick="return false;" />
+	    <input class="button smallButton" type="button" disabled="disabled" value="Input class button smallButton disabled" onclick="return false;" />
+	    <input class="button major" type="button" value="Input button" onclick="return false;" />
+	    <input class="button smallButton major" type="button" value="Input smallButton button" onclick="return false;" />
+	    
+	    <p class="buttonsGadget">
+	      <input type="submit" class="button major" onclick="return false;" value="Save" name="#" id="#" />
+	      <input type="submit" class="button" onclick="return false;" value="Cancel" name="#" id="#" />
+	    </p>
+	    
+	    <div>
+		    <div class="action_bar">
+		      <ul id="#">
+		        <li>
+		          <a href="#" onclick="return false;"><img src="/nuxeo/icons/action_add.gif" />New</a>
+		        </li>
+		        <li>
+		          <a href="#" onclick="return false;"><img src="/nuxeo/icons/action_add_file.gif" />Import a file</a>
+		        </li>
+		      </ul>
+		    </div>		    
+		    <div class="listingLayoutSelector">
+		      <form>
+		        <ul style="display:inline;" class="layoutViewMode">
+		          <li class="selected">
+		            <a onclick="return false" name="#" id="#" href="#">
+		              <img title="List view" src="/nuxeo/icons/document_listing_icon.png" />
+		            </a>
+		          </li>
+		          <li>
+		            <a onclick="return false" name="#" id="#" href="#">
+		              <img title="Compact view" src="/nuxeo/icons/document_listing_compact_2_columns_icon.png" />
+		            </a>
+		          </li>
+		          <li class="">
+		            <a onclick="return false" name="#" id="#" href="#">
+		              <img title="Icon view" src="/nuxeo/icons/document_listing_icon_2_columns_icon.png" />
+		            </a>
+		          </li>
+		        </ul>
+		        <ul style="display:inline;" class="layoutViewMode">
+		          <li>
+		            <a onclick="return false" name="#" id="#" href="#">
+		              <img title="Refresh" alt="Refresh" src="/nuxeo/icons/refresh.png" id="#" />
+		            </a>
+		          </li>
+		          <li>
+		            <a onclick="return false" name="#" id="#" href="#">
+		              <img title="Excel Export" alt="Excel Export" src="/nuxeo/icons/xls_export.png" />
+		            </a>
+		          </li>
+		        </ul>
+		      </form>
+		    </div>  
+		    <div class="listingLayoutSelector">
+		      <form>
+		        <p class="contentViewPageSelectorDesc">Items/page</p>
+		        <select onchange="Element.next(this).firstChild.click();" size="1" class="langSelect" name="#" id="#">
+		          <option value="5">5</option>
+				    	<option value="10">10</option>
+				    	<option selected="selected" value="20">20</option>
+				    	<option value="30">30</option>
+				    	<option value="40">40</option>
+				    	<option value="50">50</option>
+				    </select>
+		      </form>
+		    </div>
+		    <div class="clear" />
+		  </div>
+
+	    <div class="globalActionBar">
+	      <h1>My title</h1>
+		    <ul class="actionList">
+		     <li class="dropDownMenu button dropdown">Actions
+		       <ul class="actionSubList" style="display: none;">
+		         <li><a onclick="return false;" name="#" id="#" href="#">Edit</a></li>
+		       </ul>
+		     </li>
+		    </ul>
+		  </div>
+		  <div class="clear" />
+
+		  <div>
+		    <form class="titleBlock"><h1>Title &amp; Actions</h1></form>
+		    <div class="globalActions">
+		      <div>
+		        <form enctype="application/x-www-form-urlencoded" action="/nuxeo/view_documents.faces" method="post" name="documentActionsUpperButtons" id="documentActionsUpperButtons">
+		          <div class="globalActionBar">
+		            <div class="contextActions">
+		              <div class="widgetPanel actionsWidgetPanel">
+		                <a class="actionLink button" onclick="return false" href="#" id="#"><img class="smallIcon " title="Lock" alt="Lock" src="/nuxeo/icons/contextual_menu/unlocked.png" /></a>
+		              </div>
+		              <div class="widgetPanel actionsWidgetPanel">
+		                <a class="actionLink button" onclick="return false" href="#" id="#"><img class="smallIcon " title="Permanent link to this document" alt="Permanent link to this document" src="/nuxeo/icons/contextual_menu/share.png" /></a>
+		              </div>
+		              <ul class="actionList">
+		                <li class="dropDownMenu button dropdown">More
+		                  <ul class="actionSubList">
+		                    <li>
+		                      <a class="actionLink button " onclick="return false" href="#" id="#">
+		                        <img class="smallIcon " title="Follow this document" alt="Follow this document" src="/nuxeo/icons/contextual_menu/subscribe.png" />
+		                        <span class="actionLabel "> Follow this document</span>
+		                      </a>
+		                    </li>
+		                    <li>
+		                      <a onclick="return false" name="#" id="#" href="#" class="actionLink button ">
+		                        <img class="smallIcon " title="Preview" alt="Preview" src="/nuxeo/icons/contextual_menu/preview.png" />
+		                        <span class="actionLabel "> Preview</span>
+		                      </a>
+		                    </li>
+		                    <li>
+		                      <a class="actionLink button " onclick="return false" href="#" id="#">
+		                        <img class="smallIcon " title="Add to worklist" alt="Add to worklist" src="/nuxeo/icons/action_add.gif" />
+		                        <span class="actionLabel "> Add to worklist</span>
+		                      </a>
+		                    </li>
+		                    <li>
+		                      <a class="actionLink button " onclick="return false" href="#" id="#">
+		                        <img class="smallIcon " title="Export options" alt="Export options" src="/nuxeo/icons/export.png" />
+		                        <span class="actionLabel "> Export options</span>
+		                      </a>
+		                    </li>
+		                    <li>
+		                      <a class="actionLink button " onclick="return false" href="#" id="#">
+		                        <img class="smallIcon " title="Print" alt="Print" src="/nuxeo/icons/printer.gif" />
+		                        <span class="actionLabel "> Print</span>
+		                      </a>
+		                    </li>
+		                  </ul>
+		                </li>
+		              </ul>
+		            </div>
+		          </div>
+		        </form>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="clear" />
+
     </div>
     
     <div class="clear" />
   </div>
+  
+  <script type="text/javascript">
+        jQuery(document).ready(function($) {
+          jQuery('.dropDownMenu').click(function(e) {
+            jQuery('.dropDownMenu').find('ul').hide();
+            jQuery(this).find("ul").show();
+            e.stopPropagation();
+          });
+  
+          jQuery(document).click(function() {
+            jQuery('.dropDownMenu').find('ul').hide();
+          })
+        });
+      </script>
 
 </c:if>
 

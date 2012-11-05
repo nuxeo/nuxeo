@@ -10,25 +10,26 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <h3 id="icons" alt="Icons">Icons</h3>
-
   <div class="gridRow">
+    <div class="gridBox gridStyle12">
+
+      <h3 id="icons" alt="Icons">Icons</h3>
 
       <c:forEach var="styleGuideCat" items="#{styleGuideIcons.keySet()}">
         <c:if test="#{styleGuideCat == 'unknown'}">
-          <h1>Unknown category</h1>
+          <h4>Others</h4>
         </c:if>
         <c:if test="#{styleGuideCat != 'unknown'}">
-          <h1>Category "#{styleGuideCat}"</h1>
+          <h4>#{styleGuideCat}</h4>
         </c:if>
         <c:forEach var="icon" items="#{styleGuideIcons.get(styleGuideCat)}"
           varStatus="status">
-          <div class="styleGuideIcon">
-            <h:graphicImage value="#{icon.path}" alt="#{icon.label}" title="#{icon.label}" width="16px" />
-            <br />
-            #{icon.filename}
+          <div class="bubbleBox displayIB textAlignC">
+            <div class="bubbleHeader">
+              #{icon.filename}
+            </div>
+            <h:graphicImage value="#{icon.path}" alt="#{icon.label}" title="#{icon.label}" height="16px" />
             <c:if test="#{not empty icon.description or true}">
-              <br />
               <h:outputText value="#{icon.description}" escape="false" />
             </c:if>
           </div>
@@ -36,6 +37,8 @@
       </c:forEach>
 
     </div>
+    <div class="clear" />
+  </div>
 
 </c:if>
 
