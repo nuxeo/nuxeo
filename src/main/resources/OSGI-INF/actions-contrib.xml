@@ -28,6 +28,11 @@
       <category>STYLE_GUIDE_PAGE</category>
     </action>
 
+    <action id="Boxes" link="/styleGuide/incl/boxes.xhtml" order="90"
+      label="Boxes">
+      <category>STYLE_GUIDE_PAGE</category>
+    </action>
+
     <action id="Messages" link="/styleGuide/incl/messages.xhtml" order="40"
       label="Messages">
       <category>STYLE_GUIDE_PAGE</category>
@@ -48,8 +53,8 @@
       <category>STYLE_GUIDE_PAGE</category>
     </action>
 
-    <action id="Tabs" link="/styleGuide/incl/tabs.xhtml" order="80"
-      label="Tabs">
+    <action id="Navigation" link="/styleGuide/incl/navigation.xhtml" order="80"
+      label="Navigation">
       <category>STYLE_GUIDE_PAGE</category>
     </action>
 

@@ -53,6 +53,7 @@
         <style>foldable_boxes</style>
         <style>richfaces_components</style>
         <style>tabs_content</style>
+        <style>helpers</style>
         <style>style_guide</style>
       </styles>
     </themePage>
