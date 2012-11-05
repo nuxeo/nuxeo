@@ -68,6 +68,11 @@
       <artifactId>nuxeo-opencmis-tests</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-document-routing-test</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
