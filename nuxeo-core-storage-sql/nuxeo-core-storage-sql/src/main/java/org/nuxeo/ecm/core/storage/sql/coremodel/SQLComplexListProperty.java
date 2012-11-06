@@ -69,8 +69,7 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
 
     @Override
     public List<Object> getValue() throws DocumentException {
-        List<Property> properties = session.makeProperties(node, name, type,
-                null, readonly, -1);
+        List<Property> properties = getProperties();
         List<Object> list = new ArrayList<Object>(properties.size());
         for (Property property : properties) {
             list.add(property.getValue());
@@ -109,7 +108,7 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
 
     @Override
     public List<Property> getProperties() throws DocumentException {
-        return session.makeProperties(node, name, type, null, readonly, -1);
+        return session.makeProperties(node, name, type, null, readonly, -1, -1);
     }
 
     @Override
@@ -252,14 +251,24 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
         if (getValue().equals(list)) {
             return;
         }
-        // remove previous nodes
-        List<Node> nodes = session.getComplexList(node, name);
-        for (Node n : nodes) {
-            session.removeProperty(n);
+
+        List<Property> properties = getProperties();
+        int oldSize = properties.size();
+        int newSize = list.size();
+        // remove extra list elements
+        if (oldSize > newSize) {
+            for (int i = newSize; i < oldSize; i++) {
+                SQLComplexProperty property = (SQLComplexProperty) properties.get(i);
+                session.removeProperty(property.getNode());
+                properties.remove(newSize);
+            }
         }
-        // add new nodes
-        List<Property> properties = session.makeProperties(node, name, type,
-                null, readonly, list.size());
+        // add new list elements
+        if (oldSize < newSize) {
+            List<Property> newProperties = session.makeProperties(node, name,
+                    type, null, readonly, properties.size(), newSize);
+            properties.addAll(newProperties);
+        }
         // set values
         int i = 0;
         for (Object value : list) {
