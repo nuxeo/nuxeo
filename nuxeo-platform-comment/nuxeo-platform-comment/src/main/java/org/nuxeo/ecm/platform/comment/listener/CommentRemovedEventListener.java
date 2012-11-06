@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -44,7 +45,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener
             DocumentModel docMessage) throws Exception {
         log.debug("Processing relations cleanup on Comment removal");
         String typeName = docMessage.getType();
-        if ("Comment".equals(typeName) || "Post".equals(typeName)) {
+        if (CommentsConstants.COMMENT_DOC_TYPE.equals(typeName) || "Post".equals(typeName)) {
             onCommentRemoved(relationManager, config, docMessage);
         }
     }

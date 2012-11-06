@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.service.CommentService;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.runtime.api.Framework;
@@ -83,12 +84,12 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
 
         // Create a first commentary
         CommentableDocument cDoc = doc.getAdapter(CommentableDocument.class);
-        DocumentModel comment = getCoreSession().createDocumentModel("Comment");
+        DocumentModel comment = getCoreSession().createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
         comment.setProperty("comment", "text", "This is my comment");
         comment = cDoc.addComment(comment);
 
         // Create a second commentary
-        DocumentModel comment2 = getCoreSession().createDocumentModel("Comment");
+        DocumentModel comment2 = getCoreSession().createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
         comment2.setProperty("comment", "text", "This is another  comment");
         comment2 = cDoc.addComment(comment);
         return doc;

@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -184,10 +185,10 @@ public class CommentManagerImpl implements CommentManager {
             loginContext = Framework.login();
             session = openCoreSession(docModel.getRepositoryName());
 
-            DocumentModel commentDM = session.createDocumentModel("Comment");
-            commentDM.setProperty("comment", "text", comment);
-            commentDM.setProperty("comment", "author", author);
-            commentDM.setProperty("comment", "creationDate",
+            DocumentModel commentDM = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
+            commentDM.setPropertyValue(CommentsConstants.COMMENT_TEXT, comment);
+            commentDM.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, author);
+            commentDM.setPropertyValue(CommentsConstants.COMMENT_CREATION_DATE,
                     Calendar.getInstance());
             commentDM = internalCreateComment(session, docModel, commentDM,
                     null);
@@ -636,7 +637,7 @@ public class CommentManagerImpl implements CommentManager {
         if (threads.size()>0) {
             DocumentModel thread = (DocumentModel) threads.get(0);
             while (thread.getType().equals("Post")
-                    || thread.getType().equals("Comment")) {
+                    || thread.getType().equals(CommentsConstants.COMMENT_DOC_TYPE)) {
                 thread = getThreadForComment(thread);
             }
             return thread;

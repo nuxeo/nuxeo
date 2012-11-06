@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
@@ -42,7 +43,7 @@ public class CommentConverterImpl implements CommentConverter {
     }*/
 
     public String getDocumentType() {
-        return "Comment";
+        return CommentsConstants.COMMENT_DOC_TYPE;
     }
 
     /*public Comment getComment(DocumentModel docModel) throws ClientException {

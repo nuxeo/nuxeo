@@ -208,11 +208,11 @@ public abstract class AbstractCommentManagerActionsBean implements
 
     @Override
     public String addComment() throws ClientException {
-        DocumentModel myComment = documentManager.createDocumentModel("Comment");
+        DocumentModel myComment = documentManager.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
 
-        myComment.setProperty("comment", "author", principal.getName());
-        myComment.setProperty("comment", "text", newContent);
-        myComment.setProperty("comment", "creationDate", Calendar.getInstance());
+        myComment.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, principal.getName());
+        myComment.setPropertyValue(CommentsConstants.COMMENT_TEXT, newContent);
+        myComment.setPropertyValue(CommentsConstants.COMMENT_CREATION_DATE, Calendar.getInstance());
         myComment = addComment(myComment);
 
         // do not navigate to newly-created comment, they are hidden documents
@@ -222,7 +222,7 @@ public abstract class AbstractCommentManagerActionsBean implements
     @Override
     public String createComment(DocumentModel docToComment)
             throws ClientException {
-        DocumentModel myComment = documentManager.createDocumentModel("Comment");
+        DocumentModel myComment = documentManager.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
 
         myComment.setProperty("comment", "author", principal.getName());
         myComment.setProperty("comment", "text", newContent);

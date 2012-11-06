@@ -19,6 +19,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
 import org.nuxeo.runtime.api.Framework;
 
@@ -37,7 +38,7 @@ public class CommentNotificationListener implements NotificationListenerHook {
         EventContext ctx = event.getContext();
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         if (docCtx.getSourceDocument().getType().equals("Post")
-                || docCtx.getSourceDocument().getType().equals("Comment")) {
+                || docCtx.getSourceDocument().getType().equals(CommentsConstants.COMMENT_DOC_TYPE)) {
             CommentManager commentManager = Framework.getService(CommentManager.class);
             DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
             if (thread !=null) {
