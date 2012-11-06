@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
@@ -155,6 +156,85 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(actual instanceof List);
         assertEquals(1, ((List) actual).size());
         assertEquals(item, ((List) actual).get(0));
+    }
+
+    public void testComplexListChange() throws Exception {
+        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> item1 = new HashMap<String, Serializable>();
+        Map<String, Serializable> item2 = new HashMap<String, Serializable>();
+        List<?> actual;
+
+        item1.put("string", "foo");
+        item1.put("int", Long.valueOf(123));
+        values.add(item1);
+        doc.setPropertyValue("tp:complexList", values);
+        doc = session.saveDocument(doc);
+
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(1, actual.size());
+        assertEquals("foo",
+                ((Map<String, Serializable>) actual.get(0)).get("string"));
+
+        // add to list
+
+        item2.put("string", "bar");
+        item2.put("int", Long.valueOf(999));
+        values.add(item2);
+        doc.setPropertyValue("tp:complexList", values);
+        doc = session.saveDocument(doc);
+
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(2, actual.size());
+        assertEquals("foo",
+                ((Map<String, Serializable>) actual.get(0)).get("string"));
+        assertEquals("bar",
+                ((Map<String, Serializable>) actual.get(1)).get("string"));
+
+        // change list
+
+        item1.put("int", Long.valueOf(111));
+        item2.put("int", Long.valueOf(222));
+        doc.setPropertyValue("tp:complexList", values);
+        doc = session.saveDocument(doc);
+
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(2, actual.size());
+        assertEquals(Long.valueOf(111),
+                ((Map<String, Serializable>) actual.get(0)).get("int"));
+        assertEquals(Long.valueOf(222),
+                ((Map<String, Serializable>) actual.get(1)).get("int"));
+
+
+        // remove from list
+
+        values.remove(0);
+        doc.setPropertyValue("tp:complexList", values);
+        doc = session.saveDocument(doc);
+
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(1, actual.size());
+        assertEquals("bar",
+                ((Map<String, Serializable>) actual.get(0)).get("string"));
     }
 
     // NXP-912
