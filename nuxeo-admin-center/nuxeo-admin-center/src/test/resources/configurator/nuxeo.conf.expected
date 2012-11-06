@@ -12,10 +12,10 @@ nuxeo.templates=postgresql,oldchange
 
 test.nuxeo.conf = true
 ### BEGIN - DO NOT EDIT BETWEEN BEGIN AND END ### JJ/MM/AAAA hh:mm:ss
-#test.default.nuxeo.defaults=true
-test.default.nuxeo.defaults=false
 #nuxeo.bind.address=0.0.0.0
 nuxeo.bind.address=127.0.0.1
 #server.status.key=
 server.status.key=rAnd0MKey
+#test.default.nuxeo.defaults=true
+test.default.nuxeo.defaults=false
 ### END - DO NOT EDIT BETWEEN BEGIN AND END ###
