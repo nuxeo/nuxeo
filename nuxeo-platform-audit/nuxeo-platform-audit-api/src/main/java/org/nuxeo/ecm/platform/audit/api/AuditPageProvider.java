@@ -56,6 +56,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     public static final String UICOMMENTS_PROPERTY = "generateUIComments";
 
     public String toString() {
+        buildAuditQuery(true);
         StringBuffer sb = new StringBuffer();
 
         sb.append("\nquery : " + auditQuery);
