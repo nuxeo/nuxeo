@@ -264,6 +264,7 @@ public class SetupWizardActionBean implements Serializable {
         setupConfigGenerator = null;
         parameters = null;
         advancedParameters = null;
+        Contexts.getPageContext().remove("setupConfigGenerator");
     }
 
     /**
