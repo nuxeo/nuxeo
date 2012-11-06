@@ -162,6 +162,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> item1 = new HashMap<String, Serializable>();
         Map<String, Serializable> item2 = new HashMap<String, Serializable>();
+        Map<String, Serializable> item3 = new HashMap<String, Serializable>();
         List<?> actual;
 
         item1.put("string", "foo");
@@ -177,14 +178,16 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
         assertEquals(1, actual.size());
-        assertEquals("foo",
-                ((Map<String, Serializable>) actual.get(0)).get("string"));
+        assertComplexListElements(actual, 0, "foo", 123);
 
         // add to list
 
         item2.put("string", "bar");
         item2.put("int", Long.valueOf(999));
         values.add(item2);
+        item3.put("string", "baz");
+        item3.put("int", Long.valueOf(314));
+        values.add(item3);
         doc.setPropertyValue("tp:complexList", values);
         doc = session.saveDocument(doc);
 
@@ -194,16 +197,16 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.getDocument(new PathRef("/doc"));
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
-        assertEquals(2, actual.size());
-        assertEquals("foo",
-                ((Map<String, Serializable>) actual.get(0)).get("string"));
-        assertEquals("bar",
-                ((Map<String, Serializable>) actual.get(1)).get("string"));
+        assertEquals(3, actual.size());
+        assertComplexListElements(actual, 0, "foo", 123);
+        assertComplexListElements(actual, 1, "bar", 999);
+        assertComplexListElements(actual, 2, "baz", 314);
 
         // change list
 
         item1.put("int", Long.valueOf(111));
         item2.put("int", Long.valueOf(222));
+        item3.put("int", Long.valueOf(333));
         doc.setPropertyValue("tp:complexList", values);
         doc = session.saveDocument(doc);
 
@@ -213,15 +216,14 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.getDocument(new PathRef("/doc"));
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
-        assertEquals(2, actual.size());
-        assertEquals(Long.valueOf(111),
-                ((Map<String, Serializable>) actual.get(0)).get("int"));
-        assertEquals(Long.valueOf(222),
-                ((Map<String, Serializable>) actual.get(1)).get("int"));
-
+        assertEquals(3, actual.size());
+        assertComplexListElements(actual, 0, "foo", 111);
+        assertComplexListElements(actual, 1, "bar", 222);
+        assertComplexListElements(actual, 2, "baz", 333);
 
         // remove from list
 
+        values.remove(0);
         values.remove(0);
         doc.setPropertyValue("tp:complexList", values);
         doc = session.saveDocument(doc);
@@ -233,8 +235,14 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
         assertEquals(1, actual.size());
-        assertEquals("bar",
-                ((Map<String, Serializable>) actual.get(0)).get("string"));
+        assertComplexListElements(actual, 0, "baz", 333);
+    }
+
+    protected static void assertComplexListElements(List<?> list, int i,
+            String string, int theint) {
+        Map<String, Serializable> map = (Map<String, Serializable>) list.get(i);
+        assertEquals(string, map.get("string"));
+        assertEquals(Long.valueOf(theint), map.get("int"));
     }
 
     // NXP-912

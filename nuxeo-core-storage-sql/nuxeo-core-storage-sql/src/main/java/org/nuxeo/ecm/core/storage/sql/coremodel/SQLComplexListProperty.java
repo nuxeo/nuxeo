@@ -260,6 +260,8 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
             for (int i = newSize; i < oldSize; i++) {
                 SQLComplexProperty property = (SQLComplexProperty) properties.get(i);
                 session.removeProperty(property.getNode());
+            }
+            for (int i = newSize; i < oldSize; i++) {
                 properties.remove(newSize);
             }
         }
