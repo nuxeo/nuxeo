@@ -19,7 +19,6 @@
 package org.nuxeo.launcher;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -1965,25 +1964,20 @@ public abstract class NuxeoLauncher {
                 }
             }
         }
-        Properties nxConfProps = new Properties();
-        try {
-            nxConfProps.load(new FileInputStream(
-                    configurationGenerator.getNuxeoConf()));
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not read nuxeo.conf");
-        }
         log.info("** Settings from nuxeo.conf:");
+        Properties userConfig = configurationGenerator.getUserConfig();
         @SuppressWarnings("rawtypes")
-        Enumeration nxConfEnum = nxConfProps.propertyNames();
+        Enumeration nxConfEnum = userConfig.keys();
         while (nxConfEnum.hasMoreElements()) {
             String key = (String) nxConfEnum.nextElement();
-            String value = nxConfProps.getProperty(key);
+            String value = userConfig.getProperty(key);
             if (key.equals("JAVA_OPTS")) {
                 value = getJavaOptsProperty();
             }
             KeyValueInfo kv = new KeyValueInfo(key, value);
             nxConfig.keyvals.add(kv);
-            if (!key.contains("password")) {
+            if (!key.contains("password")
+                    && !key.equals(ConfigurationGenerator.PARAM_STATUS_KEY)) {
                 log.info(key + "=" + value);
             } else {
                 log.info(key + "=********");
