@@ -19,7 +19,6 @@
 package org.nuxeo.launcher.config;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -75,14 +74,12 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     private void testAddress(String bindAddress, String expectedLoopback)
             throws ConfigurationException {
-        configGenerator.getUserConfig().setProperty(
-                ConfigurationGenerator.PARAM_BIND_ADDRESS, bindAddress);
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS,
+                bindAddress);
         log.debug("Test with "
                 + configGenerator.getUserConfig().getProperty(
                         ConfigurationGenerator.PARAM_BIND_ADDRESS));
-        configGenerator.getUserConfig().remove(
-                ConfigurationGenerator.PARAM_LOOPBACK_URL);
-        configGenerator.evalDynamicProperties();
+        configGenerator.init(true);
         assertEquals(
                 "Bad loop back URL",
                 expectedLoopback,
@@ -94,14 +91,23 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     public void testSetProperty() throws ConfigurationException {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        configGenerator.setProperty("test.prop.key", "test.prop.value");
+        String oldValue = configGenerator.setProperty("test.prop.key",
+                "test.prop.value");
+        assertEquals("Wrong old value", null, oldValue);
         assertEquals("Property not set", "test.prop.value",
                 configGenerator.getUserConfig().getProperty("test.prop.key"));
-        configGenerator.setProperty("test.prop.key", null);
-        assertNull("Property not unset",
+        oldValue = configGenerator.setProperty("test.prop.key", null);
+        assertEquals("Wrong old value", "test.prop.value", oldValue);
+        assertEquals("Property not unset", null,
                 configGenerator.getUserConfig().getProperty("test.prop.key"));
-        configGenerator.setProperty("test.prop.key", "");
-        assertNull("Property not unset",
+        oldValue = configGenerator.setProperty("test.prop.key", "");
+        assertEquals("Wrong old value", null, oldValue);
+        assertEquals("Property must not be set", null,
+                configGenerator.getUserConfig().getProperty("test.prop.key"));
+        configGenerator.setProperty("test.prop.key", "test.prop.value");
+        oldValue = configGenerator.setProperty("test.prop.key", "");
+        assertEquals("Wrong old value", "test.prop.value", oldValue);
+        assertEquals("Property not unset", null,
                 configGenerator.getUserConfig().getProperty("test.prop.key"));
     }
 
@@ -112,17 +118,16 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         assertEquals(
-                "Error calculating nodbtemplate",
-                originalTemplates.substring("default".length() + 1),
+                "Error calculating db template",
+                "default",
                 configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATES_NODB));
+                        ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
         configGenerator.addTemplate("newTemplate");
         assertEquals(
-                "Error calculating nodbtemplate",
-                originalTemplates.substring("default".length() + 1)
-                        + ",newTemplate",
+                "Error calculating db template",
+                "postgresql",
                 configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATES_NODB));
+                        ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
         assertEquals(
                 "newTemplate not added",
                 originalTemplates + ",newTemplate",
@@ -130,10 +135,10 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                         ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         configGenerator.rmTemplate("newTemplate");
         assertEquals(
-                "Error calculating nodbtemplate",
-                originalTemplates.substring("default".length() + 1),
+                "Error calculating db template",
+                "default",
                 configGenerator.getUserConfig().getProperty(
-                        ConfigurationGenerator.PARAM_TEMPLATES_NODB));
+                        ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
         assertEquals(
                 "newTemplate not removed",
                 originalTemplates,
@@ -173,5 +178,49 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertTrue(outfile.exists());
         String fileContents = FileUtils.readFileToString(outfile).trim();
         assertEquals(fileContents, "Success");
+    }
+
+    @Test
+    public void testChangeDatabase() throws Exception {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        String originalTemplates = configGenerator.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        configGenerator.changeDBTemplate("postgresql");
+        assertEquals("Failed to change database default to postgresql",
+                originalTemplates.replaceFirst("default", "postgresql"),
+                configGenerator.getUserTemplates());
+    }
+
+    @Test
+    public void testChangeDatabaseFromCustom() throws Exception {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        configGenerator.changeTemplates("testinclude2");
+        String originalTemplates = configGenerator.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        configGenerator.changeDBTemplate("postgresql");
+        assertEquals("Failed to change database default to postgresql",
+                originalTemplates + ",postgresql",
+                configGenerator.getUserTemplates());
+        Map<String, String> customParameters = new HashMap<String, String>();
+        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME,
+                "postgresql");
+        configGenerator.saveFilteredConfiguration(customParameters);
+        // Check stored value
+        assertTrue(configGenerator.init(true));
+        assertEquals("Failed to change database default to postgresql",
+                originalTemplates + ",postgresql",
+                configGenerator.getUserTemplates());
+        assertEquals(
+                "Failed to change database default to postgresql",
+                originalTemplates + ",postgresql",
+                configGenerator.getUserConfig().getProperty(
+                        ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals(
+                "Failed to change database default to postgresql",
+                "postgresql",
+                configGenerator.getUserConfig().getProperty(
+                        ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
     }
 }

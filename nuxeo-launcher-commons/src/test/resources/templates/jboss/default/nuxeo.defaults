@@ -4,6 +4,7 @@ nuxeo.template.includes=common
 nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
+nuxeo.db.type=default
 
 test.nuxeo.defaults.template.1 = true
 test.nuxeo.defaults.template.2 = true

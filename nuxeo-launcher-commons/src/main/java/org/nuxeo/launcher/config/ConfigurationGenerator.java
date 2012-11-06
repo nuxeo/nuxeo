@@ -43,13 +43,16 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -106,6 +109,10 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_TEMPLATE_DBTYPE = "nuxeo.db.type";
 
+    /**
+     * @deprecated since 5.7
+     */
+    @Deprecated
     public static final String PARAM_TEMPLATES_NODB = "nuxeo.nodbtemplates";
 
     public static final String OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
@@ -181,7 +188,7 @@ public class ConfigurationGenerator {
     public static final String PARAM_NUXEO_URL = "nuxeo.url";
 
     /**
-     * Global dev property, dupplicated from runtime framework
+     * Global dev property, duplicated from runtime framework
      *
      * @since 5.6
      */
@@ -260,6 +267,18 @@ public class ConfigurationGenerator {
     private static boolean hideDeprecationWarnings = false;
 
     private Environment env;
+
+    private Properties storedConfig;
+
+    /**
+     * @since 5.7
+     */
+    protected Properties getStoredConfig() {
+        if (storedConfig == null) {
+            updateStoredConfig();
+        }
+        return storedConfig;
+    }
 
     @SuppressWarnings("serial")
     protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
@@ -444,7 +463,7 @@ public class ConfigurationGenerator {
     public void changeTemplates(String newTemplates) {
         try {
             templates = newTemplates;
-            setBasicConfiguration();
+            setBasicConfiguration(false);
             configurable = true;
         } catch (ConfigurationException e) {
             log.warn("Error reading basic configuration.", e);
@@ -463,18 +482,23 @@ public class ConfigurationGenerator {
     }
 
     private void setBasicConfiguration() throws ConfigurationException {
+        setBasicConfiguration(true);
+    }
+
+    private void setBasicConfiguration(boolean save)
+            throws ConfigurationException {
         try {
             // Load default configuration
             defaultConfig = loadTrimmedProperties(nuxeoDefaultConf);
+            // Add System properties
+            defaultConfig.putAll(System.getProperties());
             userConfig = new Properties(defaultConfig);
 
             // If Windows, replace backslashes in paths in nuxeo.conf
             if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
                 replaceBackslashes();
             }
-
             // Load user configuration
-            userConfig.putAll(System.getProperties()); // Add System properties
             userConfig.putAll(loadTrimmedProperties(nuxeoConf));
             onceGeneration = "once".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
             forceGeneration = onceGeneration
@@ -483,7 +507,7 @@ public class ConfigurationGenerator {
             checkForDeprecatedParameters(userConfig);
 
             // Synchronize directories between serverConfigurator and
-            // userConfig
+            // userConfig/defaultConfig
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR);
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_PID_DIR);
@@ -510,47 +534,24 @@ public class ConfigurationGenerator {
         }
 
         Map<String, String> newParametersToSave = evalDynamicProperties();
-        if (newParametersToSave != null && !newParametersToSave.isEmpty()) {
+        if (save && newParametersToSave != null
+                && !newParametersToSave.isEmpty()) {
             saveConfiguration(newParametersToSave, false, false);
         }
 
-        // init debug mode(s)
-        String debugPropValue = userConfig.getProperty(NUXEO_DEV_SYSTEM_PROP,
-                "false");
-        boolean isDebugSet = Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
-        if (isDebugSet) {
-            log.debug("Nuxeo Dev mode enabled");
-        } else {
-            log.debug("Nuxeo Dev mode is not enabled");
-        }
-
-        // XXX: cannot init seam debug mode when global debug mode is set, as
-        // it needs to be activated at startup, and requires the seam-debug jar
-        // to be in the classpath anyway
-        String seamDebugPropValue = userConfig.getProperty(
-                SEAM_DEBUG_SYSTEM_PROP, "false");
-        boolean isSeamDebugSet = Boolean.TRUE.equals(Boolean.valueOf(seamDebugPropValue))
-                || hasSeamDebugFile();
-        if (isSeamDebugSet) {
-            log.debug("Nuxeo Seam HotReload is enabled");
-            // add it to the system props for compat, in case this mode was
-            // detected because of presence of the file in the config dir, and
-            // because it's checked there on code that relies on it
-            System.setProperty(SEAM_DEBUG_SYSTEM_PROP, "true");
-        } else {
-            log.debug("Nuxeo Seam HotReload is not enabled");
-        }
+        logDebugInformation();
 
         // Could be useful to initialize DEFAULT env...
         // initEnv();
     }
 
+    /**
+     * @since 5.7
+     * @throws IOException
+     */
     protected void includeTemplates() throws IOException {
-        if (templates == null) {
-            templates = getUserTemplates();
-        }
         includedTemplates.clear();
-        List<File> orderedTemplates = includeTemplates(templates);
+        List<File> orderedTemplates = includeTemplates(getUserTemplates());
         includedTemplates.clear();
         includedTemplates.addAll(orderedTemplates);
         log.debug(includedTemplates);
@@ -574,6 +575,29 @@ public class ConfigurationGenerator {
             return false;
         }
         return true;
+    }
+
+    private void logDebugInformation() {
+        String debugPropValue = userConfig.getProperty(NUXEO_DEV_SYSTEM_PROP);
+        if (Boolean.parseBoolean(debugPropValue)) {
+            log.debug("Nuxeo Dev mode enabled");
+        } else {
+            log.debug("Nuxeo Dev mode is not enabled");
+        }
+
+        // XXX: cannot init seam debug mode when global debug mode is set, as
+        // it needs to be activated at startup, and requires the seam-debug jar
+        // to be in the classpath anyway
+        String seamDebugPropValue = userConfig.getProperty(SEAM_DEBUG_SYSTEM_PROP);
+        if (Boolean.parseBoolean(seamDebugPropValue) || hasSeamDebugFile()) {
+            log.debug("Nuxeo Seam HotReload is enabled");
+            // add it to the system props for compat, in case this mode was
+            // detected because of presence of the file in the config dir, and
+            // because it's checked there on code that relies on it
+            System.setProperty(SEAM_DEBUG_SYSTEM_PROP, "true");
+        } else {
+            log.debug("Nuxeo Seam HotReload is not enabled");
+        }
     }
 
     /**
@@ -639,7 +663,7 @@ public class ConfigurationGenerator {
                     + httpPort + contextPath;
         }
         log.debug("Set as loop back URL: " + loopbackURL);
-        userConfig.setProperty(PARAM_LOOPBACK_URL, loopbackURL);
+        defaultConfig.setProperty(PARAM_LOOPBACK_URL, loopbackURL);
     }
 
     /**
@@ -699,7 +723,7 @@ public class ConfigurationGenerator {
     public void setDirectoryWithProperty(String key) {
         String directory = userConfig.getProperty(key);
         if (directory == null) {
-            userConfig.setProperty(key,
+            defaultConfig.setProperty(key,
                     serverConfigurator.getDirectory(key).getPath());
         } else {
             serverConfigurator.setDirectory(key, directory);
@@ -707,17 +731,19 @@ public class ConfigurationGenerator {
     }
 
     public String getUserTemplates() {
-        String userTemplatesList = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        if (userTemplatesList == null) {
-            // backward compliance: manage parameter for a single
-            // template
-            userTemplatesList = userConfig.getProperty(PARAM_TEMPLATE_NAME);
+        if (templates == null) {
+            templates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         }
-        if (userTemplatesList == null) {
+        if (templates == null) {
+            // backward compliance: manage parameter for a single template
+            templates = userConfig.getProperty(PARAM_TEMPLATE_NAME);
+        }
+        if (templates == null) {
             log.warn("No template found in configuration! Fallback on 'default'.");
-            userTemplatesList = "default";
+            templates = "default";
         }
-        return userTemplatesList;
+        userConfig.setProperty(PARAM_TEMPLATES_NAME, templates);
+        return templates;
     }
 
     protected void generateFiles() throws ConfigurationException {
@@ -728,7 +754,7 @@ public class ConfigurationGenerator {
             // keep true or false, switch once to false
             if (onceGeneration) {
                 setOnceToFalse = true;
-                writeConfiguration(loadConfiguration());
+                writeConfiguration();
             }
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file: " + e.getMessage(),
@@ -741,15 +767,6 @@ public class ConfigurationGenerator {
                     "Could not process FreeMarker template: " + e.getMessage(),
                     e);
         }
-    }
-
-    private StringBuffer loadConfiguration() throws ConfigurationException {
-        return loadConfiguration(null);
-    }
-
-    private void writeConfiguration(StringBuffer configuration)
-            throws ConfigurationException {
-        writeConfiguration(configuration, null);
     }
 
     private List<File> includeTemplates(String templatesList)
@@ -864,9 +881,11 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Save changed parameters in {@code nuxeo.conf}. This method does not
-     * check values in map. Use {@link #saveFilteredConfiguration(Map)} for
-     * parameters filtering.
+     * Save changed parameters in {@code nuxeo.conf} calculating templates if
+     * changedParameters contains a value for {@link #PARAM_TEMPLATE_DBNAME}. If
+     * a parameter value is empty ("" or null), then the property is unset. This
+     * method does not check values in map: use
+     * {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
      * @param changedParameters Map of modified parameters
      * @param setGenerationOnceToFalse If generation was on (true or once),
@@ -881,32 +900,53 @@ public class ConfigurationGenerator {
             throws ConfigurationException {
         this.setOnceToFalse = setGenerationOnceToFalse;
         this.setFalseToOnce = setGenerationFalseToOnce;
-        writeConfiguration(loadConfiguration(changedParameters),
-                changedParameters);
-        for (String key : changedParameters.keySet()) {
-            if (changedParameters.get(key) != null) {
-                userConfig.setProperty(key, changedParameters.get(key));
-            }
-        }
-    }
-
-    /**
-     * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
-     * {@link #getChangedParametersMap(Map, Map)} and calculating templates if
-     * changedParameters contains a value for {@link #PARAM_TEMPLATE_DBNAME}
-     *
-     * @param changedParameters Maps of modified parameters
-     * @since 5.4.2
-     * @see #getChangedParameters(Map)
-     */
-    public void saveFilteredConfiguration(Map<String, String> changedParameters)
-            throws ConfigurationException {
+        updateStoredConfig();
         String newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNAME);
         if (newDbTemplate != null) {
             changedParameters.put(PARAM_TEMPLATES_NAME,
                     rebuildTemplatesStr(newDbTemplate));
         }
-        saveConfiguration(getChangedParameters(changedParameters));
+        if (changedParameters.containsValue(null)
+                || changedParameters.containsValue("")) {
+            // There are properties to unset
+            Set<String> propertiesToUnset = new HashSet<String>();
+            for (String key : changedParameters.keySet()) {
+                if (StringUtils.isEmpty(changedParameters.get(key))) {
+                    propertiesToUnset.add(key);
+                }
+            }
+            for (String key : propertiesToUnset) {
+                changedParameters.remove(key);
+                userConfig.remove(key);
+            }
+        }
+        userConfig.putAll(changedParameters);
+        writeConfiguration();
+        updateStoredConfig();
+    }
+
+    private void updateStoredConfig() {
+        if (storedConfig == null) {
+            storedConfig = new Properties(defaultConfig);
+        } else {
+            storedConfig.clear();
+        }
+        storedConfig.putAll(userConfig);
+    }
+
+    /**
+     * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
+     * {@link #getChangedParametersMap(Map, Map)}
+     *
+     * @param changedParameters Maps of modified parameters
+     * @since 5.4.2
+     * @see #saveConfiguration(Map, boolean)
+     * @see #getChangedParametersMap(Map, Map)
+     */
+    public void saveFilteredConfiguration(Map<String, String> changedParameters)
+            throws ConfigurationException {
+        Map<String, String> filteredParameters = getChangedParameters(changedParameters);
+        saveConfiguration(filteredParameters);
     }
 
     /**
@@ -922,12 +962,12 @@ public class ConfigurationGenerator {
             Map<String, String> changedParameters) {
         Map<String, String> filteredChangedParameters = new HashMap<String, String>();
         for (String key : changedParameters.keySet()) {
-            String oldParam = userConfig.getProperty(key);
+            String oldParam = getStoredConfig().getProperty(key);
             String newParam = changedParameters.get(key);
             if (newParam != null) {
                 newParam = newParam.trim();
             }
-            if (oldParam == null && newParam != null && !newParam.isEmpty()
+            if (oldParam == null && StringUtils.isNotEmpty(newParam)
                     || oldParam != null && !oldParam.trim().equals(newParam)) {
                 filteredChangedParameters.put(key, newParam);
             }
@@ -935,30 +975,28 @@ public class ConfigurationGenerator {
         return filteredChangedParameters;
     }
 
-    private void writeConfiguration(StringBuffer newContent,
-            Map<String, String> changedParameters)
-            throws ConfigurationException {
+    private void writeConfiguration() throws ConfigurationException {
+        StringBuffer newContent = readConfiguration();
         FileWriter writer = null;
         try {
             writer = new FileWriter(nuxeoConf, false);
             // Copy back file content
             writer.append(newContent.toString());
-            if (changedParameters != null && !changedParameters.isEmpty()) {
-                // Write changed parameters
-                writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
-                        + System.getProperty("line.separator"));
-                for (String key : changedParameters.keySet()) {
-                    writer.write("#" + key + "="
-                            + userConfig.getProperty(key, "")
+            // Write changed parameters
+            writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
+                    + System.getProperty("line.separator"));
+            for (Object o : userConfig.keySet()) {
+                String key = (String) o;
+                String oldValue = storedConfig.getProperty(key, "");
+                String newValue = userConfig.getProperty(key, "");
+                if (!newValue.equals(oldValue)) {
+                    writer.write("#" + key + "=" + oldValue
                             + System.getProperty("line.separator"));
-                    if (changedParameters.get(key) != null) {
-                        writer.write(key + "=" + changedParameters.get(key)
-                                + System.getProperty("line.separator"));
-                    }
+                    writer.write(key + "=" + newValue
+                            + System.getProperty("line.separator"));
                 }
-                writer.write(BOUNDARY_END
-                        + System.getProperty("line.separator"));
             }
+            writer.write(BOUNDARY_END + System.getProperty("line.separator"));
         } catch (IOException e) {
             throw new ConfigurationException("Error writing in " + nuxeoConf, e);
         } finally {
@@ -972,16 +1010,13 @@ public class ConfigurationGenerator {
         }
     }
 
-    private StringBuffer loadConfiguration(Map<String, String> changedParameters)
-            throws ConfigurationException {
+    private StringBuffer readConfiguration() throws ConfigurationException {
         String wizardParam = null, templatesParam = null;
         Integer generationIndex = null, wizardIndex = null, templatesIndex = null;
-        if (changedParameters != null) {
-            // Will change wizardParam value instead of appending it
-            wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
-            // Will change templatesParam value instead of appending it
-            templatesParam = changedParameters.remove(PARAM_TEMPLATES_NAME);
-        }
+        // Will change wizardParam value instead of appending it
+        wizardParam = userConfig.getProperty(PARAM_WIZARD_DONE);
+        // Will change templatesParam value instead of appending it
+        templatesParam = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         ArrayList<String> newLines = new ArrayList<String>();
         BufferedReader reader = null;
         try {
@@ -1043,30 +1078,24 @@ public class ConfigurationGenerator {
                     }
                 } else {
                     if (!line.startsWith(BOUNDARY_END)) {
-                        if (changedParameters == null) {
-                            newLines.add(line);
+                        int equalIdx = line.indexOf("=");
+                        if (line.startsWith("#" + PARAM_TEMPLATES_NAME)
+                                || line.startsWith(PARAM_TEMPLATES_NAME)) {
+                            // Backward compliance, it must be ignored
+                            continue;
+                        }
+                        if (equalIdx < 1) { // Ignore non-readable lines
+                            continue;
+                        }
+                        if (line.trim().startsWith("#")) {
+                            String key = line.substring(1, equalIdx).trim();
+                            String value = line.substring(equalIdx + 1).trim();
+                            storedConfig.setProperty(key, value);
                         } else {
-                            int equalIdx = line.indexOf("=");
-                            if (line.startsWith("#" + PARAM_TEMPLATES_NAME)
-                                    || line.startsWith(PARAM_TEMPLATES_NAME)) {
-                                // Backward compliance, it must be ignored
-                                continue;
-                            }
-                            if (equalIdx < 1) { // Ignore non-readable lines
-                                continue;
-                            }
-                            if (line.trim().startsWith("#")) {
-                                String key = line.substring(1, equalIdx).trim();
-                                String value = line.substring(equalIdx + 1).trim();
-                                userConfig.setProperty(key, value);
-                            } else {
-                                String key = line.substring(0, equalIdx).trim();
-                                String value = line.substring(equalIdx + 1).trim();
-                                if (!changedParameters.containsKey(key)) {
-                                    changedParameters.put(key, value);
-                                } else if (!value.equals(changedParameters.get(key))) {
-                                    userConfig.setProperty(key, value);
-                                }
+                            String key = line.substring(0, equalIdx).trim();
+                            String value = line.substring(equalIdx + 1).trim();
+                            if (!value.equals(userConfig.getProperty(key))) {
+                                storedConfig.setProperty(key, value);
                             }
                         }
                     } else {
@@ -1095,28 +1124,42 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Extract a database template from a list of templates. Return the last
-     * one if there are multiples
+     * Extract a database template from the current list of templates. Return
+     * the last one if there are multiples.
      *
      * @see #rebuildTemplatesStr(String)
      */
     public String extractDatabaseTemplateName() {
         String dbTemplate = "unknown";
-        String nodbTemplates = "";
-        StringTokenizer st = new StringTokenizer(templates, ",");
-        while (st.hasMoreTokens()) {
-            String template = st.nextToken();
+        boolean found = false;
+        for (File templateFile : includedTemplates) {
+            String template = templateFile.getName();
             if (DB_LIST.contains(template)) {
                 dbTemplate = template;
-            } else {
-                nodbTemplates += "," + template;
+                found = true;
             }
         }
-        if (nodbTemplates.startsWith(",")) {
-            nodbTemplates = nodbTemplates.substring(1);
+        String dbType = userConfig.getProperty(PARAM_TEMPLATE_DBTYPE);
+        if (!found && dbType != null) {
+            log.warn(String.format(
+                    "Didn't find a known database template in the list but "
+                            + "some template contributed a value for %s.",
+                    PARAM_TEMPLATE_DBTYPE));
+            dbTemplate = dbType;
         }
-        userConfig.put(PARAM_TEMPLATES_NODB, nodbTemplates);
-        userConfig.put(PARAM_TEMPLATE_DBNAME, dbTemplate);
+        if (!dbTemplate.equals(dbType)) {
+            if (dbType == null) {
+                log.warn(String.format("Missing value for %s, using %s",
+                        PARAM_TEMPLATE_DBTYPE, dbTemplate));
+                userConfig.setProperty(PARAM_TEMPLATE_DBTYPE, dbTemplate);
+            } else {
+                log.error(String.format(
+                        "Inconsistent values between %s (%s) and %s (%s)",
+                        PARAM_TEMPLATE_DBNAME, dbTemplate,
+                        PARAM_TEMPLATE_DBTYPE, dbType));
+            }
+        }
+        defaultConfig.setProperty(PARAM_TEMPLATE_DBNAME, dbTemplate);
         return dbTemplate;
     }
 
@@ -1359,14 +1402,21 @@ public class ConfigurationGenerator {
      * @see {@link #changeTemplates(String)}
      */
     public String rebuildTemplatesStr(String dbTemplate) {
-        String nodbTemplates = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NODB);
-        if (nodbTemplates == null) {
-            extractDatabaseTemplateName();
-            nodbTemplates = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NODB);
+        String currentDBTemplate = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
+        if (currentDBTemplate == null) {
+            currentDBTemplate = extractDatabaseTemplateName();
         }
-        String newTemplates = nodbTemplates.isEmpty() ? dbTemplate : dbTemplate
-                + "," + nodbTemplates;
-        return newTemplates;
+        List<String> templatesList = new ArrayList<String>();
+        templatesList.addAll(Arrays.asList(templates.split(",")));
+        int dbIdx = templatesList.indexOf(currentDBTemplate);
+        if (dbIdx < 0) {
+            // current db template is implicit => override it
+            templatesList.add(dbTemplate);
+        } else {
+            // current db template is explicit => replace it
+            templatesList.set(dbIdx, dbTemplate);
+        }
+        return StringUtils.join(templatesList, ",");
     }
 
     /**
@@ -1457,22 +1507,15 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public void rmTemplate(String template) throws ConfigurationException {
-        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
         String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        List<String> oldTemplatesSplit = Arrays.asList(oldTemplates.split(","));
-        if (oldTemplatesSplit.contains(template)) {
-            StringBuffer newTemplates = new StringBuffer();
-            boolean firstIem = true;
-            for (String templateItem : oldTemplatesSplit) {
-                if (!template.equals(templateItem)) {
-                    newTemplates.append((firstIem ? "" : ",") + templateItem);
-                    firstIem = false;
-                }
-            }
-            newParametersToSave.put(PARAM_TEMPLATES_NAME,
-                    newTemplates.toString());
+        List<String> templatesList = new ArrayList<String>();
+        templatesList.addAll(Arrays.asList(oldTemplates.split(",")));
+        if (templatesList.remove(template)) {
+            String newTemplates = StringUtils.join(templatesList, ",");
+            HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+            newParametersToSave.put(PARAM_TEMPLATES_NAME, newTemplates);
             saveFilteredConfiguration(newParametersToSave);
-            changeTemplates(newTemplates.toString());
+            changeTemplates(newTemplates);
         }
     }
 
@@ -1487,9 +1530,9 @@ public class ConfigurationGenerator {
      */
     public String setProperty(String key, String value)
             throws ConfigurationException {
+        String oldValue = getStoredConfig().getProperty(key);
         HashMap<String, String> newParametersToSave = new HashMap<String, String>();
         newParametersToSave.put(key, value);
-        String oldValue = userConfig.getProperty(key);
         saveFilteredConfiguration(newParametersToSave);
         setBasicConfiguration();
         return oldValue;
