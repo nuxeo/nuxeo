@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -985,8 +986,14 @@ public class ConfigurationGenerator {
             // Write changed parameters
             writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
                     + System.getProperty("line.separator"));
-            for (Object o : userConfig.keySet()) {
+            for (Object o : new TreeSet<Object>(userConfig.keySet())) {
                 String key = (String) o;
+                // Ignore parameters already stored in newContent
+                if (PARAM_FORCE_GENERATION.equals(key)
+                        || PARAM_WIZARD_DONE.equals(key)
+                        || PARAM_TEMPLATES_NAME.equals(key)) {
+                    continue;
+                }
                 String oldValue = storedConfig.getProperty(key, "");
                 String newValue = userConfig.getProperty(key, "");
                 if (!newValue.equals(oldValue)) {
