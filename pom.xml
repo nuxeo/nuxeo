@@ -959,7 +959,7 @@
 
       <!-- Multi Tenant Management -->
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
+        <groupId>org.nuxeo.multi.tenant</groupId>
         <artifactId>nuxeo-multi-tenant</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
@@ -1037,7 +1037,7 @@
         <version>${nuxeo.templates.version}</version>
       </dependency>
 
-      
+
       <!-- CSV -->
       <dependency>
         <groupId>org.nuxeo.csv</groupId>
