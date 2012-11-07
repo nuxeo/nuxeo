@@ -45,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
 import org.apache.geronimo.connector.outbound.SubjectSource;
+import org.apache.geronimo.connector.outbound.connectionmanagerconfig.NoPool;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PartitionedPool;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
@@ -54,6 +55,7 @@ import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.xbean.naming.reference.SimpleReference;
+import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.InitialContextAccessor;
 
 /**
@@ -584,6 +586,15 @@ public class NuxeoContainer {
                 config.selectOneNoMatch,
                 config.partitionByConnectionRequestInfo,
                 config.partitionBySubject);
+
+        // if using single-connection mode, don't use a pool, as the underlying
+        // datasource will already be pooled, plus we don't want the connections
+        // to outlive their high-level use and be used in different threads
+        String dataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(config.name);
+        if (ConnectionHelper.useSingleConnection(dataSourceName)) {
+            poolingSupport = new NoPool();
+        }
+
         final Subject subject = new Subject();
         SubjectSource subjectSource = new SubjectSource() {
             @Override

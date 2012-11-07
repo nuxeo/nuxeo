@@ -77,6 +77,9 @@ public class ConnectionHelper {
         /** The number of references to the JDBC connection. */
         protected int ref;
 
+        /** The thread in which this was initially acquired. */
+        protected Thread thread;
+
         private static final int LEAK_REF_MIN = 20;
 
         private static final int LEAK_REF_MAX = LEAK_REF_MIN + 5;
@@ -90,6 +93,7 @@ public class ConnectionHelper {
         public ConnectionInfo(Connection connection) {
             this.connection = connection;
             threadConnectionInfo.set(this);
+            thread = Thread.currentThread();
             if (log.isDebugEnabled()) {
                 log.debug("Opening single connection to: "
                         + Framework.getProperty(SINGLE_DS) + " " + this + " "
@@ -134,7 +138,15 @@ public class ConnectionHelper {
                 log.debug("Reference removed (" + ref + ") for " + this);
             }
             if (ref == 0) {
-                threadConnectionInfo.remove();
+                Thread currentThread = Thread.currentThread();
+                if (thread == currentThread) {
+                    threadConnectionInfo.remove();
+                } else {
+                    log.error("Single connection was acquired in thread "
+                            + thread.getName() + " but is closed in thread "
+                            + currentThread.getName() + ": " + this,
+                            new Exception());
+                }
                 connection.close();
                 if (log.isDebugEnabled()) {
                     log.debug("Closing single connection to: "
@@ -210,6 +222,40 @@ public class ConnectionHelper {
     }
 
     /**
+     * Checks if single thread-local datasource mode will be used for the given
+     * datasource name.
+     *
+     * @return {@code true} if using a single thread-local connection for this
+     *         datasource
+     */
+    public static boolean useSingleConnection(String dataSourceName) {
+        if (dataSourceName != null) {
+            String excludes = Framework.getProperty(EXCLUDE_DS);
+            if ("*".equals(excludes)) {
+                return false;
+            }
+            if (!StringUtils.isBlank(excludes)) {
+                for (String exclude : excludes.split("[, ] *")) {
+                    if (dataSourceName.equals(exclude)
+                            || dataSourceName.equals(DataSourceHelper.getDataSourceJNDIName(exclude))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return !StringUtils.isBlank(Framework.getProperty(SINGLE_DS));
+    }
+
+    /**
+     * Gets the fake name we use to pass to ConnectionHelper.getConnection, in
+     * order for exclusions on these connections to be possible.
+     */
+    public static String getPseudoDataSourceNameForRepository(
+            String repositoryName) {
+        return "repository_" + repositoryName;
+    }
+
+    /**
      * Gets a new reference to the thread-local JDBC connection for the given
      * dataSource. The connection <strong>MUST</strong> be closed in a finally
      * block when code is done using it.
@@ -222,21 +268,8 @@ public class ConnectionHelper {
      */
     public static Connection getConnection(String dataSourceName)
             throws SQLException {
-        if (dataSourceName == null) {
-            return getConnection();
-        }
-        String excludes = Framework.getProperty(EXCLUDE_DS);
-        if ("*".equals(excludes)) {
+        if (!useSingleConnection(dataSourceName)) {
             return null;
-        }
-        if (StringUtils.isBlank(excludes)) {
-            return getConnection();
-        }
-        for (String exclude : excludes.split("[, ] *")) {
-            if (dataSourceName.equals(exclude)
-                    || dataSourceName.equals(DataSourceHelper.getDataSourceJNDIName(exclude))) {
-                return null;
-            }
         }
         return getConnection();
     }
@@ -257,16 +290,57 @@ public class ConnectionHelper {
                 return null;
             }
             // get a new physical connection using the single datasource
-            DataSource dataSource;
-            try {
-                dataSource = DataSourceHelper.getDataSource(dataSourceName);
-            } catch (NamingException e) {
-                throw new SQLException("Cannot find datasource: "
-                        + dataSourceName, e);
-            }
+            DataSource dataSource = getDataSource(dataSourceName);
             info = new ConnectionInfo(getConnection(dataSource));
         }
         return info.getNewConnection();
+    }
+
+    private static DataSource getDataSource(String dataSourceName)
+            throws SQLException {
+        if (Framework.isTestModeSet()) {
+            String url = Framework.getProperty("nuxeo.test.vcs.url");
+            String user = Framework.getProperty("nuxeo.test.vcs.user");
+            String password = Framework.getProperty("nuxeo.test.vcs.password");
+            if (url != null && user != null) {
+                return new DataSourceFromUrl(url, user, password); // driver?
+            }
+        }
+        try {
+            return DataSourceHelper.getDataSource(dataSourceName);
+        } catch (NamingException e) {
+            throw new SQLException("Cannot find datasource: " + dataSourceName,
+                    e);
+        }
+    }
+
+    /**
+     * Checks how many references there are to the shared connection for the
+     * current thread.
+     * <p>
+     * USED IN UNIT TESTS OR FOR DEBUGGING.
+     */
+    public static int countConnectionReferences() {
+        ConnectionInfo info = ConnectionInfo.getCurrent();
+        return info == null ? 0 : info.ref;
+    }
+
+    /**
+     * Clears the remaining connection references for the current thread.
+     * <p>
+     * USED IN UNIT TESTS ONLY.
+     */
+    public static int clearConnectionReferences() {
+        int n = 0;
+        while (countConnectionReferences() > 0) {
+            n++;
+            try {
+                ConnectionInfo.getCurrent().unref();
+            } catch (SQLException e) {
+                log.error("Error closing connection", e);
+            }
+        }
+        return n;
     }
 
     private static Connection getConnection(DataSource dataSource)
