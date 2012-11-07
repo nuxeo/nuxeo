@@ -486,7 +486,7 @@
 
     <action id="le_create_msword"
       link="#{nxd:liveCreateUrl('application/msword', 'File', 'file', 'content', 'filename')}"
-      order="40" label="action.liveedit.create.msword" icon="/icons/doc.png">
+      order="40" label="action.liveedit.create.msword" icon="/icons/word.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
 
