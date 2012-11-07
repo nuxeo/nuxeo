@@ -545,8 +545,19 @@
           the current one.
         </description>
         <categories>
-          <category>configuration_not_ready</category>
+          <category>search</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -1014,8 +1025,19 @@
           from a l10nvocabulary or l10nxvocabulary directory.
         </description>
         <categories>
-          <category>configuration_not_ready</category>
+          <category>search</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
         <properties>
           <layouts mode="any">
             <layout name="select_l10n_vocabulary_tree_widget_type_properties_any">
@@ -2026,7 +2048,7 @@
        </documentation>
        <sinceVersion>5.7</sinceVersion>
        <categories>
-         <category>document</category>
+         <category>search</category>
        </categories>
        <supportedModes>
         <mode>edit</mode>
