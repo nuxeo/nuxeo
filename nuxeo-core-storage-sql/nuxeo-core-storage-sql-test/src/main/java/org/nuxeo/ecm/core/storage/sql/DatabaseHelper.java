@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory;
+import org.nuxeo.runtime.api.ConnectionHelper;
 
 public abstract class DatabaseHelper {
 
@@ -33,6 +34,8 @@ public abstract class DatabaseHelper {
     public static final String DB_PROPERTY = "nuxeo.test.vcs.db";
 
     public static final String DB_DEFAULT = "H2";
+
+    private static final boolean SINGLEDS_DEFAULT = false;
 
     public static DatabaseHelper DATABASE;
 
@@ -48,6 +51,7 @@ public abstract class DatabaseHelper {
         }
         setDatabaseForTests(className);
         setRepositoryFactory(defaultRepositoryFactory);
+        setSingleDataSourceMode();
     }
 
     public static final String REPOSITORY_PROPERTY = "nuxeo.test.vcs.repository";
@@ -70,6 +74,9 @@ public abstract class DatabaseHelper {
     public static final String USER_PROPERTY = "nuxeo.test.vcs.user";
 
     public static final String PASSWORD_PROPERTY = "nuxeo.test.vcs.password";
+
+    // set this to true to activate single datasource for all tests
+    public static final String SINGLEDS_PROPERTY = "nuxeo.test.vcs.singleds";
 
     public static String setProperty(String name, String def) {
         String value = System.getProperty(name);
@@ -182,6 +189,17 @@ public abstract class DatabaseHelper {
 
     public abstract RepositoryDescriptor getRepositoryDescriptor();
 
+    public static void setSingleDataSourceMode() {
+        if (Boolean.parseBoolean(System.getProperty(SINGLEDS_PROPERTY))
+                || SINGLEDS_DEFAULT) {
+            // the name doesn't actually matter, as code in
+            // ConnectionHelper.getDataSource ignores it and uses
+            // nuxeo.test.vcs.url etc. for connections in test mode
+            String dataSourceName = "jdbc/NuxeoTestDS";
+            System.setProperty(ConnectionHelper.SINGLE_DS, dataSourceName);
+        }
+    }
+
     /**
      * For databases that do asynchronous fulltext indexing, sleep a bit.
      */
@@ -223,6 +241,10 @@ public abstract class DatabaseHelper {
     }
 
     public boolean supportsMultipleFulltextIndexes() {
+        return true;
+    }
+
+    public boolean supportsXA() {
         return true;
     }
 

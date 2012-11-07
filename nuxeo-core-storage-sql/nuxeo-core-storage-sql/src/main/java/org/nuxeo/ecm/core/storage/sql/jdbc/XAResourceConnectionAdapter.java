@@ -58,7 +58,7 @@ public class XAResourceConnectionAdapter implements XAResource {
             try {
                 connection.setAutoCommit(false);
             } catch (SQLException e) {
-                throw newXAException(XAER_RMERR, "Cannot set autoCommit=true");
+                throw newXAException(XAER_RMERR, "Cannot set autoCommit=false");
             }
         } else {
             // cannot support resume
@@ -93,9 +93,9 @@ public class XAResourceConnectionAdapter implements XAResource {
             throw newXAException(XAER_RMERR, "Cannot commit", e);
         } finally {
             try {
-                connection.setAutoCommit(false);
+                connection.setAutoCommit(true);
             } catch (SQLException e) {
-                log.error("Cannot set autoCommit=false", e);
+                log.error("Cannot set autoCommit=true", e);
             }
         }
     }
@@ -112,9 +112,9 @@ public class XAResourceConnectionAdapter implements XAResource {
             throw newXAException(XAER_RMERR, "Cannot rollback", e);
         } finally {
             try {
-                connection.setAutoCommit(false);
+                connection.setAutoCommit(true);
             } catch (SQLException e) {
-                log.error("Cannot set autoCommit=false", e);
+                log.error("Cannot set autoCommit=true", e);
             }
         }
     }

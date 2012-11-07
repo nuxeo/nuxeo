@@ -87,6 +87,10 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         if (!hasPoolingConfig()) {
             return;
         }
+        if (useSingleConnectionMode()) {
+            // there's not actual pool in this mode
+            return;
+        }
 
         threadException = null;
 

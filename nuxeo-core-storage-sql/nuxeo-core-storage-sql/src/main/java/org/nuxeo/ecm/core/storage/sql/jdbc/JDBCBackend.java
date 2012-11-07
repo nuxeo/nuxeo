@@ -64,7 +64,7 @@ public class JDBCBackend implements RepositoryBackend {
     public void initialize(RepositoryImpl repository) throws StorageException {
         this.repository = repository;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
-        pseudoDataSourceName = JDBCConnection.getPseudoDataSourceName(repositoryDescriptor.name);
+        pseudoDataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryDescriptor.name);
 
         // try single-datasource non-XA mode
         Connection connection = null;

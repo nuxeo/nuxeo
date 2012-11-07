@@ -121,17 +121,9 @@ public class JDBCConnection {
         }
     }
 
-    /**
-     * Gets the fake name we use to pass to ConnectionHelper.getConnection, in
-     * order for exclusions on these connections to be possible.
-     */
-    protected static String getPseudoDataSourceName(String repositoryName) {
-        return "VCS_" + repositoryName;
-    }
-
     protected void openBaseConnection() throws SQLException {
         // try single-datasource non-XA mode
-        connection = ConnectionHelper.getConnection(getPseudoDataSourceName(model.getRepositoryDescriptor().name));
+        connection = ConnectionHelper.getConnection(ConnectionHelper.getPseudoDataSourceNameForRepository(model.getRepositoryDescriptor().name));
         if (connection == null) {
             // standard XA mode
             for (int tryNo = 0;; tryNo++) {

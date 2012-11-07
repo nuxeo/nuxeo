@@ -14,6 +14,9 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +28,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DatabaseSQLServer extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseSQLServer();
+
+    private boolean supportsXA;
 
     private static final String DEF_SERVER = "localhost";
 
@@ -86,6 +91,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
         setProperties();
         Connection connection = DriverManager.getConnection(System.getProperty(URL_PROPERTY));
         doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
+        checkSupports(connection);
         connection.close();
     }
 
@@ -120,6 +126,23 @@ public class DatabaseSQLServer extends DatabaseHelper {
         }
     }
 
+    protected void checkSupports(Connection connection) throws SQLException {
+        int engineEdition = getEngineEdition(connection);
+        boolean azure = engineEdition == 5; // 5 = SQL Azure
+        supportsXA = !azure;
+    }
+
+    protected int getEngineEdition(Connection connection) throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("SELECT CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            st.close();
+        }
+    }
+
     @Override
     public boolean supportsMultipleFulltextIndexes() {
         return false;
@@ -128,6 +151,11 @@ public class DatabaseSQLServer extends DatabaseHelper {
     @Override
     public boolean supportsClustering() {
         return true;
+    }
+
+    @Override
+    public boolean supportsXA() {
+        return supportsXA;
     }
 
 }

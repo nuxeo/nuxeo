@@ -8,11 +8,14 @@
     <param name="Target" value="System.out" />
     <param name="Threshold" value="TRACE" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m%n" />
     </layout>
   </appender>
 
   <logger name="org.nuxeo.ecm.core.storage.sql.jdbc">
+    <level value="WARN" />
+  </logger>
+  <logger name="org.nuxeo.runtime.api.ConnectionHelper">
     <level value="WARN" />
   </logger>
 

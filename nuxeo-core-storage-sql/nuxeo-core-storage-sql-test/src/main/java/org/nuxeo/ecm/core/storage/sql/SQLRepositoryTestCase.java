@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -53,6 +54,8 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
      */
     protected int initialOpenSessions;
 
+    protected int initialSingleConnections;
+
     public DatabaseHelper database = DatabaseHelper.DATABASE;
 
     public SQLRepositoryTestCase() {
@@ -65,6 +68,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
+        initialSingleConnections = ConnectionHelper.countConnectionReferences();
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
@@ -98,6 +102,16 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
                 log.warn("Leaking session", info);
             }
         }
+        int finalSingleConnections = ConnectionHelper.countConnectionReferences();
+        int leakedSingleConnections = finalSingleConnections - initialSingleConnections;
+        if (leakedSingleConnections > 0) {
+            log.error(String.format(
+                    "There are %s single datasource connection(s) open at tear down; "
+                            + "the test leaked %s connection(s).",
+                    Integer.valueOf(finalSingleConnections),
+                    Integer.valueOf(leakedSingleConnections)));
+        }
+        ConnectionHelper.clearConnectionReferences();
     }
 
     public void openSession() throws ClientException {

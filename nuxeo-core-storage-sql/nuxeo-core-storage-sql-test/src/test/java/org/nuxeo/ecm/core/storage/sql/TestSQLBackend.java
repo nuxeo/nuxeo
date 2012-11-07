@@ -11,6 +11,14 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -39,12 +47,10 @@ import java.util.concurrent.TimeUnit;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
@@ -368,7 +374,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 "OSGI-INF/test-restriction-contrib.xml");
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node nodea = session.addChildNode(root, "foo", null, "Restriction", false);
+        Node nodea = session.addChildNode(root, "foo", null, "Restriction",
+                false);
         nodea.setSimpleProperty("restr:shortstring", "this-is-short");
         session.save();
 
@@ -1016,72 +1023,136 @@ public class TestSQLBackend extends SQLBackendTestCase {
         repository = newRepository(DELAY, false);
         repository2 = newRepository(DELAY, false);
 
-        Session session1 = repository.getConnection();
-        // session1 creates root node and does a save
-        // which resets invalidation timeout
-        Session session2 = repository2.getConnection();
-        session2.save(); // save resets invalidations timeout
+        ClusterTestJob r1 = new ClusterTestJob(repository, repository2);
+        ClusterTestJob r2 = new ClusterTestJob(repository, repository2);
+        ClusterTestJob.run(r1, r2);
+    }
 
-        // in session1, create base folder
-        Node root1 = session1.getRootNode();
-        Node folder1 = session1.addChildNode(root1, "foo", null, "TestDoc",
-                false);
-        SimpleProperty title1 = folder1.getSimpleProperty("tst:title");
-        session1.save();
+    protected static class ClusterTestJob extends LockStepJob {
 
-        // in session2, retrieve folder and check children
-        Node root2 = session2.getRootNode();
-        Node folder2 = session2.getChildNode(root2, "foo", false);
-        SimpleProperty title2 = folder2.getSimpleProperty("tst:title");
-        session2.getChildren(folder2, null, false);
+        protected Repository repository1;
 
-        // in session1, add document
-        session1.addChildNode(folder1, "gee", null, "TestDoc", false);
-        session1.save();
+        protected Repository repository2;
 
-        // in session2, try to get document
-        // immediate check, invalidation delay means not done yet
-        session2.save();
-        Node doc2 = session2.getChildNode(folder2, "gee", false);
-        // assertNull(doc2); // could fail if machine very slow
-        Thread.sleep(DELAY + 1); // wait invalidation delay
-        session2.save(); // process invalidations (non-transactional)
-        doc2 = session2.getChildNode(folder2, "gee", false);
-        assertNotNull(doc2);
+        private static final long DELAY = 500; // ms
 
-        // in session1 change title
-        title1.setValue("yo");
-        assertNull(title2.getString());
-        // save session1 (queues its invalidations to others)
-        session1.save();
-        // session2 has not saved (committed) yet, so still unmodified
-        assertNull(title2.getString());
-        // immediate check, invalidation delay means not done yet
-        session2.save();
-        // assertNull(title2.getString()); // could fail if machine very slow
-        Thread.sleep(DELAY + 1); // wait invalidation delay
-        session2.save();
-        // after commit, invalidations have been processed
-        assertEquals("yo", title2.getString());
+        public ClusterTestJob(
+                Repository repository1, Repository repository2) {
+            this.repository1 = repository1;
+            this.repository2 = repository2;
+        }
 
-        // written properties aren't shared
-        title1.setValue("mama");
-        title2.setValue("glop");
-        session1.save();
-        assertEquals("mama", title1.getString());
-        assertEquals("glop", title2.getString());
-        session2.save(); // and notifies invalidations
-        // in non-transaction mode, session1 has not processed
-        // its invalidations yet, call save() to process them artificially
-        Thread.sleep(DELAY + 1); // wait invalidation delay
-        session1.save();
-        // session2 save wins
-        assertEquals("glop", title1.getString());
-        assertEquals("glop", title2.getString());
+        @Override
+        public void job() throws Exception {
+            Session session1 = null;
+            Session session2 = null;
+            Node folder1 = null;
+            Node folder2 = null;
+            SimpleProperty title1 = null;
+            SimpleProperty title2 = null;
+            if (thread(1)) {
+                // session1 creates root node and does a save
+                // which resets invalidation timeout
+                session1 = repository1.getConnection();
+            }
+            if (thread(2)) {
+                session2 = repository2.getConnection();
+                session2.save(); // save resets invalidations timeout
+            }
+            if (thread(1)) {
+                // in session1, create base folder
+                Node root1 = session1.getRootNode();
+                folder1 = session1.addChildNode(root1, "foo", null, "TestDoc",
+                        false);
+                title1 = folder1.getSimpleProperty("tst:title");
+                session1.save();
+            }
+            if (thread(2)) {
+                // in session2, retrieve folder and check children
+                Node root2 = session2.getRootNode();
+                folder2 = session2.getChildNode(root2, "foo", false);
+                title2 = folder2.getSimpleProperty("tst:title");
+                session2.getChildren(folder2, null, false);
+            }
+            if (thread(1)) {
+                // in session1, add document
+                session1.addChildNode(folder1, "gee", null, "TestDoc", false);
+                session1.save();
+            }
+            if (thread(2)) {
+                // in session2, try to get document
+                // immediate check, invalidation delay means not done yet
+                session2.save();
+                Node doc2 = session2.getChildNode(folder2, "gee", false);
+                // assertNull(doc2); // could fail if machine very slow
+                Thread.sleep(DELAY + 1); // wait invalidation delay
+                session2.save(); // process invalidations
+                                 // (non-transactional)
+                doc2 = session2.getChildNode(folder2, "gee", false);
+                assertNotNull(doc2);
+            }
+            if (thread(1)) {
+                // in session1 change title
+                title1.setValue("yo");
+            }
+            if (thread(2)) {
+                assertNull(title2.getString());
+            }
+            if (thread(1)) {
+                // save session1 (queues its invalidations to others)
+                session1.save();
+            }
+            if (thread(2)) {
+                // session2 has not saved (committed) yet, so still
+                // unmodified
+                assertNull(title2.getString());
+                // immediate check, invalidation delay means not done yet
+                session2.save();
+                // assertNull(title2.getString()); // could fail if machine
+                // very
+                // slow
+                Thread.sleep(DELAY + 1); // wait invalidation delay
+                session2.save();
+                // after commit, invalidations have been processed
+                assertEquals("yo", title2.getString());
+            }
+            if (thread(1)) {
+                // written properties aren't shared
+                title1.setValue("mama");
+            }
+            if (thread(2)) {
+                title2.setValue("glop");
+            }
+            if (thread(1)) {
+                session1.save();
+                assertEquals("mama", title1.getString());
+            }
+            if (thread(2)) {
+                assertEquals("glop", title2.getString());
+                session2.save(); // and notifies invalidations
+            }
+            if (thread(1)) {
+                // in non-transaction mode, session1 has not processed
+                // its invalidations yet, call save() to process them
+                // artificially
+                Thread.sleep(DELAY + 1); // wait invalidation delay
+                session1.save();
+                // session2 save wins
+                assertEquals("glop", title1.getString());
+            }
+            if (thread(2)) {
+                assertEquals("glop", title2.getString());
+            }
+        }
+
     }
 
     @Test
     public void testRollback() throws Exception {
+        if (!DatabaseHelper.DATABASE.supportsXA()) {
+            return;
+        }
+
         Session session = repository.getConnection();
         XAResource xaresource = ((SessionImpl) session).getXAResource();
         Node root = session.getRootNode();
@@ -1120,6 +1191,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testSaveOnCommit() throws Exception {
+        if (!DatabaseHelper.DATABASE.supportsXA()) {
+            return;
+        }
+
         Session session = repository.getConnection(); // init
         session.save();
 
@@ -2774,7 +2849,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
         node.addMixinType("Templated");
-        Node t = session.addChildNode(node, "template", Long.valueOf(0), "template", true);
+        Node t = session.addChildNode(node, "template", Long.valueOf(0),
+                "template", true);
         t.setSimpleProperty("templateId", "123");
         session.save();
 

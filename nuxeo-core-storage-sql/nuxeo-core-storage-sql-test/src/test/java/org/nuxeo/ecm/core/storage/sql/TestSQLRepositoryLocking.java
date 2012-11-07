@@ -139,13 +139,13 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
         if (!hasPoolingConfig()) {
             return;
         }
-    
+
         DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
         doc1 = session.createDocument(doc1);
         session.save();
         // read lock after save (SQL INSERT)
         assertNull(doc1.getLockInfo());
-    
+
         DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
         doc2 = session.createDocument(doc2);
         session.save();
@@ -196,6 +196,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 } finally {
+                    threadStartLatch.countDown(); // error recovery
                     if (session2 != null) {
                         closeSession(session2);
                     }
