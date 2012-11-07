@@ -3639,6 +3639,9 @@
             <nuxeo.test.vcs.password>
               ${nuxeo.test.vcs.password}
             </nuxeo.test.vcs.password>
+            <nuxeo.test.vcs.singleds>
+              ${nuxeo.test.vcs.singleds}
+            </nuxeo.test.vcs.singleds>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>
