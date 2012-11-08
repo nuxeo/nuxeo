@@ -263,32 +263,68 @@ public class ConnectionHelper {
      * If the passed dataSource name is in the exclusion list, null will be
      * returned.
      *
+     * @param dataSourceName the datasource for which the connection is
+     *            requested
      * @return a new reference to the connection, or {@code null} if single
      *         datasource connection sharing is not in effect
      */
     public static Connection getConnection(String dataSourceName)
             throws SQLException {
+        return getConnection(dataSourceName, false);
+    }
+
+    /**
+     * Gets a new reference to the thread-local JDBC connection for the given
+     * dataSource. The connection <strong>MUST</strong> be closed in a finally
+     * block when code is done using it.
+     * <p>
+     * If the passed dataSource name is in the exclusion list, null will be
+     * returned.
+     * <p>
+     * If noSharing is requested, the connection will never come from the
+     * thread-local and will always be newly allocated.
+     *
+     * @param dataSourceName the datasource for which the connection is
+     *            requested
+     * @param noSharing {@code true} if this connection must not be shared with
+     *            others
+     * @return a new reference to the connection, or {@code null} if single
+     *         datasource connection sharing is not in effect
+     */
+    public static Connection getConnection(String dataSourceName,
+            boolean noSharing) throws SQLException {
         if (!useSingleConnection(dataSourceName)) {
             return null;
         }
-        return getConnection();
+        return getConnection(noSharing);
     }
 
     /**
      * Gets a new reference to the thread-local JDBC connection. The connection
      * <strong>MUST</strong> be closed in a finally block when code is done
      * using it.
+     * <p>
+     * If noSharing is requested, the connection will never come from the
+     * thread-local and will always be newly allocated.
      *
+     * @param noSharing {@code true} if this connection must not be shared with
+     *            others
      * @return a new reference to the connection, or {@code null} if single
      *         datasource connection sharing is not in effect
      */
-    public static Connection getConnection() throws SQLException {
+    protected static Connection getConnection(boolean noSharing)
+            throws SQLException {
+        String dataSourceName = Framework.getProperty(SINGLE_DS);
+        if (StringUtils.isBlank(dataSourceName)) {
+            return null;
+        }
+        if (noSharing) {
+            DataSource dataSource = getDataSource(dataSourceName);
+            return getConnection(dataSource);
+        }
+        // sharing mode through thread-local ConnectionInfo
         ConnectionInfo info = ConnectionInfo.getCurrent();
         if (info == null) {
-            String dataSourceName = Framework.getProperty(SINGLE_DS);
-            if (StringUtils.isBlank(dataSourceName)) {
-                return null;
-            }
             // get a new physical connection using the single datasource
             DataSource dataSource = getDataSource(dataSourceName);
             info = new ConnectionInfo(getConnection(dataSource));
