@@ -22,6 +22,10 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_STORYBOARD_FACET;
 import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_PROPERTY;
 
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,6 +43,8 @@ import org.nuxeo.ecm.platform.video.VideoHelper;
  * @author ogrisel
  */
 public class VideoStoryboardListener implements PostCommitEventListener {
+
+    public static final Log log = LogFactory.getLog(VideoStoryboardListener.class);
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
@@ -65,11 +71,19 @@ public class VideoStoryboardListener implements PostCommitEventListener {
         if (doc.hasFacet(HAS_STORYBOARD_FACET)
                 && ctx.hasProperty(VIDEO_CHANGED_PROPERTY)) {
             BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+            VideoHelper.updateVideoInfo(doc, blobHolder.getBlob());
             VideoHelper.updateStoryboard(doc, blobHolder.getBlob());
+            try {
+                VideoHelper.updatePreviews(doc, blobHolder.getBlob());
+            } catch (IOException e) {
+                // this should only happen if the hard drive is full
+                log.error(String.format(
+                        "Failed to extract previews for video '%s': %s",
+                        doc.getTitle(), e.getMessage()), e);
+            }
             CoreSession session = docCtx.getCoreSession();
             session.saveDocument(doc);
             session.save();
         }
     }
-
 }

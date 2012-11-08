@@ -31,6 +31,7 @@ import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoDocument;
+import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 
 import com.google.common.collect.Maps;
@@ -49,17 +50,23 @@ public class VideoDocumentAdapter implements VideoDocument {
 
     private Map<String, TranscodedVideo> transcodedVideos;
 
+    @SuppressWarnings("unchecked")
     public VideoDocumentAdapter(DocumentModel doc) {
         if (!doc.hasFacet(VideoConstants.VIDEO_FACET)) {
             throw new ClientRuntimeException(doc + " is not a Video document.");
         }
-
         try {
             this.doc = doc;
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             Blob blob = bh.getBlob();
-            @SuppressWarnings("unchecked")
-            VideoInfo videoInfo = VideoInfo.fromMap((Map<String, Serializable>) doc.getPropertyValue("vid:info"));
+
+            Map<String, Serializable> videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue("vid:info");
+            if (videoInfoMap == null || videoInfoMap.get("duration") == null) {
+                // Lazy extraction of video info if missing.
+                VideoHelper.updateVideoInfo(doc, blob);
+                videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue("vid:info");
+            }
+            VideoInfo videoInfo = VideoInfo.fromMap(videoInfoMap);
             video = Video.fromBlobAndInfo(blob, videoInfo);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
