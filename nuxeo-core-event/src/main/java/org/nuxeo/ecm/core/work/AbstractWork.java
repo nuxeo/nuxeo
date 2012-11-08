@@ -79,6 +79,11 @@ public abstract class AbstractWork implements Work {
 
     protected volatile Map<String, Serializable> data;
 
+    // Subclasses can update this field during the lifecycle of the work execution
+    // when they want to manage their transaction manually (e.g. for long running tasks
+    // that only need access to transactional resources at specific times)
+    protected volatile boolean isTransactionStarted = false;
+
     public AbstractWork() {
         state = SCHEDULED;
         progress = PROGRESS_INDETERMINATE;
@@ -137,7 +142,7 @@ public abstract class AbstractWork implements Work {
         }
         boolean tx = isTransactional();
         if (tx) {
-            tx = TransactionHelper.startTransaction();
+            isTransactionStarted = TransactionHelper.startTransaction();
         }
         boolean ok = false;
         Exception err = null;
@@ -156,11 +161,12 @@ public abstract class AbstractWork implements Work {
                 cleanUp(ok, err);
             } finally {
                 try {
-                    if (tx) {
+                    if (tx && isTransactionStarted) {
                         if (!ok) {
                             TransactionHelper.setTransactionRollbackOnly();
                         }
                         TransactionHelper.commitOrRollbackTransaction();
+                        isTransactionStarted = false;
                     }
                 } finally {
                     if (err instanceof InterruptedException) {
