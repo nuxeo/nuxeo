@@ -72,6 +72,7 @@ public class VideoConversionWork extends AbstractWork {
             // take a long time)
             if (isTransactional() && isTransactionStarted) {
                 TransactionHelper.commitOrRollbackTransaction();
+                isTransactionStarted = false;
             }
 
             // Perform the actual conversion
