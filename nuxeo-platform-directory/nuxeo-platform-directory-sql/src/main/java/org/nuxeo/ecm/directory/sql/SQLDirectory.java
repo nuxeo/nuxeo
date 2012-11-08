@@ -212,6 +212,8 @@ public class SQLDirectory extends AbstractDirectory {
             if (connection == null) {
                 // standard datasource usage
                 connection = getDataSource().getConnection();
+            } else {
+                managedSQLSession = true;
             }
             return connection;
         } catch (SQLException e) {
