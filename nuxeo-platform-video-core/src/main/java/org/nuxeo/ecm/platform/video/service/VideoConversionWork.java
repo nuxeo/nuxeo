@@ -33,6 +33,7 @@ import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Work running a defined video conversion.
@@ -67,11 +68,24 @@ public class VideoConversionWork extends AbstractWork {
         setProgress(Progress.PROGRESS_INDETERMINATE);
         Video originalVideo = getVideoToConvert();
         if (originalVideo != null) {
+            // Release transaction resources while calling ffmpeg (which can
+            // take a long time)
+            if (isTransactional() && isTransactionStarted) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+
+            // Perform the actual conversion
             VideoService service = Framework.getLocalService(VideoService.class);
             String conversionName = id.getConversionName();
             setStatus("Transcoding");
             TranscodedVideo transcodedVideo = service.convert(id,
                     originalVideo, conversionName);
+
+            // Reopen a new transaction to save the results back to the
+            // repository
+            if (isTransactional()) {
+                isTransactionStarted = TransactionHelper.startTransaction();
+            }
             setStatus("Saving");
             saveNewTranscodedVideo(transcodedVideo);
         }
