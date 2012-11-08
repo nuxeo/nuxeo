@@ -330,17 +330,15 @@ public class NXQLQueryBuilder {
             } else if (options.size() == 1) {
                 return serializeUnary(parameter, "=", options.get(0));
             } else {
-                // "IN" is not (yet?) supported by jackrabbit, so rewriting it
-                // as a disjonction of exact matches
                 StringBuilder builder = new StringBuilder();
-                builder.append('(');
-                for (int i = 0; i < options.size() - 1; i++) {
-                    builder.append(serializeUnary(parameter, "=",
-                            options.get(i)));
-                    builder.append(" OR ");
+                builder.append(parameter);
+                builder.append(" IN (");
+                for (int i = 0; i < options.size(); i++) {
+                    if (i != 0) {
+                        builder.append(", ");
+                    }
+                    builder.append(options.get(i));
                 }
-                builder.append(serializeUnary(parameter, "=",
-                        options.get(options.size() - 1)));
                 builder.append(')');
                 return builder.toString();
             }
