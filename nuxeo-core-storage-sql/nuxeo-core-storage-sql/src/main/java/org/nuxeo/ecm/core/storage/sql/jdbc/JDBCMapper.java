@@ -112,10 +112,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo,
             XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
-            JDBCConnectionPropagator connectionPropagator)
+            JDBCConnectionPropagator connectionPropagator, boolean noSharing)
             throws StorageException {
         super(model, sqlInfo, xadatasource, clusterNodeHandler,
-                connectionPropagator);
+                connectionPropagator, noSharing);
         this.pathResolver = pathResolver;
         try {
             queryMakerService = Framework.getService(QueryMakerService.class);

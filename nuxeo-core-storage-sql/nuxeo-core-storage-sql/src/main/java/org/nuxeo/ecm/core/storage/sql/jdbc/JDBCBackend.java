@@ -22,7 +22,6 @@ import javax.sql.XADataSource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -168,14 +167,18 @@ public class JDBCBackend implements RepositoryBackend {
 
     @Override
     public Mapper newMapper(Model model, PathResolver pathResolver,
-            Credentials credentials, boolean create) throws StorageException {
+            MapperKind kind) throws StorageException {
+        boolean create = kind == MapperKind.LOCK_MANAGER;
+        boolean noSharing = kind == MapperKind.LOCK_MANAGER
+                || kind == MapperKind.CLUSTER_NODE_HANDLER;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
 
         // The first mapper is used for the lock manager and must not accumulate
         // invalidations from the cluster. Fortunately if first then there is
         // no cluster node handler yet.
-        Mapper mapper = createMapper(model, pathResolver);
-
+        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo,
+                xadatasource, clusterNodeHandler, connectionPropagator,
+                noSharing);
         if (create) {
             if (repositoryDescriptor.noDDL) {
                 log.info("Skipping database creation");
@@ -183,23 +186,13 @@ public class JDBCBackend implements RepositoryBackend {
                 // first connection, initialize the database
                 mapper.createDatabase();
             }
-            if (repositoryDescriptor.clusteringEnabled) {
-                Mapper clusterNodeMapper = createMapper(model, pathResolver);
-                log.info("Clustering enabled with "
-                        + repositoryDescriptor.clusteringDelay
-                        + " ms delay for repository: " + repository.getName());
-                clusterNodeHandler = new ClusterNodeHandler(clusterNodeMapper,
-                        repositoryDescriptor);
-                connectionPropagator.setClusterNodeHandler(clusterNodeHandler);
-            }
+        }
+        if (kind == MapperKind.CLUSTER_NODE_HANDLER) {
+            clusterNodeHandler = new ClusterNodeHandler(mapper,
+                    repositoryDescriptor);
+            connectionPropagator.setClusterNodeHandler(clusterNodeHandler);
         }
         return mapper;
-    }
-
-    protected JDBCMapper createMapper(Model model, PathResolver pathResolver)
-            throws StorageException {
-        return new JDBCMapper(model, pathResolver, sqlInfo, xadatasource,
-                clusterNodeHandler, connectionPropagator);
     }
 
     @Override

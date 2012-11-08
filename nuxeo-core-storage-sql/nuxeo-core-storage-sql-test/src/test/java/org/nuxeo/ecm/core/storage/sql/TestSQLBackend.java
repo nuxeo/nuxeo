@@ -1026,6 +1026,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         ClusterTestJob r1 = new ClusterTestJob(repository, repository2);
         ClusterTestJob r2 = new ClusterTestJob(repository, repository2);
         ClusterTestJob.run(r1, r2);
+        repository = null; // already closed
+        repository2 = null; // already closed
     }
 
     protected static class ClusterTestJob extends LockStepJob {
@@ -1142,6 +1144,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
             }
             if (thread(2)) {
                 assertEquals("glop", title2.getString());
+            }
+
+            // final close
+
+            if (thread(1)) {
+                repository1.close();
+            }
+            if (thread(2)) {
+                repository2.close();
             }
         }
 

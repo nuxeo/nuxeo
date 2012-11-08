@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
@@ -386,15 +387,25 @@ public class RepositoryImpl implements Repository {
             model = new Model(modelSetup);
             backend.initializeModel(model);
 
+            // create the lock manager, which creates its own mapper
+            // creating this first, before the cluster node handler,
+            // as we don't want invalidations in the lock manager's mapper
             Mapper lockManagerMapper = backend.newMapper(model, null,
-                    credentials, true);
+                    MapperKind.LOCK_MANAGER);
             lockManager = new LockManager(lockManagerMapper,
                     repositoryDescriptor.clusteringEnabled);
+
+            // create the mapper for the cluster node handler
+            if (repositoryDescriptor.clusteringEnabled) {
+                backend.newMapper(model, null, MapperKind.CLUSTER_NODE_HANDLER);
+                log.info("Clustering enabled with "
+                        + repositoryDescriptor.clusteringDelay
+                        + " ms delay for repository: " + getName());
+            }
         }
 
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = backend.newMapper(model, pathResolver, credentials,
-                false);
+        Mapper mapper = backend.newMapper(model, pathResolver, null);
         SessionImpl session = newSession(model, mapper, credentials);
         pathResolver.setSession(session);
         sessions.add(session);

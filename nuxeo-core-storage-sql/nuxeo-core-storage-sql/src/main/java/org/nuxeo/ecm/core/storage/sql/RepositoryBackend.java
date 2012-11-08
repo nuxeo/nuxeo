@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
@@ -41,16 +40,21 @@ public interface RepositoryBackend {
     void initializeModel(Model model) throws StorageException;
 
     /**
+     * The kind of mapper to create through {@link #newMapper}.
+     */
+    enum MapperKind {
+        LOCK_MANAGER, CLUSTER_NODE_HANDLER
+    }
+
+    /**
      * Creates a new instance a {@link Mapper}. Called once for every new
      * session.
      *
      * @param model the model
      * @param pathResolver the path resolver
-     * @param credentials the core session credentials
-     * @param create {@code true} if the database has to be created
-     *            (initialization)
+     * @param kind the kind of mapper to create
      */
-    Mapper newMapper(Model model, PathResolver pathResolver, Credentials credentials, boolean create)
+    Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind)
             throws StorageException;
 
     /**

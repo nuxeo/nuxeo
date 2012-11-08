@@ -74,9 +74,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     public JDBCRowMapper(Model model, SQLInfo sqlInfo,
             XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
-            JDBCConnectionPropagator connectionPropagator)
+            JDBCConnectionPropagator connectionPropagator, boolean noSharing)
             throws StorageException {
-        super(model, sqlInfo, xadatasource, connectionPropagator);
+        super(model, sqlInfo, xadatasource, connectionPropagator, noSharing);
         this.clusterNodeHandler = clusterNodeHandler;
         if (clusterNodeHandler != null) {
             queue = new InvalidationsQueue("cluster-" + this);

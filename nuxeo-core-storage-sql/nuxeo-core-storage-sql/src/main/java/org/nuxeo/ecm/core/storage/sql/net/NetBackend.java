@@ -13,7 +13,6 @@ package org.nuxeo.ecm.core.storage.sql.net;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -48,9 +47,9 @@ public class NetBackend implements RepositoryBackend {
 
     @Override
     public Mapper newMapper(Model model, PathResolver pathResolver,
-            Credentials credentials, boolean create) throws StorageException {
+            MapperKind kind) throws StorageException {
         try {
-            return MapperClient.getMapper(repository, credentials);
+            return MapperClient.getMapper(repository, null);
         } catch (StorageException e) {
             String url = MapperClient.getUrl(repository.getRepositoryDescriptor());
             log.error("Failed to connect to server: " + url, e);

@@ -59,6 +59,9 @@ public class JDBCConnection {
 
     protected final JDBCConnectionPropagator connectionPropagator;
 
+    /** Whether this connection must never be shared (long-lived). */
+    protected final boolean noSharing;
+
     /** If there's a chance the connection may be closed. */
     protected volatile boolean checkConnectionValid;
 
@@ -87,12 +90,13 @@ public class JDBCConnection {
      */
     public JDBCConnection(Model model, SQLInfo sqlInfo,
             XADataSource xadatasource,
-            JDBCConnectionPropagator connectionPropagator)
+            JDBCConnectionPropagator connectionPropagator, boolean noSharing)
             throws StorageException {
         this.model = model;
         this.sqlInfo = sqlInfo;
         this.xadatasource = xadatasource;
         this.connectionPropagator = connectionPropagator;
+        this.noSharing = noSharing;
         connectionPropagator.addConnection(this);
         open();
     }
@@ -123,7 +127,9 @@ public class JDBCConnection {
 
     protected void openBaseConnection() throws SQLException {
         // try single-datasource non-XA mode
-        connection = ConnectionHelper.getConnection(ConnectionHelper.getPseudoDataSourceNameForRepository(model.getRepositoryDescriptor().name));
+        String repositoryName = model.getRepositoryDescriptor().name;
+        String dataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryName);
+        connection = ConnectionHelper.getConnection(dataSourceName, noSharing);
         if (connection == null) {
             // standard XA mode
             for (int tryNo = 0;; tryNo++) {

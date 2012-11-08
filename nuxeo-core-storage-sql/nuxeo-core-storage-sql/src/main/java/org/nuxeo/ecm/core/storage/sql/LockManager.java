@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
@@ -62,13 +61,6 @@ public class LockManager {
      * Lock serializing access to the mapper.
      */
     protected final ReentrantLock serializationLock;
-
-    /**
-     * Counter to avoid having two identical transaction ids.
-     * <p>
-     * Used under {@link #serializationLock}.
-     */
-    protected static AtomicLong txCounter = new AtomicLong();
 
     protected static final Lock NULL_LOCK = new Lock(null, null);
 
