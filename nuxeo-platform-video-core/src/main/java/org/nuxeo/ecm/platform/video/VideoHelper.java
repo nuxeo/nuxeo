@@ -111,7 +111,7 @@ public class VideoHelper {
             // this can happen when if the codec is not supported or not
             // readable by ffmpeg and is recoverable by using a dummy preview
             log.warn(String.format(
-                    "could not process document '%s' with video file '%s': %s",
+                    "could not extract story board for document '%s' with video file '%s': %s",
                     docModel.getTitle(), video.getFilename(), e.getMessage()));
             log.debug(e, e);
             return;
@@ -157,7 +157,7 @@ public class VideoHelper {
             // this can happen when if the codec is not supported or not
             // readable by ffmpeg and is recoverable by using a dummy preview
             log.warn(String.format(
-                    "could not process document '%s' with video file '%s': %s",
+                    "could not extract screenshot from document '%s' with video file '%s': %s",
                     docModel.getTitle(), video.getFilename(), e.getMessage()));
             log.debug(e, e);
             return;
