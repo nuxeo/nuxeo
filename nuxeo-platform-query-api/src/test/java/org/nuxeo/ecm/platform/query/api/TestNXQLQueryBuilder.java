@@ -63,4 +63,25 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
 
     }
 
+    @Test
+    public void testBuidInQuery() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "TEST_IN").getWhereClause();
+        DocumentModel model = new DocumentModelImpl("/", "doc", "File");
+        model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE dc:title IN ('foo', 'bar')",
+                query);
+
+        model.setPropertyValue("dc:subjects", new String[] { "foo" });
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE dc:title = 'foo'", query);
+
+        // criteria with no values are removed
+        model.setPropertyValue("dc:subjects", new String[] {});
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document", query);
+    }
+
 }

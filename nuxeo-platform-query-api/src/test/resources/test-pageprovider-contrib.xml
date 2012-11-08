@@ -66,6 +66,14 @@
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="TEST_IN">
+      <whereClause docType="File">
+        <predicate parameter="dc:title" operator="IN">
+          <field schema="dublincore" name="subjects" />
+        </predicate>
+      </whereClause>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>
