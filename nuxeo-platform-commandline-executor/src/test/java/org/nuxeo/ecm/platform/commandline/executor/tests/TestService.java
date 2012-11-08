@@ -28,6 +28,7 @@ import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.commandline.executor.service.executors.AbstractExecutor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -125,6 +126,21 @@ public class TestService extends NXRuntimeTestCase {
             String msg = e.getErrorMessage();
             assertNotNull(msg);
         }
+    }
+
+    @Test
+    public void testIllegalCharactersInParameters() {
+        assertTrue(AbstractExecutor.VALID_PARAMETER_PATTERN.matcher(
+                "only/valid:%chars.").matches());
+        assertTrue(AbstractExecutor.VALID_PARAMETER_PATTERN.matcher(
+                "Non-latin words such as \u0625\u0646\u062a\u0631\u0646\u062a are valid.").matches());
+
+        assertFalse(AbstractExecutor.VALID_PARAMETER_PATTERN.matcher(
+                "\"quotes\" are invalid characters").matches());
+        assertFalse(AbstractExecutor.VALID_PARAMETER_PATTERN.matcher(
+                "(parens) are invalid characters").matches());
+        assertFalse(AbstractExecutor.VALID_PARAMETER_PATTERN.matcher(
+                "exclamation marks! are invalid characters").matches());
     }
 
 }

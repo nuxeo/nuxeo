@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  */
 public abstract class AbstractExecutor {
 
-    private static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[a-zA-Z_0-9-.%:/\\\\ ]+");
+    public static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:/\\\\ ]+");
 
     public static boolean isWindows() {
         String osName = System.getProperty("os.name");
