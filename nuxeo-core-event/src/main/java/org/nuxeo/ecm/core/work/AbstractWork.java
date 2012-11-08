@@ -359,4 +359,31 @@ public abstract class AbstractWork implements Work {
         return Collections.emptyList();
     }
 
+    /**
+     * Release the transaction resources by committing the existing transaction
+     * (if any). This is recommended before running a long process such as a
+     * video conversion for instance.
+     */
+    protected void commitOrRollbackTransaction() {
+        if (isTransactional() && isTransactionStarted) {
+            TransactionHelper.commitOrRollbackTransaction();
+            isTransactionStarted = false;
+        }
+    }
+
+    /**
+     * Start a new transaction if {@code commitOrRollbackTransaction()} was
+     * called previously, for instance for saving back the results of a long
+     * process such as a video conversion back as blob property of a nuxeo
+     * document in the repository.
+     *
+     * @return true if a new transaction has started
+     */
+    protected boolean startTransaction() {
+        if (isTransactional() && !isTransactionStarted) {
+            isTransactionStarted = TransactionHelper.startTransaction();
+        }
+        return isTransactionStarted;
+    }
+
 }
