@@ -492,6 +492,11 @@
         <artifactId>nuxeo-platform-jbpm-task-migration</artifactId>
         <version>${nuxeo.jbpm.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-gadgets</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
 
       <!-- Smart Search -->
       <dependency>
