@@ -16,10 +16,12 @@
  */
 package org.nuxeo.ecm.core.scheduler;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,7 +70,26 @@ public class SchedulerServiceImpl extends DefaultComponent implements
         URL cfg = context.getRuntimeContext().getResource(
                 "config/quartz.properties");
         if (cfg != null) {
-            schedulerFactory.initialize(cfg.openStream());
+            InputStream stream = cfg.openStream();
+            try {
+                schedulerFactory.initialize(stream);
+            } finally {
+                stream.close();
+            }
+        } else {
+            // use default config (unit tests)
+            Properties props = new Properties();
+            props.put("org.quartz.scheduler.instanceName", "Quartz");
+            props.put("org.quartz.scheduler.threadName", "Quartz_Scheduler");
+            props.put("org.quartz.scheduler.instanceId", "NON_CLUSTERED");
+            props.put("org.quartz.scheduler.makeSchedulerThreadDaemon", "true");
+            props.put("org.quartz.scheduler.skipUpdateCheck", "true");
+            props.put("org.quartz.threadPool.class",
+                    "org.quartz.simpl.SimpleThreadPool");
+            props.put("org.quartz.threadPool.threadCount", "1");
+            props.put("org.quartz.threadPool.threadPriority", "4");
+            props.put("org.quartz.threadPool.makeThreadsDaemons", "true");
+            schedulerFactory.initialize(props);
         }
         scheduler = schedulerFactory.getScheduler();
         scheduler.start();
