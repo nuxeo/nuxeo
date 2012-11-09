@@ -34,6 +34,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mvel2.PropertyAccessException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -312,8 +313,18 @@ public class NotificationEventListener implements
         String mailTemplate = null;
         // mail template can be dynamically computed from a MVEL expression
         if (notif.getTemplateExpr() != null) {
-            mailTemplate = emailHelper.evaluateMvelExpresssion(
-                    notif.getTemplateExpr(), eventInfo);
+            try {
+                mailTemplate = emailHelper.evaluateMvelExpresssion(
+                        notif.getTemplateExpr(), eventInfo);
+            } catch (PropertyAccessException pae) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cannot evaluate mail template expression '"
+                            + notif.getTemplateExpr() + "' in that context "
+                            + eventInfo, pae);
+                }
+            } catch (Exception e) {
+                log.error(e);
+            }
         }
         // if there is no mailTemplate evaluated, use the defined one
         if (StringUtils.isEmpty(mailTemplate)) {
