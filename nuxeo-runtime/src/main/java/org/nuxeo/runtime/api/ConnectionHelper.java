@@ -222,6 +222,41 @@ public class ConnectionHelper {
     }
 
     /**
+     * Tries to unwrap the connection to get the real physical one (returned by
+     * the original datasource).
+     * <p>
+     * This should only be used by code that needs to cast the connection to a
+     * driver-specific class to use driver-specific features.
+     */
+    public static Connection unwrap(Connection connection) {
+        if (Proxy.isProxyClass(connection.getClass())) {
+            InvocationHandler handler = Proxy.getInvocationHandler(connection);
+            if (handler instanceof ConnectionInvocationHandler) {
+                ConnectionInvocationHandler h = (ConnectionInvocationHandler) handler;
+                connection = h.connectionInfo.connection;
+            }
+        }
+        // now try Apache DBCP unwrap (standard or Tomcat), to skip datasource
+        // wrapping layers
+        // this needs accessToUnderlyingConnectionAllowed=true in the pool
+        // config
+        try {
+            Method m = connection.getClass().getMethod("getInnermostDelegate");
+            m.setAccessible(true); // needed, method of inner private class
+            Connection delegate = (Connection) m.invoke(connection);
+            if (delegate == null) {
+                log.error("Cannot access underlying connection, you must use "
+                        + "accessToUnderlyingConnectionAllowed=true in the pool configuration");
+            } else {
+                connection = delegate;
+            }
+        } catch (Exception e) {
+            // ignore missing method, connection not coming from Apache pool
+        }
+        return connection;
+    }
+
+    /**
      * Checks if single thread-local datasource mode will be used for the given
      * datasource name.
      *
