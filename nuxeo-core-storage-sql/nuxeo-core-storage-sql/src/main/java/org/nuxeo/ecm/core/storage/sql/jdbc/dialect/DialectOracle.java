@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.runtime.api.ConnectionHelper;
 
 /**
  * Oracle-specific dialect.
@@ -527,12 +528,13 @@ public class DialectOracle extends Dialect {
         }
         init();
         try {
+            connection = ConnectionHelper.unwrap(connection);
             Object arrayDescriptor = arrayDescriptorConstructor.newInstance(
                     "NX_STRING_TABLE", connection);
             return (Array) arrayConstructor.newInstance(arrayDescriptor,
                     connection, elements);
         } catch (Exception e) {
-            throw new SQLException(e.toString());
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
