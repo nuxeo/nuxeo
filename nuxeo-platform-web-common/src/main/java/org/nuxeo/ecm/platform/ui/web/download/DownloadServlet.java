@@ -337,7 +337,7 @@ public class DownloadServlet extends HttpServlet {
 
     public void handleClientDisconnect(IOException ioe) throws IOException {
         if (ExceptionHelper.isClientAbortError(ioe)) {
-            log.warn("Client disconnected: " + ioe.getMessage());
+            log.debug("Client disconnected: " + ioe.getMessage());
         } else {
             // this is a real unexpected problem, let the traditional error
             // management handle this case
