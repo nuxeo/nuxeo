@@ -5,7 +5,8 @@
     point="filterConfig">
 
     <filterConfig name="BigFileDownloaderRequest" cached="true" private="true"
-      transactional="true" synchonize="false">
+      transactional="false" synchonize="false">
+      <!-- transaction is manually handled in DownloadServlet -->
       <pattern>${org.nuxeo.ecm.contextPath}/nxbigfile/.*</pattern>
     </filterConfig>
 

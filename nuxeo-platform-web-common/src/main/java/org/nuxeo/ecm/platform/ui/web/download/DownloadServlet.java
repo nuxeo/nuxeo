@@ -51,6 +51,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Simple download servlet used for big files that can not be downloaded from
@@ -139,7 +140,16 @@ public class DownloadServlet extends HttpServlet {
         }
 
         CoreSession session = null;
+        boolean tx = false;
         try {
+            if (!TransactionHelper.isTransactionActive()) {
+                // manually start and stop a transaction around repository
+                // access to be able to release transactional resources without
+                // waiting for the download that can take a long time (longer
+                // than the transaction timeout) especially if the client or the
+                // connection is slow.
+                tx = TransactionHelper.startTransaction();
+            }
             session = getCoreSession(repoName);
 
             DocumentModel doc = session.getDocument(new IdRef(docId));
@@ -178,10 +188,16 @@ public class DownloadServlet extends HttpServlet {
             }
             return blob;
         } catch (Exception e) {
+            if (tx) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
             throw new ServletException(e);
         } finally {
             if (session != null) {
                 CoreInstance.getInstance().close(session);
+            }
+            if (tx) {
+                TransactionHelper.commitOrRollbackTransaction();
             }
         }
     }
@@ -238,7 +254,6 @@ public class DownloadServlet extends HttpServlet {
     private void handleDownloadSingleDocument(HttpServletRequest req,
             HttpServletResponse resp, String requestURI)
             throws ServletException {
-
         Blob blob = resolveBlob(req, resp, requestURI);
         if (!isBlobFound(blob, resp)) {
             return;
