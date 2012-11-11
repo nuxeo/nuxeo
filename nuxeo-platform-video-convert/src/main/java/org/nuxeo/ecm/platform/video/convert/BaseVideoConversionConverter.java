@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.Path;
@@ -70,13 +71,14 @@ public abstract class BaseVideoConversionConverter extends
 
         String baseDir = getTmpDirectory(parameters);
         Path tmpPath = new Path(baseDir).append(getTmpDirectoryPrefix() + "_"
-                + System.currentTimeMillis());
+                + UUID.randomUUID());
 
         File outDir = new File(tmpPath.toString());
         boolean dirCreated = outDir.mkdir();
         if (!dirCreated) {
             throw new ConversionException(
-                    "Unable to create tmp dir for transformer output");
+                    "Unable to create tmp dir for transformer output: "
+                            + outDir);
         }
 
         try {
