@@ -371,8 +371,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         // Add check to verify if last element of the path (current document)
         // has been updated
         if (parents == null
-                || !parents.get(parents.size() - 1).getName().equals(
-                        getCurrentDocument().getTitle())) {
+                || (!parents.isEmpty() && !parents.get(parents.size() - 1).getName().equals(
+                        getCurrentDocument().getTitle()))) {
             resetCurrentPath();
         }
         return parents;
@@ -395,8 +395,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     /**
-     * Switches to a new server location by updating the context and updating
-     * to the CoreSession (DocumentManager).
+     * Switches to a new server location by updating the context and updating to
+     * the CoreSession (DocumentManager).
      */
     public void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException {
@@ -424,8 +424,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     /**
-     * Returns the current documentManager if any or create a new session to
-     * the current location.
+     * Returns the current documentManager if any or create a new session to the
+     * current location.
      */
     public CoreSession getOrCreateDocumentManager() throws ClientException {
         if (documentManager != null) {
@@ -551,12 +551,13 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         // iterate in reverse list order to go down the tree
         // set all navigation variables according to docType
-        // => update to tree (check added to verify if last document (current
+        // => update to tree
+        // (check added to verify if last document (current
         // document) has been updated
         if (currentDocumentParents == null
-                || !currentDocumentParents.get(
+                || (!currentDocumentParents.isEmpty() && !currentDocumentParents.get(
                         currentDocumentParents.size() - 1).getTitle().equals(
-                        currentDocument.getTitle())) {
+                        currentDocument.getTitle()))) {
             currentDocumentParents = documentManager.getParentDocuments(currentDocument.getRef());
         }
         String docType;
