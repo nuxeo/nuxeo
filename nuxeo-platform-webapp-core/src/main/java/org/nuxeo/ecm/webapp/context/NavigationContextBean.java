@@ -368,7 +368,11 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     public List<PathElement> getCurrentPathList() throws ClientException {
-        if (parents == null) {
+        // Add check to verify if last element of the path (current document)
+        // has been updated
+        if (parents == null
+                || !parents.get(parents.size() - 1).getName().equals(
+                        getCurrentDocument().getTitle())) {
             resetCurrentPath();
         }
         return parents;
@@ -547,8 +551,12 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         // iterate in reverse list order to go down the tree
         // set all navigation variables according to docType
-        // => update to tree
-        if (currentDocumentParents == null) {
+        // => update to tree (check added to verify if last document (current
+        // document) has been updated
+        if (currentDocumentParents == null
+                || !currentDocumentParents.get(
+                        currentDocumentParents.size() - 1).getTitle().equals(
+                        currentDocument.getTitle())) {
             currentDocumentParents = documentManager.getParentDocuments(currentDocument.getRef());
         }
         String docType;
