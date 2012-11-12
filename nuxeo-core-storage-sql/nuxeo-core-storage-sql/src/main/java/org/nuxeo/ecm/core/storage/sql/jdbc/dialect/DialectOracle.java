@@ -65,10 +65,11 @@ public class DialectOracle extends Dialect {
 
     protected boolean pathOptimizationsEnabled;
 
+    protected int pathOptimizationsVersion = 0;
+
     private static final String DEFAULT_USERS_SEPARATOR = "|";
 
     protected String usersSeparator;
-
 
     public DialectOracle(DatabaseMetaData metadata,
             BinaryManager binaryManager,
@@ -79,6 +80,10 @@ public class DialectOracle extends Dialect {
                         : repositoryDescriptor.fulltextAnalyzer;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.pathOptimizationsEnabled;
+        if (pathOptimizationsEnabled) {
+            pathOptimizationsVersion = repositoryDescriptor == null ? 0
+                    : repositoryDescriptor.pathOptimizationsVersion;
+        }
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
@@ -408,11 +413,17 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getInTreeSql(String idColumnName) {
-        if (pathOptimizationsEnabled) {
+        if (pathOptimizationsVersion == 2) {
+            return String.format(
+                    "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = hierarchy.id AND ancestor = ?)",
+                    idColumnName);
+        } else if (pathOptimizationsVersion == 1) {
+            // using nested table optim
             return String.format(
                     "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ? MEMBER OF ancestors)",
                     idColumnName);
         } else {
+            // no optimization
             return String.format("NX_IN_TREE(%s, ?) = 1", idColumnName);
         }
     }
@@ -534,6 +545,8 @@ public class DialectOracle extends Dialect {
                 Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled",
                 Boolean.valueOf(pathOptimizationsEnabled));
+        properties.put("pathOptimizationsVersion1", (pathOptimizationsVersion == 1) ? true : false);
+        properties.put("pathOptimizationsVersion2", (pathOptimizationsVersion == 2) ? true : false);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
