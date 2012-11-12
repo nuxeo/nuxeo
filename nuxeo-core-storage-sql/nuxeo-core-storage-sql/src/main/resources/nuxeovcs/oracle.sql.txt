@@ -195,12 +195,41 @@ CREATE INDEX DUBLINCORE_MODIFIED_IDX ON DUBLINCORE(MODIFIED)
 # -- PATH OPTIMIZATIONS
 
 # ------------------------------------------------------------
-# -- ancestors table
-# -- ancestors field contains the list of parents from root to parent
+
+# -- without optimization path search are done using a proc stock and the hierarchy table
+#IF: ! pathOptimizationsEnabled
+LOG.INFO pathOptimizations is disabled
+
+# -- first optimization that use a nested table to store ancestors
+#IF: pathOptimizationsVersion1
+LOG.INFO pathOptimizations version 1 enabled using nested table
+
+# -- new optimization NXP-10210
+#IF: pathOptimizationsVersion2
+LOG.INFO pathOptimizations version 2 enabled
+
+
+# -- changing version optimization requires DBA action
+#TEST:
+SELECT 1 FROM user_tab_columns WHERE table_name='ANCESTORS' AND column_name='ANCESTORS'
+
+#IF: ! emptyResult
+#IF: pathOptimizationsVersion2
+LOG.ERROR You have changed the version of the pathOptimizations, you need to drop the ANCESTORS table
+
+#TEST:
+SELECT 1 FROM user_tab_columns WHERE table_name='ANCESTORS' AND column_name='ANCESTOR'
+
+#IF: ! emptyResult
+#IF: pathOptimizationsVersion1
+LOG.ERROR You have changed the version of the pathOptimizations, you need to drop the ANCESTORS table
+
+
 #TEST:
 SELECT 1 FROM USER_TABLES WHERE table_name = 'ANCESTORS'
 
 #IF: emptyResult
+#IF: pathOptimizationsVersion1
 CREATE TABLE ANCESTORS (
   hierarchy_id VARCHAR2(36) NOT NULL,
   ancestors NX_STRING_TABLE,
@@ -209,34 +238,43 @@ CREATE TABLE ANCESTORS (
 ) NESTED TABLE ancestors STORE AS ancestors_ancestors
 
 
-#TEST:
-SELECT 1 FROM user_tab_columns WHERE table_name = 'ANCESTORS' AND column_name = 'NEED_UPDATE'
-
 #IF: emptyResult
-ALTER TABLE ANCESTORS ADD NEED_UPDATE NUMBER (1)
-
-
-#TEST:
-SELECT 1 FROM USER_INDEXES WHERE index_name = 'ANCESTORS_NEED_UPDATE_IDX'
-
-#IF: emptyResult
-CREATE INDEX ANCESTORS_NEED_UPDATE_IDX ON ANCESTORS(need_update)
+#IF: pathOptimizationsVersion2
+CREATE TABLE ANCESTORS (
+  hierarchy_id VARCHAR2(36) NOT NULL,
+  ancestor VARCHAR2(36) NOT NULL,
+  need_update NUMBER(1),
+  CONSTRAINT ANCESTORS_HIERARCHY_ID_FK FOREIGN KEY (hierarchy_id) REFERENCES hierarchy (id) ON DELETE CASCADE,
+  CONSTRAINT ANCESTORS_PK PRIMARY KEY (hierarchy_id, ancestor)
+)
 
 
 #TEST:
-SELECT 1 FROM USER_INDEXES WHERE index_name = 'ANCESTORS_HIERARCHY_ID_IDX'
+SELECT 1 FROM DUAL WHERE EXISTS(SELECT 1 FROM USER_TABLES WHERE table_name = 'ANCESTORS')
+           AND NOT EXISTS(SELECT 1 FROM USER_INDEXES WHERE index_name='ANCESTORS_HIERARCHY_ID_IDX')
 
-#IF: emptyResult
+#IF: ! emptyResult
 CREATE INDEX ANCESTORS_HIERARCHY_ID_IDX ON ANCESTORS(hierarchy_id)
 
 
 #TEST:
-SELECT 1 FROM USER_INDEXES WHERE index_name = 'ANCESTORS_ANCESTORS_IDX'
+SELECT 1 FROM DUAL WHERE EXISTS(SELECT 1 FROM USER_TABLES WHERE table_name = 'ANCESTORS')
+           AND NOT EXISTS(SELECT 1 FROM USER_INDEXES WHERE index_name='ANCESTORS_NEED_UPDATE_IDX')
 
-#IF: emptyResult
-CREATE INDEX ANCESTORS_ANCESTORS_IDX ON ANCESTORS_ANCESTORS(NESTED_TABLE_ID, COLUMN_VALUE)
+#IF: ! emptyResult
+CREATE INDEX ANCESTORS_NEED_UPDATE_IDX ON ANCESTORS(need_update)
 
 
+#TEST:
+SELECT 1 FROM DUAL WHERE EXISTS(SELECT 1 FROM USER_TABLES WHERE table_name = 'ANCESTORS')
+           AND NOT EXISTS(SELECT 1 FROM USER_INDEXES WHERE index_name='ANCESTORS_ANCESTOR_IDX')
+
+#IF: ! emptyResult
+#IF: pathOptimizationsVersion2
+CREATE INDEX ANCESTORS_ANCESTOR_IDX ON ANCESTORS(ancestor)
+
+
+#IF: pathOptimizationsVersion1
 CREATE OR REPLACE FUNCTION nx_get_ancestors(id VARCHAR2)
 RETURN NX_STRING_TABLE
 IS
@@ -270,6 +308,39 @@ BEGIN
 END;
 
 
+#IF: pathOptimizationsVersion2
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id VARCHAR2)
+RETURN NX_STRING_TABLE PIPELINED
+IS
+  curid hierarchy.id%TYPE := id;
+  newid hierarchy.id%TYPE;
+  first BOOLEAN := TRUE;
+BEGIN
+  WHILE curid IS NOT NULL LOOP
+    BEGIN
+      SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+      -- curid not in hierarchy at all
+      newid := NULL;
+    END;
+    IF curid IS NOT NULL AND curid <> id THEN
+      PIPE row(curid);
+    END IF;
+    IF first AND newid IS NULL THEN
+      BEGIN
+        SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;
+      EXCEPTION
+        WHEN NO_DATA_FOUND THEN NULL;
+      END;
+    END IF;
+    first := FALSE;
+    curid := newid;
+  END LOOP;
+END;
+
+# -- Triggers
+
+#IF: pathOptimizationsVersion1
 CREATE OR REPLACE TRIGGER nx_trig_ancestors_insert
   AFTER INSERT ON hierarchy
   FOR EACH ROW
@@ -279,10 +350,7 @@ BEGIN
 END;
 
 
-#IF: ! pathOptimizationsEnabled
-ALTER TRIGGER nx_trig_ancestors_insert DISABLE
-
-
+#IF: pathOptimizationsVersion1
 CREATE OR REPLACE TRIGGER nx_trig_ancestors_update
   AFTER UPDATE ON hierarchy
   FOR EACH ROW  WHEN (NEW.isproperty = 0 AND NEW.parentid <> OLD.parentid)
@@ -292,11 +360,7 @@ BEGIN
                            WHERE :NEW.id MEMBER OF a.ancestors OR  hierarchy_id = :NEW.id);
 END;
 
-
-#IF: ! pathOptimizationsEnabled
-ALTER TRIGGER nx_trig_ancestors_update DISABLE
-
-
+#IF: pathOptimizationsVersion1
 CREATE OR REPLACE TRIGGER nx_trig_ancestors_process
   AFTER INSERT OR UPDATE ON hierarchy
   -- statement level is required to be able to read hierarchy table with updated values
@@ -305,11 +369,78 @@ BEGIN
     WHERE need_update = 1;
 END;
 
+#IF: pathOptimizationsVersion2
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_insert
+  AFTER INSERT ON hierarchy
+  FOR EACH ROW
+  WHEN (NEW.isproperty = 0 AND NEW.parentid IS NOT NULL)
+BEGIN
+  INSERT INTO ancestors (hierarchy_id, ancestor)
+    SELECT :NEW.id, ancestor FROM ancestors WHERE hierarchy_id = :NEW.parentid;
+  INSERT INTO ancestors (hierarchy_id, ancestor) VALUES (:NEW.id, :NEW.parentid);
+END;
 
+
+#IF: pathOptimizationsVersion2
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_update
+  AFTER UPDATE ON hierarchy
+  FOR EACH ROW  WHEN (NEW.isproperty = 0 AND NEW.parentid <> OLD.parentid)
+BEGIN
+   -- mark rows to update
+   UPDATE ancestors SET need_update = 1 WHERE hierarchy_id IN (
+     SELECT hierarchy_id FROM ancestors WHERE ancestor = :NEW.id OR hierarchy_id = :NEW.id);
+END;
+
+
+#IF: pathOptimizationsVersion2
+CREATE OR REPLACE TRIGGER nx_trig_ancestors_process
+  AFTER INSERT OR UPDATE ON hierarchy
+  -- statement level is required to be able to read hierarchy table with updated values
+DECLARE
+  CURSOR process_cur IS
+    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM ancestors WHERE need_update = 1;
+  process_rec process_cur%ROWTYPE;
+BEGIN
+   OPEN process_cur;
+   LOOP
+      FETCH process_cur INTO process_rec;
+      IF process_cur%NOTFOUND THEN
+         EXIT;
+      ELSE
+         DELETE from ancestors WHERE hierarchy_id = process_rec.hierarchy_id AND need_update = 1;
+         INSERT INTO ancestors (hierarchy_id, ancestor)
+           SELECT process_rec.hierarchy_id AS hierarchy_id, t.COLUMN_VALUE AS ancestor FROM TABLE(nx_get_ancestors(process_rec.hierarchy_id)) t;
+      END IF;
+   END LOOP;
+   CLOSE process_cur;
+END;
+
+
+#TEST:
+SELECT 1 FROM USER_TRIGGERS WHERE trigger_name = 'NX_TRIG_ANCESTORS_INSERT'
+
+#IF: ! emptyResult
+#IF: ! pathOptimizationsEnabled
+ALTER TRIGGER nx_trig_ancestors_insert DISABLE
+
+
+#TEST:
+SELECT 1 FROM USER_TRIGGERS WHERE trigger_name = 'NX_TRIG_ANCESTORS_PROCESS'
+
+#IF: ! emptyResult
 #IF: ! pathOptimizationsEnabled
 ALTER TRIGGER nx_trig_ancestors_process DISABLE
 
 
+#TEST:
+SELECT 1 FROM USER_TRIGGERS WHERE trigger_name = 'NX_TRIG_ANCESTORS_UPDATE'
+
+#IF: ! emptyResult
+#IF: ! pathOptimizationsEnabled
+ALTER TRIGGER nx_trig_ancestors_update DISABLE
+
+
+#IF: pathOptimizationsVersion1
 CREATE OR REPLACE PROCEDURE nx_init_ancestors
 IS
 BEGIN
@@ -320,7 +451,18 @@ BEGIN
 END;
 
 
-# Init the ancestors if empty
+#IF: pathOptimizationsVersion2
+CREATE OR REPLACE PROCEDURE nx_init_ancestors
+IS
+BEGIN
+  EXECUTE IMMEDIATE 'TRUNCATE TABLE ancestors';
+  INSERT INTO ancestors (hierarchy_id, ancestor)
+  SELECT h.id AS hierarchy_id, t.COLUMN_VALUE AS ancestor FROM hierarchy h, TABLE(nx_get_ancestors(h.id)) t
+    WHERE isproperty = 0;
+END;
+
+
+# -- Init the ancestors if empty
 #IF: pathOptimizationsEnabled
 #TEST:
 SELECT 1 FROM ancestors WHERE ROWNUM=1
@@ -328,7 +470,7 @@ SELECT 1 FROM ancestors WHERE ROWNUM=1
 
 #IF: pathOptimizationsEnabled
 #IF: emptyResult
-LOG.INFO Initializing ancestors table for path optimization, please wait...
+LOG.INFO Initializing ancestors table for pathOptimizations, this can take a long time, please wait...
 
 
 #IF: pathOptimizationsEnabled
@@ -336,23 +478,7 @@ LOG.INFO Initializing ancestors table for path optimization, please wait...
 {CALL nx_init_ancestors}
 
 
-# ancestors ids (since Nuxeo 5.5)
-
-#IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
-RETURN NX_STRING_TABLE PIPELINED
-IS
-  id hierarchy.id%TYPE;
-  a ancestors.ancestors%TYPE;
-BEGIN
-  FOR i IN ids.FIRST .. ids.LAST LOOP
-    id := ids(i);
-    SELECT ancestors INTO a FROM ancestors WHERE hierarchy_id = id;
-    FOR j IN 1 .. a.count LOOP
-      PIPE ROW(a(j));
-    END LOOP;
-  END LOOP;
-END;
+# -- ancestors ids (since Nuxeo 5.5)
 
 #IF: !pathOptimizationsEnabled
 CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
@@ -369,6 +495,31 @@ BEGIN
       PIPE ROW(curid);
     END LOOP;
   END LOOP;
+END;
+
+#IF: pathOptimizationsVersion1
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
+RETURN NX_STRING_TABLE PIPELINED
+IS
+  id hierarchy.id%TYPE;
+  a ancestors.ancestors%TYPE;
+BEGIN
+  FOR i IN ids.FIRST .. ids.LAST LOOP
+    id := ids(i);
+    SELECT ancestors INTO a FROM ancestors WHERE hierarchy_id = id;
+    FOR j IN 1 .. a.count LOOP
+      PIPE ROW(a(j));
+    END LOOP;
+  END LOOP;
+END;
+
+#IF: pathOptimizationsVersion2
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
+RETURN NX_STRING_TABLE PIPELINED IS
+BEGIN
+   FOR r in (SELECT DISTINCT(ancestor) AS ancestor FROM ancestors WHERE hierarchy_id MEMBER OF ids) LOOP
+      PIPE ROW(r.ancestor);
+   END LOOP;
 END;
 
 
