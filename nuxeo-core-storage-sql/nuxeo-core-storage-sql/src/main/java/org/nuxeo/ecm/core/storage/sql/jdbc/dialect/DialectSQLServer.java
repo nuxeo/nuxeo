@@ -87,7 +87,9 @@ public class DialectSQLServer extends Dialect {
         if (engineEdition == 5) { // 5 = SQL Azure
             azure = true;
             fulltextDisabled = true;
-            repositoryDescriptor.fulltextDisabled = true;
+            if (repositoryDescriptor != null) {
+                repositoryDescriptor.fulltextDisabled = true;
+            }
         }
         fulltextAnalyzer = repositoryDescriptor == null ? null
                 : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
