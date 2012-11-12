@@ -180,17 +180,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         currentSuperSpace = null;
         currentDocument = documentModel;
-        if (currentDocument == null) {
-            currentDocumentParents = null;
-        } else {
-            DocumentRef ref = currentDocument.getRef();
-            if (ref == null) {
-                throw new ClientException(
-                        "DocumentRef is null for currentDocument: "
-                                + currentDocument.getName());
-            }
-            currentDocumentParents = documentManager.getParentDocuments(ref);
-        }
         // update all depending variables
         updateContextVariables();
         resetCurrentPath();
@@ -368,11 +357,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     public List<PathElement> getCurrentPathList() throws ClientException {
-        // Add check to verify if last element of the path (current document)
-        // has been updated
-        if (parents == null
-                || (!parents.isEmpty() && !parents.get(parents.size() - 1).getName().equals(
-                        getCurrentDocument().getTitle()))) {
+        if (parents == null) {
             resetCurrentPath();
         }
         return parents;
@@ -546,20 +531,21 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         setChangeableDocument(null);
 
         if (currentDocument == null) {
+            currentDocumentParents = null;
             return;
         }
+        DocumentRef ref = currentDocument.getRef();
+        if (ref == null) {
+            throw new ClientException(
+                    "DocumentRef is null for currentDocument: "
+                            + currentDocument.getName());
+        }
+        // Recompute document parents
+        currentDocumentParents = documentManager.getParentDocuments(ref);
 
         // iterate in reverse list order to go down the tree
         // set all navigation variables according to docType
         // => update to tree
-        // (check added to verify if last document (current
-        // document) has been updated
-        if (currentDocumentParents == null
-                || (!currentDocumentParents.isEmpty() && !currentDocumentParents.get(
-                        currentDocumentParents.size() - 1).getTitle().equals(
-                        currentDocument.getTitle()))) {
-            currentDocumentParents = documentManager.getParentDocuments(currentDocument.getRef());
-        }
         String docType;
         if (currentDocumentParents != null) {
             for (int i = currentDocumentParents.size() - 1; i >= 0; i--) {
@@ -599,6 +585,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
         // TODO compute SuperSpace with logic above
         currentSuperSpace = null; // lazily recompute
+        parents = null; //
     }
 
     private SchemaManager getSchemaManager() throws Exception {
