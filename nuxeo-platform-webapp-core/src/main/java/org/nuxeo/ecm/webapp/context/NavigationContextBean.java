@@ -380,8 +380,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     /**
-     * Switches to a new server location by updating the context and updating to
-     * the CoreSession (DocumentManager).
+     * Switches to a new server location by updating the context and updating
+     * to the CoreSession (DocumentManager).
      */
     public void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException {
@@ -409,8 +409,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     /**
-     * Returns the current documentManager if any or create a new session to the
-     * current location.
+     * Returns the current documentManager if any or create a new session to
+     * the current location.
      */
     public CoreSession getOrCreateDocumentManager() throws ClientException {
         if (documentManager != null) {
@@ -534,6 +534,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             currentDocumentParents = null;
             return;
         }
+
         DocumentRef ref = currentDocument.getRef();
         if (ref == null) {
             throw new ClientException(
@@ -566,6 +567,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
                 }
             }
         }
+
         // reinit lower tree
         docType = currentDocument.getType();
         if (docType.equals("Root")) {
@@ -583,9 +585,10 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         } else if (hasSuperType(docType, "Workspace")) {
             setCurrentWorkspace(currentDocument);
         }
-        // TODO compute SuperSpace with logic above
-        currentSuperSpace = null; // lazily recompute
-        parents = null; //
+
+        // lazily recompute some fields
+        currentSuperSpace = null;
+        parents = null;
     }
 
     private SchemaManager getSchemaManager() throws Exception {
