@@ -24,6 +24,13 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
  */
 public interface Table extends Serializable {
 
+    enum IndexType {
+        /** Fulltext index, may be on several columns. */
+        FULLTEXT,
+        /** Non primary index but the main one for this table. */
+        MAIN_NON_PRIMARY
+    }
+
     boolean isAlias();
 
     Table getRealTable();
@@ -57,12 +64,13 @@ public interface Table extends Serializable {
     void addIndex(String... columnNames);
 
     /**
-     * Adds a named fulltext index on one or several columns.
+     * Adds an index of the given name and type on one or several columns.
      *
      * @param indexName the index name
+     * @param indexType the index type
      * @param columnNames the column names
      */
-    void addFulltextIndex(String indexName, String... columnNames);
+    void addIndex(String indexName, IndexType indexType, String... columnNames);
 
     /**
      * Checks if the table has some fulltext indexes.

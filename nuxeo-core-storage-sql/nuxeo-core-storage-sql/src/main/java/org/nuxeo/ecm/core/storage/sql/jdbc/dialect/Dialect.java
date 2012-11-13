@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -405,12 +406,40 @@ public abstract class Dialect {
     }
 
     /**
-     * Gets a CREATE INDEX statement for a normal index.
+     * Gets a CREATE INDEX statement for an index.
+     *
+     * @param indexName the index name (for fulltext)
+     * @param indexType the index type
+     * @param table the table
+     * @param columns the columns to index
+     * @param model the model
      */
-    public String getCreateIndexSql(String indexName, String tableName,
-            List<String> columnNames) {
-        return String.format("CREATE INDEX %s ON %s (%s)", indexName,
-                tableName, StringUtils.join(columnNames, ", "));
+    public String getCreateIndexSql(String indexName,
+            Table.IndexType indexType, Table table, List<Column> columns,
+            Model model) {
+        List<String> qcols = new ArrayList<String>(columns.size());
+        List<String> pcols = new ArrayList<String>(columns.size());
+        for (Column col : columns) {
+            qcols.add(col.getQuotedName());
+            pcols.add(col.getPhysicalName());
+        }
+        String quotedIndexName = openQuote()
+                + getIndexName(table.getKey(), pcols) + closeQuote();
+        if (indexType == Table.IndexType.FULLTEXT) {
+            return getCreateFulltextIndexSql(indexName, quotedIndexName, table,
+                    columns, model);
+        } else {
+            String prefix = getCreateIndexPrefixSql(indexType, columns);
+            return String.format("CREATE %s INDEX %s ON %s (%s)", prefix,
+                    quotedIndexName, table.getQuotedName(),
+                    StringUtils.join(qcols, ", "));
+        }
+    }
+
+    // overridden by SQL Server for Azure CLUSTERED indexes
+    public String getCreateIndexPrefixSql(Table.IndexType indexType,
+            List<Column> columns) {
+        return "";
     }
 
     /**

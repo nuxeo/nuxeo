@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement;
 
@@ -509,10 +510,10 @@ public class SQLInfo {
                 String suffix = model.getFulltextIndexSuffix(indexName);
                 int ftic = dialect.getFulltextIndexedColumns();
                 if (ftic == 1) {
-                    table.addFulltextIndex(indexName,
+                    table.addIndex(indexName, IndexType.FULLTEXT,
                             model.FULLTEXT_FULLTEXT_KEY + suffix);
                 } else if (ftic == 2) {
-                    table.addFulltextIndex(indexName,
+                    table.addIndex(indexName, IndexType.FULLTEXT,
                             model.FULLTEXT_SIMPLETEXT_KEY + suffix,
                             model.FULLTEXT_BINARYTEXT_KEY + suffix);
                 }

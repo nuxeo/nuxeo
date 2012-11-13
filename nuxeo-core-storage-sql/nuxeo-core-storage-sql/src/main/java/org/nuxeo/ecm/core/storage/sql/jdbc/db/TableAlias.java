@@ -122,7 +122,8 @@ public class TableAlias implements Table {
     }
 
     @Override
-    public void addFulltextIndex(String indexName, String... columnNames) {
+    public void addIndex(String indexName, IndexType indexType,
+            String... columnNames) {
         throw new UnsupportedOperationException();
     }
 

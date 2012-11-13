@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -53,6 +54,8 @@ public class DialectSQLServer extends Dialect {
     private static final String DEFAULT_FULLTEXT_ANALYZER = "english";
 
     private static final String DEFAULT_FULLTEXT_CATALOG = "nuxeo";
+
+    private static final String CLUSTERED = "CLUSTERED";
 
     protected final String fulltextAnalyzer;
 
@@ -285,16 +288,20 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String getCreateIndexSql(String indexName, String tableName,
-            List<String> columnNames) {
-        if (columnNames.size() == 1 && columnNames.get(0).equals("[id]")
-                && azure) {
+    public String getCreateIndexPrefixSql(IndexType indexType,
+            List<Column> columns) {
+        if (!azure) {
+            return "";
+        }
+        if (indexType == IndexType.MAIN_NON_PRIMARY) {
+            return CLUSTERED;
+        }
+        if (columns.size() == 1 && columns.get(0).getKey().equals("id")) {
             // creates index on id for collection tables
             // as there is no primary key, create a clustered index for this one
-            return String.format("CREATE CLUSTERED INDEX %s ON %s (%s)",
-                    indexName, tableName, StringUtils.join(columnNames, ", "));
+            return CLUSTERED;
         }
-        return super.getCreateIndexSql(indexName, tableName, columnNames);
+        return "";
     }
 
     @Override
@@ -458,7 +465,7 @@ public class DialectSQLServer extends Dialect {
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("idType", "VARCHAR(36)");
-        properties.put("clusteredIndex", azure ? "CLUSTERED" : "");
+        properties.put("clusteredIndex", azure ? CLUSTERED : "");
         properties.put("md5HashString", getMd5HashString());
         properties.put("reseedAclrModified", azure ? ""
                 : "DBCC CHECKIDENT('aclr_modified', RESEED, 0);");
