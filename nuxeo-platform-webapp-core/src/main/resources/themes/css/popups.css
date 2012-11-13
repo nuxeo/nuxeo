@@ -24,11 +24,12 @@ author: lkemen@nuxeo.com
   background-color: #fff;
   border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   display: none;
+  left: 26%;
   padding: 0 1em .5em;
   position: absolute;
-  width: 400px;
+  width: 670px;
   z-index: 10000 }
 
 .genericPopUp .closePopUpHeader {
