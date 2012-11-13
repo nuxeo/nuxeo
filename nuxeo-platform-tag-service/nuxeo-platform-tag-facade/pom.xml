@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-platform-tag-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>    
-    <version>5.4.2.1-SNAPSHOT</version>
+    <version>5.4.2-HF29</version>
   </parent>
 
   <artifactId>nuxeo-platform-tag-facade</artifactId>
