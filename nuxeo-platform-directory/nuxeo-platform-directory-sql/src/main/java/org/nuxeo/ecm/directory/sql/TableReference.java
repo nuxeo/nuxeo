@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Delete;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
@@ -521,6 +522,8 @@ public class TableReference extends AbstractReference {
                     nativeCase);
             SQLHelper.addColumn(table, targetColumn, ColumnType.STRING,
                     nativeCase);
+            // index added for Azure
+            table.addIndex(null, IndexType.MAIN_NON_PRIMARY, sourceColumn);
         }
         return table;
     }
