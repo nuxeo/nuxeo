@@ -4,23 +4,23 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.4.2.1-SNAPSHOT</version>
+    <version>5.4.2-HF29</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-jsf-parent</artifactId>
-  <version>5.4.2.1-SNAPSHOT</version>
+  <version>5.4.2-HF29</version>
   <name>Nuxeo JSF Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo JSF: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>5.4.2.1-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>5.4.2.1-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>5.4.2.1-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.services.version>5.4.2.1-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.jsf.version>5.4.2.1-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.theme.version>5.4.2.1-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.common.version>5.4.2-HF29</nuxeo.common.version>
+    <nuxeo.runtime.version>5.4.2-HF29</nuxeo.runtime.version>
+    <nuxeo.core.version>5.4.2-HF29</nuxeo.core.version>
+    <nuxeo.services.version>5.4.2-HF29</nuxeo.services.version>
+    <nuxeo.jsf.version>5.4.2-HF29</nuxeo.jsf.version>
+    <nuxeo.theme.version>5.4.2-HF29</nuxeo.theme.version>
   </properties>
 
   <modules>
