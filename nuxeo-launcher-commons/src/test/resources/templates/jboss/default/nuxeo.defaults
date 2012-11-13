@@ -9,4 +9,4 @@ test.nuxeo.defaults.template.1 = true
 test.nuxeo.defaults.template.2 = true
 test.nuxeo.conf.override.defaults.template = default.nuxeo.defaults
 
-nuxeo.data.dir_2 = C:\\nuxeo-dm-5.4.2.1-SNAPSHOT-jboss\\server\\default\\data\\NXRuntime\\data
+nuxeo.data.dir_2 = C:\\nuxeo-dm-5.4.2-HF29-jboss\\server\\default\\data\\NXRuntime\\data
