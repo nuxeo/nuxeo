@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam Action bean to handle the preview tabs and associated actions.
- *
+ * 
  * @author <a href="mailto:enriqueperez@yerbabuena.es">Enrique Perez</a>
  * @author tiry
  */
@@ -127,6 +127,7 @@ public class PreviewActionBean implements Serializable {
                 doc.getRepositoryName(), doc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation,
                 PREVIEW_POPUP_VIEW);
+        docView.setPatternName("id");
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
         String url = urlPolicyService.getUrlFromDocumentView(docView, null);
         url = RestHelper.addCurrentConversationParameters(url);
@@ -138,7 +139,7 @@ public class PreviewActionBean implements Serializable {
         try {
             DocumentModel doc = documentManager.getDocument(new IdRef(docId));
             return getPreviewPopupURL(doc);
-        } catch(ClientException e) {
+        } catch (ClientException e) {
             log.error(e, e);
             return "";
         }
