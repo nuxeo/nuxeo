@@ -169,7 +169,7 @@ public class OperationServiceImpl implements AutomationService {
 
     protected synchronized void putOperation(OperationTypeImpl op,
             boolean replace) throws OperationException {
-        operations.addContribution(op, false);
+        operations.addContribution(op, replace);
     }
 
     public synchronized void removeOperation(Class<?> key) {
