@@ -46,8 +46,13 @@ public class TableImpl implements Table {
     /** Logical names of indexed columns. */
     private final List<String[]> indexedColumns;
 
-    /** Those of the indexed columns that concern fulltext. */
-    private final Map<String[], String> fulltextIndexedColumns;
+    /** Index names. */
+    private final Map<String[], String> indexNames;
+
+    /** Index types. */
+    private final Map<String[], IndexType> indexTypes;
+
+    private boolean hasFulltextIndex;
 
     /**
      * Creates a new empty table.
@@ -59,7 +64,8 @@ public class TableImpl implements Table {
         // we use a LinkedHashMap to have deterministic ordering
         columns = new LinkedHashMap<String, Column>();
         indexedColumns = new LinkedList<String[]>();
-        fulltextIndexedColumns = new HashMap<String[], String>();
+        indexNames = new HashMap<String[], String>();
+        indexTypes = new HashMap<String[], IndexType>();
     }
 
     @Override
@@ -151,14 +157,19 @@ public class TableImpl implements Table {
     }
 
     @Override
-    public void addFulltextIndex(String indexName, String... columnNames) {
+    public void addIndex(String indexName, IndexType indexType,
+            String... columnNames) {
         addIndex(columnNames);
-        fulltextIndexedColumns.put(columnNames, indexName);
+        indexNames.put(columnNames, indexName);
+        indexTypes.put(columnNames, indexType);
+        if (indexType == IndexType.FULLTEXT) {
+            hasFulltextIndex = true;
+        }
     }
 
     @Override
     public boolean hasFulltextIndex() {
-        return !fulltextIndexedColumns.isEmpty();
+        return hasFulltextIndex;
     }
 
     /**
@@ -307,25 +318,14 @@ public class TableImpl implements Table {
             }
             // add this index now, as all columns have been created
             List<Column> cols = new ArrayList<Column>(columnNames.length);
-            List<String> qcols = new ArrayList<String>(columnNames.length);
-            List<String> pcols = new ArrayList<String>(columnNames.length);
             for (String name : columnNames) {
                 Column col = getColumn(name);
                 cols.add(col);
-                qcols.add(col.getQuotedName());
-                pcols.add(col.getPhysicalName());
             }
-            String quotedIndexName = dialect.openQuote()
-                    + dialect.getIndexName(key, pcols) + dialect.closeQuote();
-            String createIndexSql;
-            String indexName = fulltextIndexedColumns.get(columnNames);
-            if (indexName != null) {
-                createIndexSql = dialect.getCreateFulltextIndexSql(indexName,
-                        quotedIndexName, this, cols, model);
-            } else {
-                createIndexSql = dialect.getCreateIndexSql(quotedIndexName,
-                        getQuotedName(), qcols);
-            }
+            String indexName = indexNames.get(columnNames);
+            IndexType indexType = indexTypes.get(columnNames);
+            String createIndexSql = dialect.getCreateIndexSql(indexName,
+                    indexType, this, cols, model);
             sqls.add(createIndexSql);
         }
     }

@@ -149,6 +149,13 @@ public abstract class DatabaseHelper {
         if (tableNames.remove("HIERARCHY")) {
             tableNames.add("HIERARCHY");
         }
+        // needed for Azure
+        if (tableNames.remove("NXP_LOGS")) {
+            tableNames.add("NXP_LOGS");
+        }
+        if (tableNames.remove("NXP_LOGS_EXTINFO")) {
+            tableNames.add("NXP_LOGS_EXTINFO");
+        }
         // PostgreSQL is lowercase
         if (tableNames.remove("hierarchy")) {
             tableNames.add("hierarchy");
