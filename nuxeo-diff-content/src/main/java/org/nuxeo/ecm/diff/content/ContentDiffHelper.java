@@ -79,6 +79,7 @@ public final class ContentDiffHelper {
                 currentDoc.getRepositoryName(), currentDoc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation,
                 CONTENT_DIFF_FANCYBOX_VIEW);
+        docView.setPatternName("id");
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
         String docUrl = urlPolicyService.getUrlFromDocumentView(docView, null);
         if (docUrl == null) {
