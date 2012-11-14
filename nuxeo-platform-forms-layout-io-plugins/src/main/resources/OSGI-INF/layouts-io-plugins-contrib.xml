@@ -4,7 +4,7 @@
   <documentation>
     Component that provides main contributions to the basic widget
     converters needed for export.
-    @version 5.5.0-HF16-SNAPSHOT
+    @version 5.5.0-HF17-SNAPSHOT
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
