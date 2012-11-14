@@ -7,11 +7,11 @@
   <c:choose>
    <c:when test="#{tagServiceEnabled}">
       <h:form id="tagCloudForm">
-        <nxu:dataList id="tagCloudTable"
+        <nxu:dataList id="tagCloudTable" rowIndexVar="rowIndex"
           value="#{tagCloudOnAllDocuments}" var="tag"
           rendered="#{not empty tagCloudOnAllDocuments}">
 
-            <h:commandLink value="#{tag.label}"
+            <h:commandLink value="#{tag.label}" styleClass="#{nxu:test(rowIndex % 2 == 1, 'tagClassOdd', 'tagClassEven')}"
               action="#{tagActions.listDocumentsForTag(tag.label)}" style="font-size: #{tag.weight}%"/>
 
         </nxu:dataList>
