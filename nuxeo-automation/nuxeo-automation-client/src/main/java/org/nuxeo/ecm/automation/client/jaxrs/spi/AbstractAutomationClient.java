@@ -33,8 +33,19 @@ import org.nuxeo.ecm.automation.client.model.OperationRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public abstract class AbstractAutomationClient implements AutomationClient {
+
+    // Use an operation registry shared by the multiple client sessions for
+    // performance reasons
+    private static volatile OperationRegistry sharedRegistry;
+
+    private static long sharedRegistryUpdateTimestamp = 0L;
+
+    private static long sharedRegistryExpirationDelay = 60000L;
+
+    private static final Object SHARED_REGISTRY_SYNCHRONIZER = new Object();
 
     protected String url;
 
@@ -122,9 +133,20 @@ public abstract class AbstractAutomationClient implements AutomationClient {
             connector = new ConnectorHandler(connector, requestInterceptor);
         }
         if (registry == null) { // not yet connected
-            synchronized (this) {
-                if (registry == null) {
-                    registry = connect(connector);
+            if (System.currentTimeMillis() - sharedRegistryUpdateTimestamp < sharedRegistryExpirationDelay) {
+                registry = sharedRegistry;
+            } else {
+                synchronized (SHARED_REGISTRY_SYNCHRONIZER) {
+                    // duplicate the test to avoid reentrance
+                    if (System.currentTimeMillis()
+                            - sharedRegistryUpdateTimestamp < sharedRegistryExpirationDelay) {
+                        registry = sharedRegistry;
+                    } else {
+                        // retrieve the registry
+                        registry = connect(connector);
+                        sharedRegistry = registry;
+                        sharedRegistryUpdateTimestamp = System.currentTimeMillis();
+                    }
                 }
             }
         }
@@ -202,5 +224,12 @@ public abstract class AbstractAutomationClient implements AutomationClient {
     }
 
     protected abstract Connector newConnector();
+
+    /**
+     * @since 5.7
+     */
+    public void setSharedRegistryExpirationDelay(long delay) {
+        sharedRegistryExpirationDelay = delay;
+    }
 
 }
