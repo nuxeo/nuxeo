@@ -126,6 +126,14 @@
       </fields>
     </widget>
 
+    <widget name="widgetWithControls" type="test">
+      <controls mode="any">
+        <control name="addForm">true</control>
+        <control name="useAjaxForm">true</control>
+        <control name="handlingLabels">true</control>
+      </controls>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"

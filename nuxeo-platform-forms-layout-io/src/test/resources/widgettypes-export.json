@@ -107,7 +107,8 @@
                 "schemaName": "foo",
                 "propertyName": "foo:bar"
               }]
-            }]
+            }],
+            "controls": {"any": {"addForm": "true"}}
           },
                     {
             "name": "selection_property",

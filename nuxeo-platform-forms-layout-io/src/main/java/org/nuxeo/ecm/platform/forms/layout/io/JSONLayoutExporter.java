@@ -545,6 +545,7 @@ public class JSONLayoutExporter {
      * @param widgetConverters
      * @return
      */
+    @SuppressWarnings("deprecation")
     public static JSONObject exportToJson(WidgetDefinition widgetDef,
             LayoutConversionContext ctx,
             List<WidgetDefinitionConverter> widgetConverters) {
@@ -608,6 +609,11 @@ public class JSONLayoutExporter {
             json.element("propertiesByWidgetMode", widgetModeProps);
         }
 
+        JSONObject controls = exportPropsByModeToJson(widgetDef.getControls());
+        if (!controls.isEmpty()) {
+            json.element("controls", controls);
+        }
+
         JSONArray selectOptions = new JSONArray();
         WidgetSelectOption[] selectOptionDefs = widgetDef.getSelectOptions();
         if (selectOptionDefs != null) {
@@ -627,6 +633,7 @@ public class JSONLayoutExporter {
         return json;
     }
 
+    @SuppressWarnings("deprecation")
     public static WidgetDefinition importWidgetDefinition(JSONObject widgetDef) {
         String name = widgetDef.getString("name");
         String type = widgetDef.getString("type");
@@ -662,6 +669,7 @@ public class JSONLayoutExporter {
 
         Map<String, Map<String, Serializable>> properties = importPropsByMode(widgetDef.optJSONObject("properties"));
         Map<String, Map<String, Serializable>> widgetModeProperties = importPropsByMode(widgetDef.optJSONObject("propertiesByWidgetMode"));
+        Map<String, Map<String, Serializable>> controls = importPropsByMode(widgetDef.optJSONObject("controls"));
 
         // select options
         List<WidgetSelectOption> selectOptions = new ArrayList<WidgetSelectOption>();
@@ -683,6 +691,7 @@ public class JSONLayoutExporter {
         res.setRenderingInfos(renderingInfos);
         res.setSubWidgetReferences(subWidgetRefs.toArray(new WidgetReference[] {}));
         res.setHandlingLabels(handlingLabels);
+        res.setControls(controls);
         return res;
     }
 

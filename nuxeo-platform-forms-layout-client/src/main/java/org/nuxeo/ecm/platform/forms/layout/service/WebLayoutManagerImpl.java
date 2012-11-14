@@ -170,8 +170,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * Evaluates an EL expression in given context.
      * <p>
-     * If the expression resolves to an EL expression, evaluate it again this is
-     * useful when retrieving the expression from a configuration file.
+     * If the expression resolves to an EL expression, evaluate it again this
+     * is useful when retrieving the expression from a configuration file.
      * <p>
      * If given context is null, do no try to evaluate it and return the
      * expression itself.
@@ -265,11 +265,12 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     /**
      * Computes a widget from a definition for a mode in a given context.
      * <p>
-     * If the widget is configured not to be rendered in the given mode, returns
-     * null.
+     * If the widget is configured not to be rendered in the given mode,
+     * returns null.
      * <p>
      * Sub widgets are also computed recursively.
      */
+    @SuppressWarnings("deprecation")
     protected Widget getWidget(FaceletContext context, String layoutName,
             LayoutDefinition layoutDef, WidgetDefinition wDef,
             String layoutMode, String valueName, int level) {
@@ -327,7 +328,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
 
         boolean required = getBooleanValue(context,
                 wDef.getRequired(layoutMode, wMode)).booleanValue();
-        Widget widget = new WidgetImpl(layoutName, wDef.getName(), wMode,
+        WidgetImpl widget = new WidgetImpl(layoutName, wDef.getName(), wMode,
                 wDef.getType(), valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
                 wDef.isTranslated(), wDef.isHandlingLabels(),
@@ -336,6 +337,12 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 wDef.getSelectOptions(),
                 LayoutFunctions.computeWidgetDefinitionId(wDef),
                 wDef.getRenderingInfos(layoutMode));
+        Map<String, Serializable> controls = wDef.getControls(layoutMode, wMode);
+        if (controls != null) {
+            for (Map.Entry<String, Serializable> control : controls.entrySet()) {
+                widget.setControl(control.getKey(), control.getValue());
+            }
+        }
         return widget;
     }
 

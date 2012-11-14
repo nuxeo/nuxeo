@@ -113,6 +113,9 @@
                 <widgetModes>
                   <mode value="any">view</mode>
                 </widgetModes>
+                <controls mode="any">
+                  <control name="addForm">true</control>
+                </controls>
                 <subWidgets>
                   <widget name="subwidget" type="text">
                     <labels>

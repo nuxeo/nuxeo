@@ -116,13 +116,13 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     @Test
     public void testWidgetTypeImport() throws Exception {
-        checkWidgetTypeImport("widgettype-export.json", true);
+        checkWidgetTypeImport("widgettype-export.json", false);
         // check compat for old format
-        checkWidgetTypeImport("widgettype-old-export.json", false);
+        checkWidgetTypeImport("widgettype-old-export.json", true);
     }
 
-    protected void checkWidgetTypeImport(String filename,
-            boolean checkSubWidgetRefs) throws Exception {
+    protected void checkWidgetTypeImport(String filename, boolean isCompat)
+            throws Exception {
         JSONObject json = null;
         InputStream in = new FileInputStream(
                 FileUtils.getResourcePathFromContext(filename));
@@ -262,9 +262,10 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(0, editLayout.getTemplates().size());
         assertEquals(0, editLayout.getProperties().size());
         LayoutRowDefinition[] editRows = editLayout.getRows();
-        if (checkSubWidgetRefs) {
+        if (!isCompat) {
             assertEquals(4, editRows.length);
         } else {
+            // no widget ref in compat export
             assertEquals(2, editRows.length);
         }
 
@@ -294,8 +295,19 @@ public class TestLayoutExport extends NXRuntimeTestCase {
                 renderedWidget.getMode(BuiltinModes.ANY));
         assertEquals(0, renderedWidget.getProperties().size());
         assertEquals(0, renderedWidget.getWidgetModeProperties().size());
+        Map<String, Map<String, Serializable>> controls = renderedWidget.getControls();
+        assertNotNull(controls);
+        if (isCompat) {
+            // no controls
+            assertNull(controls.get(BuiltinModes.ANY));
+        } else {
+            assertNotNull(controls.get(BuiltinModes.ANY));
+            assertEquals(1, controls.get(BuiltinModes.ANY).size());
+            assertEquals("true", controls.get(BuiltinModes.ANY).get("addForm"));
+        }
         assertEquals(0, renderedWidget.getSelectOptions().length);
         assertEquals(1, renderedWidget.getSubWidgetDefinitions().length);
+
         WidgetDefinition subWidget = renderedWidget.getSubWidgetDefinitions()[0];
         assertEquals("subwidget", subWidget.getName());
         assertEquals(1, subWidget.getLabels().size());
@@ -359,7 +371,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
                 null);
         assertEquals(0, selectionWidget.getSubWidgetDefinitions().length);
 
-        if (!checkSubWidgetRefs) {
+        if (isCompat) {
             return;
         }
 

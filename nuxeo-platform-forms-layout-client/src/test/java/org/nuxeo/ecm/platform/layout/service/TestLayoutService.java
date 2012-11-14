@@ -495,6 +495,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals(1, fieldDefs.length);
         assertEquals("foo", fieldDefs[0].getSchemaName());
         assertEquals("bar", fieldDefs[0].getFieldName());
+        assertNull(widget.getControl("addForm"));
 
         // exceptions
         widget = service.getWidget(null, "unknownWidget", null,
@@ -503,6 +504,21 @@ public class TestLayoutService extends NXRuntimeTestCase {
         widget = service.getWidget(null, null, BuiltinModes.VIEW, null,
                 "pseudoLayout");
         assertNull(widget);
+    }
+
+    @Test
+    public void testWidgetWithFormInfo() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+        Widget widget = service.getWidget(null, "widgetWithControls", null,
+                BuiltinModes.VIEW, null, "pseudoLayout");
+        assertNotNull(widget);
+        assertEquals("widgetWithControls", widget.getName());
+        assertEquals("test", widget.getType());
+        assertEquals("pseudoLayout", widget.getLayoutName());
+        assertEquals("true", widget.getControl("addForm"));
+        assertEquals("true", widget.getControl("useAjaxForm"));
+        assertTrue(widget.isHandlingLabels());
     }
 
     @Test
