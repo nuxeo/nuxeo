@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     ataillefer
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
@@ -28,6 +29,7 @@ import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.nuxeo.ecm.automation.client.RemoteException;
@@ -37,23 +39,55 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 /**
  * Connector wrapping a {@link HttpClient} instance.
  *
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class HttpConnector implements Connector {
 
     protected final AbstractHttpClient http;
+
+    /**
+     * Timeout in milliseconds for the socket, connection manager and connection
+     * used by {@link #http}.
+     */
+    protected final long httpConnectionTimeout;
 
     protected final HttpContext ctx;
 
     protected String basicAuth;
 
     public HttpConnector(HttpClient http) {
-        this(http, new BasicHttpContext());
+        this(http, 0);
+    }
+
+    /**
+     * Allows to set a timeout for the HTTP connection to avoid infinite or
+     * quite long waiting periods if:
+     * <ul>
+     * <li>Nuxeo is broken or running into an infinite loop</li>
+     * <li>the network doesn't respond at all</li>
+     * </ul>
+     *
+     * @since 5.7
+     */
+    public HttpConnector(HttpClient http, long httpConnectionTimeout) {
+        this(http, new BasicHttpContext(), httpConnectionTimeout);
     }
 
     public HttpConnector(HttpClient http, HttpContext ctx) {
+        this(http, ctx, 0);
+    }
+
+    /**
+     * @see #HttpConnector(HttpClient, long)
+     * @since 5.7
+     */
+    public HttpConnector(HttpClient http, HttpContext ctx,
+            long httpConnectionTimeout) {
         ctx.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
         this.http = (AbstractHttpClient) http;
+        this.httpConnectionTimeout = httpConnectionTimeout;
         this.ctx = ctx;
     }
 
@@ -94,7 +128,7 @@ public class HttpConnector implements Connector {
         for (Map.Entry<String, String> entry : request.entrySet()) {
             httpReq.setHeader(entry.getKey(), entry.getValue());
         }
-        HttpResponse resp = http.execute(httpReq, ctx);
+        HttpResponse resp = executeRequestWithTimeout(httpReq);
         HttpEntity entity = resp.getEntity();
         int status = resp.getStatusLine().getStatusCode();
         if (entity == null) {
@@ -120,6 +154,23 @@ public class HttpConnector implements Connector {
             disp = hdisp[0].getValue();
         }
         return request.handleResult(status, ctype, disp, entity.getContent());
+    }
+
+    protected HttpResponse executeRequestWithTimeout(HttpUriRequest httpReq)
+            throws Exception {
+
+        // Set timeout for the socket, connection manager
+        // and connection itself
+        if (httpConnectionTimeout > 0) {
+            HttpParams httpParams = http.getParams();
+            httpParams.setParameter("http.socket.timeout",
+                    httpConnectionTimeout);
+            httpParams.setParameter("http.connection-manager.timeout",
+                    httpConnectionTimeout);
+            httpParams.setParameter("http.connection.timeout",
+                    httpConnectionTimeout);
+        }
+        return http.execute(httpReq, ctx);
     }
 
 }

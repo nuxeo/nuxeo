@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     ataillefer
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
@@ -21,14 +22,32 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  */
 public class HttpAutomationClient extends AsyncAutomationClient {
 
     protected DefaultHttpClient http;
 
+    protected long httpConnectionTimeout;
+
+    /**
+     * Instantiates a new {@link HttpAutomationClient} with no timeout for the
+     * HTTP connection.
+     */
     public HttpAutomationClient(String url) {
+        this(url, 0);
+    }
+
+    /**
+     * Instantiates a new {@link HttpAutomationClient} with a timeout for the
+     * HTTP connection.
+     *
+     * @since 5.7
+     */
+    public HttpAutomationClient(String url, long httpConnectionTimeout) {
         super(url);
         http = new DefaultHttpClient();
+        this.httpConnectionTimeout = httpConnectionTimeout;
         // http.setCookieSpecs(null);
         // http.setCookieStore(null);
         registerAdapter(new DocumentServiceFactory());
@@ -56,6 +75,6 @@ public class HttpAutomationClient extends AsyncAutomationClient {
 
     @Override
     protected Connector newConnector() {
-        return new HttpConnector(http);
+        return new HttpConnector(http, httpConnectionTimeout);
     }
 }
