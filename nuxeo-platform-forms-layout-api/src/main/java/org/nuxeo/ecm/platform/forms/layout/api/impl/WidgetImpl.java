@@ -57,6 +57,8 @@ public class WidgetImpl implements Widget {
 
     protected Map<String, Serializable> properties;
 
+    protected Map<String, Serializable> controls;
+
     protected boolean required = false;
 
     protected String valueName;
@@ -65,6 +67,10 @@ public class WidgetImpl implements Widget {
 
     protected boolean translated = false;
 
+    /**
+     * @deprecated since 5.7: use {@link #controls} instead
+     */
+    @Deprecated
     protected boolean handlingLabels = false;
 
     protected int level = 0;
@@ -218,6 +224,14 @@ public class WidgetImpl implements Widget {
     }
 
     public boolean isHandlingLabels() {
+        // migration code
+        Map<String, Serializable> controls = getControls();
+        if (controls != null && controls.containsKey("handlingLabels")) {
+            Serializable handling = controls.get("handlingLabels");
+            if (handling != null) {
+                return Boolean.parseBoolean(handling.toString());
+            }
+        }
         return handlingLabels;
     }
 
@@ -240,6 +254,30 @@ public class WidgetImpl implements Widget {
             properties = new HashMap<String, Serializable>();
         }
         properties.put(name, value);
+    }
+
+    @Override
+    public Map<String, Serializable> getControls() {
+        if (controls == null) {
+            return Collections.emptyMap();
+        }
+        return Collections.unmodifiableMap(controls);
+    }
+
+    @Override
+    public Serializable getControl(String name) {
+        if (controls != null) {
+            return controls.get(name);
+        }
+        return null;
+    }
+
+    @Override
+    public void setControl(String name, Serializable value) {
+        if (controls == null) {
+            controls = new HashMap<String, Serializable>();
+        }
+        controls.put(name, value);
     }
 
     public boolean isRequired() {
@@ -303,6 +341,8 @@ public class WidgetImpl implements Widget {
         buf.append(required);
         buf.append(", properties=");
         buf.append(properties);
+        buf.append(", controls=");
+        buf.append(controls);
         buf.append(", valueName=");
         buf.append(valueName);
         buf.append(", level=");

@@ -89,6 +89,9 @@ public class WidgetDescriptor {
     @XNodeMap(value = "properties", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> properties = new HashMap<String, PropertiesDescriptor>();
 
+    @XNodeMap(value = "controls", key = "@mode", type = HashMap.class, componentType = ControlsDescriptor.class)
+    Map<String, ControlsDescriptor> controls = new HashMap<String, ControlsDescriptor>();
+
     @XNodeMap(value = "properties", key = "@widgetMode", type = HashMap.class, componentType = PropertiesDescriptor.class)
     Map<String, PropertiesDescriptor> widgetModeProperties = new HashMap<String, PropertiesDescriptor>();
 
@@ -215,6 +218,23 @@ public class WidgetDescriptor {
         return getProperties(widgetModeProperties);
     }
 
+    /**
+     * @since 5.7
+     * @see WidgetDefinition#getControls()
+     */
+    public Map<String, Map<String, Serializable>> getControls() {
+        if (controls == null) {
+            return null;
+        }
+        Map<String, Map<String, Serializable>> res = new HashMap<String, Map<String, Serializable>>();
+        for (Map.Entry<String, ControlsDescriptor> item : controls.entrySet()) {
+            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            props.putAll(item.getValue().getControls());
+            res.put(item.getKey(), props);
+        }
+        return res;
+    }
+
     public WidgetDefinition[] getSubWidgetDefinitions() {
         WidgetDefinition[] csubWidgets = null;
         if (subWidgets != null) {
@@ -317,6 +337,7 @@ public class WidgetDescriptor {
         return categories;
     }
 
+    @SuppressWarnings("deprecation")
     public WidgetDefinition getWidgetDefinition() {
         Map<String, String> clabels = null;
         if (labels != null) {
@@ -365,7 +386,7 @@ public class WidgetDescriptor {
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubwidgetRefs);
         clone.setHandlingLabels(handlingLabels);
+        clone.setControls(getControls());
         return clone;
     }
-
 }

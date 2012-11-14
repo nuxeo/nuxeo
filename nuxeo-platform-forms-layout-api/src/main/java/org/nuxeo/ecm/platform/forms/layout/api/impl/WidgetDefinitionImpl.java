@@ -51,6 +51,10 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
 
     protected boolean translated = false;
 
+    /**
+     * @deprecated since 5.7: use {@link #controls} instead
+     */
+    @Deprecated
     protected boolean handlingLabels = false;
 
     protected Map<String, String> modes;
@@ -60,6 +64,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     protected Map<String, Map<String, Serializable>> properties;
 
     protected Map<String, Map<String, Serializable>> widgetModeProperties;
+
+    protected Map<String, Map<String, Serializable>> controls;
 
     protected WidgetDefinition[] subWidgets;
 
@@ -290,6 +296,21 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     @Override
+    public Map<String, Serializable> getControls(String layoutMode, String mode) {
+        return getProperties(controls, layoutMode);
+    }
+
+    @Override
+    public Map<String, Map<String, Serializable>> getControls() {
+        return controls;
+    }
+
+    @Override
+    public void setControls(Map<String, Map<String, Serializable>> controls) {
+        this.controls = controls;
+    }
+
+    @Override
     public String getRequired(String layoutMode, String mode) {
         String res = "false";
         Map<String, Serializable> props = getProperties(layoutMode, mode);
@@ -340,6 +361,15 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     public boolean isHandlingLabels() {
+        // migration code
+        Map<String, Serializable> controls = getControls(BuiltinModes.ANY,
+                BuiltinModes.ANY);
+        if (controls != null && controls.containsKey("handlingLabels")) {
+            Serializable handling = controls.get("handlingLabels");
+            if (handling != null) {
+                return Boolean.parseBoolean(handling.toString());
+            }
+        }
         return handlingLabels;
     }
 
@@ -404,6 +434,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public WidgetDefinition clone() {
         Map<String, Map<String, Serializable>> cprops = null;
         if (properties != null) {
@@ -416,6 +447,19 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
                     csubProps.putAll(subProps);
                 }
                 cprops.put(entry.getKey(), csubProps);
+            }
+        }
+        Map<String, Map<String, Serializable>> ccontrols = null;
+        if (controls != null) {
+            ccontrols = new HashMap<String, Map<String, Serializable>>();
+            for (Map.Entry<String, Map<String, Serializable>> entry : controls.entrySet()) {
+                Map<String, Serializable> subControls = entry.getValue();
+                Map<String, Serializable> csubControls = null;
+                if (subControls != null) {
+                    csubControls = new HashMap<String, Serializable>();
+                    csubControls.putAll(subControls);
+                }
+                ccontrols.put(entry.getKey(), csubControls);
             }
         }
         Map<String, String> clabels = null;
@@ -495,6 +539,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubWidgetRefs);
         clone.setHandlingLabels(handlingLabels);
+        clone.setControls(ccontrols);
         return clone;
     }
 
