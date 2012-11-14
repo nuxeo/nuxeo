@@ -143,6 +143,30 @@ public interface Widget extends Serializable {
     void setProperty(String name, Serializable value);
 
     /**
+     * Returns controls on this widget.
+     *
+     * @since 5.7
+     * @see WidgetDefinition#getControls()
+     */
+    Map<String, Serializable> getControls();
+
+    /**
+     * Returns control with given name.
+     *
+     * @since 5.7
+     * @see WidgetDefinition#getControls()
+     */
+    Serializable getControl(String name);
+
+    /**
+     * Sets control with given name and value.
+     *
+     * @since 5.7
+     * @see WidgetDefinition#getControls()
+     */
+    void setControl(String name, Serializable value);
+
+    /**
      * Returns true if the widget is required.
      * <p>
      * This is a short link for the "required" property, already evaluated from

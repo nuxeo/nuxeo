@@ -143,13 +143,21 @@ public interface WidgetDefinition extends Serializable {
      * Defaults to false.
      *
      * @since 5.6
+     * @deprecated since 5.7: this was added prematurely, see
+     *             {@link #getControls()} for a more generic management of
+     *             rendering controls
      */
+    @Deprecated
     boolean isHandlingLabels();
 
     /**
      * @since 5.6
      * @see #isHandlingLabels()
+     * @deprecated since 5.7: this was added prematurely, see
+     *             {@link #setControls()} for a more generic management of
+     *             rendering controls
      */
+    @Deprecated
     void setHandlingLabels(boolean handlingLabels);
 
     /**
@@ -182,6 +190,36 @@ public interface WidgetDefinition extends Serializable {
      */
     void setWidgetModeProperties(
             Map<String, Map<String, Serializable>> properties);
+
+    /**
+     * Returns controls for given mode.
+     *
+     * @since 5.7
+     * @see #getControls()
+     */
+    Map<String, Serializable> getControls(String layoutMode, String mode);
+
+    /**
+     * Returns controls by mode.
+     * <p>
+     * Controls are property-like markers on widget instances, expect these are
+     * not forwarded to the underlying rendering object (like the JSF component
+     * attributes).
+     * <p>
+     * This makes it possible to keep "flags" on widgets that can be checked by
+     * parent widget or layout, for instance "addForm" or "handlingLabels"
+     * markers.
+     *
+     * @since 5.7
+     */
+    Map<String, Map<String, Serializable>> getControls();
+
+    /**
+     * Sets controls by mode on widget definition.
+     *
+     * @since 5.7
+     */
+    void setControls(Map<String, Map<String, Serializable>> controls);
 
     /**
      * Returns sub widget definitions.
