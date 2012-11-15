@@ -129,6 +129,7 @@
     <jxls.version>1.0</jxls.version>
     <xdocreport.version>0.9.8</xdocreport.version>
     <itext.version>2.1.7</itext.version>
+    <jclouds.version>1.5.2</jclouds.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -3566,6 +3567,11 @@
         <groupId>com.amazonaws</groupId>
         <artifactId>aws-java-sdk</artifactId>
         <version>1.3.8</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jclouds</groupId>
+        <artifactId>jclouds-allblobstore</artifactId>
+        <version>${jclouds.version}</version>
       </dependency>
 
       <dependency>
