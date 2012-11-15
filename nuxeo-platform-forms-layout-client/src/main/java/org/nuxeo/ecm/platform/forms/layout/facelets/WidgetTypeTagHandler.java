@@ -236,6 +236,7 @@ public class WidgetTypeTagHandler extends TagHandler {
                 String.format("%s_%s",
                         RenderVariables.widgetVariables.widget.name(),
                         Integer.valueOf(widget.getLevel())), widgetVe);
+        // TODO: expose widget controls too?
         try {
             WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget,
                     value, true, nextHandler);

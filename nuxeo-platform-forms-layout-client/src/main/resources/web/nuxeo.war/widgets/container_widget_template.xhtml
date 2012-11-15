@@ -15,16 +15,16 @@
   </c:if>
   <nxl:subWidget>
     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-    <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-    <c:if test="#{addForm}">
-      <h:form id="#{layout.id}_#{widget.id}_form"
-        enctype="multipart/form-data">
+    <c:set var="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+    <ui:decorate template="/widgets/incl/form_template.xhtml">
+      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+      <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+      <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+      <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+      <ui:define name="content">
         <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-      </h:form>
-    </c:if>
-    <c:if test="#{not addForm}">
-      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-    </c:if>
+      </ui:define>
+    </ui:decorate>
   </nxl:subWidget>
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
@@ -34,16 +34,15 @@
     </c:if>
     <nxl:subWidget>
       <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-      <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-      <c:if test="#{addForm}">
-        <h:form id="#{layout.id}_#{widget.id}_form"
-          enctype="multipart/form-data">
+      <ui:decorate template="/widgets/incl/form_template.xhtml">
+        <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+        <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+        <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+        <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+        <ui:define name="content">
           <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-        </h:form>
-      </c:if>
-      <c:if test="#{not addForm}">
-        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-      </c:if>
+        </ui:define>
+      </ui:decorate>
     </nxl:subWidget>
   </nxp:html>
 </c:if>
@@ -116,17 +115,16 @@
                 <nxl:subWidget>
                   <td class="fieldColumnn containerField">
                     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-                    <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-                    <c:if test="#{addForm}">
-                      <h:form id="#{layout.id}_#{widget.id}_form"
-                        enctype="multipart/form-data"
-                        styleClass="subWidgetForm">
+                    <ui:decorate template="/widgets/incl/form_template.xhtml">
+                      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+                      <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+                      <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                      <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+                      <ui:param name="formStyleClass" value="subWidgetForm" />
+                      <ui:define name="content">
                         <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                      </h:form>
-                    </c:if>
-                    <c:if test="#{not addForm}">
-                      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                    </c:if>
+                      </ui:define>
+                    </ui:decorate>
                   </td>
                 </nxl:subWidget>
               </tr>
@@ -145,17 +143,16 @@
                 <h:outputText value=" " />
               </c:if>
               <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-              <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-              <c:if test="#{addForm}">
-                <h:form id="#{layout.id}_#{widget.id}_form"
-                  enctype="multipart/form-data"
-                  styleClass="subWidgetForm">
+              <ui:decorate template="/widgets/incl/form_template.xhtml">
+                <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+                <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+                <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+                <ui:param name="formStyleClass" value="subWidgetForm" />
+                <ui:define name="content">
                   <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                </h:form>
-              </c:if>
-              <c:if test="#{not addForm}">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-              </c:if>
+                </ui:define>
+              </ui:decorate>
             </span>
           </nxl:subWidget>
         </c:when>
@@ -173,17 +170,16 @@
               </c:if>
               <div>
                 <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-                <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-                <c:if test="#{addForm}">
-                  <h:form id="#{layout.id}_#{widget.id}_form"
-                    enctype="multipart/form-data"
-                    styleClass="subWidgetForm">
+                <ui:decorate template="/widgets/incl/form_template.xhtml">
+                  <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+                  <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+                  <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                  <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+                  <ui:param name="formStyleClass" value="subWidgetForm" />
+                  <ui:define name="content">
                     <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                  </h:form>
-                </c:if>
-                <c:if test="#{not addForm}">
-                  <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                </c:if>
+                  </ui:define>
+                </ui:decorate>
               </div>
             </div>
           </nxl:subWidget>
@@ -206,17 +202,16 @@
                   </c:if>
                   <td class="fieldColumnn containerField">
                     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-                    <c:set var="addForm" value="#{containerWidgetProps[addFormName]}" />
-                    <c:if test="#{addForm}">
-                      <h:form id="#{layout.id}_#{widget.id}_form"
-                        enctype="multipart/form-data"
-                        styleClass="subWidgetForm">
+                    <ui:decorate template="/widgets/incl/form_template.xhtml">
+                      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+                      <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+                      <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                      <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+                      <ui:param name="formStyleClass" value="subWidgetForm" />
+                      <ui:define name="content">
                         <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                      </h:form>
-                    </c:if>
-                    <c:if test="#{not addForm}">
-                      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-                    </c:if>
+                      </ui:define>
+                    </ui:decorate>
                   </td>
                 </tr>
               </nxl:subWidget>

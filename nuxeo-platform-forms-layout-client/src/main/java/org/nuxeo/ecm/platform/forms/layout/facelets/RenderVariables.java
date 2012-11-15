@@ -48,7 +48,18 @@ public class RenderVariables {
     }
 
     public enum widgetVariables {
-        widget, widgetIndex, field, widgetProperty, fieldOrValue,
+        //
+        widget,
+        //
+        widgetIndex,
+        //
+        field,
+        //
+        widgetProperty,
+        // @since 5.7
+        widgetControl,
+        //
+        fieldOrValue,
     }
 
 }

@@ -20,12 +20,14 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
@@ -97,7 +99,8 @@ public class SubWidgetTagHandler extends TagHandler {
         for (Widget subWidget : subWidgets) {
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
-            ValueExpression subWidgetVe = ctx.getExpressionFactory().createValueExpression(
+            ExpressionFactory eFactory = ctx.getExpressionFactory();
+            ValueExpression subWidgetVe = eFactory.createValueExpression(
                     subWidget, Widget.class);
             Integer level = null;
             String tagConfigId = null;
@@ -111,18 +114,32 @@ public class SubWidgetTagHandler extends TagHandler {
             variables.put(String.format("%s_%s",
                     RenderVariables.widgetVariables.widget.name(), level),
                     subWidgetVe);
-            ValueExpression subWidgetIndexVe = ctx.getExpressionFactory().createValueExpression(
+            ValueExpression subWidgetIndexVe = eFactory.createValueExpression(
                     Integer.valueOf(subWidgetCounter), Integer.class);
             variables.put(RenderVariables.widgetVariables.widgetIndex.name(),
                     subWidgetIndexVe);
             variables.put(String.format("%s_%s",
                     RenderVariables.widgetVariables.widgetIndex.name(), level),
                     subWidgetIndexVe);
+            // expose widget controls too
+            for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
+                String key = ctrl.getKey();
+                String name = String.format("%s_%s",
+                        RenderVariables.widgetVariables.widgetControl.name(),
+                        key);
+                String value = String.format("#{%s.controls.%s}",
+                        RenderVariables.widgetVariables.widget.name(), key);
+                variables.put(
+                        name,
+                        eFactory.createValueExpression(ctx, value, Object.class));
+            }
 
             List<String> blockedPatterns = new ArrayList<String>();
             blockedPatterns.add(RenderVariables.widgetVariables.widget.name());
             blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name()
                     + "*");
+            blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name()
+                    + "_*");
 
             FaceletHandler handlerWithVars = helper.getAliasTagHandler(
                     tagConfigId, variables, blockedPatterns, nextHandler);

@@ -20,12 +20,14 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
@@ -90,12 +92,18 @@ public class WidgetTagHandler extends MetaTagHandler {
      */
     protected final TagAttribute layoutName;
 
+    /**
+     * @since 5.7
+     */
+    protected final TagAttribute resolveOnly;
+
     protected final TagAttribute value;
 
     protected final TagAttribute[] vars;
 
     protected final String[] reservedVarsArray = { "id", "widget", "name",
-            "category", "definition", "mode", "layoutName", "value" };
+            "category", "definition", "mode", "layoutName", "value",
+            "resolveOnly" };
 
     public WidgetTagHandler(TagConfig config) {
         super(config);
@@ -107,6 +115,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         category = getAttribute("category");
         mode = getAttribute("mode");
         layoutName = getAttribute("layoutName");
+        resolveOnly = getAttribute("resolveOnly");
 
         value = getRequiredAttribute("value");
         vars = tag.getAttributes().getAll();
@@ -208,15 +217,37 @@ public class WidgetTagHandler extends MetaTagHandler {
                 // templates referring to it.
                 VariableMapper vm = new VariableMapperWrapper(orig);
                 ctx.setVariableMapper(vm);
-                ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                ValueExpression widgetVe = eFactory.createValueExpression(
                         widgetInstance, Widget.class);
                 vm.setVariable(RenderVariables.widgetVariables.widget.name(),
                         widgetVe);
+                // expose widget controls too
+                for (Map.Entry<String, Serializable> ctrl : widgetInstance.getControls().entrySet()) {
+                    String key = ctrl.getKey();
+                    String name = String.format(
+                            "%s_%s",
+                            RenderVariables.widgetVariables.widgetControl.name(),
+                            key);
+                    String value = String.format("#{%s.controls.%s}",
+                            RenderVariables.widgetVariables.widget.name(), key);
+                    vm.setVariable(name, eFactory.createValueExpression(ctx,
+                            value, Object.class));
+                }
             }
 
             try {
-                applyWidgetHandler(ctx, parent, config, widgetInstance, value,
-                        true, nextHandler);
+                boolean resolveOnlyBool = false;
+                if (resolveOnly != null) {
+                    resolveOnlyBool = resolveOnly.getBoolean(ctx);
+                }
+
+                if (resolveOnlyBool) {
+                    nextHandler.apply(ctx, parent);
+                } else {
+                    applyWidgetHandler(ctx, parent, config, widgetInstance,
+                            value, true, nextHandler);
+                }
             } finally {
                 ctx.setVariableMapper(orig);
             }

@@ -109,6 +109,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
         blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name()
                 + "_*");
+        blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name()
+                + "_*");
 
         DecorateHandler includeHandler = new DecorateHandler(config);
         FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId,
@@ -180,6 +182,16 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 value = String.format("#{%s.properties.%s}",
                         RenderVariables.widgetVariables.widget.name(), key);
             }
+            variables.put(name,
+                    eFactory.createValueExpression(ctx, value, Object.class));
+        }
+        // expose widget controls too
+        for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
+            String key = ctrl.getKey();
+            String name = String.format("%s_%s",
+                    RenderVariables.widgetVariables.widgetControl.name(), key);
+            String value = String.format("#{%s.controls.%s}",
+                    RenderVariables.widgetVariables.widget.name(), key);
             variables.put(name,
                     eFactory.createValueExpression(ctx, value, Object.class));
         }
