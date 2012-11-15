@@ -253,7 +253,7 @@ public class EventHandler {
             if (expr == null) {
                 expr = Scripting.newExpression(expression);
             }
-            if ((Boolean) expr.eval(ctx)) {
+            if (!(Boolean) expr.eval(ctx)) {
                 return false;
             }
         }
