@@ -2119,6 +2119,49 @@
         /widgets/date_range_widget_template.xhtml
       </property>
     </widgetType>
+    
+    <widgetType name="path">
+      <configuration>
+        <title>Path</title>
+        <documentation>
+          The path widget displays a popup browser in the document
+          hierarchy.
+        </documentation>
+        <sinceVersion>5.7</sinceVersion>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+            <type>path</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>path</type>
+          </defaultTypes>
+        </fields>
+        <categories>
+          <category>document</category>
+        </categories>
+        <properties>
+          <layouts mode="edit">
+            <layout name="path_widget_type_properties">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/search_path_widget.xhtml</property>
+    </widgetType>
 
   </extension>
 
