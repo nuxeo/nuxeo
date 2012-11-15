@@ -28,6 +28,17 @@ public abstract class AsyncAutomationClient extends AbstractAutomationClient {
 
     protected ExecutorService async;
 
+    /**
+     * Timeout in milliseconds for the wait of the asynchronous thread pool
+     * termination. Default value: 2 seconds.
+     */
+    protected long asyncAwaitTerminationTimeout = 2000;
+
+    /**
+     * Instantiates a new asynchronous automation client with the default
+     * timeout for the wait of the asynchronous thread pool termination: 2
+     * seconds.
+     */
     public AsyncAutomationClient(String url) {
         this(url, Executors.newCachedThreadPool(new ThreadFactory() {
             public Thread newThread(Runnable r) {
@@ -36,9 +47,38 @@ public abstract class AsyncAutomationClient extends AbstractAutomationClient {
         }));
     }
 
+    /**
+     * Instantiates a new asynchronous automation client with the given
+     * asynchronous executor and the default timeout for the wait of the
+     * asynchronous thread pool termination: 2 seconds.
+     */
     public AsyncAutomationClient(String url, ExecutorService executor) {
         super(url);
         async = executor;
+    }
+
+    /**
+     * Instantiates a new asynchronous automation client with the given timeout
+     * in milliseconds for the wait of the asynchronous thread pool termination.
+     *
+     * @since 5.7
+     */
+    public AsyncAutomationClient(String url, long asyncAwaitTerminationTimeout) {
+        this(url);
+        this.asyncAwaitTerminationTimeout = asyncAwaitTerminationTimeout;
+    }
+
+    /**
+     * Instantiates a new asynchronous automation client with the given
+     * asynchronous executor and the given timeout in milliseconds for the wait
+     * of the asynchronous thread pool termination.
+     *
+     * @since 5.7
+     */
+    public AsyncAutomationClient(String url, ExecutorService executor,
+            long asyncAwaitTerminationTimeout) {
+        this(url, executor);
+        this.asyncAwaitTerminationTimeout = asyncAwaitTerminationTimeout;
     }
 
     @Override
@@ -49,7 +89,8 @@ public abstract class AsyncAutomationClient extends AbstractAutomationClient {
     @Override
     public synchronized void shutdown() {
         try {
-            async.awaitTermination(2, TimeUnit.SECONDS);
+            async.awaitTermination(asyncAwaitTerminationTimeout,
+                    TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             log.error(e, e);
         }

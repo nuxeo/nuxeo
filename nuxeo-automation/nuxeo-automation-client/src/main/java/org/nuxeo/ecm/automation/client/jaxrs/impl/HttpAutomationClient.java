@@ -33,20 +33,39 @@ public class HttpAutomationClient extends AsyncAutomationClient {
 
     /**
      * Instantiates a new {@link HttpAutomationClient} with no timeout for the
-     * HTTP connection.
+     * HTTP connection and the default timeout for the wait of the asynchronous
+     * thread pool termination: 2 seconds.
      */
     public HttpAutomationClient(String url) {
         this(url, 0);
     }
 
     /**
-     * Instantiates a new {@link HttpAutomationClient} with a timeout for the
-     * HTTP connection.
+     * Instantiates a new {@link HttpAutomationClient} with the given timeout in
+     * milliseconds for the HTTP connection and the default timeout for the wait
+     * of the asynchronous thread pool termination: 2 seconds.
      *
      * @since 5.7
      */
     public HttpAutomationClient(String url, long httpConnectionTimeout) {
         super(url);
+        init(httpConnectionTimeout);
+    }
+
+    /**
+     * Instantiates a new {@link HttpAutomationClient} with the given timeout in
+     * milliseconds for the HTTP connection and the given timeout in
+     * milliseconds for the wait of the asynchronous thread pool termination.
+     *
+     * @since 5.7
+     */
+    public HttpAutomationClient(String url, long httpConnectionTimeout,
+            long asyncAwaitTerminationTimeout) {
+        super(url, asyncAwaitTerminationTimeout);
+        init(httpConnectionTimeout);
+    }
+
+    private void init(long httpConnectionTimeout) {
         http = new DefaultHttpClient(new ThreadSafeClientConnManager());
         this.httpConnectionTimeout = httpConnectionTimeout;
         // http.setCookieSpecs(null);
