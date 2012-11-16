@@ -94,7 +94,6 @@
         <property name="searchField">ecm:fulltext</property>
         <propertyList name="availableOperators">
           <value>LIKE</value>
-          <value>NOT LIKE</value>
         </propertyList>
       </properties>
       <subWidgets>
@@ -630,7 +629,7 @@
         </propertyList>
       </properties>
       <subWidgets>
-        <widget name="search_path" type="template">
+        <widget name="search_path" type="path">
           <labels>
             <label mode="any">label.advanced_search.searchpath</label>
           </labels>
@@ -638,11 +637,6 @@
           <fields>
             <field>stringValue</field>
           </fields>
-          <properties mode="any">
-            <property name="template">
-              /widgets/search_path_widget.xhtml
-            </property>
-          </properties>
         </widget>
       </subWidgets>
     </widget>
