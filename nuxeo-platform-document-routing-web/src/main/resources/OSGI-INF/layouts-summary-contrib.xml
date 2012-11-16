@@ -14,7 +14,7 @@
           </p>
           <p>
             If there is already a route started, it displays the name of
-            the route started.
+            the started route.
           </p>
         </description>
         <categories>
@@ -67,6 +67,9 @@
       <properties>
         <property name="widgetName">summary_document_route</property>
       </properties>
+      <controls mode="any">
+        <control name="addForm">true</control>
+      </controls>
     </action>
 
   </extension>
