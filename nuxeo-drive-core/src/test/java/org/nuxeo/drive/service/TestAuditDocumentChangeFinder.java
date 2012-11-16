@@ -286,6 +286,22 @@ public class TestAuditDocumentChangeFinder {
 
         assertEquals("found_changes", docChangeSummary.getStatusCode());
 
+        // Create 2 documents in the same sync root: "/folder1" and 1 document
+        // in another sync root => should find 2 changes for "/folder1"
+        TransactionHelper.startTransaction();
+        session.createDocument(session.createDocumentModel("/folder1", "doc3",
+                "File"));
+        session.createDocument(session.createDocumentModel("/folder1", "doc4",
+                "File"));
+        session.createDocument(session.createDocumentModel("/folder2", "doc5",
+                "File"));
+        commitAndWaitForAsyncCompletion();
+
+        docChangeSummary = getFolderDocumentChangeSummary("/folder1");
+        assertEquals(2, docChangeSummary.getDocumentChanges().size());
+        assertEquals(2, docChangeSummary.getChangedDocModels().size());
+        assertEquals("found_changes", docChangeSummary.getStatusCode());
+
         // No changes since last successful sync
         docChangeSummary = getDocumentChangeSummary("Administrator");
         assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
@@ -324,13 +340,28 @@ public class TestAuditDocumentChangeFinder {
     }
 
     /**
-     * Gets the document changes summary using the {@link NuxeoDriveManager} and
-     * updates the {@link #lastSuccessfulSync} date.
+     * Gets the document changes summary for the given user's synchronization
+     * roots using the {@link NuxeoDriveManager} and updates the
+     * {@link #lastSuccessfulSync} date.
      */
     protected DocumentChangeSummary getDocumentChangeSummary(String userName)
             throws ClientException {
         DocumentChangeSummary docChangeSummary = nuxeoDriveManager.getDocumentChangeSummary(
                 userName, session, lastSuccessfulSync);
+        assertNotNull(docChangeSummary);
+        lastSuccessfulSync = docChangeSummary.getSyncDate();
+        return docChangeSummary;
+    }
+
+    /**
+     * Gets the document changes summary for the given folder using the
+     * {@link NuxeoDriveManager} and updates the {@link #lastSuccessfulSync}
+     * date.
+     */
+    protected DocumentChangeSummary getFolderDocumentChangeSummary(
+            String folderPath) throws ClientException {
+        DocumentChangeSummary docChangeSummary = nuxeoDriveManager.getFolderDocumentChangeSummary(
+                folderPath, session, lastSuccessfulSync);
         assertNotNull(docChangeSummary);
         lastSuccessfulSync = docChangeSummary.getSyncDate();
         return docChangeSummary;

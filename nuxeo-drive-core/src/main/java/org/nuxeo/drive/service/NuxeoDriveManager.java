@@ -91,7 +91,7 @@ public interface NuxeoDriveManager {
     public void handleFolderDeletion(IdRef ref) throws ClientException;
 
     /**
-     * Gets a summary of document changes on the given user's synchronization
+     * Gets a summary of document changes for the given user's synchronization
      * roots since the user's device last successful synchronization date.
      * <p>
      * The summary includes:
@@ -110,6 +110,25 @@ public interface NuxeoDriveManager {
      */
     public DocumentChangeSummary getDocumentChangeSummary(String userName,
             CoreSession session, long lastSuccessfulSync)
+            throws ClientException;
+
+    /**
+     * Gets a summary of document changes for the given folder since the user's
+     * device last successful synchronization date.
+     *
+     * @see #getDocumentChangeSummary(String, CoreSession, long) for the
+     *      document change summary description
+     *
+     * @param folderPath the folder path
+     * @param session active CoreSession instance to the repository hosting the
+     *            folder
+     * @param lastSuccessfulSync the last successful synchronization date of the
+     *            user's device
+     * @return the summary of document changes
+     *
+     */
+    public DocumentChangeSummary getFolderDocumentChangeSummary(
+            String folderPath, CoreSession session, long lastSuccessfulSync)
             throws ClientException;
 
     /**

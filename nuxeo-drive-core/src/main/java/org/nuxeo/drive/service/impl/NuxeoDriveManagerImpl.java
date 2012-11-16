@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -187,13 +188,38 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             CoreSession session, long lastSuccessfulSync)
             throws ClientException {
 
+        // Get sync root paths
+        Set<String> syncRootPaths = getSynchronizationRootPaths(userName,
+                session);
+        return getDocumentChangeSummary(syncRootPaths, session,
+                lastSuccessfulSync);
+    }
+
+    /**
+     * Uses the {@link AuditDocumentChangeFinder} to get the summary of document
+     * changes for the given folder and last successful synchronization date.
+     *
+     * @see #getDocumentChangeSummary(String, CoreSession, long)
+     */
+    @Override
+    public DocumentChangeSummary getFolderDocumentChangeSummary(
+            String folderPath, CoreSession session, long lastSuccessfulSync)
+            throws ClientException {
+
+        Set<String> syncRootPaths = new HashSet<String>();
+        syncRootPaths.add(folderPath);
+        return getDocumentChangeSummary(syncRootPaths, session,
+                lastSuccessfulSync);
+    }
+
+    protected DocumentChangeSummary getDocumentChangeSummary(
+            Set<String> syncRootPaths, CoreSession session,
+            long lastSuccessfulSync) throws ClientException {
+
         List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
         Map<String, DocumentModel> changedDocModels = new HashMap<String, DocumentModel>();
         String statusCode = DocumentChangeSummary.STATUS_NO_CHANGES;
 
-        // Get sync root paths
-        Set<String> syncRootPaths = getSynchronizationRootPaths(userName,
-                session);
         // Update sync date
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         long syncDate = cal.getTimeInMillis();

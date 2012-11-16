@@ -4,6 +4,7 @@
     point="operations" >
       <operation class="org.nuxeo.drive.operations.GetRepositoriesOperation" />
       <operation class="org.nuxeo.drive.operations.NuxeoDriveGetDocumentChangeSummary" />
+      <operation class="org.nuxeo.drive.operations.NuxeoDriveGetFolderDocumentChangeSummary" />
       <operation class="org.nuxeo.drive.operations.NuxeoDriveGetRootsOperation" />
       <operation class="org.nuxeo.drive.operations.NuxeoDriveSetSynchronizationOperation" />
    </extension>

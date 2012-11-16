@@ -134,18 +134,53 @@ public class TestGetDocumentChangeSummary {
         assertNull(docChangeSummary.getChangedDocModels());
 
         assertEquals("found_changes", docChangeSummary.getStatusCode());
+
+        // Create 2 documents in the same sync root: "/folder1" and 1 document
+        // in another sync root => should find 2 changes for "/folder1"
+        session.createDocument(session.createDocumentModel("/folder1", "doc3",
+                "File"));
+        session.createDocument(session.createDocumentModel("/folder1", "doc4",
+                "File"));
+        session.createDocument(session.createDocumentModel("/folder2", "doc5",
+                "File"));
+        session.save();
+
+        docChangeSummary = getFolderDocumentChangeSummary("/folder1");
+        assertEquals(2, docChangeSummary.getDocumentChanges().size());
+        assertEquals("found_changes", docChangeSummary.getStatusCode());
     }
 
     /**
-     * Gets the document changes summary using the
-     * {@link NuxeoDriveGetDocumentChangeSummary} automation operation and
-     * updates the {@link #lastSuccessfulSync} date.
+     * Gets the document changes summary for the user bound to the
+     * {@link #session} using the {@link NuxeoDriveGetDocumentChangeSummary}
+     * automation operation and updates the {@link #lastSuccessfulSync} date.
      */
     protected DocumentChangeSummary getDocumentChangeSummary() throws Exception {
 
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetDocumentChangeSummary.ID).set(
                 "lastSuccessfulSync", lastSuccessfulSync).execute();
+        assertNotNull(docChangeSummaryJSON);
+
+        DocumentChangeSummary docChangeSummary = mapper.readValue(
+                docChangeSummaryJSON.getStream(), DocumentChangeSummary.class);
+        assertNotNull(docChangeSummary);
+
+        lastSuccessfulSync = docChangeSummary.getSyncDate();
+        return docChangeSummary;
+    }
+
+    /**
+     * Gets the document changes summary for the given folder using the
+     * {@link NuxeoDriveGetFolderDocumentChangeSummary} automation operation and
+     * updates the {@link #lastSuccessfulSync} date.
+     */
+    protected DocumentChangeSummary getFolderDocumentChangeSummary(
+            String folderPath) throws Exception {
+
+        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetFolderDocumentChangeSummary.ID).set("folderPath",
+                folderPath).set("lastSuccessfulSync", lastSuccessfulSync).execute();
         assertNotNull(docChangeSummaryJSON);
 
         DocumentChangeSummary docChangeSummary = mapper.readValue(
