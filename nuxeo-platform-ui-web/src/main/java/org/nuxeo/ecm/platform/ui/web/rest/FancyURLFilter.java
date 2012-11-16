@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: $
  */
 
 package org.nuxeo.ecm.platform.ui.web.rest;
@@ -82,11 +81,9 @@ public class FancyURLFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         try {
-
             getUrlService();
             // initialize its view id manager if necessary
             urlService.initViewIdManager(servletContext);
@@ -131,17 +128,21 @@ public class FancyURLFilter implements Filter {
             // view has not been set in the request yet => always wrap
             chain.doFilter(request, wrapResponse(httpRequest, httpResponse));
 
-        } catch (IOException ioe) {
-            if (ExceptionHelper.isClientAbortError(ioe)) {
-                log.debug("Client disconnected: " + ioe.getMessage());
+        } catch (IOException e) {
+            String url = httpRequest.getRequestURL().toString();
+            if (ExceptionHelper.isClientAbortError(e)) {
+                log.debug(String.format("Client disconnected from URL %s : %s",
+                        url, e.getMessage()));
             } else {
-                throw ioe;
+                throw new IOException("On requestURL: " + url, e);
             }
         } catch (ServletException e) {
+            String url = httpRequest.getRequestURL().toString();
             if (ExceptionHelper.isClientAbortError(e)) {
-                log.debug("Client disconnected: " + e.getMessage());
+                log.debug(String.format("Client disconnected from URL %s : %s",
+                        url, e.getMessage()));
             } else {
-                throw e;
+                throw new ServletException("On requestURL: " + url, e);
             }
         }
 
