@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -130,17 +131,25 @@ public class FancyURLFilter implements Filter {
             // view has not been set in the request yet => always wrap
             chain.doFilter(request, wrapResponse(httpRequest, httpResponse));
 
+        } catch (IOException ioe) {
+            if (ExceptionHelper.isClientAbortError(ioe)) {
+                log.debug("Client disconnected: " + ioe.getMessage());
+            } else {
+                throw ioe;
+            }
         } catch (ServletException e) {
-            throw e;
-        } catch (Throwable t) {
-            // interrupt chain and throw exception
-            throw new ServletException(t);
+            if (ExceptionHelper.isClientAbortError(e)) {
+                log.debug("Client disconnected: " + e.getMessage());
+            } else {
+                throw e;
+            }
         }
 
     }
 
-    private ServletResponse wrapResponse(HttpServletRequest request,
+    protected ServletResponse wrapResponse(HttpServletRequest request,
             HttpServletResponse response) {
         return new FancyURLResponseWrapper(response, request);
     }
+
 }
