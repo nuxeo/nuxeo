@@ -184,14 +184,16 @@ public class NuxeoDriveActions implements Serializable {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         String userName = documentManager.getPrincipal().getName();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
-        driveManager.synchronizeRoot(userName, newSyncRoot);
+        driveManager.registerSynchronizationRoot(userName, newSyncRoot,
+                documentManager);
     }
 
     public void unsynchronizeCurrentDocument() throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         String userName = documentManager.getPrincipal().getName();
         DocumentModel syncRoot = navigationContext.getCurrentDocument();
-        driveManager.unsynchronizeRoot(userName, syncRoot);
+        driveManager.unregisterSynchronizationRoot(userName, syncRoot,
+                documentManager);
     }
 
     public String navigateToCurrentSynchronizationRoot() throws ClientException {
@@ -218,7 +220,8 @@ public class NuxeoDriveActions implements Serializable {
             throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         String userName = documentManager.getPrincipal().getName();
-        driveManager.unsynchronizeRoot(userName, syncRoot);
+        driveManager.unregisterSynchronizationRoot(userName, syncRoot,
+                documentManager);
     }
 
 }

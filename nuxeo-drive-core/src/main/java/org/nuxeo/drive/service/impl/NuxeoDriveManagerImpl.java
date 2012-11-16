@@ -13,21 +13,30 @@
  *
  * Contributors:
  *     Olivier Grisel <ogrisel@nuxeo.com>
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import org.nuxeo.drive.service.DocumentChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.TooManyDocumentChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -41,7 +50,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.google.common.collect.MapMaker;
 
-
 /**
  * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo
  * user.
@@ -53,13 +61,24 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     public static final String DRIVE_SUBSCRIBERS_PROPERTY = "drv:subscribers";
 
+    public static final String DOCUMENT_CHANGE_LIMIT_PROPERTY = "org.nuxeo.drive.document.change.limit";
+
+    /**
+     * Cache holding the synchronization roots as a 2 dimension array: the first
+     * element is a set of root references of type {@link DocumentRef}, the
+     * second one a set of root paths of type {@link String}.
+     */
     // TODO: upgrade to latest version of google collections to be able to limit
     // the size with a LRU policy
-    ConcurrentMap<String, Set<IdRef>> cache = new MapMaker().concurrencyLevel(4).softKeys().softValues().expiration(
-            10, TimeUnit.MINUTES).makeMap();
+    ConcurrentMap<String, Serializable[]> cache = new MapMaker().concurrencyLevel(
+            4).softKeys().softValues().expiration(10, TimeUnit.MINUTES).makeMap();
+
+    // TODO: make this overridable with an extension point
+    protected DocumentChangeFinder documentChangeFinder = new AuditDocumentChangeFinder();
 
     @Override
-    public void synchronizeRoot(String userName, DocumentModel newRootContainer)
+    public void registerSynchronizationRoot(String userName,
+            DocumentModel newRootContainer, CoreSession session)
             throws PropertyException, ClientException, SecurityException {
         if (!newRootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             newRootContainer.addFacet(NUXEO_DRIVE_FACET);
@@ -72,7 +91,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                             + " proxy or archived version.",
                     newRootContainer.getTitle(), newRootContainer.getRef()));
         }
-        CoreSession session = newRootContainer.getCoreSession();
         UserManager userManager = Framework.getLocalService(UserManager.class);
         if (!session.hasPermission(userManager.getPrincipal(userName),
                 newRootContainer.getRef(), SecurityConstants.ADD_CHILDREN)) {
@@ -103,7 +121,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unsynchronizeRoot(String userName, DocumentModel rootContainer)
+    public void unregisterSynchronizationRoot(String userName,
+            DocumentModel rootContainer, CoreSession session)
             throws PropertyException, ClientException {
         if (!rootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             rootContainer.addFacet(NUXEO_DRIVE_FACET);
@@ -124,10 +143,23 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         }
         rootContainer.setPropertyValue(DRIVE_SUBSCRIBERS_PROPERTY,
                 (Serializable) subscribers);
-        CoreSession session = rootContainer.getCoreSession();
         session.saveDocument(rootContainer);
         session.save();
         cache.clear();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Set<IdRef> getSynchronizationRootReferences(String userName,
+            CoreSession session) throws ClientException {
+        return (Set<IdRef>) getSynchronizationRoots(userName, session)[0];
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Set<String> getSynchronizationRootPaths(String userName,
+            CoreSession session) throws ClientException {
+        return (Set<String>) getSynchronizationRoots(userName, session)[1];
     }
 
     @Override
@@ -135,15 +167,73 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         cache.clear();
     }
 
+    /**
+     * Uses the {@link AuditDocumentChangeFinder} to get the summary of document
+     * changes for the given user and last successful synchronization date.
+     * <p>
+     * Sets the status code to
+     * {@link DocumentChangeSummary#STATUS_TOO_MANY_CHANGES} if the audit log
+     * query returns too many results, to
+     * {@link DocumentChangeSummary#STATUS_NO_CHANGES} if no results are
+     * returned and to {@link DocumentChangeSummary#STATUS_FOUND_CHANGES}
+     * otherwise.
+     * <p>
+     * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
+     * a limit of document changes to fetch from the audit logs. Default value
+     * is 1000.
+     */
     @Override
-    public Set<IdRef> getSynchronizationRootReferences(String userName,
+    public DocumentChangeSummary getDocumentChangeSummary(String userName,
+            CoreSession session, long lastSuccessfulSync)
+            throws ClientException {
+
+        List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
+        Map<String, DocumentModel> changedDocModels = new HashMap<String, DocumentModel>();
+        String statusCode = DocumentChangeSummary.STATUS_NO_CHANGES;
+
+        // Get sync root paths
+        Set<String> syncRootPaths = getSynchronizationRootPaths(userName,
+                session);
+        // Update sync date
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        long syncDate = cal.getTimeInMillis();
+        if (!syncRootPaths.isEmpty()) {
+            try {
+                // Get document changes
+                int limit = Integer.parseInt(Framework.getProperty(
+                        DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
+                docChanges = documentChangeFinder.getDocumentChanges(session,
+                        syncRootPaths, lastSuccessfulSync, limit);
+                if (!docChanges.isEmpty()) {
+                    // Build map of document models that have changed
+                    for (DocumentChange docChange : docChanges) {
+                        String docUuid = docChange.getDocUuid();
+                        if (!changedDocModels.containsKey(docUuid)) {
+                            changedDocModels.put(docUuid,
+                                    session.getDocument(new IdRef(docUuid)));
+                        }
+                    }
+                    statusCode = DocumentChangeSummary.STATUS_FOUND_CHANGES;
+                }
+            } catch (TooManyDocumentChangesException e) {
+                statusCode = DocumentChangeSummary.STATUS_TOO_MANY_CHANGES;
+            }
+        }
+
+        return new DocumentChangeSummary(docChanges, changedDocModels,
+                statusCode, syncDate);
+    }
+
+    protected Serializable[] getSynchronizationRoots(String userName,
             CoreSession session) throws ClientException {
         // cache uses soft keys hence physical equality: intern key before
         // lookup
         userName = userName.intern();
-        Set<IdRef> references = cache.get(userName);
-        if (references == null) {
-            references = new LinkedHashSet<IdRef>();
+        Serializable[] syncRoots = cache.get(userName);
+        if (syncRoots == null) {
+            syncRoots = new Serializable[2];
+            Set<IdRef> references = new LinkedHashSet<IdRef>();
+            Set<String> paths = new LinkedHashSet<String>();
             String q = String.format(
                     "SELECT ecm:uuid FROM Document WHERE %s = %s"
                             + " AND ecm:currentLifeCycleState <> 'deleted'"
@@ -152,12 +242,23 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     NXQLQueryBuilder.prepareStringLiteral(userName, true, true));
             IterableQueryResult results = session.queryAndFetch(q, NXQL.NXQL);
             for (Map<String, Serializable> result : results) {
-                references.add(new IdRef(result.get("ecm:uuid").toString()));
+                IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
+                references.add(docRef);
+                paths.add(session.getDocument(docRef).getPathAsString());
             }
             results.close();
-            cache.put(userName, references);
+            syncRoots[0] = (Serializable) references;
+            syncRoots[1] = (Serializable) paths;
+            cache.put(userName, syncRoots);
         }
-        return references;
+        return syncRoots;
+    }
+
+    // TODO: make documentChangeFinder overridable with an extension point and
+    // remove setter
+    public void setDocumentChangeFinder(
+            DocumentChangeFinder documentChangeFinder) {
+        this.documentChangeFinder = documentChangeFinder;
     }
 
 }

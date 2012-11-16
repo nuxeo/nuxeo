@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-  <classpathentry kind="src" path="src/test/java" output="bin/test" including="**/*.java"/>  
+  <classpathentry kind="src" path="src/test/java" output="bin/test" including="**/*.java"/>
+  <classpathentry kind="src" path="src/test/resources" output="bin/test" excluding="**/*.java"/>
   <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
   <classpathentry kind="output" path="bin/main"/>
