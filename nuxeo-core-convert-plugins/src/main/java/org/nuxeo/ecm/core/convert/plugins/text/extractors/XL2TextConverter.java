@@ -42,8 +42,9 @@ public class XL2TextConverter implements Converter {
 
     private static final Log log = LogFactory.getLog(XL2TextConverter.class);
 
-    private static final String CELL_SEP = " ";
-    private static final String ROW_SEP = "\n";
+    private static final String CELL_SEP = "  ";
+
+    private static final String ROW_SEP = "\n\n";
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder,
@@ -64,6 +65,7 @@ public class XL2TextConverter implements Converter {
                     while (cells.hasNext()) {
                         HSSFCell cell = (HSSFCell) cells.next();
                         appendTextFromCell(cell, sb);
+                        sb.append(CELL_SEP);
                     }
                     sb.append(ROW_SEP);
                 }
@@ -89,12 +91,12 @@ public class XL2TextConverter implements Converter {
             cellValue = Double.toString(cell.getNumericCellValue()).trim();
             break;
         case HSSFCell.CELL_TYPE_STRING:
-            cellValue = cell.getStringCellValue().trim();
+            cellValue = cell.getStringCellValue().trim().replaceAll("\n", " ");
             break;
         }
 
         if (cellValue != null && cellValue.length() > 0) {
-            sb.append(cellValue).append(CELL_SEP);
+            sb.append(cellValue);
         }
     }
 
