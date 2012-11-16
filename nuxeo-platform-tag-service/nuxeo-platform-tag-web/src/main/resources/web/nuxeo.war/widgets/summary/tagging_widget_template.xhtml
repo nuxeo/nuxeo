@@ -34,7 +34,7 @@
             <a4j:commandLink id="#{widget.id}_removeTag"
               action="#{tagActions.removeTagging(tag.label)}"
               immediate="true"
-              reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView"
+              reRender="#{widget.id}_taggingPanel, MultiTreeView"
               rendered="#{tagActions.canModifyTag(tag)}">
               <h:graphicImage value="/icons/action_tag_delete.png" />
             </a4j:commandLink>
@@ -59,7 +59,7 @@
               value="#{messages['command.tag.add.new.tag']}"
               id="#{widget.id}_tagLabelAddButton"
               action="#{tagActions.addTagging}" styleClass="button"
-              reRender="#{widget.id}_message_banner, #{widget.id}_taggingPanel, MultiTreeView" />
+              reRender="#{widget.id}_taggingPanel, MultiTreeView" />
 
             <a4j:status>
               <f:facet name="start">
