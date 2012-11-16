@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
-	<classpathentry kind="src" output="bin/seam" path="src/main/seam"/>
+	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.nuxeo.ide.SDK_CONTAINER"/>
 	<classpathentry kind="con" path="org.nuxeo.ide.SDK_TEST_CONTAINER"/>
