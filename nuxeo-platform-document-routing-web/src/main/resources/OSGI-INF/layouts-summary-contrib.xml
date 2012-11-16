@@ -37,7 +37,11 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="summary_document_route" type="summary_document_route" />
+    <widget name="summary_document_route" type="summary_document_route">
+      <controls mode="any">
+        <control name="addForm">true</control>
+      </controls>
+    </widget>
 
     <widget name="start_route_widget" type="template">
       <labels>
@@ -55,6 +59,9 @@
       <properties widgetMode="edit">
         <property name="cssStyleClass">dataInputText</property>
       </properties>
+      <controls mode="any">
+        <control name="addForm">true</control>
+      </controls>
     </widget>
 
   </extension>
@@ -67,9 +74,6 @@
       <properties>
         <property name="widgetName">summary_document_route</property>
       </properties>
-      <controls mode="any">
-        <control name="addForm">true</control>
-      </controls>
     </action>
 
   </extension>
