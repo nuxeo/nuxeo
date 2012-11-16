@@ -102,8 +102,10 @@
   </div>
 
   <a4j:outputPanel id="#{widget.id}_inputId" ajaxRendered="true">
-      <h:inputText value="#{field_0}"
-    styleClass="dataInputText" id="#{widget.id}_input" />
+    <h:inputText value="#{field_0}" styleClass="#{widgetProperty_styleClass}"
+      required="#{widgetProperty_required}" id="#{widget.id}_input" />
+    <h:message styleClass="errorMessage" for="#{widget.id}_input"
+      id="#{widget.id}_inputId_message" />
   </a4j:outputPanel>
 
 </c:if>

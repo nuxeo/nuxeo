@@ -2152,6 +2152,9 @@
                 <row>
                   <widget category="widgetTypeConf">required</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
