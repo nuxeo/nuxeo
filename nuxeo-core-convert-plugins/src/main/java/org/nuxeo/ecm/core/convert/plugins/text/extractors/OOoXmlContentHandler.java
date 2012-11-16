@@ -37,6 +37,8 @@ public class OOoXmlContentHandler extends DefaultHandler {
 
     protected boolean dumpText = false;
 
+    protected boolean isSpreadSheet = false;
+
     public String getContent() {
         return sb.toString();
     }
@@ -45,6 +47,12 @@ public class OOoXmlContentHandler extends DefaultHandler {
     public void startElement(String namespaceURI, String localName,
             String qName, Attributes atts) throws SAXException {
         path.push(qName);
+
+        // Detect spreadsheet
+        if (qName.equals("office:spreadsheet")) {
+            isSpreadSheet = true;
+        }
+
         // Text element
         if (qName.startsWith("text:")) {
             dumpText = true;
@@ -68,9 +76,10 @@ public class OOoXmlContentHandler extends DefaultHandler {
             }
         }
         // Paragraph: add a new line
-        if (qName.equals("text:p")) {
+        if (!isSpreadSheet && qName.equals("text:p")) {
             sb.append("\n");
         }
+
         // Page (Impress only): add a new line if not the first one
         if (qName.equals("draw:page")
                 && !"page1".equals(atts.getValue("draw:name"))) {
@@ -93,6 +102,25 @@ public class OOoXmlContentHandler extends DefaultHandler {
         path.pop();
         if (path.isEmpty() || !path.lastElement().startsWith("text:")) {
             dumpText = false;
+        }
+
+        // Specific separators for spreadsheets:
+        if (isSpreadSheet) {
+
+            // End of table row: add a blank line
+            if (qName.equals("table:table-row")) {
+                sb.append("\n\n");
+            }
+
+            // End of table cell: add a separator
+            if (qName.equals("table:table-cell")) {
+                sb.append("  ");
+            }
+
+            // End of paragraph: add a white space
+            if (qName.equals("text:p")) {
+                sb.append(" ");
+            }
         }
     }
 
