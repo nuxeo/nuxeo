@@ -2198,12 +2198,17 @@
             never be displayed.
           </p>
           <p>
-            This widget also accepts custom properties to add forms around some
-            of its subwidgets. If the property with name
-            "nxw_addForm_#{widgetIndex}" is present and resolves to true, then a
-            form will be added around the subwidgets at index #{widgetIndex}.
-            For instance, adding a property "nxw_addForm_0" with value true, the
-            first subwidget will be surrounded with a form.
+            On version 5.6 (only this version), this widget also accepts custom
+            properties to add forms around some of its subwidgets. If the
+            property with name "nxw_addForm_#{widgetIndex}" is present and
+            resolves to true, then a form will be added around the subwidgets at
+            index #{widgetIndex}. For instance, adding a property
+            "nxw_addForm_0" with value true, the first subwidget will be
+            surrounded with a form.
+          </p>
+          <p>
+            From version 5.7, subwidgets hold this information directly, by
+            declaring a control with key "addForm" and value "true".
           </p>
           <p>
             It will apply to the current value (e.g. the layout or parent
