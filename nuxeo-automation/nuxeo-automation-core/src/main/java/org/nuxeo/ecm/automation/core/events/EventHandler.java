@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -34,6 +36,8 @@ import org.nuxeo.ecm.core.event.EventContext;
  */
 @XObject("handler")
 public class EventHandler {
+
+    private static final Log log = LogFactory.getLog(EventHandler.class);
 
     @XNode("@chainId")
     protected String chainId;
@@ -76,15 +80,34 @@ public class EventHandler {
     @XNode("filters/isAdministrator")
     protected Boolean isAdministrator;
 
+    /**
+     * @deprecated since 5.7: expression evaluation was inverted so a new
+     *             attribute condition has been defined, see NXP-8630
+     */
+    @Deprecated
     protected String expression;
+
+    /**
+     * @since 5.7: added to replace the 'expression' element as its evaluation
+     *        is inverted
+     */
+    protected String condition;
 
     @XNode("filters/expression")
     protected void _setExpression(String expr) {
-        expr = expr.replaceAll("&lt;", "<");
-        expression = expr.replaceAll("&gt;", ">");
+        expression = convertExpr(expr);
     }
 
-    private Expression expr;
+    @XNode("filters/condition")
+    protected void _setCondition(String expr) {
+        condition = convertExpr(expr);
+    }
+
+    protected String convertExpr(String expr) {
+        String res = expr.replaceAll("&lt;", "<");
+        res = res.replaceAll("&gt;", ">");
+        return res;
+    }
 
     public EventHandler() {
     }
@@ -150,8 +173,21 @@ public class EventHandler {
         this.chainId = chainId;
     }
 
+    /**
+     * @deprecated since 5.7: use {@link #getCondition()} instead
+     */
+    @Deprecated
     public String getExpression() {
         return expression;
+    }
+
+    /**
+     * Condition to define on event handler
+     *
+     * @since 5.7
+     */
+    public String getCondition() {
+        return condition;
     }
 
     public String getFacet() {
@@ -182,8 +218,12 @@ public class EventHandler {
         return doctypes;
     }
 
+    /**
+     * @deprecated since 5.7: use
+     */
+    @Deprecated
     public Expression getExpr() {
-        return expr;
+        return Scripting.newExpression(expression);
     }
 
     public boolean isEnabled(OperationContext ctx, EventContext eventCtx)
@@ -249,15 +289,25 @@ public class EventHandler {
                 return false;
             }
         }
-        if (expression != null) {
-            if (expr == null) {
-                expr = Scripting.newExpression(expression);
+        if (!org.apache.commons.lang.StringUtils.isBlank(condition)) {
+            Expression expr = Scripting.newExpression(condition);
+            if (!Boolean.TRUE.equals(expr.eval(ctx))) {
+                return false;
             }
-            if ((Boolean) expr.eval(ctx)) {
+        } else if (!org.apache.commons.lang.StringUtils.isBlank(expression)) {
+            // BBB
+            if (log.isWarnEnabled()) {
+                log.warn(String.format(
+                        "The 'expression' element with value '%s' "
+                                + "on event handler for chain '%s' is deprecated: please use the 'condition'"
+                                + " attribute instead, as its evaluation will not be inverted.",
+                        expression, chainId));
+            }
+            Expression expr = Scripting.newExpression(expression);
+            if (Boolean.TRUE.equals(expr.eval(ctx))) {
                 return false;
             }
         }
         return true;
     }
-
 }
