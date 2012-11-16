@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.web.common.exceptionhandling;
@@ -25,7 +24,6 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 public class ExceptionHelper {
@@ -37,11 +35,8 @@ public class ExceptionHelper {
 
     public static Throwable unwrapException(Throwable t) {
         Throwable cause = null;
-
         if (t instanceof ServletException) {
             cause = ((ServletException) t).getRootCause();
-        } else if (t instanceof ClientException) {
-            cause = t.getCause();
         } else if (t instanceof Exception) {
             cause = t.getCause();
         }
@@ -59,11 +54,11 @@ public class ExceptionHelper {
             SecurityException.class.getName());
 
     public static boolean isSecurityError(Throwable t) {
-        if (t instanceof DocumentSecurityException) {
-            return true;
-        } else if (t.getCause() instanceof DocumentSecurityException) {
-            return true;
-        } else if (t.getCause() instanceof SecurityException) {
+        if (t == null) {
+            return false;
+        } else if (t instanceof DocumentSecurityException
+                || t.getCause() instanceof DocumentSecurityException
+                || t.getCause() instanceof SecurityException) {
             return true;
         } else if (t.getMessage() != null) {
             String message = t.getMessage();
@@ -73,32 +68,29 @@ public class ExceptionHelper {
                 }
             }
         }
-
         return false;
     }
 
     public static boolean isClientAbortError(Throwable t) {
-        if (t instanceof SocketException) {
+        if (t == null) {
+            return false;
+        } else if (t instanceof SocketException
+                || t.getCause() instanceof SocketException) {
             return true;
-        } else if (t.getCause() instanceof SocketException) {
-            return true;
-        } else if (t != null) {
+        } else {
             // handle all IOException that are ClientAbortException by looking
             // at their class name since the package name is not the same for
             // jboss, glassfish, tomcat and jetty and we don't want to add
             // implementation specific build dependencies to this project
-            if (CLIENT_ABORT_EXCEPTION.equals(
-                    t.getClass().getSimpleName())) {
+            if (CLIENT_ABORT_EXCEPTION.equals(t.getClass().getSimpleName())) {
                 return true;
             }
             Throwable cause = t.getCause();
             if (cause != null
-                    && CLIENT_ABORT_EXCEPTION.equals(
-                            cause.getClass().getSimpleName())) {
+                    && CLIENT_ABORT_EXCEPTION.equals(cause.getClass().getSimpleName())) {
                 return true;
             }
         }
-
         return false;
     }
 }
