@@ -1,5 +1,6 @@
 package org.nuxeo.snapshot;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -9,8 +10,6 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.versioning.OrphanVersionRemovalFilter;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 public class SnapshotRemovalPolicy implements OrphanVersionRemovalFilter {
 

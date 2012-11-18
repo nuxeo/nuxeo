@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import org.dom4j.swing.LeafTreeNode;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -19,7 +18,10 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.runtime.api.Framework;
 
 public class SnapshotableAdapter implements Snapshot, Serializable {
 
@@ -51,7 +53,8 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             throw new ClientException(
                     "Can not version a folder that has not snapshot schema");
         }
-        if (!targetDoc.isFolder() && !targetDoc.isCheckedOut()) {
+        if (!targetDoc.isFolder() && !targetDoc.isProxy()
+                && !targetDoc.isCheckedOut()) {
             if (targetDoc.isVersion()) {
                 return targetDoc.getRef();
             }
@@ -69,13 +72,27 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                 return targetDoc.getRef();
             } else {
                 // live proxy
-                // checkin the target doc ?
-                targetDoc.getCoreSession().checkIn(proxyTarget.getRef(),
-                        option, null);
+                // create a new leaf with target doc ?
+                return createLeafVersion(proxyTarget, option);
+
                 // create a new proxy ??
+                // XXX
             }
 
         }
+
+        // Fire event to change document
+        DocumentEventContext ctx = new DocumentEventContext(
+                targetDoc.getCoreSession(),
+                targetDoc.getCoreSession().getPrincipal(), targetDoc);
+        ctx.setProperty(ROOT_DOCUMENT_PROPERTY, doc);
+
+        Framework.getLocalService(EventService.class).fireEvent(ctx.newEvent(ABOUT_TO_CREATE_LEAF_VERSION_EVENT));
+        // Save only if needed
+        if (targetDoc.isDirty()) {
+            targetDoc.getCoreSession().saveDocument(targetDoc);
+        }
+
         return targetDoc.getCoreSession().checkIn(targetDoc.getRef(), option,
                 null);
     }
@@ -138,9 +155,9 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                 } else {
                     throw new ClientException(
                             "Unable to create leaf version for "
-                                    + child.getPathAsString() + " ("
-                                    + child.isVersion() + "," + child.isProxy()
-                                    + ")");
+                                    + child.getPathAsString() + " (V:"
+                                    + child.isVersion() + ",P:"
+                                    + child.isProxy() + ")");
                 }
             } else {
                 SnapshotableAdapter adapter = new SnapshotableAdapter(child);

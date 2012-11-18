@@ -14,7 +14,7 @@
  * Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.snapshot.tests;
+package org.nuxeo.snapshot;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;

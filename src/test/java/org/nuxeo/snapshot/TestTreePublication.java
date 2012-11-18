@@ -14,7 +14,7 @@
  * Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.snapshot.tests;
+package org.nuxeo.snapshot;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

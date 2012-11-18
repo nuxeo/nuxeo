@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.test.listeners">
+  <extension point="listener" target="org.nuxeo.ecm.core.event.EventServiceComponent">
+    <listener class="org.nuxeo.snapshot.CreateLeafListener" name="aboutToCreateLeaf">
+      <event>aboutToCreateLeafVersionEvent</event>
+    </listener>
+  </extension>
+</component>
