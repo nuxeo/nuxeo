@@ -54,6 +54,8 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     private static final long serialVersionUID = 1495841177711755669L;
 
+    public static String DIR_AUTO = "auto";
+
     @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
@@ -71,6 +73,14 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
+            // Make text fields automatically switch to right-to-left if
+            // not told otherwise
+            if (widget.getProperty("dir") == null) {
+                TagAttribute dir = helper.createAttribute("dir",
+                        DIR_AUTO);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                        dir);
+            }
             ComponentHandler input = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,
                     HtmlInputText.COMPONENT_TYPE, null);
@@ -82,6 +92,14 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             TagAttributes attributes = getViewTagAttributes(ctx, helper,
                     widgetId, widget, !BuiltinWidgetModes.isLikePlainMode(mode));
+            // Make text fields automatically switch to right-to-left if
+            // not told otherwise
+            if (widget.getProperty("dir") == null) {
+                TagAttribute dir = helper.createAttribute("dir",
+                        DIR_AUTO);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                        dir);
+            }
             // default on text for other modes
             ComponentHandler output = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,

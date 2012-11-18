@@ -26,7 +26,7 @@
                 <c:if test="#{layoutWidgetsDisplay == 'label_top'}">
                   <nxu:set var="fieldColspan"
                     value="#{layout.columns/layoutRow.size}">
-                    <td class="fieldColumn" colspan="#{fieldColspan}">
+                    <td class="fieldColumn" colspan="#{fieldColspan}" dir="auto">
                       <c:if test="#{not widget.handlingLabels}">
                         <div>
                           <ui:include src="/widgets/incl/widget_label_template.xhtml">
@@ -50,7 +50,7 @@
                   </c:if>
                   <nxu:set var="fieldColspan"
                     value="#{2*layout.columns/layoutRow.size -1 + nxu:test(widget.handlingLabels, 1, 0)}">
-                    <td class="fieldColumn" colspan="#{fieldColspan}">
+                    <td class="fieldColumn" colspan="#{fieldColspan}" dir="auto">
                       <nxl:widget widget="#{widget}" value="#{value}" />
                     </td>
                   </nxu:set>

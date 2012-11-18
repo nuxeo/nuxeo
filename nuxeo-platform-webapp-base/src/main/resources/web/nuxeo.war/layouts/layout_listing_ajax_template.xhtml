@@ -25,7 +25,7 @@
   <thead>
     <tr>
       <nxl:layoutColumn>
-        <th>
+        <th dir="auto">
           <c:choose>
             <c:when test="#{layoutColumn.properties.isListingSelectionBox}">
               <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
@@ -141,7 +141,7 @@
 <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
 <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
   <nxl:layoutColumn>
-    <td class="#{layoutColumn.properties.columnStyleClass}">
+    <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto">
       <nxl:layoutColumnWidget>
         <nxl:widget widget="#{widget}" value="#{value}" />
         <c:if test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1 and widgetIndex > 0}">
