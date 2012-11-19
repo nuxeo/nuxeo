@@ -19,6 +19,7 @@ package org.nuxeo.drive.service.impl;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -26,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Summary of document changes, including:
  * <ul>
+ * <li>The list of sync root paths</li>
  * <li>A list of document changes</li>
  * <li>A map of document models that have changed</li>
  * <li>A status code</li>
@@ -44,6 +46,8 @@ public class DocumentChangeSummary implements Serializable {
 
     public static final String STATUS_NO_CHANGES = "no_changes";
 
+    protected Set<String> syncRootPaths;
+
     protected List<DocumentChange> documentChanges;
 
     // Ignored from JSON serialization for the moment as we need to define
@@ -60,13 +64,23 @@ public class DocumentChangeSummary implements Serializable {
         // Needed for JSON deserialization
     }
 
-    public DocumentChangeSummary(List<DocumentChange> documentChanges,
+    public DocumentChangeSummary(Set<String> syncRootPaths,
+            List<DocumentChange> documentChanges,
             Map<String, DocumentModel> changedDocModels, String statusCode,
             Long syncDate) {
         this.documentChanges = documentChanges;
+        this.syncRootPaths = syncRootPaths;
         this.changedDocModels = changedDocModels;
         this.statusCode = statusCode;
         this.syncDate = syncDate;
+    }
+
+    public Set<String> getSyncRootPaths() {
+        return syncRootPaths;
+    }
+
+    public void setSyncRootPaths(Set<String> syncRootPaths) {
+        this.syncRootPaths = syncRootPaths;
     }
 
     public List<DocumentChange> getDocumentChanges() {

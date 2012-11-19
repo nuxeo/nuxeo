@@ -219,6 +219,7 @@ public class TestAuditDocumentChangeFinder {
         // No sync roots => shouldn't find any changes
         DocumentChangeSummary docChangeSummary = getDocumentChangeSummary("Administrator");
         assertNotNull(docChangeSummary);
+        assertTrue(docChangeSummary.getSyncRootPaths().isEmpty());
         assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
         assertTrue(docChangeSummary.getChangedDocModels().isEmpty());
         assertEquals("no_changes", docChangeSummary.getStatusCode());
@@ -235,6 +236,10 @@ public class TestAuditDocumentChangeFinder {
         // commitAndWaitForAsyncCompletion();
 
         docChangeSummary = getDocumentChangeSummary("Administrator");
+        Set<String> expectedSyncRootPaths = new HashSet<String>();
+        expectedSyncRootPaths.add("/folder1");
+        expectedSyncRootPaths.add("/folder2");
+        assertEquals(expectedSyncRootPaths, docChangeSummary.getSyncRootPaths());
         assertEquals(2, docChangeSummary.getDocumentChanges().size());
         assertEquals(2, docChangeSummary.getChangedDocModels().size());
         assertEquals("found_changes", docChangeSummary.getStatusCode());
@@ -250,6 +255,8 @@ public class TestAuditDocumentChangeFinder {
         commitAndWaitForAsyncCompletion();
 
         docChangeSummary = getDocumentChangeSummary("Administrator");
+        assertEquals(expectedSyncRootPaths, docChangeSummary.getSyncRootPaths());
+
         List<DocumentChange> docChanges = docChangeSummary.getDocumentChanges();
         assertEquals(2, docChanges.size());
         DocumentChange docChange = docChanges.get(0);
@@ -298,12 +305,16 @@ public class TestAuditDocumentChangeFinder {
         commitAndWaitForAsyncCompletion();
 
         docChangeSummary = getFolderDocumentChangeSummary("/folder1");
+        expectedSyncRootPaths.remove("/folder2");
+        assertEquals(expectedSyncRootPaths, docChangeSummary.getSyncRootPaths());
         assertEquals(2, docChangeSummary.getDocumentChanges().size());
         assertEquals(2, docChangeSummary.getChangedDocModels().size());
         assertEquals("found_changes", docChangeSummary.getStatusCode());
 
         // No changes since last successful sync
         docChangeSummary = getDocumentChangeSummary("Administrator");
+        expectedSyncRootPaths.add("/folder2");
+        assertEquals(expectedSyncRootPaths, docChangeSummary.getSyncRootPaths());
         assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
         assertTrue(docChangeSummary.getChangedDocModels().isEmpty());
         assertEquals("no_changes", docChangeSummary.getStatusCode());
@@ -317,6 +328,7 @@ public class TestAuditDocumentChangeFinder {
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "1");
         docChangeSummary = getDocumentChangeSummary("Administrator");
+        assertEquals(expectedSyncRootPaths, docChangeSummary.getSyncRootPaths());
         assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
         assertTrue(docChangeSummary.getChangedDocModels().isEmpty());
         assertEquals("too_many_changes", docChangeSummary.getStatusCode());

@@ -96,6 +96,7 @@ public interface NuxeoDriveManager {
      * <p>
      * The summary includes:
      * <ul>
+     * <li>The list of sync root paths</li>
      * <li>A list of document changes</li>
      * <li>The document models that have changed</li>
      * <li>A status code</li>

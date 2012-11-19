@@ -246,8 +246,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             }
         }
 
-        return new DocumentChangeSummary(docChanges, changedDocModels,
-                statusCode, syncDate);
+        return new DocumentChangeSummary(syncRootPaths, docChanges,
+                changedDocModels, statusCode, syncDate);
     }
 
     protected Serializable[] getSynchronizationRoots(String userName,
