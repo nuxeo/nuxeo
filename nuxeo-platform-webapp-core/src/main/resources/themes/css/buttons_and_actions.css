@@ -20,7 +20,7 @@ author: lkemen@nuxeo.com
 	margin: .4em .9em .9em 0;
 	padding: .3em .7em;
 	text-decoration: none;
-	text-shadow: 1px 1px 0px #fff;
+	text-shadow: 1px 1px 0 #fff;
 	white-space: nowrap; }
 .button:hover, input.button:hover {
   background: none "color.major.medium (__FLAVOR__ background)";
@@ -94,10 +94,10 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 .headerTitleAndTools .globalActionBar { float: right }
 .globalActionBar h1 { float: left }
 .globalActionBar .actionList { float: right; list-style: none; margin: 0; padding: 0 }
-.globalActionBar .actionList li { cursor: pointer; display: inline-block; font-weight: normal; margin: 0 0 0 .8em; position: relative; text-decoration: none; z-index:3000 }
+.globalActionBar .actionList li { cursor: pointer; display: block; font-weight: normal; margin: 0 0 0 .8em; position: relative; text-decoration: none; z-index:3000 }
 .globalActionBar .actionList li a { color: "default (__FLAVOR__ color)"; padding: 0 }
 .globalActionBar .actionList .actionSubList { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); display:none; list-style: none; margin-top: 0.5em; padding: 0; position: absolute; right: 0; top: auto; width: 250px; z-index: 1001 }
-.globalActionBar .actionList .actionSubList li { background: none; border: none; display: inline; float: none; height: auto; margin: 0; padding: 0; text-align: left; width: 300px }
+.globalActionBar .actionList .actionSubList li { background: none; border: none; float: none; height: auto; margin: 0; padding: 0; text-align: left; max-width: 300px }
 .globalActionBar .actionList .actionSubList li a { background: none; border: none; display: block; margin: 0; padding: .5em 1em; text-decoration: none; white-space: normal }
 .globalActionBar .actionList .actionSubList li a:hover { background-color:"color.major.medium (__FLAVOR__ background)";}
 .globalActionBar .actionSubList .smallIcon { margin: 0 .8em -0.2em 0 }
@@ -128,7 +128,7 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
   margin: 0 .5em;
   padding: 0 .7em;
   text-decoration: none;
-  text-shadow: 1px 1px 0px #fff }
+  text-shadow: 1px 1px 0 #fff }
 .foldableBox h3 a.action:hover, .foldableBox h3 a.action:visited:hover { background: none "color.major.medium (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)"; float: right !important; }
 
 /* =RightClick menu */
