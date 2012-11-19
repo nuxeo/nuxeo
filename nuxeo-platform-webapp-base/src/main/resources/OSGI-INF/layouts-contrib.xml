@@ -470,7 +470,7 @@
         <field>orderable</field>
       </fields>
     </widget>
-    
+
     <widget name="userSuggestion_hideSearchTypeText" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -488,7 +488,7 @@
         <field>hideSearchTypeText</field>
       </fields>
     </widget>
-    
+
     <widget name="userSuggestion_displaySuggestionOnTop" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -498,7 +498,8 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          This attribute controls the possibility to display the suggestion 
+          This attribute controls the possibility to display the
+          suggestion
           box on top of the search results. Available since 5.7.
         </label>
       </helpLabels>
@@ -506,7 +507,7 @@
         <field>displaySuggestionOnTop</field>
       </fields>
     </widget>
-    
+
     <widget name="userSuggestion_hideHelpLabel" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -516,7 +517,7 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          This attribute controls the possibility to hide the 
+          This attribute controls the possibility to hide the
           help label. Available since 5.7.
         </label>
       </helpLabels>
@@ -2035,26 +2036,27 @@
         /widgets/user_vgoups_widget_template.xhtml
       </property>
     </widgetType>
-    
+
     <widgetType name="date_range">
       <configuration>
-       <title>Date range</title>
-       <documentation>Widget used to search on a date range.
-         Two fields are required :
+        <title>Date range</title>
+        <documentation>
+          Widget used to search on a date range.
+          Two fields are required:
           <ul>
             <li>A field to map the min date</li>
             <li>A field to map the max date</li>
           </ul>
-       </documentation>
-       <sinceVersion>5.7</sinceVersion>
-       <categories>
-         <category>search</category>
-       </categories>
-       <supportedModes>
-        <mode>edit</mode>
-        <mode>view</mode>
-       </supportedModes>
-       <fields>
+        </documentation>
+        <sinceVersion>5.7</sinceVersion>
+        <categories>
+          <category>search</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
           <list>false</list>
           <complex>false</complex>
           <supportedTypes>
@@ -2080,7 +2082,7 @@
           <layouts mode="edit">
             <layout name="daterange_widget_type_properties_edit">
               <rows>
-               <row>
+                <row>
                   <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
@@ -2110,7 +2112,7 @@
               </rows>
             </layout>
           </layouts>
-        </properties> 
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -2119,7 +2121,7 @@
         /widgets/date_range_widget_template.xhtml
       </property>
     </widgetType>
-    
+
     <widgetType name="path">
       <configuration>
         <title>Path</title>
