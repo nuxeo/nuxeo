@@ -114,7 +114,7 @@ public class OOoXmlContentHandler extends DefaultHandler {
 
             // End of table cell: add a separator
             if (qName.equals("table:table-cell")) {
-                sb.append("  ");
+                sb.append(" ");
             }
 
             // End of paragraph: add a white space
