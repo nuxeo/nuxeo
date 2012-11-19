@@ -67,12 +67,13 @@ public class MockDocumentChangeFinder implements DocumentChangeFinder {
                             "Too many document changes found in the repository.");
                 }
                 for (DocumentModel doc : queryResult) {
+                    String repositoryId = session.getRepositoryName();
                     String eventId = "documentChanged";
                     String docLifeCycleState = doc.getCurrentLifeCycleState();
                     long eventDate = ((Calendar) doc.getPropertyValue("dc:modified")).getTimeInMillis();
                     String docPath = doc.getPathAsString();
                     String docUuid = doc.getId();
-                    docChanges.add(new DocumentChange(eventId,
+                    docChanges.add(new DocumentChange(repositoryId, eventId,
                             docLifeCycleState, eventDate, docPath, docUuid));
                 }
             } catch (Exception e) {

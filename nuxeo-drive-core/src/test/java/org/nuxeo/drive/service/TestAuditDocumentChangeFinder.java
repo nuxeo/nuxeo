@@ -130,11 +130,13 @@ public class TestAuditDocumentChangeFinder {
         docChanges = getDocumentChanges();
         assertEquals(2, docChanges.size());
         DocumentChange docChange = docChanges.get(0);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentCreated", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder2/doc2", docChange.getDocPath());
         assertEquals(doc2.getId(), docChange.getDocUuid());
         docChange = docChanges.get(1);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentCreated", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());
@@ -158,6 +160,7 @@ public class TestAuditDocumentChangeFinder {
         docChanges = getDocumentChanges();
         assertEquals(1, docChanges.size());
         docChange = docChanges.get(0);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentModified", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());
@@ -171,6 +174,7 @@ public class TestAuditDocumentChangeFinder {
         docChanges = getDocumentChanges();
         assertEquals(1, docChanges.size());
         docChange = docChanges.get(0);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("lifecycle_transition_event", docChange.getEventId());
         assertEquals("deleted", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());
@@ -187,11 +191,13 @@ public class TestAuditDocumentChangeFinder {
         docChanges = getDocumentChanges();
         assertEquals(2, docChanges.size());
         docChange = docChanges.get(0);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentMoved", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder2/doc3", docChange.getDocPath());
         assertEquals(doc3.getId(), docChange.getDocUuid());
         docChange = docChanges.get(1);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("lifecycle_transition_event", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());
@@ -260,12 +266,14 @@ public class TestAuditDocumentChangeFinder {
         List<DocumentChange> docChanges = docChangeSummary.getDocumentChanges();
         assertEquals(2, docChanges.size());
         DocumentChange docChange = docChanges.get(0);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentCreated", docChange.getEventId());
         // TODO: understand why the life cycle is not good
         // assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder2/doc2", docChange.getDocPath());
         assertEquals(doc2.getId(), docChange.getDocUuid());
         docChange = docChanges.get(1);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentCreated", docChange.getEventId());
         // TODO: understand why the life cycle is not good
         // assertEquals("project", docChange.getDocLifeCycleState());

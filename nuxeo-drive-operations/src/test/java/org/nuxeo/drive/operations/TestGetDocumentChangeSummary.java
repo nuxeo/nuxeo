@@ -127,11 +127,13 @@ public class TestGetDocumentChangeSummary {
         List<DocumentChange> docChanges = docChangeSummary.getDocumentChanges();
         assertEquals(2, docChanges.size());
         DocumentChange docChange = docChanges.get(0);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder2/doc2", docChange.getDocPath());
         assertEquals(doc2.getId(), docChange.getDocUuid());
         docChange = docChanges.get(1);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());

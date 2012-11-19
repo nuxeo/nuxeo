@@ -59,7 +59,7 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
         if (!rootPaths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
-            auditQuerySb.append("select log.eventId,log.docLifeCycle,log.eventDate,log.docPath,log.docUUID from LogEntry log ");
+            auditQuerySb.append("select log.repositoryId,log.eventId,log.docLifeCycle,log.eventDate,log.docPath,log.docUUID from LogEntry log ");
             auditQuerySb.append("where log.repositoryId = '%s' ");
             auditQuerySb.append("and (");
             auditQuerySb.append("log.category = 'eventDocumentCategory' and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved') ");
@@ -86,13 +86,14 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
                         "Too many document changes found in the audit logs.");
             }
             for (Object[] auditEntry : queryResult) {
-                String eventId = (String) auditEntry[0];
-                String docLifeCycleState = (String) auditEntry[1];
-                Long eventDate = ((Timestamp) auditEntry[2]).getTime();
-                String docPath = (String) auditEntry[3];
-                String docUuid = (String) auditEntry[4];
-                docChanges.add(new DocumentChange(eventId, docLifeCycleState,
-                        eventDate, docPath, docUuid));
+                String repositoryId = (String) auditEntry[0];
+                String eventId = (String) auditEntry[1];
+                String docLifeCycleState = (String) auditEntry[2];
+                Long eventDate = ((Timestamp) auditEntry[3]).getTime();
+                String docPath = (String) auditEntry[4];
+                String docUuid = (String) auditEntry[5];
+                docChanges.add(new DocumentChange(repositoryId, eventId,
+                        docLifeCycleState, eventDate, docPath, docUuid));
             }
         }
         return docChanges;

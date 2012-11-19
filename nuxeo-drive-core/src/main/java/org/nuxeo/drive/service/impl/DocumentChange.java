@@ -27,6 +27,8 @@ public class DocumentChange implements Serializable {
 
     private static final long serialVersionUID = -5697869523880291618L;
 
+    protected String repositoryId;
+
     protected String eventId;
 
     protected String docLifeCycleState;
@@ -41,13 +43,23 @@ public class DocumentChange implements Serializable {
         // Needed for JSON deserialization
     }
 
-    public DocumentChange(String eventId, String docLifeCycleState,
-            long eventDate, String docPath, String docUuid) {
+    public DocumentChange(String repositoryId, String eventId,
+            String docLifeCycleState, long eventDate, String docPath,
+            String docUuid) {
+        this.repositoryId = repositoryId;
         this.eventId = eventId;
         this.docLifeCycleState = docLifeCycleState;
         this.eventDate = eventDate;
         this.docPath = docPath;
         this.docUuid = docUuid;
+    }
+
+    public String getRepositoryId() {
+        return repositoryId;
+    }
+
+    public void setRepositoryId(String repositoryId) {
+        this.repositoryId = repositoryId;
     }
 
     public String getEventId() {
