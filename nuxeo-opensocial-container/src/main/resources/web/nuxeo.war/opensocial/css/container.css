@@ -248,7 +248,6 @@ div.builder {
 .preferences-title {
 	width: 273px;
 	height: 18px;
-	background: url("../images/text-bg.gif") repeat-x scroll 0 0 #FFFFFF;
 	border: 1px solid #B5B8C8;
 	padding: 1px 3px;
 	font: 12px tahoma, arial, helvetica, sans-serif;
@@ -414,124 +413,6 @@ div.builder {
 .title-color-none {
 }
 
-.header>.caclulette-icon {
-	background: url("gadgets/calculette-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.etatflash-icon {
-	background: url("gadgets/etatflash-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.hi42-icon {
-	background: url("gadgets/hi42-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.mappy-icon {
-	background: url("gadgets/mappy-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.messagerie-icon {
-	background: url("gadgets/messagerie-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.rendezvous-icon {
-	background: url("gadgets/rendezvous-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.agenda-icon {
-	background: url("gadgets/rendezvous-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.rss-icon {
-	background: url("gadgets/rss-icon.png") no-repeat scroll 0 1px
-		transparent;
-}
-
-.header>.bookmarks-icon {
-	background: url("gadgets/bookmarks-icon.png") no-repeat scroll 0 2px
-		transparent;
-}
-
-.header>.mappy-icon {
-	background: url("gadgets/mappy-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.meteo-icon {
-	background: url("gadgets/meteo-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.note-icon {
-	background: url("gadgets/note-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.photo-icon {
-	background: url("gadgets/photo-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.richtext-icon {
-	background: url("gadgets/richtext-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.todolist-icon {
-	background: url("gadgets/todo-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.todogadget-icon {
-	background: url("gadgets/todo-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.video-icon {
-	background: url("gadgets/video-icon.png") no-repeat scroll 0 1px
-		transparent;
-}
-
-.header>.mydocs-icon {
-	background: url("gadgets/mydocs-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.picturebook-icon {
-	background: url("gadgets/picturebook-icon.png") no-repeat scroll 0 2px
-		transparent;
-}
-
-.header>.cahierliaison-icon {
-	background: url("gadgets/cahierliaison-icon.png") no-repeat scroll 0 0
-		transparent;
-}
-
-.header>.lmactu-icon {
-	background: url("gadgets/rss-icon.png") no-repeat scroll 0 1px
-		transparent;
-}
-
-
-#FKtabs li.welcomePage:before {
-	content: url(../images/theme/icons/home.png);
-}
-
-#FKtabs li.teamSpace:before {
-	content: url(../images/theme/icons/team.png);
-}
-
-#FKtabs li.userSpace:before {
-	content: url(../images/theme/icons/mypage.png);
-}
-
 ul#directlinks {
 	margin: 0.5em 0px 0.5em 20px;
 	list-style: none;
@@ -555,8 +436,6 @@ ul#directlinks {
 }
 
 #editQuickLinks {
-	background: url("../images/edit_quicklinks.png") no-repeat scroll 0 0
-		transparent;
 	display: inline-block;
 	width: 16px;
 }
@@ -826,8 +705,6 @@ em.subMenuLink {
 }
 
 .editer {
-	background: transparent url(../images/editer_plus.png) no-repeat scroll
-		0 2px;
 	color: #0F3D52;
 	display: block;
 	float: right;
@@ -876,8 +753,6 @@ em.subMenuLink {
 }
 
 #explorerIntranet div.explorerTitle {
-	background: url(../images/explorerIntranetBandeauArrierePlan.png)
-		no-repeat 0 0;
 	border-bottom: solid 1px #cccccc;
 	border-top: solid 1px #cccccc;
 	margin: auto;
@@ -890,7 +765,6 @@ em.subMenuLink {
 }
 
 #explorerIntranet a.seeAll {
-	background: url(../images/explorerIntranetPlus.png) no-repeat 0 0;
 	color: #14516C;
 	font-size: 13px;
 	padding-left: 20px;
@@ -904,19 +778,13 @@ em.subMenuLink {
 }
 
 #explorerIntranet a.head {
-	background: url(../images/explorerIntranetPlus.png) no-repeat 0 0;
 	color: #14516C;
 	font-size: 13px;
 	padding-left: 19px;
 	text-decoration: none;
 }
 
-#mainColumn {
-	background: url(../images/explorerIntranetMinus.png) no-repeat 0 0;
-}
-
 #explorerIntranet a.urlSite {
-	background: url(../images/explorerIntranetArrow.png) no-repeat 0 4px;
 	color: rgb(0, 0, 0);
 	font-family: Trebuchet MS, Arial, Verdana, sans-serif;
 	font-size: 11px;
@@ -934,7 +802,6 @@ em.subMenuLink {
 }
 
 #explorerIntranet div.explorerText {
-	background: url(../images/explorerIntranetTitle.png) no-repeat 0 0;
 	color: #14516c;
 	display: block;
 	height: 22px;
@@ -949,14 +816,6 @@ em.subMenuLink {
 
 #explorerIntranet select.category_select {
 	margin-top: 2px;
-}
-
-#explorerIntranet a.display {
-	background: url(../images/explorerIntranetButtonDown.png) no-repeat 0 0;
-}
-
-#explorerIntranet a.hide {
-	background: url(../images/explorerIntranetButtonUp.png) no-repeat 0 0;
 }
 
 #FKfooter a,#FKfooter a:hover {
@@ -976,4 +835,3 @@ em.subMenuLink {
 	padding-left: 20px;
 	margin-top: 30px;
 }
-
