@@ -21,15 +21,15 @@
             <h:form id="openSocialActionsForm">
               <ul>
                 <li>
-                  <a onclick="nuxeo.container.openContainerBuilder();"
+                  <a class="button" onclick="nuxeo.container.openContainerBuilder();"
                     id="openContainerBuilder"
                     title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</a>
                 </li>
                 <li>
-                  <a id="addGadgetButton" href="#{baseURL}site/gadgets?language=#{localeSelector.language}">#{messages['label.opensocial.container.add.gadget']}</a>
+                  <a class="button" id="addGadgetButton" href="#{baseURL}site/gadgets?language=#{localeSelector.language}">#{messages['label.opensocial.container.add.gadget']}</a>
                 </li>
                 <li>
-                  <h:commandLink id="restoreToDefault" action="#{userDashboardActions.removeUserDashboard()}"
+                  <h:commandLink styleClass="button" id="restoreToDefault" action="#{userDashboardActions.removeUserDashboard()}"
                     immediate="true" onclick="return confirmRestoreDashboard();">
                     <h:outputText value="#{messages['label.opensocial.container.restore.default']}" />
                   </h:commandLink>
