@@ -183,7 +183,7 @@ div.builder { background-color: white;
 	height: 18px;
 	width: 18px }
 .preferences .color-on { border: 2px solid #777; border-radius: 3px }
-.preferences .color-off { border: 2px solid transparent }
+.preferences .color-off { border: 2px solid #eee }
 
 /* Used in FolderPickerWidget.java */
 .folder-container { overflow: auto }
