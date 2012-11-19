@@ -18,9 +18,9 @@
     <c:set var="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
     <ui:decorate template="/widgets/incl/form_template.xhtml">
       <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
-      <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+      <ui:param name="formId" value="#{widget.id}_form" />
       <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
-      <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+      <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
       <ui:define name="content">
         <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
       </ui:define>
@@ -36,9 +36,9 @@
       <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
       <ui:decorate template="/widgets/incl/form_template.xhtml">
         <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
-        <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+        <ui:param name="formId" value="#{widget.id}_form" />
         <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
-        <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+        <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
         <ui:define name="content">
           <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
         </ui:define>
@@ -117,9 +117,9 @@
                     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
                     <ui:decorate template="/widgets/incl/form_template.xhtml">
                       <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
-                      <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+                      <ui:param name="formId" value="#{widget.id}_form" />
                       <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
-                      <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+                      <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
                       <ui:param name="formStyleClass" value="subWidgetForm" />
                       <ui:define name="content">
                         <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
@@ -145,9 +145,9 @@
               <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
               <ui:decorate template="/widgets/incl/form_template.xhtml">
                 <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
-                <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+                <ui:param name="formId" value="#{widget.id}_form" />
                 <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
-                <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+                <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
                 <ui:param name="formStyleClass" value="subWidgetForm" />
                 <ui:define name="content">
                   <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
@@ -172,9 +172,9 @@
                 <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
                 <ui:decorate template="/widgets/incl/form_template.xhtml">
                   <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
-                  <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+                  <ui:param name="formId" value="#{widget.id}_form" />
                   <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
-                  <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+                  <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
                   <ui:param name="formStyleClass" value="subWidgetForm" />
                   <ui:define name="content">
                     <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
@@ -204,9 +204,9 @@
                     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
                     <ui:decorate template="/widgets/incl/form_template.xhtml">
                       <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
-                      <ui:param name="formId" value="#{layout.id}_#{widget.id}_form" />
+                      <ui:param name="formId" value="#{widget.id}_form" />
                       <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
-                      <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
+                      <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
                       <ui:param name="formStyleClass" value="subWidgetForm" />
                       <ui:define name="content">
                         <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />

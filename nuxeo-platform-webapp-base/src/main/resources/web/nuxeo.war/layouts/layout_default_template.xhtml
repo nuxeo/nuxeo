@@ -35,7 +35,15 @@
                           </ui:include>
                         </div>
                       </c:if>
-                      <nxl:widget widget="#{widget}" value="#{value}" />
+                      <ui:decorate template="/widgets/incl/form_template.xhtml">
+                        <ui:param name="addForm" value="#{widgetControl_addForm}" />
+                        <ui:param name="formId" value="#{widget.id}_form" />
+                        <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                        <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                        <ui:define name="content">
+                          <nxl:widget widget="#{widget}" value="#{value}" />
+                        </ui:define>
+                      </ui:decorate>
                     </td>
                   </nxu:set>
                 </c:if>
@@ -51,7 +59,15 @@
                   <nxu:set var="fieldColspan"
                     value="#{2*layout.columns/layoutRow.size -1 + nxu:test(widget.handlingLabels, 1, 0)}">
                     <td class="fieldColumn" colspan="#{fieldColspan}">
-                      <nxl:widget widget="#{widget}" value="#{value}" />
+                      <ui:decorate template="/widgets/incl/form_template.xhtml">
+                        <ui:param name="addForm" value="#{widgetControl_addForm}" />
+                        <ui:param name="formId" value="#{widget.id}_form" />
+                        <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
+                        <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                        <ui:define name="content">
+                          <nxl:widget widget="#{widget}" value="#{value}" />
+                        </ui:define>
+                      </ui:decorate>
                     </td>
                   </nxu:set>
                 </c:if>
