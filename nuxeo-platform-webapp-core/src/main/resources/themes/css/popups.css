@@ -23,18 +23,25 @@ author: lkemen@nuxeo.com
 .genericPopUp {
   background-color: #fff;
   border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 3px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   display: none;
+  left: 26%;
+  padding: 0 1em .5em;
   position: absolute;
-  width: 400px;
+  width: 670px;
   z-index: 10000 }
 
 .genericPopUp .closePopUpHeader {
-  background-color: "color.major.light (__FLAVOR__ background)";
-  border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)";
-  padding: .3em;
+  border-width: 2px; border-style: none none dotted;  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "black (__FLAVOR__ color)";
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: .5em 0;
   text-align: right }
 
-.genericPopUp .closePopUpHeader .closePopUp { cursor: pointer; float: right }
+.genericPopUp .closePopUpHeader .closePopUp { color: "gray.medium (__FLAVOR__ color)";
+	cursor: pointer; float: right; font-size: .9em }
 .genericPopUp .closePopUpHeader .popUpTitle { float: left; font-size: 1.2em }
 .genericPopUp .popUpContent { height: 390px; overflow: auto; padding: 1em }
 .genericPopUp .dr-tree td, .genericPopUp .rich-tree td { padding: .1em }

@@ -35,7 +35,7 @@ author: lkemen@nuxeo.com
 
 /* =Clipboard & Worklist */
 .userClipboard { background-color: #fff; height: 1%; margin: 1em 0 }
-.userClipboardContent { margin: 0; padding: 1em 0 1em 0.3em; word-wrap: break-word }
+.userClipboardContent { margin: 0; padding: 1em 0; word-wrap: break-word }
 .userClipboard h4 {
   border-width: 1px; border-style: none none dotted; border-color: "neutral.medium (__FLAVOR__ border)";
   color: "gray.medium (__FLAVOR__ color)";
