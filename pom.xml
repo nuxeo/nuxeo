@@ -37,6 +37,7 @@
     <module>nuxeo-user-center</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-platform-user-dashboard-compat</module>
+    <module>nuxeo-filesystem-connectors</module>
     <!--<module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
     <module>nuxeo-platform-semantic-entities</module>
