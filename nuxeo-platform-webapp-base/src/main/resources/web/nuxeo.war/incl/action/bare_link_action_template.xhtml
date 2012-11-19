@@ -7,13 +7,14 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
-  <h:outputLink value="#{action.getLink()}"
-    target="#{action.properties.target}"
-    onclick="#{action.confirm};#{action.properties.onclick};"
-    immediate="#{action.immediate}"
-    styleClass="#{useButton ? 'button' : 'actionLink'} #{actionStyleClass} #{action.properties.styleClass}">
-    <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-    <ui:insert name="inside_action" />
-  </h:outputLink>
-
+  <nxu:set var="actionLink" value="#{action.getLink()}" resolveTwice="true" >
+    <h:outputLink value="#{actionLink}"
+      target="#{action.properties.target}"
+      onclick="#{action.confirm};#{action.properties.onclick};"
+      immediate="#{action.immediate}"
+      styleClass="#{useButton ? 'button' : 'actionLink'} #{actionStyleClass} #{action.properties.styleClass}">
+      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:insert name="inside_action" />
+    </h:outputLink>
+  </nxu:set>
 </c:if>

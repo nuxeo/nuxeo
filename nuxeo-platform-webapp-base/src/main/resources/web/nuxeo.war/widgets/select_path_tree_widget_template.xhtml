@@ -19,69 +19,53 @@
 <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
   <script type="text/javascript">
-      function showTree(treeId) {
-        // hide all trees
-        hideAllTrees();
+    jQuery(document).ready(function() {
+      var config = {
+        'width'              : '50%',
+        'height'             : '75%',
+        'autoScale'          : false,
+        'autoDimensions'     : false,
+        'transitionIn'       : 'none',
+        'transitionOut'      : 'none',
+        'type'               : 'inline',
+        'enableEscapeButton' : true,
+        'centerOnScroll'     : true
+      };
+      jQuery("##{widget.id}_openPopup").fancybox(config);
 
-        var tree = jQuery(treeId);
-        tree.css('top', 100 + getScrollTop());
-        tree.show();
-
-        return false;
+      if (jQuery('.#{widget.id}_inputHidden').val()) {
+        jQuery("##{widget.id}_openPopup").hide();
+      } else {
+        jQuery(".#{widget.id}_deleteSingleValueLink").hide();
       }
+    });
 
-      function hideAllTrees() {
-        jQuery('.treeSearchPopUp').each(function () {
-          jQuery(this).hide();
-        });
-      }
+    function set#{widget.id}SingleValue(label, path) {	
+      jQuery('##{widget.id}_openPopup').hide();
+      jQuery('.#{widget.id}_outputText').text(label);
+      jQuery('.#{widget.id}_inputHidden').val(path);
+      jQuery('.#{widget.id}_deleteSingleValueLink').show();
+      jQuery.fancybox.close();
+      return false;
+    }
 
-      function hideTree(treeId) {
-        jQuery(treeId).hide();
-      }
+    function remove#{widget.id}SingleValue() {
+      jQuery('##{widget.id}_openPopup').show();
+      jQuery('.#{widget.id}_outputText').text('');
+      jQuery('.#{widget.id}_inputHidden').val('');
+      jQuery('.#{widget.id}_deleteSingleValueLink').hide();
+      return false;
+    }
 
-      function getScrollTop() {
-        var scrollTop  = document.body.scrollTop  || document.documentElement.scrollTop;
-        return scrollTop;
-      }
+  </script>
 
-      jQuery(document).keydown(function(event) {
-        // escape
-        if (event.keyCode == '27') {
-          hideAllTrees();
-          event.preventDefault();
-        }
-      });
-
-      jQuery(document).click(function(event) {
-        var element = jQuery(event.target);
-        if (!(element.is('.treeSearchPopUp') || element.parents().is('.treeSearchPopUp')) &amp;&amp; !(element.is('.labelTool') || element.parents().is('.labelTool'))) {
-          hideAllTrees();
-        }
-      });
-    </script>
-
-  <c:set var="labelOpenPopUp" value="#{nxu:test(!empty widget.properties.labelOpenPopUp, widget.properties.labelOpenPopUp, widget.label)}" />
-  <span class="labelOpenPopUp"><c:choose>
-    <c:when test="#{widget.translated}">
-      <span class="subLabel"> <h:outputText
-        value="#{messages[labelOpenPopUp]}" /> </span>
-    </c:when>
-    <c:otherwise>
-      <span class="subLabel"> <h:outputText value="#{labelOpenPopUp}" />
-      </span>
-    </c:otherwise>
-  </c:choose> <span class="labelTool" onclick="showTree('##{widget.id}_tree');"><img
-    src="#{contextPath}/icons/add_popup.png" alt="Pop up" /></span></span>
+  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree"><img src="#{contextPath}/icons/add_popup.png" alt="Pop up" /></a>
   <div style="clear: both;"></div>
 
-  <div id="#{widget.id}_tree" class="genericPopUp treeSearchPopUp">
-  <div class="closePopUpHeader"><span class="popUpTitle"><h:outputText
-    value="#{messages['label.search.popup.title']}" /></span> <span
-    class="closePopUp" onclick="hideTree('##{widget.id}_tree');">#{messages['label.search.popup.close']}</span>
-  <div style="clear: both;"></div>
-  </div>
-  <div class="popUpContent">
+  <div style="display:none">
+    <div id="#{widget.id}_tree">
+     <span class="popUpTitle"><h:outputText
+     value="#{messages['label.search.popup.title']}"/></span>
     <rich:tree
       id="#{widget.id}_treeId"
       adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"

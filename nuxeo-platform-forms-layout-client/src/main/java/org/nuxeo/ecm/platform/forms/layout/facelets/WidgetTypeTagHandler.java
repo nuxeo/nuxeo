@@ -105,7 +105,7 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "mode", "type",
+    protected final String[] reservedVarsArray = { "id", "name", "mode", "type",
             "properties", "ignoreTemplateProperty", "subWidgets", "widgetName" };
 
     public WidgetTypeTagHandler(TagConfig config) {

@@ -11,7 +11,7 @@
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
   <c:if test="#{not empty field_0}">
-    <div class="#{widgetProperty_cssClass}">
+    <div class="#{widgetProperty_cssClass}" dir="auto">
       <c:choose>
         <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
           <nxu:set var="translatedHtml"

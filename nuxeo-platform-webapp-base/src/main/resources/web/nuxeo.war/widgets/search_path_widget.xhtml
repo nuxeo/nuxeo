@@ -1,28 +1,113 @@
-<div xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:h="http://java.sun.com/jsf/html"
+<div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax" id="#{widget.id}">
 
-  <script language="javascript">
-    function popupSearch(inputElementId, url) {
-      popup = window.open(url + '&amp;fieldId=' + inputElementId, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
-      if(!popup.opener) {
-        popup.opener = window;
+<c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+
+  <h:dataTable value="#{field_0}" var="path"
+    rendered="#{not empty field_0}">
+    <h:column>
+      <h:outputText value="#{nxd:titleOrId(treeWidgetActions.getDocumentFromPath(path))}" />
+    </h:column>
+  </h:dataTable>
+
+</c:if>
+
+<c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+      var config = {
+        'width'              : '50%',
+        'height'             : '75%',
+        'autoScale'          : false,
+        'autoDimensions'     : false,
+        'transitionIn'       : 'none',
+        'transitionOut'      : 'none',
+        'type'               : 'inline',
+        'enableEscapeButton' : true,
+        'centerOnScroll'     : true
+      };
+      jQuery("##{widget.id}_openPopup").fancybox(config);
+
+      if (jQuery('.#{widget.id}_inputHidden').val()) {
+        jQuery("##{widget.id}_openPopup").hide();
+      } else {
+        jQuery(".#{widget.id}_deleteSingleValueLink").hide();
       }
+    });
+
+    function set#{widget.id}SingleValue(label, path) {	
+      jQuery('##{widget.id}_openPopup').hide();
+      jQuery('.#{widget.id}_outputText').text(label);
+      jQuery('.#{widget.id}_inputHidden').val(path);
+      jQuery('.#{widget.id}_deleteSingleValueLink').show();
+      jQuery.fancybox.close();
       return false;
     }
+
+    function remove#{widget.id}SingleValue() {
+      jQuery('##{widget.id}_openPopup').show();
+      jQuery('.#{widget.id}_outputText').text('');
+      jQuery('.#{widget.id}_inputHidden').val('');
+      jQuery('.#{widget.id}_deleteSingleValueLink').hide();
+      return false;
+    }
+
   </script>
 
-  <h:inputText value="#{field}"
-    styleClass="dataInputText" id="#{widget.id}" />
-  <nxu:set var="url" value="#{contextPath}/search/choose_searchscope_popup.faces">
-    <nxu:set var="urlWithConversation"
-      value="#{restHelper.addCurrentConversationParameters(url)}"
-      cache="true">
-      <input type="button" value="#{messages['command.advancedsearch.browse']}" class="button"
-        onclick="javascript:popupSearch(this.previousSibling.previousSibling.id, '#{urlWithConversation}');" />
-    </nxu:set>
-  </nxu:set>
+  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree"><img src="#{contextPath}/icons/add_popup.png" alt="Pop up" /></a>
+  <div style="clear: both;"></div>
+
+  <div style="display:none">
+    <div id="#{widget.id}_tree">
+     <span class="popUpTitle"><h:outputText
+     value="#{messages['label.search.popup.title']}"/></span>
+    <rich:tree
+      id="#{widget.id}_treeId"
+      adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
+      changeExpandListener="#{reducedTreeActions.changeExpandListener}"
+      icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
+      iconLeaf="#{nxd:iconPath(node.document)}"
+      iconExpanded="/icons/toggle_minus.png"
+      iconCollapsed="/icons/toggle_plus.png"
+      rowKeyVar="rowKey"
+      styleClass="labelTool"
+      stateVar="nodeState">
+      <rich:recursiveTreeNodesAdaptor
+        id="#{widget.id}_recursiveTreeNodesAdaptorId"
+        roots="#{widget.properties.showAllDomains ? reducedTreeActions.rootNode : reducedTreeActions.treeRoots}"
+        nodes="#{node.children}"
+        styleClass="labelTool"
+        var="node">
+        <rich:treeNode
+          id="#{widget.id}_treeNodeId"
+          highlightedClass="treeNodeHighlightedClass"
+          selectedClass="treeNodeSelectedClass">
+          <a4j:commandLink immediate="true"
+            id="#{widget.id}_linkId"
+            actionListener="#{treeWidgetActions.setUIInputValue}"
+            styleClass="treeLink" reRender="#{widget.id}_inputId">
+            <f:param name="selectionInputId" value="#{widget.id}_input" />
+            <f:param name="selectedPath" value="#{node.path}" />
+            <h:outputText value="#{nxd:titleOrId(node.document)}" />
+          </a4j:commandLink>
+        </rich:treeNode>
+      </rich:recursiveTreeNodesAdaptor>
+    </rich:tree>
+  </div>
+  </div>
+
+  <a4j:outputPanel id="#{widget.id}_inputId" ajaxRendered="true">
+    <h:inputText value="#{field_0}" styleClass="#{widgetProperty_styleClass}"
+      required="#{widgetProperty_required}" id="#{widget.id}_input" />
+    <h:message styleClass="errorMessage" for="#{widget.id}_input"
+      id="#{widget.id}_inputId_message" />
+  </a4j:outputPanel>
+
+</c:if>
 
 </div>

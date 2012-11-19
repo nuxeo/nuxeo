@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.event.ActionEvent;
 
 import org.jboss.seam.annotations.In;
@@ -56,6 +57,9 @@ public class TreeWidgetActions implements Serializable {
 
     @RequestParameter
     protected String selectionListId;
+    
+    @RequestParameter
+    protected String selectionInputId;
 
     @RequestParameter
     protected String selectedPath;
@@ -76,6 +80,20 @@ public class TreeWidgetActions implements Serializable {
             if (!values.contains(selectedPath)) {
                 list.addValue(selectedPath);
             }
+        }
+    }
+    
+    public void setUIInputValue(ActionEvent event) {
+        UIComponent component = event.getComponent();
+        if (component == null) {
+            return;
+        }
+        UIComponent base = ComponentUtils.getBase(component);
+        UIInput uiInput = ComponentUtils.getComponent(base, selectionInputId,
+                UIInput.class);
+
+        if (uiInput != null) {
+            uiInput.setSubmittedValue(selectedPath);
         }
     }
 
