@@ -274,11 +274,11 @@
 
     <context-param>
       <param-name>com.sun.faces.numberOfViewsInSession</param-name>
-      <param-value>50</param-value>
+      <param-value>4</param-value>
     </context-param>
     <context-param>
       <param-name>com.sun.faces.numberOfLogicalViews</param-name>
-      <param-value>50</param-value>
+      <param-value>4</param-value>
     </context-param>
 
     <!-- parameters for RichFaces resources loading -->
