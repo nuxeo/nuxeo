@@ -289,7 +289,6 @@ public class ConfigurationGenerator {
         this.quiet = quiet;
         this.debug = debug;
         String nuxeoHomePath = System.getProperty(org.nuxeo.common.Environment.NUXEO_HOME);
-        String nuxeoConfPath = System.getProperty(NUXEO_CONF);
         if (nuxeoHomePath != null) {
             nuxeoHome = new File(nuxeoHomePath);
         } else {
@@ -300,12 +299,15 @@ public class ConfigurationGenerator {
                 nuxeoHome = userDir;
             }
         }
+        String nuxeoConfPath = System.getProperty(NUXEO_CONF);
         if (nuxeoConfPath != null) {
-            nuxeoConf = new File(nuxeoConfPath);
+            nuxeoConf = new File(nuxeoConfPath).getAbsoluteFile();
         } else {
             nuxeoConf = new File(nuxeoHome, "bin" + File.separator
-                    + "nuxeo.conf");
+                    + "nuxeo.conf").getAbsoluteFile();
         }
+        System.setProperty(NUXEO_CONF, nuxeoConf.getPath());
+
         nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
                 + NUXEO_DEFAULT_CONF);
 
