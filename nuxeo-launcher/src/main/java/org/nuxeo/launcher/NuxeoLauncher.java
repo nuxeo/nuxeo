@@ -547,10 +547,11 @@ public abstract class NuxeoLauncher {
 
     protected Collection<? extends String> getNuxeoProperties() {
         ArrayList<String> nuxeoProperties = new ArrayList<String>();
-        nuxeoProperties.add("-Dnuxeo.home="
-                + configurationGenerator.getNuxeoHome().getPath());
-        nuxeoProperties.add("-Dnuxeo.conf="
-                + configurationGenerator.getNuxeoConf().getPath());
+        nuxeoProperties.add(String.format("-D%s=%s", Environment.NUXEO_HOME,
+                configurationGenerator.getNuxeoHome().getPath()));
+        nuxeoProperties.add(String.format("-D%s=%s",
+                ConfigurationGenerator.NUXEO_CONF,
+                configurationGenerator.getNuxeoConf().getPath()));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_LOG_DIR));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_DATA_DIR));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_TMP_DIR));
