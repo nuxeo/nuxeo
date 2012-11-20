@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,15 +52,11 @@ import org.nuxeo.runtime.api.Framework;
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
  * document. This default implementation does not track the space used by
  * versions, or the space used by non-Blob properties
- *
+ * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
 public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
-
-    public static final List<String> EVENTS_TO_HANDLE = Arrays.asList(
-            ABOUT_TO_REMOVE, DOCUMENT_CREATED_BY_COPY, DOCUMENT_MOVED,
-            BEFORE_DOC_UPDATE, DOCUMENT_CREATED);
 
     public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
 
@@ -255,6 +252,20 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
 
+        if (targetDoc.isVersion()) {
+            // for versions we need to decrement the live doc + it's parents
+            List<String> parentUUIDs = new ArrayList<String>();
+            parentUUIDs.add(targetDoc.getSourceId());
+            parentUUIDs.addAll(getParentUUIDS(session,
+                    new IdRef(targetDoc.getSourceId())));
+            BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
+            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                    session, docCtx, bsi.getBlobSize(), ABOUT_TO_REMOVE);
+            asyncEventCtx.setParentUUIds(parentUUIDs);
+            sendUpdateEvents(asyncEventCtx);
+            return;
+        }
+
         QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
         if (quotaDoc != null) {
             long total = quotaDoc.getTotalSize();
@@ -303,14 +314,19 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     }
 
     protected List<String> getParentUUIDS(CoreSession unrestrictedSession,
-            final DocumentModel doc) throws ClientException {
+            final DocumentRef docRef) throws ClientException {
 
         final List<String> result = new ArrayList<String>();
-        DocumentRef[] parentRefs = unrestrictedSession.getParentDocumentRefs(doc.getRef());
+        DocumentRef[] parentRefs = unrestrictedSession.getParentDocumentRefs(docRef);
         for (DocumentRef parentRef : parentRefs) {
             result.add(parentRef.toString());
         }
         return result;
+    }
+
+    protected List<String> getParentUUIDS(CoreSession unrestrictedSession,
+            final DocumentModel doc) throws ClientException {
+        return getParentUUIDS(unrestrictedSession, doc.getRef());
     }
 
     protected void checkConstraints(CoreSession unrestrictedSession,

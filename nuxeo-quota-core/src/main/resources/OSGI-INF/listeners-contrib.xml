@@ -12,6 +12,7 @@
       <event>documentMoved</event>
       <event>documentModified</event>
       <event>beforeDocumentModification</event>
+      <event>aboutToRemoveVersion</event>
     </listener>
 
     <listener name="quotaProcessor" async="true"
