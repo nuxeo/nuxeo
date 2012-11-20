@@ -239,8 +239,14 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     @Override
     public void starting() {
-        incrementProp(PROP_COUNT);
         try {
+            // Allow input transitions reevaluation (needed for loop case)
+            for (Transition t : inputTransitions) {
+                t.setResult(false);
+                getSession().saveDocument(t.source.getDocument());
+            }
+            // Increment node counter
+            incrementProp(PROP_COUNT);
             document.setPropertyValue(PROP_NODE_START_DATE,
                     Calendar.getInstance());
             saveDocument();

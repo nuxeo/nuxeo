@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME;
@@ -215,7 +216,8 @@ public class GraphRouteTest {
         // create instance and start
         String id = routing.createNewInstance(route.getDocument().getName(),
                 Collections.singletonList(doc.getId()), map, session, true);
-        return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
+        return session.getDocument(new IdRef(id)).getAdapter(
+                DocumentRoute.class);
     }
 
     @Test
@@ -285,7 +287,8 @@ public class GraphRouteTest {
         map.put("stringfield", "ABC");
         DocumentRoute route = instantiateAndRun(session, map);
         assertTrue(route.isDone());
-        String v = (String) route.getDocument().getPropertyValue("fctroute1:stringfield");
+        String v = (String) route.getDocument().getPropertyValue(
+                "fctroute1:stringfield");
         assertEquals("ABC", v);
     }
 
@@ -701,6 +704,121 @@ public class GraphRouteTest {
         assertEquals("title 1", doc.getTitle());
         assertEquals("descr 1", doc.getPropertyValue("dc:description"));
         assertEquals("rights 1", doc.getPropertyValue("dc:rights"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testForkMergeWithTasksAndLoopTransition() throws Exception {
+
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        assertNotNull(user1);
+
+        NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
+        assertNotNull(user2);
+
+        // Create nodes
+        DocumentModel startNode = createNode(routeDoc, "startNode");
+        startNode.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(startNode,
+                transition("transToParallel1", "parallelNode1", "true"),
+                transition("transToParallel2", "parallelNode2", "true"));
+        startNode = session.saveDocument(startNode);
+
+        DocumentModel parallelNode1 = createNode(routeDoc, "parallelNode1");
+        parallelNode1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users1 = { user1.getName() };
+        parallelNode1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
+        setTransitions(parallelNode1,
+                transition("transToMerge", "mergeNode", "true"));
+        parallelNode1 = session.saveDocument(parallelNode1);
+
+        DocumentModel parallelNode2 = createNode(routeDoc, "parallelNode2");
+        parallelNode2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users2 = { user2.getName() };
+        parallelNode2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
+        setTransitions(parallelNode2,
+                transition("transToMerge", "mergeNode", "true"));
+        parallelNode2 = session.saveDocument(parallelNode2);
+
+        DocumentModel mergeNode = createNode(routeDoc, "mergeNode");
+        mergeNode.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        mergeNode.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        mergeNode.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
+        setTransitions(
+                mergeNode,
+                transition("transLoop", "startNode",
+                        "NodeVariables[\"button\"] ==\"loop\""),
+                transition("transEnd", "endNode",
+                        "NodeVariables[\"button\"] ==\"end\""));
+        mergeNode = session.saveDocument(mergeNode);
+
+        DocumentModel endNode = createNode(routeDoc, "endNode");
+        endNode.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        endNode = session.saveDocument(endNode);
+
+        // Start route
+        DocumentRoute route = instantiateAndRun();
+
+        // Make user1 end his parallel task (1st time)
+        List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        CoreSession sessionUser1 = openSession(user1);
+        routing.endTask(sessionUser1, tasks.get(0), data, "transToMerge");
+        closeSession(sessionUser1);
+
+        // Make user2 end his parallel task (1st time)
+        tasks = taskService.getTaskInstances(doc, user2, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        CoreSession sessionUser2 = openSession(user2);
+        routing.endTask(sessionUser2, tasks.get(0), data, "transToMerge");
+        closeSession(sessionUser2);
+
+        // Make user1 end the merge task choosing the "loop" transition
+        tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        sessionUser1 = openSession(user1);
+        routing.endTask(sessionUser1, tasks.get(0), data, "loop");
+        closeSession(sessionUser1);
+
+        // Make user1 end his parallel task (2nd time)
+        tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        sessionUser1 = openSession(user1);
+        routing.endTask(sessionUser1, tasks.get(0), data, "transToMerge");
+        closeSession(sessionUser1);
+
+        // Make user2 end his parallel task (2nd time)
+        tasks = taskService.getTaskInstances(doc, user2, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        sessionUser2 = openSession(user2);
+        routing.endTask(sessionUser2, tasks.get(0), data, "transToMerge");
+        closeSession(sessionUser2);
+
+        // Make user1 end the merge task choosing the "end" transition
+        tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        sessionUser1 = openSession(user1);
+        routing.endTask(sessionUser1, tasks.get(0), data, "end");
+        closeSession(sessionUser1);
+
+        // Check that route is done
+        session.save();
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
     }
 
     @SuppressWarnings("unchecked")
