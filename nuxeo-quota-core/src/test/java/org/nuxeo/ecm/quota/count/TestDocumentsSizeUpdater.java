@@ -297,6 +297,9 @@ public class TestDocumentsSizeUpdater {
 
         List<DocumentModel> versions = session.getVersions(firstFileRef);
 
+        if (verboseMode) {
+
+        }
         session.removeDocument(versions.get(0).getRef());
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -529,11 +532,11 @@ public class TestDocumentsSizeUpdater {
 
         secondFile = session.getDocument(secondFileRef);
 
-        assertQuota(firstFile, 380L, 1140L);
+        assertQuota(firstFile, 380L, 760L);
         assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 1340L);
-        assertQuota(firstFolder, 0L, 1340L);
-        assertQuota(ws, 50L, 1390L);
+        assertQuota(firstSubFolder, 0L, 960L);
+        assertQuota(firstFolder, 0L, 960L);
+        assertQuota(ws, 50L, 1010L);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();

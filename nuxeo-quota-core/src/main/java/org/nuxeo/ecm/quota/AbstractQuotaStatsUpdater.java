@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_B
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +101,8 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         try {
             if (DOCUMENT_CREATED.equals(eventName)) {
                 processDocumentCreated(session, doc, docCtx);
-            } else if (ABOUT_TO_REMOVE.equals(eventName)) {
+            } else if (ABOUT_TO_REMOVE.equals(eventName)
+                    || ABOUT_TO_REMOVE_VERSION.equals(eventName)) {
                 processDocumentAboutToBeRemoved(session, doc, docCtx);
             } else if (DOCUMENT_CREATED_BY_COPY.equals(eventName)) {
                 processDocumentCopied(session, doc, docCtx);
