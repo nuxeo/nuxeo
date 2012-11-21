@@ -162,7 +162,7 @@
       </description>
     </attribute>
     <attribute>
-      <name>widgetName/name>
+      <name>widgetName</name>
       <required>false</required>
       <description>
        The String widget Name. Available since 5.7. If is not present, a name is 
