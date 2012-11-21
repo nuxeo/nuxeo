@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -196,6 +197,10 @@ public interface GraphNode {
             chain = (String) prop.get(PROP_TRANS_CHAIN).getValue();
             target = (String) prop.get(PROP_TRANS_TARGET).getValue();
             label = (String) prop.get(PROP_TRANS_LABEL).getValue();
+            Property resultProp = prop.get(PROP_TRANS_RESULT);
+            if (resultProp != null) {
+                result = BooleanUtils.isTrue(resultProp.getValue(Boolean.class));
+            }
         }
 
         protected void setResult(boolean bool) throws ClientException {

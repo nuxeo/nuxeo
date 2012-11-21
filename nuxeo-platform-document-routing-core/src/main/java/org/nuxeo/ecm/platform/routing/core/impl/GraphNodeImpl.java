@@ -585,12 +585,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             List<Transition> inputTransitions = getInputTransitions();
 
             for (Transition t : inputTransitions) {
-                Property property = t.source.getDocument().getProperty(
-                        "rnode:transitions").get(0).get("result");
-                if (property != null) {
-                    if (Boolean.TRUE.equals(property.getValue())) {
-                        n++;
-                    }
+                if (t.result) {
+                    n++;
                 }
             }
             String merge = (String) getProperty(PROP_MERGE);

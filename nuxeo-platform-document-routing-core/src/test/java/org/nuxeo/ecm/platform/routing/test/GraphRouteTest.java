@@ -708,7 +708,7 @@ public class GraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testForkMergeWithTasksAndLoopTransition() throws Exception {
+    public void testForkMergeWithTasksAndLoopTransitions() throws Exception {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
@@ -728,16 +728,24 @@ public class GraphRouteTest {
         parallelNode1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users1 = { user1.getName() };
         parallelNode1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
-        setTransitions(parallelNode1,
-                transition("transToMerge", "mergeNode", "true"));
+        setTransitions(
+                parallelNode1,
+                transition("transLoop", "parallelNode1",
+                        "NodeVariables[\"button\"] ==\"loop\""),
+                transition("transToMerge", "mergeNode",
+                        "NodeVariables[\"button\"] ==\"toMerge\""));
         parallelNode1 = session.saveDocument(parallelNode1);
 
         DocumentModel parallelNode2 = createNode(routeDoc, "parallelNode2");
         parallelNode2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         String[] users2 = { user2.getName() };
         parallelNode2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
-        setTransitions(parallelNode2,
-                transition("transToMerge", "mergeNode", "true"));
+        setTransitions(
+                parallelNode2,
+                transition("transLoop", "parallelNode2",
+                        "NodeVariables[\"button\"] ==\"loop\""),
+                transition("transToMerge", "mergeNode",
+                        "NodeVariables[\"button\"] ==\"toMerge\""));
         parallelNode2 = session.saveDocument(parallelNode2);
 
         DocumentModel mergeNode = createNode(routeDoc, "mergeNode");
@@ -766,7 +774,7 @@ public class GraphRouteTest {
 
         Map<String, Object> data = new HashMap<String, Object>();
         CoreSession sessionUser1 = openSession(user1);
-        routing.endTask(sessionUser1, tasks.get(0), data, "transToMerge");
+        routing.endTask(sessionUser1, tasks.get(0), data, "toMerge");
         closeSession(sessionUser1);
 
         // Make user2 end his parallel task (1st time)
@@ -775,7 +783,7 @@ public class GraphRouteTest {
         assertEquals(1, tasks.size());
 
         CoreSession sessionUser2 = openSession(user2);
-        routing.endTask(sessionUser2, tasks.get(0), data, "transToMerge");
+        routing.endTask(sessionUser2, tasks.get(0), data, "toMerge");
         closeSession(sessionUser2);
 
         // Make user1 end the merge task choosing the "loop" transition
@@ -793,7 +801,7 @@ public class GraphRouteTest {
         assertEquals(1, tasks.size());
 
         sessionUser1 = openSession(user1);
-        routing.endTask(sessionUser1, tasks.get(0), data, "transToMerge");
+        routing.endTask(sessionUser1, tasks.get(0), data, "toMerge");
         closeSession(sessionUser1);
 
         // Make user2 end his parallel task (2nd time)
@@ -802,7 +810,7 @@ public class GraphRouteTest {
         assertEquals(1, tasks.size());
 
         sessionUser2 = openSession(user2);
-        routing.endTask(sessionUser2, tasks.get(0), data, "transToMerge");
+        routing.endTask(sessionUser2, tasks.get(0), data, "toMerge");
         closeSession(sessionUser2);
 
         // Make user1 end the merge task choosing the "end" transition
