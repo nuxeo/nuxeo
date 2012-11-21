@@ -101,7 +101,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
             return null;
         }
         RegistrationInfoImpl ri = createRegistrationInfo(ref);
-        if (ri.name == null) {
+        if (ri == null || ri.name == null) {
             // not parsed correctly, e.g., faces-config.xml
             return null;
         }

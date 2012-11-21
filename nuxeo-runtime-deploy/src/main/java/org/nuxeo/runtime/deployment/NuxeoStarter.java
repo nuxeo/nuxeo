@@ -122,12 +122,10 @@ public class NuxeoStarter implements ServletContextListener {
             if (!ctxpath.endsWith(".jar")) {
                 continue;
             }
-            URL url = servletContext.getResource(ctxpath);
-            if (!url.getProtocol().equals("file")) {
-                // TODO jar: URLs?
+            String path = servletContext.getRealPath(ctxpath);
+            if (path == null) {
                 continue;
             }
-            String path = url.toURI().getPath();
             bundleFiles.add(new File(path));
             webinflib = path.substring(0, path.lastIndexOf('/'));
         }
