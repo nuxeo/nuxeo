@@ -49,7 +49,8 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .contentViewTitle { float: left; line-height: normal; margin: 0 1em 1em 0 }
 
-.gridBox h3, .gridBox h4 { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: 1.15em; margin: .7em 0 .2em; padding: .4em 0 }
+.gridBox h3, .gridBox h4 { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: 1.2em; margin: .7em 0 .2em; padding: .4em 0 }
+.gridBox h4 { font-size: 1.1em }
 
 h3.summaryTitle, .gridBox h3.summaryTitle {
   border-width: 3px; border-style: none none double; border-color: "color.major.medium (__FLAVOR__ border)";
@@ -60,6 +61,10 @@ h3.summaryTitle, .gridBox h3.summaryTitle {
   padding: 2em 0 .2em;
   text-transform: uppercase }
 .gridBox h3.summaryTitle { padding: 0 0 .2em }
+
+.gridBox .foldableBox {
+  margin-right: 1em;
+  padding: 0 }
 
 .summary_div_1 h3.summaryTitle { font-size: 1.1em }
 .summary_div_1 .fieldColumn img { float: left; margin-bottom: 15px }
@@ -158,7 +163,7 @@ h3.summaryTitle, .gridBox h3.summaryTitle {
 .archiveTabContent .notEditable { background-color: #fff; border: none }
 .archiveTabContent .currentDocumentInformation { background-color: "neutral.medium (__FLAVOR__ background)" }
 
-/* Workflow */
+/* Workflow @deprecated since 5.6 */
 .taskAssign {
   background: "neutral.medium (__FLAVOR__ background)";
   border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
