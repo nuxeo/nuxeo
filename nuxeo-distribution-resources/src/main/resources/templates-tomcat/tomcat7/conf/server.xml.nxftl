@@ -19,7 +19,7 @@
      define subcomponents such as "Valves" at this level.
      Documentation at /docs/config/server.html
  -->
-<Server port="8005" shutdown="SHUTDOWN">
+<Server port="${nuxeo.server.tomcat_admin.port}" shutdown="SHUTDOWN">
   <!-- Security listener. Documentation at /docs/config/listeners.html
   <Listener className="org.apache.catalina.security.SecurityListener" />
   -->
@@ -44,6 +44,14 @@
               description="User database that can be updated and saved"
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
+
+    <!-- Common datasource for all basic nuxeo datasources -->
+    <Resource name="${nuxeo.db.commonds}" auth="Container" type="javax.sql.DataSource"
+        maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
+        url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
+        username="${nuxeo.db.user}" password="${nuxeo.db.password}"
+        accessToUnderlyingConnectionAllowed="true" />
+
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share
@@ -65,30 +73,41 @@
          Java HTTP Connector: /docs/config/http.html (blocking & non-blocking)
          Java AJP  Connector: /docs/config/ajp.html
          APR (HTTP/AJP) Connector: /docs/apr.html
-         Define a non-SSL HTTP/1.1 Connector on port 8080
+         Define a non-SSL HTTP/1.1 Connector on port ${nuxeo.server.http.port}
     -->
-    <Connector port="8080" protocol="HTTP/1.1"
-               connectionTimeout="20000"
-               redirectPort="8443" />
+    <Connector port="${nuxeo.server.http.port}" protocol="HTTP/1.1"
+<#if "${nuxeo.server.https.port}" == "0">
+               address="${nuxeo.bind.address}"
+<#else>
+               address="127.0.0.1"
+               redirectPort="${nuxeo.server.https.port}"
+</#if>
+               connectionTimeout="20000" />
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"
-               port="8080" protocol="HTTP/1.1"
+               port="${nuxeo.server.http.port}" protocol="HTTP/1.1"
+               address="${nuxeo.bind.address}"
                connectionTimeout="20000"
-               redirectPort="8443" />
+               redirectPort="${nuxeo.server.https.port}" />
     -->
-    <!-- Define a SSL HTTP/1.1 Connector on port 8443
+<#if "${nuxeo.server.https.port}" != "0">
+    <!-- Define a SSL HTTP/1.1 Connector on port ${nuxeo.server.https.port}
          This connector uses the JSSE configuration, when using APR, the
          connector should be using the OpenSSL style configuration
          described in the APR documentation -->
-    <!--
-    <Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
+    <Connector port="${nuxeo.server.https.port}" protocol="HTTP/1.1" SSLEnabled="true"
+               address="${nuxeo.bind.address}"
                maxThreads="150" scheme="https" secure="true"
+               keystoreFile="${nuxeo.server.https.keystoreFile}"
+               keystorePass="${nuxeo.server.https.keystorePass}"
                clientAuth="false" sslProtocol="TLS" />
-    -->
+</#if>
 
-    <!-- Define an AJP 1.3 Connector on port 8009 -->
-    <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
+    <!-- Define an AJP 1.3 Connector on port ${nuxeo.server.ajp.port} -->
+    <Connector port="${nuxeo.server.ajp.port}" protocol="AJP/1.3"
+               address="${nuxeo.bind.address}"
+               redirectPort="${nuxeo.server.https.port}" />
 
 
     <!-- An Engine represents the entry point (within Catalina) that processes
@@ -100,7 +119,7 @@
     <!-- You should set jvmRoute to support load-balancing via AJP ie :
     <Engine name="Catalina" defaultHost="localhost" jvmRoute="jvm1">
     -->
-    <Engine name="Catalina" defaultHost="localhost">
+    <Engine name="Catalina" defaultHost="localhost" jvmRoute="${nuxeo.server.jvmRoute}">
 
       <!--For clustering, please take a look at documentation at:
           /docs/cluster-howto.html  (simple how to)
@@ -121,7 +140,10 @@
       </Realm>
 
       <Host name="localhost"  appBase="webapps"
-            unpackWARs="true" autoDeploy="true">
+            unpackWARs="true" autoDeploy="false">
+
+            <!-- Uncomment to avoid nuxeo deployment preprocessing at each startup -->
+            <Listener className="org.nuxeo.runtime.tomcat.NuxeoDeployer" home="nxserver" />
 
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->
