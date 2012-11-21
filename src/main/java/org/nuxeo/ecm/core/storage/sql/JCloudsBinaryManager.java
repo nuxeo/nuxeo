@@ -42,6 +42,7 @@ import org.jclouds.blobstore.BlobStoreContext;
 import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
+import org.jclouds.domain.LocationScope;
 import org.nuxeo.common.utils.SizeUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -153,28 +154,29 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
             System.setProperty("https.proxyUser", proxyLogin);
             System.setProperty("https.proxyPassword", proxyPassword);
             Authenticator.setDefault(
-                new Authenticator() {
-                    public PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(
-                                proxyLogin, proxyPassword.toCharArray());
+                    new Authenticator() {
+                        public PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(
+                                    proxyLogin, proxyPassword.toCharArray());
+                        }
                     }
-                }
-            );
+                    );
         }
 
 
         BlobStoreContext context = ContextBuilder.newBuilder(storeProvider)
-                                        .credentials(storeIdentity, storeSecret)
-                                        .buildView(BlobStoreContext.class);
+                .credentials(storeIdentity, storeSecret)
+                .buildView(BlobStoreContext.class);
 
         // Try to create container if it doesn't exist
-                BlobStore store = context.getBlobStore();
+        BlobStore store = context.getBlobStore();
         boolean created = false;
         if (storeLocation == null) {
             created = store.createContainerInLocation(null, storeName);
         } else {
-            // Is this the right way to do it?
-            Location location = new LocationBuilder().id(storeLocation).build();
+            Location location = new LocationBuilder().scope(
+                    LocationScope.REGION).id(storeLocation).description(
+                    storeLocation).build();
             created = store.createContainerInLocation(location, storeName);
         }
         if (created) {
@@ -222,7 +224,7 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
             // validate storage
             Blob checkBlob = storeMap.get(digest);
             if ((checkBlob == null) ||
-                (remoteBlob.getMetadata().getContentMetadata().getContentLength() !=
+                    (remoteBlob.getMetadata().getContentMetadata().getContentLength() !=
                     checkBlob.getMetadata().getContentMetadata().getContentLength())) {
                 throw new IOException("Upload to blob store failed");
             }
@@ -288,7 +290,7 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
      * binaries in memory.
      */
     public static class JCloudsBinaryGarbageCollector implements
-            BinaryGarbageCollector {
+    BinaryGarbageCollector {
 
         protected final JCloudsBinaryManager binaryManager;
 
