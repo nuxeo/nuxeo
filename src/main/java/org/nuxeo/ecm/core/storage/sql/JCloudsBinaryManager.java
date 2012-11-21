@@ -176,7 +176,7 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
         } else {
             Location location = new LocationBuilder().scope(
                     LocationScope.REGION).id(storeLocation).description(
-                    storeLocation).build();
+                            storeLocation).build();
             created = store.createContainerInLocation(location, storeName);
         }
         if (created) {
@@ -216,16 +216,47 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
         }
 
         // Store the blob in the store if not already there
-        Blob currentObject = storeMap.get(digest);
+        Blob currentObject;
+        try {
+            currentObject = storeMap.get(digest);
+        } catch (Exception e) {
+            throw new IOException("Unable to check existence of binary", e);
+        }
         if (currentObject == null) {
             // no data, store the blob
             Blob remoteBlob = storeMap.blobBuilder().name(digest).payload(tmp).calculateMD5().build();
-            storeMap.put(digest, remoteBlob);
+            try {
+                storeMap.put(digest, remoteBlob);
+            } catch (Exception e) {
+                throw new IOException("Unable to store binary", e);
+            }
             // validate storage
-            Blob checkBlob = storeMap.get(digest);
+            Blob checkBlob;
+            try {
+                checkBlob = storeMap.get(digest);
+            } catch (Exception e) {
+                try {
+                    // Remote blob can't be validated - remove it
+                    storeMap.remove(digest);
+                } catch (Exception e2) {
+                    log.error("Possible data corruption : binary " + digest
+                            + " validation failed but it could not be removed.");
+                }
+                throw new IOException("Unable to validate stored binary", e);
+            }
             if ((checkBlob == null) ||
                     (remoteBlob.getMetadata().getContentMetadata().getContentLength() !=
                     checkBlob.getMetadata().getContentMetadata().getContentLength())) {
+                if (checkBlob != null) {
+                    // Remote blob is incomplete - remove it
+                    try {
+                        storeMap.remove(digest);
+                    } catch (Exception e2) {
+                        log.error("Possible data corruption : binary "
+                                + digest
+                                + " validation failed but it could not be removed.");
+                    }
+                }
                 throw new IOException("Upload to blob store failed");
             }
         }
@@ -252,7 +283,14 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
 
         @Override
         public boolean fetchFile(String digest, File tmp) {
-            Blob remoteBlob = storeMap.get(digest);
+            Blob remoteBlob;
+            try {
+                remoteBlob = storeMap.get(digest);
+            } catch (Exception e) {
+                log.error("Could not cache binary from remote storage: "
+                        + digest, e);
+                return false;
+            }
             if (remoteBlob == null) {
                 log.error("Unknown binary: " + digest);
                 return false;
@@ -263,7 +301,8 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
                     localStream = new FileOutputStream(tmp);
                     IOUtils.copy(remoteStream, localStream);
                 } catch (IOException e) {
-                    log.error("Could not get binary: " + digest, e);
+                    log.error("Unable to cache binary from remote storage: "
+                            + digest, e);
                     return false;
                 } finally {
                     IOUtils.closeQuietly(remoteStream);
@@ -275,7 +314,13 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
 
         @Override
         public Long fetchLength(String digest) {
-            Blob remoteBlob = storeMap.get(digest);
+            Blob remoteBlob;
+            try {
+                remoteBlob = storeMap.get(digest);
+            } catch (Exception e) {
+                log.error("Unable to fetch binary information from remote storage");
+                return null;
+            }
             if (remoteBlob == null) {
                 return null;
             } else {
@@ -289,8 +334,7 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
      * Garbage collector for the blobstore binaries that stores the marked (in use)
      * binaries in memory.
      */
-    public static class JCloudsBinaryGarbageCollector implements
-    BinaryGarbageCollector {
+    public static class JCloudsBinaryGarbageCollector implements BinaryGarbageCollector {
 
         protected final JCloudsBinaryManager binaryManager;
 
@@ -376,6 +420,7 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
+
     }
 
     @Override
