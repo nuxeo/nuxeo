@@ -51,11 +51,21 @@ public class BlobToPDF {
         Blob result = pdfBh.getBlob();
 
         String fname = result.getFilename();
-        if (fname == null || fname.isEmpty()) {
-            fname = bh.getBlob().getFilename();
-            fname = fname + ".pdf";
+        String filename = bh.getBlob().getFilename();
+        if (filename != null && !filename.isEmpty()) {
+            // add pdf extension
+            int pos = filename.lastIndexOf('.');
+            if (pos > 0) {
+                filename = filename.substring(0, pos);
+            }
+            filename += ".pdf";
+            result.setFilename(filename);
+        } else if (fname != null && !fname.isEmpty()) {
             result.setFilename(fname);
+        } else {
+            result.setFilename("file");
         }
+
         result.setMimeType("application/pdf");
         return result;
     }
