@@ -25,7 +25,7 @@ Version: ${docVersion}<br>
 <a href="${docUrl}?tabIds=%3Aview_comments">Go to "comment" tab of the document</a><br>
 <a href="${docUrl}?tabIds=%3ATAB_CONTENT_HISTORY">Go to "history" tab of the document</a><br><br>
 <em>
-You received this notification because you subscribed to modification on this document or on one of its parents.
+You received this notification because you subscribed to ${notification.name?lower_case} on this document or on one of its parents.
 </em>
 </p>
 </body>
