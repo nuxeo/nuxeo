@@ -1,5 +1,37 @@
-<div xmlns:h="http://java.sun.com/jsf/html">
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
 
-  <i>TODO</i>
+  <c:choose>
+    <c:when test="#{empty nuxeoDriveActions.clientPackages}">
+      <p>
+        <h:outputText
+          value="#{messages['user.center.nuxeoDrive.missingDesktopPackage']}" />
+      </p>
+    </c:when>
 
+    <c:otherwise>
+      <p>
+        <h:outputText
+          value="#{messages['user.center.nuxeoDrive.helpDesktopInstall']}" />
+      </p>
+
+      <table class="dataOutput nuxeoDrivePackages">
+        <tr>
+          <th><h:outputText
+              value="#{messages['user.center.nuxeoDrive.heading.platform']}" /></th>
+          <th><h:outputText
+              value="#{messages['user.center.nuxeoDrive.heading.package']}" /></th>
+        </tr>
+        <c:forEach var="package"
+          items="#{nuxeoDriveActions.clientPackages}">
+          <tr>
+            <td class="wideLabel #{package.platformId}"><h:outputText
+                value="#{messages[package.platformLabel]}" /></td>
+            <td id="nuxeo-drive-download-#{package.platformId}"><a
+              href="#{package.downloadURL}">#{package.name}</a></td>
+          </tr>
+        </c:forEach>
+      </table>
+    </c:otherwise>
+  </c:choose>
 </div>

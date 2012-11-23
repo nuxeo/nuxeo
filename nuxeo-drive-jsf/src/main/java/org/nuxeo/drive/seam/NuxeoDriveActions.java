@@ -15,10 +15,11 @@
  *     Olivier Grisel <ogrisel@nuxeo.com>
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-
 package org.nuxeo.drive.seam;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.faces.context.FacesContext;
@@ -224,4 +225,14 @@ public class NuxeoDriveActions implements Serializable {
                 documentManager);
     }
 
+    public List<DesktopPackageDefinition> getClientPackages() {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        Set<String> paths = ctx.getExternalContext().getResourcePaths("/nuxeo-drive");
+        String baseURL = VirtualHostHelper.getBaseURL((ServletRequest) ctx.getExternalContext().getRequest());
+        List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
+        for (String path: paths) {
+            packages.add(new DesktopPackageDefinition(path, baseURL));
+        }
+        return packages;
+    }
 }
