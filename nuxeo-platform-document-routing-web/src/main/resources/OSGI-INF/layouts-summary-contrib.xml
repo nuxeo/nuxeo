@@ -39,7 +39,7 @@
 
     <widget name="summary_document_route" type="summary_document_route">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
@@ -60,7 +60,7 @@
         <property name="cssStyleClass">dataInputText</property>
       </properties>
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
