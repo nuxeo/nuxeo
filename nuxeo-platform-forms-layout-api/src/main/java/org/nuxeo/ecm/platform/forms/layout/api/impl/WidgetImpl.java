@@ -226,8 +226,8 @@ public class WidgetImpl implements Widget {
     public boolean isHandlingLabels() {
         // migration code
         Map<String, Serializable> controls = getControls();
-        if (controls != null && controls.containsKey("handlingLabels")) {
-            Serializable handling = controls.get("handlingLabels");
+        if (controls != null && controls.containsKey("handleLabels")) {
+            Serializable handling = controls.get("handleLabels");
             if (handling != null) {
                 return Boolean.parseBoolean(handling.toString());
             }
