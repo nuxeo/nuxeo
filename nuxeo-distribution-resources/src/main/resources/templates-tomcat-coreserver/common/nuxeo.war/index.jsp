@@ -142,6 +142,6 @@ H2 {
                  <a href="http://forum.nuxeo.com/f/12/">Nuxeo CMIS forum</a>.
                </p>
     </div>
-    <div class="footer">Copyright &copy; 2010 Nuxeo and its respective authors.</div>
+    <div class="footer">Copyright &copy; 2001-2012 Nuxeo SA (http://nuxeo.com/) and contributors.</div>
   </body>
 </html>
