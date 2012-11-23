@@ -20,6 +20,8 @@
 
       <c:forEach var="task" items="#{tasks}" varStatus="status">
 
+        <nxu:set var="currenttask" value="#{routingTaskActions.setCurrentTask(task)}" cache="true" />
+
         <nxu:set var="idPrefix" value="task_#{task.id}" cache="true">
 
         <div>
