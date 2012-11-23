@@ -6,7 +6,7 @@
 
     <div class="facesStatusMessage">
       <h:outputText value="#{messages['feedback.correctErrors']}"
-        rendered="#{facesContext.maximumSeverity.ordinal >= 3}"
+        rendered="#{facesContext.maximumSeverity.ordinal >= 2}"
         class="errorFeedback" />
     </div>
     <div id="#{messagesFacesId}facesStatusMessage" class="facesStatusMessage">

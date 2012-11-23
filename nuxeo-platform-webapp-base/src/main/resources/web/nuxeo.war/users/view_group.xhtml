@@ -14,11 +14,11 @@
   <h:form>
     <p class="action_bar directoryBack">
       <a4j:commandLink immediate="true"
-        value="#{messages['command.directoryBack']}"
         action="#{groupManagementActions.toggleShowUserOrGroup}"
         reRender="groupsPanel"
         eventsQueue="adminCenterQueue">
         <h:graphicImage value="/icons/arrow_left.gif" />
+        <h:outputText value="#{messages['command.directoryBack']}" />
       </a4j:commandLink>
     </p>
   </h:form>
