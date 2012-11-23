@@ -46,6 +46,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
+import org.nuxeo.ecm.user.center.UserCenterViewManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -71,6 +73,9 @@ public class NuxeoDriveActions implements Serializable {
 
     @In(required = false)
     CoreSession documentManager;
+
+    @In(required = false, create = true)
+    UserCenterViewManager userCenterViews;
 
     @Factory(value = CURRENT_SYNCHRONIZATION_ROOT, scope = ScopeType.EVENT)
     public DocumentModel getCurrentSynchronizationRoot() throws ClientException {
@@ -180,13 +185,28 @@ public class NuxeoDriveActions implements Serializable {
         return !currentDocRef.equals(currentSyncRoot.getRef());
     }
 
-    public void synchronizeCurrentDocument() throws ClientException,
+    public String synchronizeCurrentDocument() throws ClientException,
             SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         String userName = documentManager.getPrincipal().getName();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
         driveManager.registerSynchronizationRoot(userName, newSyncRoot,
                 documentManager);
+        TokenAuthenticationService tokenService = Framework.getLocalService(TokenAuthenticationService.class);
+        boolean hasOneNuxeoDriveToken = false;
+        for (DocumentModel token : tokenService.getTokenBindings(userName)) {
+            if ("Nuxeo Drive".equals(token.getPropertyValue("authtoken:applicationName"))) {
+                hasOneNuxeoDriveToken = true;
+                break;
+            }
+        }
+        if (hasOneNuxeoDriveToken) {
+            return null;
+        } else {
+            // redirect to user center
+            userCenterViews.setCurrentViewId("userCenterNuxeoDrive");
+            return "view_home";
+        }
     }
 
     public void unsynchronizeCurrentDocument() throws ClientException {
@@ -227,10 +247,11 @@ public class NuxeoDriveActions implements Serializable {
 
     public List<DesktopPackageDefinition> getClientPackages() {
         FacesContext ctx = FacesContext.getCurrentInstance();
-        Set<String> paths = ctx.getExternalContext().getResourcePaths("/nuxeo-drive");
+        Set<String> paths = ctx.getExternalContext().getResourcePaths(
+                "/nuxeo-drive");
         String baseURL = VirtualHostHelper.getBaseURL((ServletRequest) ctx.getExternalContext().getRequest());
         List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
-        for (String path: paths) {
+        for (String path : paths) {
             packages.add(new DesktopPackageDefinition(path, baseURL));
         }
         return packages;
