@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 
 /**
 * A class that exposes the fields from user schema
+* @since 5.7
 *
 * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
 */
