@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
@@ -331,36 +332,39 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
             return userName;
         }
 
-        // get nuxeo pricipal
-        NuxeoPrincipal nuxeoPrincipal = null;
-        if (principal == null || !(principal instanceof NuxeoPrincipal)) {
-            try {
-                nuxeoPrincipal = userManager.getPrincipal(userName);
-            } catch (ClientException e) {
-                log.debug("failed to get principal" + userName, e);
-            }
-        } else {
-            nuxeoPrincipal = (NuxeoPrincipal) principal;
+        // Adapter userModel to get its fields (firstname, lastname)
+        DocumentModel userModel;
+        UserAdapter userAdapter = null;
+        try {
+            userModel = userManager.getUserModel(userName);
+            userAdapter = userModel.getAdapter(UserAdapter.class);
+        } catch (ClientException ce) {
+            log.error("Error while adapting user model", ce);
+            return userName;
         }
 
-        // Second check after trying to explictly getting it.
-        if (nuxeoPrincipal == null) {
+        if (userAdapter == null) {
             return userName;
         }
 
         // compute the title
         StringBuilder title = new StringBuilder();
-        String firstName = nuxeoPrincipal.getFirstName();
-        if (StringUtils.isBlank(firstName)) {
-            title.append(firstName);
-        }
-
-        String lastName = nuxeoPrincipal.getLastName();
-        if (StringUtils.isBlank(lastName)) {
-            if (title.length() > 0) {
-                title.append(" ");
+        try {
+            String firstName = userAdapter.getFirstName();
+            if (firstName != null && firstName.trim().length() > 0) {
+                title.append(firstName);
             }
-            title.append(lastName);
+
+            String lastName = userAdapter.getLastName();
+            if (lastName != null && lastName.trim().length() > 0) {
+                if (title.length() > 0) {
+                    title.append(" ");
+                }
+                title.append(lastName);
+            }
+        } catch (ClientException ce) {
+            log.error("Failed to compute the title for " + userName
+                    + "'s workspace", ce);
         }
 
         if (title.length() > 0) {
