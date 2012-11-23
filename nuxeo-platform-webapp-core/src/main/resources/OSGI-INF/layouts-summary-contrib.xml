@@ -619,13 +619,13 @@
 
     <widget name="summary_current_document_description" type="summary_current_document_description">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_actions" type="summary_current_document_actions">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
@@ -634,74 +634,74 @@
         <label mode="any"></label>
       </labels>
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_files" type="summary_current_document_files">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
 
     </widget>
 
     <widget name="summary_current_document_view" type="summary_current_document_view">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_tagging" type="summary_current_document_tagging">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_dublincore" type="summary_current_document_dublincore">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_relations" type="summary_current_document_relations">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_comments" type="summary_current_document_comments">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_publications" type="summary_current_document_publications">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_lc_and_version" type="summary_current_document_lc_and_version">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_single_tasks" type="summary_current_document_single_tasks">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_states" type="summary_current_document_states">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_contributors" type="summary_current_document_contributors">
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
@@ -717,7 +717,7 @@
         <property name="cssClass">note_content_block</property>
       </properties>
       <controls mode="any">
-        <control name="addForm">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
