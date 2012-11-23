@@ -516,7 +516,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("widgetWithControls", widget.getName());
         assertEquals("test", widget.getType());
         assertEquals("pseudoLayout", widget.getLayoutName());
-        assertEquals("true", widget.getControl("addForm"));
+        assertEquals("true", widget.getControl("requireSurroundingForm"));
         assertEquals("true", widget.getControl("useAjaxForm"));
         assertTrue(widget.isHandlingLabels());
     }

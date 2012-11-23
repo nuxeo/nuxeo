@@ -303,7 +303,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         } else {
             assertNotNull(controls.get(BuiltinModes.ANY));
             assertEquals(1, controls.get(BuiltinModes.ANY).size());
-            assertEquals("true", controls.get(BuiltinModes.ANY).get("addForm"));
+            assertEquals("true", controls.get(BuiltinModes.ANY).get("requireSurroundingForm"));
         }
         assertEquals(0, renderedWidget.getSelectOptions().length);
         assertEquals(1, renderedWidget.getSubWidgetDefinitions().length);

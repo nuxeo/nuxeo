@@ -108,7 +108,7 @@
                 "propertyName": "foo:bar"
               }]
             }],
-            "controls": {"any": {"addForm": "true"}}
+            "controls": {"any": {"requireSurroundingForm": "true"}}
           },
                     {
             "name": "selection_property",

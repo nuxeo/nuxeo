@@ -114,7 +114,7 @@
                   <mode value="any">view</mode>
                 </widgetModes>
                 <controls mode="any">
-                  <control name="addForm">true</control>
+                  <control name="requireSurroundingForm">true</control>
                 </controls>
                 <subWidgets>
                   <widget name="subwidget" type="text">

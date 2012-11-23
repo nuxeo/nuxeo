@@ -21,7 +21,7 @@
       value="#{fieldOrValue}"
       resolveOnly="true">
       <ui:decorate template="/widgets/incl/form_template.xhtml">
-        <ui:param name="addForm" value="#{widgetControl_addForm}" />
+        <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />
         <ui:param name="formId" value="#{layout.id}_#{action.id}_form" />
         <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
         <ui:param name="eventsQueueId" value="#{layout.id_queue}" />

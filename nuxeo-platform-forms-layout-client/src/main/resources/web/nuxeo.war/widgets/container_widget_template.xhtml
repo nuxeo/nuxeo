@@ -15,9 +15,9 @@
   </c:if>
   <nxl:subWidget>
     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
-    <c:set var="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+    <c:set var="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
     <ui:decorate template="/widgets/incl/form_template.xhtml">
-      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
       <ui:param name="formId" value="#{widget.id}_form" />
       <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
       <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
@@ -35,7 +35,7 @@
     <nxl:subWidget>
       <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
       <ui:decorate template="/widgets/incl/form_template.xhtml">
-        <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+        <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
         <ui:param name="formId" value="#{widget.id}_form" />
         <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
         <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
@@ -116,7 +116,7 @@
                   <td class="fieldColumnn containerField">
                     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
                     <ui:decorate template="/widgets/incl/form_template.xhtml">
-                      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+                      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
                       <ui:param name="formId" value="#{widget.id}_form" />
                       <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
                       <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
@@ -144,7 +144,7 @@
               </c:if>
               <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
               <ui:decorate template="/widgets/incl/form_template.xhtml">
-                <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+                <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
                 <ui:param name="formId" value="#{widget.id}_form" />
                 <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
                 <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
@@ -171,7 +171,7 @@
               <div>
                 <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
                 <ui:decorate template="/widgets/incl/form_template.xhtml">
-                  <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+                  <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
                   <ui:param name="formId" value="#{widget.id}_form" />
                   <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
                   <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
@@ -203,7 +203,7 @@
                   <td class="fieldColumnn containerField">
                     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
                     <ui:decorate template="/widgets/incl/form_template.xhtml">
-                      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_addForm}" />
+                      <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
                       <ui:param name="formId" value="#{widget.id}_form" />
                       <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
                       <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
