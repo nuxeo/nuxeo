@@ -49,7 +49,7 @@ public class CreateRelation {
     // TODO use a combo box?
     protected String predicate;
 
-    @Param(name = "outgoing", required=false, values="false")
+    @Param(name = "outgoing", required=false, values = "false")
     protected boolean outgoing = false;
 
     @OperationMethod(collector = DocumentModelCollector.class)

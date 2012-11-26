@@ -62,7 +62,7 @@ public class GetDocumentPrincipalEmails {
     @Param(name = "variable name")
     protected String key;
 
-    @Param(name = "ignore groups", required = false, values = "false")
+    @Param(name = "ignore groups", required = false, values = {"false"})
     protected boolean ignoreGroups = false;
 
     @OperationMethod

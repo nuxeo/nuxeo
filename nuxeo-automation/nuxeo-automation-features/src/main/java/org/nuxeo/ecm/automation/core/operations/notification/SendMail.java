@@ -68,16 +68,16 @@ public class SendMail {
     @Param(name = "to")
     protected StringList to; // a comma separated list of emails
 
-    @Param(name = "HTML", required = false, values = "false")
+    @Param(name = "HTML", required = false, values = {"false"})
     protected boolean asHtml = false;
 
     @Param(name = "files", required = false)
     protected StringList blobXpath;
 
-    @Param(name = "viewId", required = false, values = "view_documents")
+    @Param(name = "viewId", required = false, values = {"view_documents"})
     protected String viewId = "view_documents";
 
-    @Param(name = "rollbackOnError", required = false, values = "true")
+    @Param(name = "rollbackOnError", required = false, values = {"true"})
     protected boolean rollbackOnError = true;
 
     @OperationMethod(collector = DocumentModelCollector.class)

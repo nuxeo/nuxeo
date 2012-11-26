@@ -63,13 +63,13 @@ public class GetDocumentUsersAndGroups {
     @Param(name = "variable name")
     protected String key;
 
-    @Param(name = "ignore groups", required = false, values = "false")
+    @Param(name = "ignore groups", required = false, values = {"false"})
     protected boolean ignoreGroups = false;
 
-    @Param(name = "resolve groups", required = false, values = "false")
+    @Param(name = "resolve groups", required = false, values = {"false"})
     protected boolean resolveGroups = false;
 
-    @Param(name = "prefix identifiers", required = false, values = "false")
+    @Param(name = "prefix identifiers", required = false, values = {"false"})
     protected boolean prefixIds = false;
 
     @OperationMethod

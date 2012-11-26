@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 /**
  * Run an embedded operation chain for each page of the pageProvider given as
  * input. The output is undefined (Void)
- * 
+ *
  * @since 5.6
  */
 @Operation(id = RunOperationOnProvider.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each Page", description = "Run an operation for each page of the provider defined by the provider name, the operation input is the curent page ")
@@ -45,7 +45,7 @@ public class RunOperationOnProvider {
     @Param(name = "id")
     protected String chainId;
 
-    @Param(name = "isolate", required = false, values = "true")
+    @Param(name = "isolate", required = false, values = {"true"})
     protected boolean isolate = true;
 
     @OperationMethod
