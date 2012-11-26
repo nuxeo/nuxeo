@@ -129,7 +129,7 @@
     <jxls.version>1.0</jxls.version>
     <xdocreport.version>0.9.8</xdocreport.version>
     <itext.version>2.1.7</itext.version>
-    <jclouds.version>1.5.2</jclouds.version>
+    <jclouds.version>1.5.3</jclouds.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
