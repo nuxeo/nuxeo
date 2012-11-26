@@ -308,15 +308,19 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         }
 
         // Adapter userModel to get its fields (firstname, lastname)
-        DocumentModel userModel;
-        UserAdapter userAdapter = null;
+        DocumentModel userModel = null;
         try {
             userModel = userManager.getUserModel(userName);
-            userAdapter = userModel.getAdapter(UserAdapter.class);
-        } catch (ClientException ce) {
-            log.error("Error while adapting user model", ce);
+        } catch (ClientException e) {
+            log.error("Unable to fetch user model", e);
+        }
+
+        if (userModel == null) {
             return userName;
         }
+
+        UserAdapter userAdapter = null;
+        userAdapter = userModel.getAdapter(UserAdapter.class);
 
         if (userAdapter == null) {
             return userName;
