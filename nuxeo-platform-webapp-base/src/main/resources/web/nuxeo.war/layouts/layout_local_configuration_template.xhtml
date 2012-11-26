@@ -24,7 +24,7 @@
 </c:if>
 
 <c:set var="layoutTemplateToInclude"
-  value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/default_layout_template.xhmtl')}" />
+  value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/layout_default_template.xhtml')}" />
 
 <c:set var="elementsToReRender"
   value="#{nxu:test(!empty layoutProperty_elementsToReRender, layoutProperty_elementsToReRender, 'local_configuration_#{layout.id}_panel')}" />

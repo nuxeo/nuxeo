@@ -26,7 +26,7 @@
         <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
         <ui:param name="eventsQueueId" value="#{layout.id_queue}" />
         <ui:param name="formStyleClass" value="subWidgetForm" />
-        <ui:define name="content">
+        <ui:define name="form_template_content">
           <c:if test="#{action.properties.displayWidgetLabel}">
             <ui:include src="/widgets/incl/widget_label_template.xhtml" />
             <h:outputText value=" " />
