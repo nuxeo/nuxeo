@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -831,6 +832,116 @@ public class GraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    @Ignore
+    public void testForkWithLoopFromParallelToFork() throws Exception {
+
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        assertNotNull(user1);
+
+        NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
+        assertNotNull(user2);
+
+        // Create nodes
+        DocumentModel startNode = createNode(routeDoc, "startNode");
+        startNode.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        startNode.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users1 = { user1.getName() };
+        startNode.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
+        setTransitions(
+                startNode,
+                transition("transToParallel1", "parallelNode1",
+                        "NodeVariables[\"button\"] ==\"validate\""),
+                transition("transToParallel2", "parallelNode2",
+                        "NodeVariables[\"button\"] ==\"validate\""));
+        startNode = session.saveDocument(startNode);
+
+        DocumentModel parallelNode1 = createNode(routeDoc, "parallelNode1");
+        parallelNode1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        parallelNode1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users1);
+        setTransitions(
+                parallelNode1,
+                transition("transLoop", "startNode",
+                        "NodeVariables[\"button\"] ==\"loop\""),
+                transition("transToMerge", "mergeNode",
+                        "NodeVariables[\"button\"] ==\"toMerge\""));
+        parallelNode1 = session.saveDocument(parallelNode1);
+
+        DocumentModel parallelNode2 = createNode(routeDoc, "parallelNode2");
+        parallelNode2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users2 = { user2.getName() };
+        parallelNode2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users2);
+        setTransitions(
+                parallelNode2,
+                transition("transToMerge", "mergeNode",
+                        "NodeVariables[\"button\"] ==\"toMerge\""));
+        parallelNode2 = session.saveDocument(parallelNode2);
+
+        DocumentModel mergeNode = createNode(routeDoc, "mergeNode");
+        mergeNode.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        startNode.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        mergeNode = session.saveDocument(mergeNode);
+
+        // Start route
+        DocumentRoute route = instantiateAndRun();
+
+        // Make user1 validate the start task (1st time)
+        List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        CoreSession sessionUser1 = openSession(user1);
+        routing.endTask(sessionUser1, tasks.get(0), data, "validate");
+        closeSession(sessionUser1);
+
+        // Make user1 loop to the start task
+        tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        data = new HashMap<String, Object>();
+        sessionUser1 = openSession(user1);
+        routing.endTask(sessionUser1, tasks.get(0), data, "loop");
+        closeSession(sessionUser1);
+
+        // Make user1 validate the start task (2nd time)
+        tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        data = new HashMap<String, Object>();
+        sessionUser1 = openSession(user1);
+        routing.endTask(sessionUser1, tasks.get(0), data, "validate");
+        closeSession(sessionUser1);
+
+        // Make user1 validate his parallel task
+        tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        data = new HashMap<String, Object>();
+        sessionUser1 = openSession(user1);
+        routing.endTask(sessionUser1, tasks.get(0), data, "toMerge");
+        closeSession(sessionUser1);
+
+        // Make user2 end his parallel task
+        tasks = taskService.getTaskInstances(doc, user2, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        CoreSession sessionUser2 = openSession(user2);
+        routing.endTask(sessionUser2, tasks.get(0), data, "toMerge");
+        closeSession(sessionUser2);
+
+        // Check that route is done
+        session.save();
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
+    }
+
+    // @SuppressWarnings("unchecked")
+    // @Test
     public void testRouteWithTasks() throws Exception {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
