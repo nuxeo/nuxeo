@@ -31,12 +31,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface DocumentChangeFinder extends Serializable {
 
     /**
-     * Gets the document changes in the repository against which the given
-     * session is bound, for the given synchronization root paths, since the
-     * given last successful synchronization date and without exceeding the
-     * given limit.
+     * Gets the document changes in all repositories or in the repository
+     * against which the given session is bound depending on the
+     * {@code allRepositories} parameter, for the given synchronization root
+     * paths, since the given last successful synchronization date and without
+     * exceeding the given limit.
      *
-     * @param session the session bound to the repository
+     * @param allRepositories if true then the document changes are retrieved
+     *            from all repositories, else only from the one against which
+     *            the given session is bound
+     * @param session the session bound to a specific repository
      * @param rootPaths the synchronization root paths
      * @param lastSuccessfulSync the last successful synchronization date of the
      *            user's device
@@ -45,8 +49,9 @@ public interface DocumentChangeFinder extends Serializable {
      * @throws TooManyDocumentChangesException if the number of changes found
      *             has exceeded the limit
      */
-    public List<DocumentChange> getDocumentChanges(CoreSession session,
-            Set<String> rootPaths, long lastSuccessfulSync, int limit)
+    public List<DocumentChange> getDocumentChanges(boolean allRepositories,
+            CoreSession session, Set<String> rootPaths,
+            long lastSuccessfulSync, int limit)
             throws TooManyDocumentChangesException;
 
 }

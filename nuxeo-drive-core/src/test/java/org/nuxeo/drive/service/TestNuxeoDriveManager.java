@@ -57,7 +57,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
-
 /**
  * Tests for {@link NuxeoDriveManager}
  *
@@ -168,8 +167,8 @@ public class TestNuxeoDriveManager {
     protected void checkRootsCount(String userName, CoreSession session,
             int expectedCount) throws ClientException {
         assertEquals(
-                nuxeoDriveManager.getSynchronizationRootReferences(userName,
-                        session).size(), expectedCount);
+                nuxeoDriveManager.getSynchronizationRootReferences(true,
+                        userName, session).size(), expectedCount);
     }
 
     public DocumentModel doc(String path) throws ClientException {
@@ -193,7 +192,7 @@ public class TestNuxeoDriveManager {
 
         // Check synchronization root references
         Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(
-                "user1", user1Session);
+                true, "user1", user1Session);
         assertEquals(2, rootRefs.size());
         assertTrue(rootRefs.contains(user1Workspace));
         assertTrue(rootRefs.contains(new IdRef(user1Session.getDocument(
@@ -201,7 +200,7 @@ public class TestNuxeoDriveManager {
 
         // Check synchronization root paths
         Set<String> rootPaths = nuxeoDriveManager.getSynchronizationRootPaths(
-                "user1", user1Session);
+                true, "user1", user1Session);
         assertEquals(2, rootPaths.size());
         assertTrue(rootPaths.contains("/default-domain/UserWorkspaces/user1"));
         assertTrue(rootPaths.contains("/default-domain/workspaces/workspace-2"));

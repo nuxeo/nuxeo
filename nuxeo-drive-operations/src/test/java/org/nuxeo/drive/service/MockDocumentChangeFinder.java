@@ -16,21 +16,30 @@
  */
 package org.nuxeo.drive.service;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.impl.DocumentChange;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Mock implementation of {@link DocumentChangeFinder} using a
@@ -47,37 +56,43 @@ public class MockDocumentChangeFinder implements DocumentChangeFinder {
     private static final Log log = LogFactory.getLog(MockDocumentChangeFinder.class);
 
     @Override
-    public List<DocumentChange> getDocumentChanges(CoreSession session,
-            Set<String> rootPaths, long lastSuccessfulSync, int limit)
+    public List<DocumentChange> getDocumentChanges(boolean allRepositories,
+            CoreSession session, Set<String> rootPaths,
+            long lastSuccessfulSync, int limit)
             throws TooManyDocumentChangesException {
 
         List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
         if (!rootPaths.isEmpty()) {
-            try {
-                StringBuilder querySb = new StringBuilder();
-                querySb.append("SELECT * FROM Document WHERE (%s) AND dc:modified > '%s' ORDER BY dc:modified DESC");
-                String query = String.format(querySb.toString(),
-                        getRootPathClause(rootPaths),
-                        getLastSuccessfulSyncDate(lastSuccessfulSync));
-                log.debug("Querying repository for document changes: " + query);
+            StringBuilder querySb = new StringBuilder();
+            querySb.append("SELECT * FROM Document WHERE (%s) AND dc:modified > '%s' ORDER BY dc:modified DESC");
+            String query = String.format(querySb.toString(),
+                    getRootPathClause(rootPaths),
+                    getLastSuccessfulSyncDate(lastSuccessfulSync));
+            log.debug("Querying repository for document changes: " + query);
 
-                DocumentModelList queryResult = session.query(query, limit);
-                if (queryResult.size() >= limit) {
-                    throw new TooManyDocumentChangesException(
-                            "Too many document changes found in the repository.");
+            if (allRepositories) {
+                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+                for (Repository repo : repositoryManager.getRepositories()) {
+                    CoreSession repoSession = null;
+                    try {
+                        Map<String, Serializable> context = new HashMap<String, Serializable>();
+                        context.put("principal", principal);
+                        repoSession = repo.open(context);
+                        docChanges.addAll(getDocumentChanges(repoSession,
+                                query, limit));
+                    } catch (TooManyDocumentChangesException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        throw new ClientRuntimeException(e);
+                    } finally {
+                        if (repoSession != null) {
+                            CoreInstance.getInstance().close(repoSession);
+                        }
+                    }
                 }
-                for (DocumentModel doc : queryResult) {
-                    String repositoryId = session.getRepositoryName();
-                    String eventId = "documentChanged";
-                    String docLifeCycleState = doc.getCurrentLifeCycleState();
-                    long eventDate = ((Calendar) doc.getPropertyValue("dc:modified")).getTimeInMillis();
-                    String docPath = doc.getPathAsString();
-                    String docUuid = doc.getId();
-                    docChanges.add(new DocumentChange(repositoryId, eventId,
-                            docLifeCycleState, eventDate, docPath, docUuid));
-                }
-            } catch (Exception e) {
-                throw new ClientRuntimeException(e);
+            } else {
+                docChanges.addAll(getDocumentChanges(session, query, limit));
             }
         }
         return docChanges;
@@ -98,6 +113,34 @@ public class MockDocumentChangeFinder implements DocumentChangeFinder {
     protected String getLastSuccessfulSyncDate(long lastSuccessfulSync) {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         return sdf.format(new Date(lastSuccessfulSync));
+    }
+
+    protected List<DocumentChange> getDocumentChanges(CoreSession session,
+            String query, int limit) throws TooManyDocumentChangesException {
+
+        try {
+            List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
+            DocumentModelList queryResult = session.query(query, limit);
+            if (queryResult.size() >= limit) {
+                throw new TooManyDocumentChangesException(
+                        "Too many document changes found in the repository.");
+            }
+            for (DocumentModel doc : queryResult) {
+                String repositoryId = session.getRepositoryName();
+                String eventId = "documentChanged";
+                String docLifeCycleState = doc.getCurrentLifeCycleState();
+                long eventDate = ((Calendar) doc.getPropertyValue("dc:modified")).getTimeInMillis();
+                String docPath = doc.getPathAsString();
+                String docUuid = doc.getId();
+                docChanges.add(new DocumentChange(repositoryId, eventId,
+                        docLifeCycleState, eventDate, docPath, docUuid));
+            }
+            return docChanges;
+        } catch (TooManyDocumentChangesException e) {
+            throw e;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
 }

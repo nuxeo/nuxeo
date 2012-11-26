@@ -349,6 +349,7 @@ public class TestAuditDocumentChangeFinder {
     protected List<DocumentChange> getDocumentChanges()
             throws TooManyDocumentChangesException {
         List<DocumentChange> docChanges = documentChangeFinder.getDocumentChanges(
+                true,
                 session,
                 syncRootPaths,
                 lastSuccessfulSync,
@@ -367,7 +368,7 @@ public class TestAuditDocumentChangeFinder {
     protected DocumentChangeSummary getDocumentChangeSummary(String userName)
             throws ClientException {
         DocumentChangeSummary docChangeSummary = nuxeoDriveManager.getDocumentChangeSummary(
-                userName, session, lastSuccessfulSync);
+                true, userName, session, lastSuccessfulSync);
         assertNotNull(docChangeSummary);
         lastSuccessfulSync = docChangeSummary.getSyncDate();
         return docChangeSummary;

@@ -58,6 +58,9 @@ public interface NuxeoDriveManager {
      * assumed to be short enough (in the order of 100 folder max) so that no
      * paging API is required.
      *
+     * @param allRepositories if true then the synchronization root ids are
+     *            retrieved from all repositories, else only from the one
+     *            against which the given session is bound
      * @param userName the id of the Nuxeo Drive user
      * @param session active CoreSession instance to the repository hosting the
      *            roots.
@@ -65,14 +68,17 @@ public interface NuxeoDriveManager {
      *         for that user
      * @see #getSynchronizationRootPaths(String, CoreSession)
      */
-    public Set<IdRef> getSynchronizationRootReferences(String userName,
-            CoreSession session) throws ClientException;
+    public Set<IdRef> getSynchronizationRootReferences(boolean allRepositories,
+            String userName, CoreSession session) throws ClientException;
 
     /**
      * Fetch the list of synchronization root paths for a given user. This list
      * is assumed to be short enough (in the order of 100 folder max) so that no
      * paging API is required.
      *
+     * @param allRepositories if true then the synchronization root paths are
+     *            retrieved from all repositories, else only from the one
+     *            against which the given session is bound
      * @param userName the id of the Nuxeo Drive user
      * @param session active CoreSession instance to the repository hosting the
      *            roots.
@@ -80,8 +86,8 @@ public interface NuxeoDriveManager {
      *         that user
      * @see #getSynchronizationRootReferences(String, CoreSession)
      */
-    public Set<String> getSynchronizationRootPaths(String userName,
-            CoreSession session) throws ClientException;
+    public Set<String> getSynchronizationRootPaths(boolean allRepositories,
+            String userName, CoreSession session) throws ClientException;
 
     /**
      * Method to be called by a CoreEvent listener monitoring documents
@@ -91,8 +97,10 @@ public interface NuxeoDriveManager {
     public void handleFolderDeletion(IdRef ref) throws ClientException;
 
     /**
-     * Gets a summary of document changes for the given user's synchronization
-     * roots since the user's device last successful synchronization date.
+     * Gets a summary of document changes in all repositories or in the
+     * repository against which the given session is bound depending on the
+     * {@code allRepositories} parameter, for the given user's synchronization
+     * roots, since the user's device last successful synchronization date.
      * <p>
      * The summary includes:
      * <ul>
@@ -102,6 +110,9 @@ public interface NuxeoDriveManager {
      * <li>A status code</li>
      * </ul>
      *
+     * @param allRepositories if true then the document changes are retrieved
+     *            from all repositories, else only from the one against which
+     *            the given session is bound
      * @param userName the id of the Nuxeo Drive user
      * @param session active CoreSession instance to the repository hosting the
      *            user's synchronization roots
@@ -109,16 +120,16 @@ public interface NuxeoDriveManager {
      *            user's device
      * @return the summary of document changes
      */
-    public DocumentChangeSummary getDocumentChangeSummary(String userName,
-            CoreSession session, long lastSuccessfulSync)
-            throws ClientException;
+    public DocumentChangeSummary getDocumentChangeSummary(
+            boolean allRepositories, String userName, CoreSession session,
+            long lastSuccessfulSync) throws ClientException;
 
     /**
      * Gets a summary of document changes for the given folder since the user's
      * device last successful synchronization date.
      *
-     * @see #getDocumentChangeSummary(String, CoreSession, long) for the
-     *      document change summary description
+     * @see #getDocumentChangeSummary(boolean, String, CoreSession, long) for
+     *      the document change summary description
      *
      * @param folderPath the folder path
      * @param session active CoreSession instance to the repository hosting the

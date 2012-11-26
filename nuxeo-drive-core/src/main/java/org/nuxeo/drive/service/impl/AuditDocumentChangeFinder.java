@@ -51,17 +51,20 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<DocumentChange> getDocumentChanges(CoreSession session,
-            Set<String> rootPaths, long lastSuccessfulSync, int limit)
+    public List<DocumentChange> getDocumentChanges(boolean allRepositories,
+            CoreSession session, Set<String> rootPaths,
+            long lastSuccessfulSync, int limit)
             throws TooManyDocumentChangesException {
 
         List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
         if (!rootPaths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
-            auditQuerySb.append("select log.repositoryId,log.eventId,log.docLifeCycle,log.eventDate,log.docPath,log.docUUID from LogEntry log ");
-            auditQuerySb.append("where log.repositoryId = '%s' ");
-            auditQuerySb.append("and (");
+            auditQuerySb.append("select log.repositoryId,log.eventId,log.docLifeCycle,log.eventDate,log.docPath,log.docUUID from LogEntry log where ");
+            if (!allRepositories) {
+                auditQuerySb.append("log.repositoryId = '%s' and ");
+            }
+            auditQuerySb.append("(");
             auditQuerySb.append("log.category = 'eventDocumentCategory' and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved') ");
             auditQuerySb.append("or ");
             auditQuerySb.append("log.category = 'eventLifeCycleCategory' and log.eventId = 'lifecycle_transition_event' ");
@@ -71,12 +74,20 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
             auditQuerySb.append("and log.docType not in (%s) ");
             auditQuerySb.append("and (%s) ");
             auditQuerySb.append("and log.eventDate > '%s' ");
-            auditQuerySb.append("order by log.eventDate desc");
+            auditQuerySb.append("order by log.repositoryId asc, log.eventDate desc");
 
-            String auditQuery = String.format(auditQuerySb.toString(),
-                    session.getRepositoryName(), blackListedDocTypes,
-                    getRootPathClause(rootPaths),
-                    getLastSuccessfulSyncDate(lastSuccessfulSync));
+            String auditQuery;
+            if (!allRepositories) {
+                String repositoryName = session.getRepositoryName();
+                auditQuery = String.format(auditQuerySb.toString(),
+                        repositoryName, blackListedDocTypes,
+                        getRootPathClause(rootPaths),
+                        getLastSuccessfulSyncDate(lastSuccessfulSync));
+            } else {
+                auditQuery = String.format(auditQuerySb.toString(),
+                        blackListedDocTypes, getRootPathClause(rootPaths),
+                        getLastSuccessfulSyncDate(lastSuccessfulSync));
+            }
             log.debug("Querying audit logs for document changes: " + auditQuery);
 
             List<Object[]> queryResult = (List<Object[]>) auditService.nativeQuery(
