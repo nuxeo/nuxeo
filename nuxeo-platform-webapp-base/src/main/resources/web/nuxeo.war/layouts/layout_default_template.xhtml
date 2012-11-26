@@ -40,7 +40,7 @@
                         <ui:param name="formId" value="#{widget.id}_form" />
                         <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
                         <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
-                        <ui:define name="content">
+                        <ui:define name="form_template_content">
                           <nxl:widget widget="#{widget}" value="#{value}" />
                         </ui:define>
                       </ui:decorate>
@@ -64,7 +64,7 @@
                         <ui:param name="formId" value="#{widget.id}_form" />
                         <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
                         <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
-                        <ui:define name="content">
+                        <ui:define name="form_template_content">
                           <nxl:widget widget="#{widget}" value="#{value}" />
                         </ui:define>
                       </ui:decorate>

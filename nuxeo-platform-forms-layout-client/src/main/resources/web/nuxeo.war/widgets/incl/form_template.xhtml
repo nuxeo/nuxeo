@@ -13,7 +13,7 @@ Accepted parameters:
 - formId: the form id (required if addForm is true)
 - useAjaxForm: boolean stating if form should be ajaxified (optional, defaults to false)
 - eventsQueueId: id for events queue of the ajax form (optional, defaults to
-  the form id suffiwed by _eventsQueue)
+  the form id suffixed by _eventsQueue)
 - formStyleClass: style class to put on the form (optional)
 
 Templating zone to define:
@@ -25,7 +25,7 @@ Templating zone to define:
   <c:if test="#{not useAjaxForm}">
     <h:form id="#{formId}" enctype="multipart/form-data"
       styleClass="#{formStyleClass}">
-      <ui:insert name="content" />
+      <ui:insert name="form_template_content" />
     </h:form>
   </c:if>
   <c:if test="#{useAjaxForm}">
@@ -34,14 +34,14 @@ Templating zone to define:
         ignoreDupResponses="true"
         eventsQueue="#{empty eventsQueueId? defaultEventsId: eventsQueueId}"
         styleClass="#{formStyleClass}">
-        <ui:insert name="content" />
+        <ui:insert name="form_template_content" />
       </a4j:form>
     </nxu:set>
   </c:if>
 </c:if>
 
 <c:if test="#{not addForm}">
-  <ui:insert name="content" />
+  <ui:insert name="form_template_content" />
 </c:if>
 
 </c:if>
