@@ -9,15 +9,21 @@ author: lkemen@nuxeo.com
 
 /* =Messages */
 .facesStatusMessage { top: 1em; right: 1em; position: fixed; z-index: 10000 }
-.facesStatusMessage ul, .infoFeedback ul, .warningFeedback ul, .errorFeedback ul { list-style-type: none; max-height: 30em;	min-width: 15em; text-align: center }
+.facesStatusMessage ul, .infoFeedback ul,
+.warningFeedback ul, .errorFeedback ul {
+  list-style-type: none;
+  max-height: 30em;
+  min-width: 15em;
+  text-align: center }
 
-.errorMessage, .infoMessage, .warningMessage, .infoFeedback, .errorFeedback, .warningFeedback  {
+.infoMessage, .errorMessage, .warningMessage, .successMessage,
+.infoFeedback, .errorFeedback, .warningFeedback, .successFeedback {
   background-color: #e6f1ff;
   border-color: "neutral.medium (__FLAVOR__ border)";
   border-width: 1px;
   border-style: solid;
   border-radius: 7px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
   color: "black (__FLAVOR__ color)";
   display: block;
   font-weight: bold;
@@ -25,8 +31,15 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: 1em }
 
-.errorMessage, .errorFeedback { background-color:"warning (__FLAVOR__ background)"; border-color:"error (__FLAVOR__ border)" }
-.warningMessage, .warningFeedback { background-color: "info (__FLAVOR__ background)"; border-color:"warning (__FLAVOR__ border)" }
+.successMessage, .successFeedback {
+  background-color:"success (__FLAVOR__ background)";
+  border-color:"success (__FLAVOR__ border)" }
+.errorMessage, .errorFeedback {
+  background-color:"warning (__FLAVOR__ background)";
+  border-color:"error (__FLAVOR__ border)" }
+.warningMessage, .warningFeedback {
+  background-color: "info (__FLAVOR__ background)";
+  border-color:"warning (__FLAVOR__ border)" }
 
 .success { color: "normal.status (__FLAVOR__ color)"; font-weight: bold }
 .avert { color: "gray.dark (__FLAVOR__ color)"; font-weight: bold }
@@ -35,7 +48,8 @@ author: lkemen@nuxeo.com
 .successLink { color: "normal.status (__FLAVOR__ color)" }
 .errorLink, .warningLink, .warningLabel { color: "warning.status (__FLAVOR__ color)" }
 
-.processMessage { background: url("${basePath}/icons/bullet.png") no-repeat scroll 0 center #fff;
+.processMessage {
+  background: url("${basePath}/icons/bullet.png") no-repeat scroll 0 4px #fff;
   display: inline-block;
   font-size: 1.1em;
   font-weight: bold;
@@ -48,9 +62,24 @@ author: lkemen@nuxeo.com
 .scheduled { background-image: url("${basePath}/icons/clock.png") }
 
 /* =Quote */
-.quote { background: url("${basePath}/icons/quote.png") no-repeat scroll 0 1px transparent; color: "gray.dark (__FLAVOR__ color)"; margin: .3em 0; text-indent: 1.7em }
+.quote {
+  background: url("${basePath}/icons/quote.png") no-repeat scroll 0 1px transparent;
+  color: "gray.dark (__FLAVOR__ color)";
+  margin: .3em 0;
+  text-indent: 1.7em }
+
+/* Visible lists style, as lists are invisible in Nuxeo by default */
+ul.visibleList {
+   list-style: disc outside none;
+   margin: .5em 0 1em;
+   padding: 0 0 0 2em }
+
+.visibleList li { list-style: disc outside none }
 
 /* =Small help messages */
+.specification { clear: both;	margin: 0 0 1.5em }
+.widgetPanel .specification { font-size: .95em }
+
 .detail, .help { color: "gray.medium (__FLAVOR__ color)"; font-size: .9em }
 div.detail, p.detail { margin: .1em 0 .7em }
 
@@ -70,7 +99,7 @@ div.detail, p.detail { margin: .1em 0 .7em }
   padding: .6em .8em .8em;
   white-space: normal;
   z-index: 2000 }
-.dropArea { border: 1px dashed;  border-color: "neutral.light (__FLAVOR__ border)";
+.dropArea { border: 1px dashed; border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
   box-shadow: none;
   color: "gray.medium (__FLAVOR__ color)";
