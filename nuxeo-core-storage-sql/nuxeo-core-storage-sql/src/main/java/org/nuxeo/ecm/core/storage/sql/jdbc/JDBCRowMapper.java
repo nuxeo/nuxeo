@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.Serializable;
+import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -542,6 +543,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 ps.execute();
             } catch (Exception e) {
                 checkConnectionReset(e);
+                if (e instanceof BatchUpdateException) {
+                    BatchUpdateException bue = (BatchUpdateException) e;
+                    if (e.getCause() == null && bue.getNextException() != null) {
+                        // provide a readable cause in the stack trace
+                        e.initCause(bue.getNextException());
+                    }
+                }
                 throw new StorageException("Could not insert: " + sql, e);
             }
             // TODO DB_IDENTITY : post insert fetch idrow
