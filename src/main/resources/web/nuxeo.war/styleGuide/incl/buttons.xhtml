@@ -10,154 +10,226 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <h3 id="" alt="Buttons">Buttons</h3>
+  <h2 id="" alt="Buttons">Buttons</h2>
+  <p class="specification">The styles of buttons can be applied on button or links. For each forms in default pages, search, modal pop ups, here is a showcase of which classes you can apply on your actions.</p>
 
   <div class="gridRow">
-    <div class="gridBox gridStyle7">
-	    <a href="#" class="button" onclick="return false;">Link class button</a>
-	    <input class="button" type="button" value="Input class button" onclick="return false;" />
-	    <input class="button smallButton" type="button" value="Input class button smallButton" onclick="return false;" />
-	    <input class="button" type="button" disabled="disabled" value="Input button disabled" onclick="return false;" />
-	    <input class="button smallButton" type="button" disabled="disabled" value="Input class button smallButton disabled" onclick="return false;" />
-	    <input class="button major" type="button" value="Input button" onclick="return false;" />
-	    <input class="button smallButton major" type="button" value="Input smallButton button" onclick="return false;" />
-	    
-	    <p class="buttonsGadget">
-	      <input type="submit" class="button major" onclick="return false;" value="Save" name="#" id="#" />
-	      <input type="submit" class="button" onclick="return false;" value="Cancel" name="#" id="#" />
-	    </p>
-	    
-	    <div>
-		    <div class="action_bar">
-		      <ul id="#">
-		        <li>
-		          <a href="#" onclick="return false;"><img src="/nuxeo/icons/action_add.gif" />New</a>
-		        </li>
-		        <li>
-		          <a href="#" onclick="return false;"><img src="/nuxeo/icons/action_add_file.gif" />Import a file</a>
-		        </li>
-		      </ul>
-		    </div>		    
-		    <div class="listingLayoutSelector">
-		      <form>
-		        <ul style="display:inline;" class="layoutViewMode">
-		          <li class="selected">
-		            <a onclick="return false" name="#" id="#" href="#">
-		              <img title="List view" src="/nuxeo/icons/document_listing_icon.png" />
-		            </a>
-		          </li>
-		          <li>
-		            <a onclick="return false" name="#" id="#" href="#">
-		              <img title="Compact view" src="/nuxeo/icons/document_listing_compact_2_columns_icon.png" />
-		            </a>
-		          </li>
-		          <li class="">
-		            <a onclick="return false" name="#" id="#" href="#">
-		              <img title="Icon view" src="/nuxeo/icons/document_listing_icon_2_columns_icon.png" />
-		            </a>
-		          </li>
-		        </ul>
-		        <ul style="display:inline;" class="layoutViewMode">
-		          <li>
-		            <a onclick="return false" name="#" id="#" href="#">
-		              <img title="Refresh" alt="Refresh" src="/nuxeo/icons/refresh.png" id="#" />
-		            </a>
-		          </li>
-		          <li>
-		            <a onclick="return false" name="#" id="#" href="#">
-		              <img title="Excel Export" alt="Excel Export" src="/nuxeo/icons/xls_export.png" />
-		            </a>
-		          </li>
-		        </ul>
-		      </form>
-		    </div>  
-		    <div class="listingLayoutSelector">
-		      <form>
-		        <p class="contentViewPageSelectorDesc">Items/page</p>
-		        <select onchange="Element.next(this).firstChild.click();" size="1" class="langSelect" name="#" id="#">
-		          <option value="5">5</option>
-				    	<option value="10">10</option>
-				    	<option selected="selected" value="20">20</option>
-				    	<option value="30">30</option>
-				    	<option value="40">40</option>
-				    	<option value="50">50</option>
-				    </select>
-		      </form>
-		    </div>
-		    <div class="clear" />
-		  </div>
-
-	    <div class="globalActionBar">
-	      <h1>My title</h1>
-		    <ul class="actionList">
-		     <li class="dropDownMenu button dropdown">Actions
-		       <ul class="actionSubList" style="display: none;">
-		         <li><a onclick="return false;" name="#" id="#" href="#">Edit</a></li>
-		       </ul>
-		     </li>
-		    </ul>
-		  </div>
-		  <div class="clear" />
-
-		  <div>
-		    <form class="titleBlock"><h1>Title &amp; Actions</h1></form>
-		    <div class="globalActions">
-		      <div>
-		        <form enctype="application/x-www-form-urlencoded" action="/nuxeo/view_documents.faces" method="post" name="documentActionsUpperButtons" id="documentActionsUpperButtons">
-		          <div class="globalActionBar">
-		            <div class="contextActions">
-		              <div class="widgetPanel actionsWidgetPanel">
-		                <a class="actionLink button" onclick="return false" href="#" id="#"><img class="smallIcon " title="Lock" alt="Lock" src="/nuxeo/icons/contextual_menu/unlocked.png" /></a>
-		              </div>
-		              <div class="widgetPanel actionsWidgetPanel">
-		                <a class="actionLink button" onclick="return false" href="#" id="#"><img class="smallIcon " title="Permanent link to this document" alt="Permanent link to this document" src="/nuxeo/icons/contextual_menu/share.png" /></a>
-		              </div>
-		              <ul class="actionList">
-		                <li class="dropDownMenu button dropdown">More
-		                  <ul class="actionSubList">
-		                    <li>
-		                      <a class="actionLink button " onclick="return false" href="#" id="#">
-		                        <img class="smallIcon " title="Follow this document" alt="Follow this document" src="/nuxeo/icons/contextual_menu/subscribe.png" />
-		                        <span class="actionLabel "> Follow this document</span>
-		                      </a>
-		                    </li>
-		                    <li>
-		                      <a onclick="return false" name="#" id="#" href="#" class="actionLink button ">
-		                        <img class="smallIcon " title="Preview" alt="Preview" src="/nuxeo/icons/contextual_menu/preview.png" />
-		                        <span class="actionLabel "> Preview</span>
-		                      </a>
-		                    </li>
-		                    <li>
-		                      <a class="actionLink button " onclick="return false" href="#" id="#">
-		                        <img class="smallIcon " title="Add to worklist" alt="Add to worklist" src="/nuxeo/icons/action_add.gif" />
-		                        <span class="actionLabel "> Add to worklist</span>
-		                      </a>
-		                    </li>
-		                    <li>
-		                      <a class="actionLink button " onclick="return false" href="#" id="#">
-		                        <img class="smallIcon " title="Export options" alt="Export options" src="/nuxeo/icons/export.png" />
-		                        <span class="actionLabel "> Export options</span>
-		                      </a>
-		                    </li>
-		                    <li>
-		                      <a class="actionLink button " onclick="return false" href="#" id="#">
-		                        <img class="smallIcon " title="Print" alt="Print" src="/nuxeo/icons/printer.gif" />
-		                        <span class="actionLabel "> Print</span>
-		                      </a>
-		                    </li>
-		                  </ul>
-		                </li>
-		              </ul>
-		            </div>
-		          </div>
-		        </form>
-		      </div>
-		    </div>
-		  </div>
-		  <div class="clear" />
-
+    <h3>Available classes</h3>
+    <div class="gridBox gridStyle4">
+      <div class="widgetPanel">
+        <a href="#" class="button" onclick="return false;">Link class button</a>
+        <input class="button" type="button" value="Input class button" onclick="return false;" />
+        <input class="button smallButton" type="button" value="Input class button smallButton" onclick="return false;" />
+        <p class="specification">The default style for buttons and links is handled by the css class <span class="code">.button</span>. For small area, you can add the complementary class <span class="code">.smallButton</span> to reduce font-size and space.</p>
+      </div>
     </div>
-    
+    <div class="gridBox gridStyle4">
+      <div class="widgetPanel">
+        <input class="button" type="button" disabled="disabled" value="Input class button disabled" onclick="return false;" />
+        <input class="button smallButton" type="button" disabled="disabled" value="Input class button smallButton disabled" onclick="return false;" />
+        <p class="specification">When an action in a form is disabled, or only abled in a particular case, use the <span class="code">.disabled</span> class in addition. The <span class="code">.disabled="disabled"</span> attribute needs to be used for a right behavior.</p>
+      </div>
+    </div>
+    <div class="gridBox gridStyle4">
+      <div class="widgetPanel">
+        <input class="button major" type="button" value="Input class button major" onclick="return false;" />
+        <input class="button smallButton major" type="button" value="Input class button smallButton major" onclick="return false;" />
+        <p class="specification">If you need to highlight an action among several buttons, you can use the <span class="code">.major</span> class in addition. It will guide the user to the most logical action.</p>
+      </div>
+    </div>
+    <div class="gridBox gridStyle12">
+      <h3>Buttons containers</h3>
+      <div class="gridBox gridStyle5">
+        <div class="widgetPanel">
+        <h4>In forms</h4>
+          <form>
+            <table class="dataTableNoBorder">
+              <tr class="">
+                <td class="labelColumn">
+                  <div><span>Title </span></div>
+                </td>
+                <td class="fieldColumn">
+                  <input type="text" class="dataInputText" name="#" id="#" />
+                </td>
+              </tr>
+            </table>
+            <p class="buttonsGadget">
+              <input type="submit" class="button major" onclick="return false;" value="Save" name="#" id="#" />
+              <input type="submit" class="button" onclick="return false;" value="Cancel" name="#" id="#" />
+            </p>
+          </form>
+          <p class="specification">The actions in forms are included after the form table, in a p class <span class="code">.buttonsGadget</span>. This class will manage the space and the alignment of your buttons.</p>
+        </div>
+      </div>
+      <div class="gridBox gridStyle7">
+        <div class="widgetPanel">
+          <h4>Under tabs</h4>
+          <div>
+            <div class="action_bar">
+              <ul id="#">
+                <li><a href="#" onclick="return false;"><img src="/nuxeo/icons/action_add.gif" />New</a></li>
+                <li><a href="#" onclick="return false;"><img src="/nuxeo/icons/action_add_file.gif" />Import a file</a></li>
+              </ul>
+            </div>
+            <div class="listingLayoutSelector">
+              <form>
+                <ul style="display:inline;" class="layoutViewMode">
+                  <li class="selected">
+                    <a onclick="return false" name="#" id="#" href="#">
+                      <img title="List view" src="/nuxeo/icons/document_listing_icon.png" />
+                    </a>
+                  </li>
+                  <li>
+                    <a onclick="return false" name="#" id="#" href="#">
+                      <img title="Compact view" src="/nuxeo/icons/document_listing_compact_2_columns_icon.png" />
+                    </a>
+                  </li>
+                  <li class="">
+                    <a onclick="return false" name="#" id="#" href="#">
+                      <img title="Icon view" src="/nuxeo/icons/document_listing_icon_2_columns_icon.png" />
+                    </a>
+                  </li>
+                </ul>
+                <ul style="display:inline;" class="layoutViewMode">
+                  <li>
+                    <a onclick="return false" name="#" id="#" href="#">
+                      <img title="Refresh" alt="Refresh" src="/nuxeo/icons/refresh.png" id="#" />
+                    </a>
+                  </li>
+                  <li>
+                    <a onclick="return false" name="#" id="#" href="#">
+                      <img title="Excel Export" alt="Excel Export" src="/nuxeo/icons/xls_export.png" />
+                    </a>
+                  </li>
+                </ul>
+              </form>
+            </div>
+            <div class="listingLayoutSelector">
+              <form>
+                <p class="contentViewPageSelectorDesc">Items/page</p>
+                <select onchange="Element.next(this).firstChild.click();" size="1" class="langSelect" name="#" id="#">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option selected="selected" value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="40">40</option>
+                  <option value="50">50</option>
+                </select>
+              </form>
+            </div>
+            <div class="clear" />
+          </div>
+          <p class="specification">The available actions displayed just under the tabs are displayed in a div class <span class="code">.action_bar</span>. Then, each action is listed in a <span class="code">.action_bar</span> in it.</p>
+          <p class="specification">If you need an icon in your button to help user to quickly identify the action, use an <span class="code">img</span> tag first and then display your label in your link. The class <span class="code">.button</span> is not mandatory, use it here will only change the margin.</p>
+        </div>
+      </div>
+      <div class="gridBox gridStyle8">
+        <div class="widgetPanel">
+          <h4>In titles</h4>
+          <div class="globalActionBar">
+           <h1>My page title</h1>
+           <ul class="actionList">
+            <li class="dropDownMenu button dropdown">Actions
+              <ul class="actionSubList" style="display: none;">
+                <li><a onclick="return false;" name="#" id="#" href="#">Edit</a></li>
+              </ul>
+            </li>
+           </ul>
+         </div>
+          <div class="clear" />
+          <div class="globalActionBar">
+            <h1>My page title with a back link</h1>
+            <p class="action_bar directoryBack">
+              <a onclick="return false;" class="button" name="" id="" href="#">
+                <img src="/nuxeo/icons/arrow_left.gif" />Back to the list
+              </a>
+            </p>
+          </div>
+          <div class="clear" />
+          <div>
+            <form class="titleBlock">
+              <h1>Title &amp; Actions</h1>
+            </form>
+            <div class="globalActions">
+              <div>
+                <form enctype="application/x-www-form-urlencoded" action="/nuxeo/view_documents.faces" method="post" name="documentActionsUpperButtons" id="documentActionsUpperButtons">
+                 <div class="globalActionBar">
+                   <div class="contextActions">
+                     <div class="widgetPanel actionsWidgetPanel">
+                       <a class="actionLink button" onclick="return false" href="#" id="#"><img class="smallIcon " title="Lock" alt="Lock" src="/nuxeo/icons/contextual_menu/unlocked.png" /></a>
+                     </div>
+                     <div class="widgetPanel actionsWidgetPanel">
+                       <a class="actionLink button" onclick="return false" href="#" id="#"><img class="smallIcon " title="Permanent link to this document" alt="Permanent link to this document" src="/nuxeo/icons/contextual_menu/share.png" /></a>
+                     </div>
+                     <ul class="actionList">
+                       <li class="dropDownMenu button dropdown">More
+                         <ul class="actionSubList">
+                           <li>
+                             <a class="actionLink button " onclick="return false" href="#" id="#">
+                               <img class="smallIcon" title="Follow this document" alt="Follow this document" src="/nuxeo/icons/contextual_menu/subscribe.png" />
+                               <span class="actionLabel "> Follow this document</span>
+                             </a>
+                           </li>
+                           <li>
+                             <a onclick="return false" name="#" id="#" href="#" class="actionLink button ">
+                               <img class="smallIcon " title="Preview" alt="Preview" src="/nuxeo/icons/contextual_menu/preview.png" />
+                               <span class="actionLabel "> Preview</span>
+                             </a>
+                           </li>
+                           <li>
+                             <a class="actionLink button " onclick="return false" href="#" id="#">
+                               <img class="smallIcon " title="Add to worklist" alt="Add to worklist" src="/nuxeo/icons/action_add.gif" />
+                               <span class="actionLabel "> Add to worklist</span>
+                             </a>
+                           </li>
+                           <li>
+                             <a class="actionLink button " onclick="return false" href="#" id="#">
+                               <img class="smallIcon " title="Export options" alt="Export options" src="/nuxeo/icons/export.png" />
+                               <span class="actionLabel "> Export options</span>
+                             </a>
+                           </li>
+                           <li>
+                             <a class="actionLink button " onclick="return false" href="#" id="#">
+                               <img class="smallIcon " title="Print" alt="Print" src="/nuxeo/icons/printer.gif" />
+                               <span class="actionLabel "> Print</span>
+                             </a>
+                           </li>
+                         </ul>
+                       </li>
+                     </ul>
+                   </div>
+                 </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <p class="specification">Depending of the inclusion of your <span class="code">.button</span> in containers, they will be displayed in the same line than the main title. In these examples, the actions are included in a li class <span class="code">dropDownMenu button dropdown</span>, or <span class="code">action_bar directoryBack</span>, or <span class="code">widgetPanel actionsWidgetPanel</span> at the end. For most details about actions in titles, please check the <a href="/nuxeo/styleGuide/Titles">Titles</a> section.</p>
+          <div class="clear" />
+        </div>
+      </div>
+      <div class="gridBox gridStyle4">
+        <div class="widgetPanel">
+          <h4>Other types</h4>
+          <p class="specification">Users and groups, so as tags have a specific display, as they need to be easily identifiable. Users are displayed in a span class <span class="code">tag user</span>, only add a class <span class="code">group</span>to have the group icon. Tags are included in a <span class="code">tag tagLink</span>, with one or two links if you need to delete it.</p>
+          <div>
+            <span class="tag user">
+              <a href="#" onclick="return false">User name</a>
+            </span>
+            <span class="tag user group">
+              <a href="#" onclick="return false">Group name</a>
+            </span>
+          </div>
+          <div>
+            <span class="tag tagLink">A tag</span>
+            <span class="tag tagLink">
+              <a onclick="" href="#">A deletable tag</a>
+              <a onclick="" name="" id="" href="#"><img src="/nuxeo/icons/action_tag_delete.png" /></a>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="clear" />
   </div>
   
