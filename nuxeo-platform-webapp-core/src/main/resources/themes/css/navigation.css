@@ -38,8 +38,10 @@ author: lkemen@nuxeo.com
   color: #fff;
   text-shadow: 1px 1px 0 #000 }
 
-.column .tabsBar { border-style: solid solid none; border-width: 1px; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 0 0 0 0; box-shadow: 0 0 0 transparent, 0 10px 8px #fff inset }
-.column .tabsBar li.selected a { background-color: "tabs.selected (__FLAVOR__ background)"; color: "tabs.selected (__FLAVOR__ color)"; text-shadow: none }
+.column .tabsBar,
+.modularTabs { border-style: solid solid none; border-width: 1px; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 0 0 0 0; box-shadow: 0 0 0 transparent, 0 10px 8px #fff inset }
+.column .tabsBar li.selected a,
+.modularTabs li.selected a { background-color: "tabs.selected (__FLAVOR__ background)"; color: "tabs.selected (__FLAVOR__ color)"; text-shadow: none }
 
 .subtabsBar { background: none transparent; border-style: none none solid; border-width: 1px; border-color: "subtabs.selected (__FLAVOR__ border)"; border-radius: 0; box-shadow: 0 0 0 transparent; font-size: .9em; margin-top: 1em }
 .subtabsBar li { margin: 0 0 -0.1em .3em }
@@ -54,5 +56,5 @@ author: lkemen@nuxeo.com
 .pageNavigationControls input[disabled=disabled], #pageNavigationControls input[disabled=disabled] { cursor: default; filter: alpha(opacity=50); opacity: .4 }
 
 /* =Back Arrow */
-.directoryBack { display: inline; float: right }
+.directoryBack { display: inline; float: right; margin: 0 -0.9em 0 0 }
 .directoryBack:after { clear: both }
