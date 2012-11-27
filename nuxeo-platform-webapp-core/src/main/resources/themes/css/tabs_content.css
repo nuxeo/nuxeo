@@ -27,7 +27,7 @@ author: lkemen@nuxeo.com
 /* Grid layout system */
 /*A .gridContainer contains several .gridRow. vertically
 Each .gridRow contains several .gridBox horizontally
-A .gridBox may contain several .actionsWidgetPanel vertically. */
+A .gridBox may contain several .widgetPanel vertically. */
 .gridRow { clear: both; padding: 0 }
 .gridBox { float: left; margin: 0 }
 
@@ -51,7 +51,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .contentViewTitle { float: left; line-height: normal; margin: 0 1em 1em 0 }
 
-.gridBox h3, .gridBox h4 { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: 1.2em; margin: .7em 0 .2em; padding: .4em 0 }
+.gridBox h3, .gridBox h4 { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: 1.2em; margin: .7em 0 .5em; padding: .4em 0 }
 .gridBox h4 { font-size: 1.1em }
 
 h3.summaryTitle, .gridBox h3.summaryTitle {
