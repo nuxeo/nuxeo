@@ -10,21 +10,141 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <h3 id="" alt="Titles">Titles</h3>
+  <h2 id="" alt="Titles">Titles</h2>
+  <p class="specification">Each page, modal pop up, or widget must contain a title to structure the page. It is important to help users to quickly identify where they are, and to introduce the subject of the page.</p>
 
-  <div class="gridRow">
-    <div class="gridBox gridStyle3">
-      <h1>H1 title</h1>
-      <h2>H2 title</h2>
-      <h3>H3 title</h3>
-      <h3 class="summaryTitle">H3 title</h3>
-      <h4>H4 title</h4>
-      <h5>H5 title</h5>
-      <h6>H6 title</h6>
+  <div class="gridContainer">
+    <div class="gridRow">
+      <div class="gridBox gridStyle4">
+        <div class="widgetPanel">
+          <h1>h1 title</h1>
+          <p class="specification">The h1 title is display in each page of the document management view. Try to always provide one.</p>
+          <h2>h2 title</h2>
+          <p class="specification">As an alternative to h1, since the platform is not necessary parsed by google engines, the h2 can be used as a main title with a border.</p>
+        </div>
+      </div>
+      <div class="gridBox gridStyle4">
+        <div class="widgetPanel">
+          <h3>h3 title</h3>
+          <p class="specification">The default h3 title is used as a subtitle, structuring the content with its neutral bottom border.</p>
+          <h3 class="summaryTitle">h3.summaryTitle</h3>
+          <p class="specification">This h3, with a <span class="code">.summaryTitle</span> class, is commonly used in all the widgets in the summary view of a document, or in your custom tab design in Studio.</p>
+        </div>
+      </div>
+      <div class="gridBox gridStyle4">
+        <div class="widgetPanel">
+          <h4>h4 title</h4>
+          <p class="specification">A small title with a bottom border, designed to be used to structure small paragraphs.</p>
+          <h5>h5 title</h5>
+          <p class="specification">An equivalent of a h4 title, without a border, to structure content included under a h4 title.</p>
+          <h6>h6 title</h6>
+          <p class="specification">The smallest title you can use before a paragraph, or in boxes like <span class="code">.foldableBox</span> or <span class="code">.bubbleBox</span>.</p>
+        </div>
+      </div>
+      <div class="clear"></div>
     </div>
-
-    <div class="clear" />
+    <div class="gridRow">
+      <div class="gridBox gridStyle12">
+        <h3>Titles with actions</h3>
+        <p class="specification">
+          Each <span class="code">h1</span> title of a page can be displayed with a set of actions or links in the same line. There are 3 ways to display actions on the same line than the main title.
+        </p>
+        <div class="globalActionBar">
+          <h1>Page title with back link</h1>
+          <p class="action_bar directoryBack">
+            <a onclick="return false;" href="#" class="button"><img src="/nuxeo/icons/arrow_left.gif" />Back to the list</a>
+          </p>
+          <div class="clear"></div>
+        </div>
+        <p class="specification">The <span class="code">h1</span> title and the action class <span class="code">action_bar directoryBack</span> are included in a div class <span class="code">.globalActionBar</span>. A div class <span class="code">clear</span> is used at the end to stop the floating behavior of blocks.</p>
+        <div class="globalActionBar">
+          <h1>Page title with a simple dropdown menu</h1>
+          <ul class="actionList">
+           <li class="dropDownMenu button dropdown">Actions
+             <ul class="actionSubList" style="display: none;">
+               <li><a onclick="return false;" name="#" id="#" href="#">Edit</a></li>
+             </ul>
+           </li>
+          </ul>
+          <div class="clear"></div>
+        </div>
+        <p class="specification">The <span class="code">h1</span> title and the ul <span class="code">actionList</span> are included in a div class <span class="code">.globalActionBar</span>. The ul list contains a li class <span class="code">dropDownMenu button dropdown</span>, that contains a ul class <span class="code">actionSubList</span> hidden by default. A div class <span class="code">clear</span> is used at the end to stop the floating behavior of blocks.</p>
+        <div>
+          <form class="titleBlock">
+            <h1>Page title with actions</h1>
+          </form>
+          <div class="globalActions">
+            <form enctype="application/x-www-form-urlencoded" action="/nuxeo/view_documents.faces" method="post" name="documentActionsUpperButtons" id="documentActionsUpperButtons">
+              <div class="globalActionBar">
+                <div class="contextActions">
+                  <div class="widgetPanel actionsWidgetPanel">
+                    <a class="actionLink button" onclick="return false" href="#" id="#"><img class="smallIcon " title="Lock" alt="Lock" src="/nuxeo/icons/contextual_menu/unlocked.png" /></a>
+                  </div>
+                  <div class="widgetPanel actionsWidgetPanel">
+                    <a class="actionLink button" onclick="return false" href="#" id="#"><img class="smallIcon " title="Permanent link to this document" alt="Permanent link to this document" src="/nuxeo/icons/contextual_menu/share.png" /></a>
+                  </div>
+                  <ul class="actionList">
+                    <li class="dropDownMenu button dropdown">More
+                      <ul class="actionSubList">
+                        <li>
+                          <a class="actionLink button " onclick="return false" href="#" id="#">
+                            <img class="smallIcon " title="Follow this document" alt="Follow this document" src="/nuxeo/icons/contextual_menu/subscribe.png" /><span class="actionLabel "> Follow this document</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a onclick="return false" name="#" id="#" href="#" class="actionLink button ">
+                            <img class="smallIcon " title="Preview" alt="Preview" src="/nuxeo/icons/contextual_menu/preview.png" />
+                            <span class="actionLabel "> Preview</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a class="actionLink button " onclick="return false" href="#" id="#">
+                            <img class="smallIcon " title="Add to worklist" alt="Add to worklist" src="/nuxeo/icons/action_add.gif" />
+                            <span class="actionLabel "> Add to worklist</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a class="actionLink button " onclick="return false" href="#" id="#">
+                            <img class="smallIcon " title="Export options" alt="Export options" src="/nuxeo/icons/export.png" />
+                            <span class="actionLabel "> Export options</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a class="actionLink button " onclick="return false" href="#" id="#">
+                            <img class="smallIcon " title="Print" alt="Print" src="/nuxeo/icons/printer.gif" />
+                            <span class="actionLabel "> Print</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </form>
+            <div class="clear"></div>
+          </div>
+          <p class="specification">
+            For now, this is how Studio is generating the actions: in a div without class, the <span class="code">h1</span> is include in a form class <span class="code">titleBlock</span>.
+            Then, a div class <span class="code">.globalActions</span> contains another div class <span class="code">.globalActions</span>, then a div class <span class="code">.contextActions</span>. In these containers, each action is a div class <span class="code">widgetPanel actionsWidgetPanel</span>, and the dropdown menu is a ul <span class="code">actionList</span>.
+            A div class <span class="code">clear</span> is used at the end to stop the floating behavior of blocks.</p>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
   </div>
+
+  <script type="text/javascript">
+    jQuery(document).ready(function($) {
+      jQuery('.dropDownMenu').click(function(e) {
+        jQuery(this).find('ul').hide();
+        jQuery(this).find("ul").show();
+        e.stopPropagation();
+      });
+      jQuery(document).click(function() {
+        jQuery('.dropDownMenu').find('ul').hide();
+      });
+    });
+  </script>
 
 </c:if>
 
