@@ -33,6 +33,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "inverseReference")
 public class InverseReference extends AbstractReference {
 
+    protected boolean readOnly = false;
+
     @XNode("@dualReferenceField")
     protected String dualReferenceName;
 
@@ -47,6 +49,15 @@ public class InverseReference extends AbstractReference {
     @XNode("@directory")
     public void setTargetDirectoryName(String targetDirectoryName) {
         this.targetDirectoryName = targetDirectoryName;
+    }
+
+    @XNode("@readOnly")
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
     }
 
     protected void checkDualReference() throws DirectoryException {
@@ -66,22 +77,34 @@ public class InverseReference extends AbstractReference {
 
     public void addLinks(String sourceId, List<String> targetIds)
             throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
         checkDualReference();
         dualReference.addLinks(targetIds, sourceId);
     }
 
     public void addLinks(List<String> sourceIds, String targetId)
             throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
         checkDualReference();
         dualReference.addLinks(targetId, sourceIds);
     }
 
     public void removeLinksForTarget(String targetId) throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
         checkDualReference();
         dualReference.removeLinksForSource(targetId);
     }
 
     public void removeLinksForSource(String sourceId) throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
         checkDualReference();
         dualReference.removeLinksForTarget(sourceId);
     }
@@ -100,12 +123,18 @@ public class InverseReference extends AbstractReference {
 
     public void setTargetIdsForSource(String sourceId, List<String> targetIds)
             throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
         checkDualReference();
         dualReference.setSourceIdsForTarget(sourceId, targetIds);
     }
 
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds)
             throws DirectoryException {
+        if (readOnly) {
+            return;
+        }
         checkDualReference();
         dualReference.setTargetIdsForSource(targetId, sourceIds);
     }
