@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 
 /**
@@ -37,8 +38,20 @@ public class DocumentModelListPageProvider extends AbstractPageProvider<Document
 
     protected final DocumentModelList docs;
 
+    public DocumentModelListPageProvider() {
+        this.docs = new DocumentModelListImpl();
+    }
+
     public DocumentModelListPageProvider(DocumentModelList docs) {
         this.docs = docs;
+    }
+
+    public void setDocumentModelList(List<DocumentModel> docs) {
+        this.docs.addAll(docs);
+    }
+
+    public DocumentModelList getDocumentModelList() {
+        return new DocumentModelListImpl(docs);
     }
 
     @Override
