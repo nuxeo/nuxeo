@@ -4,7 +4,8 @@ author: lkemen@nuxeo.com
 */
 
 /* =Helpers */
-.boldLabel, .bold { font-weight: bold }
+.boldLabel, /* to be deprecated in 5.7 */
+.bold { font-weight: bold }
 .nowrap { white-space: nowrap }
 
 .textAlignR { text-align: right }
@@ -32,7 +33,7 @@ author: lkemen@nuxeo.com
 .tenPercent { width: 10% }
 .twentyPercent { width: 20% }
 .thirtyPercent { width: 30% }
-.fourtyPercent { width: 40% }
+.fortyPercent { width: 40% }
 .fiftyPercent { width: 50% }
 .sixtyPercent { width: 60% }
 .seventyPercent { width: 70% }
