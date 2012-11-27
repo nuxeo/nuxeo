@@ -16,9 +16,9 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: .3em .3em .3em 1.7em }
 .foldableBox h3.folded {
-  background:url("${basePath}/icons/arrow_folded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)" }
+  background:url("${basePath}/icons/arrow_folded.gif") 5px left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)" }
 .foldableBox h3.unfolded {
-  background:url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)";
+  background:url("${basePath}/icons/arrow_unfolded.gif") 3px left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)";
   clear: both }
 .foldableBox h3.foldedDisabled {
   background:"neutral.medium (__FLAVOR__ background)" none;
@@ -34,14 +34,14 @@ author: lkemen@nuxeo.com
 
 /* =Light boxes */
 .foldableLightBox { margin-bottom: 1.8em }
-.foldableLightBox div.folded {background: #fff url("${basePath}/icons/arrow_folded.gif") top left no-repeat }
-.foldableLightBox div.unfolded { background: #fff url("${basePath}/icons/arrow_unfolded.gif") top left no-repeat }
+.foldableLightBox div.folded { background: #fff url("${basePath}/icons/arrow_folded.gif") no-repeat left 5px }
+.foldableLightBox div.unfolded { background: #fff url("${basePath}/icons/arrow_unfolded.gif") no-repeat left 3px }
 .foldableLightBox div.folded a, .foldableLightBox div.unfolded a { color: "gray.dark (__FLAVOR__ color)"; float: left }
 .foldableLightBox div.folded, .foldableLightBox div.unfolded {
   border-width: 1px; border-style: none none solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "gray.dark (__FLAVOR__ color)";
-  font-size: .8em;
+  font-size: .9em;
   height: 18px;
   padding: .3em .3em .3em 1.7em }
 .foldableLightBox .boxBody {
@@ -49,7 +49,7 @@ author: lkemen@nuxeo.com
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-top: none;
   clear: both;
-  font-size: .8em;
+  font-size: .85em;
   padding: 1em }
 
 .massEditForm foldableBox { margin-right: 1.4em }
@@ -59,10 +59,12 @@ author: lkemen@nuxeo.com
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;
   box-shadow: 0 1px 2px #eee;
-  display: inline-block;
   margin: 0 1em 1em 0;
   padding: 0 .8em .5em }
 .bubbleBoxSmall { max-width: 300px }  
-.bubbleBox .bubbleHeader { margin: 0 0 1em }
-.bubbleBox .bubbleHeader h3 { margin: 0; padding: .5em 0 }
+.bubbleBox .bubbleHeader { border-width: 1px; border-style: none none solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)"; margin: 0 0 1em }
+.bubbleBox .bubbleHeader h3 { border: none; display: inline-block; margin: 0; padding: .5em 0 }
 .bubbleBox .bubbleHeader input.button { float: right; margin-right: 0 }
+
+.bubbleShadow { box-shadow: 0 -5px 5px #eee inset, 0 1px 2px #eee }
