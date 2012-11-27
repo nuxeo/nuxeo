@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryEntryNotFoundException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.Session;
@@ -509,7 +510,7 @@ public class LDAPReference extends AbstractReference {
                                 fieldName, sourceDirectory,
                                 targetDirectoryName, staticAttributeId,
                                 targetId, targetDirectoryName);
-                        throw new DirectoryException(msg);
+                        throw new DirectoryEntryNotFoundException(msg);
                     }
                     targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
 
