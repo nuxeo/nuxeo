@@ -47,11 +47,49 @@ Custom CSS for the Nuxeo Styles guide
 	.verticalTabs li.selected a {
 	    color: #fff }
 
+.widgetPanel .column {
+  border: none;
+  width: auto;/* keep inheritance of the other values of .column */
+}
+
+/* Special styles to explain the grid layout model */
+.gridVisible {
+  background-color: #fef6ff;
+  border: 1px solid #f5b3ff;
+  border-radius: 3px;
+  padding: 1em }
+
+.gridVisible .code {
+  display: inline-block;
+  margin: -7px 0 5px }
+
+.gridVisible .gridVisible { background-color: #f6fff8; border-color: #b8dfbf }
+.gridVisible .gridVisible .gridVisible { background-color: #fff8f3; border-color: #ddc1b1 }
+
+.gridRow.gridVisible,
+.gridBox.gridVisible { margin: 0 0 .5em }
+
+.gridVisible .gridStyle6 { margin-right: .5em; width: 39% }
+.gridVisible .gridStyle4 { margin-right: .4em; width: 24% }
+.gridVisible .gridStyle12 { width: 85% }
+
+/* Special styles to show pop ups */
+.genericPopUp { display: block;
+  left: auto;
+  position: inherit;
+  width: auto }
+.genericPopUp .popUpContent { height: 180px }
 
 /* Missing styles in the platform for sure */
+h2 {
+  border-bottom: 1px solid;  border-color: "color.major.strong (__FLAVOR__ border)";
+  font-size: 1.4em;
+  margin: 0 0 1em }
+
 .code {
+  background-color: #fff;
   border: 1px solid #cde;
   border-radius: 3px;
-  color: #1358AE;
+  color: #1358ae;
   font-family: monospace,sans-serif;
   padding: .1em }

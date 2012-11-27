@@ -20,6 +20,14 @@
     <icon path="/icons/icones-metanav.png" enabled="false" />
     <icon path="/icons/favicon.png" enabled="false" />
 
+    <!-- Don't display Home tab icons -->
+    <icon path="/icons/dashboard.png" enabled="false" />
+    <icon path="/icons/preferences.png" enabled="false" />
+    <icon path="/icons/users_groups.png" enabled="false" />
+    <icon path="/icons/profile.png" enabled="false" />
+    <icon path="/icons/notifications.png" enabled="false" />
+    <icon path="/icons/authorized_apps.png" enabled="false" />
+
     <!-- Document types -->
     <icon path="/icons/o.png">
       <categories>
@@ -536,9 +544,24 @@
         <category>Document types</category>
       </categories>
     </icon>
+     <icon path="/icons/page_white_world.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
+     <icon path="/icons/ps.png">
+      <categories>
+        <category>Document types</category>
+      </categories>
+    </icon>
 
     <!-- Folder types -->
     <icon path="/icons/folder_template.gif">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/folder_template_open.gif">
       <categories>
         <category>Folder types</category>
       </categories>
@@ -594,6 +617,11 @@
       </categories>
     </icon>
     <icon path="/icons/website_100.png">
+      <categories>
+        <category>Folder types</category>
+      </categories>
+    </icon>
+    <icon path="/icons/wiki_folder.png">
       <categories>
         <category>Folder types</category>
       </categories>
