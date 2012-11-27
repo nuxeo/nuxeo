@@ -10,86 +10,121 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <h3 id="" alt="Messages">Messages</h3>
-  
+  <h2 id="" alt="Messages">Messages</h2>
+  <p class="specification">Feedback, status and help messages are used to communicate with users after a task: confirm that a task has been done, tell that the platform is processing the task and need a bit more time, ask users to do the task one more time as the request couldn't be performed, show users what thing can be done where, or indicate a state of a document. A feedback message is always a good way to show users what happend or what is happening: the content of the message is as important than the presence of the message itself. The less surprise there is during a process, the most intuitive the interface will be.</p>
+
   <div class="gridRow">
-    <div class="gridBox gridStyle4">
-      <div class="infoMessage">An info message</div>
+    <div class="gridBox gridStyle7">
+      <div class="widgetPanel">
+        <h3 id="" alt="Messages">Feedback messages</h3>
+        <p class="specification">The feedback messages showing a global status are displayed in the top right of the window. Use the class <span class="code">.facesStatusMessage</span> and add a secundary class for the type of your message: <span class="code">.infoMessage</span>, <span class="code">.successMessage</span>, <span class="code">.warningMessage</span>, or <span class="code">.errorMessage</span>. If you want to display a feedback message under a field in a form, please use only the class of the message type.</p>
+        <div class="gridBox gridStyle6">
+          <div class="widgetPanel">
+            <div class="infoMessage">Your workspace is created</div>
+          </div>
+        </div>
+        <div class="gridBox gridStyle6">
+          <div class="widgetPanel">
+            <div class="successMessage">Your task is achieved</div>
+          </div>
+        </div>
+        <div class="gridBox gridStyle6">
+          <div class="widgetPanel">
+            <div class="warningMessage">The task will expired today</div>
+          </div>
+        </div>
+        <div class="gridBox gridStyle6">
+          <div class="widgetPanel">
+            <div class="errorMessage">Invalid password</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="gridBox gridStyle4">
-      <div class="warningMessage">An warning message</div>
-    </div>
-    <div class="gridBox gridStyle4">
-      <div class="errorMessage">An error message</div>
-    </div>
-    <div class="clear" />
-  </div>
-  
-  <div class="gridRow">
-    <div class="gridBox gridStyle3">
-      <span class="success">A success label</span>
-    </div>
-    <div class="gridBox gridStyle3">
-      <span class="avert">A neutral label</span>
-    </div>
-    <div class="gridBox gridStyle3">
-      <span class="warning">A warning label</span>
-    </div>
-    <div class="gridBox gridStyle3">
-      <span class="error">An error label</span>
+    <div class="gridBox gridStyle5">
+      <div class="widgetPanel">
+        <h3 id="" alt="Messages">Label highlights</h3>
+        <p class="specification">To highlight just a word or a sentence in a paragraph, here is a list of classes that you can use on inline elements like <span class="code">span</span> tags.</p>
+        <p class="specification">There are 4 available classes to highlight your words: <span class="code">.success</span>, <span class="code">.avert</span>, <span class="code">.warning</span>, and <span class="code">.error</span> .</p>
+        <div class="gridBox gridStyle12">
+          <span class="success">Document unlocked</span>
+        </div>
+        <div class="gridBox gridStyle12">
+          <span class="avert">Draft state</span>
+        </div>
+        <div class="gridBox gridStyle12">
+          <span class="warning">Document locked</span>
+        </div>
+        <div class="gridBox gridStyle12">
+          <span class="error">Deleted document</span>
+        </div>
+      </div>
     </div>
     <div class="clear" />
   </div>
   
    <div class="gridRow">
-    <div class="gridBox gridStyle4">
-      <div class="processMessage completeSuccess">Your process is complete</div>
+     <div class="gridBox gridStyle7">
+       <div class="widgetPanel">
+       <h3 id="" alt="Messages">Status messages</h3>
+       <p class="specification">If you need to show a feedback or status message in a modal pop up, or at the end of a process in a screen, the status messages will be helpful to tell users what they did and most of all to explain what is happening next.</p>
+       <p class="specification">
+         Define your message with a div class <span class="code">.processMessage</span>, then add a secundary class to display the corresponding icon that will define the type of your message to users. There are 5 available classes that define a status messages: <span class="code">.completeSuccess</span>, <span class="code">.completeError</span>, <span class="code">.completeWarning</span>, <span class="code">.running</span>,  and <span class="code">.scheduled</span> .
+       </p>
+       <div class="gridBox gridStyle12">
+         <div class="processMessage completeSuccess">Your process is complete, you can continue.</div>
+       </div>
+       <div class="gridBox gridStyle12">
+         <div class="processMessage completeError">Your process contains an error, please relaunch the process.</div>
+       </div>
+       <div class="gridBox gridStyle12">
+         <div class="processMessage completeWarning">Your process has a warning state, be careful and don't forget to save.</div>
+       </div>
+       <div class="gridBox gridStyle12">
+         <div class="processMessage running">Your process is running, please be patient.</div>
+       </div>
+       <div class="gridBox gridStyle12">
+         <div class="processMessage scheduled">Your process is scheduled, please don't run another heavy action.</div>
+      </div>
+     </div>
     </div>
-    <div class="gridBox gridStyle4">
-      <div class="processMessage completeError">Your process contains an error</div>
-    </div>
-    <div class="gridBox gridStyle4">
-      <div class="processMessage completeWarning">Your process has a warning state</div>
-    </div>
-    <div class="gridBox gridStyle4">
-      <div class="processMessage running">Your process is running</div>
-    </div>
-    <div class="gridBox gridStyle4">
-      <div class="processMessage scheduled">Your process is scheduled</div>
+    <div class="gridBox gridStyle5">
+      <div class="widgetPanel">
+        <h3 alt="Messages">Specification, details and help messages</h3>
+        <p class="specification">At least, some complementary classes to add a detail, precise a field, or help users to understand a specific action.</p>
+        <div class="gridBox gridStyle12">
+          <table class="dataTableLine">
+            <tbody>
+              <tr>
+                <td><div class="detail">A detail under a field in a form</div></td>
+                <td><a onclick="return false;" href="#"><span class="code">.detail</span></a></td>
+              </tr>
+              <tr>
+                <td><div class="quote">A quote, or a description</div></td>
+                <td><a onclick="return false;" href="#"><span class="code">.quote</span></a></td>
+              </tr>
+              <tr>
+                <td><div class="specification">A specification paragraph, the default opening paragraph class</div></td>
+                <td><a onclick="return false;" href="#"><span class="code">.specification</span></a></td>
+              </tr>
+              <tr>
+                <td><div class="widgetHelpLabel" title="With a tooltip to help">A widget help label in a form.</div> Roll over it to see the tooltip from the title attribute!</td>
+                <td><a onclick="return false;" href="#"><span class="code">.widgetHelpLabel</span></a></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tips">A <span class="code">.tips</span> class to use in a foldable box or a gadget</div>
+          <div class="dropArea">A <span class="code">.dropArea</span> div to show users where to drop documents</div>
+        </div>
+      </div>
     </div>
     <div class="clear" />
   </div>
-  
-  <div class="gridRow">
-    <div class="gridBox gridStyle4">
-      <div class="detail">A small detail under a label to precise something</div>
-      <div class="tips">A tip</div>
-      <div class="dropArea">A drop area</div>
-    </div>
-    <div class="gridBox gridStyle4">
-      <div class="widgetHelpLabel">A widget help label</div>
-    </div>
-    <div class="gridBox gridStyle4">
-      <div class="tooltip">A tooltip</div>
-    </div>
-    <div class="gridBox gridStyle4">
-      <div class="quote">A quote, or a description</div>
-    </div>
-    <div class="clear" />
-  </div>
-  
-  <div class="gridRow">
-    <div class="gridBox gridStyle4">
-      <span class="tag tagLink">A tag</span>
-    </div>
-    <div class="gridBox gridStyle4">
-      <span class="tag tagLink">
-        <a onclick="" href="#">A deletable tag</a>
-        <a onclick="" name="" id="" href="#"><img src="/nuxeo/icons/action_tag_delete.png" /></a>
-      </span>
-    </div>
-    <div class="clear" />
-  </div>  
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery("div.widgetHelpLabel[title]").tooltip({relative: true, position: 'bottom center'});
+    });
+  </script>
 
 </c:if>
 
