@@ -45,9 +45,12 @@ a.button { color: "link.action (__FLAVOR__ color)"; display: inline-block; text-
 	background: none repeat scroll 0 0 #01a2df;
 	border: 1px solid #0186b8 }
 
-.smallButton, input.smallButton { font-size: 0.85em; padding: 0 .4em}
+.smallButton, input.smallButton { font-size: .85em; padding: 0 .4em}
 
-.dropdown, .dropdown:hover { background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center transparent; padding: .25em 1.5em .2em .8em }
+.dropdown, .dropdown:hover { background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
+  background-color: "button (__FLAVOR__ background)";
+  padding: .25em 1.5em .2em .8em }
+.dropdown:hover { background-color: "color.major.medium (__FLAVOR__ background)" }
 
 /* =Syndication Button */
 div.syndicationButton { background-color: #ff9d5c; float: right; font-size: .7em; margin-bottom: .5em }
@@ -85,18 +88,18 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 
 .listingLayoutSelector { color: "gray.medium (__FLAVOR__ color)"; float: right; margin: 1.1em 0 1em .7em; text-align: right }
 .listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 0 .4em 0 0 }
-.listingLayoutSelector .langSelect { float: left; font-size: 0.8em; padding: .1em }
+.listingLayoutSelector .langSelect { float: left; font-size: .8em; padding: .1em }
 
 /* =Actionbar in Home */
 .headerTitleAndTools { margin-bottom: 4em }
 .headerTitleAndTools h1 { display: inline }
 .headerTitleAndTools h1 span { color: "gray.light (__FLAVOR__ color)"; font-weight: normal }
-.headerTitleAndTools .globalActionBar { float: right }
+.headerTitleAndTools .globalActionBar { float: right } /* Clean headerTitleAndTools style, inheritance issue with globalActionBar class*/
 .globalActionBar h1 { float: left }
 .globalActionBar .actionList { float: right; list-style: none; margin: 0; padding: 0 }
 .globalActionBar .actionList li { cursor: pointer; display: block; font-weight: normal; margin: 0 0 0 .8em; position: relative; text-decoration: none; z-index:3000 }
 .globalActionBar .actionList li a { color: "default (__FLAVOR__ color)"; padding: 0 }
-.globalActionBar .actionList .actionSubList { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); display:none; list-style: none; margin-top: 0.5em; padding: 0; position: absolute; right: 0; top: auto; width: 250px; z-index: 1001 }
+.globalActionBar .actionList .actionSubList { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); display:none; list-style: none; margin-top: .5em; padding: 0; position: absolute; right: 0; top: 19px; width: 250px; z-index: 1001 }
 .globalActionBar .actionList .actionSubList li { background: none; border: none; float: none; height: auto; margin: 0; padding: 0; text-align: left; max-width: 300px }
 .globalActionBar .actionList .actionSubList li a { background: none; border: none; display: block; margin: 0; padding: .5em 1em; text-decoration: none; white-space: normal }
 .globalActionBar .actionList .actionSubList li a:hover { background-color:"color.major.medium (__FLAVOR__ background)";}
@@ -123,7 +126,7 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
   border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
   float: right !important;
-  font-size: 0.8em;
+  font-size: .8em;
   font-weight: bold;
   margin: 0 .5em;
   padding: 0 .7em;
@@ -133,20 +136,20 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 
 /* =RightClick menu */
 #contextMenu { position: absolute; visibility: hidden; top: 0; left: 0 }
-.ctxMenuStyle { box-shadow: 2px 2px 5px #CCC; border: 2px solid #ddd; min-width: 120px; font-size: .7em }
-.ctxMenuItemStyle, .ctxMenuItemHoverStyle { margin: 0; display: block; cursor: default; padding: .4em .5em; border-style: none none solid; border-width: 1px; border-color: "neutral.light (__FLAVOR__ border)"; background-color:#fff }
+.ctxMenuStyle { box-shadow: 2px 2px 3px #ccc; border: 1px solid #bbb; border-radius: 2px; min-width: 120px; font-size: .7em }
+.ctxMenuItemStyle, .ctxMenuItemHoverStyle { margin: 0; display: block; cursor: default; padding: .4em .5em; border-style: none none solid; border-width: 1px; border-color: "neutral.medium (__FLAVOR__ border)"; background-color:#fff; font-weight: bold }
 .ctxMenuItemHoverStyle { cursor: pointer; background-color: "color.major.medium (__FLAVOR__ background)" }
 .ctxMenuItemStyle a, .ctxMenuItemHoverStyle a { display: block; text-decoration: none }
-.ctxMenuImg { vertical-align: middle; padding: 0 .4em 0.1em 0 }
+.ctxMenuImg { vertical-align: middle; padding: 0 .4em .1em 0 }
 
 /* =Labels and tags */
 .tag { background: "color.major.stronger (__FLAVOR__ background)"; border-radius: 3px; color: #fff; display: block; margin: .2em; padding: 0 .3em;}
 .tagLink { display: inline-block }
-.tagLink a { color: #fff; display: inline-block; opacity: 0.8; padding: 0 0 0 .2em; text-decoration: none }
+.tagLink a { color: #fff; display: inline-block; opacity: .8; padding: 0 0 0 .2em; text-decoration: none }
 .tagLink a:hover { opacity: 1 }
 .tagLink img { border-left: 1px dotted rgba(255,255,255,0.4); display: inline; margin: 0 -0.1em -0.3em .2em }
 
-.user, span.user, .group, span.group { background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; box-shadow: -1px -2px 2px rgba(140, 140, 140, 0.2) inset, 1px 1px 1px #fff inset; color: "gray.dark (__FLAVOR__ color)"; display: inline-block; opacity: 1; padding: .1em .3em .1em 1.8em }
+.user, span.user, .group, span.group { background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; box-shadow: -1px -2px 2px rgba(140, 140, 140, 0.2) inset, 1px 1px 1px #fff inset; color: "gray.dark (__FLAVOR__ color)"; display: inline-block; opacity: 1; padding: .1em .3em .1em 1.8em; white-space: nowrap }
 .group, span.group { background: url("${basePath}/icons/group.png") no-repeat scroll 2px 2px transparent }
 .user a { color: "link (__FLAVOR__ color)" }
 span.user:hover { background-color: "color.major.light (__FLAVOR__ background)" ; border-color: "color.major.stronger (__FLAVOR__ border)" }
