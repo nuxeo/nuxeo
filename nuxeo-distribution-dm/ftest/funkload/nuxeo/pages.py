@@ -192,7 +192,7 @@ class BasePage:
         if not "Exit admin center" in fl.getBody():
             self.adminCenter()
         fl.post(fl.server_url + "/view_admin.faces", params=[
-            ['adminSelectorForm_SUBMIT', '1'],
+            ['adminSelectorForm', 'adminSelectorForm'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['adminSelectorForm:adminSelectorList:6:item', 'adminSelectorForm:adminSelectorList:6:item']],
             description="Users and groups page")
@@ -209,7 +209,7 @@ class BasePage:
                        "You should call usersAndGroupsPage first")
             fl.post(fl.server_url + "/view_admin.faces", params=[
                     ['AJAXREQUEST', 'usersListingView:cv_users_listing_search_only__region'],
-                    ['usersListingView:createUserActionsForm_SUBMIT', '1'],
+                    ['usersListingView:createUserActionsForm', 'usersListingView:createUserActionsForm'],
                     ['javax.faces.ViewState', fl.getLastJsfState()],
                     ['usersListingView:createUserActionsForm:createUserButton', 'usersListingView:createUserActionsForm:createUserButton']],
                     description="View user creation form")
@@ -302,7 +302,7 @@ class BasePage:
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['userServicesForm:userServicesActionsTable:0:userServicesActionCommandLink', 'userServicesForm:userServicesActionsTable:0:userServicesActionCommandLink'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userServicesForm_SUBMIT', '1']],
+            ['userServicesForm', 'userServicesForm']],
                 description="Dashboard opensocial")
 
         ts = str(time.time())
@@ -383,7 +383,7 @@ class BasePage:
     def personalWorkspace(self):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-                ['userServicesForm_SUBMIT', '1'],
+                ['userServicesForm', 'userServicesForm'],
                 ['javax.faces.ViewState', fl.getLastJsfState()],
                 ['userServicesForm:menuActionCommand_SHOW_PERSONAL_WORKSPACE', 'userServicesForm:menuActionCommand_SHOW_PERSONAL_WORKSPACE']],
             description="View personal workspace")
@@ -405,7 +405,7 @@ class BasePage:
             ['userServicesSearchForm:faceted_search_suggest_box', query],
             ['userServicesSearchForm:faceted_search_suggestionBox_selection', ''],
             ['userServicesSearchForm:simpleSearchSubmitButton', 'Search'],
-            ['userServicesSearchForm_SUBMIT', '1'],
+            ['userServicesSearchForm', 'userServicesSearchForm'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['AJAX:EVENTS_COUNT', '1']],
             description=description)
@@ -439,26 +439,28 @@ class BasePage:
         """Publish in the first section"""
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['AJAXREQUEST', '_viewRoot'],
+            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
+            ['publishTreeForm:publishTree:input', ''],
             ['publishTreeForm', 'publishTreeForm'],
+            ['autoScroll', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNodeAjaxExpanded', 'true'],
-            ['publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNodeNodeExpanded', 'true'],
-            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
-            ['AJAXREQUEST', '_viewRoot'],
-            ['publishTreeForm:publishTree:input', ''],
-            ['autoScroll', '']],
+            ['publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNodeNodeExpanded', 'true']],
             description="Publish view section root")
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['publishTreeForm', 'publishTreeForm'],
-            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
             ['AJAXREQUEST', '_viewRoot'],
-            ['publishTreeForm:publishTree:input', 'publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:1::publishTreeNode'],
+            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
+            ['publishTreeForm:publishTree:input', 'publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishTreeNode'],
+            ['publishTreeForm', 'publishTreeForm'],
             ['autoScroll', ''],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
             ['publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink', 'publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink']],
             description="Publish document")
+
         fl.assert_("Unpublish" in fl.getBody())
+
         return self
 
     def relations(self):
@@ -521,7 +523,7 @@ class FolderPage(BasePage):
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['documentActionSubviewUpperListForm_SUBMIT', '1'],
+            ['documentActionSubviewUpperListForm', 'documentActionSubviewUpperListForm'],
             ['documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink', 'documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
@@ -532,7 +534,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:create_doc_CREATE_WORKSPACE', 'Create'],
-            ['document_create_SUBMIT', '1'],
+            ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                 description="Create workspace submit")
         fl.assert_('Workspace saved' in fl.getBody())
@@ -543,18 +545,18 @@ class FolderPage(BasePage):
         server_url = fl.server_url
         fl.post(server_url + "/view_documents.faces", params=[
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['documentActionSubviewUpperListForm_SUBMIT', '1'],
+            ['documentActionSubviewUpperListForm', 'documentActionSubviewUpperListForm'],
             ['documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink', 'documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink']],
             description="Create a section form")
         fl.assert_('nxw_title' in fl.getBody(),
-                   "Workspace creation form not found.")
+                   "Section creation form not found.")
 
         fl.post(server_url + "/create_document.faces", params=[
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
-            ['document_create_SUBMIT', '1']],
+            ['document_create', 'document_create']],
             description="Create a section submit")
         fl.assert_('Section saved' in fl.getBody())
         return self
@@ -562,7 +564,7 @@ class FolderPage(BasePage):
     def createFolder(self, title, description):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['selectDocumentTypeForCreationForm_SUBMIT', '1'],
+            ['selectDocumentTypeForCreationForm', 'selectDocumentTypeForCreationForm'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink'],
             ['selectDocumentTypeForCreationForm:selectDocTypePanelOpenedState', '']],
@@ -571,12 +573,11 @@ class FolderPage(BasePage):
         fl.assert_('document_create' in fl.getBody(),
                    "Folder form not found")
         fl.post(fl.server_url + "/create_document.faces", params=[
-            ['document_create', 'document_create'],
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             #['parentDocumentPath', '/default-domain/workspaces/flnxtest-page-workspace.1237992970017'],
             ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
-            ['document_create_SUBMIT', '1'],
+            ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create folder: Submit")
         fl.assert_('Folder saved' in fl.getBody())
@@ -585,7 +586,7 @@ class FolderPage(BasePage):
     def createFile(self, title, description, file_path=None):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['selectDocumentTypeForCreationForm_SUBMIT', '1'],
+            ['selectDocumentTypeForCreationForm', 'selectDocumentTypeForCreationForm'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink'],
             ['selectDocumentTypeForCreationForm:selectDocTypePanelOpenedState', '']],
@@ -594,7 +595,6 @@ class FolderPage(BasePage):
         fl.assert_('document_create' in fl.getBody(),
                    "File form not found")
         fl.post(fl.server_url + "/create_document.faces", params=[
-            ['document_create', 'document_create'],
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:nxl_file:nxw_file:nxw_file_file:choice',
@@ -602,9 +602,9 @@ class FolderPage(BasePage):
             ['document_create:nxl_file:nxw_file:nxw_file_file:upload',
              Upload(file_path or '')],
             ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
-            ['document_create_SUBMIT', '1'],
+            ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
-            description="Create file: Sumbit")
+            description="Create file: Submit")
         fl.assert_('File saved' in fl.getBody())
         return self
 
@@ -647,7 +647,7 @@ class FolderPage(BasePage):
             [checkbox_id, 'on'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             [checkbox_ajax_onclick_id, checkbox_ajax_onclick_id],
-            [table_name + '_SUBMIT', '1']
+            [table_name, table_name]
             ]
         fl.post(fl.server_url + "/view_documents.faces", params,
             description='Select document "%s"' % title)
@@ -669,7 +669,7 @@ class FolderPage(BasePage):
             [table_name + ':nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document', 'on'],
             ['javax.faces.ViewState', state],
             [table_name + ':clipboardActionsTable_0_0:' + pos + ':clipboardActionsButton', 'Delete'],
-            [table_name + '_SUBMIT', '1']
+            [table_name, table_name]
             ]
         fl.post(fl.server_url + "/view_documents.faces", params,
             description='Delete document "%s"' % title)
@@ -700,7 +700,7 @@ class FolderPage(BasePage):
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', ''],
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', 'Everything'],
-            ['add_rights_form_SUBMIT', '1'],
+            ['add_rights_form', 'add_rights_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['userSuggestionSearchType', ''],
             ['userSuggestionMaxSearchResults', '0'],
@@ -719,7 +719,7 @@ class FolderPage(BasePage):
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', permission],
-            ['add_rights_form_SUBMIT', '1'],
+            ['add_rights_form', 'add_rights_form'],
             ['javax.faces.ViewState', state],
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select'],
             ['suggestionSelectionListId', 'nxw_selection_list'],
@@ -733,7 +733,7 @@ class FolderPage(BasePage):
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', permission],
             ['add_rights_form:rights_add_button', 'Add permission'],
-            ['add_rights_form_SUBMIT', '1'],
+            ['add_rights_form', 'add_rights_form'],
             ['javax.faces.ViewState', state]]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm %s to %s" % (permission, user))
@@ -741,7 +741,7 @@ class FolderPage(BasePage):
 
         params = [
             ['validate_rights:document_rights_validate_button', 'Save local rights'],
-            ['validate_rights_SUBMIT', '1'],
+            ['validate_rights', 'validate_rights'],
             ['javax.faces.ViewState', fl.getLastJsfState()]]
         fl.post(server_url + "/view_documents.faces", params,
                   description="Grant perm apply")
@@ -766,7 +766,7 @@ class FolderPage(BasePage):
         fl.assert_(column in options.keys(), 'Invalid sort column')
         # date
         fl.post(server_url + "/view_documents.faces", params=[
-            ['document_content_SUBMIT', '1'],
+            ['document_content', 'document_content'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             options[column]],
             description="Sort by " + column)
