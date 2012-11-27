@@ -44,6 +44,11 @@ author: lkemen@nuxeo.com
 	cursor: pointer; float: right; font-size: .9em }
 .genericPopUp .closePopUpHeader .popUpTitle { float: left; font-size: 1.2em }
 .genericPopUp .popUpContent { height: 390px; overflow: auto; padding: 1em }
+.genericPopUp .buttonsGadget {
+  border-width: 2px; border-style: dotted none none;  border-color: "neutral.lighter (__FLAVOR__ border)";
+  margin: .5em 0 0;
+  padding: .5em 0 0 }
+
 .genericPopUp .dr-tree td, .genericPopUp .rich-tree td { padding: .1em }
 
 .bigPopUp { height: 70%; width: 80% }
