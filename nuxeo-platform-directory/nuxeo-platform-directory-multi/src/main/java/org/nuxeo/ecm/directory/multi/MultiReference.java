@@ -24,12 +24,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryEntryException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 
 public class MultiReference extends AbstractReference {
+
+    private static final Log log = LogFactory.getLog(MultiReference.class);
 
     final MultiDirectory dir;
 
@@ -67,7 +72,11 @@ public class MultiReference extends AbstractReference {
                 if (ref == null) {
                     continue;
                 }
-                ids.addAll(extractor.collect(ref));
+                try {
+                    ids.addAll(extractor.collect(ref));
+                } catch (DirectoryEntryException dee) {
+                    log.debug(dee.getMessage());
+                }
             }
         }
         List<String> x = new ArrayList<String>(ids.size());
