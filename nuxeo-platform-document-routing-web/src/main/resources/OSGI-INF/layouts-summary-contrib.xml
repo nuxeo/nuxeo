@@ -14,7 +14,7 @@
           </p>
           <p>
             If there is already a route started, it displays the name of
-            the route started.
+            the started route.
           </p>
         </description>
         <categories>
@@ -37,7 +37,11 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="summary_document_route" type="summary_document_route" />
+    <widget name="summary_document_route" type="summary_document_route">
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
 
     <widget name="start_route_widget" type="template">
       <labels>
@@ -55,6 +59,9 @@
       <properties widgetMode="edit">
         <property name="cssStyleClass">dataInputText</property>
       </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
     </widget>
 
   </extension>
