@@ -2255,7 +2255,7 @@
     <widgetType name="current_document_actions">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Actions</title>
+        <title>Form actions</title>
         <description>
           <p>This widget displays actions filtered on the current document.</p>
           <p>
@@ -2331,7 +2331,7 @@
     <widgetType name="current_document_actions_with_forms">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Actions (with forms)</title>
+        <title>Toolbar Actions</title>
         <description>
           <p>This widget displays actions filtered on the current document, and
             surrounds them by a form.</p>
@@ -2409,7 +2409,7 @@
     <widgetType name="current_document_action">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Action</title>
+        <title>Form Action</title>
         <description>
           <p>This widget displays an action filtered on current document context</p>
           <p>
@@ -2479,7 +2479,7 @@
     <widgetType name="current_document_action_with_forms">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Action (with forms)</title>
+        <title>Toolbar Action</title>
         <description>
           <p>This widget displays an action filtered on current document context</p>
           <p>

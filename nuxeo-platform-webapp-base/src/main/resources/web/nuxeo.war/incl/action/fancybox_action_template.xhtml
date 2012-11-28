@@ -31,7 +31,7 @@
             oncomplete="#{action.properties.onclick};return false;"
             styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
             disabled="#{!action.available}"
-            reRender="#{fancyboxId}_ajax_panel,mainDocumentViewPanel">
+            reRender="#{fancyboxId}_ajax_panel">
             <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
               target="#{selectionActions.lookupLevelValue}" />
             <f:setPropertyActionListener value="#{action.id}"

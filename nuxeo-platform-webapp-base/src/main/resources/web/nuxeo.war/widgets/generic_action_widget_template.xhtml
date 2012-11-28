@@ -21,6 +21,8 @@
           cache="true">
         <nxu:set var="idPrefix" value="#{widget.id}_"
           cache="true">
+        <nxu:set var="eventsQueueId" value="#{layout.id}_queue"
+          cache="true">
           <nxu:valueHolder id="#{idPrefix}clickedActionIdHolder"
             var="clickedActionId">
 
@@ -28,7 +30,6 @@
               <ui:param name="addForm" value="#{widgetProperty_addForm}" />
               <ui:param name="formId" value="#{widget.id}_form" />
               <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
-              <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
               <ui:param name="formStyleClass" value="subWidgetForm" />
               <ui:define name="form_template_content">
 
