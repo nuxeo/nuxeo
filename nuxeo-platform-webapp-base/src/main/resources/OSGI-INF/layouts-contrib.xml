@@ -391,68 +391,6 @@
       </fields>
     </widget>
 
-    <widget name="actionsDisplay" type="selectOneListbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Actions Display</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          If set to 'buttons', actions will be displayed as
-          command
-          buttons. If set to 'links', actions will be displayed as
-          command links. If set to 'icons', actions will be displayed
-          as icons.
-          Else (default behaviour), actions will be
-          displayed as command links
-          and display their icons when
-          defined.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>actionsDisplay</field>
-      </fields>
-      <selectOptions>
-        <option itemLabel="Icons and links (default)" itemValue="icons_links" />
-        <option itemLabel="Icons" itemValue="icons" />
-        <option itemLabel="Buttons" itemValue="buttons" />
-        <option itemLabel="Links" itemValue="links" />
-      </selectOptions>
-    </widget>
-
-    <widget name="formActionsDisplay" type="selectOneListbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Actions Display</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          If set to 'buttons', actions will be displayed as
-          command
-          buttons. If set to 'links', actions will be displayed as
-          command links. If set to 'icons', actions will be displayed
-          as icons.
-          Else (default behaviour), actions will be
-          displayed as command links
-          and display their icons when
-          defined.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>actionsDisplay</field>
-      </fields>
-      <selectOptions>
-        <option itemLabel="Buttons (default)" itemValue="buttons" />
-        <option itemLabel="Icons and links" itemValue="icons_links" />
-        <option itemLabel="Icons" itemValue="icons" />
-        <option itemLabel="Links" itemValue="links" />
-      </selectOptions>
-    </widget>
-
     <widget name="suggestion_orderable" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -523,6 +461,306 @@
       </helpLabels>
       <fields>
         <field>hideHelpLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="actionsDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Actions Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to 'buttons', actions will be displayed as
+          command
+          buttons. If set to 'links', actions will be displayed as
+          command links. If set to 'icons', actions will be displayed
+          as icons.
+          Else (default behaviour), actions will be
+          displayed as command links
+          and display their icons when
+          defined.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionsDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Icons and links (default)" itemValue="icons_links" />
+        <option itemLabel="Icons" itemValue="icons" />
+        <option itemLabel="Buttons" itemValue="buttons" />
+        <option itemLabel="Links" itemValue="links" />
+      </selectOptions>
+    </widget>
+
+    <widget name="formActionsDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Actions Display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to 'buttons', actions will be displayed as
+          command
+          buttons. If set to 'links', actions will be displayed as
+          command links. If set to 'icons', actions will be displayed
+          as icons.
+          Else (default behaviour), actions will be
+          displayed as command links
+          and display their icons when
+          defined.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionsDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Buttons (default)" itemValue="buttons" />
+        <option itemLabel="Icons and links" itemValue="icons_links" />
+        <option itemLabel="Icons" itemValue="icons" />
+        <option itemLabel="Links" itemValue="links" />
+      </selectOptions>
+    </widget>
+
+    <widget name="actions_headerStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Header style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for the header, displaying this
+          widget
+          label.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>headerStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_styleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for the global container div.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>styleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_subStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for div containing actions.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>subStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_actionStyleClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Action style class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Style class for each action link.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionStyleClass</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_addForm" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Add form</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will be surrounded
+          by a form,
+          so there should be no other surrounding form.
+          This property is useful
+          when fancybox actions need to open a
+          popup in another form. Available
+          since 5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>addForm</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_useAjaxForm" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Use ajax actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will be performed
+          using ajax.
+          Note that sometimes, selection actions will
+          require you to reload the
+          whole page for other elements than
+          the content view to be re-rendered,
+          so using ajax will not
+          be user friendly in these cases. Available from
+          5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>useAjaxForm</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_disableFiltered" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Disable filtered actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          If set to true, actions will appear as disabled if
+          they are supposed to be filtered (instead of not being displayed at
+          all). Available from 5.7, defaults to false.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>disableFiltered</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_category" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Category</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The category of actions to use.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>category</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="resourceName">actionCategories</property>
+      </properties>
+    </widget>
+
+    <widget name="actions_actionId" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Action</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action to display.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>actionId</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="resourceName">actions</property>
+      </properties>
+    </widget>
+
+    <widget name="actions_overallDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Overall display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Overall display of actions.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>overallDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Vertical block (default)" itemValue="" />
+        <option itemLabel="Horizontal block" itemValue="horizontal_block" />
+        <option itemLabel="Menu" itemValue="menu" />
+      </selectOptions>
+    </widget>
+
+    <widget name="actions_maxActionsNumber" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Maximum number of actions</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Integer indicating the maximum number of
+          actions to
+          display. When this limit is reached, other
+          actions are displayed in a
+          menu.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>maxActionsNumber</field>
+      </fields>
+    </widget>
+
+    <widget name="actions_moreMenuLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Label for the "more" menu</label>
+      </labels>
+      <fields>
+        <field>moreMenuLabel</field>
       </fields>
     </widget>
 
@@ -1863,6 +2101,11 @@
         <categories>
           <category>hidden</category>
         </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
@@ -1877,28 +2120,28 @@
                   <widget category="widgetTypeConf">actionsDisplay</widget>
                 </row>
                 <row>
-                  <widget>overallDisplay</widget>
+                  <widget category="widgetTypeConf">actions_overallDisplay</widget>
                 </row>
                 <row>
-                  <widget>maxActionsNumber</widget>
+                  <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
                 </row>
                 <row>
-                  <widget>headerStyleClass</widget>
+                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
                 </row>
                 <row>
-                  <widget>styleClass</widget>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
                 </row>
                 <row>
-                  <widget>subStyleClass</widget>
+                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
                 </row>
                 <row>
-                  <widget>moreMenuLabel</widget>
+                  <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
                 </row>
                 <row>
-                  <widget>addForm</widget>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
                 </row>
                 <row>
-                  <widget>useAjaxForm</widget>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
                 </row>
               </rows>
               <widget name="actions" type="actions">
@@ -1917,133 +2160,6 @@
                   <mode value="edit_demo_preview">hidden</mode>
                 </widgetModes>
               </widget>
-              <widget name="headerStyleClass" type="text">
-                <labels>
-                  <label mode="any">Header style class</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Style class for the header, displaying this
-                    widget label.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>headerStyleClass</field>
-                </fields>
-              </widget>
-              <widget name="overallDisplay" type="selectOneListbox">
-                <categories>
-                  <category>widgetTypeConf</category>
-                </categories>
-                <labels>
-                  <label mode="any">Overall display</label>
-                </labels>
-                <fields>
-                  <field>overallDisplay</field>
-                </fields>
-                <selectOptions>
-                  <option itemLabel="Vertical block (default)" itemValue="" />
-                  <option itemLabel="Horizontal block" itemValue="horizontal_block" />
-                  <option itemLabel="Menu" itemValue="menu" />
-                </selectOptions>
-              </widget>
-              <widget name="styleClass" type="text">
-                <labels>
-                  <label mode="any">Style class</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Style class for the global container div.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>styleClass</field>
-                </fields>
-              </widget>
-              <widget name="subStyleClass" type="text">
-                <labels>
-                  <label mode="any">Sub style class</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Style class for div containing actions.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>subStyleClass</field>
-                </fields>
-              </widget>
-              <widget name="actionStyleClass" type="text">
-                <labels>
-                  <label mode="any">Action style class</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Style class for each action link.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>subStyleClass</field>
-                </fields>
-              </widget>
-              <widget name="maxActionsNumber" type="int">
-                <labels>
-                  <label mode="any">Maximum number of actions</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Integer indicating the maximum number of
-                    actions to display. When this limit is reached, other
-                    actions are displayed in a menu.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>maxActionsNumber</field>
-                </fields>
-              </widget>
-              <widget name="moreMenuLabel" type="text">
-                <labels>
-                  <label mode="any">Label for the "more" menu</label>
-                </labels>
-                <fields>
-                  <field>moreMenuLabel</field>
-                </fields>
-              </widget>
-              <widget name="addForm" type="checkbox">
-                <labels>
-                  <label mode="any">Add form</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    If set to true, actions will be surrounded
-                    by a form, so there should be no other surrounding form.
-                    This property is useful when fancybox actions need to open a
-                    popup in another form. Available since 5.7, defaults to
-                    false.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>addForm</field>
-                </fields>
-              </widget>
-              <widget name="useAjaxForm" type="checkbox">
-                <labels>
-                  <label mode="any">Use ajax actions</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    If set to true, actions will be performed
-                    using ajax. Note that sometimes, selection actions will
-                    require you to reload the whole page for other elements than
-                    the content view to be re-rendered, so using ajax will not
-                    be user friendly in these cases. Available since 5.7,
-                    defaults to false.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>useAjaxForm</field>
-                </fields>
-              </widget>
             </layout>
           </layouts>
         </properties>
@@ -2053,6 +2169,381 @@
       </handler-class>
       <property name="template">
         /widgets/generic_actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="action">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Action</title>
+        <description>
+          <p>This widget displays an action.</p>
+          <p>
+            It needs the action as property "action".
+            <br />
+            Its bound value is used for actions with type "widget".
+            <br />
+            It can add a form around its button to handle actions with type
+            "fancybox" that would need a form in their opened fancybox content.
+          </p>
+        </description>
+        <categories>
+          <category>hidden</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="generic_action_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>action</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+              </rows>
+              <widget name="action" type="action">
+                <labels>
+                  <label mode="any">Action</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The action to display.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>action</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/generic_action_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="current_document_actions">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Actions</title>
+        <description>
+          <p>This widget displays actions filtered on the current document.</p>
+          <p>
+            It will display actions in the category given in the 'category'
+            property. The widget label and help label will be displayed above
+            the actions.
+          </p>
+          <p>
+            This widget requires to be surrounded by a form, so if it displays
+            fancybox actions for instance, their popup content cannot contain
+            another form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>false</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="current_document_actions_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_category</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/current_document_actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="current_document_actions_with_forms">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Actions (with forms)</title>
+        <description>
+          <p>This widget displays actions filtered on the current document, and
+            surrounds them by a form.</p>
+          <p>
+            It will display actions in the category given in the 'category'
+            property. The widget label and help label will be displayed above
+            the actions.
+          </p>
+          <p>
+            The fact that actions are surrounded by their own form makes it
+            possible to use fancybox actions for instance, whose popup content
+            would use a different form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout
+              name="current_document_actions_with_forms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_category</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/current_document_actions_with_forms_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="current_document_action">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Action</title>
+        <description>
+          <p>This widget displays an action filtered on current document context</p>
+          <p>
+            It needs the action id as property "actionId".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+          <p>
+            This widget requires to be surrounded by a form, so if it displays
+            fancybox actions for instance, their popup content cannot contain
+            another form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>false</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="current_document_action_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_actionId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/current_document_action_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="current_document_action_with_forms">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Action (with forms)</title>
+        <description>
+          <p>This widget displays an action filtered on current document context</p>
+          <p>
+            It needs the action id as property "actionId".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+          <p>
+            The fact that action is surrounded by its own form makes it
+            possible to use fancybox actions for instance, whose popup content
+            would use a different form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout
+              name="current_document_action_with_forms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_actionId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/summary/current_document_action_with_forms_widget_template.xhtml
       </property>
     </widgetType>
 

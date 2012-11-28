@@ -310,8 +310,14 @@ public interface WebActions {
     boolean checkFilter(String filterId);
 
     /**
+     * @since 5.7
+     * @see ActionManager#getAction(String, ActionContext, boolean)
+     */
+    Action getAction(String actionId, boolean hideUnavailableAction);
+
+    /**
      * @since 5.6
-     * @see ActionManager#getAction(String, ActionContext, boolean)c
+     * @see ActionManager#getAction(String, ActionContext, boolean)
      */
     Action getAction(String actionId, ActionContext context,
             boolean hideUnavailableAction);
