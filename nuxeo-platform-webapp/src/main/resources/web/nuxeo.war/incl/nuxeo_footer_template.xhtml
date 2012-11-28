@@ -17,7 +17,9 @@
       <nxu:set var="actions"
         value="#{webActions.getActionsList('FOOTER')}" cache="true">
         <c:forEach var="action" items="#{actions}" varStatus="status">
-          <ui:decorate template="/incl/action/generic_action_template.xhtml" />
+          <ui:decorate template="/incl/action/generic_action_template.xhtml">
+            <ui:define name="after_action_template_content" />
+          </ui:decorate>
           <c:if test="#{not status.last}">
             <h:outputText value=" | " />
           </c:if>
