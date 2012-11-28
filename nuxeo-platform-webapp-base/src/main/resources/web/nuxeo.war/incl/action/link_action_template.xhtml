@@ -7,6 +7,11 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 <ui:insert name="action_template_content">
+
+<nxu:set var="elementsToReRender"
+  value="#{action.properties.reRender}"
+  resolveTwice="true" cache="true">
+
 <c:if test="#{useButton}">
 
   <c:if test="#{not useAjaxForm}">
@@ -25,12 +30,14 @@
   </c:if>
 
   <c:if test="#{useAjaxForm}">
-    <nxh:commandButton
+    <a4j:commandButton
       id="#{idPrefix}#{action.id}"
       onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
+      reRender="#{elementsToReRender}"
+      eventsQueue="#{eventsQueueId}"
       styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml">
         <ui:param name="hideLabel" value="true" />
@@ -39,7 +46,7 @@
       <nxu:actionListenerMethod
         value="#{action.getLink()}" />
       <ui:insert name="after_action_trigger" />
-    </nxh:commandButton>
+    </</a4j:commandButton>
   </c:if>
 
 </c:if>
@@ -65,6 +72,8 @@
       onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
       disabled="#{!action.available}"
+      reRender="#{elementsToReRender}"
+      eventsQueue="#{eventsQueueId}"
       styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="before_action_trigger" />
@@ -75,5 +84,8 @@
   </c:if>
 
 </c:if>
+
+</nxu:set>
+
 </ui:insert>
 </ui:composition>

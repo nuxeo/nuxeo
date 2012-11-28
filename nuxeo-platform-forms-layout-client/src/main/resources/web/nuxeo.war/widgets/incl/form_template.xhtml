@@ -14,6 +14,7 @@ Accepted parameters:
 - useAjaxForm: boolean stating if form should be ajaxified (optional, defaults to false)
 - eventsQueueId: id for events queue of the ajax form (optional, defaults to
   the form id suffixed by _eventsQueue)
+- reRender: ajax elements ids to rerender (optional)
 - formStyleClass: style class to put on the form (optional)
 
 Templating zone to define:
@@ -33,6 +34,7 @@ Templating zone to define:
       <a4j:form id="#{formId}" ajaxSubmit="true"
         ignoreDupResponses="true"
         eventsQueue="#{nxu:test(empty eventsQueueId, defaultEventsId, eventsQueueId)}"
+        reRender="#{reRender}"
         styleClass="#{formStyleClass}">
         <ui:insert name="form_template_content" />
       </a4j:form>
