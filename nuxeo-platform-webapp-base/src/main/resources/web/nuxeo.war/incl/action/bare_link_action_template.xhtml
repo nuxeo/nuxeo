@@ -1,4 +1,4 @@
-<c:if test="true"
+<ui:composition
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -6,7 +6,7 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
-
+<ui:insert name="action_template_content">
   <nxu:set var="actionLink" value="#{action.getLink()}" resolveTwice="true" >
     <h:outputLink value="#{actionLink}"
       target="#{action.properties.target}"
@@ -17,4 +17,5 @@
       <ui:insert name="inside_action" />
     </h:outputLink>
   </nxu:set>
-</c:if>
+</ui:insert>
+</ui:composition>

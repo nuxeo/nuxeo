@@ -1,4 +1,4 @@
-<c:if test="true"
+<ui:composition
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -6,7 +6,7 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
-
+<ui:insert name="action_template_content">
 <c:if test="#{useButton}">
 
   <c:if test="#{not useAjaxForm}">
@@ -71,5 +71,5 @@
   </c:if>
 
 </c:if>
-
-</c:if>
+</ui:insert>
+</ui:composition>

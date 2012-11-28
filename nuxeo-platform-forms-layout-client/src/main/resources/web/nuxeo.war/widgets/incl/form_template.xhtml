@@ -32,7 +32,7 @@ Templating zone to define:
     <nxu:set var="defaultEventsId" value="#{formId}_eventsQueue">
       <a4j:form id="#{formId}" ajaxSubmit="true"
         ignoreDupResponses="true"
-        eventsQueue="#{empty eventsQueueId? defaultEventsId: eventsQueueId}"
+        eventsQueue="#{nxu:test(empty eventsQueueId, defaultEventsId, eventsQueueId)}"
         styleClass="#{formStyleClass}">
         <ui:insert name="form_template_content" />
       </a4j:form>
