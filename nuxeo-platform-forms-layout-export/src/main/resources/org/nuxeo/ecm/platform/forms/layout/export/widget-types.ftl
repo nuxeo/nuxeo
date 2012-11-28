@@ -103,10 +103,9 @@ pre {
             <div class="category">${cat}</div>
             <div class="export_link">
               <a href="${baseURL}widgetTypes/${cat}?all=true">JSON definitions</a>
-              <a href="${baseURL}widgetTypes/${cat}?version=5.4.0&all=true">5.4.0</a>
-              <a href="${baseURL}widgetTypes/${cat}?version=5.4.2&all=true">5.4.2</a>
               <a href="${baseURL}widgetTypes/${cat}?version=5.5&all=true">5.5</a>
               <a href="${baseURL}widgetTypes/${cat}?version=5.6&all=true">5.6</a>
+              <a href="${baseURL}widgetTypes/${cat}?version=5.7&all=true">5.7</a>
             </div>
             <div class="category_content">
               <#list categories["${cat}"] as widgetType>
@@ -120,10 +119,9 @@ pre {
           </#list>
           <div class="export_link">
             <a href="${baseURL}widgetTypes?all=true">All JSON definitions</a>
-            <a href="${baseURL}widgetTypes?version=5.4.0&all=true">5.4.0</a>
-            <a href="${baseURL}widgetTypes?version=5.4.2&all=true">5.4.2</a>
             <a href="${baseURL}widgetTypes?version=5.5&all=true">5.5</a>
             <a href="${baseURL}widgetTypes?version=5.6&all=true">5.6</a>
+            <a href="${baseURL}widgetTypes?version=5.7&all=true">5.7</a>
           </div>
         </div>
       </td>
