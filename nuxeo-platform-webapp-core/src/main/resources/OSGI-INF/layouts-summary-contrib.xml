@@ -47,6 +47,7 @@
     <widgetType name="summary_current_document_custom_actions">
       <configuration>
         <sinceVersion>5.4.2</sinceVersion>
+        <deprecatedVersion>5.7</deprecatedVersion>
         <title>Custom actions</title>
         <description>
           <p>This widget displays custom actions on the current document.</p>

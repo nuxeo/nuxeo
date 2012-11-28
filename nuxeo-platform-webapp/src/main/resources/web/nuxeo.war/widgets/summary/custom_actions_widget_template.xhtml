@@ -6,18 +6,14 @@
 <nxu:set var="category"
   value="#{nxu:test(empty widgetProperty_category, 'DOCUMENT_SUMMARY_CUSTOM_ACTIONS', widgetProperty_category)}"
   cache="true">
-<nxu:set var="actions"
-  value="#{webActions.getActionsList(category)}"
-  cache="true">
 
-  <nxl:widgetType name="actions" mode="#{widget.mode}"
+  <nxl:widgetType name="current_document_actions" mode="#{widget.mode}"
     label="#{widget.label}"
     value="#{fieldOrValue}" properties="#{widget.properties}"
-    actions="#{actions}" actionsDisplay="#{widgetProperty_display}"
+    category="#{category}" actionsDisplay="#{widgetProperty_display}"
     ignoreTemplateProperty="true" subWidgets="#{widget.subWidgets}"
     addForm="false" />
 
-</nxu:set>
 </nxu:set>
 
 </c:if>
