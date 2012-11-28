@@ -22,6 +22,7 @@ package org.nuxeo.functionaltests;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -36,6 +37,8 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.browsermob.proxy.ProxyServer;
@@ -60,6 +63,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -79,6 +83,30 @@ import org.openqa.selenium.support.ui.SystemClock;
  * Base functions for all pages.
  */
 public abstract class AbstractTest {
+
+    /**
+     * @since 5.7
+     */
+    public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/google-chrome";
+
+    /**
+     * @since 5.7
+     *        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+     *        doesn't work
+     */
+    public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
+
+    /**
+     * @since 5.7
+     */
+    public static final String CHROME_DRIVER_DEFAULT_PATH_WINVISTA = SystemUtils.getUserHome().getPath()
+            + "\\AppData\\Local\\Google\\Chrome\\Application\\chromedriver.exe";
+
+    /**
+     * @since 5.7
+     */
+    public static final String CHROME_DRIVER_DEFAULT_PATH_WINXP = SystemUtils.getUserHome().getPath()
+            + "\\Local Settings\\Application Data\\Google\\Chrome\\Application\\chromedriver.exe";
 
     private static final Log log = LogFactory.getLog(AbstractTest.class);
 
@@ -103,6 +131,8 @@ public abstract class AbstractTest {
 
     private static final String HAR_NAME = "http-headers.json";
 
+    public static final String SYSPROP_CHROME_DRIVER_PATH = "webdriver.chrome.driver";
+
     protected static RemoteWebDriver driver;
 
     protected static File tmp_firebug_xpi;
@@ -110,12 +140,11 @@ public abstract class AbstractTest {
     protected static ProxyServer proxyServer = null;
 
     /**
-     * Logger method to follow what's being run on server logs and take a
-     * screenshot of the last page in case of failure
+     *
+     *
+     * @since 5.7
      */
-    @Rule
-    public MethodRule watchman = new TestWatchman() {
-
+    protected class LogTestWatchman extends TestWatchman {
         @Override
         public void starting(FrameworkMethod method) {
             String message = String.format("Starting test '%s#%s'",
@@ -134,6 +163,7 @@ public abstract class AbstractTest {
             String filename = String.format("screenshot-lastpage-%s-%s",
                     className, methodName);
             takeScreenshot(filename);
+            dumpPageSource(filename);
             super.failed(e, method);
         }
 
@@ -160,21 +190,49 @@ public abstract class AbstractTest {
             }
         }
 
-        protected void takeScreenshot(String filename) {
-            // Temporary code to take snapshots of the last page
-            if (driver instanceof FirefoxDriver) {
+        public File takeScreenshot(String filename) {
+            if (TakesScreenshot.class.isInstance(driver)) {
                 try {
                     Thread.sleep(250);
-                    ((FirefoxDriver) driver).getScreenshotAs(new ScreenShotFileOutput(
-                            filename));
-                } catch (InterruptedException ee) {
-                    log.error(ee, ee);
+                    return TakesScreenshot.class.cast(driver).getScreenshotAs(
+                            new ScreenShotFileOutput(filename));
+                } catch (InterruptedException e) {
+                    log.error(e, e);
                 }
-            } else {
-                // Not implemented for other drivers
+            }
+            return null;
+        }
+
+        public File dumpPageSource(String filename) {
+            FileWriter writer = null;
+            try {
+                String location = System.getProperty("basedir")
+                        + File.separator + "target";
+                File outputFolder = new File(location);
+                if (!outputFolder.exists() || !outputFolder.isDirectory()) {
+                    outputFolder = null;
+                }
+                File tmpFile = File.createTempFile(filename, ".html",
+                        outputFolder);
+                log.info(String.format("Created page source file named '%s'",
+                        tmpFile.getPath()));
+                writer = new FileWriter(tmpFile);
+                writer.write(driver.getPageSource());
+                return tmpFile;
+            } catch (IOException e) {
+                throw new WebDriverException(e);
+            } finally {
+                IOUtils.closeQuietly(writer);
             }
         }
-    };
+    }
+
+    /**
+     * Logger method to follow what's being run on server logs and take a
+     * screenshot of the last page in case of failure
+     */
+    @Rule
+    public MethodRule watchman = new LogTestWatchman();
 
     @BeforeClass
     public static void initDriver() throws Exception {
@@ -211,6 +269,37 @@ public abstract class AbstractTest {
 
     @SuppressWarnings("deprecation")
     protected static void initChromeDriver() throws Exception {
+        if (System.getProperty(SYSPROP_CHROME_DRIVER_PATH) == null) {
+            String chromeDriverDefaultPath = null;
+            if (SystemUtils.IS_OS_LINUX) {
+                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_LINUX;
+            } else if (SystemUtils.IS_OS_MAC) {
+                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_MAC;
+            } else if (SystemUtils.IS_OS_WINDOWS_XP) {
+                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINXP;
+            } else if (SystemUtils.IS_OS_WINDOWS_VISTA) {
+                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINVISTA;
+            } else if (SystemUtils.IS_OS_WINDOWS) {
+                // Unknown default path on other Windows OS. To be completed.
+            }
+
+            if (chromeDriverDefaultPath != null
+                    && new File(chromeDriverDefaultPath).exists()) {
+                log.warn(String.format(
+                        "Missing property %s but found %s. Using it...",
+                        SYSPROP_CHROME_DRIVER_PATH, chromeDriverDefaultPath));
+                System.setProperty(SYSPROP_CHROME_DRIVER_PATH,
+                        chromeDriverDefaultPath);
+            } else {
+                log.error(String.format(
+                        "Could not find the Chrome driver looking at %s."
+                                + "Download it from %s and set its path with "
+                                + "the System property %s.",
+                        chromeDriverDefaultPath,
+                        "http://code.google.com/p/chromedriver/downloads/list",
+                        SYSPROP_CHROME_DRIVER_PATH));
+            }
+        }
         DesiredCapabilities dc = DesiredCapabilities.chrome();
         ChromeOptions options = new ChromeOptions();
         options.addArguments(Arrays.asList("--ignore-certificate-errors"));
