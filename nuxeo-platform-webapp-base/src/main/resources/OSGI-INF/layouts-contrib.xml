@@ -1894,6 +1894,12 @@
                 <row>
                   <widget>moreMenuLabel</widget>
                 </row>
+                <row>
+                  <widget>addForm</widget>
+                </row>
+                <row>
+                  <widget>useAjaxForm</widget>
+                </row>
               </rows>
               <widget name="actions" type="actions">
                 <labels>
@@ -2001,6 +2007,41 @@
                 </labels>
                 <fields>
                   <field>moreMenuLabel</field>
+                </fields>
+              </widget>
+              <widget name="addForm" type="checkbox">
+                <labels>
+                  <label mode="any">Add form</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, actions will be surrounded
+                    by a form, so there should be no other surrounding form.
+                    This property is useful when fancybox actions need to open a
+                    popup in another form. Available since 5.7, defaults to
+                    false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>addForm</field>
+                </fields>
+              </widget>
+              <widget name="useAjaxForm" type="checkbox">
+                <labels>
+                  <label mode="any">Use ajax actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, actions will be performed
+                    using ajax. Note that sometimes, selection actions will
+                    require you to reload the whole page for other elements than
+                    the content view to be re-rendered, so using ajax will not
+                    be user friendly in these cases. Available since 5.7,
+                    defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>useAjaxForm</field>
                 </fields>
               </widget>
             </layout>

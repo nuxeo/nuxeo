@@ -1,9 +1,11 @@
-<c:if test="true"
+<ui:composition
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<ui:insert name="action_template_content">
 
   <nxu:set var="resolvedMode"
     value="#{nxu:test(empty action.properties.widgetMode, empty widget.mode?'view':widget.mode, action.properties.widgetMode)}">
@@ -38,4 +40,5 @@
 
   </nxu:set>
 
-</c:if>
+</ui:insert>
+</ui:composition>
