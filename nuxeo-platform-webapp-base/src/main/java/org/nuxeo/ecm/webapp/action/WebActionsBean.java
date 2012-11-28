@@ -377,10 +377,15 @@ public class WebActionsBean implements WebActions, Serializable {
     }
 
     @Override
-    public Action getAction(String actionId, ActionContext context,
-            boolean hideUnavailableAction) {
+    public Action getAction(String actionId, boolean hideUnavailableAction) {
         return actionManager.getAction(actionId, createActionContext(),
                 hideUnavailableAction);
+    }
+
+    @Override
+    public Action getAction(String actionId, ActionContext context,
+            boolean hideUnavailableAction) {
+        return actionManager.getAction(actionId, context, hideUnavailableAction);
     }
 
     @Override

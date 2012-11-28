@@ -12,6 +12,7 @@
       target="#{action.properties.target}"
       onclick="#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
+      disabled="#{!action.available}"
       styleClass="#{useButton ? 'button' : 'actionLink'} #{actionStyleClass} #{action.properties.styleClass}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
