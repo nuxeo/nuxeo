@@ -822,7 +822,7 @@ Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
 [INFO] Preparing source:jar
 [WARNING] Removing: jar from forked lifecycle, to prevent recursive invocation.
 [INFO] [buildnumber:create {execution: default}]
-[INFO] Storing buildNumber: 20100722-083059 at timestamp: 127978025.4.2.1-SNAPSHOT
+[INFO] Storing buildNumber: 20100722-083059 at timestamp: 127978025.4.2-HF30
 [INFO] [source:jar {execution: attach-sources}]
 [INFO] Building jar: /usr/local/src/org.nuxeo.tests/nuxeo-service/nuxeo-platform-versioning-api/target/nuxeo-platform-versioning-api-5.3.2-APG-240-SNAPSHOT-sources.jar
 [INFO] [install:install {execution: default-install}]
