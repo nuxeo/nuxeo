@@ -236,7 +236,7 @@ CREATE TRIGGER NX_TRIG_FT_UPDATE
   BEFORE INSERT OR UPDATE ON ${fulltextTable}
   FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT();
 
-# -- migrate table from read_acls into aclr, since 5.4.2.1-SNAPSHOT
+# -- migrate table from read_acls into aclr, since 5.4.2-HF30
 #TEST:
 SELECT 1 FROM pg_tables WHERE tablename = 'read_acls';
 
@@ -245,7 +245,7 @@ ALTER TABLE read_acls RENAME TO aclr;
 ALTER TABLE aclr RENAME COLUMN id TO acl_id;
 
 
-# -- Remove useless primary key since 5.4.2.1-SNAPSHOT
+# -- Remove useless primary key since 5.4.2-HF30
 #TEST:
 SELECT 1 FROM pg_constraint WHERE conname='read_acls_pkey';
 
@@ -274,7 +274,7 @@ SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_acl_id_idx';
 CREATE INDEX aclr_acl_id_idx ON aclr USING btree(acl_id);
 
 
-# -- Migration since 5.4.2.1-SNAPSHOT
+# -- Migration since 5.4.2-HF30
 #TEST:
 SELECT 1 FROM pg_tables WHERE tablename = 'read_acls_cache';
 
@@ -361,7 +361,7 @@ SELECT 1 FROM pg_indexes WHERE indexname='hierarchy_read_acl_acl_id_idx';
 CREATE INDEX hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl USING btree(acl_id);
 
 
-# -- Remove old table since 5.4.2.1-SNAPSHOT
+# -- Remove old table since 5.4.2-HF30
 #TEST:
 SELECT 1 FROM pg_tables WHERE tablename='hierarchy_modified_acl';
 
@@ -380,7 +380,7 @@ CREATE TABLE aclr_modified (
 );
 
 
-# -- Remove old table since 5.4.2.1-SNAPSHOT
+# -- Remove old table since 5.4.2-HF30
 #TEST:
 SELECT 1 FROM pg_tables WHERE tablename='read_acl_permissions';
 
@@ -630,7 +630,7 @@ RETURN NEW;
 END $$
 LANGUAGE plpgsql;
 
-# -- remove old trigger since 5.4.2.1-SNAPSHOT
+# -- remove old trigger since 5.4.2-HF30
 DROP TRIGGER IF EXISTS nx_trig_read_acls_modified ON aclr;
 
 DROP TRIGGER IF EXISTS nx_trig_aclr_modified ON aclr;
