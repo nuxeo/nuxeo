@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.ResourceBundle;
 
 import org.apache.catalina.loader.WebappClassLoader;
 import org.nuxeo.osgi.application.MutableClassLoader;
@@ -83,6 +84,7 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
 
     public synchronized void flushWebResources() {
         resourceEntries.clear();
+        ResourceBundle.clearCache(this);
     }
 
     public LocalClassLoader[] getChildren() {
