@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.drive.service.test.contrib.FileSystemItemAdapterService"
+  version="1.0">
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="fileSystemItemFactory">
+
+    <fileSystemItemFactory name="dummyDocTypeFactory"
+      order="20" docType="File" class="org.nuxeo.drive.service.DummyFileItemFactory" />
+    <fileSystemItemFactory name="dummyFacetFactory"
+      order="30" facet="Folderish" class="org.nuxeo.drive.service.DummyFolderItemFactory" />
+
+  </extension>
+
+</component>

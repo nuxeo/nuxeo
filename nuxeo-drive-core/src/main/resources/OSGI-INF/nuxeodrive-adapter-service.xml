@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.service.FileSystemItemAdapterService"
+  version="1.0">
+
+  <documentation>
+    @author Antoine Taillefer(ataillefer@nuxeo.com)
+
+    This service allows to get a FileSystemItem from a
+    DocumentModel.
+
+    FileSystemItem is an adapter that provides methods to
+    get data from the document such as the binary content for a File
+    or the children items of a Folder.
+
+    It is used by Nuxeo Drive to fetch the needed data for synchronization.
+
+    Factories can be contributed to implement a specific behavior
+    for the FileSystemItem retrieval
+    depending on the document type or facet.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.drive.service.FileSystemItemAdapterService" />
+  </service>
+
+  <implementation
+    class="org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl" />
+
+  <extension-point name="fileSystemItemFactory">
+
+    <documentation>
+      @author Antoine Taillefer(ataillefer@nuxeo.com)
+
+      This extension point lets you contribute custom
+      FileSystemItem factories according to a document
+      type or facet.
+
+      Example of the DefaultFileSystemItemFactory:
+      <code>
+        <extension
+          target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+          point="fileSystemItemFactory">
+          <fileSystemItemFactory name="defaultFileSystemItemFactory" order="50"
+            class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
+         </extension>
+      </code>
+
+      Example of a FileSystemItem factory for documents with the Picture facet:
+      <code>
+        <extension
+          target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+          point="fileSystemItemFactory">
+          <fileSystemItemFactory name="picture" facet="Picture" order="100"
+            class="org.nuxeo.drive.sample.PictureFileSystemItemFactory" />
+         </extension>
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.drive.service.impl.FileSystemItemFactoryDescriptor" />
+
+  </extension-point>
+
+</component>

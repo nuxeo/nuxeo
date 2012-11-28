@@ -4,10 +4,12 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Version: 5.7
 Bundle-Name: org.nuxeo.drive.core
-Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/nuxeodrive-service.xml,
  OSGI-INF/nuxeodrive-core-types.xml,
- OSGI-INF/nuxeodrive-listeners.xml
+ OSGI-INF/nuxeodrive-listeners.xml,
+ OSGI-INF/nuxeodrive-adapter-service.xml,
+ OSGI-INF/nuxeodrive-adapter-contrib.xml
+Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.drive.core;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
