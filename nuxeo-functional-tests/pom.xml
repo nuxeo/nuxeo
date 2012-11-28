@@ -5,7 +5,7 @@
     <!-- avoid pulling unwanted test dependencies (old webdriver) -->
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.4.2.1-SNAPSHOT</version>
+    <version>5.4.2-HF30</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
