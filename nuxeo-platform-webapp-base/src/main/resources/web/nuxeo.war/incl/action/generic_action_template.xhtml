@@ -5,6 +5,8 @@
 <c:if test="false">
 Template displaying an action depending of its type (@since 5.6).
 
+Since 5.7, also generates a javascript function to handle confimation message.
+
 Parameters:
 - action: the action instance (mandatory)
 - actionWidgetBinding: binding actions displaying widgets should be bound to
@@ -34,9 +36,18 @@ Templating zones that can be filled when useAjaxForm is set to true:
 
 TODO:
 - document properties used on actions (fancybox, style class)
-- make it possible to generate an action from templates
 
 </c:if>
+
+  <script type="text/javascript">
+    function confirm#{idPrefix}#{action.id}Message() {
+      message = "#{nxu:translate(action.properties.confirmMessage, action.properties.confirmMessageArgs)}";
+      if (message != "") {
+        return confirm(message);
+      }
+      return true;
+    }
+  </script>
 
   <c:choose>
 

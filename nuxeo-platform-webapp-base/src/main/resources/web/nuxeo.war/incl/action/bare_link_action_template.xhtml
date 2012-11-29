@@ -10,7 +10,7 @@
   <nxu:set var="actionLink" value="#{action.getLink()}" resolveTwice="true" >
     <h:outputLink value="#{actionLink}"
       target="#{action.properties.target}"
-      onclick="#{action.confirm};#{action.properties.onclick};"
+      onclick="if (!confirm#{idPrefix}#{action.id}Message()) return false;#{action.confirm};#{action.properties.onclick};"
       immediate="#{action.immediate}"
       disabled="#{!action.available}"
       styleClass="#{useButton ? 'button' : 'actionLink'} #{actionStyleClass} #{action.properties.styleClass}">

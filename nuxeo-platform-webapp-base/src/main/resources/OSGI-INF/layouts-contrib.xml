@@ -2252,7 +2252,7 @@
       </property>
     </widgetType>
 
-    <widgetType name="current_document_actions">
+    <widgetType name="currentDocumentActions">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
         <title>Form actions</title>
@@ -2283,7 +2283,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout name="current_document_actions_widget_type_properties_any">
+            <layout name="currentDocumentActions_widget_type_properties_any">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">actions_category</widget>
@@ -2328,7 +2328,7 @@
       </property>
     </widgetType>
 
-    <widgetType name="current_document_actions_with_forms">
+    <widgetType name="currentDocumentActionsWithForms">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
         <title>Toolbar Actions</title>
@@ -2361,7 +2361,7 @@
         <properties>
           <layouts mode="any">
             <layout
-              name="current_document_actions_with_forms_widget_type_properties_any">
+              name="currentDocumentActions_with_forms_widget_type_properties_any">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">actions_category</widget>
@@ -2406,7 +2406,7 @@
       </property>
     </widgetType>
 
-    <widgetType name="current_document_action">
+    <widgetType name="currentDocumentAction">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
         <title>Form Action</title>
@@ -2437,7 +2437,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout name="current_document_action_widget_type_properties_any">
+            <layout name="currentDocumentAction_widget_type_properties_any">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">actions_actionId</widget>
@@ -2476,7 +2476,7 @@
       </property>
     </widgetType>
 
-    <widgetType name="current_document_action_with_forms">
+    <widgetType name="currentDocumentActionWithForms">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
         <title>Toolbar Action</title>
@@ -2508,7 +2508,7 @@
         <properties>
           <layouts mode="any">
             <layout
-              name="current_document_action_with_forms_widget_type_properties_any">
+              name="currentDocumentAction_with_forms_widget_type_properties_any">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">actions_actionId</widget>
