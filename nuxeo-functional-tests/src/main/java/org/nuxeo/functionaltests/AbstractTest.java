@@ -108,6 +108,16 @@ public abstract class AbstractTest {
     public static final String CHROME_DRIVER_DEFAULT_PATH_WINXP = SystemUtils.getUserHome().getPath()
             + "\\Local Settings\\Application Data\\Google\\Chrome\\Application\\chromedriver.exe";
 
+    /**
+     * @since 5.7
+     */
+    public static final String CHROME_DRIVER_DEFAULT_EXECUTABLE_NAME = "chromedriver";
+
+    /**
+     * @since 5.7
+     */
+    public static final String CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME = "chromedriver.exe";
+
     private static final Log log = LogFactory.getLog(AbstractTest.class);
 
     public static final String NUXEO_URL = System.getProperty("nuxeoURL",
@@ -271,16 +281,20 @@ public abstract class AbstractTest {
     protected static void initChromeDriver() throws Exception {
         if (System.getProperty(SYSPROP_CHROME_DRIVER_PATH) == null) {
             String chromeDriverDefaultPath = null;
+            String chromeDriverExecutableName = CHROME_DRIVER_DEFAULT_EXECUTABLE_NAME;
             if (SystemUtils.IS_OS_LINUX) {
                 chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_LINUX;
             } else if (SystemUtils.IS_OS_MAC) {
                 chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_MAC;
             } else if (SystemUtils.IS_OS_WINDOWS_XP) {
                 chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINXP;
+                chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
             } else if (SystemUtils.IS_OS_WINDOWS_VISTA) {
                 chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINVISTA;
+                chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
             } else if (SystemUtils.IS_OS_WINDOWS) {
                 // Unknown default path on other Windows OS. To be completed.
+                chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
             }
 
             if (chromeDriverDefaultPath != null
@@ -291,13 +305,24 @@ public abstract class AbstractTest {
                 System.setProperty(SYSPROP_CHROME_DRIVER_PATH,
                         chromeDriverDefaultPath);
             } else {
-                log.error(String.format(
-                        "Could not find the Chrome driver looking at %s."
+                // Can't find chromedriver in default location, check system path
+                File chromeDriverExecutable = findExecutableOnPath(chromeDriverExecutableName);
+                if ((chromeDriverExecutable != null) &&
+                    (chromeDriverExecutable.exists())) {
+                    log.warn(String.format(
+                        "Missing property %s but found %s. Using it...",
+                        SYSPROP_CHROME_DRIVER_PATH, chromeDriverExecutable.getCanonicalPath()));
+                    System.setProperty(SYSPROP_CHROME_DRIVER_PATH,
+                        chromeDriverExecutable.getCanonicalPath());
+                } else {
+                    log.error(String.format(
+                        "Could not find the Chrome driver looking at %s or system path."
                                 + "Download it from %s and set its path with "
                                 + "the System property %s.",
                         chromeDriverDefaultPath,
                         "http://code.google.com/p/chromedriver/downloads/list",
                         SYSPROP_CHROME_DRIVER_PATH));
+                }
             }
         }
         DesiredCapabilities dc = DesiredCapabilities.chrome();
@@ -310,6 +335,23 @@ public abstract class AbstractTest {
         }
         dc.setCapability(ChromeOptions.CAPABILITY, options);
         driver = new ChromeDriver(dc);
+    }
+
+    /**
+     * @since 5.7
+     */
+    protected static File findExecutableOnPath(String executableName) {
+        String systemPath = System.getenv("PATH");
+        String[] pathDirs = systemPath.split(File.pathSeparator);
+        File fullyQualifiedExecutable = null;
+        for (String pathDir : pathDirs) {
+            File file = new File(pathDir, executableName);
+            if (file.isFile()) {
+                fullyQualifiedExecutable = file;
+                break;
+            }
+        }
+        return fullyQualifiedExecutable;
     }
 
     @AfterClass
