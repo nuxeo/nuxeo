@@ -50,35 +50,22 @@
 
   <c:set var="isEditMode" value="#{widget.mode == 'edit'}" />
 
-  <div class="widgetPanel containerWidgetPanel #{nxu:test(widgetProperty_foldable and showHeader, 'foldableBox ', '')} #{widgetProperty_styleClass}">
+  <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
+    <ui:param name="hideHeader" value="#{not showHeader or empty widget.label}" />
+    <ui:param name="foldable" value="#{widgetProperty_foldable}" />
+    <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault}" />
+    <ui:param name="foldableStyleClass" value="widgetPanel containerWidgetPanel #{widgetProperty_styleClass}" />
+    <ui:param name="headerStyleClass" value="widgetHeader #{nxu:test(widgetProperty_foldable and not empty widget.label, '', 'summaryTitle')} #{widgetProperty_headerStyleClass}" />
 
-    <c:if test="#{showHeader}">
-      <c:choose>
-        <c:when test="#{widgetProperty_foldable}">
-          <h3 class="widgetHeader #{nxu:test(widgetProperty_foldedByDefault, 'folded', 'unfolded')}">
-            <a href="#nogo" onclick="return toggleBox(this)">
-              <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                <ui:param name="labelStyleClass"
-                  value="#{widgetProperty_headerStyleClass}" />
-                <ui:param name="hideHelp" value="true" />
-              </ui:include>
-            </a>
-          </h3>
-        </c:when>
-        <c:otherwise>
-          <c:if test="#{not empty widget.label}">
-            <h3 class="widgetHeader summaryTitle #{widgetProperty_headerStyleClass}">
-              <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                <ui:param name="hideHelp" value="true" />
-              </ui:include>
-            </h3>
-          </c:if>
-        </c:otherwise>
-      </c:choose>
-    </c:if>
+    <ui:define name="foldable_box_header_content">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass"
+          value="#{widgetProperty_headerStyleClass}" />
+        <ui:param name="hideHelp" value="true" />
+      </ui:include>
+    </ui:define>
 
-    <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}"
-      style="#{nxu:test(widgetProperty_foldable and widgetProperty_foldedByDefault, 'display: none;', '')}">
+    <ui:define name="foldable_box_content">
 
       <c:if test="#{showHeader and not empty widget.helpLabel}">
         <nxu:set var="widgetHelpLabel"
@@ -221,9 +208,8 @@
 
       </c:choose>
 
-    </div>
-
-  </div>
+    </ui:define>
+  </ui:decorate>
 
 </c:if>
 </c:if>

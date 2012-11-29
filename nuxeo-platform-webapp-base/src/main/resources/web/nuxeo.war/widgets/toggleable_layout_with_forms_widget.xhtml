@@ -1,4 +1,5 @@
-<div xmlns:f="http://java.sun.com/jsf/core"
+<a4j:region id="#{widget.id}_region"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -7,11 +8,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxa4j="http://nuxeo.org/nxweb/a4j"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  id="#{widget.id}"
-  class="widgetPanel #{nxu:test(widgetProperty_foldable and widget.handlingLabels, 'foldableBox ', '')} #{widgetProperty_styleClass}">
-
-<a4j:region id="#{widget.id}_region">
+  xmlns:ui="http://java.sun.com/jsf/facelets">
   <a4j:outputPanel id="#{widget.id}_regionPanel">
 
     <nxu:set var="initialMode"
@@ -57,247 +54,235 @@
       value="#{nxu:test(empty widgetProperty_toggledLayoutName, widgetProperty_initialLayoutName, widgetProperty_toggledLayoutName)}"
       cache="false">
 
-    <div class="widgetPanel layoutWidgetPanel #{nxu:test(widgetProperty_foldable and showHeader, 'foldableBox ', '')}">
+      <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
+        <ui:param name="hideHeader" value="#{not widget.handlingLabels}" />
+        <ui:param name="foldable" value="#{widgetProperty_foldable}" />
+        <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault and layoutWidgetMode == initialMode}" />
+        <ui:param name="foldableStyleClass" value="widgetPanel layoutWidgetPanel #{widgetProperty_styleClass}" />
+        <ui:param name="headerStyleClass" value="widgetHeader #{nxu:test(widgetProperty_foldable and not empty widget.label, '', 'summaryTitle')} #{widgetProperty_headerStyleClass}" />
 
-    <c:if test="#{showHeader}">
-      <c:choose>
-        <c:when test="#{widgetProperty_foldable}">
-          <h3 class="widgetHeader #{nxu:test(widgetProperty_foldedByDefault and layoutWidgetMode == initialMode, 'folded', 'unfolded')}">
-            <a href="#nogo" onclick="return toggleBox(this)">
-              <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                <ui:param name="labelStyleClass"
-                  value="#{widgetProperty_headerStyleClass}" />
-                <ui:param name="hideHelp" value="true" />
-              </ui:include>
-            </a>
-          </h3>
-        </c:when>
-        <c:otherwise>
-          <c:if test="#{not empty widget.label}">
-            <h3 class="widgetHeader summaryTitle #{widgetProperty_headerStyleClass}">
-              <ui:include src="/widgets/incl/widget_label_template.xhtml">
-                <ui:param name="hideHelp" value="true" />
-              </ui:include>
-            </h3>
+        <ui:define name="foldable_box_header_content">
+          <ui:include src="/widgets/incl/widget_label_template.xhtml">
+            <ui:param name="labelStyleClass"
+              value="#{widgetProperty_headerStyleClass}" />
+            <ui:param name="hideHelp" value="true" />
+          </ui:include>
+        </ui:define>
+
+        <ui:define name="foldable_box_content">
+
+          <c:if test="#{widget.handlingLabels and not empty widget.helpLabel}">
+            <nxu:set var="widgetHelpLabel"
+              value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
+              cache="true">
+              <h:outputText value="#{widgetHelpLabel}" class="infoMessage" />
+            </nxu:set>
           </c:if>
-        </c:otherwise>
-      </c:choose>
-    </c:if>
 
-    <div class="#{nxu:test(widgetProperty_foldable, 'boxBody', '')}"
-      style="#{nxu:test(widgetProperty_foldable and widgetProperty_foldedByDefault and layoutWidgetMode == initialMode, 'display: none;', '')}">
+          <c:if test="#{layoutWidgetMode == initialMode}">
 
-      <c:if test="#{showHeader and not empty widget.helpLabel}">
-        <nxu:set var="widgetHelpLabel"
-          value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
-          cache="true">
-          <h:outputText value="#{widgetHelpLabel}" class="infoMessage" />
-        </nxu:set>
-      </c:if>
+            <h:form id="#{widget.id}_initialForm">
 
-      <c:if test="#{layoutWidgetMode == initialMode}">
+              <nxl:layout
+                name="#{widgetProperty_initialLayoutName}"
+                category="#{widgetProperty_category}"
+                mode="#{layoutWidgetMode}"
+                value="#{fieldOrValue}"
+                template="#{widgetProperty_template}"
+                selectedRows="#{widgetProperty_selectedRows}"
+                selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+                widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
 
-        <h:form id="#{widget.id}_initialForm">
+              <c:if test="#{canToggleMode}">
+                <p class="buttonsGadget">
+                  <a4j:commandLink
+                    ignoreDupResponses="true"
+                    eventsQueue="#{widget.id}_queue"
+                    id="#{widget.id}_toggleAction"
+                    immediate="true"
+                    reRender="#{widget.id}_regionPanel"
+                    value="#{initialActionLabel}"
+                    styleClass="button #{widgetProperty_actionStyleClass} #{widgetProperty_toggleActionStyleClass}">
+                    <f:setPropertyActionListener
+                      value="#{toggledMode}"
+                      target="#{selectionActions.selectedValue}" />
+                    <f:param name="valueHolderId"
+                      value="#{widget.id}_modeValueHolder" />
+                    <nxu:actionListenerMethod
+                      value="#{selectionActions.onClick}" />
+                  </a4j:commandLink>
+                  <a4j:status>
+                    <f:facet name="start">
+                      <h:graphicImage value="/img/standart_waiter.gif" />
+                    </f:facet>
+                  </a4j:status>
+                </p>
+              </c:if>
 
-          <nxl:layout
-            name="#{widgetProperty_initialLayoutName}"
-            category="#{widgetProperty_category}"
-            mode="#{layoutWidgetMode}"
-            value="#{fieldOrValue}"
-            template="#{widgetProperty_template}"
-            selectedRows="#{widgetProperty_selectedRows}"
-            selectAllByDefault="#{widgetProperty_selectAllByDefault}"
-            widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
+            </h:form>
 
-          <c:if test="#{canToggleMode}">
-            <p class="buttonsGadget">
-              <a4j:commandLink
-                ignoreDupResponses="true"
-                eventsQueue="#{widget.id}_queue"
-                id="#{widget.id}_toggleAction"
-                immediate="true"
+          </c:if>
+
+          <c:if test="#{layoutWidgetMode == toggledMode}">
+
+            <c:if test="#{useAjaxForm}">
+              <a4j:form
+                id="#{widget.id}_toggledForm"
+                ajaxSubmit="true"
+                ignoreDupResponses="true" eventsQueue="#{widget.id}_queue"
                 reRender="#{widget.id}_regionPanel"
-                value="#{initialActionLabel}"
-                styleClass="button #{widgetProperty_actionStyleClass} #{widgetProperty_toggleActionStyleClass}">
-                <f:setPropertyActionListener
-                  value="#{toggledMode}"
-                  target="#{selectionActions.selectedValue}" />
-                <f:param name="valueHolderId"
-                  value="#{widget.id}_modeValueHolder" />
-                <nxu:actionListenerMethod
-                  value="#{selectionActions.onClick}" />
-              </a4j:commandLink>
-              <a4j:status>
-                <f:facet name="start">
-                  <h:graphicImage value="/img/standart_waiter.gif" />
-                </f:facet>
-              </a4j:status>
-            </p>
+                selfRendered="true">
+
+                <nxl:layout
+                  name="#{toggledLayoutName}"
+                  category="#{widgetProperty_category}"
+                  mode="#{layoutWidgetMode}"
+                  value="#{fieldOrValue}"
+                  template="#{widgetProperty_template}"
+                  selectedRows="#{widgetProperty_selectedRows}"
+                  selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+                  widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
+
+                <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
+                  <nxl:layout name="document_edit_form_options"
+                    mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
+                </c:if>
+
+                <p class="buttonsGadget">
+
+                  <nxu:set var="display"
+                    value="#{actionsDisplay}"
+                    cache="true">
+                    <c:if test="#{not empty actionsCategory}">
+                      <nxu:set var="actions"
+                        value="#{webActions.getActionsList(actionsCategory)}"
+                        cache="true">
+                        <c:forEach var="action" items="#{actions}">
+                          <ui:decorate template="/incl/action/action_template.xhtml">
+                            <ui:param name="idPrefix" value="#{widget.id}_" />
+                            <ui:param name="useAjaxForm" value="true" />
+                            <ui:define name="after_action_trigger">
+                              <f:setPropertyActionListener
+                                value="#{widget.id}_modeValueHolder"
+                                target="#{selectionActions.selectedValueHolder}" />
+                              <f:setPropertyActionListener
+                                value="#{initialMode}"
+                                target="#{selectionActions.selectedValue}" />
+                              <nxu:actionListenerMethod
+                                value="#{selectionActions.onClick}" />
+                            </ui:define>
+                          </ui:decorate>
+                        </c:forEach>
+                      </nxu:set>
+                    </c:if>
+                    <c:if test="#{not empty widgetProperty_additionalActionsCategory}">
+                      <nxu:set var="actions"
+                        value="#{webActions.getActionsList(widgetProperty_additionalActionsCategory)}"
+                        cache="true">
+                        <c:forEach var="action" items="#{actions}">
+                          <ui:decorate template="/incl/action/action_template.xhtml">
+                            <ui:param name="idPrefix" value="#{widget.id}_" />
+                            <ui:param name="useAjaxForm" value="true" />
+                            <ui:define name="after_action_trigger">
+                              <f:setPropertyActionListener
+                                value="#{widget.id}_modeValueHolder"
+                                target="#{selectionActions.selectedValueHolder}" />
+                              <f:setPropertyActionListener
+                                value="#{initialMode}"
+                                target="#{selectionActions.selectedValue}" />
+                              <nxu:actionListenerMethod
+                                value="#{selectionActions.onClick}" />
+                            </ui:define>
+                          </ui:decorate>
+                        </c:forEach>
+                      </nxu:set>
+                    </c:if>
+
+                    <input type="hidden" name="restoreCurrentTabs" value="true" />
+
+                    <ui:include src="toggleable_layout_with_forms_cancel_button.xhtml" />
+                  </nxu:set>
+
+                  <a4j:status>
+                    <f:facet name="start">
+                      <h:graphicImage value="/img/standart_waiter.gif" />
+                    </f:facet>
+                  </a4j:status>
+
+                </p>
+
+              </a4j:form>
+            </c:if>
+
+            <c:if test="#{not useAjaxForm}">
+              <h:form id="#{widget.id}_toggledForm"
+                enctype="multipart/form-data">
+
+                <nxl:layout
+                  name="#{toggledLayoutName}"
+                  category="#{widgetProperty_category}"
+                  mode="#{layoutWidgetMode}"
+                  value="#{fieldOrValue}"
+                  template="#{widgetProperty_template}"
+                  selectedRows="#{widgetProperty_selectedRows}"
+                  selectAllByDefault="#{widgetProperty_selectAllByDefault}"
+                  widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
+
+                <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
+                  <nxl:layout name="document_edit_form_options"
+                    mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
+                </c:if>
+
+                <p class="buttonsGadget">
+
+                  <nxu:set var="display"
+                    value="#{actionsDisplay}"
+                    cache="true">
+
+                    <c:if test="#{not empty actionsCategory}">
+                      <nxu:set var="actions"
+                        value="#{webActions.getActionsList(actionsCategory)}"
+                        cache="true">
+                        <c:forEach var="action" items="#{actions}">
+                          <ui:decorate template="/incl/action/action_template.xhtml">
+                            <ui:param name="idPrefix" value="#{widget.id}_" />
+                          </ui:decorate>
+                        </c:forEach>
+                      </nxu:set>
+                    </c:if>
+                    <c:if test="#{not empty widgetProperty_additionalActionsCategory}">
+                      <nxu:set var="actions"
+                        value="#{webActions.getActionsList(widgetProperty_additionalActionsCategory)}"
+                        cache="true">
+                        <c:forEach var="action" items="#{actions}">
+                          <ui:decorate template="/incl/action/action_template.xhtml">
+                            <ui:param name="idPrefix" value="#{widget.id}_" />
+                          </ui:decorate>
+                        </c:forEach>
+                      </nxu:set>
+                    </c:if>
+
+                    <input type="hidden" name="restoreCurrentTabs" value="true" />
+
+                    <ui:include src="toggleable_layout_with_forms_cancel_button.xhtml" />
+                  </nxu:set>
+
+                  <a4j:status>
+                    <f:facet name="start">
+                      <h:graphicImage value="/img/standart_waiter.gif" />
+                    </f:facet>
+                  </a4j:status>
+
+                </p>
+
+              </h:form>
+            </c:if>
+
           </c:if>
 
-        </h:form>
+        </ui:define>
+      </ui:decorate>
 
-      </c:if>
-
-      <c:if test="#{layoutWidgetMode == toggledMode}">
-
-        <c:if test="#{useAjaxForm}">
-          <a4j:form
-            id="#{widget.id}_toggledForm"
-            ajaxSubmit="true"
-            ignoreDupResponses="true" eventsQueue="#{widget.id}_queue"
-            reRender="#{widget.id}_regionPanel"
-            selfRendered="true">
-
-            <nxl:layout
-              name="#{toggledLayoutName}"
-              category="#{widgetProperty_category}"
-              mode="#{layoutWidgetMode}"
-              value="#{fieldOrValue}"
-              template="#{widgetProperty_template}"
-              selectedRows="#{widgetProperty_selectedRows}"
-              selectAllByDefault="#{widgetProperty_selectAllByDefault}"
-              widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
-
-            <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
-              <nxl:layout name="document_edit_form_options"
-                mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
-            </c:if>
-
-            <p class="buttonsGadget">
-
-              <nxu:set var="display"
-                value="#{actionsDisplay}"
-                cache="true">
-                <c:if test="#{not empty actionsCategory}">
-                  <nxu:set var="actions"
-                    value="#{webActions.getActionsList(actionsCategory)}"
-                    cache="true">
-                    <c:forEach var="action" items="#{actions}">
-                      <ui:decorate template="/incl/action/action_template.xhtml">
-                        <ui:param name="idPrefix" value="#{widget.id}_" />
-                        <ui:param name="useAjaxForm" value="true" />
-                        <ui:define name="after_action_trigger">
-                          <f:setPropertyActionListener
-                            value="#{widget.id}_modeValueHolder"
-                            target="#{selectionActions.selectedValueHolder}" />
-                          <f:setPropertyActionListener
-                            value="#{initialMode}"
-                            target="#{selectionActions.selectedValue}" />
-                          <nxu:actionListenerMethod
-                            value="#{selectionActions.onClick}" />
-                        </ui:define>
-                      </ui:decorate>
-                    </c:forEach>
-                  </nxu:set>
-                </c:if>
-                <c:if test="#{not empty widgetProperty_additionalActionsCategory}">
-                  <nxu:set var="actions"
-                    value="#{webActions.getActionsList(widgetProperty_additionalActionsCategory)}"
-                    cache="true">
-                    <c:forEach var="action" items="#{actions}">
-                      <ui:decorate template="/incl/action/action_template.xhtml">
-                        <ui:param name="idPrefix" value="#{widget.id}_" />
-                        <ui:param name="useAjaxForm" value="true" />
-                        <ui:define name="after_action_trigger">
-                          <f:setPropertyActionListener
-                            value="#{widget.id}_modeValueHolder"
-                            target="#{selectionActions.selectedValueHolder}" />
-                          <f:setPropertyActionListener
-                            value="#{initialMode}"
-                            target="#{selectionActions.selectedValue}" />
-                          <nxu:actionListenerMethod
-                            value="#{selectionActions.onClick}" />
-                        </ui:define>
-                      </ui:decorate>
-                    </c:forEach>
-                  </nxu:set>
-                </c:if>
-
-                <input type="hidden" name="restoreCurrentTabs" value="true" />
-
-                <ui:include src="toggleable_layout_with_forms_cancel_button.xhtml" />
-              </nxu:set>
-
-              <a4j:status>
-                <f:facet name="start">
-                  <h:graphicImage value="/img/standart_waiter.gif" />
-                </f:facet>
-              </a4j:status>
-
-            </p>
-
-          </a4j:form>
-        </c:if>
-
-        <c:if test="#{not useAjaxForm}">
-          <h:form id="#{widget.id}_toggledForm"
-            enctype="multipart/form-data">
-
-            <nxl:layout
-              name="#{toggledLayoutName}"
-              category="#{widgetProperty_category}"
-              mode="#{layoutWidgetMode}"
-              value="#{fieldOrValue}"
-              template="#{widgetProperty_template}"
-              selectedRows="#{widgetProperty_selectedRows}"
-              selectAllByDefault="#{widgetProperty_selectAllByDefault}"
-              widgetsDisplay="#{widgetProperty_widgetsDisplay}" />
-
-            <c:if test="#{showEditOptions and nxd:isDocumentModel(fieldOrValue)}">
-              <nxl:layout name="document_edit_form_options"
-                mode="#{layoutWidgetMode}" value="#{fieldOrValue}" />
-            </c:if>
-
-            <p class="buttonsGadget">
-
-              <nxu:set var="display"
-                value="#{actionsDisplay}"
-                cache="true">
-
-                <c:if test="#{not empty actionsCategory}">
-                  <nxu:set var="actions"
-                    value="#{webActions.getActionsList(actionsCategory)}"
-                    cache="true">
-                    <c:forEach var="action" items="#{actions}">
-                      <ui:decorate template="/incl/action/action_template.xhtml">
-                        <ui:param name="idPrefix" value="#{widget.id}_" />
-                      </ui:decorate>
-                    </c:forEach>
-                  </nxu:set>
-                </c:if>
-                <c:if test="#{not empty widgetProperty_additionalActionsCategory}">
-                  <nxu:set var="actions"
-                    value="#{webActions.getActionsList(widgetProperty_additionalActionsCategory)}"
-                    cache="true">
-                    <c:forEach var="action" items="#{actions}">
-                      <ui:decorate template="/incl/action/action_template.xhtml">
-                        <ui:param name="idPrefix" value="#{widget.id}_" />
-                      </ui:decorate>
-                    </c:forEach>
-                  </nxu:set>
-                </c:if>
-
-                <input type="hidden" name="restoreCurrentTabs" value="true" />
-
-                <ui:include src="toggleable_layout_with_forms_cancel_button.xhtml" />
-              </nxu:set>
-
-              <a4j:status>
-                <f:facet name="start">
-                  <h:graphicImage value="/img/standart_waiter.gif" />
-                </f:facet>
-              </a4j:status>
-
-            </p>
-
-          </h:form>
-        </c:if>
-
-      </c:if>
-
-    </div>
-    </div>
     </nxu:set>
     </nxu:valueHolder>
 
@@ -313,5 +298,3 @@
 
   </a4j:outputPanel>
 </a4j:region>
-
-</div>
