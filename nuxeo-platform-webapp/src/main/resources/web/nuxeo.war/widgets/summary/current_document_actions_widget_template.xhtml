@@ -1,0 +1,19 @@
+<c:if test="#{not empty widgetProperty_category}"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <nxu:set var="actions"
+    value="#{webActions.getActionsList(widgetProperty_category, widgetProperty_disableFiltered)}"
+    cache="true">
+    <nxl:widgetType name="actions" mode="#{widget.mode}"
+      label="#{widget.label}"
+      value="#{fieldOrValue}"
+      properties="#{widget.properties}"
+      actions="#{actions}"
+      ignoreTemplateProperty="true"
+      subWidgets="#{widget.subWidgets}"
+      addForm="false" />
+  </nxu:set>
+
+</c:if>
