@@ -17,10 +17,12 @@
 package org.nuxeo.ecm.platform.usermanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,12 +80,12 @@ public class TestUserAdapter extends NXRuntimeTestCase {
         groups.add("administrators");
 
         assertEquals("Administrator", userAdapter.getName());
-        assertEquals("", userAdapter.getFirstName());
-        assertEquals("", userAdapter.getLastName());
         assertEquals("Administrator@example.com", userAdapter.getEmail());
-        assertEquals(groups, userAdapter.getGroups());
-        assertEquals("", userAdapter.getCompany());
         assertEquals("user", userAdapter.getSchemaName());
+        assertEquals(groups, userAdapter.getGroups());
+        assertTrue(StringUtils.isEmpty(userAdapter.getFirstName()));
+        assertTrue(StringUtils.isEmpty(userAdapter.getLastName()));
+        assertTrue(StringUtils.isEmpty(userAdapter.getCompany()));
     }
 
 }
