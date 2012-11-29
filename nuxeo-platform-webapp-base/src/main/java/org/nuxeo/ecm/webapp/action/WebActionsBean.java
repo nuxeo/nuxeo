@@ -107,9 +107,9 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public List<Action> getActionsList(String category,
-            boolean hideUnavailableAction) {
+            Boolean hideUnavailableAction) {
         return getActionsList(category, createActionContext(),
-                hideUnavailableAction);
+                Boolean.TRUE.equals(hideUnavailableAction));
     }
 
     public List<Action> getActionsList(String category, ActionContext context) {
