@@ -11,13 +11,16 @@
 <nxu:set var="elementsToReRender"
   value="#{action.properties.reRender}"
   resolveTwice="true" cache="true">
+<nxu:set var="onclick"
+  value="if (!confirm#{idPrefix}#{action.id}Message()) return false;#{action.confirm};#{action.properties.onclick};"
+  cache="true">
 
 <c:if test="#{useButton}">
 
   <c:if test="#{not useAjaxForm}">
     <nxh:commandButton action="#{action.getLink()}"
       id="#{idPrefix}#{action.id}"
-      onclick="#{action.confirm};#{action.properties.onclick};"
+      onclick="#{onclick}"
       immediate="#{action.immediate}"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
@@ -32,7 +35,7 @@
   <c:if test="#{useAjaxForm}">
     <a4j:commandButton
       id="#{idPrefix}#{action.id}"
-      onclick="#{action.confirm};#{action.properties.onclick};"
+      onclick="#{onclick}"
       immediate="#{action.immediate}"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
@@ -46,7 +49,7 @@
       <nxu:actionListenerMethod
         value="#{action.getLink()}" />
       <ui:insert name="after_action_trigger" />
-    </</a4j:commandButton>
+    </a4j:commandButton>
   </c:if>
 
 </c:if>
@@ -56,7 +59,7 @@
   <c:if test="#{not useAjaxForm}">
     <nxh:commandLink action="#{action.getLink()}"
       id="#{idPrefix}#{action.id}"
-      onclick="#{action.confirm};#{action.properties.onclick};"
+      onclick="#{onclick}"
       immediate="#{action.immediate}"
       target="#{action.properties.target}"
       disabled="#{!action.available}"
@@ -69,7 +72,7 @@
   <c:if test="#{useAjaxForm}">
     <a4j:commandLink
       id="#{idPrefix}#{action.id}"
-      onclick="#{action.confirm};#{action.properties.onclick};"
+      onclick="#{onclick}"
       immediate="#{action.immediate}"
       disabled="#{!action.available}"
       reRender="#{elementsToReRender}"
@@ -85,6 +88,7 @@
 
 </c:if>
 
+</nxu:set>
 </nxu:set>
 
 </ui:insert>
