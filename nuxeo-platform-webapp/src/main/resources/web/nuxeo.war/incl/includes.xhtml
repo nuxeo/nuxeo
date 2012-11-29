@@ -7,14 +7,12 @@
   src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}">
 </script>
 <script type="text/javascript">
-  <h:outputText
-    value="var currentConversationId='#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';"/>
-  <h:outputText
-    value="var currentDocURL='#{currentServerLocation.name}/#{currentDocument.id}';"/>
+  var currentConversationId = '#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';
+  var currentDocURL = '#{currentServerLocation.name}/#{currentDocument.id}';
   // set the conversation id before doing any call
   Seam.Remoting.getContext().setConversationId(currentConversationId);
   Seam.Remoting.contextPath = '#{contextPath}';
-  Seam.Remoting.resourcePath='#{contextPath}/seam/resource/remoting';
+  Seam.Remoting.resourcePath = '#{contextPath}/seam/resource/remoting';
 </script>
 
 <ui:include src="/incl/confirm-alerts.xhtml" />
