@@ -103,6 +103,29 @@ public interface WebActions {
     List<Action> getActionsList(String category, ActionContext context);
 
     /**
+     * Returns all filtered actions for a given category and given resolution
+     * context, creating a new context for the filters resolution.
+     * <p>
+     * Actions are filtered according to filters set on the actions
+     * definitions.
+     *
+     * @since 5.7
+     */
+    List<Action> getActionsList(String category, boolean hideUnavailableAction);
+
+    /**
+     * Returns all filtered actions for a given category and given resolution
+     * context.
+     * <p>
+     * Actions are filtered according to filters set on the actions
+     * definitions.
+     *
+     * @since 5.7
+     */
+    List<Action> getActionsList(String category, ActionContext context,
+            boolean hideUnavailableAction);
+
+    /**
      * Returns all filtered actions for a given category, creating a new
      * context for the filters resolution.
      *
@@ -116,7 +139,11 @@ public interface WebActions {
      * Actions are not filtered according to filters set on the actions
      * definitions: actions that should have been removed are just marked as
      * non-available.
+     *
+     * @deprecated since 5.7, use
+     *             {@link #getActionsList(String, ActionContext, boolean)}
      */
+    @Deprecated
     List<Action> getUnfiltredActionsList(String category, ActionContext context);
 
     /**
@@ -124,7 +151,10 @@ public interface WebActions {
      * filters resolution.
      *
      * @see #getUnfiltredActionsList(String, ActionContext)
+     * @deprecated since 5.7, use
+     *             {@link #getActionsList(String, ActionContext, boolean)}
      */
+    @Deprecated
     List<Action> getUnfiltredActionsList(String category);
 
     /**

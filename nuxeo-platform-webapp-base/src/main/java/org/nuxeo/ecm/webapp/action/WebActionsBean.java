@@ -93,13 +93,27 @@ public class WebActionsBean implements WebActions, Serializable {
 
     // actions management
 
-    public List<Action> getActionsList(String category, ActionContext context) {
+    @Override
+    public List<Action> getActionsList(String category, ActionContext context,
+            boolean hideUnavailableAction) {
         List<Action> list = new ArrayList<Action>();
-        List<Action> actions = actionManager.getActions(category, context);
+        List<Action> actions = actionManager.getActions(category, context,
+                hideUnavailableAction);
         if (actions != null) {
             list.addAll(actions);
         }
         return list;
+    }
+
+    @Override
+    public List<Action> getActionsList(String category,
+            boolean hideUnavailableAction) {
+        return getActionsList(category, createActionContext(),
+                hideUnavailableAction);
+    }
+
+    public List<Action> getActionsList(String category, ActionContext context) {
+        return getActionsList(category, context, true);
     }
 
     public List<Action> getActionsList(String category) {
@@ -108,13 +122,7 @@ public class WebActionsBean implements WebActions, Serializable {
 
     public List<Action> getUnfiltredActionsList(String category,
             ActionContext context) {
-        List<Action> list = new ArrayList<Action>();
-        List<Action> actions = actionManager.getActions(category, context,
-                false);
-        if (actions != null) {
-            list.addAll(actions);
-        }
-        return list;
+        return getActionsList(category, context, false);
     }
 
     public List<Action> getUnfiltredActionsList(String category) {
@@ -127,6 +135,23 @@ public class WebActionsBean implements WebActions, Serializable {
 
     protected ActionContext createActionContext() {
         return actionContextProvider.createActionContext();
+    }
+
+    @Override
+    public Action getAction(String actionId, boolean hideUnavailableAction) {
+        return actionManager.getAction(actionId, createActionContext(),
+                hideUnavailableAction);
+    }
+
+    @Override
+    public Action getAction(String actionId, ActionContext context,
+            boolean hideUnavailableAction) {
+        return actionManager.getAction(actionId, context, hideUnavailableAction);
+    }
+
+    @Override
+    public boolean checkFilter(String filterId) {
+        return actionManager.checkFilter(filterId, createActionContext());
     }
 
     // tabs management
@@ -374,23 +399,6 @@ public class WebActionsBean implements WebActions, Serializable {
         // set current tab
         setCurrentTabId(currentTabActionId);
         return viewId;
-    }
-
-    @Override
-    public Action getAction(String actionId, boolean hideUnavailableAction) {
-        return actionManager.getAction(actionId, createActionContext(),
-                hideUnavailableAction);
-    }
-
-    @Override
-    public Action getAction(String actionId, ActionContext context,
-            boolean hideUnavailableAction) {
-        return actionManager.getAction(actionId, context, hideUnavailableAction);
-    }
-
-    @Override
-    public boolean checkFilter(String filterId) {
-        return actionManager.checkFilter(filterId, createActionContext());
     }
 
     // deprecated API
