@@ -13,6 +13,11 @@
   <description>Nuxeo Functional Tests. Framework for testing nuxeo
     distribution projects</description>
 
+  <properties>
+    <!-- Skip tests by default, see profiles -->
+    <skipTests>true</skipTests>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -41,6 +46,21 @@
       <artifactId>nuxeo-common</artifactId>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>all-tests</id>
+      <properties>
+        <skipTests>false</skipTests>
+      </properties>
+    </profile>
+    <profile>
+      <id>all-distributions</id>
+      <properties>
+        <skipTests>false</skipTests>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
