@@ -111,7 +111,7 @@ public interface WebActions {
      *
      * @since 5.7
      */
-    List<Action> getActionsList(String category, boolean hideUnavailableAction);
+    List<Action> getActionsList(String category, Boolean hideUnavailableAction);
 
     /**
      * Returns all filtered actions for a given category and given resolution
