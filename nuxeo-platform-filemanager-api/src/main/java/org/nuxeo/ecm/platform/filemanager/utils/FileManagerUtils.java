@@ -86,7 +86,8 @@ public final class FileManagerUtils {
      * @return the FileName String
      */
     // FIXME: badly named method
-    // FIXME: doesn't work in some corner cases, for instance a Unix filename with a \, or a DOS file with a /
+    // FIXME: doesn't work in some corner cases, for instance a Unix filename
+    // with a \, or a DOS file with a /
     public static String fetchFileName(String fullName) {
         // Fetching filename
         String ret = fullName;
@@ -119,7 +120,14 @@ public final class FileManagerUtils {
     public static DocumentModel getExistingDocByFileName(
             CoreSession documentManager, String path, String filename)
             throws ClientException {
-        return getExistingDocByPropertyName(documentManager, path, filename, "file:filename");
+        // We must use the "file:content/name" sub-property which is the only
+        // one on which we can rely (and not "file:filename" which can possibly
+        // not be set), see https://jira.nuxeo.com/browse/NXP-10565
+        // Note that the "file:content" property is handled in a particular way
+        // by NXQL, so we must use "content/name" instead of
+        // "file:content/name".
+        return getExistingDocByPropertyName(documentManager, path, filename,
+                "content/name");
     }
 
     /**
@@ -128,9 +136,10 @@ public final class FileManagerUtils {
     public static DocumentModel getExistingDocByTitle(
             CoreSession documentManager, String path, String title)
             throws ClientException {
-        return getExistingDocByPropertyName(documentManager, path, title, "dc:title");
+        return getExistingDocByPropertyName(documentManager, path, title,
+                "dc:title");
     }
-    
+
     /**
      * Looks if an existing Document has the same value for a given property.
      */
