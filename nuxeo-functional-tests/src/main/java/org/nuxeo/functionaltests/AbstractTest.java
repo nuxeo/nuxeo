@@ -87,7 +87,7 @@ public abstract class AbstractTest {
     /**
      * @since 5.7
      */
-    public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/google-chrome";
+    public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
     /**
      * @since 5.7
