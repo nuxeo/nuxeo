@@ -38,6 +38,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
 import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
+import org.nuxeo.ecm.platform.suggestbox.service.suggesters.I18nHelper;
 import org.nuxeo.runtime.api.Framework;
 
 public class SuggestionServiceTest extends SQLRepositoryTestCase {
@@ -342,5 +343,42 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         messages.put("label.searchDocumentsByUser_fsd_dc_creator",
                 "Search documents by {0}");
         return messages;
+    }
+
+    @Test
+    public void testSpecialCharacterHandlingInSuggesters()
+            throws SuggestionException {
+        // check that special characters are not interpreted by the search
+        // backend
+        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
+            return;
+        }
+
+        // build a suggestion context
+        NuxeoPrincipal admin = (NuxeoPrincipal) session.getPrincipal();
+        Map<String, String> messages = getTestMessages();
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(
+                Locale.US).withSession(session).withMessages(messages);
+
+        // smoke test to perform suggestion against suggesters registered by default
+        List<Suggestion> suggestions = suggestionService.suggest(
+                "!@#$%^&*()--", context);
+        assertNotNull(suggestions);
+
+        suggestions = suggestionService.suggest("\\\\", context);
+        assertNotNull(suggestions);
+    }
+
+    @Test
+    public void testSpecialCharacterHandlingInInterpolation()
+            throws SuggestionException {
+        // check the escaping of regexp replacement special chars
+        String interpolated = I18nHelper.interpolate(
+                "A {1} interpolated message {0}", "\\", "$");
+        assertEquals("A $ interpolated message \\", interpolated);
+
+        interpolated = I18nHelper.interpolate(
+                "A {1} interpolated message {0}", "\\\\", "$");
+        assertEquals("A $ interpolated message \\\\", interpolated);
     }
 }
