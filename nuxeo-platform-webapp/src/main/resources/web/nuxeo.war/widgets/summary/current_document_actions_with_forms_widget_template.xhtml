@@ -4,15 +4,15 @@
   xmlns:c="http://java.sun.com/jstl/core">
 
   <nxu:set var="actions"
-    value="#{webActions.getActionsList(widgetProperty_category, widgetProperty_disableFiltered)}"
+    value="#{webActions.getActionsList(widgetProperty_category, not widgetProperty_disableFiltered)}"
     cache="true">
     <nxl:widgetType name="actions"
       mode="#{widget.mode}"
+      widgetName="#{widget.name}"
       label="#{widget.label}"
       value="#{fieldOrValue}"
       properties="#{widget.properties}"
       actions="#{actions}"
-      actionsDisplay="#{widgetProperty_display}"
       ignoreTemplateProperty="true"
       subWidgets="#{widget.subWidgets}"
       addForm="true" />
