@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
@@ -63,13 +62,11 @@ public class ImagePlugin extends AbstractFileImporter {
         if (overwrite && docModel != null) {
 
             // Do a snapshot of the current version first
-            DocumentRef docRef = docModel.getRef();
-            if (documentManager.isCheckedOut(docRef)) {
-                documentManager.checkIn(docRef, null, null);
-            }
+            docModel = overwriteAndIncrementversion(documentManager, docModel);
 
             BlobHolder bh = docModel.getAdapter(BlobHolder.class);
             bh.setBlob(content.persist());
+            documentManager.saveDocument(docModel);
         } else {
             PathSegmentService pss;
             try {
