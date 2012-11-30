@@ -16,16 +16,18 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -43,7 +45,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     public static final String FILE_SYSTEM_ITEM_FACTORY_EP = "fileSystemItemFactory";
 
-    protected final Set<FileSystemItemFactoryDescriptor> factoryDescriptors = new TreeSet<FileSystemItemFactoryDescriptor>();
+    protected final Map<String, FileSystemItemFactoryDescriptor> factoryDescriptors = new HashMap<String, FileSystemItemFactoryDescriptor>();
 
     @Override
     public void registerContribution(Object contribution,
@@ -52,19 +54,20 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
             FileSystemItemFactoryDescriptor desc = (FileSystemItemFactoryDescriptor) contribution;
+            String descName = desc.getName();
             // Override
-            if (factoryDescriptors.contains(desc)) {
+            if (factoryDescriptors.containsKey(descName)) {
                 if (desc.isEnabled()) {
                     // No merge
-                    factoryDescriptors.add(desc);
+                    factoryDescriptors.put(descName, desc);
                 } else {
-                    factoryDescriptors.remove(desc);
+                    factoryDescriptors.remove(descName);
                 }
             }
             // New factory
             else {
                 if (desc.isEnabled()) {
-                    factoryDescriptors.add(desc);
+                    factoryDescriptors.put(descName, desc);
                 }
             }
         } else {
@@ -88,53 +91,62 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             throws ClientException {
 
         FileSystemItemFactoryDescriptor matchingFactoryDesc = null;
-        Iterator<FileSystemItemFactoryDescriptor> factoryDescriptorsIt = factoryDescriptors.iterator();
+        FileSystemItem fileSystemItem = null;
+        List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
+                factoryDescriptors.values());
+        Collections.sort(orderedFactoryDescriptors);
+        Iterator<FileSystemItemFactoryDescriptor> factoryDescriptorsIt = orderedFactoryDescriptors.iterator();
         while (factoryDescriptorsIt.hasNext()) {
             FileSystemItemFactoryDescriptor factoryDesc = factoryDescriptorsIt.next();
             if (StringUtils.isEmpty(factoryDesc.getDocType())
                     && StringUtils.isEmpty(factoryDesc.getFacet())) {
                 matchingFactoryDesc = factoryDesc;
-                break;
-            }
-            if (!StringUtils.isEmpty(factoryDesc.getDocType())
+                fileSystemItem = getFileSystemItem(factoryDesc, doc);
+            } else if (!StringUtils.isEmpty(factoryDesc.getDocType())
                     && factoryDesc.getDocType().equals(doc.getType())) {
                 matchingFactoryDesc = factoryDesc;
-                break;
-            }
-            if (!StringUtils.isEmpty(factoryDesc.getFacet())) {
+                fileSystemItem = getFileSystemItem(factoryDesc, doc);
+            } else if (!StringUtils.isEmpty(factoryDesc.getFacet())) {
                 for (String docFacet : doc.getFacets()) {
                     if (factoryDesc.getFacet().equals(docFacet)) {
                         matchingFactoryDesc = factoryDesc;
+                        fileSystemItem = getFileSystemItem(factoryDesc, doc);
                         break;
                     }
                 }
-                if (matchingFactoryDesc != null) {
-                    break;
-                }
+            }
+            if (fileSystemItem != null) {
+                return fileSystemItem;
             }
         }
         if (matchingFactoryDesc == null) {
             log.debug(String.format(
-                    "No fileSystemItemFactory found for document %s, it cannot be part of the synchronized items. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">",
+                    "No fileSystemItemFactory found matching with document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">",
                     doc.getId()));
-            return null;
+        } else {
+            log.debug(String.format(
+                    "None of the fileSystemItemFactories were able to get a FileSystemItem adapter for document %s => returning null.",
+                    doc.getId()));
         }
+        return null;
+    }
 
-        FileSystemItemFactory factory = null;
+    public Map<String, FileSystemItemFactoryDescriptor> getFactoryDescriptors() {
+        return factoryDescriptors;
+    }
+
+    protected FileSystemItem getFileSystemItem(
+            FileSystemItemFactoryDescriptor factoryDesc, DocumentModel doc)
+            throws ClientException {
         try {
-            factory = matchingFactoryDesc.getFactory();
+            return factoryDesc.getFactory().getFileSystemItem(doc);
         } catch (Exception e) {
             throw new ClientException(
                     String.format(
                             "Error while trying to instantiate the class %s for the <fileSystemItemFactory> contribution named %s.",
-                            matchingFactoryDesc.factoryClass.getName(),
-                            matchingFactoryDesc.getName()), e);
+                            factoryDesc.factoryClass.getName(),
+                            factoryDesc.getName()), e);
         }
-        return factory.getFileSystemItem(doc);
-    }
-
-    public Set<FileSystemItemFactoryDescriptor> getFactoryDescriptors() {
-        return factoryDescriptors;
     }
 
 }
