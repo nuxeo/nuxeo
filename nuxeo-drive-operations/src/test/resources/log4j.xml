@@ -23,7 +23,7 @@
   </appender>
 
   <root>
-    <priority value="DEBUG" />
+    <priority value="TRACE" />
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="FILE" />
   </root>
