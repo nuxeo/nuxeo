@@ -158,22 +158,26 @@ function mkCell(colDef, dashBoardItem) {
         }
     } else if (colDef.type == 'system') {
         html += "<td>";
-        if (colDef.i18n) {
-            var  text = prefs.getMsg(dashBoardItem[colDef.field]);
-            if (text == "") {
-                text = dashBoardItem[colDef.field];
+        if (!!dashBoardItem[colDef.field]) {
+            if (colDef.i18n) {
+                var  text = prefs.getMsg(dashBoardItem[colDef.field]);
+                if (text == "") {
+                    text = dashBoardItem[colDef.field];
+                }
+                html += gadgets.util.escapeString(text);
+            } else {
+                html += gadgets.util.escapeString(dashBoardItem[colDef.field]);
             }
-            html += gadgets.util.escapeString(text);
-        } else {
-            html += gadgets.util.escapeString(dashBoardItem[colDef.field]);
         }
         html += "</td>";
     } else {
         html += "<td>";
-        if (colDef.type == 'date') {
-            html += getDateForDisplay(dashBoardItem.properties[colDef.field]);
-        } else {
-            html += gadgets.util.escapeString(dashBoardItem.properties[colDef.field]);
+        if (!!dashBoardItem.properties[colDef.field]) {
+            if (colDef.type == 'date') {
+                html += getDateForDisplay(dashBoardItem.properties[colDef.field]);
+            } else {
+                html += gadgets.util.escapeString(dashBoardItem.properties[colDef.field]);
+            }
         }
         html += "</td>";
     }

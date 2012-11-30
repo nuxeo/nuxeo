@@ -176,7 +176,9 @@ function mkCell(colDef, entry) {
             html += getDateForDisplay(date);
           }
         } else {
-            html += gadgets.util.escapeString(entry[colDef.field]);
+            if (!!entry[colDef.field]) {
+                html += gadgets.util.escapeString(entry[colDef.field]);
+            }
         }
         html += "</td>";
     }
