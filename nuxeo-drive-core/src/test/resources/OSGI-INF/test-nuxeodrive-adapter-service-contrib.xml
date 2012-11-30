@@ -3,13 +3,17 @@
   name="org.nuxeo.drive.service.test.contrib.FileSystemItemAdapterService"
   version="1.0">
 
+  <require>org.nuxeo.drive.adapters</require>
+
   <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
     point="fileSystemItemFactory">
 
     <fileSystemItemFactory name="dummyDocTypeFactory"
-      order="20" docType="File" class="org.nuxeo.drive.service.DummyFileItemFactory" />
+      order="20" docType="File"
+      class="org.nuxeo.drive.service.adapter.DummyFileItemFactory" />
     <fileSystemItemFactory name="dummyFacetFactory"
-      order="30" facet="Folderish" class="org.nuxeo.drive.service.DummyFolderItemFactory" />
+      order="30" facet="Folderish"
+      class="org.nuxeo.drive.service.adapter.DummyFolderItemFactory" />
 
   </extension>
 

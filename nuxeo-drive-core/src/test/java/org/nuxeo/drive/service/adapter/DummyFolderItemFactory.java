@@ -14,24 +14,25 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service;
+package org.nuxeo.drive.service.adapter;
 
 import java.security.Principal;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Dummy file implementation of a {@link FileSystemItemFactory} for test
+ * Dummy folder implementation of a {@link FileSystemItemFactory} for test
  * purpose.
  *
  * @author Antoine Taillefer
  */
-public class DummyFileItemFactory implements FileSystemItemFactory {
+public class DummyFolderItemFactory implements FileSystemItemFactory {
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc) {
-        return new DummyFileItem(doc);
+        return new DummyFolderItem(doc);
     }
 
     @Override

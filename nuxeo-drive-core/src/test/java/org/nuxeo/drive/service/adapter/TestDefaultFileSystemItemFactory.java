@@ -14,7 +14,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.adapter;
+package org.nuxeo.drive.service.adapter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,7 +28,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.drive.adapter.impl.FileSystemItemAdapterFactory;
+import org.nuxeo.drive.adapter.FileItem;
+import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,15 +46,15 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * Tests the {@link FileSystemItemAdapterFactory}.
+ * Tests the {@link DefaultFileSystemItemFactory}.
  *
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.drive.core")
-@LocalDeploy("org.nuxeo.drive.core:test-nuxeodrive-types-contrib.xml")
-public class TestNuxeoDriveItemAdapterFactory {
+@LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
+public class TestDefaultFileSystemItemFactory {
 
     @Inject
     protected CoreSession session;
@@ -104,7 +107,7 @@ public class TestNuxeoDriveItemAdapterFactory {
     }
 
     @Test
-    public void testAdapterFactory() throws Exception {
+    public void testFactory() throws Exception {
 
         // ------------------------------------------------------
         // Check downloadable NuxeoDriveItems

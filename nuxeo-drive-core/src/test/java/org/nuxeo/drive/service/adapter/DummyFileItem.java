@@ -14,29 +14,32 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service;
+package org.nuxeo.drive.service.adapter;
 
-import java.security.Principal;
-
+import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Dummy folder implementation of a {@link FileSystemItemFactory} for test
- * purpose.
+ * Dummy file implementation of a {@link FileSystemItem} for test purpose.
  *
  * @author Antoine Taillefer
  */
-public class DummyFolderItemFactory implements FileSystemItemFactory {
+public class DummyFileItem extends AbstractDocumentBackedFileSystemItem {
 
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc) {
-        return new DummyFolderItem(doc);
+    public DummyFileItem(DocumentModel doc) {
+        super(doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
-        return null;
+    public String getName() throws ClientException {
+        return "Dummy file with id " + getDocument().getId();
+    }
+
+    @Override
+    public boolean isFolder() {
+        return false;
     }
 
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.drive.service.test.contrib.override.FileSystemItemAdapterService"
+  version="1.0">
+
+  <require>org.nuxeo.drive.service.test.contrib.FileSystemItemAdapterService
+  </require>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="fileSystemItemFactory">
+
+    <!-- Disable defaultFileSystemItemFactory -->
+    <fileSystemItemFactory name="defaultFileSystemItemFactory"
+      enabled="false" />
+
+    <!-- Override dummyDocTypeFactory and dummyFacetFactory -->
+    <fileSystemItemFactory name="dummyFacetFactory"
+      order="20" facet="Folderish"
+      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
+    <fileSystemItemFactory name="dummyDocTypeFactory"
+      order="30" docType="File"
+      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
+
+  </extension>
+
+</component>

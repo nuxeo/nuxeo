@@ -14,7 +14,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service;
+package org.nuxeo.drive.service.adapter;
 
 import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
