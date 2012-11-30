@@ -357,7 +357,7 @@ public abstract class AbstractTest {
     @AfterClass
     public static void quitDriver() throws InterruptedException {
         if (driver != null) {
-            driver.close();
+            driver.quit();
             driver = null;
         }
 
