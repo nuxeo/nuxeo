@@ -68,7 +68,7 @@ class BasePage:
     # helpers
     def getDocUid(self):
         fl = self.fl
-        uid = extractToken(fl.getBody(), "var currentDocURL='default/", "'")
+        uid = extractToken(fl.getBody(), "var currentDocURL = 'default/", "'")
         fl.assert_(uid, 'Current document uid not found.')
         return uid
 
