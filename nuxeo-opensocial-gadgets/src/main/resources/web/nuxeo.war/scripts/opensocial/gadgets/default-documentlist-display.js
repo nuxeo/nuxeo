@@ -148,7 +148,6 @@ function mkCell(colDef, dashBoardItem) {
                 codec = colDef.codec;
             }
             html += "<td><a target = \"_top\" title=\"";
-            html += dashBoardItem.title;
             html += gadgets.util.escapeString(dashBoardItem.title);
             html += "\" href=\"";
             html += dashBoardItem.contextParameters.documentURL;
