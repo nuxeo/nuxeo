@@ -53,11 +53,14 @@ public class DocumentBackedFolderItem extends
 
     /*--------------------- FolderItem -----------------*/
     @Override
-    public List<FileSystemItem> getChildren(CoreSession session)
-            throws ClientException {
+    public List<FileSystemItem> getChildren() throws ClientException {
 
-        DocumentRef parentRef = getDocument().getRef();
-        DocumentModelList dmChildren = session.getChildren(parentRef);
+        // TODO: use a pageProvider
+        String parentId = doc.getId();
+        DocumentModelList dmChildren = getCoreSession().query(
+                String.format(
+                        "select * from Document where ecm:parentId='%s' order by dc:created asc",
+                        parentId));
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>(
                 dmChildren.size());

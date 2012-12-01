@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -34,8 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface FolderItem extends FileSystemItem {
 
-    List<FileSystemItem> getChildren(CoreSession session)
-            throws ClientException;
+    List<FileSystemItem> getChildren() throws ClientException;
 
     void addChild(FileSystemItem child);
 

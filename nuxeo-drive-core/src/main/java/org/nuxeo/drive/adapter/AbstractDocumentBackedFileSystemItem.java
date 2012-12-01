@@ -21,6 +21,7 @@ import java.util.Calendar;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -79,6 +80,11 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
             return false;
         }
         return getId().equals(((FileSystemItem) obj).getId());
+    }
+
+    /*--------------------- Protected -----------------*/
+    protected CoreSession getCoreSession() {
+        return doc.getCoreSession();
     }
 
 }
