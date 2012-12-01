@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -46,6 +48,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     public static final String FILE_SYSTEM_ITEM_FACTORY_EP = "fileSystemItemFactory";
 
     protected final Map<String, FileSystemItemFactoryDescriptor> factoryDescriptors = new HashMap<String, FileSystemItemFactoryDescriptor>();
+
+    protected final List<FileSystemItemFactoryWrapper> factories = new ArrayList<FileSystemItemFactoryWrapper>();
 
     @Override
     public void registerContribution(Object contribution,
@@ -76,50 +80,45 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /**
-     * Iterates on the ordered contributed factories looking for the first one
-     * that matches, in this order of precedence:
+     * Sorts the contributed factories according to their order.
+     */
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        sortFactories();
+    }
+
+    /**
+     * Iterates on the ordered contributed factories until it finds one that
+     * matches and retrieves a non null {@link FileSystemItem} adapter for the
+     * given doc. A factory matches if:
      * <ul>
-     * <li>The factory contribution has no docType and no facet (this is the
-     * case for the default factory {@code defaultFileSystemItemFactory} bound
+     * <li>It is not bound to any docType nor facet (this is the case for the
+     * default factory contribution {@code defaultFileSystemItemFactory} bound
      * to {@link DefaultFileSystemItemFactory})</li>
-     * <li>The factory contribution has a matching docType</li>
-     * <li>The factory contribution has a matching facet</li>
+     * <li>It is bound to a docType that matches the given doc's type</li>
+     * <li>It is bound to a facet that matches one of the given doc's facets</li>
      * </ul>
      */
     @Override
     public FileSystemItem getFileSystemItemAdapter(DocumentModel doc)
             throws ClientException {
 
-        FileSystemItemFactoryDescriptor matchingFactoryDesc = null;
-        FileSystemItem fileSystemItem = null;
-        List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
-                factoryDescriptors.values());
-        Collections.sort(orderedFactoryDescriptors);
-        Iterator<FileSystemItemFactoryDescriptor> factoryDescriptorsIt = orderedFactoryDescriptors.iterator();
-        while (factoryDescriptorsIt.hasNext()) {
-            FileSystemItemFactoryDescriptor factoryDesc = factoryDescriptorsIt.next();
-            if (StringUtils.isEmpty(factoryDesc.getDocType())
-                    && StringUtils.isEmpty(factoryDesc.getFacet())) {
-                matchingFactoryDesc = factoryDesc;
-                fileSystemItem = getFileSystemItem(factoryDesc, doc);
-            } else if (!StringUtils.isEmpty(factoryDesc.getDocType())
-                    && factoryDesc.getDocType().equals(doc.getType())) {
-                matchingFactoryDesc = factoryDesc;
-                fileSystemItem = getFileSystemItem(factoryDesc, doc);
-            } else if (!StringUtils.isEmpty(factoryDesc.getFacet())) {
-                for (String docFacet : doc.getFacets()) {
-                    if (factoryDesc.getFacet().equals(docFacet)) {
-                        matchingFactoryDesc = factoryDesc;
-                        fileSystemItem = getFileSystemItem(factoryDesc, doc);
-                        break;
-                    }
+        FileSystemItemFactoryWrapper matchingFactory = null;
+        Iterator<FileSystemItemFactoryWrapper> factoriesIt = factories.iterator();
+        while (factoriesIt.hasNext()) {
+            FileSystemItemFactoryWrapper factory = factoriesIt.next();
+            if (generalFactoryMatches(factory)
+                    || docTypeFactoryMatches(factory, doc)
+                    || facetFactoryMatches(factory, doc)) {
+                matchingFactory = factory;
+                FileSystemItem fileSystemItem = factory.getFactory().getFileSystemItem(
+                        doc);
+                if (fileSystemItem != null) {
+                    return fileSystemItem;
                 }
             }
-            if (fileSystemItem != null) {
-                return fileSystemItem;
-            }
         }
-        if (matchingFactoryDesc == null) {
+        if (matchingFactory == null) {
             log.debug(String.format(
                     "No fileSystemItemFactory found matching with document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">",
                     doc.getId()));
@@ -131,22 +130,55 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         return null;
     }
 
+    /*------------------------- For test purpose ----------------------------------*/
     public Map<String, FileSystemItemFactoryDescriptor> getFactoryDescriptors() {
         return factoryDescriptors;
     }
 
-    protected FileSystemItem getFileSystemItem(
-            FileSystemItemFactoryDescriptor factoryDesc, DocumentModel doc)
-            throws ClientException {
-        try {
-            return factoryDesc.getFactory().getFileSystemItem(doc);
-        } catch (Exception e) {
-            throw new ClientException(
-                    String.format(
-                            "Error while trying to instantiate the class %s for the <fileSystemItemFactory> contribution named %s.",
-                            factoryDesc.factoryClass.getName(),
-                            factoryDesc.getName()), e);
+    public List<FileSystemItemFactoryWrapper> getFactories() {
+        return factories;
+    }
+
+    // TODO: remove when better solution found for hot deploy
+    public void recomputeFactories() throws Exception {
+        factories.clear();
+        sortFactories();
+    }
+
+    /*--------------------------- Protected ----------------------------------------*/
+    protected void sortFactories() throws Exception {
+        List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
+                factoryDescriptors.values());
+        Collections.sort(orderedFactoryDescriptors);
+        for (FileSystemItemFactoryDescriptor factoryDesc : orderedFactoryDescriptors) {
+            FileSystemItemFactoryWrapper factoryWrapper = new FileSystemItemFactoryWrapper(
+                    factoryDesc.getDocType(), factoryDesc.getFacet(),
+                    factoryDesc.getFactory());
+            factories.add(factoryWrapper);
         }
+    }
+
+    protected boolean generalFactoryMatches(FileSystemItemFactoryWrapper factory) {
+        return StringUtils.isEmpty(factory.getDocType())
+                && StringUtils.isEmpty(factory.getFacet());
+    }
+
+    protected boolean docTypeFactoryMatches(
+            FileSystemItemFactoryWrapper factory, DocumentModel doc) {
+        return !StringUtils.isEmpty(factory.getDocType())
+                && factory.getDocType().equals(doc.getType());
+    }
+
+    protected boolean facetFactoryMatches(FileSystemItemFactoryWrapper factory,
+            DocumentModel doc) {
+        if (!StringUtils.isEmpty(factory.getFacet())) {
+            for (String docFacet : doc.getFacets()) {
+                if (factory.getFacet().equals(docFacet)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -35,6 +36,7 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.drive.service.impl.FileSystemItemFactoryDescriptor;
+import org.nuxeo.drive.service.impl.FileSystemItemFactoryWrapper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -104,7 +106,7 @@ public class TestFileSystemItemAdapterService {
     public void testService() throws Exception {
 
         // ------------------------------------------------------
-        // Check ordered factory descriptors
+        // Check factory descriptors
         // ------------------------------------------------------
         Map<String, FileSystemItemFactoryDescriptor> factoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFactoryDescriptors();
         assertNotNull(factoryDescs);
@@ -138,7 +140,35 @@ public class TestFileSystemItemAdapterService {
         assertTrue(desc.getFactory() instanceof DefaultFileSystemItemFactory);
 
         // ------------------------------------------------------
-        // Check factories
+        // Check ordered factories
+        // ------------------------------------------------------
+        List<FileSystemItemFactoryWrapper> factories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFactories();
+        assertNotNull(factories);
+        assertEquals(3, factories.size());
+
+        FileSystemItemFactoryWrapper factory = factories.get(0);
+        assertNotNull(factory);
+        assertEquals("File", factory.getDocType());
+        assertNull(factory.getFacet());
+        assertTrue(factory.getFactory().getClass().getName().endsWith(
+                "DummyFileItemFactory"));
+
+        factory = factories.get(1);
+        assertNotNull(factory);
+        assertNull(factory.getDocType());
+        assertEquals("Folderish", factory.getFacet());
+        assertTrue(factory.getFactory().getClass().getName().endsWith(
+                "DummyFolderItemFactory"));
+
+        factory = factories.get(2);
+        assertNotNull(factory);
+        assertNull(factory.getDocType());
+        assertNull(factory.getFacet());
+        assertTrue(factory.getFactory().getClass().getName().endsWith(
+                "DefaultFileSystemItemFactory"));
+
+        // ------------------------------------------------------
+        // Check #getFileSystemItemAdapter(DocumentModel doc)
         // ------------------------------------------------------
         // File => should use the dummyDocTypeFactory bound to the
         // DummyFileItemFactory class
@@ -177,9 +207,11 @@ public class TestFileSystemItemAdapterService {
 
         harness.deployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
+        // TODO: find a better solution to manage hot deploy
+        ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).recomputeFactories();
 
         // ------------------------------------------------------
-        // Check ordered factory descriptors
+        // Check factory descriptors
         // ------------------------------------------------------
         Map<String, FileSystemItemFactoryDescriptor> factoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFactoryDescriptors();
         assertNotNull(factoryDescs);
@@ -204,7 +236,28 @@ public class TestFileSystemItemAdapterService {
         assertTrue(desc.getFactory() instanceof DefaultFileSystemItemFactory);
 
         // ------------------------------------------------------
-        // Check factories
+        // Check ordered factories
+        // ------------------------------------------------------
+        List<FileSystemItemFactoryWrapper> factories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFactories();
+        assertNotNull(factories);
+        assertEquals(2, factories.size());
+
+        FileSystemItemFactoryWrapper factory = factories.get(0);
+        assertNotNull(factory);
+        assertNull(factory.getDocType());
+        assertEquals("Folderish", factory.getFacet());
+        assertTrue(factory.getFactory().getClass().getName().endsWith(
+                "DefaultFileSystemItemFactory"));
+
+        factory = factories.get(1);
+        assertNotNull(factory);
+        assertEquals("File", factory.getDocType());
+        assertNull(factory.getFacet());
+        assertTrue(factory.getFactory().getClass().getName().endsWith(
+                "DefaultFileSystemItemFactory"));
+
+        // ------------------------------------------------------
+        // Check #getFileSystemItemAdapter(DocumentModel doc)
         // ------------------------------------------------------
         // File => should use the dummyDocTypeFactory bound to the
         // DefaultFileSystemItemFactory class, but return null because the

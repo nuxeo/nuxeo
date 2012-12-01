@@ -80,19 +80,6 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null
-                || !(other instanceof FileSystemItemFactoryDescriptor)) {
-            return false;
-        }
-        String otherName = ((FileSystemItemFactoryDescriptor) other).getName();
-        return getName().equals(otherName);
-    }
-
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getName());
