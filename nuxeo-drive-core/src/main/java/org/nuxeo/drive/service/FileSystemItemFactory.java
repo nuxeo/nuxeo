@@ -16,8 +16,6 @@
  */
 package org.nuxeo.drive.service;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -37,11 +35,5 @@ public interface FileSystemItemFactory {
      * {@link DocumentModel}.
      */
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
-
-    /**
-     * Gets the {@link FileSystemItem} with the given id for the given user.
-     */
-    FileSystemItem getFileSystemItemById(String id, Principal principal)
-            throws ClientException;
 
 }

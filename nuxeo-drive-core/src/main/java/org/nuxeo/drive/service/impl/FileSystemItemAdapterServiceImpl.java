@@ -16,7 +16,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,26 +125,6 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             log.debug(String.format(
                     "None of the fileSystemItemFactories were able to get a FileSystemItem adapter for document %s => returning null.",
                     doc.getId()));
-        }
-        return null;
-    }
-
-    /**
-     * Iterates on the ordered contributed factories until if finds one that
-     * retrieves a non null {@link FileSystemItem} adapter for the given id and
-     * principal.
-     */
-    @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal)
-            throws ClientException {
-        Iterator<FileSystemItemFactoryWrapper> factoriesIt = factories.iterator();
-        while (factoriesIt.hasNext()) {
-            FileSystemItemFactoryWrapper factory = factoriesIt.next();
-            FileSystemItem fileSystemItem = factory.getFactory().getFileSystemItemById(
-                    id, principal);
-            if (fileSystemItem != null) {
-                return fileSystemItem;
-            }
         }
         return null;
     }

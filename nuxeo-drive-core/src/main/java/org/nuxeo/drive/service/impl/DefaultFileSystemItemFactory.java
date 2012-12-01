@@ -16,11 +16,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -29,11 +24,7 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
@@ -59,38 +50,6 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
                 "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem => returning null.",
                 doc.getId()));
         return null;
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal)
-            throws ClientException {
-
-        String[] idFragments = id.split("/");
-        if (idFragments.length != 2) {
-            throw new ClientException(
-                    String.format(
-                            "Invalid id for FileSystemItem retrieval: %s. Should match the 'repositoryName/docId' pattern.",
-                            id));
-        }
-        String repositoryName = idFragments[0];
-        String docId = idFragments[1];
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("principal", (Serializable) principal);
-        CoreSession session = CoreInstance.getInstance().open(repositoryName,
-                context);
-        try {
-            DocumentRef docRef = new IdRef(docId);
-            if (!session.exists(docRef)) {
-                log.debug(String.format(
-                        "No document with id %s in repository %s.", docId,
-                        repositoryName));
-                return null;
-            }
-            DocumentModel doc = session.getDocument(docRef);
-            return getFileSystemItem(doc);
-        } finally {
-            CoreInstance.getInstance().close(session);
-        }
     }
 
     protected boolean hasBlob(DocumentModel doc) throws ClientException {

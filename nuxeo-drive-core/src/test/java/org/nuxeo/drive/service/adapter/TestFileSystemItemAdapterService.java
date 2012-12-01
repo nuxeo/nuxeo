@@ -202,22 +202,6 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Bonnie's file.txt", fileFsItemBlob.getFilename());
         assertEquals("Content of the custom document's blob.",
                 fileFsItemBlob.getString());
-
-        // -------------------------------------------------------------
-        // Check #getFileSystemItemById(String id, Principal principal)
-        // -------------------------------------------------------------
-        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
-                + file.getId(), session.getPrincipal());
-        assertNull(fsItem);
-        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
-                + folder.getId(), session.getPrincipal());
-        assertNotNull(fsItem);
-        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
-                + custom.getId(), session.getPrincipal());
-        assertNotNull(fsItem);
-        fsItem = fileSystemItemAdapterService.getFileSystemItemById(
-                "test/nonExistentDocId", session.getPrincipal());
-        assertNull(fsItem);
     }
 
     @Test
@@ -295,21 +279,6 @@ public class TestFileSystemItemAdapterService {
         // Custom => should find no matching fileSystemItemFactory
         fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(custom);
         assertNull(fsItem);
-
-        // -------------------------------------------------------------
-        // Check #getFileSystemItemById(String id, Principal principal)
-        // -------------------------------------------------------------
-        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
-                + file.getId(), session.getPrincipal());
-        assertNull(fsItem);
-        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
-                + folder.getId(), session.getPrincipal());
-        assertNotNull(fsItem);
-        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
-                + custom.getId(), session.getPrincipal());
-        assertNotNull(fsItem);
-        fsItem = fileSystemItemAdapterService.getFileSystemItemById(
-                "test/badId", session.getPrincipal());
-        assertNull(fsItem);
     }
+
 }

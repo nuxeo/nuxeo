@@ -16,8 +16,6 @@
  */
 package org.nuxeo.drive.service.adapter;
 
-import java.security.Principal;
-
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,11 +31,6 @@ public class DummyFileItemFactory implements FileSystemItemFactory {
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc) {
         return new DummyFileItem(doc);
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
-        return null;
     }
 
 }
