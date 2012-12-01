@@ -64,8 +64,9 @@ public class DocumentBackedFileItem extends
     }
 
     @Override
-    public void setBlob(Blob blob) {
-        // TODO
+    public void setBlob(Blob blob) throws ClientException {
+        getBlobHolder().setBlob(blob);
+        getCoreSession().saveDocument(doc);
     }
 
     /*--------------------- Protected -----------------*/
