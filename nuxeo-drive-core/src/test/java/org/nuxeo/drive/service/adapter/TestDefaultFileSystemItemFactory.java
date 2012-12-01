@@ -259,4 +259,60 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("This is a new file.", updatedBlob.getString());
     }
 
+    @Test
+    public void testFolderItem() throws Exception {
+
+        // ------------------------------------------------------
+        // FolderItem#getChildren
+        // ------------------------------------------------------
+        // Create another child adaptable as a FileSystemItem => should be
+        // retrieved
+        DocumentModel adaptableChild = session.createDocumentModel("/aFolder",
+                "adaptableChild", "File");
+        Blob adaptableChildBlob = new StringBlob("Content of another file.");
+        adaptableChildBlob.setFilename("Another file.odt");
+        adaptableChild.setPropertyValue("file:content",
+                (Serializable) adaptableChildBlob);
+        session.createDocument(adaptableChild);
+        // Create another child not adaptable as a FileSystemItem => should not
+        // be retrieved
+        session.createDocument(session.createDocumentModel("/aFolder",
+                "notAdaptableChild", "NotSynchronizable"));
+        session.save();
+
+        List<FileSystemItem> folderChildren = folderItem.getChildren();
+        assertEquals(4, folderChildren.size());
+        // Check Note
+        FileSystemItem fsItem = folderChildren.get(0);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals("First child file.txt", fsItem.getName());
+        assertFalse(fsItem.isFolder());
+        Blob fileItemBlob = ((FileItem) fsItem).getBlob();
+        assertEquals("First child file.txt", fileItemBlob.getFilename());
+        assertEquals("This is the first child file.", fileItemBlob.getString());
+        // Check File
+        fsItem = folderChildren.get(1);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals("Second child file.odt", fsItem.getName());
+        assertFalse(fsItem.isFolder());
+        fileItemBlob = ((FileItem) fsItem).getBlob();
+        assertEquals("Second child file.odt", fileItemBlob.getFilename());
+        assertEquals("This is the second child file.", fileItemBlob.getString());
+        // Check Folder
+        fsItem = folderChildren.get(2);
+        assertTrue(fsItem instanceof FolderItem);
+        assertEquals("Child folder", fsItem.getName());
+        assertTrue(fsItem.isFolder());
+        List<FileSystemItem> childFolderChildren = ((FolderItem) fsItem).getChildren();
+        assertNotNull(childFolderChildren);
+        assertEquals(0, childFolderChildren.size());
+        // Check other File
+        fsItem = folderChildren.get(3);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals("Another file.odt", fsItem.getName());
+        assertFalse(fsItem.isFolder());
+        fileItemBlob = ((FileItem) fsItem).getBlob();
+        assertEquals("Another file.odt", fileItemBlob.getFilename());
+        assertEquals("Content of another file.", fileItemBlob.getString());
+    }
 }
