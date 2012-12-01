@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
+import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FolderItem}.
@@ -74,8 +74,27 @@ public class DocumentBackedFolderItem extends
     }
 
     @Override
-    public void addChild(FileSystemItem child) {
-        // TODO
+    public FolderItem createFolder(String name) throws ClientException {
+        try {
+            DocumentModel folder = getFileManager().createFolder(
+                    getCoreSession(), name, doc.getPathAsString());
+            return new DocumentBackedFolderItem(folder);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    @Override
+    public FileItem createFile(Blob blob) throws ClientException {
+        try {
+            // TODO: manage conflict (overwrite should not necessarily be true)
+            DocumentModel file = getFileManager().createDocumentFromBlob(
+                    getCoreSession(), blob, doc.getPathAsString(), true,
+                    blob.getFilename());
+            return new DocumentBackedFileItem(file);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        }
     }
 
 }

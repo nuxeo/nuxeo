@@ -38,8 +38,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +58,10 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.drive.core")
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.filemanager.core",
+        "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
 
@@ -261,6 +268,45 @@ public class TestDefaultFileSystemItemFactory {
 
     @Test
     public void testFolderItem() throws Exception {
+
+        // ------------------------------------------------------
+        // FolderItem#createFile and FolderItem#createFolder
+        // ------------------------------------------------------
+        FolderItem folderItem = (FolderItem) folder.getAdapter(FileSystemItem.class);
+        // Note
+        Blob childBlob = new StringBlob("This is the first child file.");
+        childBlob.setFilename("First child file.txt");
+        folderItem.createFile(childBlob);
+        // File
+        childBlob = new StringBlob("This is the second child file.");
+        childBlob.setFilename("Second child file.odt");
+        childBlob.setMimeType("application/vnd.oasis.opendocument.text");
+        folderItem.createFile(childBlob);
+        // Folder
+        folderItem.createFolder("Child folder");
+
+        DocumentModelList children = session.query(String.format(
+                "select * from Document where ecm:parentId = '%s' order by dc:created asc",
+                folder.getId()));
+        assertEquals(3, children.size());
+        // Check Note
+        DocumentModel child = children.get(0);
+        assertEquals("Note", child.getType());
+        assertEquals("First child file.txt", child.getTitle());
+        childBlob = child.getAdapter(BlobHolder.class).getBlob();
+        assertEquals("First child file.txt", childBlob.getFilename());
+        assertEquals("This is the first child file.", childBlob.getString());
+        // Check File
+        child = children.get(1);
+        assertEquals("File", child.getType());
+        assertEquals("Second child file.odt", child.getTitle());
+        childBlob = (Blob) child.getPropertyValue("file:content");
+        assertEquals("Second child file.odt", childBlob.getFilename());
+        assertEquals("This is the second child file.", childBlob.getString());
+        // Check Folder
+        child = children.get(2);
+        assertEquals("Folder", child.getType());
+        assertEquals("Child folder", child.getTitle());
 
         // ------------------------------------------------------
         // FolderItem#getChildren

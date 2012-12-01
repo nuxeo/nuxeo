@@ -23,6 +23,8 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FileSystemItem}.
@@ -85,6 +87,10 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
     /*--------------------- Protected -----------------*/
     protected CoreSession getCoreSession() {
         return doc.getCoreSession();
+    }
+
+    protected FileManager getFileManager() {
+        return Framework.getLocalService(FileManager.class);
     }
 
 }
