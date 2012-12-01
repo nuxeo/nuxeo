@@ -70,4 +70,15 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
         return doc;
     }
 
+    /*--------------------- Object -----------------*/
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof FileSystemItem)) {
+            return false;
+        }
+        return getId().equals(((FileSystemItem) obj).getId());
+    }
+
 }
