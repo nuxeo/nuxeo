@@ -78,12 +78,19 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
         context.put("principal", (Serializable) principal);
         CoreSession session = CoreInstance.getInstance().open(repositoryName,
                 context);
-        DocumentRef docRef = new IdRef(docId);
-        if (!session.exists(docRef)) {
-            return null;
+        try {
+            DocumentRef docRef = new IdRef(docId);
+            if (!session.exists(docRef)) {
+                log.debug(String.format(
+                        "No document with id %s in repository %s.", docId,
+                        repositoryName));
+                return null;
+            }
+            DocumentModel doc = session.getDocument(docRef);
+            return getFileSystemItem(doc);
+        } finally {
+            CoreInstance.getInstance().close(session);
         }
-        DocumentModel doc = session.getDocument(docRef);
-        return getFileSystemItem(doc);
     }
 
     protected boolean hasBlob(DocumentModel doc) throws ClientException {
