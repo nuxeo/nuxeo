@@ -67,6 +67,8 @@ public class TestDefaultFileSystemItemFactory {
 
     protected DocumentModel folder;
 
+    protected DocumentModel folderishFile;
+
     protected DocumentModel notAFileSystemItem;
 
     @Before
@@ -99,6 +101,14 @@ public class TestDefaultFileSystemItemFactory {
         folder.setPropertyValue("dc:title", "Jack's folder");
         folder.setPropertyValue("dc:creator", "Jack");
         folder = session.createDocument(folder);
+
+        // FolderishFile: doc type with the "file" schema and the "Folderish"
+        // facet
+        folderishFile = session.createDocumentModel("/", "aFolderishFile",
+                "FolderishFile");
+        folderishFile.setPropertyValue("dc:title", "Sarah's folderish file");
+        folderishFile.setPropertyValue("dc:creator", "Sarah");
+        folderishFile = session.createDocument(folderishFile);
 
         // Doc not adaptable as a FileSystemItem (not Folderish nor a
         // BlobHolder)
@@ -169,6 +179,16 @@ public class TestDefaultFileSystemItemFactory {
         List<FileSystemItem> children = ((FolderItem) fsItem).getChildren();
         assertNotNull(children);
         assertEquals(0, children.size());
+
+        // Check FolderishFile => adaptable as a FolderItem since the default
+        // FileSystemItem factory gives precedence to the Folderish facet
+        fsItem = folderishFile.getAdapter(FileSystemItem.class);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FolderItem);
+        assertEquals("test/" + folderishFile.getId(), fsItem.getId());
+        assertEquals("Sarah's folderish file", fsItem.getName());
+        assertTrue(fsItem.isFolder());
+        assertEquals("Sarah", fsItem.getCreator());
 
         // ------------------------------------------------------
         // Check not adaptable as a FileSystemItem

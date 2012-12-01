@@ -9,6 +9,12 @@
       <schema name="file" />
     </doctype>
 
+    <doctype name="FolderishFile" extends="Document">
+      <schema name="dublincore" />
+      <schema name="file" />
+      <facet name="Folderish" />
+    </doctype>
+
     <doctype name="NotSynchronizable" extends="Document">
       <schema name="dublincore" />
     </doctype>
