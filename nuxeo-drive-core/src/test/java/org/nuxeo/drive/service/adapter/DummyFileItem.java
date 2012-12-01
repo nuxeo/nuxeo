@@ -34,7 +34,7 @@ public class DummyFileItem extends AbstractDocumentBackedFileSystemItem {
 
     @Override
     public String getName() throws ClientException {
-        return "Dummy file with id " + getDocument().getId();
+        return "Dummy file with id " + doc.getId();
     }
 
     @Override
