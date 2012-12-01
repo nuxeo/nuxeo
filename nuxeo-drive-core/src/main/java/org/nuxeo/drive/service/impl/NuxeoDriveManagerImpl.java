@@ -311,7 +311,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     queryAndFecthSynchronizationRoots(repoSession, query,
                             syncRoots);
                 } catch (Exception e) {
-                    throw new ClientRuntimeException(e);
+                    throw ClientException.wrap(e);
                 } finally {
                     if (repoSession != null) {
                         CoreInstance.getInstance().close(repoSession);
@@ -370,7 +370,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                             try {
                                 repoSession = repository.open(context);
                             } catch (Exception e) {
-                                throw new ClientRuntimeException(e);
+                                throw ClientException.wrap(e);
                             }
                             repoSessions.put(repositoryId, repoSession);
                         }
