@@ -16,8 +16,13 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY;
+
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.FileItem;
@@ -26,7 +31,9 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FolderItem}.
@@ -35,6 +42,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  */
 public class DocumentBackedFolderItem extends
         AbstractDocumentBackedFileSystemItem implements FolderItem {
+
+    private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
 
     public DocumentBackedFolderItem(DocumentModel doc) {
         super(doc);
@@ -53,14 +62,16 @@ public class DocumentBackedFolderItem extends
 
     /*--------------------- FolderItem -----------------*/
     @Override
+    @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() throws ClientException {
 
-        // TODO: use a pageProvider
-        String parentId = doc.getId();
-        DocumentModelList dmChildren = getCoreSession().query(
-                String.format(
-                        "select * from Document where ecm:parentId='%s' order by dc:created asc",
-                        parentId));
+        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CORE_SESSION_PROPERTY, (Serializable) getCoreSession());
+        PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props,
+                doc.getId());
+        List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>(
                 dmChildren.size());
