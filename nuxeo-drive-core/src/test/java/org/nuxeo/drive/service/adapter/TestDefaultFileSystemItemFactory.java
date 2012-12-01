@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -58,6 +60,9 @@ public class TestDefaultFileSystemItemFactory {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     protected DocumentModel file;
 
@@ -115,6 +120,8 @@ public class TestDefaultFileSystemItemFactory {
         notAFileSystemItem = session.createDocumentModel("/",
                 "notAFileSystemItem", "NotSynchronizable");
         notAFileSystemItem = session.createDocument(notAFileSystemItem);
+
+        session.save();
     }
 
     @Test
@@ -194,6 +201,40 @@ public class TestDefaultFileSystemItemFactory {
         // Check not adaptable as a FileSystemItem
         // ------------------------------------------------------
         fsItem = notAFileSystemItem.getAdapter(FileSystemItem.class);
+        assertNull(fsItem);
+
+        // -------------------------------------------------------------
+        // Check #getFileSystemItemById(String id, Principal principal)
+        // -------------------------------------------------------------
+        // Bad id
+        try {
+            fsItem = fileSystemItemAdapterService.getFileSystemItemById(
+                    "badId", session.getPrincipal());
+            fail("Should fail because of a bad id.");
+        } catch (ClientException e) {
+            assertEquals(
+                    "Invalid id for FileSystemItem retrieval: badId. Should match the 'repositoryName/docId' pattern.",
+                    e.getMessage());
+        }
+        // Non existent doc id
+        fsItem = fileSystemItemAdapterService.getFileSystemItemById(
+                "test/nonExistentDocId", session.getPrincipal());
+        assertNull(fsItem);
+        // File
+        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
+                + file.getId(), session.getPrincipal());
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals("Joe.odt", fsItem.getName());
+        // Folder
+        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
+                + folder.getId(), session.getPrincipal());
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FolderItem);
+        assertEquals("Jack's folder", fsItem.getName());
+        // Not adaptable as a FileSystemItem
+        fsItem = fileSystemItemAdapterService.getFileSystemItemById("test/"
+                + notAFileSystemItem.getId(), session.getPrincipal());
         assertNull(fsItem);
     }
 

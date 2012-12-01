@@ -130,6 +130,26 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         return null;
     }
 
+    /**
+     * Iterates on the ordered contributed factories until if finds one that
+     * retrieves a non null {@link FileSystemItem} adapter for the given id and
+     * principal.
+     */
+    @Override
+    public FileSystemItem getFileSystemItemById(String id, Principal principal)
+            throws ClientException {
+        Iterator<FileSystemItemFactoryWrapper> factoriesIt = factories.iterator();
+        while (factoriesIt.hasNext()) {
+            FileSystemItemFactoryWrapper factory = factoriesIt.next();
+            FileSystemItem fileSystemItem = factory.getFactory().getFileSystemItemById(
+                    id, principal);
+            if (fileSystemItem != null) {
+                return fileSystemItem;
+            }
+        }
+        return null;
+    }
+
     /*------------------------- For test purpose ----------------------------------*/
     public Map<String, FileSystemItemFactoryDescriptor> getFactoryDescriptors() {
         return factoryDescriptors;
