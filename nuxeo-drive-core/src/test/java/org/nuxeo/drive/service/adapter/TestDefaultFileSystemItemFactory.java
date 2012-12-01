@@ -197,4 +197,25 @@ public class TestDefaultFileSystemItemFactory {
         assertNull(fsItem);
     }
 
+    @Test
+    public void testFileItem() throws Exception {
+
+        // ------------------------------------------------------
+        // FileItem#setBlob
+        // ------------------------------------------------------
+        FileItem fileItem = (FileItem) file.getAdapter(FileSystemItem.class);
+        Blob fileItemBlob = fileItem.getBlob();
+        assertEquals("Joe.odt", fileItemBlob.getFilename());
+        assertEquals("Content of Joe's file.", fileItemBlob.getString());
+
+        Blob newBlob = new StringBlob("This is a new file.");
+        newBlob.setFilename("New blob.txt");
+        fileItem.setBlob(newBlob);
+
+        file = session.getDocument(file.getRef());
+        Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
+        assertEquals("New blob.txt", updatedBlob.getFilename());
+        assertEquals("This is a new file.", updatedBlob.getString());
+    }
+
 }
