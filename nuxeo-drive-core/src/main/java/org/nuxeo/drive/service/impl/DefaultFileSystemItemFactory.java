@@ -67,7 +67,10 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
 
         String[] idFragments = id.split("/");
         if (idFragments.length != 2) {
-            throw new ClientException("TODO");
+            throw new ClientException(
+                    String.format(
+                            "Invalid id for FileSystemItem retrieval: %s. Should match the 'repositoryName/docId' pattern.",
+                            id));
         }
         String repositoryName = idFragments[0];
         String docId = idFragments[1];
