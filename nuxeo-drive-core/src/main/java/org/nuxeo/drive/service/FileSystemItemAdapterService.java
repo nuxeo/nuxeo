@@ -33,6 +33,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface FileSystemItemAdapterService {
 
+    /**
+     * Gets the {@link FileSystemItem} adapter for the given
+     * {@link DocumentModel}.
+     */
     FileSystemItem getFileSystemItemAdapter(DocumentModel doc)
             throws ClientException;
 
