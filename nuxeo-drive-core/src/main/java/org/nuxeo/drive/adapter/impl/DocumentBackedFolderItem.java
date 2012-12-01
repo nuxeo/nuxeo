@@ -43,7 +43,7 @@ public class DocumentBackedFolderItem extends
     /*--------------------- AbstractDocumentBackedFileSystemItem ---------------------*/
     @Override
     public String getName() throws ClientException {
-        return getDocument().getTitle();
+        return doc.getTitle();
     }
 
     @Override
