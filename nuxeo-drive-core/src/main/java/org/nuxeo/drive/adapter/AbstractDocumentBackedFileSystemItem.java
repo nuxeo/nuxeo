@@ -64,15 +64,6 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
         return (Calendar) doc.getPropertyValue("dc:modified");
     }
 
-    /*--------------------- AbstractDocumentBackedFileSystemItem ---------------------*/
-    /**
-     * Gets the backing {@link DocumentModel}. Possibly null if the file system
-     * item has no representation server-side.
-     */
-    public DocumentModel getDocument() {
-        return doc;
-    }
-
     /*--------------------- Object -----------------*/
     public boolean equals(Object obj) {
         if (obj == this) {
