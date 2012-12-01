@@ -49,17 +49,10 @@ public class DocumentBackedFileItem extends
     /*--------------------- FileItem -----------------*/
     @Override
     public Blob getBlob() throws ClientException {
-        BlobHolder bh = getDocument().getAdapter(BlobHolder.class);
-        if (bh == null) {
-            throw new ClientException(
-                    String.format(
-                            "Document %s is not a BlobHolder, it is not adaptable as a FileItem and therefore it cannot not be part of the synchronized items.",
-                            getDocument().getId()));
-        }
-        Blob blob = bh.getBlob();
+        Blob blob = getBlobHolder().getBlob();
         if (blob == null) {
             throw new ClientException(
-                    "Document has no blob, it is not adaptable as a FileItem and therefore it cannot not be part of the synchronized items.");
+                    "Document has no blob, it is not adaptable as a FileItem and therefore it cannot not be part of the items to synchronize.");
         }
         return blob;
     }
@@ -78,6 +71,17 @@ public class DocumentBackedFileItem extends
     /*--------------------- Protected -----------------*/
     protected String getFileName() throws ClientException {
         return getBlob().getFilename();
+    }
+
+    protected BlobHolder getBlobHolder() throws ClientException {
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh == null) {
+            throw new ClientException(
+                    String.format(
+                            "Document %s is not a BlobHolder, it is not adaptable as a FileItem and therefore it cannot not be part of the items to synchronize.",
+                            doc.getId()));
+        }
+        return bh;
     }
 
 }
