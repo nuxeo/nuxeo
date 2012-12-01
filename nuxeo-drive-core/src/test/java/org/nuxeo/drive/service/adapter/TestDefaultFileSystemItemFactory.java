@@ -67,7 +67,7 @@ public class TestDefaultFileSystemItemFactory {
 
     protected DocumentModel folder;
 
-    protected DocumentModel notADriveItem;
+    protected DocumentModel notAFileSystemItem;
 
     @Before
     public void createTestDocs() throws ClientException {
@@ -100,79 +100,81 @@ public class TestDefaultFileSystemItemFactory {
         folder.setPropertyValue("dc:creator", "Jack");
         folder = session.createDocument(folder);
 
-        // Non synchronizable doc type (not Folderish nor a BlobHolder)
-        notADriveItem = session.createDocumentModel("/", "notADriveItem",
-                "NotSynchronizable");
-        notADriveItem = session.createDocument(notADriveItem);
+        // Doc not adaptable as a FileSystemItem (not Folderish nor a
+        // BlobHolder)
+        notAFileSystemItem = session.createDocumentModel("/",
+                "notAFileSystemItem", "NotSynchronizable");
+        notAFileSystemItem = session.createDocument(notAFileSystemItem);
     }
 
     @Test
     public void testFactory() throws Exception {
 
         // ------------------------------------------------------
-        // Check downloadable NuxeoDriveItems
+        // Check downloadable FileSystemItems
         // ------------------------------------------------------
         // Check File
-        FileSystemItem driveItem = file.getAdapter(FileSystemItem.class);
-        assertNotNull(driveItem);
-        assertTrue(driveItem instanceof FileItem);
-        assertEquals("test/" + file.getId(), driveItem.getId());
-        assertEquals("Joe.odt", driveItem.getName());
-        assertFalse(driveItem.isFolder());
-        assertEquals("Joe", driveItem.getCreator());
-        Blob fileItemBlob = ((FileItem) driveItem).getBlob();
+        FileSystemItem fsItem = file.getAdapter(FileSystemItem.class);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals("test/" + file.getId(), fsItem.getId());
+        assertEquals("Joe.odt", fsItem.getName());
+        assertFalse(fsItem.isFolder());
+        assertEquals("Joe", fsItem.getCreator());
+        Blob fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
 
         // Check Note
-        driveItem = note.getAdapter(FileSystemItem.class);
-        assertNotNull(driveItem);
-        assertTrue(driveItem instanceof FileItem);
-        assertEquals("test/" + note.getId(), driveItem.getId());
-        assertEquals("aNote.txt", driveItem.getName());
-        assertFalse(driveItem.isFolder());
-        assertEquals("Bob", driveItem.getCreator());
-        fileItemBlob = ((FileItem) driveItem).getBlob();
+        fsItem = note.getAdapter(FileSystemItem.class);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals("test/" + note.getId(), fsItem.getId());
+        assertEquals("aNote.txt", fsItem.getName());
+        assertFalse(fsItem.isFolder());
+        assertEquals("Bob", fsItem.getCreator());
+        fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("aNote.txt", fileItemBlob.getFilename());
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
 
         // Check custom doc type with the "file" schema
-        driveItem = custom.getAdapter(FileSystemItem.class);
-        assertNotNull(driveItem);
-        assertTrue(driveItem instanceof FileItem);
-        assertEquals("test/" + custom.getId(), driveItem.getId());
-        assertEquals("Bonnie's file.odt", driveItem.getName());
-        assertFalse(driveItem.isFolder());
-        assertEquals("Bonnie", driveItem.getCreator());
-        fileItemBlob = ((FileItem) driveItem).getBlob();
+        fsItem = custom.getAdapter(FileSystemItem.class);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals("test/" + custom.getId(), fsItem.getId());
+        assertEquals("Bonnie's file.odt", fsItem.getName());
+        assertFalse(fsItem.isFolder());
+        assertEquals("Bonnie", fsItem.getCreator());
+        fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Bonnie's file.odt", fileItemBlob.getFilename());
         assertEquals("Content of Bonnie's file.", fileItemBlob.getString());
 
-        // Check File without a blob => not synchronizable
+        // Check File without a blob => not adaptable as a FileSystemItem
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);
-        driveItem = file.getAdapter(FileSystemItem.class);
-        assertNull(driveItem);
+        fsItem = file.getAdapter(FileSystemItem.class);
+        assertNull(fsItem);
 
         // ------------------------------------------------------
-        // Check folderish NuxeoDriveItem
+        // Check folderish FileSystemItems
         // ------------------------------------------------------
-        driveItem = folder.getAdapter(FileSystemItem.class);
-        assertNotNull(driveItem);
-        assertTrue(driveItem instanceof FolderItem);
-        assertEquals("test/" + folder.getId(), driveItem.getId());
-        assertEquals("Jack's folder", driveItem.getName());
-        assertTrue(driveItem.isFolder());
-        assertEquals("Jack", driveItem.getCreator());
-        FolderItem folderItem = (FolderItem) driveItem;
-        List<FileSystemItem> children = folderItem.getChildren(session);
+        // Check Folder
+        fsItem = folder.getAdapter(FileSystemItem.class);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FolderItem);
+        assertEquals("test/" + folder.getId(), fsItem.getId());
+        assertEquals("Jack's folder", fsItem.getName());
+        assertTrue(fsItem.isFolder());
+        assertEquals("Jack", fsItem.getCreator());
+        List<FileSystemItem> children = ((FolderItem) fsItem).getChildren();
         assertNotNull(children);
+        assertEquals(0, children.size());
 
         // ------------------------------------------------------
-        // Check not adaptable to NuxeoDriveItem
+        // Check not adaptable as a FileSystemItem
         // ------------------------------------------------------
-        driveItem = notADriveItem.getAdapter(FileSystemItem.class);
-        assertNull(driveItem);
+        fsItem = notAFileSystemItem.getAdapter(FileSystemItem.class);
+        assertNull(fsItem);
     }
 
 }
