@@ -16,8 +16,8 @@
  */
 package org.nuxeo.drive.service.adapter;
 
-import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author Antoine Taillefer
  */
-public class DummyFolderItem extends AbstractDocumentBackedFileSystemItem {
+public class DummyFolderItem extends DocumentBackedFolderItem {
 
     public DummyFolderItem(DocumentModel doc) {
         super(doc);
@@ -35,11 +35,6 @@ public class DummyFolderItem extends AbstractDocumentBackedFileSystemItem {
     @Override
     public String getName() throws ClientException {
         return "Dummy folder with id " + doc.getId();
-    }
-
-    @Override
-    public boolean isFolder() {
-        return true;
     }
 
 }
