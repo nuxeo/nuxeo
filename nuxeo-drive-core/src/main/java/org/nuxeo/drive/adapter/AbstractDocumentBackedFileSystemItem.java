@@ -64,6 +64,10 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
         return (Calendar) doc.getPropertyValue("dc:modified");
     }
 
+    public DocumentModel getDocument() {
+        return doc;
+    }
+
     /*--------------------- Object -----------------*/
     public boolean equals(Object obj) {
         if (obj == this) {
