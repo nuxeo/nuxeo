@@ -89,6 +89,12 @@ public class DocumentBackedFolderItem extends
         try {
             DocumentModel folder = getFileManager().createFolder(
                     getCoreSession(), name, doc.getPathAsString());
+            if (folder == null) {
+                throw new ClientException(
+                        String.format(
+                                "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check the allowed sub-types for the %s doc type.",
+                                name, doc.getPathAsString(), doc.getType()));
+            }
             return new DocumentBackedFolderItem(folder);
         } catch (Exception e) {
             throw ClientException.wrap(e);
@@ -102,6 +108,12 @@ public class DocumentBackedFolderItem extends
             DocumentModel file = getFileManager().createDocumentFromBlob(
                     getCoreSession(), blob, doc.getPathAsString(), true,
                     blob.getFilename());
+            if (file == null) {
+                throw new ClientException(
+                        String.format(
+                                "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
+                                blob.getFilename(), doc.getPathAsString()));
+            }
             return new DocumentBackedFileItem(file);
         } catch (Exception e) {
             throw ClientException.wrap(e);
