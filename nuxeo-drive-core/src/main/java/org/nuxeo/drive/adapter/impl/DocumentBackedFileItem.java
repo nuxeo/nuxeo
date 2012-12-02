@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.ecm.core.api.Blob;
@@ -77,6 +78,10 @@ public class DocumentBackedFileItem extends
 
     @Override
     public void setBlob(Blob blob) throws ClientException {
+        // If blob's filename is empty, set it to the current blob's filename
+        if (StringUtils.isEmpty(blob.getFilename())) {
+            blob.setFilename(getBlob().getFilename());
+        }
         getBlobHolder().setBlob(blob);
         getCoreSession().saveDocument(doc);
     }
