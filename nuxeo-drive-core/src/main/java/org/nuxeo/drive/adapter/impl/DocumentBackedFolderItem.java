@@ -60,6 +60,12 @@ public class DocumentBackedFolderItem extends
         return true;
     }
 
+    @Override
+    public void rename(String name) throws ClientException {
+        doc.setPropertyValue("dc:title", name);
+        getCoreSession().saveDocument(doc);
+    }
+
     /*--------------------- FolderItem -----------------*/
     @Override
     @SuppressWarnings("unchecked")

@@ -46,6 +46,18 @@ public class DocumentBackedFileItem extends
         return false;
     }
 
+    @Override
+    public void rename(String name) throws ClientException {
+        // TODO: not sure about the behavior for the doc title
+        Blob blob = getBlob();
+        if (doc.getTitle().equals(blob.getFilename())) {
+            doc.setPropertyValue("dc:title", name);
+        }
+        blob.setFilename(name);
+        getBlobHolder().setBlob(blob);
+        getCoreSession().saveDocument(doc);
+    }
+
     /*--------------------- FileItem -----------------*/
     @Override
     public Blob getBlob() throws ClientException {

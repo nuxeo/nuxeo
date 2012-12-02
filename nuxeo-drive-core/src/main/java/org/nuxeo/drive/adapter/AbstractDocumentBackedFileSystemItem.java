@@ -48,6 +48,8 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
 
     public abstract boolean isFolder();
 
+    public abstract void rename(String name) throws ClientException;
+
     public String getId() {
         return doc.getRepositoryName() + "/" + doc.getId();
     }

@@ -49,6 +49,8 @@ public interface FileSystemItem {
 
     Calendar getLastModificationDate() throws ClientException;
 
+    void rename(String name) throws ClientException;
+
     /**
      * Gets the backing {@link DocumentModel} in the case of a
      * {@link DocumentModel} backed implementation.
