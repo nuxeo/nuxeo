@@ -49,6 +49,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -62,6 +63,7 @@ import com.google.inject.Inject;
 // several consecutive transactions in a test method
 @TransactionalConfig(autoStart = false)
 @Deploy("org.nuxeo.drive.core")
+@LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestAuditDocumentChangeFinder {
 
     @Inject
@@ -252,10 +254,16 @@ public class TestAuditDocumentChangeFinder {
 
         // Create 3 documents, only 2 in sync roots => should find 2 changes
         TransactionHelper.startTransaction();
-        DocumentModel doc1 = session.createDocument(session.createDocumentModel(
-                "/folder1", "doc1", "File"));
-        DocumentModel doc2 = session.createDocument(session.createDocumentModel(
-                "/folder2", "doc2", "File"));
+        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
+                "File");
+        doc1.setPropertyValue("file:content", new StringBlob(
+                "The content of file 1."));
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
+                "File");
+        doc2.setPropertyValue("file:content", new StringBlob(
+                "The content of file 2."));
+        doc2 = session.createDocument(doc2);
         session.createDocument(session.createDocumentModel("/folder3", "doc3",
                 "File"));
         commitAndWaitForAsyncCompletion();
@@ -301,15 +309,37 @@ public class TestAuditDocumentChangeFinder {
 
         assertEquals("found_changes", docChangeSummary.getStatusCode());
 
+        // Create a document that should not be synchronized because not
+        // adaptable as a FileSystemItem (not Folderish nor a BlobHolder with a
+        // blob) => should not be considered as a change
+        TransactionHelper.startTransaction();
+        session.createDocument(session.createDocumentModel("/folder1",
+                "notSynchronizableDoc", "NotSynchronizable"));
+        commitAndWaitForAsyncCompletion();
+
+        docChangeSummary = getDocumentChangeSummary("Administrator");
+        assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
+        assertTrue(docChangeSummary.getChangedDocModels().isEmpty());
+        assertEquals("no_changes", docChangeSummary.getStatusCode());
+
         // Create 2 documents in the same sync root: "/folder1" and 1 document
         // in another sync root => should find 2 changes for "/folder1"
         TransactionHelper.startTransaction();
-        session.createDocument(session.createDocumentModel("/folder1", "doc3",
-                "File"));
-        session.createDocument(session.createDocumentModel("/folder1", "doc4",
-                "File"));
-        session.createDocument(session.createDocumentModel("/folder2", "doc5",
-                "File"));
+        DocumentModel doc3 = session.createDocumentModel("/folder1", "doc3",
+                "File");
+        doc3.setPropertyValue("file:content", new StringBlob(
+                "The content of file 3."));
+        doc3 = session.createDocument(doc3);
+        DocumentModel doc4 = session.createDocumentModel("/folder1", "doc4",
+                "File");
+        doc4.setPropertyValue("file:content", new StringBlob(
+                "The content of file 4."));
+        doc4 = session.createDocument(doc4);
+        DocumentModel doc5 = session.createDocumentModel("/folder2", "doc5",
+                "File");
+        doc5.setPropertyValue("file:content", new StringBlob(
+                "The content of file 5."));
+        doc5 = session.createDocument(doc5);
         commitAndWaitForAsyncCompletion();
 
         docChangeSummary = getFolderDocumentChangeSummary("/folder1");
