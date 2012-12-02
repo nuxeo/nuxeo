@@ -235,7 +235,7 @@ public class TestAuditDocumentChangeFinder {
         // Register sync roots => should find changes: the newly
         // synchronized root folders as they are updated by the synchronization
         // registration process
-        // TODO: uncomment if not needed
+        // TODO: uncomment if needed or remove
         // TransactionHelper.startTransaction();
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
                 session);
