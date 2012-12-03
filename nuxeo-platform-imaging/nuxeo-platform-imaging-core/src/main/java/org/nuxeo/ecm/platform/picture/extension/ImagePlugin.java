@@ -80,6 +80,7 @@ public class ImagePlugin extends AbstractFileImporter {
             docModel.setPropertyValue("dc:title", title);
             docModel.setPropertyValue("file:content",
                     (Serializable) content.persist());
+            docModel.setPropertyValue("file:filename", filename);
             docModel.setPathInfo(path, pss.generatePathSegment(docModel));
             docModel = documentManager.createDocument(docModel);
         }
