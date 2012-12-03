@@ -8,13 +8,13 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="Intro" link="/styleGuide/incl/intro.xhtml" order="0"
-      label="Intro" icon="/icons/dot.png">
+    <action id="Introduction" link="/styleGuide/incl/introduction.xhtml" order="0"
+      label="Introduction" icon="/icons/dot.png">
       <category>STYLE_GUIDE_PAGE</category>
     </action>
 
-    <action id="Advices" link="/styleGuide/incl/advices.xhtml" order="10"
-      label="Advices" icon="/icons/good.png">
+    <action id="Recommendations" link="/styleGuide/incl/recommendations.xhtml" order="10"
+      label="Recommendations" icon="/icons/good.png">
       <category>STYLE_GUIDE_PAGE</category>
     </action>
 
