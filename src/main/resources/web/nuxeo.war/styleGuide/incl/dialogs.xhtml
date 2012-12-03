@@ -11,14 +11,19 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <h2 id="" alt="Dialogs">Dialogs</h2>
-  <p class="specification">There are 2 available modal windows in the platform. Modal windows are important for user interactions: use it when you need to grab the user attention for an action. By gathering the information and action in a modal window, the user will focus only on this task.</p>
+  <p class="specification"> There are two modal windows available in the platform.
+   Modal windows are important for user interactions: use it when you need to grab the user attention for an action.
+   By gathering the information and action in a modal window, the user will focus only on this task.</p>
 
   <div class="gridContainer">
     <div class="gridRow">
       <div class="gridBox gridStyle6">
         <div class="widgetPanel">
           <h3>Fancybox window</h3>
-          <p class="specification">We use the <a href="http://fancybox.net/" target="_blank">http://fancybox.net/</a> modal popup by default. To keep the consistency between the popup, please keep the following structure: a <span class="code">h3</span> for the title, a <span class="code">div.content</span> for the main part, and then a <span class="code">p.buttonsGadget</span> at the end to display the buttons.
+          <p class="specification">We use the <a href="http://fancybox.net/" target="_blank">http://fancybox.net/</a> modal pop-up by default.
+           To keep FancyBox pop-ups consistent, keep the following structure:
+           a <span class="code">h3</span> for the title, a <span class="code">div.content</span> for the main part,
+           and then a <span class="code">p.buttonsGadget</span> at the end to display the buttons.
           </p>
           <div id="fancybox-wrap" style="height: auto; display: block; position: relative">
             <div id="fancybox-outer">
@@ -33,7 +38,7 @@
               <div id="fancybox-content" style="border-width: 10px; font-size: 1.2em; height: 268px; overflow: visible; width: auto;">
                 <div style="height:268px;overflow: auto;position:relative;">
                   <div id="#">
-                    <h3>Cliquez sur un élément pour le sélectionner</h3>
+                    <h3>Click on an item to select it</h3>
                     <div id="#" class="dr-tree rich-tree labelTool content">
                       <p class="specification">An introduction paragraph to users if something needs to be explained.</p>
                       <div id="#">
@@ -128,8 +133,10 @@
       </div>
       <div class="gridBox gridStyle6">
         <div class="widgetPanel">
-          <h3>Generic Pop up</h3>
-          <p class="specification">If you can't use a FancyBox window, you can use the div class <span class="code">.genericPopUp</span> window. But you have to keep the layout consistent: always provide a <span class="code">h3</span> title if possible, a description in a <span class="code">.popUpContent</span>, and actions in a <span class="code">.buttonsGadget</span> with a close button.</p>
+          <h3>Generic pop-up</h3>
+          <p class="specification">If you can't use a FancyBox window, you can use the <span class="code">.genericPopUp</span> window div class.
+           But you have to keep the layout consistent: always provide a <span class="code">h3</span> title as often as possible,
+           a description in a <span class="code">.popUpContent</span> div class, and actions in a <span class="code">.buttonsGadget</span> with a Close button.</p>
           <div class="genericPopUp">
             <div class="closePopUpHeader">
               <span class="popUpTitle">Click on an item to select it</span>
