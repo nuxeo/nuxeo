@@ -6,6 +6,7 @@ author: lkemen@nuxeo.com
 /* =Helpers */
 .boldLabel, /* to be deprecated in 5.7 */
 .bold { font-weight: bold }
+.nobold { font-weight: normal }
 .nowrap { white-space: nowrap }
 
 .textAlignR { text-align: right }
@@ -21,6 +22,12 @@ author: lkemen@nuxeo.com
 .displayB { display: block }
 .visibilityH { visibility: hidden }
 .visibilityV { visibility: visible }
+.overflowV { overflow: visible }
+.overflowH { overflow: hidden }
+.overflowS { overflow: scroll }
+.overflowYS { overflow: scroll }
+.overflowXS { overflow: scroll }
+.overflowA { overflow: auto }
 
 /* width for divs */
 .fullWidth { width:100% }

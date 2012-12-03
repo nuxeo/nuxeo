@@ -59,6 +59,7 @@ author: lkemen@nuxeo.com
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;
   box-shadow: 0 1px 2px #eee;
+  display: block;
   margin: 0 1em 1em 0;
   padding: 0 .8em .5em }
 .bubbleBoxSmall { max-width: 300px }  
@@ -66,5 +67,9 @@ author: lkemen@nuxeo.com
   border-color: "neutral.lighter (__FLAVOR__ border)"; margin: 0 0 1em }
 .bubbleBox .bubbleHeader h3 { border: none; display: inline-block; margin: 0; padding: .5em 0 }
 .bubbleBox .bubbleHeader input.button { float: right; margin-right: 0 }
-
+.bubbleBox h3 img { margin-bottom: -0.1em; padding: 0 .5em 0 0 }
 .bubbleShadow { box-shadow: 0 -5px 5px #eee inset, 0 1px 2px #eee }
+
+a.bubbleBox:hover { background: none "color.major.light (__FLAVOR__ background)";
+  color: "black (__FLAVOR__ color)";
+  text-decoration: none }

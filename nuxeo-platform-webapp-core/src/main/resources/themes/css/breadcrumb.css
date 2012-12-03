@@ -11,6 +11,7 @@ author: lkemen@nuxeo.com
 .breadcrumbs { float: left; padding: .3em .4em 0 0 }
 .breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited { color: "gray.dark (__FLAVOR__ color)" }
 .breadcrumbs a:hover, .breadcrumbs a:active { font-weight: normal; text-decoration: underline }
+.breadcrumbs a img { vertical-align: middle }
 
 .printButton { float: right; padding-right: .1em }
 .printButton .liveEditCreateButtons { border-width: 1px; border-style: none solid none none;  border-color: "neutral.light (__FLAVOR__ border)"; margin-right: .4em; padding-right: .7em }
