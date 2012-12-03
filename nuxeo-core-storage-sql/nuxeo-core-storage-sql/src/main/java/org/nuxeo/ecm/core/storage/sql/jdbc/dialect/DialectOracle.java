@@ -559,6 +559,7 @@ public class DialectOracle extends Dialect {
         properties.put("pathOptimizationsVersion1", (pathOptimizationsVersion == 1) ? true : false);
         properties.put("pathOptimizationsVersion2", (pathOptimizationsVersion == 2) ? true : false);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
