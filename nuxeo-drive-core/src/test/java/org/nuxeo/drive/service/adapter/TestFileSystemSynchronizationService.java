@@ -138,6 +138,14 @@ public class TestFileSystemSynchronizationService {
     public void testReadOperations() throws Exception {
 
         // ------------------------------------------------------
+        // Check #exists
+        // ------------------------------------------------------
+        assertFalse(fileSystemSynchronizationService.exists("nonExistentId",
+                session));
+        assertTrue(fileSystemSynchronizationService.exists(file.getId(),
+                session));
+
+        // ------------------------------------------------------
         // Check #getFileSystemItemById
         // ------------------------------------------------------
         // Folder

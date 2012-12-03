@@ -46,6 +46,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface FileSystemSynchronizationService {
 
     /*------------- Read operations ----------------*/
+    boolean exists(String docId, CoreSession session)
+            throws ClientException;
+
     FileSystemItem getFileSystemItemById(String docId, CoreSession session)
             throws ClientException;
 

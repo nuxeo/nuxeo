@@ -41,6 +41,12 @@ public class FileSystemSynchronizationServiceImpl implements
 
     /*------------- Read operations ----------------*/
     @Override
+    public boolean exists(String docId, CoreSession session)
+            throws ClientException {
+        return session.exists(new IdRef(docId));
+    }
+
+    @Override
     public FileSystemItem getFileSystemItemById(String docId,
             CoreSession session) throws ClientException {
         DocumentModel doc = getDocumentModel(docId, session);
