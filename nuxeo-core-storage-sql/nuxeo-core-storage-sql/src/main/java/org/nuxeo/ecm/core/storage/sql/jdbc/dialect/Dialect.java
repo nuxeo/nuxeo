@@ -110,6 +110,11 @@ public abstract class Dialect {
 
     protected final boolean aclOptimizationsEnabled;
 
+    /**
+     * @since 5.7
+     */
+    protected boolean clusteringEnabled;
+
     protected final int readAclMaxSize;
 
     /**
@@ -185,10 +190,12 @@ public abstract class Dialect {
             fulltextDisabled = true;
             aclOptimizationsEnabled = false;
             readAclMaxSize = 0;
+            clusteringEnabled = false;
         } else {
             fulltextDisabled = repositoryDescriptor.fulltextDisabled;
             aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
             readAclMaxSize = repositoryDescriptor.readAclMaxSize;
+            clusteringEnabled = repositoryDescriptor.clusteringEnabled;
         }
     }
 

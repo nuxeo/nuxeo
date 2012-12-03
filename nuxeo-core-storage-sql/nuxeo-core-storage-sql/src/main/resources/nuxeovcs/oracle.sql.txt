@@ -124,6 +124,7 @@ END;
 
 # For Oracle running on Amazon RDS, stored procedures and functions are not allowed
 # to access GV$SESSION, so the cluster nodeid has to be passed in.
+#IF: clusteringEnabled
 CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i ${argIdType}, f VARCHAR2, k INTEGER, nid VARCHAR)
 IS
 BEGIN

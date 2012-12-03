@@ -475,6 +475,7 @@ public class DialectSQLServer extends Dialect {
                 Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled",
                 Boolean.valueOf(pathOptimizationsEnabled));
+        properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
                 SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();

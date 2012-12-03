@@ -28,8 +28,10 @@ CREATE ALIAS IF NOT EXISTS NX_IN_TREE FOR "${h2Functions}.isInTreeString";
 
 CREATE ALIAS IF NOT EXISTS NX_ACCESS_ALLOWED FOR "${h2Functions}.isAccessAllowedString";
 
+#IF: clusteringEnabled
 CREATE ALIAS IF NOT EXISTS NX_CLUSTER_INVAL FOR "${h2Functions}.clusterInvalidateString";
 
+#IF: clusteringEnabled
 CREATE ALIAS IF NOT EXISTS NX_CLUSTER_GET_INVALS FOR "${h2Functions}.getClusterInvalidationsString";
 
 CREATE ALIAS IF NOT EXISTS nx_upgrade_versions FOR "${h2Functions}.upgradeVersions";

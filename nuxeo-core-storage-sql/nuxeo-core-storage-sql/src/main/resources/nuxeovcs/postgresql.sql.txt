@@ -81,7 +81,7 @@ LANGUAGE plpgsql
 STABLE
 COST 500;
 
-
+#IF: clusteringEnabled
 CREATE OR REPLACE FUNCTION NX_CLUSTER_INVAL(i ${idType}, f varchar[], k int)
 RETURNS VOID
 AS $$
