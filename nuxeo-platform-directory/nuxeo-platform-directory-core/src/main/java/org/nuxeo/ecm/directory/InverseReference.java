@@ -33,6 +33,12 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "inverseReference")
 public class InverseReference extends AbstractReference {
 
+    /**
+     * Indicates if the target directory can be updated from the current
+     * reference
+     *
+     * @since 5.7
+     */
     protected boolean readOnly = false;
 
     @XNode("@dualReferenceField")
