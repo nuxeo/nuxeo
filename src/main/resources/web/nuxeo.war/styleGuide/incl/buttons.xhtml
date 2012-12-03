@@ -11,37 +11,39 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <h2 id="" alt="Buttons">Buttons</h2>
-  <p class="specification">The styles of buttons can be applied on button or links. For each forms in default pages, search, modal pop ups, here is a showcase of which classes you can apply on your actions.</p>
+  <p class="specification">The styles of buttons can be applied on button or links.  For any form, either in default pages, search screens, modal pop-ups, you can apply classes on your actions. Below are some examples.</p>
 
   <div class="gridRow">
     <h3>Available classes</h3>
     <div class="gridBox gridStyle4">
       <div class="widgetPanel">
-        <a href="#" class="button" onclick="return false;">Link class button</a>
-        <input class="button" type="button" value="Input class button" onclick="return false;" />
-        <input class="button smallButton" type="button" value="Input class button smallButton" onclick="return false;" />
-        <p class="specification">The default style for buttons and links is handled by the css class <span class="code">.button</span>. For small area, you can add the complementary class <span class="code">.smallButton</span> to reduce font-size and space.</p>
+        <p class="specification">The default style for buttons and links is handled by the <span class="code">.button</span> CSS class. For small areas, you can add the complementary <span class="code">.smallButton</span> CSS class to reduce the font-size and space.</p>
+        <a href="#" class="button" onclick="return false;">.button link</a>
+        <input class="button" type="button" value=".button input" onclick="return false;" />
+        <a href="#" class="button smallButton" onclick="return false;">.button .smallButton link</a>
+        <input class="button smallButton" type="button" value=".button .smallButton input" onclick="return false;" />
       </div>
     </div>
     <div class="gridBox gridStyle4">
       <div class="widgetPanel">
-        <input class="button" type="button" disabled="disabled" value="Input class button disabled" onclick="return false;" />
-        <input class="button smallButton" type="button" disabled="disabled" value="Input class button smallButton disabled" onclick="return false;" />
-        <p class="specification">When an action in a form is disabled, or only abled in a particular case, use the <span class="code">.disabled</span> class in addition. The <span class="code">.disabled="disabled"</span> attribute needs to be used for a right behavior.</p>
+        <p class="specification">When an action in a form is disabled, or enabled only in a particular case, use the additional <span class="code">.disabled</span> class. The <span class="code">.disabled="disabled"</span> attribute needs to be used for a right behavior.</p>
+        <input class="button" type="button" disabled="disabled" value=".button .disabled input" onclick="return false;" />
+        <input class="button smallButton disabled" type="button" disabled="disabled" value=".button .smallButton .disabled input" onclick="return false;" />
       </div>
     </div>
     <div class="gridBox gridStyle4">
       <div class="widgetPanel">
-        <input class="button major" type="button" value="Input class button major" onclick="return false;" />
-        <input class="button smallButton major" type="button" value="Input class button smallButton major" onclick="return false;" />
-        <p class="specification">If you need to highlight an action among several buttons, you can use the <span class="code">.major</span> class in addition. It will guide the user to the most logical action.</p>
+        <p class="specification">If you need to highlight an action among several buttons, you can use the additional <span class="code">.major</span> class. It will guide the user to the most logical action.</p>
+        <input class="button major" type="button" value=".button .major input" onclick="return false;" />
+        <input class="button smallButton major" type="button" value=".button .smallButton .major input" onclick="return false;" />
       </div>
     </div>
     <div class="gridBox gridStyle12">
       <h3>Buttons containers</h3>
       <div class="gridBox gridStyle5">
         <div class="widgetPanel">
-        <h4>In forms</h4>
+          <h4>In forms</h4>
+          <p class="specification">The actions in forms are put after the form table, in a p <span class="code">.buttonsGadget</span> class. This class will manage the space and alignment of your buttons.</p>
           <form>
             <table class="dataTableNoBorder">
               <tr class="">
@@ -58,12 +60,13 @@
               <input type="submit" class="button" onclick="return false;" value="Cancel" name="#" id="#" />
             </p>
           </form>
-          <p class="specification">The actions in forms are included after the form table, in a p class <span class="code">.buttonsGadget</span>. This class will manage the space and the alignment of your buttons.</p>
         </div>
       </div>
       <div class="gridBox gridStyle7">
         <div class="widgetPanel">
           <h4>Under tabs</h4>
+          <p class="specification">The available actions displayed just under the tabs are displayed in a <span class="code">.action_bar</span> div class. Then, each action is listed in a <span class="code">ul</span> list.</p>
+          <p class="specification">If you need an icon in your button to help user to quickly identify the action, in the <span class="code">a</span> tag, use an <span class="code">img</span> tag before the link label. The <span class="code">.button</span> class is not mandatory, using it here will only change the margin.</p>
           <div>
             <div class="action_bar">
               <ul id="#">
@@ -119,13 +122,12 @@
             </div>
             <div class="clear" />
           </div>
-          <p class="specification">The available actions displayed just under the tabs are displayed in a div class <span class="code">.action_bar</span>. Then, each action is listed in a <span class="code">.action_bar</span> in it.</p>
-          <p class="specification">If you need an icon in your button to help user to quickly identify the action, use an <span class="code">img</span> tag first and then display your label in your link. The class <span class="code">.button</span> is not mandatory, use it here will only change the margin.</p>
         </div>
       </div>
       <div class="gridBox gridStyle8">
         <div class="widgetPanel">
           <h4>In titles</h4>
+          <p class="specification">Depending of the inclusion of your <span class="code">.button</span> in containers, buttons will be displayed in the same line as the main title. In these examples, actions are included in a <span class="code">.dropDownMenu .button .dropdown</span>  li class, in an <span class="code">.action_bar .directoryBack</span>, and finally in a <span class="code">.widgetPanel .actionsWidgetPanel</span>. For more details about actions in titles, check the <a href="/nuxeo/styleGuide/Titles">Titles</a> section.</p>
           <div class="globalActionBar">
            <h1>My page title</h1>
            <ul class="actionList">
@@ -203,14 +205,13 @@
               </div>
             </div>
           </div>
-          <p class="specification">Depending of the inclusion of your <span class="code">.button</span> in containers, they will be displayed in the same line than the main title. In these examples, the actions are included in a li class <span class="code">dropDownMenu button dropdown</span>, or <span class="code">action_bar directoryBack</span>, or <span class="code">widgetPanel actionsWidgetPanel</span> at the end. For most details about actions in titles, please check the <a href="/nuxeo/styleGuide/Titles">Titles</a> section.</p>
           <div class="clear" />
         </div>
       </div>
       <div class="gridBox gridStyle4">
         <div class="widgetPanel">
           <h4>Other types</h4>
-          <p class="specification">Users and groups, so as tags have a specific display, as they need to be easily identifiable. Users are displayed in a span class <span class="code">tag user</span>, only add a class <span class="code">group</span>to have the group icon. Tags are included in a <span class="code">tag tagLink</span>, with one or two links if you need to delete it.</p>
+          <p class="specification">Users and groups, as well as tags, have a specific display, as they need to be easily identifiable. Users are displayed in a <span class="code">.tag .user</span> span class. To have the group icon, just add a <span class="code">.group</span> class. Tags are included in a <span class="code">.tag .tagLink</span> span class. You can display the tag label only, or display an additional delete link next to it.</p>
           <div>
             <span class="tag user">
               <a href="#" onclick="return false">User name</a>
