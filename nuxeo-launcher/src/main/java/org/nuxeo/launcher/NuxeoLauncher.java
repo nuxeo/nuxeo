@@ -906,6 +906,8 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.pkgRefreshCache();
         } else if ("showconf".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.showConfig();
+        } else if ("mp-show".equalsIgnoreCase(launcher.command)) {
+            commandSucceeded = launcher.pkgShow(params);
         } else {
             printLongHelp();
             commandSucceeded = false;
@@ -1260,7 +1262,7 @@ public abstract class NuxeoLauncher {
                     MessageInfo.class);
             printXMLOutput(jaxbContext, cset);
         } catch (JAXBException e) {
-            log.error("Output serialization failed: " + e.getMessage());
+            log.error("Output serialization failed: " + e.getMessage(), e);
             errorValue = EXIT_CODE_NOT_RUNNING;
         }
     }
@@ -1290,8 +1292,7 @@ public abstract class NuxeoLauncher {
                 }
             }
         } catch (JAXBException e) {
-            log.error("Output serialization failed: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Output serialization failed: " + e.getMessage(), e);
             errorValue = EXIT_CODE_NOT_RUNNING;
         }
     }
@@ -1743,6 +1744,7 @@ public abstract class NuxeoLauncher {
         log.error("\tmp-purge\t\tUninstall and remove all packages from the local cache.");
         log.error("\tmp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).");
         log.error("\tmp-upgrade\t\tGet all the available upgrades for the Marketplace packages currently installed (requires a registered instance).");
+        log.error("\tmp-show\t\t\tShow Marketplace package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.");
     }
 
     /**
@@ -1962,32 +1964,10 @@ public abstract class NuxeoLauncher {
         log.info("** Packages:");
         List<String> pkgTemplates = new ArrayList<String>();
         for (LocalPackage pkg : pkgs) {
-            nxInstance.packages.add(new PackageInfo(pkg.getName(),
-                    pkg.getVersion().toString(), pkg.getId(), pkg.getState()));
-            String packageDescription;
-            switch (pkg.getState()) {
-            case PackageState.DOWNLOADING:
-                packageDescription = "downloading";
-                break;
-            case PackageState.DOWNLOADED:
-                packageDescription = "downloaded";
-                break;
-            case PackageState.INSTALLING:
-                packageDescription = "installing";
-                break;
-            case PackageState.INSTALLED:
-                packageDescription = "installed";
-                break;
-            case PackageState.STARTED:
-                packageDescription = "started";
-                break;
-            default:
-                packageDescription = "unknown";
-                break;
-            }
-            log.info("- " + pkg.getName() + " (version: "
-                    + pkg.getVersion().toString() + " - id: " + pkg.getId()
-                    + " - state: " + packageDescription + ")");
+            nxInstance.packages.add(new PackageInfo(pkg));
+            log.info(String.format("- %s (version: %s - id: %s - state: %s)",
+                    pkg.getName(), pkg.getVersion(), pkg.getId(),
+                    PackageState.getByValue(pkg.getState()).getLabel()));
             // store template(s) added by this package
             try {
                 File installFile = pkg.getInstallFile();
@@ -2177,6 +2157,27 @@ public abstract class NuxeoLauncher {
             }
         }
         return pkgRequest(add, install, uninstall, null);
+    }
+
+    /**
+     * dpkg-like command which returns package location, version, dependencies,
+     * conflicts, ...
+     *
+     * @param packages List of packages identified by their ID, name or local
+     *            filename.
+     *
+     * @return false if unable to show package information.
+     * @throws PackageException
+     * @throws IOException
+     * @since 5.7
+     */
+    protected boolean pkgShow(String[] packages) throws IOException,
+            PackageException {
+        boolean cmdOK = getConnectBroker().pkgShow(Arrays.asList(packages));
+        if (!cmdOK) {
+            errorValue = EXIT_CODE_ERROR;
+        }
+        return cmdOK;
     }
 
 }

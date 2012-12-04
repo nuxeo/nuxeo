@@ -44,6 +44,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -151,8 +152,7 @@ public class ConnectBroker {
         boolean foundName = false;
         for (LocalPackage pkg : localPackages) {
             if (pkg.getName().equals(pkgName)
-                    && ((pkg.getState() == PackageState.INSTALLING)
-                            || (pkg.getState() == PackageState.INSTALLED) || (pkg.getState() == PackageState.STARTED))) {
+                    && PackageState.getByValue(pkg.getState()).isInstalled()) {
                 foundName = true;
                 break;
             }
@@ -225,12 +225,9 @@ public class ConnectBroker {
         List<LocalPackage> localPackages = getPkgList();
         List<LocalPackage> installedPackages = new ArrayList<LocalPackage>();
         for (LocalPackage pkg : localPackages) {
-            if ((pkg.getState() != PackageState.INSTALLING)
-                    && (pkg.getState() != PackageState.INSTALLED)
-                    && (pkg.getState() != PackageState.STARTED)) {
-                continue;
+            if (PackageState.getByValue(pkg.getState()).isInstalled()) {
+                installedPackages.add(pkg);
             }
-            installedPackages.add(pkg);
         }
         return getBestIdForNameInList(pkgName, installedPackages);
     }
@@ -415,7 +412,7 @@ public class ConnectBroker {
                     // - This may (will) break the server if there are
                     // dependencies/compatibility changes or it the package is
                     // in installed state.
-                    if (localPackage.getState() != PackageState.STARTED) {
+                    if (localPackage.getState() != PackageState.STARTED.getValue()) {
                         pkgRemove(localPackage.getId());
                         ret = addDistributionPackage(md5) && ret;
                     }
@@ -457,33 +454,11 @@ public class ConnectBroker {
                 StringBuilder sb = new StringBuilder();
                 for (Package pkg : packagesList) {
                     newPackageInfo(cmdInfo, pkg);
-                    String packageDescription;
-                    switch (pkg.getState()) {
-                    case PackageState.DOWNLOADING:
-                        packageDescription = "downloading";
-                        break;
-                    case PackageState.DOWNLOADED:
-                        packageDescription = "downloaded";
-                        break;
-                    case PackageState.INSTALLING:
-                        packageDescription = "installing";
-                        break;
-                    case PackageState.INSTALLED:
-                        packageDescription = "installed";
-                        break;
-                    case PackageState.STARTED:
-                        packageDescription = "started";
-                        break;
-                    case PackageState.REMOTE:
-                        packageDescription = "remote";
-                        break;
-                    default:
-                        packageDescription = "unknown";
-                        break;
-                    }
+                    String packageDescription = PackageState.getByValue(
+                            pkg.getState()).getLabel();
                     packageDescription = String.format("%6s %11s\t",
                             pkg.getType(), packageDescription);
-                    if (pkg.getState() == PackageState.REMOTE
+                    if (pkg.getState() == PackageState.REMOTE.getValue()
                             && pkg.getType() != PackageType.STUDIO
                             && pkg.getVisibility() != PackageVisibility.PUBLIC
                             && !LogicalInstanceIdentifier.isRegistered()) {
@@ -675,13 +650,13 @@ public class ConnectBroker {
             if (pkg == null) {
                 throw new PackageException("Package not found: " + pkgId);
             }
-            if ((pkg.getState() == PackageState.STARTED)
-                    || (pkg.getState() == PackageState.INSTALLED)) {
+            if (pkg.getState() == PackageState.STARTED.getValue()
+                    || pkg.getState() == PackageState.INSTALLED.getValue()) {
                 pkgUninstall(pkgId);
                 // Refresh state
                 pkg = service.getPackage(pkgId);
             }
-            if (pkg.getState() != PackageState.DOWNLOADED) {
+            if (pkg.getState() != PackageState.DOWNLOADED.getValue()) {
                 throw new PackageException(
                         "Can only remove packages in DOWNLOADED, INSTALLED or STARTED state");
             }
@@ -720,8 +695,8 @@ public class ConnectBroker {
                     if (pkgId == null) {
                         throw new PackageException(
                                 "Couldn't find a remote or local (relative to "
-                                        + "current directory or to NUXEO_HOME) package named "
-                                        + pkgToAdd);
+                                        + "current directory or to NUXEO_HOME) "
+                                        + "package with name or ID " + pkgToAdd);
                     } else {
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO,
                                 "Waiting for download");
@@ -759,7 +734,8 @@ public class ConnectBroker {
                 if (pkgId == null) {
                     throw new PackageException(
                             "Couldn't find a remote or local (relative to "
-                                    + "current directory or to NUXEO_HOME) package named "
+                                    + "current directory or to NUXEO_HOME) "
+                                    + "package with name or ID "
                                     + packageFileName);
                 } else if (!downloadPackages(Arrays.asList(new String[] { pkgId }))) {
                     throw new PackageException("Couldn't download package "
@@ -1042,7 +1018,7 @@ public class ConnectBroker {
                         cmdInfo.exitCode = 1;
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
                                 "Wrong digest for package " + pkg.getName());
-                    } else if (pkg.getState() == PackageState.DOWNLOADED) {
+                    } else if (pkg.getState() == PackageState.DOWNLOADED.getValue()) {
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG,
                                 "Downloaded " + pkg);
                     } else {
@@ -1321,10 +1297,107 @@ public class ConnectBroker {
      * adding a dependency on Connect Client
      */
     private PackageInfo newPackageInfo(CommandInfo cmdInfo, Package pkg) {
-        PackageInfo packageInfo = new PackageInfo(pkg.getName(),
-                pkg.getVersion().toString(), pkg.getId(), pkg.getState());
+        PackageInfo packageInfo = new PackageInfo(pkg);
         cmdInfo.packages.add(packageInfo);
         return packageInfo;
+    }
+
+    /**
+     * @param packages List of packages identified by their ID, name or local
+     *            filename.
+     * @since 5.7
+     */
+    public boolean pkgShow(List<String> packages) {
+        boolean cmdOk = true;
+        if (packages == null || packages.isEmpty()) {
+            return cmdOk;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("****************************************");
+        for (String pkg : packages) {
+            CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_SHOW);
+            cmdInfo.param = pkg;
+            try {
+                PackageInfo packageInfo = newPackageInfo(cmdInfo,
+                        findPackage(pkg));
+                sb.append("\nPackage: " + packageInfo.id);
+                sb.append("\nState: " + packageInfo.state);
+                sb.append("\nVersion: " + packageInfo.version);
+                sb.append("\nName: " + packageInfo.name);
+                sb.append("\nType: " + packageInfo.type);
+                sb.append("\nVisibility: " + packageInfo.visibility);
+                if (packageInfo.state == PackageState.REMOTE
+                        && packageInfo.type != PackageType.STUDIO
+                        && packageInfo.visibility != PackageVisibility.PUBLIC
+                        && !LogicalInstanceIdentifier.isRegistered()) {
+                    sb.append(" (registration required)");
+                }
+                sb.append("\nTarget platforms: "
+                        + ArrayUtils.toString(packageInfo.targetPlatforms));
+                sb.append("\nVendor: " + packageInfo.vendor);
+                sb.append("\nSupports hot-reload: "
+                        + packageInfo.supportsHotReload);
+                sb.append("\nSupported: " + packageInfo.supported);
+                sb.append("\nProduction state: " + packageInfo.productionState);
+                sb.append("\nValidation state: " + packageInfo.validationState);
+                sb.append("\nProvides: "
+                        + ArrayUtils.toString(packageInfo.provides));
+                sb.append("\nDepends: "
+                        + ArrayUtils.toString(packageInfo.dependencies));
+                sb.append("\nConflicts: "
+                        + ArrayUtils.toString(packageInfo.conflicts));
+                sb.append("\nTitle: " + packageInfo.title);
+                sb.append("\nDescription: " + packageInfo.description);
+                sb.append("\nHomepage: " + packageInfo.homePage);
+                sb.append("\nLicense: " + packageInfo.licenseType);
+                sb.append("\nLicense URL: " + packageInfo.licenseUrl);
+                sb.append("\n****************************************");
+            } catch (PackageException e) {
+                cmdOk = false;
+                cmdInfo.exitCode = 1;
+                cmdInfo.newMessage(e);
+            }
+        }
+        log.info(sb.toString());
+        return cmdOk;
+    }
+
+    /**
+     * Looks for a package. First look if it's a local ZIP file, second if it's
+     * a local package and finally if it's a remote package.
+     *
+     * @param pkg A ZIP filename or file path, or package ID or a package name.
+     * @return The first package found matching the given string.
+     * @throws PackageException If no package is found or if an issue occurred
+     *             while searching.
+     *
+     * @see PackageDefinition
+     * @see LocalPackage
+     * @see DownloadablePackage
+     */
+    protected Package findPackage(String pkg) throws PackageException {
+        // Is it a local ZIP file?
+        File localPackageFile = getLocalPackageFile(pkg);
+        if (localPackageFile != null) {
+            return service.loadPackageFromZip(localPackageFile);
+        }
+
+        // Is it a local package ID or name?
+        LocalPackage localPackage = getLocalPackage(pkg);
+        if (localPackage != null) {
+            return localPackage;
+        }
+
+        // Is it a remote package ID or name?
+        String pkgId = getRemotePackageId(pkg);
+        if (pkgId != null) {
+            return getPackageManager().findPackageById(pkgId);
+        }
+
+        throw new PackageException(
+                "Couldn't find a remote or local (relative to "
+                        + "current directory or to NUXEO_HOME) "
+                        + "package with name or ID " + pkg);
     }
 
 }
