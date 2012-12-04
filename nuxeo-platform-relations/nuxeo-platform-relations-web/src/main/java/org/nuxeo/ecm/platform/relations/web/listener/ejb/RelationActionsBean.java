@@ -450,7 +450,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                     resourcesAccessor.getMessages().get(
                             "label.relation.already.exists"));
         }
-        return "document_relations";
+        return null;
     }
 
     // for consistency for callers only
@@ -521,7 +521,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                     resourcesAccessor.getMessages().get(
                             "label.relation.deleted"));
         }
-        return "document_relations";
+        return null;
     }
 
     public Boolean getShowCreateForm() {
