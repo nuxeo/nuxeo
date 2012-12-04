@@ -99,12 +99,16 @@ public class DevValve extends ValveBase {
 
     private void sendFile(File file, Writer out) throws IOException {
         Reader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
-        char cbuf[] = new char[64 * 1024];
-        int r = -1;
-        while ((r = in.read(cbuf)) != -1) {
-            if (r > 0) {
-                out.write(cbuf, 0, r);
+        try {
+            char cbuf[] = new char[64 * 1024];
+            int r = -1;
+            while ((r = in.read(cbuf)) != -1) {
+                if (r > 0) {
+                    out.write(cbuf, 0, r);
+                }
             }
+        } finally {
+            in.close();
         }
     }
 
