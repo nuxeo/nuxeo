@@ -533,14 +533,20 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             Document dstDoc = resolveReference(dst);
             checkPermission(dstDoc, ADD_CHILDREN);
 
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+
+            // add the destination name, destination and source references in
+            // the options of the event
+            options.put(CoreEventConstants.SOURCE_REF, src);
+            options.put(CoreEventConstants.DESTINATION_REF, dst);
+            options.put(CoreEventConstants.DESTINATION_NAME, name);
             DocumentModel srcDocModel = readModel(srcDoc);
-            notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, null,
+            notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options,
                     null, null, true, true);
 
+            name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
             Document doc = getSession().copy(srcDoc, dstDoc, name);
             // no need to clear lock, locks table is not copied
-
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // notify document created by copy
             DocumentModel docModel = readModel(doc);
@@ -648,8 +654,16 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 checkPermission(srcDoc, REMOVE);
             }
 
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+
+            // add the destination name, destination and source references in
+            // the options of the event
+            options.put(CoreEventConstants.SOURCE_REF, src);
+            options.put(CoreEventConstants.DESTINATION_REF, dst);
+            options.put(CoreEventConstants.DESTINATION_NAME, name);
+
             DocumentModel srcDocModel = readModel(srcDoc);
-            notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, null,
+            notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options,
                     null, null, true, true);
 
             String comment = srcDoc.getRepository().getName() + ':'
@@ -663,7 +677,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             // notify document moved
             DocumentModel docModel = readModel(doc);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
             options.put(CoreEventConstants.PARENT_PATH,
                     srcDocModel.getParentRef());
             notifyEvent(DocumentEventTypes.DOCUMENT_MOVED, docModel, options,

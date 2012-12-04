@@ -59,6 +59,18 @@ public final class CoreEventConstants {
      */
     public static final String PREVIOUS_DOCUMENT_MODEL = "previousDocumentModel";
 
+    /**
+     * Passed with aboutToCopy, aboutToMove, documentCreatedbyCopy and documentMoved events to be able to
+     * change the destination name
+     *
+     * @since 5.7
+     */
+    public static final String DESTINATION_NAME = "destinationName";
+
+    public static final String DESTINATION_REF = "destinationRef";
+
+    public static final String SOURCE_REF = "sourceRef";
+
     // Constant utility class
     private CoreEventConstants() {
     }
