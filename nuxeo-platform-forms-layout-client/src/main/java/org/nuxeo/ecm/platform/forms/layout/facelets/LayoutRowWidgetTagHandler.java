@@ -123,7 +123,10 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             variables.put(String.format("%s_%s",
                     RenderVariables.widgetVariables.widgetIndex.name(), level),
                     widgetIndexVe);
-            // expose widget controls too
+
+            // XXX: expose widget controls too, need to figure out
+            // why controls cannot be references to widget.controls like
+            // properties are in TemplateWidgetTypeHandler
             if (widget != null) {
                 for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
                     String key = ctrl.getKey();
@@ -131,10 +134,9 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
                             "%s_%s",
                             RenderVariables.widgetVariables.widgetControl.name(),
                             key);
-                    String value = String.format("#{%s.controls.%s}",
-                            RenderVariables.widgetVariables.widget.name(), key);
-                    variables.put(name, eFactory.createValueExpression(ctx,
-                            value, Object.class));
+                    Serializable value = ctrl.getValue();
+                    variables.put(name,
+                            eFactory.createValueExpression(value, Object.class));
                 }
             }
 

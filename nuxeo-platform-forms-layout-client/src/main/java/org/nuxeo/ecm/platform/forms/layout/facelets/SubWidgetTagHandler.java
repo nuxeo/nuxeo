@@ -121,7 +121,10 @@ public class SubWidgetTagHandler extends TagHandler {
             variables.put(String.format("%s_%s",
                     RenderVariables.widgetVariables.widgetIndex.name(), level),
                     subWidgetIndexVe);
-            // expose widget controls too
+
+            // XXX: expose widget controls too, need to figure out
+            // why controls cannot be references to widget.controls like
+            // properties are in TemplateWidgetTypeHandler
             if (subWidget != null) {
                 for (Map.Entry<String, Serializable> ctrl : subWidget.getControls().entrySet()) {
                     String key = ctrl.getKey();
@@ -129,10 +132,9 @@ public class SubWidgetTagHandler extends TagHandler {
                             "%s_%s",
                             RenderVariables.widgetVariables.widgetControl.name(),
                             key);
-                    String value = String.format("#{%s.controls.%s}",
-                            RenderVariables.widgetVariables.widget.name(), key);
-                    variables.put(name, eFactory.createValueExpression(ctx,
-                            value, Object.class));
+                    Serializable value = ctrl.getValue();
+                    variables.put(name,
+                            eFactory.createValueExpression(value, Object.class));
                 }
             }
 
@@ -145,6 +147,7 @@ public class SubWidgetTagHandler extends TagHandler {
 
             FaceletHandler handlerWithVars = helper.getAliasTagHandler(
                     tagConfigId, variables, blockedPatterns, nextHandler);
+
             // apply
             handlerWithVars.apply(ctx, parent);
             subWidgetCounter++;
