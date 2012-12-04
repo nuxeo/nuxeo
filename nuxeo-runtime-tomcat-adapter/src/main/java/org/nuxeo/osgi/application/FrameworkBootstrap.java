@@ -42,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deprecated
 public class FrameworkBootstrap implements LoaderConstants {
 
     protected static final String DEFAULT_BUNDLES_CP = "bundles/*:plugins/*";
