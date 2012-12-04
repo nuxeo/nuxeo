@@ -16,9 +16,9 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: .3em .3em .3em 1.7em }
 .foldableBox h3.folded {
-  background:url("${basePath}/icons/arrow_folded.gif") 5px left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)" }
+  background:url("${basePath}/icons/arrow_folded.gif") no-repeat left 5px; background-color: "neutral.medium (__FLAVOR__ background)" }
 .foldableBox h3.unfolded {
-  background:url("${basePath}/icons/arrow_unfolded.gif") 3px left no-repeat; background-color: "neutral.medium (__FLAVOR__ background)";
+  background:url("${basePath}/icons/arrow_unfolded.gif") no-repeat left 3px; background-color: "neutral.medium (__FLAVOR__ background)";
   clear: both }
 .foldableBox h3.foldedDisabled {
   background:"neutral.medium (__FLAVOR__ background)" none;
