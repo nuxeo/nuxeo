@@ -13,3 +13,13 @@ function toggleBox(toggleButton) {
   Effect.toggle(body, 'blind', {duration:0.2});
   return false;
 }
+
+function toggleBoxFor(title, body) {
+  if (Element.hasClassName(title, 'folded')) {
+    title.className = 'unfolded';
+  } else {
+    title.className = 'folded';
+  }
+  Effect.toggle(body, 'blind', {duration:0.2});
+  return false;
+}
