@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1028,6 +1029,43 @@ public class TestUserManager extends NXRuntimeTestCase {
         Collections.sort(expectedUsers);
         assertEquals("Expected users having read access are ", expectedUsers,
                 users);
+    }
+
+    @Test
+    public void testUsersAndGroupsWithSpaces() throws Exception {
+
+        String userNameWithSpaces = " test_u1 ";
+        String groupNameWithSpaces = " test_g1 ";
+
+        deleteTestObjects();
+        DocumentModel u1 = getUser(userNameWithSpaces);
+        u1 = userManager.createUser(u1);
+
+        assertTrue(userManager.searchUsers(userNameWithSpaces).size() == 1);
+        assertNotNull(userManager.getUserModel(userNameWithSpaces));
+
+        assertTrue(userManager.searchUsers(userNameWithSpaces.trim()).size() == 1);
+        assertNotNull(userManager.getUserModel(userNameWithSpaces.trim()));
+
+        DocumentModel g1 = getGroup(groupNameWithSpaces);
+
+        List<String> g1Users = Arrays.asList(u1.getId());
+        g1.setProperty("group", "members", g1Users);
+        g1 = userManager.createGroup(g1);
+
+        assertTrue(userManager.searchGroups(groupNameWithSpaces).size() == 1);
+        assertNotNull(userManager.getGroup(groupNameWithSpaces));
+
+        assertTrue(userManager.searchGroups(groupNameWithSpaces.trim()).size() == 1);
+        assertNotNull(userManager.getGroup(groupNameWithSpaces.trim()));
+
+        NuxeoPrincipal up1 = userManager.getPrincipal(userNameWithSpaces);
+        assertNotNull(up1);
+        up1 = userManager.getPrincipal(userNameWithSpaces.trim());
+        assertNotNull(up1);
+
+        assertTrue(up1.getGroups().contains(groupNameWithSpaces.trim()));
+
     }
 
 }

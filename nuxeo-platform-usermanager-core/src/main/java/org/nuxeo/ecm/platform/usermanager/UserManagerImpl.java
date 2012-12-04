@@ -796,6 +796,16 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
     }
 
+    protected void checkGrouId(DocumentModel groupModel) throws ClientException {
+        // be sure the name does not contains trailing spaces
+        Object groupIdValue = groupModel.getProperty(groupSchemaName,
+                groupIdField);
+        if (groupIdValue != null) {
+            groupModel.setProperty(groupSchemaName, groupIdField,
+                    groupIdValue.toString().trim());
+        }
+    }
+
     protected String getGroupId(DocumentModel groupModel)
             throws ClientException {
         Object groupIdValue = groupModel.getProperty(groupSchemaName,
@@ -804,6 +814,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             throw new ClientException("Invalid group id " + groupIdValue);
         }
         return (String) groupIdValue;
+    }
+
+    protected void checkUserId(DocumentModel userModel) throws ClientException {
+        Object userIdValue = userModel.getProperty(userSchemaName, userIdField);
+        if (userIdValue != null) {
+            userModel.setProperty(userSchemaName, userIdField,
+                    userIdValue.toString().trim());
+        }
     }
 
     protected String getUserId(DocumentModel userModel) throws ClientException {
@@ -1105,6 +1123,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             entries = searchUsers(
                     Collections.<String, Serializable> emptyMap(), null);
         } else {
+            pattern = pattern.trim();
             Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
 
             for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
@@ -1175,6 +1194,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         groupModel = multiTenantManagement.groupTransformer(this, groupModel,
                 context);
 
+        // be sure the name does not contains trailing spaces
+        checkGrouId(groupModel);
+
         Session groupDir = null;
         try {
             groupDir = dirService.open(groupDirectoryName, context);
@@ -1203,6 +1225,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         String groupName = multiTenantManagement.groupnameTranformer(this,
                 groupIdValue, context);
         Session groupDir = null;
+        if (groupName != null) {
+            groupName = groupName.trim();
+        }
         try {
             groupDir = dirService.open(groupDirectoryName, context);
             return groupDir.getEntry(groupName);
@@ -1220,6 +1245,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             return null;
         }
 
+        userName = userName.trim();
         // return anonymous model
         if (anonymousUser != null && userName.equals(anonymousUser.getId())) {
             return makeVirtualUserEntry(getAnonymousUserId(), anonymousUser);
@@ -1280,6 +1306,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             entries = searchGroups(
                     Collections.<String, Serializable> emptyMap(), null);
         } else {
+            pattern = pattern.trim();
             Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
 
             for (Entry<String, MatchType> fieldEntry : groupSearchFields.entrySet()) {
@@ -1330,6 +1357,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             DocumentModel context) throws ClientException,
             UserAlreadyExistsException {
         Session userDir = null;
+
+        // be sure UserId does not contains any trailing spaces
+        checkUserId(userModel);
+
         try {
             userDir = dirService.open(userDirectoryName, context);
             String userId = getUserId(userModel);
