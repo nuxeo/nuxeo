@@ -18,7 +18,7 @@ nuxeo.url=http://localhost:8080/nuxeo
 org.nuxeo.ecm.contextPath=/nuxeo
 
 org.nuxeo.ecm.product.name=Nuxeo Platform
-org.nuxeo.ecm.product.version=5.5.0-HF17-SNAPSHOT
+org.nuxeo.ecm.product.version=5.5.0-HF17
 
 # Various other default values
 #nuxeo.db.host=
