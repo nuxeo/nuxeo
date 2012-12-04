@@ -28,14 +28,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
-import org.apache.catalina.loader.WebappClassLoader;
 import org.nuxeo.osgi.application.MutableClassLoader;
+import org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 
-public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
+public class NuxeoDevWebappClassLoader extends NuxeoWebappClassLoader implements
         MutableClassLoader, WebResourcesCacheFlusher {
 
     public LocalClassLoader createLocalClassLoader(URL... urls) {
@@ -51,6 +51,7 @@ public class NuxeoDevWebappClassLoader extends WebappClassLoader implements
     protected volatile LocalClassLoader[] _children;
 
     public NuxeoDevWebappClassLoader() {
+        super();
         this.children = new ArrayList<LocalClassLoader>();
     }
 
