@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -187,7 +188,16 @@ public class StandaloneUpdateService implements PackageUpdateService {
         addCommand(Rollback.ID, Rollback.class);
     }
 
+    @Deprecated
+    @Override
     public void setPackageState(LocalPackage pkg, int state)
+            throws PackageException {
+        persistence.updateState(pkg.getId(), state);
+        pkg.setState(state);
+    }
+
+    @Override
+    public void setPackageState(LocalPackage pkg, PackageState state)
             throws PackageException {
         persistence.updateState(pkg.getId(), state);
         pkg.setState(state);
@@ -292,8 +302,8 @@ public class StandaloneUpdateService implements PackageUpdateService {
     }
 
     protected void startInstalledPackages() throws PackageException {
-        for (Map.Entry<String, Integer> entry : persistence.getStates().entrySet()) {
-            if (entry.getValue().intValue() == PackageState.INSTALLED) {
+        for (Entry<String, PackageState> entry : persistence.getStates().entrySet()) {
+            if (entry.getValue() == PackageState.INSTALLED) {
                 persistence.updateState(entry.getKey(), PackageState.STARTED);
             }
         }
@@ -311,7 +321,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
 
     @Override
     public boolean isStarted(String pkgId) {
-        return persistence.getState(pkgId) == PackageState.STARTED;
+        return persistence.getState(pkgId) == PackageState.STARTED.getValue();
     }
 
     @Override
@@ -323,4 +333,5 @@ public class StandaloneUpdateService implements PackageUpdateService {
     public File getBackupDir() {
         return new File(getDataDir(), "backup");
     }
+
 }

@@ -29,6 +29,7 @@ import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageData;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.PackageVisibility;
@@ -50,7 +51,7 @@ public class LocalPackageImpl implements LocalPackage {
 
     protected String id;
 
-    protected int state;
+    protected PackageState state;
 
     protected LocalPackageData data;
 
@@ -65,7 +66,7 @@ public class LocalPackageImpl implements LocalPackage {
 
     public LocalPackageImpl(ClassLoader parent, File file, int state,
             PackageUpdateService pus) throws PackageException {
-        this.state = state;
+        this.state = PackageState.getByValue(state);
         this.service = pus;
         XMap xmap = StandaloneUpdateService.getXmap();
         if (xmap == null) { // for tests
@@ -87,30 +88,51 @@ public class LocalPackageImpl implements LocalPackage {
         id = def.getId();
     }
 
+    /**
+     * @since 5.7
+     */
+    public LocalPackageImpl(File file, PackageState state,
+            PackageUpdateService pus) throws PackageException {
+        this(file, state.getValue(), pus);
+    }
+
+    @Deprecated
+    @Override
     public void setState(int state) {
+        this.state = PackageState.getByValue(state);
+    }
+
+    @Override
+    public void setState(PackageState state) {
         this.state = state;
     }
 
+    @Override
     public PackageData getData() {
         return data;
     }
 
+    @Override
     public File getInstallFile() throws PackageException {
         return data.getEntry(LocalPackage.INSTALL);
     }
 
+    @Override
     public File getUninstallFile() throws PackageException {
         return data.getEntry(LocalPackage.UNINSTALL);
     }
 
+    @Override
     public String getLicenseType() {
-        return def.getLicense();
+        return def.getLicenseType();
     }
 
+    @Override
     public String getLicenseUrl() {
         return def.getLicenseUrl();
     }
 
+    @Override
     public String getLicenseContent() throws PackageException {
         File file = data.getEntry(LocalPackage.LICENSE);
         if (file.isFile()) {
@@ -125,66 +147,82 @@ public class LocalPackageImpl implements LocalPackage {
         return null;
     }
 
+    @Override
     public String getClassifier() {
         return def.getClassifier();
     }
 
+    @Override
     public String getDescription() {
         return def.getDescription();
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getName() {
         return def.getName();
     }
 
+    @Override
     public String getTitle() {
         return def.getTitle();
     }
 
+    @Override
     public int getState() {
-        return state;
+        return state.getValue();
     }
 
+    @Override
     public String[] getTargetPlatforms() {
-        return def.getPlatforms();
+        return def.getTargetPlatforms();
     }
 
+    @Override
     public PackageDependency[] getDependencies() {
         return def.getDependencies();
     }
 
+    @Override
     public PackageDependency[] getConflicts() {
         return def.getConflicts();
     }
 
+    @Override
     public PackageDependency[] getProvides() {
         return def.getProvides();
     }
 
+    @Override
     public PackageType getType() {
         return def.getType();
     }
 
+    @Override
     public String getHomePage() {
         return def.getHomePage();
     }
 
+    @Override
     public Version getVersion() {
         return def.getVersion();
     }
 
+    @Override
     public String getVendor() {
         return def.getVendor();
     }
 
+    @Override
     public boolean isLocal() {
         return true;
     }
 
+    @Override
     public Task getInstallTask() throws PackageException {
         if (def.getInstaller() == null) {
             def.setInstaller(new TaskDefinitionImpl(
@@ -195,6 +233,7 @@ public class LocalPackageImpl implements LocalPackage {
         return getTask(def.getInstaller());
     }
 
+    @Override
     public Task getUninstallTask() throws PackageException {
         if (def.getUninstaller() == null) {
             def.setUninstaller(new TaskDefinitionImpl(
@@ -218,6 +257,7 @@ public class LocalPackageImpl implements LocalPackage {
         return task;
     }
 
+    @Override
     public Validator getValidator() throws PackageException {
         if (def.getValidator() != null) {
             try {
@@ -255,14 +295,17 @@ public class LocalPackageImpl implements LocalPackage {
         return null;
     }
 
+    @Override
     public Form[] getValidationForms() throws PackageException {
         return getForms(LocalPackage.VALIDATION_FORMS);
     }
 
+    @Override
     public Form[] getInstallForms() throws PackageException {
         return getForms(LocalPackage.INSTALL_FORMS);
     }
 
+    @Override
     public Form[] getUninstallForms() throws PackageException {
         return getForms(LocalPackage.UNINSTALL_FORMS);
     }

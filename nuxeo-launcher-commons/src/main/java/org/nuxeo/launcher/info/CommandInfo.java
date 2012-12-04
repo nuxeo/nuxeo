@@ -63,6 +63,11 @@ public class CommandInfo {
 
     public static final String CMD_INIT = "init";
 
+    /**
+     * @since 5.7
+     */
+    public static final String CMD_SHOW = "show";
+
     public CommandInfo() {
     }
 
@@ -150,8 +155,9 @@ public class CommandInfo {
         }
         for (PackageInfo packageInfo : packages) {
             sb.append("\n\t"
-                    + ReflectionToStringBuilder.toString(packageInfo,
-                            ToStringStyle.SHORT_PREFIX_STYLE));
+                    + new ReflectionToStringBuilder(packageInfo,
+                            ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames(
+                            new String[] { "description" }).toString());
         }
         if (exitCode != 0 || debug) {
             if (exitCode != 0) {

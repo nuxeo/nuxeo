@@ -313,7 +313,7 @@ public class PackageBuilder {
 
     public String buildManifest() {
         if (!platforms.isEmpty()) {
-            def.setPlatforms(platforms.toArray(new String[platforms.size()]));
+            def.setTargetPlatforms(platforms.toArray(new String[platforms.size()]));
         }
         if (!dependencies.isEmpty()) {
             def.setDependencies(dependencies.toArray(new PackageDependency[dependencies.size()]));

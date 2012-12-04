@@ -82,10 +82,11 @@ public class XmlSerializer extends XmlWriter {
         }
         element("validator", def.getValidator());
 
-        if (def.getPlatforms() != null && def.getPlatforms().length > 0) {
+        if (def.getTargetPlatforms() != null
+                && def.getTargetPlatforms().length > 0) {
             start("platforms");
             startContent();
-            for (String platform : def.getPlatforms()) {
+            for (String platform : def.getTargetPlatforms()) {
                 element("platform", platform);
             }
             end("platforms");

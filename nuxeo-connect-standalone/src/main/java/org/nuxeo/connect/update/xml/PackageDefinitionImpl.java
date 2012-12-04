@@ -21,6 +21,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
+import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
@@ -236,13 +237,25 @@ public class PackageDefinitionImpl implements PackageDefinition {
         this.homePage = homePage;
     }
 
+    @Deprecated
     @Override
     public String getLicense() {
-        return license;
+        return getLicenseType();
     }
 
     @Override
+    public String getLicenseType() {
+        return license;
+    }
+
+    @Deprecated
+    @Override
     public void setLicense(String license) {
+        setLicenseType(license);
+    }
+
+    @Override
+    public void setLicenseType(String license) {
         this.license = license;
     }
 
@@ -256,13 +269,25 @@ public class PackageDefinitionImpl implements PackageDefinition {
         this.licenseUrl = licenseUrl;
     }
 
+    @Deprecated
     @Override
     public String[] getPlatforms() {
-        return platforms;
+        return getTargetPlatforms();
     }
 
     @Override
+    public String[] getTargetPlatforms() {
+        return platforms;
+    }
+
+    @Deprecated
+    @Override
     public void setPlatforms(String[] platforms) {
+        setTargetPlatforms(platforms);
+    }
+
+    @Override
+    public void setTargetPlatforms(String[] platforms) {
         this.platforms = platforms;
     }
 
@@ -468,18 +493,8 @@ public class PackageDefinitionImpl implements PackageDefinition {
     }
 
     @Override
-    public String[] getTargetPlatforms() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getState() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getLicenseType() {
-        throw new UnsupportedOperationException();
+        return PackageState.UNKNOWN.getValue();
     }
 
     @Override

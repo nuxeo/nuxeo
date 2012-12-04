@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import org.nuxeo.common.Environment;
@@ -58,7 +59,7 @@ public class PackagePersistence {
 
     protected final Random random = new Random();
 
-    protected Map<String, Integer> states;
+    protected Map<String, PackageState> states;
 
     private PackageUpdateService service;
 
@@ -83,12 +84,12 @@ public class PackagePersistence {
         return root;
     }
 
-    public synchronized Map<String, Integer> getStates() {
-        return new HashMap<String, Integer>(states);
+    public synchronized Map<String, PackageState> getStates() {
+        return new HashMap<String, PackageState>(states);
     }
 
-    protected Map<String, Integer> loadStates() throws IOException {
-        Map<String, Integer> result = new HashMap<String, Integer>();
+    protected Map<String, PackageState> loadStates() throws IOException {
+        Map<String, PackageState> result = new HashMap<String, PackageState>();
         File file = new File(root, ".packages");
         if (file.isFile()) {
             List<String> lines = FileUtils.readLines(file);
@@ -98,14 +99,20 @@ public class PackagePersistence {
                     continue;
                 }
                 int i = line.indexOf('=');
-                String key = line.substring(0, i).trim();
-                Integer val = null;
-                try {
-                    val = Integer.valueOf(line.substring(i + 1).trim());
-                } catch (NumberFormatException e) { // silently ignore
-                    val = new Integer(PackageState.REMOTE);
+                String pkgId = line.substring(0, i).trim();
+                String value = line.substring(i + 1).trim();
+                PackageState state = null;
+                state = PackageState.getByLabel(value);
+                if (state == PackageState.UNKNOWN) {
+                    try {
+                        // Kept for backward compliance with int instead of enum
+                        state = PackageState.getByValue(value);
+                    } catch (NumberFormatException e) {
+                        // Set as REMOTE if undefined/unreadable
+                        state = PackageState.REMOTE;
+                    }
                 }
-                result.put(key, val);
+                result.put(pkgId, state);
             }
         }
         return result;
@@ -113,9 +120,9 @@ public class PackagePersistence {
 
     protected void writeStates() throws IOException {
         StringBuilder buf = new StringBuilder();
-        for (Map.Entry<String, Integer> entry : states.entrySet()) {
-            buf.append(entry.getKey()).append('=').append(
-                    entry.getValue().toString()).append("\n");
+        for (Entry<String, PackageState> entry : states.entrySet()) {
+            buf.append(entry.getKey()).append('=').append(entry.getValue()).append(
+                    "\n");
         }
         File file = new File(root, ".packages");
         FileUtils.writeFile(file, buf.toString());
@@ -165,7 +172,7 @@ public class PackagePersistence {
                 // this is a special case - reload a studio snapshot package
                 // 1. first we need to uninstall the existing package
                 LocalPackage oldpkg = getPackage(pkg.getId());
-                if (oldpkg.getState() >= PackageState.INSTALLED) {
+                if (oldpkg.getState() >= PackageState.INSTALLED.getValue()) {
                     Task utask = oldpkg.getUninstallTask();
                     try {
                         utask.run(new HashMap<String, String>());
@@ -194,12 +201,15 @@ public class PackagePersistence {
         return pkg;
     }
 
+    /**
+     * FIXME Should return a {@link PackageState} instead.
+     */
     public synchronized int getState(String featureId) {
-        Integer state = states.get(featureId);
+        PackageState state = states.get(featureId);
         if (state == null) {
             return 0;
         }
-        return state;
+        return state.getValue();
     }
 
     /**
@@ -223,9 +233,9 @@ public class PackagePersistence {
 
     public synchronized String getActivePackageId(String name) {
         name = name + '-';
-        for (Map.Entry<String, Integer> entry : states.entrySet()) {
+        for (Entry<String, PackageState> entry : states.entrySet()) {
             if (entry.getKey().startsWith(name)
-                    && entry.getValue() >= PackageState.INSTALLING) {
+                    && entry.getValue().isInstalled()) {
                 return entry.getKey();
             }
         }
@@ -257,7 +267,25 @@ public class PackagePersistence {
         org.apache.commons.io.FileUtils.deleteQuietly(file);
     }
 
+    /**
+     * @deprecated Since 5.7. Use {@link #updateState(String, PackageState)}
+     *             instead.
+     */
+    @Deprecated
     public synchronized void updateState(String id, int state)
+            throws PackageException {
+        states.put(id, PackageState.getByValue(state));
+        try {
+            writeStates();
+        } catch (IOException e) {
+            throw new PackageException("Failed to write package states", e);
+        }
+    }
+
+    /**
+     * @since 5.7
+     */
+    public synchronized void updateState(String id, PackageState state)
             throws PackageException {
         states.put(id, state);
         try {
