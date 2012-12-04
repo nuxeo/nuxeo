@@ -681,6 +681,9 @@
       <widgetModes>
         <mode value="edit_demo_preview">hidden</mode>
       </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
       <properties mode="any">
         <property name="resourceName">actionCategories</property>
       </properties>
@@ -704,6 +707,9 @@
       <widgetModes>
         <mode value="edit_demo_preview">hidden</mode>
       </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
       <properties mode="any">
         <property name="resourceName">actions</property>
       </properties>
@@ -1472,15 +1478,15 @@
                 <row>
                   <widget>showPDFExport</widget>
                 </row>
-                <!-- not exposed in studio for now -->
                 <row>
                   <widget>foldable</widget>
                 </row>
                 <row>
-                  <widget>foldableBoxStyleClass</widget>
-                </row>
-                <row>
                   <widget>foldedByDefault</widget>
+                </row>
+                <!-- not exposed in studio for now -->
+                <row>
+                  <widget>foldableBoxStyleClass</widget>
                 </row>
                 <row>
                   <widget>foldedIfEmpty</widget>
@@ -1682,7 +1688,6 @@
                   <field>showPDFExport</field>
                 </fields>
               </widget>
-              <!-- not exposed in studio for now -->
               <widget name="foldable" type="checkbox">
                 <labels>
                   <label mode="any">Make this content view foldable</label>
@@ -1699,25 +1704,6 @@
                   <field>foldable</field>
                 </fields>
                 <widgetModes>
-                  <mode value="any">hidden</mode>
-                  <mode value="view_reference">view</mode>
-                </widgetModes>
-              </widget>
-              <widget name="foldableBoxStyleClass" type="text">
-                <labels>
-                  <label mode="any">Foldable Box Style class</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The given style class will be used on the
-                    foldable box.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>foldableBoxStyleClass</field>
-                </fields>
-                <widgetModes>
-                  <mode value="any">hidden</mode>
                   <mode value="view_reference">view</mode>
                 </widgetModes>
               </widget>
@@ -1732,6 +1718,24 @@
                 </helpLabels>
                 <fields>
                   <field>foldedByDefault</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <!-- not exposed in studio for now -->
+              <widget name="foldableBoxStyleClass" type="text">
+                <labels>
+                  <label mode="any">Foldable Box Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be used on the
+                    foldable box.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldableBoxStyleClass</field>
                 </fields>
                 <widgetModes>
                   <mode value="any">hidden</mode>
@@ -1842,6 +1846,7 @@
           </defaultConfiguration>
         </fields>
         <containingForm>true</containingForm>
+        <handlingLabels>true</handlingLabels>
         <supportedModes>
           <mode>view</mode>
           <mode>edit</mode>
@@ -1879,6 +1884,15 @@
                 </row>
                 <row>
                   <widget>useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget>foldable</widget>
+                </row>
+                <row>
+                  <widget>foldedByDefault</widget>
+                </row>
+                <row>
+                  <widget>displayToggleActionInHeader</widget>
                 </row>
                 <row>
                   <widget>initialActionLabel</widget>
@@ -2027,6 +2041,24 @@
                   <field>showEditOptions</field>
                 </fields>
               </widget>
+              <widget name="displayToggleActionInHeader" type="checkbox">
+                <labels>
+                  <label mode="any">Display toggle action in header</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true (and widget has a header,
+                    because it handles its label), actions will be displayed in
+                    the header. This includes the "toggle" action, as well as
+                    "save" actions. Only the "toggle" action is hidden from the
+                    rendering when it is displayed on top. "Save" actions are
+                    shown twice. Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>displayToggleActionInHeader</field>
+                </fields>
+              </widget>
               <widget name="useAjaxForm" type="checkbox">
                 <labels>
                   <label mode="any">Use ajax actions</label>
@@ -2073,6 +2105,41 @@
                 <fields>
                   <field>cancelActionLabel</field>
                 </fields>
+              </widget>
+              <widget name="foldable" type="checkbox">
+                <labels>
+                  <label mode="any">Make this content view foldable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the content view will be
+                    displayed in a box that can be folded if users would like to
+                    hide this content view content. Note that this state is not
+                    persisted. Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldable</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="foldedByDefault" type="checkbox">
+                <labels>
+                  <label mode="any">Folded by default</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldedByDefault</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
               </widget>
             </layout>
           </layouts>
@@ -2331,7 +2398,7 @@
     <widgetType name="currentDocumentActionsWithForms">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Toolbar Actions</title>
+        <title>Toolbar actions</title>
         <description>
           <p>This widget displays actions filtered on the current document, and
             surrounds them by a form.</p>
@@ -2409,7 +2476,7 @@
     <widgetType name="currentDocumentAction">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Form Action</title>
+        <title>Form action</title>
         <description>
           <p>This widget displays an action filtered on current document context</p>
           <p>
@@ -2479,7 +2546,7 @@
     <widgetType name="currentDocumentActionWithForms">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Toolbar Action</title>
+        <title>Toolbar action</title>
         <description>
           <p>This widget displays an action filtered on current document context</p>
           <p>

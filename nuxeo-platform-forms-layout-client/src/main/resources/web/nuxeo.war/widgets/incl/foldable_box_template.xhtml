@@ -16,6 +16,8 @@ Accepted parameters:
   before the potential 'foldableBox' style class (optional)
 - headerStyleClass: additional style class to put on the header/h3 tag
   before the potential 'unfolded' style class (optional)
+- headerFormId: string id of the form around header. Optional, no form is added
+  if id is not filled.
 
 Templating zone to define:
 - foldable_box_header: header of the box
@@ -27,18 +29,36 @@ Templating zone to define:
   <div class="#{foldableStyleClass} #{nxu:test(foldable, 'foldableBox', '')}">
 
     <c:if test="#{not hideHeader}">
-      <h3 class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
-        <c:choose>
-          <c:when test="#{foldable}">
-            <a href="#nogo" onclick="return toggleBox(this)">
+      <c:if test="#{empty headerFormId}">
+        <h3 class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
+          <c:choose>
+            <c:when test="#{foldable}">
+              <a href="#nogo" onclick="return toggleBox(this)">
+                <ui:insert name="foldable_box_header_content" />
+              </a>
+            </c:when>
+            <c:otherwise>
               <ui:insert name="foldable_box_header_content" />
-            </a>
-          </c:when>
-          <c:otherwise>
-            <ui:insert name="foldable_box_header_content" />
-          </c:otherwise>
-        </c:choose>
-      </h3>
+            </c:otherwise>
+          </c:choose>
+        </h3>
+      </c:if>
+      <c:if test="#{not empty headerFormId}">
+        <h:form id="#{headerFormId}">
+          <h3 class="#{headerStyleClass} #{nxu:test(foldable, nxu:test(foldedByDefault, 'folded', 'unfolded'), 'foldedDisabled')}">
+            <c:choose>
+              <c:when test="#{foldable}">
+                <a href="#nogo" onclick="return toggleBox(this.parentNode)">
+                  <ui:insert name="foldable_box_header_content" />
+                </a>
+              </c:when>
+              <c:otherwise>
+                <ui:insert name="foldable_box_header_content" />
+              </c:otherwise>
+            </c:choose>
+          </h3>
+        </h:form>
+      </c:if>
     </c:if>
 
     <div class="#{nxu:test(foldable, 'boxBody', '')}"

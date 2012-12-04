@@ -11,7 +11,7 @@
 
     <c:when test="#{display == 'buttons'}">
       <a4j:commandButton
-        id="#{widget.id}_cancelToggleAction"
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
         immediate="true"
         reRender="#{widget.id}_regionPanel"
         value="#{cancelActionLabel}"
@@ -28,7 +28,7 @@
 
     <c:when test="#{display == 'icons'}">
       <a4j:commandLink
-        id="#{widget.id}_cancelToggleAction"
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
         immediate="true"
         reRender="#{widget.id}_regionPanel"
         styleClass="actionLink #{widgetProperty_actionStyleClass}">
@@ -47,7 +47,7 @@
 
     <c:when test="#{display == 'links'}">
       <a4j:commandLink
-        id="#{widget.id}_cancelToggleAction"
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
         immediate="true"
         reRender="#{widget.id}_regionPanel"
         value="#{cancelActionLabel}"
@@ -64,7 +64,7 @@
 
     <c:otherwise>
       <a4j:commandLink
-        id="#{widget.id}_cancelToggleAction"
+        id="#{widget.id}_#{idPrefix}cancelToggleAction"
         immediate="true"
         reRender="#{widget.id}_regionPanel"
         styleClass="actionLink #{widgetProperty_actionStyleClass}">
