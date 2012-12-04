@@ -1,3 +1,5 @@
+<#assign isTomcat7 = tomcat.version?split(".")[0]?number == 7>
+<#assign isWizard = (nuxeo.wizard?? && nuxeo.wizard.done?? && nuxeo.wizard.done == "false")>
 <?xml version='1.0' encoding='utf-8'?>
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
@@ -21,12 +23,15 @@
  -->
 <Server port="${nuxeo.server.tomcat_admin.port}" shutdown="SHUTDOWN">
 
+
   <!--APR library loader. Documentation at /docs/apr.html -->
   <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
   <!--Initialize Jasper prior to webapps are loaded. Documentation at /docs/jasper-howto.html -->
   <Listener className="org.apache.catalina.core.JasperListener" />
   <!-- JMX Support for the Tomcat server. Documentation at /docs/non-existent.html -->
+<#if !isTomcat7>
   <Listener className="org.apache.catalina.mbeans.ServerLifecycleListener" />
+</#if>
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
 
   <!-- Global JNDI resources
@@ -42,12 +47,14 @@
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
 
+<#if !isWizard>
     <!-- Common datasource for all basic nuxeo datasources -->
     <Resource name="${nuxeo.db.commonds}" auth="Container" type="javax.sql.DataSource"
         maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
         url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
         username="${nuxeo.db.user}" password="${nuxeo.db.password}"
         accessToUnderlyingConnectionAllowed="true" />
+</#if>
 
   </GlobalNamingResources>
 
@@ -145,11 +152,18 @@
            Note: XML Schema validation will not work with Xerces 2.2.
        -->
       <Host name="localhost"  appBase="webapps"
-            unpackWARs="true" autoDeploy="false"
+            unpackWARs="true" 
+<#if isWizard>
+            autoDeploy="false"
+<#else>
+            autoDeploy="false"
+</#if>
             xmlValidation="false" xmlNamespaceAware="false">
 
-            <!-- Uncomment to avoid nuxeo deployment preprocessing at each startup -->
+<#if !isWizard>
+            <!-- Comment to avoid nuxeo deployment preprocessing at each startup -->
             <Listener className="org.nuxeo.runtime.tomcat.NuxeoDeployer" home="nxserver" />
+</#if>
 
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->

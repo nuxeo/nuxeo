@@ -69,11 +69,10 @@
 
   <target name="prepare-tomcat">
     <unzip dest="${outdir}">
-      <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:6.0.35:zip"
-                            classifier="light" />
+      <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:${tomcat.version}:zip" classifier="${tomcat.classifier}" />
     </unzip>
     <move todir="${tomcat}">
-      <fileset dir="${outdir}/apache-tomcat-6.0.35" />
+      <fileset dir="${outdir}/apache-tomcat-${tomcat.version}" />
     </move>
     <unzip dest="${tomcat}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
@@ -97,6 +96,9 @@
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="templates-tomcat" />
     </unzip>
+
+    <echo message="tomcat.version=${tomcat.version}" append="true" file="${tomcat}/templates/nuxeo.defaults"/>
+
     <copy tofile="${tomcat}/templates/nuxeo-wizard.war">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard::war" />
     </copy>
