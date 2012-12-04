@@ -2569,9 +2569,9 @@
       </property>
     </widgetType>
 
-    <widgetType name="date_range">
+    <widgetType name="datetimeRange">
       <configuration>
-        <title>Date range</title>
+        <title>Datetime range</title>
         <documentation>
           Widget used to search on a date range.
           Two fields are required:

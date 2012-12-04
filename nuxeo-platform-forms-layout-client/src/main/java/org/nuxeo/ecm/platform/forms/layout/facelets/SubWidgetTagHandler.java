@@ -122,16 +122,18 @@ public class SubWidgetTagHandler extends TagHandler {
                     RenderVariables.widgetVariables.widgetIndex.name(), level),
                     subWidgetIndexVe);
             // expose widget controls too
-            for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
-                String key = ctrl.getKey();
-                String name = String.format("%s_%s",
-                        RenderVariables.widgetVariables.widgetControl.name(),
-                        key);
-                String value = String.format("#{%s.controls.%s}",
-                        RenderVariables.widgetVariables.widget.name(), key);
-                variables.put(
-                        name,
-                        eFactory.createValueExpression(ctx, value, Object.class));
+            if (subWidget != null) {
+                for (Map.Entry<String, Serializable> ctrl : subWidget.getControls().entrySet()) {
+                    String key = ctrl.getKey();
+                    String name = String.format(
+                            "%s_%s",
+                            RenderVariables.widgetVariables.widgetControl.name(),
+                            key);
+                    String value = String.format("#{%s.controls.%s}",
+                            RenderVariables.widgetVariables.widget.name(), key);
+                    variables.put(name, eFactory.createValueExpression(ctx,
+                            value, Object.class));
+                }
             }
 
             List<String> blockedPatterns = new ArrayList<String>();
