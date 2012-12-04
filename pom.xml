@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.5.0-HF17-SNAPSHOT</version>
+  <version>5.5.0-HF18-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
@@ -98,15 +98,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <nuxeo.common.version>5.5.0-HF17-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>5.5.0-HF17-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>5.5.0-HF17-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.services.version>5.5.0-HF17-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.theme.version>5.5.0-HF17-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.jsf.version>5.5.0-HF17-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.dm.version>5.5.0-HF17-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.webengine.version>5.5.0-HF17-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.features.version>5.5.0-HF17-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.common.version>5.5.0-HF18-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>5.5.0-HF18-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>5.5.0-HF18-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.services.version>5.5.0-HF18-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.theme.version>5.5.0-HF18-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.jsf.version>5.5.0-HF18-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.dm.version>5.5.0-HF18-SNAPSHOT</nuxeo.dm.version>
+    <nuxeo.webengine.version>5.5.0-HF18-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.features.version>5.5.0-HF18-SNAPSHOT</nuxeo.features.version>
 
     <nuxeo.connect.client.version>1.3</nuxeo.connect.client.version>
     <nuxeo.distribution.tools.version>1.11</nuxeo.distribution.tools.version>
@@ -135,7 +135,7 @@
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
-    <nuxeo.platform.version>5.5.0-HF17-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.platform.version>5.5.0-HF18-SNAPSHOT</nuxeo.platform.version>
     <seam.version>2.1.0.SP1</seam.version>
   </properties>
 
