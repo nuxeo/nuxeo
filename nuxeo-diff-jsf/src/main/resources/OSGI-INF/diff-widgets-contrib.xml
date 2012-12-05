@@ -31,7 +31,7 @@
           <mode>view</mode>
         </supportedModes>
         <categories>
-          <category>document</category>
+          <category>summary</category>
         </categories>
       </configuration>
       <handler-class>
