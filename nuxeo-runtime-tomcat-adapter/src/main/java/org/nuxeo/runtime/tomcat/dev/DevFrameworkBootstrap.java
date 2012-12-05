@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
 import org.nuxeo.osgi.application.MutableClassLoader;
 
@@ -38,6 +40,8 @@ import org.nuxeo.osgi.application.MutableClassLoader;
 public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         DevBundlesManager {
 
+    protected final Log log = LogFactory.getLog(DevFrameworkBootstrap.class);
+    
     protected DevBundle[] devBundles;
 
     protected Timer bundlesCheck;

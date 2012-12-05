@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -20,12 +20,19 @@ import java.net.URL;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated Use {@link org.nuxeo.launcher.commons.MutableClassLoader}
+ * @since 5.4.2
  */
 public interface MutableClassLoader {
 
     void addURL(URL url);
 
     ClassLoader getClassLoader();
+
+    /**
+     * @param startupClass The binary name of the class
+     * @return The resulting Class object
+     * @throws ClassNotFoundException If the class was not found
+     */
+    Class<?> loadClass(String startupClass) throws ClassNotFoundException;
 
 }
