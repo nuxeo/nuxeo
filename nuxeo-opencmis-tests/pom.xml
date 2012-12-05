@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-chemistry</artifactId>
     <version>5.7-SNAPSHOT</version>
   </parent>
+
   <artifactId>nuxeo-opencmis-tests</artifactId>
   <name>Nuxeo Chemistry OpenCMIS Tests</name>
   <description>Nuxeo Core: Chemistry OpenCMIS Tests</description>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -42,6 +42,13 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
+      <exclusions>
+        <exclusion>
+          <!-- use servlet api 3 from tomcat embed -->
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -71,6 +78,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-types-core</artifactId>
     </dependency>
+
     <!-- audit -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -84,14 +92,23 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audit-core</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-web-common</artifactId>
+      <exclusions>
+        <exclusion>
+          <!-- use servlet api 3 from tomcat embed -->
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-opencmis-impl</artifactId>
@@ -100,6 +117,7 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-opencmis-bindings</artifactId>
     </dependency>
+
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
@@ -139,20 +157,25 @@
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-util</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
+      <version>7.0.23</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-juli</artifactId>
+      <version>7.0.23</version>
     </dependency>
+
     <!-- scope provided -->
     <dependency>
       <groupId>javax.resource</groupId>
       <artifactId>connector-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <!-- overridden test scopes -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -186,6 +209,7 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
+
     <!-- OpenCMIS -->
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>
@@ -212,23 +236,6 @@
       <groupId>org.apache.chemistry.opencmis</groupId>
       <artifactId>chemistry-opencmis-client-impl</artifactId>
     </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-event</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-usermanager-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-login</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
+
 </project>
