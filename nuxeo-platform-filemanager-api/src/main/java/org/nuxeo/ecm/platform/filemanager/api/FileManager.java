@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.VersioningOption;
 
 /**
  * File Manager.
@@ -109,5 +110,10 @@ public interface FileManager {
     String getDigestAlgorithm();
 
     boolean isDigestComputingEnabled();
+
+    /**
+     * @since 5.7
+     */
+    VersioningOption getVersioningOption();
 
 }

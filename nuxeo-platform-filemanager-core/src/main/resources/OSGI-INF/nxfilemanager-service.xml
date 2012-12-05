@@ -95,4 +95,25 @@
       class="org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension" />
   </extension-point>
 
+  <extension-point name="versioning">
+    <documentation>
+      @since 5.7
+      The versioning extension point defines the versioning option that will be
+      used when incrementing the document version at file import (DnD,
+      Import button)
+      The default value will be MINOR, to keep compatibility with previous
+      releases.
+      Possible values are NONE, MINOR OR MAJOR (see VersioningOption enumeration)
+      Other values will raise an IllegalArgumentException
+      <code>
+        <versioning>
+          <defaultVersioningOption>MAJOR</defaultVersioningOption>
+        </versioning>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.VersioningDescriptor" />
+  </extension-point>
+
 </component>

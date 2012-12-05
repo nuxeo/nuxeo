@@ -172,7 +172,7 @@ public abstract class AbstractFileImporter implements FileImporter {
             CoreSession documentManager, DocumentModel doc)
             throws ClientException {
         doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
+                fileManagerService.getVersioningOption());
         return documentManager.saveDocument(doc);
     }
 

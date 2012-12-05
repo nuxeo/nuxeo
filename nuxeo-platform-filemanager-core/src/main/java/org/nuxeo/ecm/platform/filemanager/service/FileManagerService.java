@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporterDescript
 import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporter;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporterDescriptor;
 import org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension;
+import org.nuxeo.ecm.platform.filemanager.service.extension.VersioningDescriptor;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -101,6 +103,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     private String digestAlgorithm = "sha-256";
 
     private boolean computeDigest = false;
+
+    /**
+     * @since 5.7
+     */
+    private VersioningOption defaultVersioningOption = VersioningOption.MINOR;
 
     private TypeManager typeService;
 
@@ -302,7 +309,13 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                             extension);
                 }
             }
-
+        } else if (extension.getExtensionPoint().equals("versioning")) {
+            Object[] contribs = extension.getContributions();
+            for (Object contrib : contribs) {
+                if (contrib instanceof VersioningDescriptor) {
+                    defaultVersioningOption = VersioningOption.valueOf(((VersioningDescriptor) contrib).getDefaultVersioningOption().toUpperCase());
+                }
+            }
         } else {
             log.warn(String.format("Unknown contribution %s: ignored",
                     extension.getExtensionPoint()));
@@ -325,6 +338,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             }
         } else if (extension.getExtensionPoint().equals("unicity")) {
 
+        } else if (extension.getExtensionPoint().equals("versioning")) {
+            // set to default value
+            defaultVersioningOption = VersioningOption.MINOR;
         } else {
             log.warn(String.format("Unknown contribution %s: ignored",
                     extension.getExtensionPoint()));
@@ -569,4 +585,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return digestAlgorithm;
     }
 
+    /**
+     * @since 5.7
+     */
+    public VersioningOption getVersioningOption() {
+        return defaultVersioningOption;
+    }
 }
