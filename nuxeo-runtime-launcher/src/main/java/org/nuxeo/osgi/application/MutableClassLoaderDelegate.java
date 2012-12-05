@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -18,41 +18,37 @@ package org.nuxeo.osgi.application;
 
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated Use {@link org.nuxeo.launcher.commons.MutableClassLoaderDelegate}
+ * @since 5.4.2
  */
 public class MutableClassLoaderDelegate implements MutableClassLoader {
 
-    protected ClassLoader cl;
+    protected final ClassLoader cl;
 
     protected Method addURL;
 
-    public MutableClassLoaderDelegate(ClassLoader delegate) {
-        addURL = urlSetter(delegate);
-        if (addURL == null) {
-            delegate = new URLClassLoader(new URL[0], delegate);
-            addURL = urlSetter(delegate);
-        }
-        addURL.setAccessible(true);
-        cl = delegate;
-    }
-
-    private Method urlSetter(ClassLoader cl) {
+    public MutableClassLoaderDelegate(ClassLoader cl)
+            throws IllegalArgumentException {
+        this.cl = cl;
         Class<?> clazz = cl.getClass();
         do {
             try {
-                return clazz.getDeclaredMethod("addURL", URL.class);
+                addURL = clazz.getDeclaredMethod("addURL", URL.class);
             } catch (NoSuchMethodException e) {
                 clazz = clazz.getSuperclass();
             } catch (Exception e) {
                 throw new IllegalArgumentException(
                         "Failed to adapt class loader: " + cl.getClass(), e);
             }
-        } while (clazz != null);
-        return null;
+        } while (addURL == null && clazz != null);
+        if (addURL == null) {
+            throw new IllegalArgumentException("Incompatible class loader: "
+                    + cl.getClass()
+                    + ". ClassLoader must provide a method: addURL(URL url)");
+        }
+        addURL.setAccessible(true);
     }
 
     @Override
@@ -68,6 +64,11 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
     @Override
     public ClassLoader getClassLoader() {
         return cl;
+    }
+
+    @Override
+    public Class<?> loadClass(String startupClass) throws ClassNotFoundException {
+        return cl.loadClass(startupClass);
     }
 
 }
