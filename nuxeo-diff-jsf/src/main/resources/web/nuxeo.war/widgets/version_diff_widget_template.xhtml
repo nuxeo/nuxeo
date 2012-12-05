@@ -6,6 +6,12 @@
            xmlns:nxl="http://nuxeo.org/nxforms/layout"
            xmlns:h="http://java.sun.com/jsf/html">
 
+  <c:if test="false">
+    Display diff between live document and specified version.
+
+    Since Nuxeo 5.7
+  </c:if>
+
   <nxu:set  var="versionLabel"
          value="#{nxu:test(!empty widgetProperty_versionLabel, widgetProperty_versionLabel, 'lastVersion')}">
   <nxu:set  var="propertyXPath"

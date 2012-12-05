@@ -5,7 +5,8 @@
 
     <widgetType name="version_diff">
       <configuration>
-        <title>Diff with a version</title>
+        <title>Diff between live document and a version</title>
+        <sinceVersion>5.7</sinceVersion>
         <description>
           <p>
             The version_diff widget displays difference between the live document and a specific version. If
@@ -30,7 +31,7 @@
           <mode>view</mode>
         </supportedModes>
         <categories>
-          <category>search</category>
+          <category>document</category>
         </categories>
       </configuration>
       <handler-class>
