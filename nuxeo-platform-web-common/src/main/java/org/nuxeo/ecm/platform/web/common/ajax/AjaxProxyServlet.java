@@ -182,10 +182,7 @@ public class AjaxProxyServlet extends HttpServlet {
 
         Map<String, String[]> params = req.getParameterMap();
         for (String paramName : params.keySet()) {
-            String[] values = params.get(paramName);
-            if (values != null && values.length > 0) {
-                httpMethod.getParams().setParameter(paramName, values[0]);
-            }
+            httpMethod.getParams().setParameter(paramName, params.get(paramName));
         }
 
         client.executeMethod(httpMethod);
