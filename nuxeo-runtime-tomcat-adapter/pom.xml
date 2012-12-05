@@ -21,14 +21,14 @@
 
     <dependency>
       <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-catalina</artifactId>
+      <artifactId>catalina</artifactId>
     </dependency>
 
     <dependency>
-       <groupId>org.nuxeo.runtime</groupId>
-       <artifactId>nuxeo-runtime-launcher</artifactId>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>coyote</artifactId>
     </dependency>
-
+    
   </dependencies>
 
 </project>
