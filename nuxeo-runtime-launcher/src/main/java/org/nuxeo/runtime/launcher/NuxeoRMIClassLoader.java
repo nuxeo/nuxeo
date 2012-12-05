@@ -49,6 +49,7 @@ import java.rmi.server.RMIClassLoaderSpi;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@SuppressWarnings({"ALL"})
 public class NuxeoRMIClassLoader
    extends RMIClassLoaderSpi
 {
