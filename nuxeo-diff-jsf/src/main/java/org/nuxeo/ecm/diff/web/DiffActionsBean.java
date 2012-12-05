@@ -257,6 +257,11 @@ public class DiffActionsBean implements Serializable {
         }
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument.isVersion()) {
+            log.info("Unable to diff, current document is a version document");
+            return null;
+        }
+
         DocumentModel documentVersion;
         if (LAST_VERSION_PROPERTY.equals(versionLabel)) {
             documentVersion = documentManager.getLastDocumentVersion(currentDocument.getRef());
