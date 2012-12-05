@@ -138,13 +138,6 @@ public class TomcatConfigurator extends ServerConfigurator {
     @Override
     public void prepareWizardStart() {
         try {
-            // overwrite server.xml with server.xml.nx (default Tomcat file)
-            File serverXMLBase = new File(generator.getNuxeoHome(), "conf");
-            File nuxeoServerXML = new File(serverXMLBase, "server.xml");
-            File nuxeoServerXMLOrg = new File(serverXMLBase, "server.xml.nx");
-            nuxeoServerXML.delete();
-            FileUtils.moveFile(nuxeoServerXMLOrg, nuxeoServerXML);
-
             // remove Tomcat configuration of Nuxeo context
             File contextXML = new File(generator.getNuxeoHome(),
                     getTomcatConfig());
