@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Handles document diff actions.
- *
+ * 
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
@@ -64,6 +64,8 @@ public class DiffActionsBean implements Serializable {
     private static final String DOC_DIFF_VIEW = "view_doc_diff";
 
     private static final String CONTENT_DIFF_DIFFERENCE_TYPE_MSG_KEY_PREFIX = "diff.content.differenceType.message.";
+
+    private static final String LAST_VERSION_PROPERTY = "lastVersion";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -91,7 +93,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Checks if the diff action is available for the
      * {@link DocumentsListsManager#CURRENT_DOCUMENT_SELECTION} working list.
-     *
+     * 
      * @return true if can diff the current document selection
      */
     public boolean getCanDiffCurrentDocumentSelection() {
@@ -103,7 +105,7 @@ public class DiffActionsBean implements Serializable {
      * Checks if the diff action is available for the
      * {@link DocumentsListsManager#CURRENT_DOCUMENT_TRASH_SELECTION} working
      * list.
-     *
+     * 
      * @return true if can diff the current document trash selection
      */
     public boolean getCanDiffCurrentTrashSelection() {
@@ -115,7 +117,7 @@ public class DiffActionsBean implements Serializable {
      * Checks if the diff action is available for the
      * {@link DocumentsListsManager#CURRENT_DOCUMENT_SECTION_SELECTION} working
      * list.
-     *
+     * 
      * @return true if can diff the current section selection
      */
     public boolean getCanDiffCurrentSectionSelection() {
@@ -127,7 +129,7 @@ public class DiffActionsBean implements Serializable {
      * Checks if the diff action is available for the
      * {@link VersionDocumentsListsConstants#CURRENT_VERSION_SELECTION} working
      * list.
-     *
+     * 
      * @return true if can diff the current version selection
      */
     public boolean getCanDiffCurrentVersionSelection() {
@@ -138,7 +140,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Checks if the diff action is available for the
      * {@link DocumentsListsManager#DEFAULT_WORKING_LIST} working list.
-     *
+     * 
      * @return true if can diff the current default working list selection
      */
     public boolean getCanDiffCurrentDefaultSelection() {
@@ -151,7 +153,7 @@ public class DiffActionsBean implements Serializable {
      * list.
      * <p>
      * Condition: the working list has exactly 2 documents.
-     *
+     * 
      * @param listName the list name
      * @return true if can diff the {@code listName} working list
      */
@@ -164,7 +166,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current document selection.
-     *
+     * 
      * @return the view id
      * @throws ClientException the client exception
      */
@@ -176,7 +178,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current document trash selection.
-     *
+     * 
      * @return the view id
      * @throws ClientException the client exception
      */
@@ -188,7 +190,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current section selection.
-     *
+     * 
      * @return the view id
      * @throws ClientException the client exception
      */
@@ -200,7 +202,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current version selection.
-     *
+     * 
      * @return the view id
      * @throws ClientException the client exception
      */
@@ -212,7 +214,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current default selection.
-     *
+     * 
      * @return the view id
      * @throws ClientException the client exception
      */
@@ -224,7 +226,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the {@code listName} working list.
-     *
+     * 
      * @return the view id
      * @throws ClientException the client exception
      */
@@ -240,8 +242,52 @@ public class DiffActionsBean implements Serializable {
     }
 
     /**
+     * Prepare a diff of the current document with a specific version
+     * 
+     * @param versionLabel version label to look for, if you want the last
+     *            version use org.nuxeo.ecm.diff.web
+     *            .DiffActionsBean#LAST_VERSION_PROPERTY
+     * @throws ClientException if current document is null or if the expected
+     *             version is missing.
+     */
+    public String prepareCurrentVersionDiff(String versionLabel)
+            throws ClientException {
+        if (StringUtils.isBlank(versionLabel)) {
+            versionLabel = LAST_VERSION_PROPERTY;
+        }
+
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentModel documentVersion;
+        if (LAST_VERSION_PROPERTY.equals(versionLabel)) {
+            documentVersion = documentManager.getLastDocumentVersion(currentDocument.getRef());
+
+            if (documentVersion == null) {
+                log.info("Unable to diff, current document do not have any versions yet.");
+                return null;
+            }
+        } else {
+            VersionModel versionModel = new VersionModelImpl();
+            versionModel.setLabel(versionLabel);
+            documentVersion = documentManager.getDocumentWithVersion(
+                    currentDocument.getRef(), versionModel);
+
+            if (documentVersion == null) {
+                log.info("Unable to found " + versionLabel + " on current document to diff.");
+                return null;
+            }
+        }
+
+        setLeftDoc(currentDocument);
+        setRightDoc(documentVersion);
+
+        diffSelectionType = DiffSelectionType.version.name();
+
+        return DOC_DIFF_VIEW;
+    }
+
+    /**
      * Prepares a diff of the selected version with the live doc.
-     *
+     * 
      * @return the view id
      * @throws ClientException the client exception
      */
@@ -276,7 +322,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Refreshes the diff between leftDoc and rightDoc.
-     *
+     * 
      * @return the view id
      * @throws ClientException the client exception
      */
@@ -293,7 +339,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Checks if document diff is available.
-     *
+     * 
      * @return true, if is document diff available
      */
     public boolean isDocumentDiffAvailable() {
@@ -302,7 +348,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the document diff.
-     *
+     * 
      * @return the document diff between leftDoc and rightDoc if leftDoc and
      *         rightDoc aren't null, else null
      * @throws ClientException the client exception
@@ -324,7 +370,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Gets the content diff fancybox URL for the property with xpath
      * {@code propertyXPath}.
-     *
+     * 
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @return the content diff fancybox URL
@@ -340,7 +386,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Gets the content diff fancybox URL for the property with xpath
      * {@code propertyXPath} using {@code conversionType}.
-     *
+     * 
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
@@ -362,7 +408,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the content diff URL.
-     *
+     * 
      * @param propertyXPath the property xpath
      * @param conversionTypeParam the conversion type param
      * @return the content diff URL
@@ -390,7 +436,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the content diff with blob post processing URL.
-     *
+     * 
      * @param propertyXPath the property xpath
      * @param conversionTypeParam the conversion type param
      * @return the content diff with blob post processing URL
@@ -419,7 +465,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the {@code listName} working list.
-     *
+     * 
      * @return the {@code listName} working list
      * @throws ClientException the client exception
      */
@@ -440,7 +486,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the document diff service.
-     *
+     * 
      * @return the document diff service
      * @throws ClientException if cannot get the document diff service
      */
@@ -462,7 +508,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the diff display service.
-     *
+     * 
      * @return the diff display service
      * @throws ClientException the client exception
      */

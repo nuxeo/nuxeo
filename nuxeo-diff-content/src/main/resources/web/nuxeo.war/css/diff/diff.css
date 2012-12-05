@@ -86,7 +86,7 @@ body { margin: 0 }
 
 /* Nuxeo styles */
 
-body { font-family: 'Lucida Grande', Arial, Helvetica, Geneva, sans-serif }
+body { font-family: 'Lucida Grande', Arial, Helvetica, Geneva, sans-serif; font-size: 0.8em; }
 
 .headerText { color: #666; font-size: .75em; line-height: 150%; padding: 0 1em; text-align: center }
 .headerText .diff-html-added, .headerText .diff-html-removed { cursor: default }

@@ -1,8 +1,47 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.diff.widgets.contrib">
 
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
+
+    <widgetType name="version_diff">
+      <configuration>
+        <title>Diff with a version</title>
+        <description>
+          <p>
+            The version_diff widget displays difference between the live document and a specific version. If
+            nothing is specified, last version is compared.
+          </p>
+          <p>
+            It accepts the following properties:
+            <ul>
+              <li>
+                versionLabel: the name of the expected label, defautl is "lastVersion"
+              </li>
+              <li>
+                propertyXPath: the property XPath, default is "file:content"
+              </li>
+              <li>
+                height: the iFrame height, default is "400px"
+              </li>
+            </ul>
+          </p>
+        </description>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <categories>
+          <category>search</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/version_diff_widget_template.xhtml</property>
+    </widgetType>
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
-    point="widgets">
+             point="widgets">
 
     <!-- Generic widgets: name = diff property type, see: org.nuxeo.ecm.diff.model.PropertyType -->
     <widget name="string" type="template">
