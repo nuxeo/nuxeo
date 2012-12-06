@@ -144,8 +144,16 @@
 
     <widget name="current_route_description" type="current_route_description" />
     <widget name="current_route_show_graph" type="current_route_show_graph" />
-    <widget name="current_route_abandon" type="current_route_abandon" />
-    <widget name="current_route_user_tasks" type="current_route_user_tasks" />
+    <widget name="current_route_abandon" type="current_route_abandon">
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+    <widget name="current_route_user_tasks" type="current_route_user_tasks">
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
     <widget name="current_route_open_tasks" type="current_route_open_tasks" />
 
     <widget name="current_route_previous_tasks" type="contentViewWithForms">
@@ -427,7 +435,6 @@
       <category>CURRENT_ROUTE_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">current_route_user_tasks</property>
-        <property name="addForm">true</property>
       </properties>
     </action>
 
@@ -463,7 +470,6 @@
       <category>CURRENT_ROUTE_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">current_route_abandon</property>
-        <property name="addForm">true</property>
       </properties>
     </action>
 
