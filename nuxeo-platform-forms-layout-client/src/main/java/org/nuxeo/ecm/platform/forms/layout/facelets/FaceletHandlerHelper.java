@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
@@ -78,6 +80,8 @@ public final class FaceletHandlerHelper {
 
     private static final String LAYOUT_ID_COUNTERS = "org.nuxeo.ecm.platform.layouts.LAYOUT_ID_COUNTERS";
 
+    private static final Pattern UNIQUE_ID_STRIP_PATTERN = Pattern.compile("(.*)(_[0-9]+)");
+
     final FaceletContext context;
 
     final TagConfig tagConfig;
@@ -111,18 +115,47 @@ public final class FaceletHandlerHelper {
         if (counters == null) {
             counters = new HashMap<String, Integer>();
         }
-        String generatedId;
+        String generatedId = generateUniqueId(base, counters);
+        requestMap.put(LAYOUT_ID_COUNTERS, counters);
+        return generatedId;
+    }
+
+    /**
+     * Strips given base of any ending counter that would conflict with
+     * potential already generated unique ids
+     *
+     * @since 5.7
+     */
+    protected static String stripUniqueIdBase(String base) {
+        if (base != null) {
+            Matcher m = UNIQUE_ID_STRIP_PATTERN.matcher(base);
+            if (m.matches()) {
+                base = m.group(1);
+                return stripUniqueIdBase(base);
+            }
+        }
+        return base;
+    }
+
+    /**
+     * Generates a unique id from counters persisted in given map
+     *
+     * @since 5.7
+     */
+    public static String generateUniqueId(String base,
+            Map<String, Integer> counters) {
+        // strip base of any remnant counter name
+        base = stripUniqueIdBase(base);
+        // increment in map
         Integer cnt = counters.get(base);
         if (cnt == null) {
             counters.put(base, new Integer(0));
-            generatedId = base;
+            return base;
         } else {
             int i = cnt.intValue() + 1;
             counters.put(base, new Integer(i));
-            generatedId = base + "_" + i;
+            return base + "_" + i;
         }
-        requestMap.put(LAYOUT_ID_COUNTERS, counters);
-        return generatedId;
     }
 
     public String generateValidIdString(String base) {
