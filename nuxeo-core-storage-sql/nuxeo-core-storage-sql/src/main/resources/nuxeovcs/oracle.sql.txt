@@ -944,7 +944,7 @@ IS
 BEGIN
   -- nx_vacuum_read_acls vacuuming
   DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr r
-    JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
+    LEFT JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
     WHERE h.acl_id IS NULL);
   EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr_user';
   EXECUTE IMMEDIATE 'TRUNCATE TABLE aclr_user_map';
