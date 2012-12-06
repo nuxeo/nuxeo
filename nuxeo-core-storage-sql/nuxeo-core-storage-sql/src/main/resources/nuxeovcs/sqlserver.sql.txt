@@ -12,7 +12,7 @@
 # Variables used:
 # ${idType} VARCHAR(36)
 # ${clusteredIndex} CLUSTERED when clustered indexes are required (Azure)
-# ${md5HashString} 
+# ${md5HashString}
 #   for SQL Server 2005:
 #     SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', @string)), 3, 32)
 #   for SQL Server 2008/2012/Azure:
@@ -866,7 +866,7 @@ CREATE PROCEDURE nx_vacuum_read_acls
 AS
 BEGIN
   DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr r
-    JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
+    LEFT JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
     WHERE h.acl_id IS NULL);
   TRUNCATE TABLE aclr_user;
   TRUNCATE TABLE aclr_user_map;
