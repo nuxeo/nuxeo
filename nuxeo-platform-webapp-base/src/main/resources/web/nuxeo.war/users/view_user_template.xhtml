@@ -93,6 +93,11 @@
 
     <ui:insert name="edit_user_tab_content">
       <a4j:form id="editUser" rendered="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
+        <script>
+         jQuery(document).ready(function() {
+           jQuery('#viewUserView\\:editUser').find(':input:first').focus();
+         });
+        </script>
         <nxl:layout name="user" mode="edit" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
           <tbody>
@@ -116,6 +121,11 @@
     <ui:insert name="edit_user_password_tab_content">
       <a4j:form id="editUserPassword"
         rendered="#{userManagementActions.detailsMode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
+        <script>
+         jQuery(document).ready(function() {
+           jQuery('#viewUserView\\:editUserPassword').find(':input:first').focus();
+         });
+        </script>
         <nxl:layout name="user" mode="editPassword" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
           <tbody>

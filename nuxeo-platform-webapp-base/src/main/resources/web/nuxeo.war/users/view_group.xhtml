@@ -79,6 +79,11 @@
     </a4j:form>
 
     <a4j:form id="editGroup" rendered="#{groupManagementActions.detailsMode == 'edit' and groupManagementActions.allowEditGroup and notReadOnly}">
+      <script>
+         jQuery(document).ready(function() {
+           jQuery('#viewGroupView\\:editGroup').find(':input:first').focus();
+         });
+      </script>
       <nxl:layout name="group" mode="edit" value="#{groupManagementActions.selectedGroup}" />
       <table class="dataInput">
         <tbody>
