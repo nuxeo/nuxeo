@@ -9,9 +9,9 @@
 
     <extension-point name="computer">
         <documentation>
-    Extension point to contribute an new class to compute virtual groups.
+    Extension point to contribute a new class to compute virtual groups.
 
-    The contribution should be of the form :
+    The contribution should be as the following example :
     <code>
         <groupComputer name="MyGroupComputerName">
             <computer>fullClassName</computer>
@@ -29,7 +29,7 @@
     <extension-point name="computerChain">
         <documentation>
     Extension point to set or update the chain of group computer.
-    The GroupComputers will be called sequentially accorting to the chain definition.
+    The GroupComputers will be called sequentially according the chain definition.
 
     The contribution should be of the form :
     <code>
