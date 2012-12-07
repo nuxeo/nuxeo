@@ -611,7 +611,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         testBigACLs("foo161", 161); // len 4025-1 failed on Oracle
         // TODO XXX test bigger ACL on PostgreSQL
         if (DatabaseHelper.DATABASE instanceof DatabaseOracle) {
-            testBigACLs("foo1000", 1000);
+            testBigACLs("foo1400", 1400); // len 35000-1
         }
     }
 
