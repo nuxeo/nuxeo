@@ -54,7 +54,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Handles users management related web actions.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.2
  */
@@ -243,13 +243,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
         facesMessages.add(FacesMessage.SEVERITY_INFO, message);
         fireSeamEvent(USERS_LISTING_CHANGED);
 
-        if (selectedUser.getId().equals(currentUser.getName())) {
-            // If user changed HIS password, reset session
-            Session.instance().invalidate();
-            return navigationContext.goHome();
-        } else {
-            return null;
-        }
+        return null;
     }
 
     public void deleteUser() throws ClientException {
