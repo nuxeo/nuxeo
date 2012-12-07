@@ -2193,13 +2193,7 @@
                   <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">actions_styleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
@@ -2276,13 +2270,7 @@
                   <widget category="widgetTypeConf">actionsDisplay</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">actions_styleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_addForm</widget>
@@ -2365,13 +2353,7 @@
                   <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">actions_styleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
@@ -2443,13 +2425,7 @@
                   <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">actions_styleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
@@ -2513,13 +2489,7 @@
                   <widget category="widgetTypeConf">actionsDisplay</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">actions_styleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_addForm</widget>
@@ -2584,13 +2554,7 @@
                   <widget category="widgetTypeConf">actionsDisplay</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actions_headerStyleClass</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">actions_styleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">actions_subStyleClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_addForm</widget>
