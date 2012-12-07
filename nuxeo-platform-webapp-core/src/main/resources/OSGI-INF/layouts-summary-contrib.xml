@@ -62,6 +62,7 @@
           <category>summary</category>
           <category>tab_designer</category>
         </categories>
+        <handlingLabels>true</handlingLabels>
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
