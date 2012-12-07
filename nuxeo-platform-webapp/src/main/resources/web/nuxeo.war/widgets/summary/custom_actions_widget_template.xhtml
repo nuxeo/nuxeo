@@ -10,7 +10,7 @@
 
   <div class="#{widgetProperty_styleClass}">
 
-    <c:if test="#{!empty widget.label}">
+    <c:if test="#{!empty widget.label and widget.handlingLabels}">
 
       <h3 class="summaryTitle">
         <ui:include src="/widgets/incl/widget_label_template.xhtml">
