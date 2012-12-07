@@ -669,7 +669,7 @@ RETURN NCLOB
 IS
   curid acls.id%TYPE := id;
   newid acls.id%TYPE;
-  acl VARCHAR2(32767) := NULL;
+  acl NCLOB := NULL;
   first BOOLEAN := TRUE;
   sep VARCHAR2(1) := '${usersSeparator}';
   read_permissions NX_STRING_TABLE;
