@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,7 +33,9 @@ import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
+import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -128,7 +131,7 @@ public class TestDefaultFileSystemItemFactory {
     }
 
     @Test
-    public void testFactory() throws Exception {
+    public void testGetFileSystemItem() throws Exception {
 
         // ------------------------------------------------------
         // Check downloadable FileSystemItems
@@ -204,6 +207,85 @@ public class TestDefaultFileSystemItemFactory {
         // Check not adaptable as a FileSystemItem
         // ------------------------------------------------------
         fsItem = notAFileSystemItem.getAdapter(FileSystemItem.class);
+        assertNull(fsItem);
+    }
+
+    @Test
+    public void testExists() throws Exception {
+
+        // Get default factory
+        FileSystemItemFactory defaultFactory = getDefaultFileSystemItemFactory();
+        assertEquals("defaultFileSystemItemFactory", defaultFactory.getName());
+        assertTrue(defaultFactory.getClass().getName().endsWith(
+                "DefaultFileSystemItemFactory"));
+
+        // Bad id
+        try {
+            defaultFactory.exists("badId", session);
+            fail("Should not be able to check existence for bad id.");
+        } catch (ClientException e) {
+            assertEquals(
+                    "FileSystemItem id badId cannot be handled by factory named defaultFileSystemItemFactory. Should match the 'fileSystemItemFactoryName/repositoryName/docId' pattern.",
+                    e.getMessage());
+        }
+        // Non existent doc id
+        assertFalse(defaultFactory.exists(
+                "defaultFileSystemItemFactory/test/nonExistentDocId", session));
+        // File
+        assertTrue(defaultFactory.exists("defaultFileSystemItemFactory/test/"
+                + file.getId(), session));
+        // Note
+        assertTrue(defaultFactory.exists("defaultFileSystemItemFactory/test/"
+                + note.getId(), session));
+        // Not adaptable as a FileSystemItem
+        assertFalse(defaultFactory.exists("defaultFileSystemItemFactory/test/"
+                + notAFileSystemItem.getId(), session));
+    }
+
+    @Test
+    public void testGetFileSystemItemById() throws Exception {
+
+        // Get default factory
+        FileSystemItemFactory defaultFactory = getDefaultFileSystemItemFactory();
+
+        // Non existent doc id
+        try {
+            defaultFactory.getFileSystemItemById(
+                    "defaultFileSystemItemFactory/test/nonExistentDocId",
+                    session);
+            fail("No FileSystemItem should be found for non existant id.");
+        } catch (ClientException e) {
+            assertEquals("Failed to get document nonExistentDocId",
+                    e.getMessage());
+        }
+        // File without a blob
+        file.setPropertyValue("file:content", null);
+        file = session.saveDocument(file);
+        FileSystemItem fsItem = defaultFactory.getFileSystemItemById(
+                "defaultFileSystemItemFactory/test/" + file.getId(), session);
+        assertNull(fsItem);
+        // Note
+        fsItem = defaultFactory.getFileSystemItemById(
+                "defaultFileSystemItemFactory/test/" + note.getId(), session);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FileItem);
+        assertEquals("aNote.txt", fsItem.getName());
+        assertFalse(fsItem.isFolder());
+        Blob fileItemBlob = ((FileItem) fsItem).getBlob();
+        assertEquals("aNote.txt", fileItemBlob.getFilename());
+        assertEquals("Content of Bob's note.", fileItemBlob.getString());
+        // Folder
+        fsItem = defaultFactory.getFileSystemItemById(
+                "defaultFileSystemItemFactory/test/" + folder.getId(), session);
+        assertNotNull(fsItem);
+        assertTrue(fsItem instanceof FolderItem);
+        assertEquals("Jack's folder", fsItem.getName());
+        assertTrue(fsItem.isFolder());
+        assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
+        // Not adaptable as a FileSystemItem
+        fsItem = defaultFactory.getFileSystemItemById(
+                "defaultFileSystemItemFactory/test/"
+                        + notAFileSystemItem.getId(), session);
         assertNull(fsItem);
     }
 
@@ -322,5 +404,10 @@ public class TestDefaultFileSystemItemFactory {
         fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Another file.odt", fileItemBlob.getFilename());
         assertEquals("Content of another file.", fileItemBlob.getString());
+    }
+
+    protected FileSystemItemFactory getDefaultFileSystemItemFactory() {
+        return ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFactories().get(
+                0).getFactory();
     }
 }

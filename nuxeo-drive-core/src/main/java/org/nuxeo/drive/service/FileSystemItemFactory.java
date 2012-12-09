@@ -19,6 +19,7 @@ package org.nuxeo.drive.service;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -51,5 +52,20 @@ public interface FileSystemItemFactory {
      * responsible for generating the {@link FileSystemItem}.
      */
     boolean canHandleFileSystemItemId(String id);
+
+    /**
+     * Returns true if a {@link FileSystemItem} with the given id exists. Uses
+     * the given session if it is consistent with the given id.
+     */
+    boolean exists(String id, CoreSession session) throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItem} with the given id. Uses the given session
+     * if it is consistent with the given id.
+     *
+     * @return the {@link FileSystemItem} or null if none matches the given id
+     */
+    FileSystemItem getFileSystemItemById(String id, CoreSession session)
+            throws ClientException;
 
 }

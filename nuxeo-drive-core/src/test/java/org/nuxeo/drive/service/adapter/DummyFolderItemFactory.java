@@ -18,6 +18,8 @@ package org.nuxeo.drive.service.adapter;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -26,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author Antoine Taillefer
  */
-public class DummyFolderItemFactory implements FileSystemItemFactory {
+public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc) {
@@ -36,6 +38,11 @@ public class DummyFolderItemFactory implements FileSystemItemFactory {
     @Override
     public boolean canHandleFileSystemItemId(String id) {
         return false;
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItemById(String id, CoreSession session) {
+        return null;
     }
 
 }
