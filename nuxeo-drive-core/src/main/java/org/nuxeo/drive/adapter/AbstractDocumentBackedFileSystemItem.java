@@ -16,13 +16,16 @@
  */
 package org.nuxeo.drive.adapter;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -66,6 +69,13 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
         return (Calendar) doc.getPropertyValue("dc:modified");
     }
 
+    public void delete() throws ClientException {
+        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        // docs.add(getDocumentByFileSystemId(id, session));
+        docs.add(doc);
+        getTrashService().trashDocuments(docs);
+    }
+
     public DocumentModel getDocument() {
         return doc;
     }
@@ -88,6 +98,10 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
 
     protected FileManager getFileManager() {
         return Framework.getLocalService(FileManager.class);
+    }
+
+    protected TrashService getTrashService() {
+        return Framework.getLocalService(TrashService.class);
     }
 
 }

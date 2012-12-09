@@ -51,6 +51,8 @@ public interface FileSystemItem {
 
     void rename(String name) throws ClientException;
 
+    void delete() throws ClientException;
+
     /**
      * Gets the backing {@link DocumentModel} in the case of a
      * {@link DocumentModel} backed implementation.
