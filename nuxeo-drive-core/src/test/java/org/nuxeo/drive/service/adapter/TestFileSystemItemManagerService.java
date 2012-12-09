@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.service.FileSystemSynchronizationService;
+import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -50,7 +50,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * Tests the {@link FileSystemSynchronizationService}.
+ * Tests the {@link FileSystemItemManager}.
  *
  * @author Antoine Taillefer
  */
@@ -63,13 +63,15 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
-public class TestFileSystemSynchronizationService {
+public class TestFileSystemItemManagerService {
+
+    private static final String DEFAULT_FILE_SYSTEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
 
     @Inject
     protected CoreSession session;
 
     @Inject
-    protected FileSystemSynchronizationService fileSystemSynchronizationService;
+    protected FileSystemItemManager fileSystemItemManagerService;
 
     protected DocumentModel folder;
 
@@ -140,17 +142,23 @@ public class TestFileSystemSynchronizationService {
         // ------------------------------------------------------
         // Check #exists
         // ------------------------------------------------------
-        assertFalse(fileSystemSynchronizationService.exists("nonExistentId",
-                session));
-        assertTrue(fileSystemSynchronizationService.exists(file.getId(),
+        // Non existent doc id
+        assertFalse(fileSystemItemManagerService.exists(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + "nonExistentId", session));
+        // File
+        assertTrue(fileSystemItemManagerService.exists(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), session));
+        // Not adaptable as a FileSystemItem
+        assertFalse(fileSystemItemManagerService.exists(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + notAFileSystemItem.getId(),
                 session));
 
         // ------------------------------------------------------
         // Check #getFileSystemItemById
         // ------------------------------------------------------
         // Folder
-        FileSystemItem fsItem = fileSystemSynchronizationService.getFileSystemItemById(
-                folder.getId(), session);
+        FileSystemItem fsItem = fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), session);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals("Jack's folder", fsItem.getName());
@@ -160,8 +168,8 @@ public class TestFileSystemSynchronizationService {
         assertEquals(5, children.size());
 
         // File
-        fsItem = fileSystemSynchronizationService.getFileSystemItemById(
-                file.getId(), session);
+        fsItem = fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), session);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
         assertEquals("Joe.odt", fsItem.getName());
@@ -171,8 +179,8 @@ public class TestFileSystemSynchronizationService {
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
 
         // FolderishFile
-        fsItem = fileSystemSynchronizationService.getFileSystemItemById(
-                folderishFile.getId(), session);
+        fsItem = fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folderishFile.getId(), session);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals("Sarah's folderish file", fsItem.getName());
@@ -180,13 +188,14 @@ public class TestFileSystemSynchronizationService {
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
 
         // Not adaptable as a FileSystemItem
-        fsItem = fileSystemSynchronizationService.getFileSystemItemById(
-                notAFileSystemItem.getId(), session);
+        fsItem = fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + notAFileSystemItem.getId(),
+                session);
         assertNull(fsItem);
 
         // Sub folder
-        fsItem = fileSystemSynchronizationService.getFileSystemItemById(
-                subFolder.getId(), session);
+        fsItem = fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(), session);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals("Tony's sub folder", fsItem.getName());
@@ -196,8 +205,8 @@ public class TestFileSystemSynchronizationService {
         // ------------------------------------------------------
         // Check #getChildren
         // ------------------------------------------------------
-        children = fileSystemSynchronizationService.getChildren(folder.getId(),
-                session);
+        children = fileSystemItemManagerService.getChildren(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), session);
         assertNotNull(children);
         assertEquals(5, children.size());
         FileSystemItem child = children.get(0);
@@ -216,8 +225,8 @@ public class TestFileSystemSynchronizationService {
         assertEquals("Tony's sub folder", child.getName());
         assertTrue(child.isFolder());
 
-        children = fileSystemSynchronizationService.getChildren(
-                subFolder.getId(), session);
+        children = fileSystemItemManagerService.getChildren(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(), session);
         assertTrue(children.isEmpty());
     }
 
@@ -229,8 +238,10 @@ public class TestFileSystemSynchronizationService {
         // ------------------------------------------------------
         // Not allowed sub-type exception
         try {
-            fileSystemSynchronizationService.createFolder(
-                    session.getRootDocument().getId(), "A new folder", session);
+            fileSystemItemManagerService.createFolder(
+                    DEFAULT_FILE_SYSTEM_ID_PREFIX
+                            + session.getRootDocument().getId(),
+                    "A new folder", session);
             fail("Folder creation should fail because the Folder type is not allowed as a sub-type of Root.");
         } catch (ClientException e) {
             assertEquals(
@@ -238,8 +249,9 @@ public class TestFileSystemSynchronizationService {
                     e.getMessage());
         }
         // Folder creation
-        FolderItem newFolderItem = fileSystemSynchronizationService.createFolder(
-                folder.getId(), "A new folder", session);
+        FolderItem newFolderItem = fileSystemItemManagerService.createFolder(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), "A new folder",
+                session);
         assertNotNull(newFolderItem);
         assertEquals("A new folder", newFolderItem.getName());
         DocumentModelList folderChildren = session.query(String.format(
@@ -252,8 +264,8 @@ public class TestFileSystemSynchronizationService {
         // Parent folder children check
         assertEquals(
                 6,
-                fileSystemSynchronizationService.getChildren(folder.getId(),
-                        session).size());
+                fileSystemItemManagerService.getChildren(
+                        DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), session).size());
 
         // ------------------------------------------------------
         // Check #createFile
@@ -263,8 +275,8 @@ public class TestFileSystemSynchronizationService {
         Blob blob = new StringBlob("Content of a new file.");
         blob.setFilename("New file.odt");
         blob.setMimeType("application/vnd.oasis.opendocument.text");
-        FileItem fileItem = fileSystemSynchronizationService.createFile(
-                newFolderItemId, blob, session);
+        FileItem fileItem = fileSystemItemManagerService.createFile(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + newFolderItemId, blob, session);
         assertNotNull(fileItem);
         assertEquals("New file.odt", fileItem.getName());
         folderChildren = session.query(String.format(
@@ -283,7 +295,8 @@ public class TestFileSystemSynchronizationService {
         // Parent folder children check
         assertEquals(
                 1,
-                fileSystemSynchronizationService.getChildren(newFolderItemId,
+                fileSystemItemManagerService.getChildren(
+                        DEFAULT_FILE_SYSTEM_ID_PREFIX + newFolderItemId,
                         session).size());
 
         // ------------------------------------------------------
@@ -291,8 +304,8 @@ public class TestFileSystemSynchronizationService {
         // ------------------------------------------------------
         String fileItemId = fileItem.getDocument().getId();
         blob = new StringBlob("Modified content of an existing file.");
-        fileItem = fileSystemSynchronizationService.updateFile(fileItemId,
-                blob, session);
+        fileItem = fileSystemItemManagerService.updateFile(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + fileItemId, blob, session);
         assertNotNull(fileItem);
         assertEquals(fileItemId, fileItem.getDocument().getId());
         assertEquals("New file.odt", fileItem.getName());
@@ -314,11 +327,12 @@ public class TestFileSystemSynchronizationService {
         // Check #delete
         // ------------------------------------------------------
         // File deletion
-        fileSystemSynchronizationService.delete(updatedFile.getId(), session);
+        fileSystemItemManagerService.delete(DEFAULT_FILE_SYSTEM_ID_PREFIX
+                + updatedFile.getId(), session);
 
         // Parent folder children check
-        assertTrue(fileSystemSynchronizationService.getChildren(
-                newFolderItemId, session).isEmpty());
+        assertTrue(fileSystemItemManagerService.getChildren(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + newFolderItemId, session).isEmpty());
 
         // Parent folder trash check
         assertEquals(
@@ -332,8 +346,9 @@ public class TestFileSystemSynchronizationService {
         // Check #rename
         // ------------------------------------------------------
         // Folder rename
-        FileSystemItem fsItem = fileSystemSynchronizationService.rename(
-                folder.getId(), "Jack's folder has a new name", session);
+        FileSystemItem fsItem = fileSystemItemManagerService.rename(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+                "Jack's folder has a new name", session);
         assertEquals("Jack's folder has a new name", fsItem.getName());
         folder = session.getDocument(folder.getRef());
         assertEquals("Jack's folder has a new name", folder.getTitle());
@@ -343,7 +358,8 @@ public class TestFileSystemSynchronizationService {
         assertEquals("aFile", file.getTitle());
         assertEquals("Joe.odt",
                 ((Blob) file.getPropertyValue("file:content")).getFilename());
-        fsItem = fileSystemSynchronizationService.rename(file.getId(),
+        fsItem = fileSystemItemManagerService.rename(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(),
                 "File new name.odt", session);
         assertEquals("File new name.odt", fsItem.getName());
         file = session.getDocument(file.getRef());
@@ -356,13 +372,14 @@ public class TestFileSystemSynchronizationService {
         blob = new StringBlob("File for a doc with title == filename.");
         blob.setFilename("Title-filename equality.odt");
         blob.setMimeType("application/vnd.oasis.opendocument.text");
-        fileItem = fileSystemSynchronizationService.createFile(newFolderItemId,
-                blob, session);
+        fileItem = fileSystemItemManagerService.createFile(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + newFolderItemId, blob, session);
         newFile = fileItem.getDocument();
         assertEquals("Title-filename equality.odt", newFile.getTitle());
         assertEquals("Title-filename equality.odt",
                 ((Blob) newFile.getPropertyValue("file:content")).getFilename());
-        fsItem = fileSystemSynchronizationService.rename(newFile.getId(),
+        fsItem = fileSystemItemManagerService.rename(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + newFile.getId(),
                 "Renamed title-filename equality.odt", session);
         assertEquals("Renamed title-filename equality.odt", fsItem.getName());
         newFile = session.getDocument(newFile.getRef());

@@ -16,63 +16,60 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.service.FileSystemSynchronizationService;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default implementation of the {@link FileSystemSynchronizationService}.
+ * Default implementation of the {@link FileSystemItemManager}.
  *
  * @author Antoine Taillefer
  */
-public class FileSystemSynchronizationServiceImpl implements
-        FileSystemSynchronizationService {
+public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Read operations ----------------*/
     @Override
-    public boolean exists(String docId, CoreSession session)
+    public boolean exists(String id, CoreSession session)
             throws ClientException {
-        return session.exists(new IdRef(docId));
+        return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
+                id).exists(id, session);
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String docId,
-            CoreSession session) throws ClientException {
-        DocumentModel doc = getDocumentModel(docId, session);
-        return doc.getAdapter(FileSystemItem.class);
+    public FileSystemItem getFileSystemItemById(String id, CoreSession session)
+            throws ClientException {
+        return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
+                id).getFileSystemItemById(id, session);
     }
 
     @Override
-    public List<FileSystemItem> getChildren(String parentId, CoreSession session)
+    public List<FileSystemItem> getChildren(String id, CoreSession session)
             throws ClientException {
-        FileSystemItem parentFsItem = getFileSystemItemById(parentId, session);
-        if (!(parentFsItem instanceof FolderItem)) {
+        FileSystemItem fileSystemItem = getFileSystemItemById(id, session);
+        if (!(fileSystemItem instanceof FolderItem)) {
             throw new ClientException(
-                    "Cannot get the children of a non folderish document.");
+                    "Cannot get the children of a non folderish file system item.");
         }
-        FolderItem parentFolder = (FolderItem) parentFsItem;
-        return parentFolder.getChildren();
+        FolderItem folderItem = (FolderItem) fileSystemItem;
+        return folderItem.getChildren();
     }
 
-    /*------------- Write operations ----------------*/
+    /*------------- Write operations ---------------*/
     @Override
     public FolderItem createFolder(String parentId, String name,
             CoreSession session) throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, session);
         if (!(parentFsItem instanceof FolderItem)) {
             throw new ClientException(
-                    "Cannot create a folder in a non folderish document.");
+                    "Cannot create a folder in a non folderish file system item.");
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
         return parentFolder.createFolder(name);
@@ -84,19 +81,19 @@ public class FileSystemSynchronizationServiceImpl implements
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, session);
         if (!(parentFsItem instanceof FolderItem)) {
             throw new ClientException(
-                    "Cannot create a file in a non folderish document.");
+                    "Cannot create a file in a non folderish file system item.");
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
         return parentFolder.createFile(blob);
     }
 
     @Override
-    public FileItem updateFile(String docId, Blob blob, CoreSession session)
+    public FileItem updateFile(String id, Blob blob, CoreSession session)
             throws ClientException {
-        FileSystemItem fsItem = getFileSystemItemById(docId, session);
+        FileSystemItem fsItem = getFileSystemItemById(id, session);
         if (!(fsItem instanceof FileItem)) {
             throw new ClientException(
-                    "Cannot update the content of a non file document.");
+                    "Cannot update the content of a file system item that is not a file.");
         }
         FileItem file = (FileItem) fsItem;
         file.setBlob(blob);
@@ -104,43 +101,36 @@ public class FileSystemSynchronizationServiceImpl implements
     }
 
     @Override
-    public void delete(String docId, CoreSession session)
-            throws ClientException {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        docs.add(getDocumentModel(docId, session));
-        getTrashService().trashDocuments(docs);
+    public void delete(String id, CoreSession session) throws ClientException {
+        FileSystemItem fsItem = getFileSystemItemById(id, session);
+        fsItem.delete();
     }
 
     @Override
-    public FileSystemItem rename(String docId, String name, CoreSession session)
+    public FileSystemItem rename(String id, String name, CoreSession session)
             throws ClientException {
-        FileSystemItem fsItem = getFileSystemItemById(docId, session);
+        FileSystemItem fsItem = getFileSystemItemById(id, session);
         fsItem.rename(name);
         return fsItem;
     }
 
     @Override
-    public FileSystemItem move(String docId, String destDocId,
-            CoreSession session) throws ClientException {
+    public FileSystemItem move(String srcId, String destId, CoreSession session)
+            throws ClientException {
         // TODO
         return null;
     }
 
     @Override
-    public FileSystemItem copy(String docId, String destDocId,
-            CoreSession session) throws ClientException {
+    public FileSystemItem copy(String srcId, String destId, CoreSession session)
+            throws ClientException {
         // TODO
         return null;
     }
 
-    /*---------------------- Protected ------------------------------*/
-    protected DocumentModel getDocumentModel(String docId, CoreSession session)
-            throws ClientException {
-        return session.getDocument(new IdRef(docId));
-    }
-
-    protected TrashService getTrashService() {
-        return Framework.getLocalService(TrashService.class);
+    /*------------- Protected ---------------*/
+    protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
+        return Framework.getLocalService(FileSystemItemAdapterService.class);
     }
 
 }
