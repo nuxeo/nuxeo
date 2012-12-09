@@ -37,6 +37,25 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactory.class);
 
+    protected String name;
+
+    /**
+     * Prevent from instantiating class as it should only be done by
+     * {@link FileSystemItemFactoryDescriptor#getFactory()}.
+     */
+    protected DefaultFileSystemItemFactory() {
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
@@ -50,6 +69,17 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
                 "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem => returning null.",
                 doc.getId()));
         return null;
+    }
+
+    @Override
+    public boolean canHandleFileSystemItemId(String id) {
+        try {
+            parseFileSystemId(id);
+        } catch (ClientException e) {
+            log.debug(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     protected boolean hasBlob(DocumentModel doc) throws ClientException {
@@ -66,6 +96,29 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
             return false;
         }
         return true;
+    }
+
+    protected String[] parseFileSystemId(String id) throws ClientException {
+
+        // Parse id, expecting pattern:
+        // fileSystemItemFactoryName/repositoryName/docId
+        String[] idFragments = id.split("/");
+        if (idFragments.length != 3) {
+            throw new ClientException(
+                    String.format(
+                            "FileSystemItem id %s cannot be handled by factory named %s. Should match the 'fileSystemItemFactoryName/repositoryName/docId' pattern.",
+                            id, name));
+        }
+
+        // Check if factory name matches
+        String factoryName = idFragments[0];
+        if (!name.equals(factoryName)) {
+            throw new ClientException(
+                    String.format(
+                            "Factoy name [%s] parsed from id %s does not match the actual factory name [%s].",
+                            factoryName, id, name));
+        }
+        return idFragments;
     }
 
 }

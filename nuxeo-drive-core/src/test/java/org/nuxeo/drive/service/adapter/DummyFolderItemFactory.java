@@ -33,4 +33,9 @@ public class DummyFolderItemFactory implements FileSystemItemFactory {
         return new DummyFolderItem(doc);
     }
 
+    @Override
+    public boolean canHandleFileSystemItemId(String id) {
+        return false;
+    }
+
 }

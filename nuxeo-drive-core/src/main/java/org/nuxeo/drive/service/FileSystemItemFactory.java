@@ -31,9 +31,25 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface FileSystemItemFactory {
 
     /**
+     * Sets the factory unique name.
+     */
+    void setName(String name);
+
+    /**
+     * Gets the factory unique name.
+     */
+    String getName();
+
      * Gets the {@link FileSystemItem} adapter for the given
      * {@link DocumentModel}.
      */
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
+
+    /**
+     * Returns true if the given {@link FileSystemItem} id can be handled by
+     * this factory. It is typically the case when the factory has been
+     * responsible for generating the {@link FileSystemItem}.
+     */
+    boolean canHandleFileSystemItemId(String id);
 
 }

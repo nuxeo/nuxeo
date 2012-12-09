@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -127,6 +128,27 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                     doc.getId()));
         }
         return null;
+    }
+
+    /**
+     * Iterates on the ordered contributed factories until if finds one that can
+     * handle the given {@link FileSystemItem} id.
+     */
+    @Override
+    public FileSystemItemFactory getFileSystemItemFactoryForId(String id)
+            throws ClientException {
+        Iterator<FileSystemItemFactoryWrapper> factoriesIt = factories.iterator();
+        while (factoriesIt.hasNext()) {
+            FileSystemItemFactoryWrapper factoryWrapper = factoriesIt.next();
+            FileSystemItemFactory factory = factoryWrapper.getFactory();
+            if (factory.canHandleFileSystemItemId(id)) {
+                return factory;
+            }
+        }
+        throw new ClientException(
+                String.format(
+                        "No fileSystemItemFactory found for FileSystemItem with id %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
+                        id));
     }
 
     /*------------------------- For test purpose ----------------------------------*/

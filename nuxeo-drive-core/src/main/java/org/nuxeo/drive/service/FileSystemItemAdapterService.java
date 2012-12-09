@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * the {@link DocumentModel} type or facet.
  * <p>
  * Factories can be contributed to implement a specific behavior for the
- * {@link FileSystemItem} retrieval.
+ * {@link FileSystemItem} adapter creation.
  *
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
@@ -36,8 +36,24 @@ public interface FileSystemItemAdapterService {
     /**
      * Gets the {@link FileSystemItem} adapter for the given
      * {@link DocumentModel}.
+     *
+     * @return the {@link FileSystemItem} adapter or null if the
+     *         {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
      */
     FileSystemItem getFileSystemItemAdapter(DocumentModel doc)
+            throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItemFactory} that can handle the the given
+     * {@link FileSystemItem} id.
+     *
+     * @throws ClientException if no {@link FileSystemItemFactory} can handle
+     *             the given {@link FileSystemItem} id
+     * @see FileSystemItemFactory#canHandleFileSystemItemId(String)
+     */
+    FileSystemItemFactory getFileSystemItemFactoryForId(String id)
             throws ClientException;
 
 }

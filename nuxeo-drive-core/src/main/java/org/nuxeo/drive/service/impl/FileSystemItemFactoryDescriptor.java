@@ -76,7 +76,9 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
 
     public FileSystemItemFactory getFactory() throws InstantiationException,
             IllegalAccessException {
-        return factoryClass.newInstance();
+        FileSystemItemFactory factory = factoryClass.newInstance();
+        factory.setName(getName());
+        return factory;
     }
 
     @Override
