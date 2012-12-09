@@ -41,8 +41,11 @@ public interface FileSystemItemFactory {
      */
     String getName();
 
-     * Gets the {@link FileSystemItem} adapter for the given
-     * {@link DocumentModel}.
+    /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
+     *
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
+     *         is not adaptable as a {@link FileSystemItem}
      */
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
 

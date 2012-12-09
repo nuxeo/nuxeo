@@ -136,7 +136,7 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------
         // Check downloadable FileSystemItems
         // ------------------------------------------------------
-        // Check File
+        // File
         FileSystemItem fsItem = file.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -148,7 +148,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
 
-        // Check Note
+        // Note
         fsItem = note.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -160,7 +160,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("aNote.txt", fileItemBlob.getFilename());
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
 
-        // Check custom doc type with the "file" schema
+        // Custom doc type with the "file" schema
         fsItem = custom.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -172,7 +172,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Bonnie's file.odt", fileItemBlob.getFilename());
         assertEquals("Content of Bonnie's file.", fileItemBlob.getString());
 
-        // Check File without a blob => not adaptable as a FileSystemItem
+        // File without a blob => not adaptable as a FileSystemItem
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);
         fsItem = file.getAdapter(FileSystemItem.class);
@@ -181,7 +181,7 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------
         // Check folderish FileSystemItems
         // ------------------------------------------------------
-        // Check Folder
+        // Folder
         fsItem = folder.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
@@ -193,7 +193,7 @@ public class TestDefaultFileSystemItemFactory {
         assertNotNull(children);
         assertEquals(0, children.size());
 
-        // Check FolderishFile => adaptable as a FolderItem since the default
+        // FolderishFile => adaptable as a FolderItem since the default
         // FileSystemItem factory gives precedence to the Folderish facet
         fsItem = folderishFile.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);

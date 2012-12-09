@@ -54,6 +54,7 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     protected DefaultFileSystemItemFactory() {
     }
 
+    /*--------------------------- FileSystemItemFactory ---------------------------------*/
     @Override
     public String getName() {
         return name;
@@ -112,6 +113,7 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
         return getFileSystemItem(doc);
     }
 
+    /*--------------------------- Protected ---------------------------------*/
     protected boolean hasBlob(DocumentModel doc) throws ClientException {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {

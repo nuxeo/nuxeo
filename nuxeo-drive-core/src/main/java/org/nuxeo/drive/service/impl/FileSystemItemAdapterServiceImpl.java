@@ -51,6 +51,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     protected final List<FileSystemItemFactoryWrapper> factories = new ArrayList<FileSystemItemFactoryWrapper>();
 
+    /*------------------------ DefaultComponent -----------------------------*/
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -87,6 +88,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         sortFactories();
     }
 
+    /*------------------------ FileSystemItemAdapterService -----------------------*/
     /**
      * Iterates on the ordered contributed factories until it finds one that
      * matches and retrieves a non null {@link FileSystemItem} adapter for the
@@ -120,7 +122,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         }
         if (matchingFactory == null) {
             log.debug(String.format(
-                    "No fileSystemItemFactory found matching with document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">",
+                    "No fileSystemItemFactory found matching with document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
                     doc.getId()));
         } else {
             log.debug(String.format(
@@ -166,7 +168,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         sortFactories();
     }
 
-    /*--------------------------- Protected ----------------------------------------*/
+    /*--------------------------- Protected ---------------------------------------*/
     protected void sortFactories() throws Exception {
         List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
                 factoryDescriptors.values());
