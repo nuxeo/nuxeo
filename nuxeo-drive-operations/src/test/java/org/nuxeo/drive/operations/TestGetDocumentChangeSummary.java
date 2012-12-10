@@ -168,6 +168,8 @@ public class TestGetDocumentChangeSummary {
      */
     protected DocumentChangeSummary getDocumentChangeSummary() throws Exception {
 
+        // Wait 1 second as the mock change finder relies on steps of 1 second
+        Thread.sleep(1000);
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetDocumentChangeSummary.ID).set(
                 "lastSuccessfulSync", lastSuccessfulSync).execute();
@@ -189,6 +191,8 @@ public class TestGetDocumentChangeSummary {
     protected DocumentChangeSummary getFolderDocumentChangeSummary(
             String folderPath) throws Exception {
 
+        // Wait 1 second as the mock change finder relies on steps of 1 second
+        Thread.sleep(1000);
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetFolderDocumentChangeSummary.ID).set("folderPath",
                 folderPath).set("lastSuccessfulSync", lastSuccessfulSync).execute();

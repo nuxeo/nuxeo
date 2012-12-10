@@ -58,16 +58,16 @@ public class MockDocumentChangeFinder implements DocumentChangeFinder {
     @Override
     public List<DocumentChange> getDocumentChanges(boolean allRepositories,
             CoreSession session, Set<String> rootPaths,
-            long lastSuccessfulSync, int limit)
+            long lastSuccessfulSyncDate, long syncDate, int limit)
             throws TooManyDocumentChangesException {
 
         List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
         if (!rootPaths.isEmpty()) {
             StringBuilder querySb = new StringBuilder();
-            querySb.append("SELECT * FROM Document WHERE (%s) AND dc:modified > '%s' ORDER BY dc:modified DESC");
+            querySb.append("SELECT * FROM Document WHERE (%s) AND (%s) ORDER BY dc:modified DESC");
             String query = String.format(querySb.toString(),
                     getRootPathClause(rootPaths),
-                    getLastSuccessfulSyncDate(lastSuccessfulSync));
+                    getDateClause(lastSuccessfulSyncDate, syncDate));
             log.debug("Querying repository for document changes: " + query);
 
             if (allRepositories) {
@@ -110,9 +110,11 @@ public class MockDocumentChangeFinder implements DocumentChangeFinder {
         return rootPathClause.toString();
     }
 
-    protected String getLastSuccessfulSyncDate(long lastSuccessfulSync) {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        return sdf.format(new Date(lastSuccessfulSync));
+    protected String getDateClause(long lastSuccessfulSyncDate, long syncDate) {
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return String.format("dc:modified >= '%s' and dc:modified < '%s'",
+                sdf.format(new Date(lastSuccessfulSyncDate)),
+                sdf.format(new Date(syncDate)));
     }
 
     protected List<DocumentChange> getDocumentChanges(CoreSession session,

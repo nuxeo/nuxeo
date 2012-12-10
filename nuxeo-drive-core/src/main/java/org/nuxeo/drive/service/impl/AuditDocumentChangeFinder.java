@@ -53,7 +53,7 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
     @SuppressWarnings("unchecked")
     public List<DocumentChange> getDocumentChanges(boolean allRepositories,
             CoreSession session, Set<String> rootPaths,
-            long lastSuccessfulSync, int limit)
+            long lastSuccessfulSyncDate, long syncDate, int limit)
             throws TooManyDocumentChangesException {
 
         List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
@@ -73,7 +73,7 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
             auditQuerySb.append(") ");
             auditQuerySb.append("and log.docType not in (%s) ");
             auditQuerySb.append("and (%s) ");
-            auditQuerySb.append("and log.eventDate > '%s' ");
+            auditQuerySb.append("and (%s) ");
             auditQuerySb.append("order by log.repositoryId asc, log.eventDate desc");
 
             String auditQuery;
@@ -82,11 +82,11 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
                 auditQuery = String.format(auditQuerySb.toString(),
                         repositoryName, blackListedDocTypes,
                         getRootPathClause(rootPaths),
-                        getLastSuccessfulSyncDate(lastSuccessfulSync));
+                        getDateClause(lastSuccessfulSyncDate, syncDate));
             } else {
                 auditQuery = String.format(auditQuerySb.toString(),
                         blackListedDocTypes, getRootPathClause(rootPaths),
-                        getLastSuccessfulSyncDate(lastSuccessfulSync));
+                        getDateClause(lastSuccessfulSyncDate, syncDate));
             }
             log.debug("Querying audit logs for document changes: " + auditQuery);
 
@@ -143,9 +143,13 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
         return rootPathClause.toString();
     }
 
-    protected String getLastSuccessfulSyncDate(long lastSuccessfulSync) {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        return sdf.format(new Date(lastSuccessfulSync));
+    // Round dates to the lower second to ensure consistency
+    // in the case of databases that don't support milliseconds
+    protected String getDateClause(long lastSuccessfulSyncDate, long syncDate) {
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return String.format("log.eventDate >= '%s' and log.eventDate < '%s'",
+                sdf.format(new Date(lastSuccessfulSyncDate)),
+                sdf.format(new Date(syncDate)));
     }
 
 }

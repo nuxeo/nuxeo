@@ -42,8 +42,9 @@ public interface DocumentChangeFinder extends Serializable {
      *            the given session is bound
      * @param session the session bound to a specific repository
      * @param rootPaths the synchronization root paths
-     * @param lastSuccessfulSync the last successful synchronization date of the
+     * @param lastSuccessfulSyncDate the last successful synchronization date of the
      *            user's device
+     * @param syncDate the current synchronization date
      * @param limit the maximum number of changes to fetch
      * @return the list of document changes
      * @throws TooManyDocumentChangesException if the number of changes found
@@ -51,7 +52,7 @@ public interface DocumentChangeFinder extends Serializable {
      */
     public List<DocumentChange> getDocumentChanges(boolean allRepositories,
             CoreSession session, Set<String> rootPaths,
-            long lastSuccessfulSync, int limit)
+            long lastSuccessfulSyncDate, long syncDate, int limit)
             throws TooManyDocumentChangesException;
 
 }

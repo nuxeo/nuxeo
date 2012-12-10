@@ -256,6 +256,8 @@ public class TestGetDocumentChangeSummaryMultiRepo {
     protected DocumentChangeSummary getDocumentChangeSummary(
             String repositoryName) throws Exception {
 
+        // Wait 1 second as the mock change finder relies on steps of 1 second
+        Thread.sleep(1000);
         OperationRequest opRequest = clientSession.newRequest(
                 NuxeoDriveGetDocumentChangeSummary.ID).set(
                 "lastSuccessfulSync", lastSuccessfulSync);

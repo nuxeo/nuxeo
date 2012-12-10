@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -347,17 +348,22 @@ public class TestAuditDocumentChangeFinder {
      * updates the {@link #lastSuccessfulSync} date.
      */
     protected List<DocumentChange> getDocumentChanges()
-            throws TooManyDocumentChangesException {
+            throws TooManyDocumentChangesException, InterruptedException {
+        // Wait 1 second as the audit change finder relies on steps of 1 second
+        Thread.sleep(1000);
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(Calendar.MILLISECOND, 0);
+        long syncDate = cal.getTimeInMillis();
         List<DocumentChange> docChanges = documentChangeFinder.getDocumentChanges(
                 true,
                 session,
                 syncRootPaths,
                 lastSuccessfulSync,
+                syncDate,
                 Integer.parseInt(Framework.getProperty("org.nuxeo.drive.document.change.limit")));
         assertNotNull(docChanges);
-        lastSuccessfulSync = System.currentTimeMillis();
+        lastSuccessfulSync = syncDate;
         return docChanges;
-
     }
 
     /**
@@ -366,7 +372,9 @@ public class TestAuditDocumentChangeFinder {
      * {@link #lastSuccessfulSync} date.
      */
     protected DocumentChangeSummary getDocumentChangeSummary(String userName)
-            throws ClientException {
+            throws ClientException, InterruptedException {
+        // Wait 1 second as the audit change finder relies on steps of 1 second
+        Thread.sleep(1000);
         DocumentChangeSummary docChangeSummary = nuxeoDriveManager.getDocumentChangeSummary(
                 true, userName, session, lastSuccessfulSync);
         assertNotNull(docChangeSummary);
@@ -380,7 +388,9 @@ public class TestAuditDocumentChangeFinder {
      * date.
      */
     protected DocumentChangeSummary getFolderDocumentChangeSummary(
-            String folderPath) throws ClientException {
+            String folderPath) throws ClientException, InterruptedException {
+        // Wait 1 second as the audit change finder relies on steps of 1 second
+        Thread.sleep(1000);
         DocumentChangeSummary docChangeSummary = nuxeoDriveManager.getFolderDocumentChangeSummary(
                 folderPath, session, lastSuccessfulSync);
         assertNotNull(docChangeSummary);

@@ -247,8 +247,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         Map<String, DocumentModel> changedDocModels = new HashMap<String, DocumentModel>();
         String statusCode = DocumentChangeSummary.STATUS_NO_CHANGES;
 
-        // Update sync date
+        // Update sync date, rounded to the lower second to ensure consistency
+        // in the case of databases that don't support milliseconds
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(Calendar.MILLISECOND, 0);
         long syncDate = cal.getTimeInMillis();
         if (!syncRootPaths.isEmpty()) {
             try {
@@ -257,7 +259,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                         DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
                 docChanges = documentChangeFinder.getDocumentChanges(
                         allRepositories, session, syncRootPaths,
-                        lastSuccessfulSync, limit);
+                        lastSuccessfulSync, syncDate, limit);
                 if (!docChanges.isEmpty()) {
                     // Build map of document models that have changed
                     changedDocModels.putAll(getChangedDocModels(
