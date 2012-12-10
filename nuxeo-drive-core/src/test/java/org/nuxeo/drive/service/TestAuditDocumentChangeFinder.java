@@ -122,6 +122,7 @@ public class TestAuditDocumentChangeFinder {
         TransactionHelper.startTransaction();
         DocumentModel doc1 = session.createDocument(session.createDocumentModel(
                 "/folder1", "doc1", "File"));
+        Thread.sleep(1000);
         DocumentModel doc2 = session.createDocument(session.createDocumentModel(
                 "/folder2", "doc2", "File"));
         DocumentModel doc3 = session.createDocument(session.createDocumentModel(
@@ -185,6 +186,7 @@ public class TestAuditDocumentChangeFinder {
         // synchronized root
         TransactionHelper.startTransaction();
         session.followTransition(doc1.getRef(), "undelete");
+        Thread.sleep(1000);
         session.move(doc3.getRef(), folder2.getRef(), null);
         commitAndWaitForAsyncCompletion();
 
@@ -255,6 +257,7 @@ public class TestAuditDocumentChangeFinder {
         TransactionHelper.startTransaction();
         DocumentModel doc1 = session.createDocument(session.createDocumentModel(
                 "/folder1", "doc1", "File"));
+        Thread.sleep(1000);
         DocumentModel doc2 = session.createDocument(session.createDocumentModel(
                 "/folder2", "doc2", "File"));
         session.createDocument(session.createDocumentModel("/folder3", "doc3",

@@ -114,6 +114,7 @@ public class TestGetDocumentChangeSummary {
 
         DocumentModel doc1 = session.createDocument(session.createDocumentModel(
                 "/folder1", "doc1", "File"));
+        Thread.sleep(1000);
         DocumentModel doc2 = session.createDocument(session.createDocumentModel(
                 "/folder2", "doc2", "File"));
         session.save();
