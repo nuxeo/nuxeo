@@ -17,6 +17,8 @@ import java.util.Locale;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -25,6 +27,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -43,6 +46,8 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  */
 @Operation(id = GetDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get directory entries", description = "Get the entries of a directory. This is returning a blob containing a serialized JSON array. The input document, if specified, is used as a context for a potential local configuration of the directory.")
 public class GetDirectoryEntries {
+
+    private static final Log log = LogFactory.getLog(GetDirectoryEntries.class);
 
     public static final String ID = "Directory.Entries";
 
@@ -67,25 +72,36 @@ public class GetDirectoryEntries {
     @OperationMethod
     public Blob run(DocumentModel doc) throws Exception {
         Directory directory = directoryService.getDirectory(directoryName, doc);
-        Session session = directory.getSession();
-        DocumentModelList entries = session.getEntries();
-        String schemaName = directory.getSchema();
-        Schema schema = schemaManager.getSchema(schemaName);
-        JSONArray rows = new JSONArray();
-        for (DocumentModel entry : entries) {
-            JSONObject obj = new JSONObject();
-            for (Field field : schema.getFields()) {
-                QName fieldName = field.getName();
-                String key = fieldName.getLocalName();
-                Serializable value = entry.getPropertyValue(fieldName.getPrefixedName());
-                if (translateLabels && "label".equals(key)) {
-                    value = translate((String) value);
+        Session session = null;
+        try {
+            session = directory.getSession();
+            DocumentModelList entries = session.getEntries();
+            String schemaName = directory.getSchema();
+            Schema schema = schemaManager.getSchema(schemaName);
+            JSONArray rows = new JSONArray();
+            for (DocumentModel entry : entries) {
+                JSONObject obj = new JSONObject();
+                for (Field field : schema.getFields()) {
+                    QName fieldName = field.getName();
+                    String key = fieldName.getLocalName();
+                    Serializable value = entry.getPropertyValue(fieldName.getPrefixedName());
+                    if (translateLabels && "label".equals(key)) {
+                        value = translate((String) value);
+                    }
+                    obj.element(key, value);
                 }
-                obj.element(key, value);
+                rows.add(obj);
             }
-            rows.add(obj);
+            return new StringBlob(rows.toString(), "application/json");
+        } finally {
+            try {
+                if (session != null) {
+                    session.close();
+                }
+            } catch (ClientException ce) {
+                log.error("Could not close directory session", ce);
+            }
         }
-        return new StringBlob(rows.toString(), "application/json");
     }
 
     @OperationMethod
