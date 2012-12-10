@@ -109,6 +109,15 @@ public class DocumentChangeSummary implements Serializable {
         this.statusCode = statusCode;
     }
 
+    /**
+     * @return the time code of current sync operation in milliseconds since
+     *         1970-01-01 UTC rounded to the second as measured on the server
+     *         clock. Changes from the current summary instance all happen
+     *         "strictly" before this time code. This value is expected to be
+     *         passed to the next call to
+     *         {@code NuxeoDriveManager#getDocumentChangeSummary} to get
+     *         strictly monotonic change summaries (without overlap).
+     */
     public Long getSyncDate() {
         return syncDate;
     }

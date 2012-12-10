@@ -109,7 +109,7 @@ public interface NuxeoDriveManager {
      * <li>The document models that have changed</li>
      * <li>A status code</li>
      * </ul>
-     *
+     * 
      * @param allRepositories if true then the document changes are retrieved
      *            from all repositories, else only from the one against which
      *            the given session is bound
@@ -117,7 +117,14 @@ public interface NuxeoDriveManager {
      * @param session active CoreSession instance to the repository hosting the
      *            user's synchronization roots
      * @param lastSuccessfulSync the last successful synchronization date of the
-     *            user's device
+     *            user's device. This time is expected to be in milliseconds
+     *            since 1970-01-01 UTC as measured on the Nuxeo server clock,
+     *            typically set to the value returned
+     *            {@code DocumentChangeSummary#getSyncDate()} of the previous
+     *            call to
+     *            {@code NuxeoDriveManager#getDocumentChangeSummary(boolean, String, CoreSession, long)}
+     *            or 0 for catching every event since the repository
+     *            initialization.
      * @return the summary of document changes
      */
     public DocumentChangeSummary getDocumentChangeSummary(
