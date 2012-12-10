@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -73,6 +74,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     protected static final Log log = LogFactory.getLog(Cas2Authenticator.class);
 
     protected static final String EXCLUDE_PROMPT_KEY = "excludePromptURL";
+
+    protected static final String ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME = "org.nuxeo.auth.plugin.alternative";
 
     protected String ticketKey = "ticket";
 
@@ -141,13 +144,26 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
+
+        // Check for an alternative authentication plugin in request cookies
+        NuxeoAuthenticationPlugin alternativeAuthPlugin = getAlternativeAuthPlugin(
+                httpRequest, httpResponse);
+        if (alternativeAuthPlugin != null) {
+            log.debug(String.format(
+                    "Found alternative authentication plugin %s, using it to handle login prompt.",
+                    alternativeAuthPlugin));
+            return alternativeAuthPlugin.handleLoginPrompt(httpRequest,
+                    httpResponse, baseURL);
+        }
+
         // Redirect to CAS Login screen
         // passing our application URL as service name
         String location = null;
         try {
             Map<String, String> urlParameters = new HashMap<String, String>();
             urlParameters.put("service", getAppURL(httpRequest));
-            location = URIUtils.addParametersToURIQuery(getServiceURL(httpRequest, LOGIN_ACTION), urlParameters);
+            location = URIUtils.addParametersToURIQuery(
+                    getServiceURL(httpRequest, LOGIN_ACTION), urlParameters);
             httpResponse.sendRedirect(location);
         } catch (IOException e) {
             log.error("Unable to redirect to CAS login screen to " + location,
@@ -304,6 +320,25 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
 
     public Boolean handleLogout(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
+
+        // Check for an alternative authentication plugin in request cookies
+        NuxeoAuthenticationPlugin alternativeAuthPlugin = getAlternativeAuthPlugin(
+                httpRequest, httpResponse);
+        if (alternativeAuthPlugin != null) {
+            if (alternativeAuthPlugin instanceof NuxeoAuthenticationPluginLogoutExtension) {
+                log.debug(String.format(
+                        "Found alternative authentication plugin %s, using it to handle logout.",
+                        alternativeAuthPlugin));
+                return ((NuxeoAuthenticationPluginLogoutExtension) alternativeAuthPlugin).handleLogout(
+                        httpRequest, httpResponse);
+            } else {
+                log.debug(String.format(
+                        "Found alternative authentication plugin %s which cannot handle logout, letting authentication filter handle it.",
+                        alternativeAuthPlugin));
+                return false;
+            }
+        }
+
         if (logoutURL == null || logoutURL.equals("")) {
             log.debug("No CAS logout params, skipping CAS2Logout");
             return false;
@@ -422,7 +457,8 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
     }
 
     @Override
-    public boolean onError(HttpServletRequest request, HttpServletResponse response) {
+    public boolean onError(HttpServletRequest request,
+            HttpServletResponse response) {
         try {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             if (errorPage != null) {
@@ -441,4 +477,48 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin,
         return false;
     }
 
+    protected NuxeoAuthenticationPlugin getAlternativeAuthPlugin(
+            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+
+        Cookie alternativeAuthPluginCookie = getCookie(httpRequest,
+                ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME);
+        if (alternativeAuthPluginCookie != null) {
+            String alternativeAuthPluginName = alternativeAuthPluginCookie.getValue();
+            PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                    PluggableAuthenticationService.NAME);
+            NuxeoAuthenticationPlugin alternativeAuthPlugin = authService.getPlugin(alternativeAuthPluginName);
+            if (alternativeAuthPlugin == null) {
+                log.error(String.format(
+                        "No alternative authentication plugin named %s, will remove cookie %s.",
+                        alternativeAuthPluginName,
+                        ALTERNATIVE_AUTH_PLUGIN_COOKIE_NAME));
+                removeCookie(httpRequest, httpResponse,
+                        alternativeAuthPluginCookie);
+            } else {
+                return alternativeAuthPlugin;
+            }
+        }
+        return null;
+    }
+
+    protected Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
+        Cookie cookies[] = httpRequest.getCookies();
+        if (cookies != null) {
+            for (int i = 0; i < cookies.length; i++) {
+                if (cookieName.equals(cookies[i].getName())) {
+                    return cookies[i];
+                }
+            }
+        }
+        return null;
+    }
+
+    protected void removeCookie(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse, Cookie cookie) {
+        log.debug(String.format("Removing cookie %s.", cookie.getName()));
+        cookie.setMaxAge(0);
+        cookie.setValue("");
+        cookie.setPath(httpRequest.getContextPath());
+        httpResponse.addCookie(cookie);
+    }
 }
