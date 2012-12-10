@@ -17,6 +17,7 @@ import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.core.util.RecordSet;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -45,8 +46,8 @@ public abstract class ExecutableResource {
     }
 
     @POST
-    public Object doPost(@Context HttpServletRequest request,
-            ExecutionRequest xreq) {
+    public Object doPost(@Context
+    HttpServletRequest request, ExecutionRequest xreq) {
         this.request = request;
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
@@ -69,6 +70,8 @@ public abstract class ExecutableResource {
             } else if ((result instanceof DocumentModel)
                     || (result instanceof DocumentModelList)
                     || (result instanceof JsonAdapter)) {
+                return result;
+            } else if (result instanceof RecordSet) {
                 return result;
             } else { // try to adapt to JSON
                 return new DefaultJsonAdapter(result);

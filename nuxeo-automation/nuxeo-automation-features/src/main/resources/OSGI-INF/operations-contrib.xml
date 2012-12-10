@@ -16,7 +16,8 @@
       class="org.nuxeo.ecm.automation.core.operations.services.GetRelations" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation" />
-
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.users.GetDocumentPrincipalEmails" />
     <operation

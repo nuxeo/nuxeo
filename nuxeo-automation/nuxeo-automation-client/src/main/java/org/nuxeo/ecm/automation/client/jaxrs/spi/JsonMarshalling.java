@@ -45,6 +45,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentsMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.LoginMarshaller;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.RecordSetMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.util.JsonOperationMarshaller;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.model.OperationInput;
@@ -82,7 +83,7 @@ public class JsonMarshalling {
 
         protected final HashMap<String, JsonNode> otherNodes = new HashMap<String, JsonNode>();
 
-        public Map<String,JsonNode> getOtherNodes() {
+        public Map<String, JsonNode> getOtherNodes() {
             return Collections.unmodifiableMap(otherNodes);
         }
     }
@@ -180,6 +181,7 @@ public class JsonMarshalling {
         addMarshaller(new DocumentsMarshaller());
         addMarshaller(new ExceptionMarshaller());
         addMarshaller(new LoginMarshaller());
+        addMarshaller(new RecordSetMarshaller());
     }
 
     public static void addMarshaller(JsonMarshaller<?> marshaller) {

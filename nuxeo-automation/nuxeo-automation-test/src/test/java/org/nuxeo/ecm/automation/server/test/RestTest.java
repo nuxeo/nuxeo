@@ -61,6 +61,7 @@ import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.model.PrimitiveInput;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.model.RecordSet;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
@@ -73,6 +74,7 @@ import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
@@ -347,6 +349,42 @@ public class RestTest {
         title2 = docs.get(1).getTitle();
         assertTrue(title1.equals("Note1") && title2.equals("Note2")
                 || title1.equals("Note2") && title2.equals("Note1"));
+
+    }
+
+    @Test
+    public void testQueryAndFetch() throws Exception {
+        // get the root
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+        // create a folder
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Folder").set("name", "queryTest").set(
+                "properties", "dc:title=Query Test").execute();
+        // create 2 files
+        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+                "Note").set("name", "note1").set("properties",
+                "dc:title=Note1\ndc:description=Desc1").execute();
+        session.newRequest(CreateDocument.ID).setInput(folder).set("type",
+                "Note").set("name", "note2").set("properties",
+                "dc:title=Note2\ndc:description=Desc2").execute();
+
+        // now query the two files
+        RecordSet result = (RecordSet) session.newRequest(
+                ResultSetPageProviderOperation.ID).set(
+                "query",
+                "SELECT dc:title, ecm:uuid, dc:description FROM Note WHERE ecm:path STARTSWITH '/queryTest' order by dc:title ").execute();
+
+        assertEquals(2, result.size());
+        String title1 = (String) result.get(0).get("dc:title");
+        String title2 = (String) result.get(1).get("dc:title");
+
+        assertTrue(title1.equals("Note1") && title2.equals("Note2"));
+
+        String desc1 = (String) result.get(0).get("dc:description");
+        String desc2 = (String) result.get(1).get("dc:description");
+
+        assertTrue(desc1.equals("Desc1") && desc2.equals("Desc2"));
 
     }
 
@@ -788,14 +826,13 @@ public class RestTest {
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", folder.getPath()).execute();
 
         session.newRequest("Document.Lock").setHeader(
-                Constants.HEADER_NX_VOIDOP, "*").setInput(
-                doc).execute();
+                Constants.HEADER_NX_VOIDOP, "*").setInput(doc).execute();
 
         doc = (Document) session.newRequest("Document.Fetch").setHeader(
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", doc.getPath()).execute();
 
         String lock = doc.getLock();
-        
+
         assertEquals(lock, "me");
     }
 
