@@ -26,7 +26,7 @@ Templating zone to define:
 
 </c:if>
 
-  <div class="#{foldableStyleClass} #{nxu:test(foldable, 'foldableBox', '')}">
+  <div class="#{foldableStyleClass} #{nxu:test(foldable and not hideHeader, 'foldableBox', '')}">
 
     <c:if test="#{not hideHeader}">
       <c:if test="#{empty headerFormId}">
@@ -61,7 +61,7 @@ Templating zone to define:
       </c:if>
     </c:if>
 
-    <div class="#{nxu:test(foldable, 'boxBody', '')}"
+    <div class="#{nxu:test(foldable and not hideHeader, 'boxBody', '')}"
       style="#{nxu:test(foldable and foldedByDefault, 'display: none;', '')}">
       <ui:insert name="foldable_box_content" />
     </div>
