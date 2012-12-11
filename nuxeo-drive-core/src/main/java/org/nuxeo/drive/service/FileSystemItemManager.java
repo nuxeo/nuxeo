@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Provides an API to manage current file system operations on a
+ * Provides an API to manage usual file system operations on a
  * {@link FileSystemItem} given its id. Allows the following actions:
  * <ul>
  * <li>Read</li>

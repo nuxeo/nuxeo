@@ -5,7 +5,7 @@
   <documentation>
     @author Antoine Taillefer(ataillefer@nuxeo.com)
 
-    This service provides an API to manage current file system operations
+    This service provides an API to manage usual file system operations
     on a FileSystemItem given its id.
     It allows the following actions:
     - check if an item exists
