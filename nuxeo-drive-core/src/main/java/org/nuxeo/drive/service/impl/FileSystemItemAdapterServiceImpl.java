@@ -16,9 +16,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,37 +44,37 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     public static final String FILE_SYSTEM_ITEM_FACTORY_EP = "fileSystemItemFactory";
 
-    protected final Map<String, FileSystemItemFactoryDescriptor> factoryDescriptors = new HashMap<String, FileSystemItemFactoryDescriptor>();
+    protected final FileSystemItemFactoryRegistry factoryRegistry = new FileSystemItemFactoryRegistry();
 
-    protected final List<FileSystemItemFactoryWrapper> factories = new ArrayList<FileSystemItemFactoryWrapper>();
+    protected List<FileSystemItemFactoryWrapper> factories;
 
     /*------------------------ DefaultComponent -----------------------------*/
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
-            FileSystemItemFactoryDescriptor desc = (FileSystemItemFactoryDescriptor) contribution;
-            String descName = desc.getName();
-            // Override
-            if (factoryDescriptors.containsKey(descName)) {
-                if (desc.isEnabled()) {
-                    // No merge
-                    factoryDescriptors.put(descName, desc);
-                } else {
-                    factoryDescriptors.remove(descName);
-                }
-            }
-            // New factory
-            else {
-                if (desc.isEnabled()) {
-                    factoryDescriptors.put(descName, desc);
-                }
-            }
+            factoryRegistry.addContribution((FileSystemItemFactoryDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
+            factoryRegistry.removeContribution((FileSystemItemFactoryDescriptor) contribution);
+        } else {
+            log.error("Unknown extension point " + extensionPoint);
+        }
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        factories = null;
+        super.deactivate(context);
     }
 
     /**
@@ -155,30 +152,16 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     /*------------------------- For test purpose ----------------------------------*/
     public Map<String, FileSystemItemFactoryDescriptor> getFactoryDescriptors() {
-        return factoryDescriptors;
+        return factoryRegistry.factoryDescriptors;
     }
 
     public List<FileSystemItemFactoryWrapper> getFactories() {
         return factories;
     }
 
-    // TODO: remove when better solution found for hot deploy
-    public void recomputeFactories() throws Exception {
-        factories.clear();
-        sortFactories();
-    }
-
     /*--------------------------- Protected ---------------------------------------*/
     protected void sortFactories() throws Exception {
-        List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
-                factoryDescriptors.values());
-        Collections.sort(orderedFactoryDescriptors);
-        for (FileSystemItemFactoryDescriptor factoryDesc : orderedFactoryDescriptors) {
-            FileSystemItemFactoryWrapper factoryWrapper = new FileSystemItemFactoryWrapper(
-                    factoryDesc.getDocType(), factoryDesc.getFacet(),
-                    factoryDesc.getFactory());
-            factories.add(factoryWrapper);
-        }
+        factories = factoryRegistry.getOrderedFactories();
     }
 
     protected boolean generalFactoryMatches(FileSystemItemFactoryWrapper factory) {

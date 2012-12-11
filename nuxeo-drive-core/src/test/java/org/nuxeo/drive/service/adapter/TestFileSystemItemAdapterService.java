@@ -47,6 +47,8 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -63,7 +65,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.drive.core")
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.runtime.reload" })
 @LocalDeploy({
         "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml",
         "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml" })
@@ -256,8 +258,7 @@ public class TestFileSystemItemAdapterService {
 
         harness.deployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-        // TODO: find a better solution to manage hot deploy
-        ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).recomputeFactories();
+        Framework.getLocalService(ReloadService.class).reload();
 
         // ------------------------------------------------------
         // Check factory descriptors
