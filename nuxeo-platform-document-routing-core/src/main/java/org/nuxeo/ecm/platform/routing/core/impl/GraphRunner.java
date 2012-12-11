@@ -102,7 +102,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
                 task = taskDoc.getAdapter(Task.class);
                 if (task == null) {
-                    throw new DocumentRouteException("Invalid taskId: " + taskId);
+                    throw new DocumentRouteException("Invalid taskId: "
+                            + taskId);
                 }
                 if (nodeId == null) {
                     nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
@@ -349,7 +350,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     node.getId(), routeInstance.getDocument().getId(),
                     new ArrayList<String>(actors), false,
                     node.getTaskDirective(), null, dueDate, taskVariables,
-                    null, node.getWorkflowContextualInfo());
+                    null, node.getWorkflowContextualInfo(true));
 
             routing.makeRoutingTasks(session, tasks);
             String taskAssigneesPermission = node.getTaskAssigneesPermission();
