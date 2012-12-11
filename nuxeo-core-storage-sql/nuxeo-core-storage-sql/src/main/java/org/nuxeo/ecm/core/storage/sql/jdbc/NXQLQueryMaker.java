@@ -800,6 +800,18 @@ public class NXQLQueryMaker implements QueryMaker {
         return new QueryAnalyzer(facetFilter);
     }
 
+    protected static Set<String> getStringLiterals(LiteralList list)
+            throws QueryMakerException {
+        Set<String> set = new HashSet<String>();
+        for (Literal literal : list) {
+            if (!(literal instanceof StringLiteral)) {
+                throw new QueryMakerException("requires string literals");
+            }
+            set.add(((StringLiteral) literal).value);
+        }
+        return set;
+    }
+
     /**
      * Collects various info about the query AST, and rewrites the toplevel AND
      * {@link Predicate}s of the WHERE clause into a single
@@ -813,7 +825,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         protected boolean inOrderBy;
 
-        protected final List<Operand> toplevelOperands = new LinkedList<Operand>();
+        protected final LinkedList<Operand> toplevelOperands = new LinkedList<Operand>();
 
         protected MultiExpression wherePredicate;
 
@@ -908,6 +920,7 @@ public class NXQLQueryMaker implements QueryMaker {
             if (node != null) {
                 analyzeToplevelOperands(node.predicate);
             }
+            simplifyToplevelOperands();
             wherePredicate = new MultiExpression(Operator.AND, toplevelOperands);
             super.visitMultiExpression(wherePredicate);
         }
@@ -939,6 +952,102 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             }
             toplevelOperands.add(node);
+        }
+
+        /**
+         * Simplify ecm:primaryType positive references, and non-per-instance
+         * mixin types.
+         */
+        protected void simplifyToplevelOperands() {
+            Set<String> primaryTypes = null; // if defined, required
+            for (Iterator<Operand> it = toplevelOperands.iterator(); it.hasNext();) {
+                // whenever we don't know how to optimize the expression,
+                // we just continue the loop
+                Operand node = it.next();
+                if (!(node instanceof Expression)) {
+                    continue;
+                }
+                Expression expr = (Expression) node;
+                if (!(expr.lvalue instanceof Reference)) {
+                    continue;
+                }
+                String name = ((Reference) expr.lvalue).name;
+                Operator op = expr.operator;
+                Operand rvalue = expr.rvalue;
+                if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
+                    if (op != Operator.EQ && op != Operator.IN) {
+                        continue;
+                    }
+                    Set<String> set;
+                    if (op == Operator.EQ) {
+                        if (!(rvalue instanceof StringLiteral)) {
+                            continue;
+                        }
+                        String primaryType = ((StringLiteral) rvalue).value;
+                        set = new HashSet<String>(
+                                Collections.singleton(primaryType));
+                    } else { // Operator.IN
+                        if (!(rvalue instanceof LiteralList)) {
+                            continue;
+                        }
+                        set = getStringLiterals((LiteralList) rvalue);
+                    }
+                    if (primaryTypes == null) {
+                        primaryTypes = set;
+                    } else {
+                        primaryTypes.retainAll(set);
+                    }
+                    it.remove(); // expression simplified into primaryTypes set
+                } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
+                    if (op != Operator.EQ && op != Operator.NOTEQ) {
+                        continue;
+                    }
+                    if (!(rvalue instanceof StringLiteral)) {
+                        continue;
+                    }
+                    String mixin = ((StringLiteral) rvalue).value;
+                    if (!MIXINS_NOT_PER_INSTANCE.contains(mixin)) {
+                        // mixin per instance -> primary type checks not enough
+                        continue;
+                    }
+                    Set<String> set = model.getMixinDocumentTypes(mixin);
+                    if (primaryTypes == null) {
+                        if (op == Operator.EQ) {
+                            primaryTypes = new HashSet<String>(set); // copy
+                        } else {
+                            continue; // unknown positive, no optimization
+                        }
+                    } else {
+                        if (op == Operator.EQ) {
+                            primaryTypes.retainAll(set);
+                        } else {
+                            primaryTypes.removeAll(set);
+                        }
+                    }
+                    it.remove(); // expression simplified into primaryTypes set
+                }
+            }
+            // readd the simplified primary types constraints
+            if (primaryTypes != null) {
+                if (primaryTypes.isEmpty()) {
+                    // TODO better removal
+                    primaryTypes.add("__NOSUCHTYPE__");
+                }
+                Expression expr;
+                if (primaryTypes.size() == 1) {
+                    String pt = primaryTypes.iterator().next();
+                    expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE),
+                            Operator.EQ, new StringLiteral(pt));
+                } else { // primaryTypes.size() > 1
+                    LiteralList list = new LiteralList();
+                    for (String pt : primaryTypes) {
+                        list.add(new StringLiteral(pt));
+                    }
+                    expr = new Expression(new Reference(NXQL.ECM_PRIMARYTYPE),
+                            Operator.IN, list);
+                }
+                toplevelOperands.addFirst(expr);
+            }
         }
 
         protected void analyzeToplevelIsProxy(Expression expr) {
@@ -1300,18 +1409,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             }
             throw new AssertionError("not reached");
-        }
-
-        protected Set<String> getStringLiterals(LiteralList list)
-                throws QueryMakerException {
-            Set<String> set = new HashSet<String>();
-            for (Literal literal : list) {
-                if (!(literal instanceof StringLiteral)) {
-                    throw new QueryMakerException("requires string literals");
-                }
-                set.add(((StringLiteral) literal).value);
-            }
-            return set;
         }
 
         @Override

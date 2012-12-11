@@ -109,7 +109,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     /**
      * Creates the following structure of documents:
-     * 
+     *
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -1349,6 +1349,35 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
                 1, 1, false);
         assertEquals(1, secondPage.size());
         assertEquals(whole.get(1).getId(), secondPage.get(0).getId());
+    }
+
+    @Test
+    public void testQueryPrimaryTypeOptimization() throws Exception {
+        // check these queries in the logs
+
+        // Folder
+        session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Folder'");
+        // empty
+        session.query("SELECT * FROM Document WHERE ecm:primaryType = 'Folder'"
+                + " AND ecm:primaryType = 'File'");
+        // empty
+        session.query("SELECT * FROM Folder WHERE ecm:primaryType = 'Note'");
+        // Folder
+        session.query("SELECT * FROM Document WHERE ecm:primaryType IN ('Folder', 'Note')"
+                + " AND ecm:primaryType = 'Folder'");
+
+        // just folderish
+        session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Folderish'");
+        // no folderish
+        session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'Folderish'");
+        // just hidden
+        session.query("SELECT * FROM Document WHERE ecm:mixinType = 'HiddenInNavigation'");
+        // no hidden
+        session.query("SELECT * FROM Document WHERE ecm:mixinType <> 'HiddenInNavigation'");
+
+        // empty
+        session.query("SELECT * FROM Note WHERE ecm:mixinType = 'Folderish'");
+
     }
 
     @Test
