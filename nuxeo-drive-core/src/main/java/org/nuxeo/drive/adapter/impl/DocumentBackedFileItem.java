@@ -17,6 +17,7 @@
 package org.nuxeo.drive.adapter.impl;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.ecm.core.api.Blob;
@@ -71,9 +72,18 @@ public class DocumentBackedFileItem extends
     }
 
     @Override
-    public String getDownloadURL(String baseURL) {
-        // TODO
-        return null;
+    public String getDownloadURL(String baseURL) throws ClientException {
+        StringBuilder downloadURLSb = new StringBuilder();
+        downloadURLSb.append(baseURL);
+        downloadURLSb.append("nxbigfile/");
+        downloadURLSb.append(doc.getRepositoryName());
+        downloadURLSb.append("/");
+        downloadURLSb.append(doc.getRef().toString());
+        downloadURLSb.append("/");
+        downloadURLSb.append("blobholder:0");
+        downloadURLSb.append("/");
+        downloadURLSb.append(URIUtils.quoteURIPathComponent(getFileName(), true));
+        return downloadURLSb.toString();
     }
 
     @Override

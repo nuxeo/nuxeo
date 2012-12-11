@@ -34,7 +34,7 @@ public interface FileItem extends FileSystemItem {
 
     Blob getBlob() throws ClientException;
 
-    String getDownloadURL(String baseURL);
+    String getDownloadURL(String baseURL) throws ClientException;
 
     void setBlob(Blob blob) throws ClientException;
 

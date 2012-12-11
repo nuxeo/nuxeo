@@ -293,9 +293,18 @@ public class TestDefaultFileSystemItemFactory {
     public void testFileItem() throws Exception {
 
         // ------------------------------------------------------
+        // FileItem#getDownloadURL
+        // ------------------------------------------------------
+        String baseURL = "http://myServer/nuxeo/";
+        FileItem fileItem = (FileItem) file.getAdapter(FileSystemItem.class);
+        String downloadURL = fileItem.getDownloadURL(baseURL);
+        assertEquals("http://myServer/nuxeo/nxbigfile/test/" + file.getId()
+                + "/blobholder:0/Joe.odt", downloadURL);
+
+        // ------------------------------------------------------
         // FileItem#setBlob
         // ------------------------------------------------------
-        FileItem fileItem = (FileItem) file.getAdapter(FileSystemItem.class);
+        fileItem = (FileItem) file.getAdapter(FileSystemItem.class);
         Blob fileItemBlob = fileItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
