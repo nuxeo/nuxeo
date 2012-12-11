@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
@@ -168,14 +169,24 @@ public class TestGetDocumentChangeSummaryMultiRepo {
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder3,
                 otherSession);
 
-        DocumentModel doc1 = session.createDocument(session.createDocumentModel(
-                "/folder1", "doc1", "File"));
+        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
+                "File");
+        doc1.setPropertyValue("file:content", new StringBlob(
+                "The content of file 1."));
+        doc1 = session.createDocument(doc1);
         Thread.sleep(1000);
-        DocumentModel doc2 = session.createDocument(session.createDocumentModel(
-                "/folder2", "doc2", "File"));
+        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
+                "File");
+        doc2.setPropertyValue("file:content", new StringBlob(
+                "The content of file 2."));
+        doc2 = session.createDocument(doc2);
         Thread.sleep(1000);
-        DocumentModel doc3 = otherSession.createDocument(otherSession.createDocumentModel(
-                "/folder3", "doc3", "File"));
+        DocumentModel doc3 = otherSession.createDocumentModel("/folder3",
+                "doc3", "File");
+        doc3.setPropertyValue("file:content", new StringBlob(
+                "The content of file 3."));
+        doc3 = otherSession.createDocument(doc3);
+
         session.save();
         otherSession.save();
 

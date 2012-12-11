@@ -43,12 +43,6 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
 
     private static final Log log = LogFactory.getLog(AuditDocumentChangeFinder.class);
 
-    protected String blackListedDocTypes;
-
-    public AuditDocumentChangeFinder() {
-        initBlackListedDocTypes();
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public List<DocumentChange> getDocumentChanges(boolean allRepositories,
@@ -71,7 +65,6 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
             auditQuerySb.append("or ");
             auditQuerySb.append("log.category = 'nuxeoDriveCategory'");
             auditQuerySb.append(") ");
-            auditQuerySb.append("and log.docType not in (%s) ");
             auditQuerySb.append("and (%s) ");
             auditQuerySb.append("and (%s) ");
             auditQuerySb.append("order by log.repositoryId asc, log.eventDate desc");
@@ -80,12 +73,11 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
             if (!allRepositories) {
                 String repositoryName = session.getRepositoryName();
                 auditQuery = String.format(auditQuerySb.toString(),
-                        repositoryName, blackListedDocTypes,
-                        getRootPathClause(rootPaths),
+                        repositoryName, getRootPathClause(rootPaths),
                         getDateClause(lastSuccessfulSyncDate, syncDate));
             } else {
                 auditQuery = String.format(auditQuerySb.toString(),
-                        blackListedDocTypes, getRootPathClause(rootPaths),
+                        getRootPathClause(rootPaths),
                         getDateClause(lastSuccessfulSyncDate, syncDate));
             }
             log.debug("Querying audit logs for document changes: " + auditQuery);
@@ -108,27 +100,6 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
             }
         }
         return docChanges;
-    }
-
-    public String getBlackListedDocTypes() {
-        return blackListedDocTypes;
-    }
-
-    public void setBlackListedDocTypes(String blackListedDocTypes) {
-        this.blackListedDocTypes = blackListedDocTypes;
-    }
-
-    protected void initBlackListedDocTypes() {
-        StringBuilder sb = new StringBuilder();
-        for (BlackListedDocTypesEnum blackListedDocType : BlackListedDocTypesEnum.values()) {
-            if (sb.length() > 0) {
-                sb.append(",");
-            }
-            sb.append("'");
-            sb.append(blackListedDocType.name());
-            sb.append("'");
-        }
-        blackListedDocTypes = sb.toString();
     }
 
     protected String getRootPathClause(Set<String> rootPaths) {

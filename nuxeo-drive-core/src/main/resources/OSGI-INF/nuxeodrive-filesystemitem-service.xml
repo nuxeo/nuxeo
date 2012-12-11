@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.service.FileSystemItemManager"
+  version="1.0">
+
+  <documentation>
+    @author Antoine Taillefer(ataillefer@nuxeo.com)
+
+    This service provides an API to manage usual file system operations
+    on a FileSystemItem given its id.
+    It allows the following actions:
+    - check if an item exists
+    - get an item
+    - get a folder's children
+    - create a folder
+    - create a file
+    - update a file
+    - delete an item
+    - rename an item
+    - move an item
+    - copy an item
+
+    It is used by Nuxeo Drive to synchronize a client device with the server.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.drive.service.FileSystemItemManager" />
+  </service>
+
+  <implementation
+    class="org.nuxeo.drive.service.impl.FileSystemItemManagerImpl" />
+
+</component>

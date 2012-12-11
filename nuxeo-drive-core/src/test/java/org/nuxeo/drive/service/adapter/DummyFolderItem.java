@@ -14,15 +14,27 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service.impl;
+package org.nuxeo.drive.service.adapter;
+
+import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Enumerates the document types blacklisted for synchronization.
+ * Dummy folder implementation of a {@link FileSystemItem} for test purpose.
  *
  * @author Antoine Taillefer
  */
-public enum BlackListedDocTypesEnum {
+public class DummyFolderItem extends DocumentBackedFolderItem {
 
-    Root, ManagementRoot, AdministrativeStatusContainer, AdministrativeStatus, UserWorkspacesRoot, UserProfile, DefaultRelation, TaskRoot, DocumentRouteModelsRoot, DocumentRoute, RouteNode;
+    public DummyFolderItem(DocumentModel doc) {
+        super(doc);
+    }
+
+    @Override
+    public String getName() throws ClientException {
+        return "Dummy folder with id " + doc.getId();
+    }
 
 }

@@ -40,6 +40,7 @@ import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -112,11 +113,18 @@ public class TestGetDocumentChangeSummary {
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder2,
                 session);
 
-        DocumentModel doc1 = session.createDocument(session.createDocumentModel(
-                "/folder1", "doc1", "File"));
+        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
+                "File");
+        doc1.setPropertyValue("file:content", new StringBlob(
+                "The content of file 1."));
+        doc1 = session.createDocument(doc1);
         Thread.sleep(1000);
-        DocumentModel doc2 = session.createDocument(session.createDocumentModel(
-                "/folder2", "doc2", "File"));
+        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
+                "File");
+        doc2.setPropertyValue("file:content", new StringBlob(
+                "The content of file 2."));
+        doc2 = session.createDocument(doc2);
+
         session.save();
 
         docChangeSummary = getDocumentChangeSummary();
@@ -147,12 +155,22 @@ public class TestGetDocumentChangeSummary {
 
         // Create 2 documents in the same sync root: "/folder1" and 1 document
         // in another sync root => should find 2 changes for "/folder1"
-        session.createDocument(session.createDocumentModel("/folder1", "doc3",
-                "File"));
-        session.createDocument(session.createDocumentModel("/folder1", "doc4",
-                "File"));
-        session.createDocument(session.createDocumentModel("/folder2", "doc5",
-                "File"));
+        DocumentModel doc3 = session.createDocumentModel("/folder1", "doc3",
+                "File");
+        doc3.setPropertyValue("file:content", new StringBlob(
+                "The content of file 3."));
+        doc3 = session.createDocument(doc3);
+        DocumentModel doc4 = session.createDocumentModel("/folder1", "doc4",
+                "File");
+        doc4.setPropertyValue("file:content", new StringBlob(
+                "The content of file 4."));
+        doc4 = session.createDocument(doc4);
+        DocumentModel doc5 = session.createDocumentModel("/folder2", "doc5",
+                "File");
+        doc5.setPropertyValue("file:content", new StringBlob(
+                "The content of file 5."));
+        doc5 = session.createDocument(doc5);
+
         session.save();
 
         docChangeSummary = getFolderDocumentChangeSummary("/folder1");

@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.DocumentChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TooManyDocumentChangesException;
@@ -261,10 +263,14 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                         allRepositories, session, syncRootPaths,
                         lastSuccessfulSync, syncDate, limit);
                 if (!docChanges.isEmpty()) {
-                    // Build map of document models that have changed
-                    changedDocModels.putAll(getChangedDocModels(
-                            allRepositories, session, docChanges));
-                    statusCode = DocumentChangeSummary.STATUS_FOUND_CHANGES;
+                    // Fill map of document models that have changed and filter
+                    // document changes to remove the one referring to documents
+                    // not adaptable as a FileSystemItem, yet not synchronizable
+                    addChangedDocModelsAndFilterDocChanges(allRepositories,
+                            session, docChanges, changedDocModels);
+                    if (!docChanges.isEmpty()) {
+                        statusCode = DocumentChangeSummary.STATUS_FOUND_CHANGES;
+                    }
                 }
             } catch (TooManyDocumentChangesException e) {
                 statusCode = DocumentChangeSummary.STATUS_TOO_MANY_CHANGES;
@@ -313,7 +319,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     queryAndFecthSynchronizationRoots(repoSession, query,
                             syncRoots);
                 } catch (Exception e) {
-                    throw new ClientRuntimeException(e);
+                    throw ClientException.wrap(e);
                 } finally {
                     if (repoSession != null) {
                         CoreInstance.getInstance().close(repoSession);
@@ -344,17 +350,19 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         syncRoots.put(session.getRepositoryName(), repoSyncRoots);
     }
 
-    protected Map<String, DocumentModel> getChangedDocModels(
+    protected void addChangedDocModelsAndFilterDocChanges(
             boolean allRepositories, CoreSession session,
-            List<DocumentChange> docChanges) throws ClientException {
+            List<DocumentChange> docChanges,
+            Map<String, DocumentModel> changedDocModels) throws ClientException {
 
-        Map<String, DocumentModel> changedDocModels = new HashMap<String, DocumentModel>();
         if (allRepositories) {
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             Map<String, CoreSession> repoSessions = new HashMap<String, CoreSession>();
             try {
-                for (DocumentChange docChange : docChanges) {
+                Iterator<DocumentChange> docChangesIt = docChanges.iterator();
+                while (docChangesIt.hasNext()) {
+                    DocumentChange docChange = docChangesIt.next();
                     String docUuid = docChange.getDocUuid();
                     if (!changedDocModels.containsKey(docUuid)) {
                         String repositoryId = docChange.getRepositoryId();
@@ -372,12 +380,12 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                             try {
                                 repoSession = repository.open(context);
                             } catch (Exception e) {
-                                throw new ClientRuntimeException(e);
+                                throw ClientException.wrap(e);
                             }
                             repoSessions.put(repositoryId, repoSession);
                         }
-                        changedDocModels.put(docUuid,
-                                repoSession.getDocument(new IdRef(docUuid)));
+                        addChangedDocModelAndFilterDocChange(repoSession,
+                                docUuid, changedDocModels, docChangesIt);
                     }
                 }
             } finally {
@@ -386,15 +394,33 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 }
             }
         } else {
-            for (DocumentChange docChange : docChanges) {
+            Iterator<DocumentChange> docChangesIt = docChanges.iterator();
+            while (docChangesIt.hasNext()) {
+                DocumentChange docChange = docChangesIt.next();
                 String docUuid = docChange.getDocUuid();
                 if (!changedDocModels.containsKey(docUuid)) {
-                    changedDocModels.put(docUuid,
-                            session.getDocument(new IdRef(docUuid)));
+                    addChangedDocModelAndFilterDocChange(session, docUuid,
+                            changedDocModels, docChangesIt);
                 }
             }
         }
-        return changedDocModels;
+    }
+
+    /**
+     * Adds the doc with the given uuid to the map of changed doc models if it
+     * is adaptable as a FileSystemItem, ie. synchronizable, else removes the
+     * doc change from the list of doc changes.
+     */
+    protected void addChangedDocModelAndFilterDocChange(CoreSession session,
+            String docUuid, Map<String, DocumentModel> changedDocModels,
+            Iterator<DocumentChange> docChangesIt) throws ClientException {
+
+        DocumentModel doc = session.getDocument(new IdRef(docUuid));
+        if (doc.getAdapter(FileSystemItem.class) == null) {
+            docChangesIt.remove();
+        } else {
+            changedDocModels.put(docUuid, doc);
+        }
     }
 
     // TODO: make documentChangeFinder overridable with an extension point and
