@@ -264,7 +264,6 @@ public interface GraphNode {
         public String getName() {
             return name;
         }
-
     }
 
     /**
@@ -499,10 +498,10 @@ public interface GraphNode {
     Date computeTaskDueDate() throws DocumentRouteException;
 
     /**
-     * Gets a map containing the workflow and node variables
+     * Gets a map containing the workflow and node variables and workflow
+     * documents.
      *
-     * @return
+     * @param detached The documents added into this map can be detached or not
      */
-    Map<String, Serializable> getWorkflowContextualInfo();
-
+    Map<String, Serializable> getWorkflowContextualInfo(boolean detached);
 }

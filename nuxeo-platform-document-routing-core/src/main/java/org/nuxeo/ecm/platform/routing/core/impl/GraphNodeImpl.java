@@ -340,7 +340,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     protected OperationContext getContext() {
         OperationContext context = new OperationContext(getSession());
-        context.putAll(getWorkflowContextualInfo());
+        context.putAll(getWorkflowContextualInfo(false));
         context.setCommit(false); // no session save at end
         DocumentModelList documents = graph.getAttachedDocumentModels();
         // associated docs
@@ -349,16 +349,26 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public Map<String, Serializable> getWorkflowContextualInfo() {
+    public Map<String, Serializable> getWorkflowContextualInfo(boolean detached) {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         // workflow context
         context.put("WorkflowVariables", (Serializable) graph.getVariables());
         context.put("workflowInitiator", getWorkflowInitiator());
         context.put("workflowStartTime", getWorkflowStartTime());
+
         DocumentModelList documents = graph.getAttachedDocumentModels();
+        if (detached) {
+            for (DocumentModel documentModel : documents) {
+                try {
+                    documentModel.detach(true);
+                } catch (ClientException e) {
+                    log.error(e);
+                    throw new ClientRuntimeException(e);
+                }
+            }
+        }
         context.put("workflowDocuments", documents);
         context.put("documents", documents);
-
         // node context
         String button = (String) getProperty(PROP_NODE_BUTTON);
         Map<String, Serializable> nodeVariables = getVariables();
