@@ -19,7 +19,7 @@ package org.nuxeo.drive.service;
 
 import java.util.Set;
 
-import org.nuxeo.drive.service.impl.DocumentChangeSummary;
+import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -127,7 +127,7 @@ public interface NuxeoDriveManager {
      *            initialization.
      * @return the summary of document changes
      */
-    public DocumentChangeSummary getDocumentChangeSummary(
+    public FileSystemChangeSummary getDocumentChangeSummary(
             boolean allRepositories, String userName, CoreSession session,
             long lastSuccessfulSync) throws ClientException;
 
@@ -146,16 +146,16 @@ public interface NuxeoDriveManager {
      * @return the summary of document changes
      *
      */
-    public DocumentChangeSummary getFolderDocumentChangeSummary(
+    public FileSystemChangeSummary getFolderChangeSummary(
             String folderPath, CoreSession session, long lastSuccessfulSync)
             throws ClientException;
 
     /**
-     * Sets the {@link DocumentChangeFinder} member.
+     * Sets the {@link FileSystemChangeFinder} member.
      * <p>
      * TODO: make it overridable with an extension point and remove setter.
      */
-    public void setDocumentChangeFinder(
-            DocumentChangeFinder documentChangeFinder);
+    public void setChangeFinder(
+            FileSystemChangeFinder changeFinder);
 
 }

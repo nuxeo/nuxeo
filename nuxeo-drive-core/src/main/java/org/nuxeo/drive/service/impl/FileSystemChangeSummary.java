@@ -18,25 +18,19 @@ package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.nuxeo.ecm.core.api.DocumentModel;
-
 /**
- * Summary of document changes, including:
+ * Summary of file system changes, including:
  * <ul>
- * <li>The list of sync root paths</li>
- * <li>A list of document changes</li>
- * <li>A map of document models that have changed</li>
- * <li>A status code</li>
+ * <li>A list of file system item changes</li>
+ * <li>A global status code</li>
  * </ul>
- * A document change is implemented by {@link DocumentChange}.
+ * A document change is implemented by {@link FileSystemItemChange}.
  *
  * @author Antoine Taillefer
  */
-public class DocumentChangeSummary implements Serializable {
+public class FileSystemChangeSummary implements Serializable {
 
     private static final long serialVersionUID = -5719579884697229867L;
 
@@ -48,29 +42,21 @@ public class DocumentChangeSummary implements Serializable {
 
     protected Set<String> syncRootPaths;
 
-    protected List<DocumentChange> documentChanges;
-
-    // Ignored from JSON serialization for the moment as we need to define
-    // exactly which fields from the DocumentModel are needed by the client
-    // device
-    @JsonIgnore
-    protected Map<String, DocumentModel> changedDocModels;
+    protected List<FileSystemItemChange> fileSystemChanges;
 
     protected String statusCode;
 
     protected Long syncDate;
 
-    public DocumentChangeSummary() {
+    public FileSystemChangeSummary() {
         // Needed for JSON deserialization
     }
 
-    public DocumentChangeSummary(Set<String> syncRootPaths,
-            List<DocumentChange> documentChanges,
-            Map<String, DocumentModel> changedDocModels, String statusCode,
-            Long syncDate) {
-        this.documentChanges = documentChanges;
+    public FileSystemChangeSummary(Set<String> syncRootPaths,
+            List<FileSystemItemChange> fileSystemItemChanges,
+            String statusCode, Long syncDate) {
+        this.fileSystemChanges = fileSystemItemChanges;
         this.syncRootPaths = syncRootPaths;
-        this.changedDocModels = changedDocModels;
         this.statusCode = statusCode;
         this.syncDate = syncDate;
     }
@@ -83,22 +69,12 @@ public class DocumentChangeSummary implements Serializable {
         this.syncRootPaths = syncRootPaths;
     }
 
-    public List<DocumentChange> getDocumentChanges() {
-        return documentChanges;
+    public List<FileSystemItemChange> getDocumentChanges() {
+        return fileSystemChanges;
     }
 
-    public void setDocumentChanges(List<DocumentChange> documentChanges) {
-        this.documentChanges = documentChanges;
-    }
-
-    @JsonIgnore
-    public Map<String, DocumentModel> getChangedDocModels() {
-        return changedDocModels;
-    }
-
-    @JsonIgnore
-    public void setChangedDocModels(Map<String, DocumentModel> changedDocModels) {
-        this.changedDocModels = changedDocModels;
+    public void setDocumentChanges(List<FileSystemItemChange> documentChanges) {
+        this.fileSystemChanges = documentChanges;
     }
 
     public String getStatusCode() {

@@ -26,18 +26,18 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.drive.service.DocumentChangeFinder;
-import org.nuxeo.drive.service.TooManyDocumentChangesException;
+import org.nuxeo.drive.service.FileSystemChangeFinder;
+import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Implementation of {@link DocumentChangeFinder} using the {@link AuditReader}.
+ * Implementation of {@link FileSystemChangeFinder} using the {@link AuditReader}.
  *
  * @author Antoine Taillefer
  */
-public class AuditDocumentChangeFinder implements DocumentChangeFinder {
+public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
 
     private static final long serialVersionUID = 1963018967324857522L;
 
@@ -45,12 +45,12 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<DocumentChange> getDocumentChanges(boolean allRepositories,
+    public List<FileSystemItemChange> getFileSystemChanges(boolean allRepositories,
             CoreSession session, Set<String> rootPaths,
             long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws TooManyDocumentChangesException {
+            throws TooManyChangesException {
 
-        List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
+        List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
         if (!rootPaths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
@@ -85,7 +85,7 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
             List<Object[]> queryResult = (List<Object[]>) auditService.nativeQuery(
                     auditQuery, 1, limit);
             if (queryResult.size() >= limit) {
-                throw new TooManyDocumentChangesException(
+                throw new TooManyChangesException(
                         "Too many document changes found in the audit logs.");
             }
             for (Object[] auditEntry : queryResult) {
@@ -95,7 +95,7 @@ public class AuditDocumentChangeFinder implements DocumentChangeFinder {
                 Long eventDate = ((Timestamp) auditEntry[3]).getTime();
                 String docPath = (String) auditEntry[4];
                 String docUuid = (String) auditEntry[5];
-                docChanges.add(new DocumentChange(repositoryId, eventId,
+                docChanges.add(new FileSystemItemChange(repositoryId, eventId,
                         docLifeCycleState, eventDate, docPath, docUuid));
             }
         }

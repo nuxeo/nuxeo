@@ -32,9 +32,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
-import org.nuxeo.drive.service.DocumentChangeFinder;
+import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.TooManyDocumentChangesException;
+import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -82,7 +82,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             4).softKeys().softValues().expiration(10, TimeUnit.MINUTES).makeMap();
 
     // TODO: make this overridable with an extension point
-    protected DocumentChangeFinder documentChangeFinder = new AuditDocumentChangeFinder();
+    protected FileSystemChangeFinder changeFinder = new AuditDocumentChangeFinder();
 
     @Override
     public void registerSynchronizationRoot(String userName,
@@ -202,10 +202,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * changes for the given user and last successful synchronization date.
      * <p>
      * Sets the status code to
-     * {@link DocumentChangeSummary#STATUS_TOO_MANY_CHANGES} if the audit log
+     * {@link FileSystemChangeSummary#STATUS_TOO_MANY_CHANGES} if the audit log
      * query returns too many results, to
-     * {@link DocumentChangeSummary#STATUS_NO_CHANGES} if no results are
-     * returned and to {@link DocumentChangeSummary#STATUS_FOUND_CHANGES}
+     * {@link FileSystemChangeSummary#STATUS_NO_CHANGES} if no results are
+     * returned and to {@link FileSystemChangeSummary#STATUS_FOUND_CHANGES}
      * otherwise.
      * <p>
      * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
@@ -213,7 +213,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * is 1000.
      */
     @Override
-    public DocumentChangeSummary getDocumentChangeSummary(
+    public FileSystemChangeSummary getDocumentChangeSummary(
             boolean allRepositories, String userName, CoreSession session,
             long lastSuccessfulSync) throws ClientException {
 
@@ -231,7 +231,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * @see #getDocumentChangeSummary(boolean, String, CoreSession, long)
      */
     @Override
-    public DocumentChangeSummary getFolderDocumentChangeSummary(
+    public FileSystemChangeSummary getFolderChangeSummary(
             String folderPath, CoreSession session, long lastSuccessfulSync)
             throws ClientException {
 
@@ -241,14 +241,14 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 lastSuccessfulSync);
     }
 
-    protected DocumentChangeSummary getDocumentChangeSummary(
+    protected FileSystemChangeSummary getDocumentChangeSummary(
             boolean allRepositories, Set<String> syncRootPaths,
             CoreSession session, long lastSuccessfulSync)
             throws ClientException {
 
-        List<DocumentChange> docChanges = new ArrayList<DocumentChange>();
+        List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
         Map<String, DocumentModel> changedDocModels = new HashMap<String, DocumentModel>();
-        String statusCode = DocumentChangeSummary.STATUS_NO_CHANGES;
+        String statusCode = FileSystemChangeSummary.STATUS_NO_CHANGES;
 
         // Update sync date, rounded to the lower second to ensure consistency
         // in the case of databases that don't support milliseconds
@@ -260,26 +260,26 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 // Get document changes
                 int limit = Integer.parseInt(Framework.getProperty(
                         DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
-                docChanges = documentChangeFinder.getDocumentChanges(
+                changes = changeFinder.getFileSystemChanges(
                         allRepositories, session, syncRootPaths,
                         lastSuccessfulSync, syncDate, limit);
-                if (!docChanges.isEmpty()) {
+                if (!changes.isEmpty()) {
                     // Fill map of document models that have changed and filter
                     // document changes to remove the one referring to documents
                     // not adaptable as a FileSystemItem, yet not synchronizable
                     addChangedDocModelsAndFilterDocChanges(allRepositories,
-                            session, docChanges, changedDocModels);
-                    if (!docChanges.isEmpty()) {
-                        statusCode = DocumentChangeSummary.STATUS_FOUND_CHANGES;
+                            session, changes, changedDocModels);
+                    if (!changes.isEmpty()) {
+                        statusCode = FileSystemChangeSummary.STATUS_FOUND_CHANGES;
                     }
                 }
-            } catch (TooManyDocumentChangesException e) {
-                statusCode = DocumentChangeSummary.STATUS_TOO_MANY_CHANGES;
+            } catch (TooManyChangesException e) {
+                statusCode = FileSystemChangeSummary.STATUS_TOO_MANY_CHANGES;
             }
         }
 
-        return new DocumentChangeSummary(syncRootPaths, docChanges,
-                changedDocModels, statusCode, syncDate);
+        return new FileSystemChangeSummary(syncRootPaths, changes,
+                statusCode, syncDate);
     }
 
     protected Map<String, Serializable[]> getSynchronizationRoots(
@@ -355,7 +355,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     protected void addChangedDocModelsAndFilterDocChanges(
             boolean allRepositories, CoreSession session,
-            List<DocumentChange> docChanges,
+            List<FileSystemItemChange> docChanges,
             Map<String, DocumentModel> changedDocModels) throws ClientException {
 
         if (allRepositories) {
@@ -363,9 +363,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             Map<String, CoreSession> repoSessions = new HashMap<String, CoreSession>();
             try {
-                Iterator<DocumentChange> docChangesIt = docChanges.iterator();
+                Iterator<FileSystemItemChange> docChangesIt = docChanges.iterator();
                 while (docChangesIt.hasNext()) {
-                    DocumentChange docChange = docChangesIt.next();
+                    FileSystemItemChange docChange = docChangesIt.next();
                     String docUuid = docChange.getDocUuid();
                     if (!changedDocModels.containsKey(docUuid)) {
                         String repositoryId = docChange.getRepositoryId();
@@ -397,9 +397,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 }
             }
         } else {
-            Iterator<DocumentChange> docChangesIt = docChanges.iterator();
+            Iterator<FileSystemItemChange> docChangesIt = docChanges.iterator();
             while (docChangesIt.hasNext()) {
-                DocumentChange docChange = docChangesIt.next();
+                FileSystemItemChange docChange = docChangesIt.next();
                 String docUuid = docChange.getDocUuid();
                 if (!changedDocModels.containsKey(docUuid)) {
                     addChangedDocModelAndFilterDocChange(session, docUuid,
@@ -416,7 +416,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      */
     protected void addChangedDocModelAndFilterDocChange(CoreSession session,
             String docUuid, Map<String, DocumentModel> changedDocModels,
-            Iterator<DocumentChange> docChangesIt) throws ClientException {
+            Iterator<FileSystemItemChange> docChangesIt) throws ClientException {
 
         DocumentModel doc = session.getDocument(new IdRef(docUuid));
         if (doc.getAdapter(FileSystemItem.class) == null) {
@@ -426,11 +426,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         }
     }
 
-    // TODO: make documentChangeFinder overridable with an extension point and
+    // TODO: make changeFinder overridable with an extension point and
     // remove setter
-    public void setDocumentChangeFinder(
-            DocumentChangeFinder documentChangeFinder) {
-        this.documentChangeFinder = documentChangeFinder;
+    public void setChangeFinder(
+            FileSystemChangeFinder changeFinder) {
+        this.changeFinder = changeFinder;
     }
 
 }

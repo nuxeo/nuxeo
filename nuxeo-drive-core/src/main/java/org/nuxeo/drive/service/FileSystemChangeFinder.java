@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import org.nuxeo.drive.service.impl.DocumentChange;
+import org.nuxeo.drive.service.impl.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -28,31 +28,35 @@ import org.nuxeo.ecm.core.api.CoreSession;
  *
  * @author Antoine Taillefer
  */
-public interface DocumentChangeFinder extends Serializable {
+public interface FileSystemChangeFinder extends Serializable {
 
     /**
-     * Gets the document changes in all repositories or in the repository
-     * against which the given session is bound depending on the
-     * {@code allRepositories} parameter, for the given synchronization root
-     * paths, since the given last successful synchronization date and without
-     * exceeding the given limit.
+     * Gets the changes in all repositories or in the repository against which
+     * the given session is bound depending on the {@code allRepositories}
+     * parameter, for the given synchronization root paths, since the given last
+     * successful synchronization date and without exceeding the given limit.
+     *
+     * The change summaries are mapped back to the file system view: the file
+     * system items might not always have the same tree layout as the backing
+     * documents in the repositories but this is a back-end detail that the
+     * client does not have to deal with.
      *
      * @param allRepositories if true then the document changes are retrieved
      *            from all repositories, else only from the one against which
      *            the given session is bound
      * @param session the session bound to a specific repository
      * @param rootPaths the synchronization root paths
-     * @param lastSuccessfulSyncDate the last successful synchronization date of the
-     *            user's device
+     * @param lastSuccessfulSyncDate the last successful synchronization date of
+     *            the user's device
      * @param syncDate the current synchronization date
      * @param limit the maximum number of changes to fetch
      * @return the list of document changes
-     * @throws TooManyDocumentChangesException if the number of changes found
-     *             has exceeded the limit
+     * @throws TooManyChangesException if the number of changes found has
+     *             exceeded the limit
      */
-    public List<DocumentChange> getDocumentChanges(boolean allRepositories,
+    public List<FileSystemItemChange> getFileSystemChanges(boolean allRepositories,
             CoreSession session, Set<String> rootPaths,
             long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws TooManyDocumentChangesException;
+            throws TooManyChangesException;
 
 }

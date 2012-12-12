@@ -23,7 +23,7 @@ import java.io.Serializable;
  *
  * @author Antoine Taillefer
  */
-public class DocumentChange implements Serializable {
+public class FileSystemItemChange implements Serializable {
 
     private static final long serialVersionUID = -5697869523880291618L;
 
@@ -39,11 +39,11 @@ public class DocumentChange implements Serializable {
 
     protected String docUuid;
 
-    public DocumentChange() {
+    public FileSystemItemChange() {
         // Needed for JSON deserialization
     }
 
-    public DocumentChange(String repositoryId, String eventId,
+    public FileSystemItemChange(String repositoryId, String eventId,
             String docLifeCycleState, long eventDate, String docPath,
             String docUuid) {
         this.repositoryId = repositoryId;
