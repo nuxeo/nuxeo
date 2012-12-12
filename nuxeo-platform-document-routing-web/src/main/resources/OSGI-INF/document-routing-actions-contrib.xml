@@ -22,21 +22,6 @@
       <filter-id>isRoute</filter-id>
     </action>
 
-    <action id="route_to_pdf"
-      link="#{routeToPdfActionBean.doRenderView('view_pdf_route.faces')}"
-      order="20" label="action.pdf.route" icon="/icons/pdf.png">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>isRoute</filter-id>
-    </action>
-
-    <action id="related_route_to_pdf"
-      link="#{routeToPdfActionBean.doRenderView('view_pdf_related_route.faces')}"
-      order="20" label="action.pdf.route" icon="/icons/pdf.png">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>isRoutable</filter-id>
-      <filter-id>hasRelatedRouteStarted</filter-id>
-    </action>
-
     <action id="CANCEL_RELATED_ROUTE" link="#{routingActions.cancelRoute()}"
       order="10" label="label.document.routing.cancel.route">
       <category>ATTACHED_ROUTE_LIST</category>
