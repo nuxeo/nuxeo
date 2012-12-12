@@ -88,8 +88,7 @@ public class NuxeoDriveActions implements Serializable {
         if (isUnderSync == null) {
             NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
             Set<IdRef> references = driveManager.getSynchronizationRootReferences(
-                    false, documentManager.getPrincipal().getName(),
-                    documentManager);
+                    documentManager.getPrincipal().getName(), documentManager);
             DocumentModelList path = navigationContext.getCurrentPath();
             DocumentModel root = null;
             // list is ordered such as closest synchronized ancestor is
@@ -231,7 +230,7 @@ public class NuxeoDriveActions implements Serializable {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         String userName = documentManager.getPrincipal().getName();
         Set<IdRef> syncRootRefs = driveManager.getSynchronizationRootReferences(
-                false, userName, documentManager);
+                userName, documentManager);
         for (IdRef syncRootRef : syncRootRefs) {
             syncRoots.add(documentManager.getDocument(syncRootRef));
         }

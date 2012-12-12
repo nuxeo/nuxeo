@@ -168,8 +168,8 @@ public class TestNuxeoDriveManager {
             int expectedCount) throws ClientException {
         assertEquals(
                 expectedCount,
-                nuxeoDriveManager.getSynchronizationRootReferences(true,
-                        userName, session).size());
+                nuxeoDriveManager.getSynchronizationRootReferences(userName,
+                        session).size());
     }
 
     public DocumentModel doc(String path) throws ClientException {
@@ -193,7 +193,7 @@ public class TestNuxeoDriveManager {
 
         // Check synchronization root references
         Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(
-                true, "user1", user1Session);
+                "user1", user1Session);
         assertEquals(2, rootRefs.size());
         assertTrue(rootRefs.contains(user1Workspace));
         assertTrue(rootRefs.contains(new IdRef(user1Session.getDocument(
