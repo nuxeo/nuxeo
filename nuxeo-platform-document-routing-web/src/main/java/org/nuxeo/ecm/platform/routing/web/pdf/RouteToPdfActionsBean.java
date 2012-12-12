@@ -42,6 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Mariana Cedica
  */
+@Deprecated
 @Name("routeToPdfActionBean")
 @Scope(EVENT)
 public class RouteToPdfActionsBean implements Serializable {
