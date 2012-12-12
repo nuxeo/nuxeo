@@ -159,6 +159,15 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     @Override
     @SuppressWarnings("unchecked")
+    public Set<IdRef> getSynchronizationRootReferences(String userName,
+            CoreSession session) throws ClientException {
+        Map<String, Serializable[]> syncRoots = getSynchronizationRoots(false,
+                userName, session);
+        return (Set<IdRef>) syncRoots.get(session.getRepositoryName())[0];
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     public Set<IdRef> getSynchronizationRootReferences(boolean allRepositories,
             String userName, CoreSession session) throws ClientException {
         Map<String, Serializable[]> syncRoots = getSynchronizationRoots(

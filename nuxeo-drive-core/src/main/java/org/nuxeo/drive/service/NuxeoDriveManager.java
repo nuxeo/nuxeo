@@ -54,6 +54,21 @@ public interface NuxeoDriveManager {
             throws ClientException;
 
     /**
+     * Fetch the list of synchronization root ids for a given user and a given
+     * session repository. This list is assumed to be short enough (in the order
+     * of 100 folder max) so that no paging API is required.
+     *
+     * @param userName the id of the Nuxeo Drive user
+     * @param session active CoreSession instance to the repository hosting the
+     *            roots.
+     * @return the ordered set of non deleted synchronization root references
+     *         for that user
+     * @see #getSynchronizationRootPaths(String, CoreSession)
+     */
+    public Set<IdRef> getSynchronizationRootReferences(String userName,
+            CoreSession session) throws ClientException;
+
+    /**
      * Fetch the list of synchronization root ids for a given user. This list is
      * assumed to be short enough (in the order of 100 folder max) so that no
      * paging API is required.
@@ -67,6 +82,7 @@ public interface NuxeoDriveManager {
      * @return the ordered set of non deleted synchronization root references
      *         for that user
      * @see #getSynchronizationRootPaths(String, CoreSession)
+     * @deprecated
      */
     public Set<IdRef> getSynchronizationRootReferences(boolean allRepositories,
             String userName, CoreSession session) throws ClientException;
@@ -109,7 +125,7 @@ public interface NuxeoDriveManager {
      * <li>The document models that have changed</li>
      * <li>A status code</li>
      * </ul>
-     * 
+     *
      * @param allRepositories if true then the document changes are retrieved
      *            from all repositories, else only from the one against which
      *            the given session is bound
