@@ -5,18 +5,6 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-    <type id="Workspace">
-      <subtypes>
-        <type>DocumentRoute</type>
-      </subtypes>
-    </type>
-
-    <type id="Folder">
-      <subtypes>
-        <type>DocumentRoute</type>
-      </subtypes>
-    </type>
-
     <type id="DocumentRouteInstancesRoot">
       <default-view>view_documents</default-view>
       <label>DocumentRouteInstancesRoot</label>
