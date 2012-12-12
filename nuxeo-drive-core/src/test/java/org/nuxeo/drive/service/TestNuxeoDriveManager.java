@@ -296,13 +296,15 @@ public class TestNuxeoDriveManager {
         checkRootsCount("user2", session, 2);
 
         nuxeoDriveManager.unregisterSynchronizationRoot("user1",
-                doc("/default-domain/workspaces/workspace-2/folder-2-1"), session);
+                doc("/default-domain/workspaces/workspace-2/folder-2-1"),
+                session);
         checkRootsCount("user1", session, 0);
         checkRootsCount("user2", session, 2);
 
         // check re-registration
         nuxeoDriveManager.registerSynchronizationRoot("user1",
-                doc("/default-domain/workspaces/workspace-2/folder-2-1"), session);
+                doc("/default-domain/workspaces/workspace-2/folder-2-1"),
+                session);
         checkRootsCount("user1", session, 1);
         checkRootsCount("user2", session, 2);
     }

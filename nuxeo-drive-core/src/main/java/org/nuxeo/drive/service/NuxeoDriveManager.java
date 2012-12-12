@@ -162,8 +162,8 @@ public interface NuxeoDriveManager {
      * @return the summary of document changes
      *
      */
-    public FileSystemChangeSummary getFolderChangeSummary(
-            String folderPath, CoreSession session, long lastSuccessfulSync)
+    public FileSystemChangeSummary getFolderChangeSummary(String folderPath,
+            CoreSession session, long lastSuccessfulSync)
             throws ClientException;
 
     /**
@@ -171,7 +171,6 @@ public interface NuxeoDriveManager {
      * <p>
      * TODO: make it overridable with an extension point and remove setter.
      */
-    public void setChangeFinder(
-            FileSystemChangeFinder changeFinder);
+    public void setChangeFinder(FileSystemChangeFinder changeFinder);
 
 }
