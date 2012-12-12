@@ -72,8 +72,18 @@ public class XSDLoader {
 
     protected final SchemaManagerImpl schemaManager;
 
+    protected List<String> referencedXSD = new ArrayList<String>();
+
+    protected boolean collectReferencedXSD = false;
+
     public XSDLoader(SchemaManagerImpl schemaManager) {
         this.schemaManager = schemaManager;
+    }
+
+    public XSDLoader(SchemaManagerImpl schemaManager,
+            boolean collectReferencedXSD) {
+        this.schemaManager = schemaManager;
+        this.collectReferencedXSD = collectReferencedXSD;
     }
 
     protected Schema getSchema(String name) {
@@ -128,7 +138,33 @@ public class XSDLoader {
             systemId = systemId.replace("file://", "file:////");
         }
         parser.parse(systemId);
-        return loadSchema(name, prefix, parser.getResult(), override);
+
+        XSSchemaSet xsSchemas = parser.getResult();
+        if (collectReferencedXSD) {
+            collectReferencedXSD(xsSchemas);
+        }
+        return loadSchema(name, prefix, xsSchemas, override);
+    }
+
+    protected void collectReferencedXSD(XSSchemaSet xsSchemas) {
+
+        Collection<XSSchema> schemas = xsSchemas.getSchemas();
+        String ns = null;
+        for (XSSchema s : schemas) {
+            ns = s.getTargetNamespace();
+            if (ns.length() <= 0 || ns.equals(NS_XSD)) {
+                continue;
+            }
+
+            String systemId = s.getLocator().getSystemId();
+            if (systemId != null && systemId.startsWith("file:/")) {
+                String filePath = systemId.substring(6);
+                if (!referencedXSD.contains(filePath)) {
+                    referencedXSD.add(filePath);
+                }
+            }
+        }
+
     }
 
     // called by tests
@@ -136,7 +172,8 @@ public class XSDLoader {
             throws SAXException, TypeException {
         XSOMParser parser = getParser();
         parser.parse(url);
-        return loadSchema(name, prefix, parser.getResult(), false);
+        XSSchemaSet xsSchemas = parser.getResult();
+        return loadSchema(name, prefix, xsSchemas, false);
     }
 
     protected Schema loadSchema(String name, String prefix,
@@ -274,8 +311,9 @@ public class XSDLoader {
         if (content == null) {
             content = xsct.getContentType();
         }
-        Type ret = createComplexType(schema, superType, name, content);
-        if (ret instanceof ComplexType) {
+        Type ret = createComplexType(schema, superType, name, content,
+                xsct.isAbstract());
+        if (ret != null && ret instanceof ComplexType) {
             // load attributes if any
             loadAttributes(schema, xsct, (ComplexType) ret);
         }
@@ -366,7 +404,8 @@ public class XSDLoader {
     }
 
     protected Type createComplexType(Schema schema, ComplexType superType,
-            String name, XSContentType content) throws TypeBindingException {
+            String name, XSContentType content, boolean abstractType)
+            throws TypeBindingException {
 
         ComplexType ct = new ComplexTypeImpl(superType, schema.getName(), name);
 
@@ -384,7 +423,7 @@ public class XSDLoader {
         XSTerm term = particle.getTerm();
         XSModelGroup mg = term.asModelGroup();
 
-        return processModelGroup(schema, superType, name, ct, mg);
+        return processModelGroup(schema, superType, name, ct, mg, abstractType);
     }
 
     protected Type createFakeComplexType(Schema schema, ComplexType superType,
@@ -395,20 +434,26 @@ public class XSDLoader {
         // recursive references to the same type
         schema.registerType(ct);
 
-        return processModelGroup(schema, superType, name, ct, mg);
+        return processModelGroup(schema, superType, name, ct, mg, false);
     }
 
     protected Type processModelGroup(Schema schema, ComplexType superType,
-            String name, ComplexType ct, XSModelGroup mg)
+            String name, ComplexType ct, XSModelGroup mg, boolean abstractType)
             throws TypeBindingException {
         if (mg == null) {
             // TODO don't know how to handle this for now
             throw new TypeBindingException("unsupported complex type");
         }
         XSParticle[] group = mg.getChildren();
+        if (group.length == 0) {
+            return null;
+        }
         if (group.length == 1 && superType == null && group[0].isRepeated()) {
-            // a list
-            return createListType(schema, name, group[0]);
+            // a list ?
+            // only convert to list of type is not abstract
+            if (!abstractType) {
+                return createListType(schema, name, group[0]);
+            }
         }
         for (XSParticle child : group) {
             XSTerm term = child.getTerm();
@@ -434,18 +479,20 @@ public class XSDLoader {
                     ct.addField(fieldName, listType, null, 0);
                 } else {
                     processModelGroup(schema, superType, name, ct,
-                            term.asModelGroup());
+                            term.asModelGroup(), abstractType);
                 }
             } else {
                 if (maxOccur < 0 || maxOccur > 1) {
                     Type fieldType = loadType(schema, element.getType(),
                             element.getName());
-                    ListType listType = createListType(schema,
-                            element.getName() + "#anonymousListType",
-                            fieldType, 0, maxOccur);
-                    // add the listfield to the current CT
-                    String fieldName = element.getName();
-                    ct.addField(fieldName, listType, null, 0);
+                    if (fieldType != null) {
+                        ListType listType = createListType(schema,
+                                element.getName() + "#anonymousListType",
+                                fieldType, 0, maxOccur);
+                        // add the listfield to the current CT
+                        String fieldName = element.getName();
+                        ct.addField(fieldName, listType, null, 0);
+                    }
                 } else {
                     loadComplexTypeElement(schema, ct, element);
                 }
@@ -469,10 +516,12 @@ public class XSDLoader {
         Type type = loadType(schema, element.getType(), element.getName());
         if (type == null) {
             log.warn("Unable to find type for " + element.getName());
+            return null;
+        } else {
+            return new ListTypeImpl(schema.getName(), name, type,
+                    element.getName(), defValue, particle.getMinOccurs(),
+                    particle.getMaxOccurs());
         }
-        return new ListTypeImpl(schema.getName(), name, type,
-                element.getName(), defValue, particle.getMinOccurs(),
-                particle.getMaxOccurs());
     }
 
     protected static ListType createListType(Schema schema, String name,
@@ -555,6 +604,10 @@ public class XSDLoader {
         } else {
             return fieldName + ANONYMOUS_TYPE_SUFFIX;
         }
+    }
+
+    public List<String> getReferencedXSD() {
+        return referencedXSD;
     }
 
 }
