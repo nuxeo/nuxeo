@@ -69,10 +69,10 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
         if (doc.isFolder()) {
-            return new DocumentBackedFolderItem(doc);
+            return new DocumentBackedFolderItem(getName(), doc);
         }
         if (hasBlob(doc)) {
-            return new DocumentBackedFileItem(doc);
+            return new DocumentBackedFileItem(getName(), doc);
         }
         log.debug(String.format(
                 "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem => returning null.",

@@ -69,6 +69,8 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
 
+    private static final String DEFAULT_FILE_SYSTEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
+
     @Inject
     protected CoreSession session;
 
@@ -140,7 +142,8 @@ public class TestDefaultFileSystemItemFactory {
         FileSystemItem fsItem = file.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals("test/" + file.getId(), fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(),
+                fsItem.getId());
         assertEquals("Joe.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
@@ -152,7 +155,8 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = note.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals("test/" + note.getId(), fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(),
+                fsItem.getId());
         assertEquals("aNote.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
@@ -164,7 +168,8 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = custom.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals("test/" + custom.getId(), fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + custom.getId(),
+                fsItem.getId());
         assertEquals("Bonnie's file.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
@@ -185,7 +190,8 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = folder.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals("test/" + folder.getId(), fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+                fsItem.getId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
@@ -198,7 +204,8 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = folderishFile.getAdapter(FileSystemItem.class);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals("test/" + folderishFile.getId(), fsItem.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folderishFile.getId(),
+                fsItem.getId());
         assertEquals("Sarah's folderish file", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
@@ -266,7 +273,7 @@ public class TestDefaultFileSystemItemFactory {
         assertNull(fsItem);
         // Note
         fsItem = defaultFactory.getFileSystemItemById(
-                "defaultFileSystemItemFactory/test/" + note.getId(), session);
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(), session);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
         assertEquals("aNote.txt", fsItem.getName());
@@ -276,7 +283,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
         // Folder
         fsItem = defaultFactory.getFileSystemItemById(
-                "defaultFileSystemItemFactory/test/" + folder.getId(), session);
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), session);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals("Jack's folder", fsItem.getName());
@@ -284,8 +291,8 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
         // Not adaptable as a FileSystemItem
         fsItem = defaultFactory.getFileSystemItemById(
-                "defaultFileSystemItemFactory/test/"
-                        + notAFileSystemItem.getId(), session);
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + notAFileSystemItem.getId(),
+                session);
         assertNull(fsItem);
     }
 

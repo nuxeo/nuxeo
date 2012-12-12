@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DummyFolderItem extends DocumentBackedFolderItem {
 
-    public DummyFolderItem(DocumentModel doc) {
-        super(doc);
+    public DummyFolderItem(String factoryName, DocumentModel doc) {
+        super(factoryName, doc);
     }
 
     @Override

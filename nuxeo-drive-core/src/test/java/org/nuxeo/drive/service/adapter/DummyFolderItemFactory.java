@@ -32,7 +32,7 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc) {
-        return new DummyFolderItem(doc);
+        return new DummyFolderItem(getName(), doc);
     }
 
     @Override

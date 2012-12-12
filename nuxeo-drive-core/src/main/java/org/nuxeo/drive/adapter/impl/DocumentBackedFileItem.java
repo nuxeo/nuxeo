@@ -18,7 +18,6 @@ package org.nuxeo.drive.adapter.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -33,11 +32,11 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 public class DocumentBackedFileItem extends
         AbstractDocumentBackedFileSystemItem implements FileItem {
 
-    public DocumentBackedFileItem(DocumentModel doc) {
-        super(doc);
+    public DocumentBackedFileItem(String factoryName, DocumentModel doc) {
+        super(factoryName, doc);
     }
 
-    /*--------------------- AbstractDocumentBackedFileSystemItem ---------------------*/
+    /*--------------------- AbstractFileSystemItem ---------------------*/
     @Override
     public String getName() throws ClientException {
         return getFileName();

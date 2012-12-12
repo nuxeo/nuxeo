@@ -181,6 +181,7 @@ public class TestFileSystemItemAdapterService {
         FileSystemItem fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(file);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof DummyFileItem);
+        assertEquals("dummyDocTypeFactory/test/" + file.getId(), fsItem.getId());
         assertEquals("Dummy file with id " + file.getId(), fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Joe", fsItem.getCreator());
@@ -190,6 +191,7 @@ public class TestFileSystemItemAdapterService {
         fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof DummyFolderItem);
+        assertEquals("dummyFacetFactory/test/" + folder.getId(), fsItem.getId());
         assertEquals("Dummy folder with id " + folder.getId(), fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());
@@ -199,6 +201,8 @@ public class TestFileSystemItemAdapterService {
         fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(custom);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
+        assertEquals("defaultFileSystemItemFactory/test/" + custom.getId(),
+                fsItem.getId());
         assertEquals("Bonnie's file.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Bonnie", fsItem.getCreator());
@@ -320,6 +324,7 @@ public class TestFileSystemItemAdapterService {
         fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
+        assertEquals("dummyFacetFactory/test/" + folder.getId(), fsItem.getId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());

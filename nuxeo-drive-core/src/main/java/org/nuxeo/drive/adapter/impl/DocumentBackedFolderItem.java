@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.drive.adapter.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
@@ -45,11 +44,11 @@ public class DocumentBackedFolderItem extends
 
     private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
 
-    public DocumentBackedFolderItem(DocumentModel doc) {
-        super(doc);
+    public DocumentBackedFolderItem(String factoryName, DocumentModel doc) {
+        super(factoryName, doc);
     }
 
-    /*--------------------- AbstractDocumentBackedFileSystemItem ---------------------*/
+    /*--------------------- AbstractFileSystemItem ---------------------*/
     @Override
     public String getName() throws ClientException {
         return doc.getTitle();
@@ -101,7 +100,7 @@ public class DocumentBackedFolderItem extends
                                 "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check the allowed sub-types for the %s doc type.",
                                 name, doc.getPathAsString(), doc.getType()));
             }
-            return new DocumentBackedFolderItem(folder);
+            return new DocumentBackedFolderItem(getFactoryName(), folder);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }
@@ -120,7 +119,7 @@ public class DocumentBackedFolderItem extends
                                 "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
                                 blob.getFilename(), doc.getPathAsString()));
             }
-            return new DocumentBackedFileItem(file);
+            return new DocumentBackedFileItem(getFactoryName(), file);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }

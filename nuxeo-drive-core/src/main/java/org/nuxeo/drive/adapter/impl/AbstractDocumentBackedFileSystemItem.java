@@ -14,14 +14,13 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.adapter;
+package org.nuxeo.drive.adapter.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
-import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,25 +35,26 @@ import org.nuxeo.runtime.api.Framework;
  * @see DocumentBackedFileItem
  * @see DocumentBackedFolderItem
  */
-public abstract class AbstractDocumentBackedFileSystemItem implements
-        FileSystemItem {
+public abstract class AbstractDocumentBackedFileSystemItem extends
+        AbstractFileSystemItem {
 
     protected final DocumentModel doc;
 
-    protected AbstractDocumentBackedFileSystemItem(DocumentModel doc) {
+    protected AbstractDocumentBackedFileSystemItem(String factoryName,
+            DocumentModel doc) {
+        super(factoryName);
         this.doc = doc;
     }
 
     /*--------------------- FileSystemItem ---------------------*/
-
-    public abstract String getName() throws ClientException;
-
-    public abstract boolean isFolder();
-
-    public abstract void rename(String name) throws ClientException;
-
     public String getId() {
-        return doc.getRepositoryName() + "/" + doc.getId();
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.getId());
+        sb.append("/");
+        sb.append(doc.getRepositoryName());
+        sb.append("/");
+        sb.append(doc.getId());
+        return sb.toString();
     }
 
     public String getCreator() throws ClientException {
@@ -78,17 +78,6 @@ public abstract class AbstractDocumentBackedFileSystemItem implements
 
     public DocumentModel getDocument() {
         return doc;
-    }
-
-    /*--------------------- Object -----------------*/
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof FileSystemItem)) {
-            return false;
-        }
-        return getId().equals(((FileSystemItem) obj).getId());
     }
 
     /*--------------------- Protected -----------------*/
