@@ -224,14 +224,13 @@ public class TestAuditFileSystemChangeFinder {
     }
 
     @Test
-    public void testGetDocumentChangeSummary() throws Exception {
+    public void testGetChangeSummary() throws Exception {
 
         // No sync roots => shouldn't find any changes
-        FileSystemChangeSummary changeSummary = getDocumentChangeSummary("Administrator");
+        FileSystemChangeSummary changeSummary = getChangeSummary("Administrator");
         assertNotNull(changeSummary);
-        assertTrue(changeSummary.getSyncRootPaths().isEmpty());
-        assertTrue(changeSummary.getDocumentChanges().isEmpty());
-        assertEquals("no_changes", changeSummary.getStatusCode());
+        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Register sync roots => should find changes: the newly
         // synchronized root folders as they are updated by the synchronization
@@ -244,13 +243,12 @@ public class TestAuditFileSystemChangeFinder {
                 session);
         // commitAndWaitForAsyncCompletion();
 
-        changeSummary = getDocumentChangeSummary("Administrator");
+        changeSummary = getChangeSummary("Administrator");
         Set<String> expectedSyncRootPaths = new HashSet<String>();
         expectedSyncRootPaths.add("/folder1");
         expectedSyncRootPaths.add("/folder2");
-        assertEquals(expectedSyncRootPaths, changeSummary.getSyncRootPaths());
-        assertEquals(2, changeSummary.getDocumentChanges().size());
-        assertEquals("found_changes", changeSummary.getStatusCode());
+        assertEquals(2, changeSummary.getFileSystemChanges().size());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Create 3 documents, only 2 in sync roots => should find 2 changes
         TransactionHelper.startTransaction();
@@ -269,10 +267,9 @@ public class TestAuditFileSystemChangeFinder {
                 "File"));
         commitAndWaitForAsyncCompletion();
 
-        changeSummary = getDocumentChangeSummary("Administrator");
-        assertEquals(expectedSyncRootPaths, changeSummary.getSyncRootPaths());
+        changeSummary = getChangeSummary("Administrator");
 
-        List<FileSystemItemChange> changes = changeSummary.getDocumentChanges();
+        List<FileSystemItemChange> changes = changeSummary.getFileSystemChanges();
         assertEquals(2, changes.size());
         FileSystemItemChange docChange = changes.get(0);
         assertEquals("test", docChange.getRepositoryId());
@@ -289,7 +286,7 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals("/folder1/doc1", docChange.getDocPath());
         assertEquals(doc1.getId(), docChange.getDocUuid());
 
-        assertEquals("found_changes", changeSummary.getStatusCode());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Create a document that should not be synchronized because not
         // adaptable as a FileSystemItem (not Folderish nor a BlobHolder with a
@@ -299,9 +296,9 @@ public class TestAuditFileSystemChangeFinder {
                 "notSynchronizableDoc", "NotSynchronizable"));
         commitAndWaitForAsyncCompletion();
 
-        changeSummary = getDocumentChangeSummary("Administrator");
-        assertTrue(changeSummary.getDocumentChanges().isEmpty());
-        assertEquals("no_changes", changeSummary.getStatusCode());
+        changeSummary = getChangeSummary("Administrator");
+        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Create 2 documents in the same sync root: "/folder1" and 1 document
         // in another sync root => should find 2 changes for "/folder1"
@@ -325,16 +322,14 @@ public class TestAuditFileSystemChangeFinder {
 
         changeSummary = getFolderChangeSummary("/folder1");
         expectedSyncRootPaths.remove("/folder2");
-        assertEquals(expectedSyncRootPaths, changeSummary.getSyncRootPaths());
-        assertEquals(2, changeSummary.getDocumentChanges().size());
-        assertEquals("found_changes", changeSummary.getStatusCode());
+        assertEquals(2, changeSummary.getFileSystemChanges().size());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // No changes since last successful sync
-        changeSummary = getDocumentChangeSummary("Administrator");
+        changeSummary = getChangeSummary("Administrator");
         expectedSyncRootPaths.add("/folder2");
-        assertEquals(expectedSyncRootPaths, changeSummary.getSyncRootPaths());
-        assertTrue(changeSummary.getDocumentChanges().isEmpty());
-        assertEquals("no_changes", changeSummary.getStatusCode());
+        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Too many changes
         TransactionHelper.startTransaction();
@@ -344,10 +339,9 @@ public class TestAuditFileSystemChangeFinder {
 
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "1");
-        changeSummary = getDocumentChangeSummary("Administrator");
-        assertEquals(expectedSyncRootPaths, changeSummary.getSyncRootPaths());
-        assertTrue(changeSummary.getDocumentChanges().isEmpty());
-        assertEquals("too_many_changes", changeSummary.getStatusCode());
+        changeSummary = getChangeSummary("Administrator");
+        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+        assertEquals(Boolean.TRUE, changeSummary.getHasTooManyChanges());
     }
 
     /**
@@ -378,7 +372,7 @@ public class TestAuditFileSystemChangeFinder {
      * roots using the {@link NuxeoDriveManager} and updates the
      * {@link #lastSuccessfulSync} date.
      */
-    protected FileSystemChangeSummary getDocumentChangeSummary(String userName)
+    protected FileSystemChangeSummary getChangeSummary(String userName)
             throws ClientException, InterruptedException {
         // Wait 1 second as the audit change finder relies on steps of 1 second
         Thread.sleep(1000);

@@ -18,7 +18,6 @@ package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Summary of file system changes, including:
@@ -32,57 +31,32 @@ import java.util.Set;
  */
 public class FileSystemChangeSummary implements Serializable {
 
-    private static final long serialVersionUID = -5719579884697229867L;
-
-    public static final String STATUS_FOUND_CHANGES = "found_changes";
-
-    public static final String STATUS_TOO_MANY_CHANGES = "too_many_changes";
-
-    public static final String STATUS_NO_CHANGES = "no_changes";
-
-    protected Set<String> syncRootPaths;
+    private static final long serialVersionUID = 1L;
 
     protected List<FileSystemItemChange> fileSystemChanges;
 
-    protected String statusCode;
-
     protected Long syncDate;
+
+    protected Boolean hasTooManyChanges = Boolean.FALSE;
 
     public FileSystemChangeSummary() {
         // Needed for JSON deserialization
     }
 
-    public FileSystemChangeSummary(Set<String> syncRootPaths,
-            List<FileSystemItemChange> fileSystemItemChanges,
-            String statusCode, Long syncDate) {
-        this.fileSystemChanges = fileSystemItemChanges;
-        this.syncRootPaths = syncRootPaths;
-        this.statusCode = statusCode;
+    public FileSystemChangeSummary(
+            List<FileSystemItemChange> fileSystemChanges, Long syncDate,
+            Boolean tooManyChanges) {
+        this.fileSystemChanges = fileSystemChanges;
         this.syncDate = syncDate;
+        this.hasTooManyChanges = tooManyChanges;
     }
 
-    public Set<String> getSyncRootPaths() {
-        return syncRootPaths;
-    }
-
-    public void setSyncRootPaths(Set<String> syncRootPaths) {
-        this.syncRootPaths = syncRootPaths;
-    }
-
-    public List<FileSystemItemChange> getDocumentChanges() {
+    public List<FileSystemItemChange> getFileSystemChanges() {
         return fileSystemChanges;
     }
 
-    public void setDocumentChanges(List<FileSystemItemChange> documentChanges) {
-        this.fileSystemChanges = documentChanges;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
+    public void setFileSystemChanges(List<FileSystemItemChange> hanges) {
+        this.fileSystemChanges = hanges;
     }
 
     /**
@@ -100,6 +74,14 @@ public class FileSystemChangeSummary implements Serializable {
 
     public void setSyncDate(Long syncDate) {
         this.syncDate = syncDate;
+    }
+
+    public void setHasTooManyChanges(Boolean hasTooManyChanges) {
+        this.hasTooManyChanges = hasTooManyChanges;
+    }
+
+    public Boolean getHasTooManyChanges() {
+        return this.hasTooManyChanges;
     }
 
 }
