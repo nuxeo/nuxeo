@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.hamcrest.text.StringContains;
 import org.jmock.Mockery;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JMock;
@@ -105,8 +106,13 @@ public class TestDialectQuerySyntax {
         final Statement m = jmcontext.mock(Statement.class);
         jmcontext.checking(new Expectations() {
             {
-                allowing(m).executeQuery(with(any(String.class)));
-                will(returnValue(getMockResultSet()));
+                allowing(m).executeQuery(
+                        with(new StringContains("is_read_committed_snapshot_on")));
+                will(returnValue(getMockResultSetReturningInt(1)));
+
+                allowing(m).executeQuery(
+                        with(new StringContains("EngineEdition")));
+                will(returnValue(getMockResultSetReturningInt(2)));
 
                 allowing(m).close();
                 will(returnValue(null));
@@ -115,15 +121,20 @@ public class TestDialectQuerySyntax {
         return m;
     }
 
-    protected ResultSet getMockResultSet() throws SQLException {
-        final ResultSet m = jmcontext.mock(ResultSet.class, "EngineEdition");
+    protected ResultSet getMockResultSetReturningInt(final int value)
+            throws SQLException {
+        final ResultSet m = jmcontext.mock(ResultSet.class,
+                "ResultSetReturningInt:" + value);
         jmcontext.checking(new Expectations() {
             {
                 allowing(m).next();
                 will(returnValue(true));
 
                 allowing(m).getInt(with(any(Integer.class)));
-                will(returnValue(2));
+                will(returnValue(value));
+
+                allowing(m).close();
+                will(returnValue(null));
             }
         });
         return m;
