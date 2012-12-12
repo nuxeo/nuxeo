@@ -95,7 +95,7 @@
       <a4j:form id="editUser" rendered="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
         <script>
          jQuery(document).ready(function() {
-           jQuery('#viewUserView\\:editUser').find(':input:first').focus();
+           jQuery('#viewUserView\\:editUser').focusFirst();
          });
         </script>
         <nxl:layout name="user" mode="edit" value="#{userManagementActions.selectedUser}" />
@@ -123,7 +123,7 @@
         rendered="#{userManagementActions.detailsMode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
         <script>
          jQuery(document).ready(function() {
-           jQuery('#viewUserView\\:editUserPassword').find(':input:first').focus();
+           jQuery('#viewUserView\\:editUserPassword').focusFirst();
          });
         </script>
         <nxl:layout name="user" mode="editPassword" value="#{userManagementActions.selectedUser}" />
