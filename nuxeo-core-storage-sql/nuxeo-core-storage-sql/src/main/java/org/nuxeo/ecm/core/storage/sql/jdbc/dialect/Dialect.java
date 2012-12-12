@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -165,6 +166,13 @@ public abstract class Dialect {
         try {
             dialect = ctor.newInstance(metadata, binaryManager,
                     repositoryDescriptor);
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof StorageException) {
+                throw (StorageException) t;
+            } else {
+                throw new StorageException(t.getMessage(), t);
+            }
         } catch (Exception e) {
             throw new StorageException("Cannot construct dialect: "
                     + dialectClassName, e);

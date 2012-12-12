@@ -12,8 +12,10 @@
 
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
@@ -46,12 +48,36 @@ public class TestDialectQuerySyntax extends MockObjectTestCase {
         m.stubs().method("getDatabaseMajorVersion").will(returnValue(9));
         m.stubs().method("getDatabaseMinorVersion").will(returnValue(0));
         m.stubs().method("getColumns").will(returnValue(getEmptyResultSet()));
+        m.stubs().method("getConnection").will(returnValue(getMockConnection()));
         return (DatabaseMetaData) m.proxy();
     }
 
     public ResultSet getEmptyResultSet() {
         Mock m = mock(ResultSet.class);
         m.stubs().method("next").will(returnValue(false));
+        return (ResultSet) m.proxy();
+    }
+
+    public Connection getMockConnection() {
+        Mock m = mock(Connection.class);
+        m.stubs().method("createStatement").will(
+                returnValue(getMockStatement()));
+        return (Connection) m.proxy();
+    }
+
+    public Statement getMockStatement() {
+        Mock m = mock(Statement.class);
+        m.stubs().method("executeQuery").will(
+                returnValue(getMockResultSetRetuningInt(1)));
+        m.stubs().method("close").will(returnValue(null));
+        return (Statement) m.proxy();
+    }
+
+    public ResultSet getMockResultSetRetuningInt(int value) {
+        Mock m = mock(ResultSet.class);
+        m.stubs().method("next").will(returnValue(true));
+        m.stubs().method("getInt").will(returnValue(value));
+        m.stubs().method("close").will(returnValue(null));
         return (ResultSet) m.proxy();
     }
 

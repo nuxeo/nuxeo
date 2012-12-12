@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -49,6 +51,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
  * @author Florent Guillaume
  */
 public class DialectSQLServer extends Dialect {
+
+    private static final Log log = LogFactory.getLog(DialectSQLServer.class);
 
     private static final String DEFAULT_FULLTEXT_ANALYZER = "english";
 
@@ -72,6 +76,7 @@ public class DialectSQLServer extends Dialect {
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         super(metadata, binaryManager, repositoryDescriptor);
         try {
+            checkDatabaseConfiguration(metadata.getConnection());
             majorVersion = metadata.getDatabaseMajorVersion();
         } catch (SQLException e) {
             throw new StorageException(e);
@@ -87,6 +92,30 @@ public class DialectSQLServer extends Dialect {
                         : repositoryDescriptor.usersSeparatorKey;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.pathOptimizationsEnabled;
+    }
+
+    protected void checkDatabaseConfiguration(Connection connection)
+            throws SQLException {
+        Statement stmt = connection.createStatement();
+        try {
+            String sql = "SELECT is_read_committed_snapshot_on FROM sys.databases WHERE name = db_name()";
+            if (log.isTraceEnabled()) {
+                log.trace("SQL: " + sql);
+            }
+            ResultSet rs = stmt.executeQuery(sql);
+            if (!rs.next()) {
+                throw new SQLException(
+                        "Cannot detect whether READ_COMMITTED_SNAPSHOT is on");
+            }
+            int on = rs.getInt(1);
+            if (on != 1) {
+                throw new SQLException(
+                        "Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
+            }
+            rs.close();
+        } finally {
+            stmt.close();
+        }
     }
 
     @Override
@@ -510,7 +539,7 @@ public class DialectSQLServer extends Dialect {
             throws SQLException {
         Statement stmt = connection.createStatement();
         try {
-            stmt.execute("SET TRANSACTION ISOLATION LEVEL SNAPSHOT;");
+            stmt.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
         } finally {
             stmt.close();
         }
