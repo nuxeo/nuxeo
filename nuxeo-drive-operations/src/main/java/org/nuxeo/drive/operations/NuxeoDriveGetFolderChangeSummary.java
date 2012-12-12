@@ -21,7 +21,7 @@ import java.io.StringWriter;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.impl.DocumentChangeSummary;
+import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -37,10 +37,10 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveGetFolderDocumentChangeSummary.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get document change summary in folder")
-public class NuxeoDriveGetFolderDocumentChangeSummary {
+@Operation(id = NuxeoDriveGetFolderChangeSummary.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get change summary for a specific folder")
+public class NuxeoDriveGetFolderChangeSummary {
 
-    public static final String ID = "NuxeoDrive.GetFolderDocumentChangeSummary";
+    public static final String ID = "NuxeoDrive.GetFolderChangeSummary";
 
     @Context
     protected CoreSession session;
@@ -55,7 +55,7 @@ public class NuxeoDriveGetFolderDocumentChangeSummary {
     public Blob run() throws Exception {
 
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        DocumentChangeSummary docChangeSummary = driveManager.getFolderDocumentChangeSummary(
+        FileSystemChangeSummary docChangeSummary = driveManager.getFolderChangeSummary(
                 folderPath, session, lastSuccessfulSync);
 
         ObjectMapper mapper = new ObjectMapper();

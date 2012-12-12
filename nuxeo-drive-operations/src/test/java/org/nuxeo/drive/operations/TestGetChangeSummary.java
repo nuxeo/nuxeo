@@ -18,7 +18,6 @@ package org.nuxeo.drive.operations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
@@ -30,10 +29,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.drive.service.MockDocumentChangeFinder;
+import org.nuxeo.drive.service.MockChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.impl.DocumentChange;
-import org.nuxeo.drive.service.impl.DocumentChangeSummary;
+import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
+import org.nuxeo.drive.service.impl.FileSystemItemChange;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -51,7 +50,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import com.google.inject.Inject;
 
 /**
- * Tests the {@link NuxeoDriveGetDocumentChangeSummary} operation.
+ * Tests the {@link NuxeoDriveGetChangeSummary} operation.
  *
  * @author Antoine Taillefer
  */
@@ -60,7 +59,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @Jetty(port = 18080)
-public class TestGetDocumentChangeSummary {
+public class TestGetChangeSummary {
 
     @Inject
     protected CoreSession session;
@@ -84,7 +83,7 @@ public class TestGetDocumentChangeSummary {
     @Before
     public void init() throws Exception {
 
-        nuxeoDriveManager.setDocumentChangeFinder(new MockDocumentChangeFinder());
+        nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
 
         folder1 = session.createDocument(session.createDocumentModel("/",
@@ -98,13 +97,11 @@ public class TestGetDocumentChangeSummary {
     }
 
     @Test
-    public void testGetDocumentChangesSummary() throws Exception {
+    public void testGetChangesSummary() throws Exception {
 
         // No sync roots => shouldn't find any changes
-        DocumentChangeSummary docChangeSummary = getDocumentChangeSummary();
+        FileSystemChangeSummary docChangeSummary = getChangeSummary();
         assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
-        // Map of changed DocumentModels is not serialized for now
-        assertNull(docChangeSummary.getChangedDocModels());
         assertEquals("no_changes", docChangeSummary.getStatusCode());
 
         // Register sync roots and create 2 documents => should find 2 changes
@@ -127,15 +124,15 @@ public class TestGetDocumentChangeSummary {
 
         session.save();
 
-        docChangeSummary = getDocumentChangeSummary();
+        docChangeSummary = getChangeSummary();
         Set<String> expectedSyncRootPaths = new HashSet<String>();
         expectedSyncRootPaths.add("/folder1");
         expectedSyncRootPaths.add("/folder2");
         assertEquals(expectedSyncRootPaths, docChangeSummary.getSyncRootPaths());
 
-        List<DocumentChange> docChanges = docChangeSummary.getDocumentChanges();
+        List<FileSystemItemChange> docChanges = docChangeSummary.getDocumentChanges();
         assertEquals(2, docChanges.size());
-        DocumentChange docChange = docChanges.get(0);
+        FileSystemItemChange docChange = docChanges.get(0);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
@@ -147,10 +144,6 @@ public class TestGetDocumentChangeSummary {
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());
         assertEquals(doc1.getId(), docChange.getDocUuid());
-
-        // Map of changed DocumentModels is not serialized for now
-        assertNull(docChangeSummary.getChangedDocModels());
-
         assertEquals("found_changes", docChangeSummary.getStatusCode());
 
         // Create 2 documents in the same sync root: "/folder1" and 1 document
@@ -181,21 +174,21 @@ public class TestGetDocumentChangeSummary {
     }
 
     /**
-     * Gets the document changes summary for the user bound to the
-     * {@link #session} using the {@link NuxeoDriveGetDocumentChangeSummary}
+     * Gets the changes summary for the user bound to the
+     * {@link #session} using the {@link NuxeoDriveGetChangeSummary}
      * automation operation and updates the {@link #lastSuccessfulSync} date.
      */
-    protected DocumentChangeSummary getDocumentChangeSummary() throws Exception {
+    protected FileSystemChangeSummary getChangeSummary() throws Exception {
 
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetDocumentChangeSummary.ID).set(
+                NuxeoDriveGetChangeSummary.ID).set(
                 "lastSuccessfulSync", lastSuccessfulSync).execute();
         assertNotNull(docChangeSummaryJSON);
 
-        DocumentChangeSummary docChangeSummary = mapper.readValue(
-                docChangeSummaryJSON.getStream(), DocumentChangeSummary.class);
+        FileSystemChangeSummary docChangeSummary = mapper.readValue(
+                docChangeSummaryJSON.getStream(), FileSystemChangeSummary.class);
         assertNotNull(docChangeSummary);
 
         lastSuccessfulSync = docChangeSummary.getSyncDate();
@@ -204,21 +197,21 @@ public class TestGetDocumentChangeSummary {
 
     /**
      * Gets the document changes summary for the given folder using the
-     * {@link NuxeoDriveGetFolderDocumentChangeSummary} automation operation and
+     * {@link NuxeoDriveGetFolderChangeSummary} automation operation and
      * updates the {@link #lastSuccessfulSync} date.
      */
-    protected DocumentChangeSummary getFolderDocumentChangeSummary(
+    protected FileSystemChangeSummary getFolderDocumentChangeSummary(
             String folderPath) throws Exception {
 
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetFolderDocumentChangeSummary.ID).set("folderPath",
+                NuxeoDriveGetFolderChangeSummary.ID).set("folderPath",
                 folderPath).set("lastSuccessfulSync", lastSuccessfulSync).execute();
         assertNotNull(docChangeSummaryJSON);
 
-        DocumentChangeSummary docChangeSummary = mapper.readValue(
-                docChangeSummaryJSON.getStream(), DocumentChangeSummary.class);
+        FileSystemChangeSummary docChangeSummary = mapper.readValue(
+                docChangeSummaryJSON.getStream(), FileSystemChangeSummary.class);
         assertNotNull(docChangeSummary);
 
         lastSuccessfulSync = docChangeSummary.getSyncDate();

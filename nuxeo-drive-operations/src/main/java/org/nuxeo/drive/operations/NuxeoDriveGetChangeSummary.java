@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.impl.DocumentChangeSummary;
+import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -42,10 +42,10 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveGetDocumentChangeSummary.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get document change summary")
-public class NuxeoDriveGetDocumentChangeSummary {
+@Operation(id = NuxeoDriveGetChangeSummary.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get change summary")
+public class NuxeoDriveGetChangeSummary {
 
-    public static final String ID = "NuxeoDrive.GetDocumentChangeSummary";
+    public static final String ID = "NuxeoDrive.GetChangeSummary";
 
     @Context
     protected OperationContext ctx;
@@ -71,7 +71,7 @@ public class NuxeoDriveGetDocumentChangeSummary {
         }
 
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        DocumentChangeSummary docChangeSummary = driveManager.getDocumentChangeSummary(
+        FileSystemChangeSummary docChangeSummary = driveManager.getDocumentChangeSummary(
                 allRepositores, session.getPrincipal().getName(), session,
                 lastSuccessfulSync);
 
