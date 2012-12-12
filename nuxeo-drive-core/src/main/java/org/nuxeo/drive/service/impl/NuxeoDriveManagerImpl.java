@@ -19,7 +19,6 @@ package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,7 +66,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     public static final String NUXEO_DRIVE_FACET = "DriveSynchronized";
 
-    public static final String DRIVE_SUBSCRIBERS_PROPERTY = "drv:subscribers";
+    public static final String DRIVE_SUBSCRIPTIONS_PROPERTY = "drv:subscriptions";
 
     public static final String DOCUMENT_CHANGE_LIMIT_PROPERTY = "org.nuxeo.drive.document.change.limit";
 
@@ -92,13 +91,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (!newRootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             newRootContainer.addFacet(NUXEO_DRIVE_FACET);
         }
-        if (!newRootContainer.isFolder() || newRootContainer.isProxy()
-                || newRootContainer.isVersion()) {
-            throw new ClientException(String.format(
-                    "Document '%s' (%s) is not a suitable synchronization root"
-                            + " as it is either not folderish or is a readonly"
-                            + " proxy or archived version.",
-                    newRootContainer.getTitle(), newRootContainer.getRef()));
+        if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
+            throw new ClientException(
+                    String.format(
+                            "Document '%s' (%s) is not a suitable synchronization root"
+                                    + " as it is either a readonly proxy or an archived version.",
+                            newRootContainer.getTitle(),
+                            newRootContainer.getRef()));
         }
         UserManager userManager = Framework.getLocalService(UserManager.class);
         if (!session.hasPermission(userManager.getPrincipal(userName),
@@ -108,22 +107,28 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     userName, newRootContainer.getTitle(),
                     newRootContainer.getRef()));
         }
-        String[] subscribers = (String[]) newRootContainer.getPropertyValue(DRIVE_SUBSCRIBERS_PROPERTY);
-        if (subscribers == null) {
-            subscribers = new String[] { userName };
-        } else {
-            if (Arrays.binarySearch(subscribers, userName) < 0) {
-                String[] old = subscribers;
-                subscribers = new String[old.length + 1];
-                for (int i = 0; i < old.length; i++) {
-                    subscribers[i] = old[i];
-                }
-                subscribers[old.length] = userName;
-                Arrays.sort(subscribers);
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) newRootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
+        boolean updated = false;
+        for (Map<String, Object> subscription : subscriptions) {
+            if (userName.equals(subscription.get("username"))) {
+                subscription.put("enabled", Boolean.TRUE);
+                subscription.put("lastChangeDate",
+                        Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+                updated = true;
+                break;
             }
         }
-        newRootContainer.setPropertyValue(DRIVE_SUBSCRIBERS_PROPERTY,
-                (Serializable) subscribers);
+        if (!updated) {
+            Map<String, Object> subscription = new HashMap<String, Object>();
+            subscription.put("username", userName);
+            subscription.put("enabled", Boolean.TRUE);
+            subscription.put("lastChangeDate",
+                    Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+            subscriptions.add(subscription);
+        }
+        newRootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY,
+                (Serializable) subscriptions);
         session.saveDocument(newRootContainer);
         session.save();
         cache.clear();
@@ -136,22 +141,18 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (!rootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             rootContainer.addFacet(NUXEO_DRIVE_FACET);
         }
-        String[] subscribers = (String[]) rootContainer.getPropertyValue(DRIVE_SUBSCRIBERS_PROPERTY);
-        if (subscribers == null) {
-            subscribers = new String[0];
-        } else {
-            if (Arrays.binarySearch(subscribers, userName) >= 0) {
-                String[] old = subscribers;
-                subscribers = new String[old.length - 1];
-                for (int i = 0; i < old.length; i++) {
-                    if (!userName.equals(old[i])) {
-                        subscribers[i] = old[i];
-                    }
-                }
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) rootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
+        for (Map<String, Object> subscription : subscriptions) {
+            if (userName.equals(subscription.get("username"))) {
+                subscription.put("enabled", Boolean.FALSE);
+                subscription.put("lastChangeDate",
+                        Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+                break;
             }
         }
-        rootContainer.setPropertyValue(DRIVE_SUBSCRIBERS_PROPERTY,
-                (Serializable) subscribers);
+        rootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY,
+                (Serializable) subscriptions);
         session.saveDocument(rootContainer);
         session.save();
         cache.clear();
@@ -291,11 +292,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (syncRoots == null) {
             syncRoots = new HashMap<String, Serializable[]>();
             String query = String.format(
-                    "SELECT ecm:uuid FROM Document WHERE %s = %s"
+                    "SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s"
+                            + " AND %s/*1/enabled = 1"
                             + " AND ecm:currentLifeCycleState <> 'deleted'"
                             + " ORDER BY dc:title, dc:created DESC",
-                    DRIVE_SUBSCRIBERS_PROPERTY,
-                    NXQLQueryBuilder.prepareStringLiteral(userName, true, true));
+                    DRIVE_SUBSCRIPTIONS_PROPERTY,
+                    NXQLQueryBuilder.prepareStringLiteral(userName, true, true),
+                    DRIVE_SUBSCRIPTIONS_PROPERTY);
             computeSynchronizationRoots(allRepositories, query, session,
                     syncRoots);
             cache.put(userName, syncRoots);
