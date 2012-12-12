@@ -184,6 +184,11 @@ public class RoutingTaskActionsBean implements Serializable {
         if (formVariables != null) {
             data.put("WorkflowVariables", formVariables);
             data.put("NodeVariables", formVariables);
+            // if there is a comment on the submitted form, pass it to be logged
+            // by audit
+            if (formVariables.containsKey("comment")) {
+                data.put("comment", formVariables.get("comment"));
+            }
         }
         // add the button name that was clicked
         try {
