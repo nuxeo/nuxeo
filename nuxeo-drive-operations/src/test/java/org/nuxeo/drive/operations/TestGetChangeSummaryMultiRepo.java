@@ -133,11 +133,6 @@ public class TestGetChangeSummaryMultiRepo {
 
     @After
     public void cleanUp() throws Exception {
-
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            return;
-        }
-
         // Reset 'other' repository
         otherSession.removeChildren(new PathRef("/"));
         otherSession.save();
@@ -154,11 +149,6 @@ public class TestGetChangeSummaryMultiRepo {
 
     @Test
     public void testGetDocumentChangesSummary() throws Exception {
-
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            return;
-        }
-
         // Register 3 sync roots and create 3 documents: 2 in the 'test'
         // repository, 1 in the 'other' repository
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
