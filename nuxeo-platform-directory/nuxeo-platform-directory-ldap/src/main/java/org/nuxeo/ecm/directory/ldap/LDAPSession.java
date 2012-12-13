@@ -71,7 +71,7 @@ import org.nuxeo.ecm.directory.Reference;
 
 /**
  * This class represents a session against an LDAPDirectory.
- * 
+ *
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public class LDAPSession extends BaseSession implements EntrySource {
@@ -108,7 +108,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     public LDAPSession(LDAPDirectory directory, DirContext dirContext) {
         this.directory = directory;
-        this.dirContext = dirContext;
+        this.dirContext = LdapRetryHandler.wrap(dirContext, directory.getServer().getRetries());
         DirectoryFieldMapper fieldMapper = directory.getFieldMapper();
         idAttribute = fieldMapper.getBackendField(directory.getConfig().getIdField());
         idCase = directory.getConfig().getIdCase();

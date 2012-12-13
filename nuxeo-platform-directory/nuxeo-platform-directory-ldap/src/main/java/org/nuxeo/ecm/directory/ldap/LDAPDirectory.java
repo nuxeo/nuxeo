@@ -125,12 +125,11 @@ public class LDAPDirectory extends AbstractDirectory {
         // Initialization of LDAP connection parameters from parameters
         // registered in the LDAP "server" extension point
         Properties props = new Properties();
-        String serverName = config.getServerName();
-        LDAPServerDescriptor serverConfig = factory.getServer(serverName);
+        LDAPServerDescriptor serverConfig = getServer();
 
         if (null == serverConfig) {
             throw new DirectoryException(
-                    "LDAP server configuration not found: " + serverName);
+                    "LDAP server configuration not found: " + config.getServerName());
         }
 
         props.put(Context.INITIAL_CONTEXT_FACTORY,
@@ -248,7 +247,12 @@ public class LDAPDirectory extends AbstractDirectory {
              * Dynamic server list requires re-computation on each access
              */
             String serverName = config.getServerName();
-            LDAPServerDescriptor serverConfig = factory.getServer(serverName);
+            if (serverName == null || serverName.equals("")) {
+                throw new DirectoryException(
+                        "server configuration is missing for directory "
+                                + config.getName());
+            }
+            LDAPServerDescriptor serverConfig = getServer();
             if (serverConfig.isDynamicServerList()) {
                 String ldapUrls = serverConfig.getLdapUrls();
                 contextProperties.put(Context.PROVIDER_URL, ldapUrls);
@@ -285,6 +289,14 @@ public class LDAPDirectory extends AbstractDirectory {
 
     public String getPasswordField() {
         return config.getPasswordField();
+    }
+
+    /**
+     * @since 5.7
+     * @return ldap server descriptor bound to this directory
+     */
+    public LDAPServerDescriptor getServer() {
+        return factory.getServer(config.getServerName());
     }
 
     public Session getSession() throws DirectoryException {

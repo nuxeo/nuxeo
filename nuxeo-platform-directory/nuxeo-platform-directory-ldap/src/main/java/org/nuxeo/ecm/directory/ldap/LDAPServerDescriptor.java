@@ -64,6 +64,12 @@ public class LDAPServerDescriptor {
     @XNode("poolingEnabled")
     public boolean poolingEnabled = true;
 
+    /**
+     * @since 5.7
+     */
+    @XNode("retries")
+    public int retries = 5;
+
     protected LinkedHashSet<LdapEntry> ldapEntries;
 
     protected boolean isDynamicServerList = false;
@@ -445,6 +451,13 @@ public class LDAPServerDescriptor {
             }
             return true;
         }
+    }
+
+    /**
+     * @since 5.7
+     */
+    public int getRetries() {
+        return retries;
     }
 
 }
