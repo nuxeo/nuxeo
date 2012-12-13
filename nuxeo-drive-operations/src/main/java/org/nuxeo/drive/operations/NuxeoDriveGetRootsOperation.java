@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.api.Framework;
 
 
+
 /**
  * Fetch the list of synchronization roots for the currently authenticated user.
  */
