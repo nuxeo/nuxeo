@@ -270,5 +270,13 @@
       </rule>
     </filter>
 
+    <filter id="currentUserIsWorkflowInitatior">
+      <rule grant="true">
+       <condition>currentUser.administrator</condition>
+       <condition>
+        #{routingActions.getCurrentWorkflowInitiator().equals(currentUser.getName())}
+       </condition>
+      </rule>
+    </filter>
   </extension>
 </component>

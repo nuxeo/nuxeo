@@ -20,7 +20,9 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -41,4 +43,13 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent
         routeInstance.resume(session, nodeId, taskId, data, status);
     }
 
+    @Override
+    public void cancel(final DocumentRoute routeInstance, CoreSession session) {
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                routeInstance.cancel(session);
+            }
+        };
+    }
 }
