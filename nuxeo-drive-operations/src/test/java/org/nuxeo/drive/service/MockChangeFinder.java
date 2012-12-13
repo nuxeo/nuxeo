@@ -56,10 +56,9 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     private static final Log log = LogFactory.getLog(MockChangeFinder.class);
 
     @Override
-    public List<FileSystemItemChange> getFileSystemChanges(boolean allRepositories,
-            CoreSession session, Set<String> rootPaths,
-            long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws TooManyChangesException {
+    public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
+            Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
+            int limit) throws TooManyChangesException {
 
         List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
         if (!rootPaths.isEmpty()) {
@@ -70,29 +69,25 @@ public class MockChangeFinder implements FileSystemChangeFinder {
                     getDateClause(lastSuccessfulSyncDate, syncDate));
             log.debug("Querying repository for document changes: " + query);
 
-            if (allRepositories) {
-                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-                for (Repository repo : repositoryManager.getRepositories()) {
-                    CoreSession repoSession = null;
-                    try {
-                        Map<String, Serializable> context = new HashMap<String, Serializable>();
-                        context.put("principal", principal);
-                        repoSession = repo.open(context);
-                        docChanges.addAll(getDocumentChanges(repoSession,
-                                query, limit));
-                    } catch (TooManyChangesException e) {
-                        throw e;
-                    } catch (Exception e) {
-                        throw new ClientRuntimeException(e);
-                    } finally {
-                        if (repoSession != null) {
-                            CoreInstance.getInstance().close(repoSession);
-                        }
+            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            for (Repository repo : repositoryManager.getRepositories()) {
+                CoreSession repoSession = null;
+                try {
+                    Map<String, Serializable> context = new HashMap<String, Serializable>();
+                    context.put("principal", principal);
+                    repoSession = repo.open(context);
+                    docChanges.addAll(getDocumentChanges(repoSession, query,
+                            limit));
+                } catch (TooManyChangesException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ClientRuntimeException(e);
+                } finally {
+                    if (repoSession != null) {
+                        CoreInstance.getInstance().close(repoSession);
                     }
                 }
-            } else {
-                docChanges.addAll(getDocumentChanges(session, query, limit));
             }
         }
         return docChanges;
@@ -117,8 +112,9 @@ public class MockChangeFinder implements FileSystemChangeFinder {
                 sdf.format(new Date(syncDate)));
     }
 
-    protected List<FileSystemItemChange> getDocumentChanges(CoreSession session,
-            String query, int limit) throws TooManyChangesException {
+    protected List<FileSystemItemChange> getDocumentChanges(
+            CoreSession session, String query, int limit)
+            throws TooManyChangesException {
 
         try {
             List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();

@@ -33,7 +33,8 @@ import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Implementation of {@link FileSystemChangeFinder} using the {@link AuditReader}.
+ * Implementation of {@link FileSystemChangeFinder} using the
+ * {@link AuditReader}.
  *
  * @author Antoine Taillefer
  */
@@ -45,19 +46,16 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<FileSystemItemChange> getFileSystemChanges(boolean allRepositories,
-            CoreSession session, Set<String> rootPaths,
-            long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws TooManyChangesException {
+    public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
+            Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
+            int limit) throws TooManyChangesException {
 
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
         if (!rootPaths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
             auditQuerySb.append("select log.repositoryId,log.eventId,log.docLifeCycle,log.eventDate,log.docPath,log.docUUID from LogEntry log where ");
-            if (!allRepositories) {
-                auditQuerySb.append("log.repositoryId = '%s' and ");
-            }
+            auditQuerySb.append("log.repositoryId = '%s' and ");
             auditQuerySb.append("(");
             auditQuerySb.append("log.category = 'eventDocumentCategory' and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved') ");
             auditQuerySb.append("or ");
@@ -69,17 +67,10 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
             auditQuerySb.append("and (%s) ");
             auditQuerySb.append("order by log.repositoryId asc, log.eventDate desc");
 
-            String auditQuery;
-            if (!allRepositories) {
-                String repositoryName = session.getRepositoryName();
-                auditQuery = String.format(auditQuerySb.toString(),
-                        repositoryName, getRootPathClause(rootPaths),
-                        getDateClause(lastSuccessfulSyncDate, syncDate));
-            } else {
-                auditQuery = String.format(auditQuerySb.toString(),
-                        getRootPathClause(rootPaths),
-                        getDateClause(lastSuccessfulSyncDate, syncDate));
-            }
+            String repositoryName = session.getRepositoryName();
+            String auditQuery = String.format(auditQuerySb.toString(),
+                    repositoryName, getRootPathClause(rootPaths),
+                    getDateClause(lastSuccessfulSyncDate, syncDate));
             log.debug("Querying audit logs for document changes: " + auditQuery);
 
             List<Object[]> queryResult = (List<Object[]>) auditService.nativeQuery(

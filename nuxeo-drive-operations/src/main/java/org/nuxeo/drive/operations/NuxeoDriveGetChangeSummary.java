@@ -19,9 +19,6 @@ package org.nuxeo.drive.operations;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
@@ -32,7 +29,6 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.runtime.api.Framework;
 
@@ -50,30 +46,14 @@ public class NuxeoDriveGetChangeSummary {
     @Context
     protected OperationContext ctx;
 
-    @Context
-    protected CoreSession session;
-
     @Param(name = "lastSuccessfulSync")
     protected Long lastSuccessfulSync;
 
     @OperationMethod
     public Blob run() throws Exception {
-
-        // By default look for document changes in all repositories, except if a
-        // specific repository name is passed as a request header
-        boolean allRepositores = true;
-        HttpServletRequest request = (HttpServletRequest) ctx.get("request");
-        if (request != null) {
-            String respositoryName = request.getHeader("X-NXRepository");
-            if (!StringUtils.isEmpty(respositoryName)) {
-                allRepositores = false;
-            }
-        }
-
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         FileSystemChangeSummary docChangeSummary = driveManager.getDocumentChangeSummary(
-                allRepositores, session.getPrincipal().getName(), session,
-                lastSuccessfulSync);
+                ctx.getPrincipal(), lastSuccessfulSync);
 
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();

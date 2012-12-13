@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -225,9 +227,11 @@ public class TestAuditFileSystemChangeFinder {
 
     @Test
     public void testGetChangeSummary() throws Exception {
+        TransactionHelper.startTransaction();
+        Principal admin = new NuxeoPrincipalImpl("Administrator");
 
         // No sync roots => shouldn't find any changes
-        FileSystemChangeSummary changeSummary = getChangeSummary("Administrator");
+        FileSystemChangeSummary changeSummary = getChangeSummary(admin);
         assertNotNull(changeSummary);
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
@@ -241,13 +245,14 @@ public class TestAuditFileSystemChangeFinder {
                 session);
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder2,
                 session);
-        // commitAndWaitForAsyncCompletion();
+        commitAndWaitForAsyncCompletion();
 
-        changeSummary = getChangeSummary("Administrator");
+        changeSummary = getChangeSummary(admin);
         assertEquals(2, changeSummary.getFileSystemChanges().size());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Create 3 documents, only 2 in sync roots => should find 2 changes
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
                 "File");
@@ -264,7 +269,7 @@ public class TestAuditFileSystemChangeFinder {
                 "File"));
         commitAndWaitForAsyncCompletion();
 
-        changeSummary = getChangeSummary("Administrator");
+        changeSummary = getChangeSummary(admin);
 
         List<FileSystemItemChange> changes = changeSummary.getFileSystemChanges();
         assertEquals(2, changes.size());
@@ -293,7 +298,7 @@ public class TestAuditFileSystemChangeFinder {
                 "notSynchronizableDoc", "NotSynchronizable"));
         commitAndWaitForAsyncCompletion();
 
-        changeSummary = getChangeSummary("Administrator");
+        changeSummary = getChangeSummary(admin);
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
@@ -317,12 +322,8 @@ public class TestAuditFileSystemChangeFinder {
         doc5 = session.createDocument(doc5);
         commitAndWaitForAsyncCompletion();
 
-        changeSummary = getFolderChangeSummary("/folder1");
-        assertEquals(2, changeSummary.getFileSystemChanges().size());
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
-
         // No changes since last successful sync
-        changeSummary = getChangeSummary("Administrator");
+        changeSummary = getChangeSummary(admin);
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
@@ -334,9 +335,10 @@ public class TestAuditFileSystemChangeFinder {
 
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "1");
-        changeSummary = getChangeSummary("Administrator");
+        changeSummary = getChangeSummary(admin);
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
         assertEquals(Boolean.TRUE, changeSummary.getHasTooManyChanges());
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
     /**
@@ -351,7 +353,6 @@ public class TestAuditFileSystemChangeFinder {
         cal.set(Calendar.MILLISECOND, 0);
         long syncDate = cal.getTimeInMillis();
         List<FileSystemItemChange> changes = changeFinder.getFileSystemChanges(
-                true,
                 session,
                 syncRootPaths,
                 lastSuccessfulSync,
@@ -367,28 +368,12 @@ public class TestAuditFileSystemChangeFinder {
      * roots using the {@link NuxeoDriveManager} and updates the
      * {@link #lastSuccessfulSync} date.
      */
-    protected FileSystemChangeSummary getChangeSummary(String userName)
+    protected FileSystemChangeSummary getChangeSummary(Principal principal)
             throws ClientException, InterruptedException {
         // Wait 1 second as the audit change finder relies on steps of 1 second
         Thread.sleep(1000);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getDocumentChangeSummary(
-                true, userName, session, lastSuccessfulSync);
-        assertNotNull(changeSummary);
-        lastSuccessfulSync = changeSummary.getSyncDate();
-        return changeSummary;
-    }
-
-    /**
-     * Gets the document changes summary for the given folder using the
-     * {@link NuxeoDriveManager} and updates the {@link #lastSuccessfulSync}
-     * date.
-     */
-    protected FileSystemChangeSummary getFolderChangeSummary(
-            String folderPath) throws ClientException, InterruptedException {
-        // Wait 1 second as the audit change finder relies on steps of 1 second
-        Thread.sleep(1000);
-        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getFolderChangeSummary(
-                folderPath, session, lastSuccessfulSync);
+                principal, lastSuccessfulSync);
         assertNotNull(changeSummary);
         lastSuccessfulSync = changeSummary.getSyncDate();
         return changeSummary;

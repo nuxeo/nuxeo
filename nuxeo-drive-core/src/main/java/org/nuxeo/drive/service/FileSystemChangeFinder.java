@@ -31,9 +31,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface FileSystemChangeFinder extends Serializable {
 
     /**
-     * Gets the changes in all repositories or in the repository against which
-     * the given session is bound depending on the {@code allRepositories}
-     * parameter, for the given synchronization root paths, since the given last
+     * Gets the changes in the repository against which the given session is
+     * bound for the given synchronization root paths, since the given last
      * successful synchronization date and without exceeding the given limit.
      *
      * The change summaries are mapped back to the file system view: the file
@@ -41,9 +40,6 @@ public interface FileSystemChangeFinder extends Serializable {
      * documents in the repositories but this is a back-end detail that the
      * client does not have to deal with.
      *
-     * @param allRepositories if true then the document changes are retrieved
-     *            from all repositories, else only from the one against which
-     *            the given session is bound
      * @param session the session bound to a specific repository
      * @param rootPaths the synchronization root paths
      * @param lastSuccessfulSyncDate the last successful synchronization date of
@@ -54,9 +50,8 @@ public interface FileSystemChangeFinder extends Serializable {
      * @throws TooManyChangesException if the number of changes found has
      *             exceeded the limit
      */
-    public List<FileSystemItemChange> getFileSystemChanges(boolean allRepositories,
-            CoreSession session, Set<String> rootPaths,
-            long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws TooManyChangesException;
+    public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
+            Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
+            int limit) throws TooManyChangesException;
 
 }

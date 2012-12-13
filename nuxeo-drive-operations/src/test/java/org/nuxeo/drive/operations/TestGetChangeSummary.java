@@ -158,10 +158,6 @@ public class TestGetChangeSummary {
         doc5 = session.createDocument(doc5);
 
         session.save();
-
-        docChangeSummary = getFolderDocumentChangeSummary("/folder1");
-        assertEquals(2, docChangeSummary.getFileSystemChanges().size());
-        assertEquals(Boolean.FALSE, docChangeSummary.getHasTooManyChanges());
     }
 
     /**
@@ -176,29 +172,6 @@ public class TestGetChangeSummary {
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetChangeSummary.ID).set(
                 "lastSuccessfulSync", lastSuccessfulSync).execute();
-        assertNotNull(docChangeSummaryJSON);
-
-        FileSystemChangeSummary docChangeSummary = mapper.readValue(
-                docChangeSummaryJSON.getStream(), FileSystemChangeSummary.class);
-        assertNotNull(docChangeSummary);
-
-        lastSuccessfulSync = docChangeSummary.getSyncDate();
-        return docChangeSummary;
-    }
-
-    /**
-     * Gets the document changes summary for the given folder using the
-     * {@link NuxeoDriveGetFolderChangeSummary} automation operation and
-     * updates the {@link #lastSuccessfulSync} date.
-     */
-    protected FileSystemChangeSummary getFolderDocumentChangeSummary(
-            String folderPath) throws Exception {
-
-        // Wait 1 second as the mock change finder relies on steps of 1 second
-        Thread.sleep(1000);
-        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetFolderChangeSummary.ID).set("folderPath",
-                folderPath).set("lastSuccessfulSync", lastSuccessfulSync).execute();
         assertNotNull(docChangeSummaryJSON);
 
         FileSystemChangeSummary docChangeSummary = mapper.readValue(

@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
@@ -63,7 +64,7 @@ import com.google.inject.Inject;
  * @author <a href="mailto:ogrise@nuxeo.com">Olivier Grisel</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({ TransactionalFeature.class, PlatformFeature.class })
 @RepositoryConfig(repositoryName = "default", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
@@ -168,8 +169,7 @@ public class TestNuxeoDriveManager {
             int expectedCount) throws ClientException {
         assertEquals(
                 expectedCount,
-                nuxeoDriveManager.getSynchronizationRootReferences(userName,
-                        session).size());
+                nuxeoDriveManager.getSynchronizationRootReferences(session).size());
     }
 
     public DocumentModel doc(String path) throws ClientException {
@@ -193,15 +193,14 @@ public class TestNuxeoDriveManager {
 
         // Check synchronization root references
         Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(
-                "user1", user1Session);
+                user1Session);
         assertEquals(2, rootRefs.size());
         assertTrue(rootRefs.contains(user1Workspace));
         assertTrue(rootRefs.contains(new IdRef(user1Session.getDocument(
                 new PathRef("/default-domain/workspaces/workspace-2")).getId())));
 
         // Check synchronization root paths
-        Map<String, SynchronizationRoots> synRootMap = nuxeoDriveManager.getSynchronizationRoots(
-                true, "user1", user1Session);
+        Map<String, SynchronizationRoots> synRootMap = nuxeoDriveManager.getSynchronizationRoots(user1Session.getPrincipal());
         Set<String> rootPaths = synRootMap.get("default").paths;
         assertEquals(2, rootPaths.size());
         assertTrue(rootPaths.contains("/default-domain/UserWorkspaces/user1"));
