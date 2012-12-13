@@ -18,6 +18,8 @@ package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
 
+import org.nuxeo.drive.adapter.FileSystemItem;
+
 /**
  * Representation of a document change.
  *
@@ -38,6 +40,8 @@ public class FileSystemItemChange implements Serializable {
     protected String docPath;
 
     protected String docUuid;
+
+    protected FileSystemItem fileSystemItem;
 
     public FileSystemItemChange() {
         // Needed for JSON deserialization
@@ -100,6 +104,14 @@ public class FileSystemItemChange implements Serializable {
 
     public void setDocUuid(String docUuid) {
         this.docUuid = docUuid;
+    }
+
+    public FileSystemItem getFileSystemIte() {
+        return fileSystemItem;
+    }
+
+    public void setFileSystemItem(FileSystemItem fileSystemItem) {
+        this.fileSystemItem = fileSystemItem;
     }
 
 }

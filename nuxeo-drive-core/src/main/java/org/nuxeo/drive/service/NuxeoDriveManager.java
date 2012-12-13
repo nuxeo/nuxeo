@@ -17,6 +17,7 @@
  */
 package org.nuxeo.drive.service;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
@@ -69,6 +70,24 @@ public interface NuxeoDriveManager {
             CoreSession session) throws ClientException;
 
     /**
+     * Fetch all the synchronization root references and paths for a given user.
+     * This list is assumed to be short enough (in the order of 100 folder max)
+     * so that no paging API is required.
+     *
+     * @param allRepositories if true then the synchronization root ids are
+     *            retrieved from all repositories, else only from the one
+     *            against which the given session is bound
+     * @param userName the id of the Nuxeo Drive user
+     * @param session active CoreSession instance to the repository hosting the
+     *            roots.
+     * @return the map keyed by repository names all active roots definitions
+     *         for the current user.
+     */
+    public Map<String, SynchronizationRoots> getSynchronizationRoots(
+            boolean allRepositories, String userName, CoreSession session)
+            throws ClientException;
+
+    /**
      * Fetch the list of synchronization root ids for a given user. This list is
      * assumed to be short enough (in the order of 100 folder max) so that no
      * paging API is required.
@@ -82,8 +101,9 @@ public interface NuxeoDriveManager {
      * @return the ordered set of non deleted synchronization root references
      *         for that user
      * @see #getSynchronizationRootPaths(String, CoreSession)
-     * @deprecated
+     * @deprecated use getSynchronizationRoots directly
      */
+    @Deprecated
     public Set<IdRef> getSynchronizationRootReferences(boolean allRepositories,
             String userName, CoreSession session) throws ClientException;
 
@@ -101,7 +121,9 @@ public interface NuxeoDriveManager {
      * @return the ordered set of non deleted synchronization root paths for
      *         that user
      * @see #getSynchronizationRootReferences(String, CoreSession)
+     * @deprecated use getSynchronizationRoots directly
      */
+    @Deprecated
     public Set<String> getSynchronizationRootPaths(boolean allRepositories,
             String userName, CoreSession session) throws ClientException;
 

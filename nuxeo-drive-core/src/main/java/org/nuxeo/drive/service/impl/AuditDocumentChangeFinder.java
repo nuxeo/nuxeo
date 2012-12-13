@@ -50,7 +50,7 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
             long lastSuccessfulSyncDate, long syncDate, int limit)
             throws TooManyChangesException {
 
-        List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
+        List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
         if (!rootPaths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
@@ -95,11 +95,11 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
                 Long eventDate = ((Timestamp) auditEntry[3]).getTime();
                 String docPath = (String) auditEntry[4];
                 String docUuid = (String) auditEntry[5];
-                docChanges.add(new FileSystemItemChange(repositoryId, eventId,
+                changes.add(new FileSystemItemChange(repositoryId, eventId,
                         docLifeCycleState, eventDate, docPath, docUuid));
             }
         }
-        return docChanges;
+        return changes;
     }
 
     protected String getRootPathClause(Set<String> rootPaths) {

@@ -200,8 +200,9 @@ public class TestNuxeoDriveManager {
                 new PathRef("/default-domain/workspaces/workspace-2")).getId())));
 
         // Check synchronization root paths
-        Set<String> rootPaths = nuxeoDriveManager.getSynchronizationRootPaths(
+        Map<String, SynchronizationRoots> synRootMap = nuxeoDriveManager.getSynchronizationRoots(
                 true, "user1", user1Session);
+        Set<String> rootPaths = synRootMap.get("default").paths;
         assertEquals(2, rootPaths.size());
         assertTrue(rootPaths.contains("/default-domain/UserWorkspaces/user1"));
         assertTrue(rootPaths.contains("/default-domain/workspaces/workspace-2"));
