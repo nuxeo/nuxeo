@@ -25,7 +25,7 @@
       <category>Preferences_sub_tab</category>
     </action>
 
-    <action enabled="true" label="user.center.preferences"
+    <action id="PreferencesAction" enabled="true" label="user.center.preferences"
       link="#{userPreferencesActions.navigateToPreferencesPage}"
       order="70">
       <category>USER_MENU_ACTIONS</category>
