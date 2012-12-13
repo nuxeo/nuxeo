@@ -20,17 +20,19 @@
 package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
@@ -45,6 +47,8 @@ public abstract class BaseSession implements Session {
     protected static final String READONLY_ENTRY_FLAG = "READONLY_ENTRY";
 
     protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
+
+    private final static Log log = LogFactory.getLog(BaseSession.class);
 
     /**
      * Returns a bare document model suitable for directory implementations.
@@ -157,6 +161,21 @@ public abstract class BaseSession implements Session {
     public static String computeMultiTenantDirectoryId(String tenantId,
             String id) {
         return String.format(MULTI_TENANT_ID_FORMAT, tenantId, id);
+    }
+
+    @Override
+    public DocumentModelList query(Map<String, Serializable> filter,
+                                   Set<String> fulltext, Map<String, String> orderBy,
+                                   boolean fetchReferences, int limit, int offset)
+            throws ClientException, DirectoryException {
+        log.info("Call an unoverrided query with offset and limit.");
+        DocumentModelList entries = query(filter, fulltext, orderBy, fetchReferences);
+        int toIndex = offset + limit;
+        if (toIndex > entries.size()) {
+            toIndex = entries.size();
+        }
+
+        return new DocumentModelListImpl(entries.subList(offset, toIndex));
     }
 
 }

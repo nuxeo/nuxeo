@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * <p>
  * This class is used to create, obtain, modify and delete entries in a
  * directory.
- *
+ * 
  * @see
  * @see Directory#getSession()
  * @author glefter@nuxeo.com
@@ -44,7 +44,7 @@ public interface Session {
      * Retrieves a directory entry using its id.
      * <p>
      * TODO what happens when the entry is not found? return null if not found?
-     *
+     * 
      * @param id the entry id
      * @return a DocumentModel representing the entry
      * @throws DirectoryException
@@ -53,7 +53,7 @@ public interface Session {
 
     /**
      * Retrieves a directory entry using its id.
-     *
+     * 
      * @param id the entry id
      * @param fetchReferences boolean stating if references have to be fetched
      * @return a DocumentModel representing the entry
@@ -64,12 +64,12 @@ public interface Session {
 
     /**
      * Retrieves all the entries in the directory.
-     *
+     * 
      * If the remote server issues a size limit exceeded error while sending
      * partial results up to that limit, the method
-     * {@code DocumentModelList#totalsize} on the returned list will return
-     * -2 as a special marker for truncated results.
-     *
+     * {@code DocumentModelList#totalsize} on the returned list will return -2
+     * as a special marker for truncated results.
+     * 
      * @return a collection with all the entries in the directory
      * @throws DirectoryException
      * @throws SizeLimitExceededException if the number of results is larger
@@ -80,7 +80,7 @@ public interface Session {
 
     /**
      * Creates an entry in a directory.
-     *
+     * 
      * @param fieldMap A map with keys and values that should be stored in a
      *            directory
      *            <p>
@@ -94,10 +94,9 @@ public interface Session {
     DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException, DirectoryException;
 
-
     /**
      * Updates a directory entry.
-     *
+     * 
      * @param docModel The entry to update
      * @throws UnsupportedOperationException if the directory does not support
      *             entry updating
@@ -108,7 +107,7 @@ public interface Session {
 
     /**
      * Deletes a directory entry.
-     *
+     * 
      * @param docModel The entry to delete
      * @throws UnsupportedOperationException if the directory does not support
      *             entry deleting
@@ -119,7 +118,7 @@ public interface Session {
 
     /**
      * Deletes a directory entry by id.
-     *
+     * 
      * @param id the id of the entry to delete
      * @throws UnsupportedOperationException if the directory does not support
      *             entry deleting
@@ -132,7 +131,7 @@ public interface Session {
      * <p>
      * This is used for hierarchical vocabularies, where the actual unique key
      * is the couple (parent, id).
-     *
+     * 
      * @param id the id of the entry to delete.
      * @param map a map of seconday key values.
      * @throws DirectoryException if a communication error occurs.
@@ -143,10 +142,10 @@ public interface Session {
     /*
      * FIXME: Parses a query string and create a query object for this
      * directory.
-     *
+     * 
      * @param query the query string to parse @return a new query object @throws
      * QueryException if the query cannot be parsed
-     *
+     * 
      * maybe not needed public SQLQuery createQuery(String query) throws
      * QueryException;
      */
@@ -157,12 +156,12 @@ public interface Session {
      * <p>
      * Does not fetch reference fields.
      * </p>
-     *
+     * 
      * If the remote server issues a size limit exceeded error while sending
      * partial results up to that limit, the method
-     * {@code DocumentModelList#totalsize} on the returned list will return
-     * -2 as a special marker for truncated results.
-     *
+     * {@code DocumentModelList#totalsize} on the returned list will return -2
+     * as a special marker for truncated results.
+     * 
      * @param filter a filter to apply to entries in directory
      * @return a list of document models containing the entries matched by the
      *         query
@@ -171,8 +170,8 @@ public interface Session {
      *             than the limit configured for the directory and the server
      *             does not send partial results.
      */
-    DocumentModelList query(Map<String, Serializable> filter) throws ClientException,
-            DirectoryException;
+    DocumentModelList query(Map<String, Serializable> filter)
+            throws ClientException, DirectoryException;
 
     /**
      * Executes a simple query. The conditions will be 'AND'-ed.
@@ -180,12 +179,12 @@ public interface Session {
      * fieldNames present in the fulltext set are treated as a fulltext match.
      * Does not fetch reference fields.
      * </p>
-     *
+     * 
      * If the remote server issues a size limit exceeded error while sending
      * partial results up to that limit, the method
-     * {@code DocumentModelList#totalsize} on the returned list will return
-     * -2 as a special marker for truncated results.
-     *
+     * {@code DocumentModelList#totalsize} on the returned list will return -2
+     * as a special marker for truncated results.
+     * 
      * @param filter a filter to apply to entries in directory
      * @param fulltext a set of field that should be treated as a fulltext
      *            search
@@ -196,8 +195,8 @@ public interface Session {
      *             than the limit configured for the directory and the server
      *             does not send partial results.
      */
-    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext)
-            throws ClientException, DirectoryException;
+    DocumentModelList query(Map<String, Serializable> filter,
+            Set<String> fulltext) throws ClientException, DirectoryException;
 
     /**
      * Executes a simple query. The conditions will be 'AND'-ed and the result
@@ -206,12 +205,12 @@ public interface Session {
      * fieldNames present in the fulltext set are treated as a fulltext match.
      * Does not fetch reference fields.
      * </p>
-     *
+     * 
      * If the remote server issues a size limit exceeded error while sending
      * partial results up to that limit, the method
-     * {@code DocumentModelList#totalsize} on the returned list will return
-     * -2 as a special marker for truncated results.
-     *
+     * {@code DocumentModelList#totalsize} on the returned list will return -2
+     * as a special marker for truncated results.
+     * 
      * @param filter a filter to apply to entries in directory
      * @param orderBy a LinkedHashMap with the 'order by' criterias.The key of
      *            an entry of this map represents the column name and the value
@@ -226,17 +225,33 @@ public interface Session {
      *             than the limit configured for the directory and the server
      *             does not send partial results.
      */
-    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
-            Map<String, String> orderBy) throws ClientException,
-            DirectoryException;
+    DocumentModelList query(Map<String, Serializable> filter,
+            Set<String> fulltext, Map<String, String> orderBy)
+            throws ClientException, DirectoryException;
 
     /**
      * Executes a query with the possibility to fetch references
-     *
+     * 
      * @see #query(Map, Set, Map)
      */
-    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext,
-            Map<String, String> orderBy, boolean fetchReferences)
+    DocumentModelList query(Map<String, Serializable> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws ClientException, DirectoryException;
+
+    /**
+     * Executes a query with the possibility to fetch a subset of the results.
+     * org.nuxeo.ecm.directory.BaseSession provides a default implementation
+     * fetching all results to return the subset. Not recommended.
+     * 
+     *
+     * @param limit maximum number of results ignored if less than 1
+     * @param offset number of rows skipped before starting, will be 0 if less than 0.
+     * @see #query(Map, Set, Map, boolean)
+     * @since 5.7
+     */
+    DocumentModelList query(Map<String, Serializable> filter,
+                            Set<String> fulltext, Map<String, String> orderBy,
+                            boolean fetchReferences, int limit, int offset)
             throws ClientException, DirectoryException;
 
     // TODO: create an API to allow sql AND/OR/NOT/LIKE conditions
@@ -264,14 +279,15 @@ public interface Session {
      * waiting for them to be automatically released.
      * <p>
      * TODO: should this operation auto-commit pending changes?
-     *
+     * 
      * @throws DirectoryException if a communication error occurs
      */
     void close() throws DirectoryException;
 
     /**
-     * Executes a query using filter and return only the column <b>columnName</b>.
-     *
+     * Executes a query using filter and return only the column
+     * <b>columnName</b>.
+     * 
      * @param filter the filter for the query
      * @param columnName the column whose content should be returned
      * @return the list with the values of <b>columnName</b> for the entries
@@ -280,8 +296,8 @@ public interface Session {
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory
      */
-    List<String> getProjection(Map<String, Serializable> filter, String columnName)
-            throws ClientException, DirectoryException;
+    List<String> getProjection(Map<String, Serializable> filter,
+            String columnName) throws ClientException, DirectoryException;
 
     List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws ClientException,
@@ -291,7 +307,7 @@ public interface Session {
      * Tells whether the directory implementation can be used as an
      * authenticating backend for the UserManager (based on login / password
      * check).
-     *
+     * 
      * @return true is the directory is authentication aware
      * @throws DirectoryException
      */
@@ -301,7 +317,7 @@ public interface Session {
      * Checks that the credentials provided by the UserManager match those
      * registered in the directory. If username is not in the directory, this
      * should return false instead of throrwing an exception.
-     *
+     * 
      * @param username
      * @param password
      * @return true is the credentials match those stored in the directory
@@ -313,7 +329,7 @@ public interface Session {
      * The Id field is the name of the field that is used a primary key: unique
      * and not null value in the whole directory. This field is also used as
      * login field if the directory is authenticating.
-     *
+     * 
      * @return the name of the id field
      */
     String getIdField() throws ClientException;
@@ -328,7 +344,7 @@ public interface Session {
 
     /**
      * Returns true if session has an entry with given id.
-     *
+     * 
      * @since 5.2M4
      * @throws ClientException
      */
@@ -336,7 +352,7 @@ public interface Session {
 
     /**
      * Creates an entry in a directory.
-     *
+     * 
      * @since 5.2M4
      * @param entry the document model representing the entry to create
      * @return The new entry created in the directory

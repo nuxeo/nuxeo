@@ -723,8 +723,13 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter,
-            Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws ClientException {
+                                   Set<String> fulltext, Map<String, String> orderBy,
+                                   boolean fetchReferences) throws ClientException {
+        return query(filter, fulltext, orderBy, fetchReferences, -1, -1);
+    }
+
+    @Override
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy, boolean fetchReferences, int limit, int offset) throws ClientException, DirectoryException {
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);
@@ -870,6 +875,12 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             select.setOrderBy(orderby.toString());
             String query = select.getStatement();
+            if (limit > 0) {
+                if (offset < 0) {
+                    offset = 0;
+                }
+                query = dialect.addPagingClause(query, limit, offset);
+            }
 
             if (logger.isLogEnabled()) {
                 List<Serializable> values = new ArrayList<Serializable>(
