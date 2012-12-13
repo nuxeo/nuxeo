@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -97,6 +98,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     }
 
     /*--------------------- AbstractDocumentBackedFileSystemItem -----------------*/
+    @JsonIgnore
     public CoreSession getSession() throws ClientException {
         return Framework.getLocalService(FileSystemItemManager.class).getSession(
                 repositoryName, principal);

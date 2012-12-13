@@ -18,6 +18,7 @@ package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.FileSystemItem;
 
 /**
@@ -106,10 +107,11 @@ public class FileSystemItemChange implements Serializable {
         this.docUuid = docUuid;
     }
 
-    public FileSystemItem getFileSystemIte() {
+    public FileSystemItem getFileSystemItem() {
         return fileSystemItem;
     }
 
+    @JsonIgnore
     public void setFileSystemItem(FileSystemItem fileSystemItem) {
         this.fileSystemItem = fileSystemItem;
     }

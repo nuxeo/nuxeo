@@ -17,12 +17,15 @@
  */
 package org.nuxeo.drive.operations;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.directory.shared.ldap.NotImplementedException;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -33,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -52,6 +56,7 @@ public class NuxeoDriveGetRootsOperation {
     @OperationMethod
     public DocumentModelList run() throws ClientException {
 
+
         // By default get synchronization roots from all repositories, except if
         // a specific repository name is passed as a request header
         boolean allRepositores = true;
@@ -62,11 +67,19 @@ public class NuxeoDriveGetRootsOperation {
                 allRepositores = false;
             }
         }
-
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        Set<IdRef> references = driveManager.getSynchronizationRootReferences(
-                allRepositores, session.getPrincipal().getName(), session);
-        return session.getDocuments(references.toArray(new DocumentRef[references.size()]));
+        Map<String, SynchronizationRoots> roots = driveManager.getSynchronizationRoots(
+                allRepositores, ctx.getPrincipal().getName(), session);
+        DocumentModelList rootDocumentModels = new DocumentModelListImpl();
+        for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {
+            if (session.getRepositoryName().equals(rootsEntry.getKey())) {
+                Set<IdRef> references = rootsEntry.getValue().refs;
+                rootDocumentModels.addAll(session.getDocuments(references.toArray(new DocumentRef[references.size()])));
+            } else {
+                throw new NotImplementedException("Multi repo roots not yet implemented");
+            }
+        }
+        return rootDocumentModels;
     }
 
 }

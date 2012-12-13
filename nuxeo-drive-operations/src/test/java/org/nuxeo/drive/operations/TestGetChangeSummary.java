@@ -21,9 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
@@ -125,10 +123,6 @@ public class TestGetChangeSummary {
         session.save();
 
         docChangeSummary = getChangeSummary();
-        Set<String> expectedSyncRootPaths = new HashSet<String>();
-        expectedSyncRootPaths.add("/folder1");
-        expectedSyncRootPaths.add("/folder2");
-
         List<FileSystemItemChange> docChanges = docChangeSummary.getFileSystemChanges();
         assertEquals(2, docChanges.size());
         FileSystemItemChange docChange = docChanges.get(0);
@@ -166,7 +160,6 @@ public class TestGetChangeSummary {
         session.save();
 
         docChangeSummary = getFolderDocumentChangeSummary("/folder1");
-        expectedSyncRootPaths.remove("/folder2");
         assertEquals(2, docChangeSummary.getFileSystemChanges().size());
         assertEquals(Boolean.FALSE, docChangeSummary.getHasTooManyChanges());
     }
