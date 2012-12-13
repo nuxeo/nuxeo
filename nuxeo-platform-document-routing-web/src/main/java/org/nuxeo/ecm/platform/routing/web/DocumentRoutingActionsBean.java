@@ -66,6 +66,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.LockableDocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
+import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
@@ -216,7 +217,8 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String cancelRoute() throws ClientException {
         DocumentModel doc = relatedRoutes.get(0);
         DocumentRoute route = doc.getAdapter(DocumentRoute.class);
-        route.cancel(documentManager);
+        Framework.getLocalService(DocumentRoutingEngineService.class).cancel(
+                route, documentManager);
         // force computing of tabs
         webActions.resetTabList();
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_CANCELED);
@@ -940,4 +942,15 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
+    /**
+     * @since 5.6
+     */
+    public String getCurrentWorkflowInitiator() throws ClientException {
+        DocumentRoute currentRoute = getRelatedRoute();
+        if (currentRoute != null) {
+            return (String) currentRoute.getDocument().getPropertyValue(
+                    DocumentRoutingConstants.INITIATOR);
+        }
+        return "";
+    }
 }

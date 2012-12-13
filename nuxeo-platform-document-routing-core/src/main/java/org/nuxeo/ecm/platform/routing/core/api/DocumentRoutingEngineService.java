@@ -49,11 +49,20 @@ public interface DocumentRoutingEngineService {
      * @param nodeId the node id to resume on (optional)
      * @param taskId the task id that resumes (optional)
      * @param data the data coming from UI form
-     * @param status the name of the button clicked to submit the associated task form
+     * @param status the name of the button clicked to submit the associated
+     *            task form
      * @param session the session
      * @since 5.6
      */
     void resume(DocumentRoute routeInstance, String nodeId, String taskId,
             Map<String, Object> data, String status, CoreSession session);
 
+    /**
+     * Cancels a route using an unrestricted session.
+     *
+     * @param routeInstance the route instance
+     * @param session the session
+     * @since 5.6
+     */
+    void cancel(DocumentRoute routeInstance, CoreSession session);
 }

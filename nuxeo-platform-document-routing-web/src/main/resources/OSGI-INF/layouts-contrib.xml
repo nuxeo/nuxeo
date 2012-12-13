@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.routing.layouts">
 
+  <require>org.nuxeo.ecm.platform.routing.actions</require>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
@@ -471,6 +472,7 @@
       <properties>
         <property name="widgetName">current_route_abandon</property>
       </properties>
+      <filter-id>currentUserIsWorkflowInitatior</filter-id>
     </action>
 
   </extension>
