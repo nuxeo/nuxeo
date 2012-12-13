@@ -38,6 +38,8 @@
       -->
       <bindDn>cn=nuxeo5,ou=applications,dc=example,dc=com</bindDn>
       <bindPassword>changeme</bindPassword>
+      <!-- Attempts to get a result when LDAP is temporary unavailable -->
+      <retries>5</retries>
     </server>
 
   </extension>

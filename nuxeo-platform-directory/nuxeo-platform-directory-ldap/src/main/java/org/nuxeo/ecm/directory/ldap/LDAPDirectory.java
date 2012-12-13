@@ -159,12 +159,11 @@ public class LDAPDirectory extends AbstractDirectory {
         // Initialization of LDAP connection parameters from parameters
         // registered in the LDAP "server" extension point
         Properties props = new Properties();
-        String serverName = config.getServerName();
-        LDAPServerDescriptor serverConfig = factory.getServer(serverName);
+        LDAPServerDescriptor serverConfig = getServer();
 
         if (null == serverConfig) {
             throw new DirectoryException(
-                    "LDAP server configuration not found: " + serverName);
+                    "LDAP server configuration not found: " + config.getServerName());
         }
 
         props.put(Context.INITIAL_CONTEXT_FACTORY,
@@ -214,12 +213,12 @@ public class LDAPDirectory extends AbstractDirectory {
             props.put("com.sun.jndi.ldap.connect.pool.timeout", "1800000"); // 30
             // min
         }
-        
+
         if (!serverConfig.isVerifyServerCert() && serverConfig.useSsl) {
-            props.put("java.naming.ldap.factory.socket", 
+            props.put("java.naming.ldap.factory.socket",
                     "org.nuxeo.ecm.directory.ldap.LDAPDirectory$TrustingSSLSocketFactory");
         }
-        
+
         return props;
     }
 
@@ -299,7 +298,7 @@ public class LDAPDirectory extends AbstractDirectory {
                         "server configuration is missing for directory "
                                 + config.getName());
             }
-            LDAPServerDescriptor serverConfig = factory.getServer(serverName);
+            LDAPServerDescriptor serverConfig = getServer();
             if (serverConfig.isDynamicServerList()) {
                 String ldapUrls = serverConfig.getLdapUrls();
                 contextProperties.put(Context.PROVIDER_URL, ldapUrls);
@@ -329,6 +328,14 @@ public class LDAPDirectory extends AbstractDirectory {
 
     public String getPasswordField() {
         return config.getPasswordField();
+    }
+
+    /**
+     * @since 5.7
+     * @return ldap server descriptor bound to this directory
+     */
+    public LDAPServerDescriptor getServer() {
+        return factory.getServer(config.getServerName());
     }
 
     public Session getSession() throws DirectoryException {
@@ -401,7 +408,7 @@ public class LDAPDirectory extends AbstractDirectory {
     public void setTestServer(ContextProvider testServer) {
         this.testServer = testServer;
     }
-    
+
     /**
      * SSLSocketFactory implementation that verifies all certificates.
      */
@@ -416,7 +423,7 @@ public class LDAPDirectory extends AbstractDirectory {
         public TrustingSSLSocketFactory() {
             try {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, new TrustManager[] { new TrustingX509TrustManager() }, 
+                sslContext.init(null, new TrustManager[] { new TrustingX509TrustManager() },
                         new SecureRandom());
                 factory = sslContext.getSocketFactory();
             } catch (NoSuchAlgorithmException nsae) {
@@ -425,16 +432,16 @@ public class LDAPDirectory extends AbstractDirectory {
                 throw new RuntimeException("Unable to register a trust manager:  ", kme);
             }
         }
-        
+
         /**
-        * TrustingSSLSocketFactoryHolder is loaded on the first execution of 
-        * TrustingSSLSocketFactory.getDefault() or the first access to 
+        * TrustingSSLSocketFactoryHolder is loaded on the first execution of
+        * TrustingSSLSocketFactory.getDefault() or the first access to
         * TrustingSSLSocketFactoryHolder.INSTANCE, not before.
         */
-        private static class TrustingSSLSocketFactoryHolder { 
+        private static class TrustingSSLSocketFactoryHolder {
             public static final TrustingSSLSocketFactory INSTANCE = new TrustingSSLSocketFactory();
         }
-        
+
         public static SocketFactory getDefault() {
             return TrustingSSLSocketFactoryHolder.INSTANCE;
         }
@@ -456,7 +463,7 @@ public class LDAPDirectory extends AbstractDirectory {
         }
 
         @Override
-        public Socket createSocket(String host, int port) 
+        public Socket createSocket(String host, int port)
                 throws IOException, UnknownHostException {
             return factory.createSocket(host, port);
         }
@@ -478,7 +485,7 @@ public class LDAPDirectory extends AbstractDirectory {
                 throws IOException {
             return factory.createSocket(address, port, localAddress, localPort);
         }
-        
+
         /**
          * Insecurely trusts everyone.
          */
