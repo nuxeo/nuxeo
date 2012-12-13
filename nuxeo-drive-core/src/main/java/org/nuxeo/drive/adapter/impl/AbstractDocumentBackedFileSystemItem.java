@@ -16,16 +16,18 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -38,12 +40,30 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractDocumentBackedFileSystemItem extends
         AbstractFileSystemItem {
 
-    protected final DocumentModel doc;
+    protected final String repositoryName;
+
+    protected final Principal principal;
+
+    protected final String docId;
+
+    protected final String docPath;
+
+    protected final String creator;
+
+    protected final Calendar created;
+
+    protected final Calendar lastModificationDate;
 
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            DocumentModel doc) {
+            DocumentModel doc) throws ClientException {
         super(factoryName);
-        this.doc = doc;
+        repositoryName = doc.getRepositoryName();
+        principal = doc.getCoreSession().getPrincipal();
+        docId = doc.getId();
+        docPath = doc.getPathAsString();
+        creator = (String) doc.getPropertyValue("dc:creator");
+        created = (Calendar) doc.getPropertyValue("dc:created");
+        lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
     }
 
     /*--------------------- FileSystemItem ---------------------*/
@@ -51,42 +71,41 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         StringBuilder sb = new StringBuilder();
         sb.append(super.getId());
         sb.append("/");
-        sb.append(doc.getRepositoryName());
+        sb.append(repositoryName);
         sb.append("/");
-        sb.append(doc.getId());
+        sb.append(docId);
         return sb.toString();
     }
 
     public String getCreator() throws ClientException {
-        return (String) doc.getPropertyValue("dc:creator");
+        return creator;
     }
 
     public Calendar getCreationDate() throws ClientException {
-        return (Calendar) doc.getPropertyValue("dc:created");
+        return created;
     }
 
     public Calendar getLastModificationDate() throws ClientException {
-        return (Calendar) doc.getPropertyValue("dc:modified");
+        return lastModificationDate;
     }
 
     public void delete() throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        // docs.add(getDocumentByFileSystemId(id, session));
+        DocumentModel doc = getDocument(getSession());
         docs.add(doc);
         getTrashService().trashDocuments(docs);
     }
 
-    public DocumentModel getDocument() {
-        return doc;
+    /*--------------------- AbstractDocumentBackedFileSystemItem -----------------*/
+    public CoreSession getSession() throws ClientException {
+        return Framework.getLocalService(FileSystemItemManager.class).getSession(
+                repositoryName, principal);
     }
 
-    /*--------------------- Protected -----------------*/
-    protected CoreSession getCoreSession() {
-        return doc.getCoreSession();
-    }
-
-    protected FileManager getFileManager() {
-        return Framework.getLocalService(FileManager.class);
+    /*--------------------- Protected -------------------------*/
+    protected DocumentModel getDocument(CoreSession session)
+            throws ClientException {
+        return session.getDocument(new IdRef(docId));
     }
 
     protected TrashService getTrashService() {

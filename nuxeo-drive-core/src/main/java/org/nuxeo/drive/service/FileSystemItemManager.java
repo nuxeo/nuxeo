@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.service;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.FileItem;
@@ -45,108 +46,113 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface FileSystemItemManager {
 
+    /**
+     * Gets a session bound to the given repository for the given principal.
+     */
+    CoreSession getSession(String repositoryName, Principal principal)
+            throws ClientException;
+
     /*------------- Read operations ----------------*/
     /**
-     * Returns true if a {@link FileSystemItem} with the given id exists. Uses
-     * the given session if it is consistent with the given id.
+     * Returns true if a {@link FileSystemItem} with the given id exists. Uses a
+     * core session fetched with the given principal.
      *
      * @throws ClientException if no {@link FileSystemItemFactory} can handle
      *             the given {@link FileSystemItem} id or if an error occurs
      *             while checking the existence
-     * @see FileSystemItemFactory#exists(String, CoreSession)
+     * @see FileSystemItemFactory#exists(String, Principal)
      */
-    boolean exists(String id, CoreSession session) throws ClientException;
+    boolean exists(String id, Principal principal) throws ClientException;
 
     /**
-     * Gets the {@link FileSystemItem} with the given id. Uses the given session
-     * if it is consistent with the given id.
+     * Gets the {@link FileSystemItem} with the given id. Uses a core session
+     * fetched with the given principal.
      *
      * @return the {@link FileSystemItem} or null if none matches the given id
      * @throws ClientException if no {@link FileSystemItemFactory} can handle
      *             the given {@link FileSystemItem} id or if an error occurs
      *             while retrieving the item
-     * @see FileSystemItemFactory#getFileSystemItemById(String, CoreSession)
+     * @see FileSystemItemFactory#getFileSystemItemById(String, Principal)
      */
-    FileSystemItem getFileSystemItemById(String id, CoreSession session)
+    FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException;
 
     /**
-     * Gets the children of the {@link FileSystemItem} with the given id. Uses
-     * the given session if it is consistent with the given id.
+     * Gets the children of the {@link FileSystemItem} with the given id. Uses a
+     * core session fetched with the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved, or if it is not a {@link FolderItem} or
      *             if an error occurs while retrieving the children
      * @see FolderItem#getChildren()
      */
-    List<FileSystemItem> getChildren(String id, CoreSession session)
+    List<FileSystemItem> getChildren(String id, Principal principal)
             throws ClientException;
 
     /*------------- Write operations ----------------*/
     /**
      * Creates a folder with the given name in the {@link FileSystemItem} with
-     * the given id. Uses the given session if it is consistent with the given
-     * id.
+     * the given id. Uses a core session fetched with the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved, or if it is not a {@link FolderItem} or
      *             if an error occurs while creating the folder
      * @see FolderItem#createFolder(String)
      */
-    FolderItem createFolder(String parentId, String name, CoreSession session)
+    FolderItem createFolder(String parentId, String name, Principal principal)
             throws ClientException;
 
     /**
      * Creates a file with the given blob in the {@link FileSystemItem} with the
-     * given id. Uses the given session if it is consistent with the given id.
+     * given id. Uses a core session fetched with the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved, or if it is not a {@link FolderItem} or
      *             if an error occurs while creating the file
      * @see FolderItem#createFile(Blob)
      */
-    FileItem createFile(String parentId, Blob blob, CoreSession session)
+    FileItem createFile(String parentId, Blob blob, Principal principal)
             throws ClientException;
 
     /**
      * Updates the {@link FileSystemItem} with the given id with the given blob.
-     * Uses the given session if it is consistent with the given id.
+     * Uses a core session fetched with the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved, or if it is not a {@link FileItem} or if
      *             an error occurs while updating the file
      * @see FileItem#setBlob(Blob)
      */
-    FileItem updateFile(String id, Blob blob, CoreSession session)
+    FileItem updateFile(String id, Blob blob, Principal principal)
             throws ClientException;
 
     /**
-     * Deletes the {@link FileSystemItem} with the given id. Uses the given
-     * session if it is consistent with the given id.
+     * Deletes the {@link FileSystemItem} with the given id. Uses a core session
+     * fetched with the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved or if an error occurs while deleting the
      *             item
      * @see FileSystemItem#delete()
      */
-    void delete(String id, CoreSession session) throws ClientException;
+    void delete(String id, Principal principal) throws ClientException;
 
     /**
      * Renames the {@link FileSystemItem} with the given id with the given name.
-     * Uses the given session if it is consistent with the given id.
+     * Uses a core session fetched with the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved or if an error occurs while renaming the
      *             item
      * @see FileSystemItem#rename(String)
      */
-    FileSystemItem rename(String id, String name, CoreSession session)
+    FileSystemItem rename(String id, String name, Principal principal)
             throws ClientException;
 
-    FileSystemItem move(String srcId, String destId, CoreSession session)
+    FileSystemItem move(String srcId, String destId, Principal principal)
             throws ClientException;
 
-    FileSystemItem copy(String srcId, String destId, CoreSession session)
+    FileSystemItem copy(String srcId, String destId, Principal principal)
             throws ClientException;
 
 }

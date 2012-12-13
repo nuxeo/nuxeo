@@ -28,13 +28,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DummyFolderItem extends DocumentBackedFolderItem {
 
-    public DummyFolderItem(String factoryName, DocumentModel doc) {
+    public DummyFolderItem(String factoryName, DocumentModel doc)
+            throws ClientException {
         super(factoryName, doc);
     }
 
     @Override
     public String getName() throws ClientException {
-        return "Dummy folder with id " + doc.getId();
+        return "Dummy folder with id " + docId;
     }
 
 }

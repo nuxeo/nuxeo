@@ -21,6 +21,7 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
@@ -32,14 +33,16 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 public class DocumentBackedFileItem extends
         AbstractDocumentBackedFileSystemItem implements FileItem {
 
-    public DocumentBackedFileItem(String factoryName, DocumentModel doc) {
+    public DocumentBackedFileItem(String factoryName, DocumentModel doc)
+            throws ClientException {
         super(factoryName, doc);
     }
 
     /*--------------------- AbstractFileSystemItem ---------------------*/
     @Override
     public String getName() throws ClientException {
-        return getFileName();
+        DocumentModel doc = getDocument(getSession());
+        return getFileName(doc);
     }
 
     @Override
@@ -49,58 +52,61 @@ public class DocumentBackedFileItem extends
 
     @Override
     public void rename(String name) throws ClientException {
+        CoreSession session = getSession();
+        DocumentModel doc = getDocument(session);
+        BlobHolder bh = getBlobHolder(doc);
+        Blob blob = getBlob(bh);
         // TODO: not sure about the behavior for the doc title
-        Blob blob = getBlob();
-        if (doc.getTitle().equals(blob.getFilename())) {
+        String fileName = blob.getFilename();
+        if (fileName.equals(doc.getPropertyValue("dc:title"))) {
             doc.setPropertyValue("dc:title", name);
         }
         blob.setFilename(name);
-        getBlobHolder().setBlob(blob);
-        getCoreSession().saveDocument(doc);
+        bh.setBlob(blob);
+        session.saveDocument(doc);
     }
 
     /*--------------------- FileItem -----------------*/
     @Override
     public Blob getBlob() throws ClientException {
-        Blob blob = getBlobHolder().getBlob();
-        if (blob == null) {
-            throw new ClientException(
-                    "Document has no blob, it is not adaptable as a FileItem and therefore it cannot not be part of the items to synchronize.");
-        }
-        return blob;
+        DocumentModel doc = getDocument(getSession());
+        return getBlob(doc);
     }
 
     @Override
     public String getDownloadURL(String baseURL) throws ClientException {
+        DocumentModel doc = getDocument(getSession());
         StringBuilder downloadURLSb = new StringBuilder();
         downloadURLSb.append(baseURL);
         downloadURLSb.append("nxbigfile/");
-        downloadURLSb.append(doc.getRepositoryName());
+        downloadURLSb.append(repositoryName);
         downloadURLSb.append("/");
-        downloadURLSb.append(doc.getRef().toString());
+        downloadURLSb.append(docId);
         downloadURLSb.append("/");
         downloadURLSb.append("blobholder:0");
         downloadURLSb.append("/");
-        downloadURLSb.append(URIUtils.quoteURIPathComponent(getFileName(), true));
+        downloadURLSb.append(URIUtils.quoteURIPathComponent(getFileName(doc),
+                true));
         return downloadURLSb.toString();
     }
 
     @Override
     public void setBlob(Blob blob) throws ClientException {
-        // If blob's filename is empty, set it to the current blob's filename
+        CoreSession session = getSession();
+        DocumentModel doc = getDocument(session);
+        BlobHolder bh = getBlobHolder(doc);
+        // If blob's filename is empty, set it to the current blob's
+        // filename
         if (StringUtils.isEmpty(blob.getFilename())) {
-            blob.setFilename(getBlob().getFilename());
+            blob.setFilename(getBlob(bh).getFilename());
         }
-        getBlobHolder().setBlob(blob);
-        getCoreSession().saveDocument(doc);
+        bh.setBlob(blob);
+        session.saveDocument(doc);
     }
 
     /*--------------------- Protected -----------------*/
-    protected String getFileName() throws ClientException {
-        return getBlob().getFilename();
-    }
-
-    protected BlobHolder getBlobHolder() throws ClientException {
+    protected BlobHolder getBlobHolder(DocumentModel doc)
+            throws ClientException {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             throw new ClientException(
@@ -109,6 +115,24 @@ public class DocumentBackedFileItem extends
                             doc.getId()));
         }
         return bh;
+    }
+
+    protected Blob getBlob(BlobHolder blobHolder) throws ClientException {
+        Blob blob = blobHolder.getBlob();
+        if (blob == null) {
+            throw new ClientException(
+                    "Document has no blob, it is not adaptable as a FileItem and therefore it cannot not be part of the items to synchronize.");
+        }
+        return blob;
+    }
+
+    protected Blob getBlob(DocumentModel doc) throws ClientException {
+        BlobHolder bh = getBlobHolder(doc);
+        return getBlob(bh);
+    }
+
+    protected String getFileName(DocumentModel doc) throws ClientException {
+        return getBlob(doc).getFilename();
     }
 
 }

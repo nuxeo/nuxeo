@@ -16,9 +16,7 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,14 +24,15 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of a {@link FileSystemItemFactory}. It is
@@ -92,10 +91,10 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     }
 
     @Override
-    public boolean exists(String id, CoreSession session)
+    public boolean exists(String id, Principal principal)
             throws ClientException {
         try {
-            DocumentModel doc = getDocumentByFileSystemId(id, session);
+            DocumentModel doc = getDocumentByFileSystemId(id, principal);
             return doc.isFolder() || hasBlob(doc);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
@@ -107,9 +106,9 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, CoreSession session)
+    public FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException {
-        DocumentModel doc = getDocumentByFileSystemId(id, session);
+        DocumentModel doc = getDocumentByFileSystemId(id, principal);
         return getFileSystemItem(doc);
     }
 
@@ -154,29 +153,16 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     }
 
     protected DocumentModel getDocumentByFileSystemId(String id,
-            CoreSession session) throws ClientException {
-
+            Principal principal) throws ClientException {
         // Parse id, expecting
         // pattern:fileSystemItemFactoryName/repositoryName/docId
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
-
-        // Fetch document using the appropriate session
-        CoreSession repoSession = session;
-        if (!repositoryName.equals(session.getRepositoryName())) {
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            context.put("principal", (Serializable) session.getPrincipal());
-            repoSession = CoreInstance.getInstance().open(repositoryName,
-                    context);
-            try {
-                return getDocumentById(docId, repoSession);
-            } finally {
-                CoreInstance.getInstance().close(repoSession);
-            }
-        } else {
-            return getDocumentById(docId, repoSession);
-        }
+        CoreSession session = Framework.getLocalService(
+                FileSystemItemManager.class).getSession(repositoryName,
+                principal);
+        return getDocumentById(docId, session);
     }
 
     protected DocumentModel getDocumentById(String docId, CoreSession session)

@@ -29,7 +29,9 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
@@ -44,14 +46,16 @@ public class DocumentBackedFolderItem extends
 
     private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
 
-    public DocumentBackedFolderItem(String factoryName, DocumentModel doc) {
+    public DocumentBackedFolderItem(String factoryName, DocumentModel doc)
+            throws ClientException {
         super(factoryName, doc);
     }
 
     /*--------------------- AbstractFileSystemItem ---------------------*/
     @Override
     public String getName() throws ClientException {
-        return doc.getTitle();
+        DocumentModel doc = getDocument(getSession());
+        return (String) doc.getPropertyValue("dc:title");
     }
 
     @Override
@@ -61,21 +65,22 @@ public class DocumentBackedFolderItem extends
 
     @Override
     public void rename(String name) throws ClientException {
+        CoreSession session = getSession();
+        DocumentModel doc = getDocument(session);
         doc.setPropertyValue("dc:title", name);
-        getCoreSession().saveDocument(doc);
+        session.saveDocument(doc);
     }
 
     /*--------------------- FolderItem -----------------*/
     @Override
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() throws ClientException {
-
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CORE_SESSION_PROPERTY, (Serializable) getCoreSession());
+        props.put(CORE_SESSION_PROPERTY, (Serializable) getSession());
         PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                 FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props,
-                doc.getId());
+                docId);
         List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>(
@@ -92,13 +97,13 @@ public class DocumentBackedFolderItem extends
     @Override
     public FolderItem createFolder(String name) throws ClientException {
         try {
-            DocumentModel folder = getFileManager().createFolder(
-                    getCoreSession(), name, doc.getPathAsString());
+            DocumentModel folder = getFileManager().createFolder(getSession(),
+                    name, docPath);
             if (folder == null) {
                 throw new ClientException(
                         String.format(
-                                "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check the allowed sub-types for the %s doc type.",
-                                name, doc.getPathAsString(), doc.getType()));
+                                "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check them.",
+                                name, docPath));
             }
             return new DocumentBackedFolderItem(getFactoryName(), folder);
         } catch (Exception e) {
@@ -109,20 +114,25 @@ public class DocumentBackedFolderItem extends
     @Override
     public FileItem createFile(Blob blob) throws ClientException {
         try {
+            String fileName = blob.getFilename();
             // TODO: manage conflict (overwrite should not necessarily be true)
             DocumentModel file = getFileManager().createDocumentFromBlob(
-                    getCoreSession(), blob, doc.getPathAsString(), true,
-                    blob.getFilename());
+                    getSession(), blob, docPath, true, fileName);
             if (file == null) {
                 throw new ClientException(
                         String.format(
                                 "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
-                                blob.getFilename(), doc.getPathAsString()));
+                                fileName, docPath));
             }
             return new DocumentBackedFileItem(getFactoryName(), file);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }
+    }
+
+    /*--------------------- Protected -----------------*/
+    protected FileManager getFileManager() {
+        return Framework.getLocalService(FileManager.class);
     }
 
 }

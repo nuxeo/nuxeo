@@ -20,7 +20,6 @@ import java.util.Calendar;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Base class for {@link FileSystemItem} implementations.
@@ -50,8 +49,6 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     public abstract void rename(String name) throws ClientException;
 
     public abstract void delete() throws ClientException;
-
-    public abstract DocumentModel getDocument();
 
     @Override
     public String getId() {

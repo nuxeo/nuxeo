@@ -16,10 +16,12 @@
  */
 package org.nuxeo.drive.service.adapter;
 
+import java.security.Principal;
+
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -31,7 +33,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc) {
+    public FileSystemItem getFileSystemItem(DocumentModel doc)
+            throws ClientException {
         return new DummyFolderItem(getName(), doc);
     }
 
@@ -41,7 +44,7 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, CoreSession session) {
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
         return null;
     }
 

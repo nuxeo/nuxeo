@@ -18,8 +18,8 @@ package org.nuxeo.drive.adapter;
 
 import java.util.Calendar;
 
+import org.nuxeo.drive.adapter.impl.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Representation of a file system item, typically a file or a folder.
@@ -52,14 +52,5 @@ public interface FileSystemItem {
     void rename(String name) throws ClientException;
 
     void delete() throws ClientException;
-
-    /**
-     * Gets the backing {@link DocumentModel} in the case of a
-     * {@link DocumentModel} backed implementation.
-     *
-     * @throws UnsupportedOperationException if the implementation is not
-     *             {@link DocumentModel} backed.
-     */
-    DocumentModel getDocument();
 
 }

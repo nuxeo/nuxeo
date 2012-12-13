@@ -16,10 +16,11 @@
  */
 package org.nuxeo.drive.service;
 
+import java.security.Principal;
+
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -49,6 +50,9 @@ public interface FileSystemItemFactory {
      */
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
 
+    // FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+    // throws ClientException;
+
     /**
      * Returns true if the given {@link FileSystemItem} id can be handled by
      * this factory. It is typically the case when the factory has been
@@ -57,18 +61,18 @@ public interface FileSystemItemFactory {
     boolean canHandleFileSystemItemId(String id);
 
     /**
-     * Returns true if a {@link FileSystemItem} with the given id exists. Uses
-     * the given session if it is consistent with the given id.
+     * Returns true if a {@link FileSystemItem} with the given id exists. Uses a
+     * core session fetched with the given principal.
      */
-    boolean exists(String id, CoreSession session) throws ClientException;
+    boolean exists(String id, Principal principal) throws ClientException;
 
     /**
-     * Gets the {@link FileSystemItem} with the given id. Uses the given session
-     * if it is consistent with the given id.
+     * Gets the {@link FileSystemItem} with the given id using a core session
+     * fetched with the given principal.
      *
      * @return the {@link FileSystemItem} or null if none matches the given id
      */
-    FileSystemItem getFileSystemItemById(String id, CoreSession session)
+    FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException;
 
 }

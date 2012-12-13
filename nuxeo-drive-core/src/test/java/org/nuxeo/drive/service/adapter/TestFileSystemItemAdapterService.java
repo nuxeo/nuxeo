@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -63,7 +64,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.runtime.reload" })
 @LocalDeploy({

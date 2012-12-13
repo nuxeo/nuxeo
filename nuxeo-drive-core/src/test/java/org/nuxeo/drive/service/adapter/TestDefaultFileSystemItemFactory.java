@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.List;
 
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
@@ -44,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -59,7 +62,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore",
         "org.nuxeo.ecm.platform.query.api",
@@ -77,6 +80,8 @@ public class TestDefaultFileSystemItemFactory {
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
+    protected Principal principal;
+
     protected DocumentModel file;
 
     protected DocumentModel note;
@@ -91,6 +96,8 @@ public class TestDefaultFileSystemItemFactory {
 
     @Before
     public void createTestDocs() throws ClientException {
+
+        principal = session.getPrincipal();
 
         // File
         file = session.createDocumentModel("/", "aFile", "File");
@@ -228,7 +235,7 @@ public class TestDefaultFileSystemItemFactory {
 
         // Bad id
         try {
-            defaultFactory.exists("badId", session);
+            defaultFactory.exists("badId", principal);
             fail("Should not be able to check existence for bad id.");
         } catch (ClientException e) {
             assertEquals(
@@ -236,17 +243,17 @@ public class TestDefaultFileSystemItemFactory {
                     e.getMessage());
         }
         // Non existent doc id
-        assertFalse(defaultFactory.exists(
-                "defaultFileSystemItemFactory/test/nonExistentDocId", session));
+        assertFalse(defaultFactory.exists(DEFAULT_FILE_SYSTEM_ID_PREFIX
+                + "nonExistentDocId", principal));
         // File
-        assertTrue(defaultFactory.exists("defaultFileSystemItemFactory/test/"
-                + file.getId(), session));
+        assertTrue(defaultFactory.exists(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), principal));
         // Note
-        assertTrue(defaultFactory.exists("defaultFileSystemItemFactory/test/"
-                + note.getId(), session));
+        assertTrue(defaultFactory.exists(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(), principal));
         // Not adaptable as a FileSystemItem
-        assertFalse(defaultFactory.exists("defaultFileSystemItemFactory/test/"
-                + notAFileSystemItem.getId(), session));
+        assertFalse(defaultFactory.exists(DEFAULT_FILE_SYSTEM_ID_PREFIX
+                + notAFileSystemItem.getId(), principal));
     }
 
     @Test
@@ -257,9 +264,8 @@ public class TestDefaultFileSystemItemFactory {
 
         // Non existent doc id
         try {
-            defaultFactory.getFileSystemItemById(
-                    "defaultFileSystemItemFactory/test/nonExistentDocId",
-                    session);
+            defaultFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ID_PREFIX
+                    + "nonExistentDocId", principal);
             fail("No FileSystemItem should be found for non existant id.");
         } catch (ClientException e) {
             assertEquals("Failed to get document nonExistentDocId",
@@ -268,12 +274,13 @@ public class TestDefaultFileSystemItemFactory {
         // File without a blob
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);
+        session.save();
         FileSystemItem fsItem = defaultFactory.getFileSystemItemById(
-                "defaultFileSystemItemFactory/test/" + file.getId(), session);
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), principal);
         assertNull(fsItem);
         // Note
         fsItem = defaultFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(), session);
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
         assertEquals("aNote.txt", fsItem.getName());
@@ -283,7 +290,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
         // Folder
         fsItem = defaultFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), session);
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals("Jack's folder", fsItem.getName());
@@ -292,7 +299,7 @@ public class TestDefaultFileSystemItemFactory {
         // Not adaptable as a FileSystemItem
         fsItem = defaultFactory.getFileSystemItemById(
                 DEFAULT_FILE_SYSTEM_ID_PREFIX + notAFileSystemItem.getId(),
-                session);
+                principal);
         assertNull(fsItem);
     }
 
@@ -319,6 +326,10 @@ public class TestDefaultFileSystemItemFactory {
         Blob newBlob = new StringBlob("This is a new file.");
         newBlob.setFilename("New blob.txt");
         fileItem.setBlob(newBlob);
+        ((DocumentBackedFileItem) fileItem).getSession().save();
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item
+        session.save();
 
         file = session.getDocument(file.getRef());
         Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -423,7 +434,7 @@ public class TestDefaultFileSystemItemFactory {
     }
 
     protected FileSystemItemFactory getDefaultFileSystemItemFactory() {
-        return ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFactories().get(
+        return ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories().get(
                 0).getFactory();
     }
 }
