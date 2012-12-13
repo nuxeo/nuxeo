@@ -42,6 +42,8 @@
           <!-- LDAP SRV DNS resolution on _gc._tcp.example.com -->
           <ldapUrl srvPrefix="_gc._tcp">ldap:///dc=example,dc=com</ldapUrl>
 
+          <retries>5</retries>
+
           <bindDn>cn=nuxeo5,ou=applications,dc=example,dc=com</bindDn>
           <bindPassword>changeme</bindPassword>
         </server>
@@ -52,6 +54,9 @@
       of load balanced connections to each server. They are assumed to
       be replicated versions of a master server that should belong to
       the list.
+
+      The retries attribute indicates how many times the request will be retried 
+      if LDAP server returns a ServiceUnavailableException (Default value is 5)
 
       The bindDn and bindPassword credentials are used by Nuxeo EP to
       access the content of the LDAP servers. It should have the read
