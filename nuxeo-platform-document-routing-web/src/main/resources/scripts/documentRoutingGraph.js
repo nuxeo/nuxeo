@@ -4,17 +4,12 @@ var arrowCommon = {
 	fillStyle : "#F78181",
 	width : 8
 };
-var connectionLabel = {
-	label : "default",
-	id : "label",
-	cssClass : "jsPlumb_LabelOverlay"
-};
+
 var overlays = [ [ "Arrow", {
 	location : 0.7
-}, arrowCommon ], [ "Label", connectionLabel ] ];
+}, arrowCommon ] ];
 
-function getConnectionOverlayLabel(label) {
-	connectionLabel.label = label;
+function getConnectionOverlayLabel() {
 	return {
 		connector : [ "Flowchart", {
 			stub : 20
@@ -31,8 +26,11 @@ function sourceEndpointOptions() {
 			strokeStyle : "#F78181"
 		},
 		anchor : [ 0.5, 1, 0, 1 ],
-		connector : [ "Flowchart", {
-			stub : 20
+		connector : [ "StateMachine", {
+			curviness:20,
+			proximityLimit:200,
+			margin:10,
+			loopbackRadius: 40
 		} ],
 		isTarget : false,
 		uniqueEndpoint : true
@@ -56,7 +54,8 @@ function displayGraph(data) {
 	jQuery.each(data['nodes'], function() {
 		var node = '<div class="node" id="' + this.id + '">' + this.title
 				+ '</div>';
-		jQuery(node).appendTo('#target').css('left', this.x - 100).css('top',
+		var x = (this.x - 100)<=10?this.x:(this.x - 100);
+		jQuery(node).appendTo('#target').css('left', x).css('top',
 				this.y).addClass('node_' + this.state);
 		jsPlumb.makeSource(this.id, sourceEndpointOptions());
 	});
@@ -65,7 +64,7 @@ function displayGraph(data) {
 		jsPlumb.connect({
 			source : this.nodeSourceId,
 			target : this.nodeTargetId
-		}, getConnectionOverlayLabel(this.label));
+		}, getConnectionOverlayLabel());
 	});
 };
 
