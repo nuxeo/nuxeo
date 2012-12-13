@@ -3906,12 +3906,13 @@
                 <goal>compile</goal>
               </goals>
               <configuration>
-                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m</extraJvmArgs>
+                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m -Djava.io.tmpdir=target</extraJvmArgs>
                 <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
                 <treeLogger>true</treeLogger>
                 <logLevel>WARN</logLevel>
                 <draftCompile>true</draftCompile>
+		<workDir>target/gwork</workDir>
                 <!-- useful for debug -->
                 <!-- <style>PRETTY</style> -->
               </configuration>
