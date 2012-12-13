@@ -133,11 +133,6 @@ public class TestGetChangeSummaryMultiRepo {
 
     @After
     public void cleanUp() throws Exception {
-
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            return;
-        }
-
         // Reset 'other' repository
         otherSession.removeChildren(new PathRef("/"));
         otherSession.save();
@@ -154,11 +149,6 @@ public class TestGetChangeSummaryMultiRepo {
 
     @Test
     public void testGetDocumentChangesSummary() throws Exception {
-
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            return;
-        }
-
         // Register 3 sync roots and create 3 documents: 2 in the 'test'
         // repository, 1 in the 'other' repository
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
@@ -195,9 +185,8 @@ public class TestGetChangeSummaryMultiRepo {
         expectedSyncRootPaths.add("/folder1");
         expectedSyncRootPaths.add("/folder2");
         expectedSyncRootPaths.add("/folder3");
-        assertEquals(expectedSyncRootPaths, changeSummary.getSyncRootPaths());
 
-        List<FileSystemItemChange> docChanges = changeSummary.getDocumentChanges();
+        List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
         assertEquals(3, docChanges.size());
         FileSystemItemChange docChange = docChanges.get(0);
         assertEquals("other", docChange.getRepositoryId());
@@ -217,8 +206,7 @@ public class TestGetChangeSummaryMultiRepo {
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());
         assertEquals(doc1.getId(), docChange.getDocUuid());
-
-        assertEquals("found_changes", changeSummary.getStatusCode());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Update documents
         doc1.setPropertyValue("dc:description", "Added description to doc1.");
@@ -234,9 +222,8 @@ public class TestGetChangeSummaryMultiRepo {
         changeSummary = getDocumentChangeSummary("other");
         expectedSyncRootPaths = new HashSet<String>();
         expectedSyncRootPaths.add("/folder3");
-        assertEquals(expectedSyncRootPaths, changeSummary.getSyncRootPaths());
 
-        docChanges = changeSummary.getDocumentChanges();
+        docChanges = changeSummary.getFileSystemChanges();
         assertEquals(1, docChanges.size());
         docChange = docChanges.get(0);
         assertEquals("other", docChange.getRepositoryId());

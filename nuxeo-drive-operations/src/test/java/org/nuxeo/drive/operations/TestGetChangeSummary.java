@@ -101,8 +101,8 @@ public class TestGetChangeSummary {
 
         // No sync roots => shouldn't find any changes
         FileSystemChangeSummary docChangeSummary = getChangeSummary();
-        assertTrue(docChangeSummary.getDocumentChanges().isEmpty());
-        assertEquals("no_changes", docChangeSummary.getStatusCode());
+        assertTrue(docChangeSummary.getFileSystemChanges().isEmpty());
+        assertEquals(Boolean.FALSE, docChangeSummary.getHasTooManyChanges());
 
         // Register sync roots and create 2 documents => should find 2 changes
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
@@ -128,9 +128,8 @@ public class TestGetChangeSummary {
         Set<String> expectedSyncRootPaths = new HashSet<String>();
         expectedSyncRootPaths.add("/folder1");
         expectedSyncRootPaths.add("/folder2");
-        assertEquals(expectedSyncRootPaths, docChangeSummary.getSyncRootPaths());
 
-        List<FileSystemItemChange> docChanges = docChangeSummary.getDocumentChanges();
+        List<FileSystemItemChange> docChanges = docChangeSummary.getFileSystemChanges();
         assertEquals(2, docChanges.size());
         FileSystemItemChange docChange = docChanges.get(0);
         assertEquals("test", docChange.getRepositoryId());
@@ -144,7 +143,7 @@ public class TestGetChangeSummary {
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder1/doc1", docChange.getDocPath());
         assertEquals(doc1.getId(), docChange.getDocUuid());
-        assertEquals("found_changes", docChangeSummary.getStatusCode());
+        assertEquals(Boolean.FALSE, docChangeSummary.getHasTooManyChanges());
 
         // Create 2 documents in the same sync root: "/folder1" and 1 document
         // in another sync root => should find 2 changes for "/folder1"
@@ -168,9 +167,8 @@ public class TestGetChangeSummary {
 
         docChangeSummary = getFolderDocumentChangeSummary("/folder1");
         expectedSyncRootPaths.remove("/folder2");
-        assertEquals(expectedSyncRootPaths, docChangeSummary.getSyncRootPaths());
-        assertEquals(2, docChangeSummary.getDocumentChanges().size());
-        assertEquals("found_changes", docChangeSummary.getStatusCode());
+        assertEquals(2, docChangeSummary.getFileSystemChanges().size());
+        assertEquals(Boolean.FALSE, docChangeSummary.getHasTooManyChanges());
     }
 
     /**

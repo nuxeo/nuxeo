@@ -240,8 +240,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * @see #getDocumentChangeSummary(boolean, String, CoreSession, long)
      */
     @Override
-    public FileSystemChangeSummary getFolderChangeSummary(
-            String folderPath, CoreSession session, long lastSuccessfulSync)
+    public FileSystemChangeSummary getFolderChangeSummary(String folderPath,
+            CoreSession session, long lastSuccessfulSync)
             throws ClientException {
 
         Set<String> syncRootPaths = new HashSet<String>();
@@ -257,38 +257,33 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
         Map<String, DocumentModel> changedDocModels = new HashMap<String, DocumentModel>();
-        String statusCode = FileSystemChangeSummary.STATUS_NO_CHANGES;
 
         // Update sync date, rounded to the lower second to ensure consistency
         // in the case of databases that don't support milliseconds
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         cal.set(Calendar.MILLISECOND, 0);
         long syncDate = cal.getTimeInMillis();
+        Boolean hasTooManyChanges = Boolean.FALSE;
         if (!syncRootPaths.isEmpty()) {
             try {
                 // Get document changes
                 int limit = Integer.parseInt(Framework.getProperty(
                         DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
-                changes = changeFinder.getFileSystemChanges(
-                        allRepositories, session, syncRootPaths,
-                        lastSuccessfulSync, syncDate, limit);
+                changes = changeFinder.getFileSystemChanges(allRepositories,
+                        session, syncRootPaths, lastSuccessfulSync, syncDate,
+                        limit);
                 if (!changes.isEmpty()) {
                     // Fill map of document models that have changed and filter
                     // document changes to remove the one referring to documents
                     // not adaptable as a FileSystemItem, yet not synchronizable
                     addChangedDocModelsAndFilterDocChanges(allRepositories,
                             session, changes, changedDocModels);
-                    if (!changes.isEmpty()) {
-                        statusCode = FileSystemChangeSummary.STATUS_FOUND_CHANGES;
-                    }
                 }
             } catch (TooManyChangesException e) {
-                statusCode = FileSystemChangeSummary.STATUS_TOO_MANY_CHANGES;
+                hasTooManyChanges = Boolean.TRUE;
             }
         }
-
-        return new FileSystemChangeSummary(syncRootPaths, changes,
-                statusCode, syncDate);
+        return new FileSystemChangeSummary(changes, syncDate, hasTooManyChanges);
     }
 
     protected Map<String, Serializable[]> getSynchronizationRoots(
@@ -437,8 +432,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     // TODO: make changeFinder overridable with an extension point and
     // remove setter
-    public void setChangeFinder(
-            FileSystemChangeFinder changeFinder) {
+    public void setChangeFinder(FileSystemChangeFinder changeFinder) {
         this.changeFinder = changeFinder;
     }
 
