@@ -126,9 +126,7 @@ public class SortInfo implements Serializable {
                 && map.containsKey(SORT_ASCENDING_NAME)) {
             return new SortInfo(
                     (String) map.get("sortColumn"),
-                    Boolean.TRUE.equals(map.get("sortAscending") != null ? Boolean.parseBoolean(map.get(
-                            "sortAscending").toString())
-                            : false));
+                    Boolean.parseBoolean(String.valueOf(map.get("sortAscending"))));
         } else {
             log.error("Cannot resolve sort info from map: " + map);
             return null;
