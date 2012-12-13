@@ -31,10 +31,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.LocaleSelector;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
@@ -409,6 +406,49 @@ public class DiffActionsBean implements Serializable {
         return ContentDiffHelper.getContentDiffFancyBoxURL(
                 navigationContext.getCurrentDocument(), propertyLabel,
                 propertyXPath, conversionType);
+    }
+
+    /**
+     * Gets the content diff URL of two documents independently of the current document
+     *
+     * @param docLeftId a DocumentModel id, not a path.
+     * @param docRightId a DocumentModel id, not a path.
+     * @param propertyXPath
+     * @param conversionTypeParam
+     * @return
+     * @throws ClientException
+     */
+    public String getContentDiffURL(String docLeftId, String docRightId, String propertyXPath,
+                                    String conversionTypeParam) throws ClientException {
+        DocumentModel leftDoc = null;
+        DocumentModel rightDoc = null;
+        if (!StringUtils.isBlank(docLeftId)) {
+            leftDoc = documentManager.getDocument(new IdRef(docLeftId));
+        }
+
+        if (!StringUtils.isBlank(docRightId)) {
+            rightDoc = documentManager.getDocument(new IdRef(docRightId));
+        }
+
+        if (rightDoc == null || leftDoc == null) {
+            log.error("Cannot get content diff URL with a null leftDoc or a null rightDoc.");
+            return null;
+        }
+
+        if (StringUtils.isEmpty(propertyXPath)) {
+            log.error("Cannot get content diff URL with a null schemaName or a null fieldName.");
+            return null;
+        }
+
+        String conversionType = null;
+        if (!StringUtils.isEmpty(conversionTypeParam)) {
+            conversionType = conversionTypeParam;
+        }
+
+        return ContentDiffHelper.getContentDiffURL(
+                navigationContext.getCurrentDocument().getRepositoryName(),
+                leftDoc, rightDoc, propertyXPath, conversionType,
+                localeSelector.getLocaleString());
     }
 
     /**
