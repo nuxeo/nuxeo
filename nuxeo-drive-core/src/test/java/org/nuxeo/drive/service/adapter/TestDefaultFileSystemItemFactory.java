@@ -434,7 +434,7 @@ public class TestDefaultFileSystemItemFactory {
     }
 
     protected FileSystemItemFactory getDefaultFileSystemItemFactory() {
-        return ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories().get(
+        return ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFactories().get(
                 0).getFactory();
     }
 }
