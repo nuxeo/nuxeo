@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -336,10 +337,14 @@ public class NotificationService extends DefaultComponent implements
             DocumentModel doc, Boolean sendConfirmationEmail,
             NuxeoPrincipal principal) throws ClientException {
         PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
+        Set<String> notificationNames = new HashSet<String>();
         for (Notification notification : getNotificationRegistry().getNotifications()) {
-            UserSubscription subscription = new UserSubscription(notification.getName(),
-                    username, doc.getId());
-            serviceBean.setAnnotation(subscription);
+            if (!notificationNames.contains(notification.getName())) {
+                UserSubscription subscription = new UserSubscription(
+                        notification.getName(), username, doc.getId());
+                serviceBean.setAnnotation(subscription);
+                notificationNames.add(notification.getName());
+            }
         }
         // send event for email if necessary
         if (sendConfirmationEmail) {
