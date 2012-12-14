@@ -723,13 +723,16 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter,
-                                   Set<String> fulltext, Map<String, String> orderBy,
-                                   boolean fetchReferences) throws ClientException {
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws ClientException {
         return query(filter, fulltext, orderBy, fetchReferences, -1, -1);
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy, boolean fetchReferences, int limit, int offset) throws ClientException, DirectoryException {
+    public DocumentModelList query(Map<String, Serializable> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences, int limit, int offset)
+            throws ClientException, DirectoryException {
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);
@@ -1134,7 +1137,7 @@ public class SQLSession extends BaseSession implements EntrySource {
      * Public getter to allow custom {@link Reference} implementation to access
      * the current connection even if it lives in a separate java package,
      * typically: com.company.custom.nuxeo.project.MyCustomReference
-     *
+     * 
      * @return the current {@link Connection} instance
      */
     public Connection getSqlConnection() {
