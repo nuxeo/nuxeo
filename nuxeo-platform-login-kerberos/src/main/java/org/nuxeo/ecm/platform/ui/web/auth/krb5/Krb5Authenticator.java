@@ -38,6 +38,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 	private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String NEGOTIATE = "Negotiate";
+	private static final String SKIP_KERBEROS = "X-Skip-Kerberos"; // magic header used by the reverse proxy to skip this authenticator
 	
 	private static final String JAVA_SECURITY_AUTH_LOGIN_CONFIG = "java.security.auth.login.config";
 	private static final String JAVA_SECURITY_KRB5_REALM = "java.security.krb5.realm";
@@ -75,7 +76,13 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 		if (authorization == null) {
 			return null; // no auth
 		}
-		// TODO traiter les cas d'erreur ex: quand le header ne commence pas par Negotiate
+		
+		if (!authorization.startsWith(NEGOTIATE)) {
+			logger.warn("Received invalid Authorization header (expected: Negotiate then SPNEGO blob): " + authorization);
+			// ignore invalid authorization headers.
+			return null;
+		}
+		
         byte[] token = Base64.decode(authorization.substring(NEGOTIATE.length() + 1));
         
 		synchronized (this) {
@@ -106,7 +113,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 
 	@Override
 	public Boolean needLoginPrompt(HttpServletRequest req) {
-		return true;
+		return req.getHeader(SKIP_KERBEROS) == null;
 	}
 
 }
