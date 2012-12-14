@@ -15,6 +15,7 @@
   - provider: instance of a PageProvider&lt;DocumentModel&gt; to handle sort
   - layoutListingStatus: iteration status, used to print table header
     matching widget label.
+  - formId: the surrounding form id
 </c:if>
 
 <nxu:set var="hasSeveralSorts"
@@ -34,7 +35,7 @@
                 <a4j:support event="onclick"
                   action="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
                   onclick="javascript:handleAllCheckBoxes('#{contentView.name}', this.checked)"
-                  reRender="ajax_selection_buttons, ajax_after_selection_buttons_form" />
+                  reRender="#{formId}:ajax_selection_buttons, #{formId}:ajax_after_selection_buttons_form" />
               </h:selectBooleanCheckbox>
             </c:when>
             <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
@@ -44,7 +45,7 @@
                 <a4j:support event="onclick"
                   onclick="javascript:handleAllCheckBoxes('#{contentView.name}', this.checked)"
                   action="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
-                  reRender="ajax_selection_buttons, ajax_after_selection_buttons_form" />
+                  reRender="#{formId}:ajax_selection_buttons, #{formId}:ajax_after_selection_buttons_form" />
               </h:selectBooleanCheckbox>
             </c:when>
             <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
