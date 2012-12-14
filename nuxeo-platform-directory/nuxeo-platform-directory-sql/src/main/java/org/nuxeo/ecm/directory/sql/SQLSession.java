@@ -878,10 +878,11 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             select.setOrderBy(orderby.toString());
             String query = select.getStatement();
-            if (limit > 0) {
+            if (limit > 0 && dialect.supportsPaging()) {
                 if (offset < 0) {
                     offset = 0;
                 }
+
                 query = dialect.addPagingClause(query, limit, offset);
             }
 
