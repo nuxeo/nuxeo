@@ -21,7 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME;
@@ -40,11 +39,16 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -53,6 +57,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
@@ -67,7 +72,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, AutomationFeature.class })
 @Deploy({
         "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
@@ -80,6 +85,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.task.api", //
         "org.nuxeo.ecm.platform.task.core", //
         "org.nuxeo.ecm.platform.task.testing",
+        "org.nuxeo.ecm.platform.routing.api",
         "org.nuxeo.ecm.platform.routing.core" //
 })
 @LocalDeploy({
@@ -107,6 +113,9 @@ public class GraphRouteTest {
 
     @Inject
     protected TaskService taskService;
+
+    @Inject
+    protected AutomationService automationService;
 
     // a doc, associated to the route
     protected DocumentModel doc;
@@ -1243,4 +1252,52 @@ public class GraphRouteTest {
         closeSession(sessionAdmin);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRestratWorkflowOperation() throws Exception {
+        assertEquals("file", doc.getTitle());
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1,
+                transition("trans12", "node2", "true", "testchain_title1"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        setTransitions(node2, transition("trans23", "node3", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node3 = session.saveDocument(node3);
+
+        DocumentRoute route = instantiateAndRun();
+        assertFalse(route.isDone());
+
+        List<Task> tasks = taskService.getTaskInstances(doc,
+                (NuxeoPrincipal) null, session);
+        assertEquals(1, tasks.size());
+
+        OperationContext ctx = new OperationContext(session);
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle());
+        automationService.run(ctx, chain);
+        // query for all the workflows
+        DocumentModelList workflows = session.query(String.format(
+                "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
+                doc.getId()));
+        assertEquals(1, workflows.size());
+        String restartedWorkflowId = workflows.get(0).getId();
+        assertFalse(restartedWorkflowId.equals(route.getDocument().getId()));
+
+        chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle()).set(
+                "nodeId", "node2");
+        automationService.run(ctx, chain);
+        // query for all the workflows
+        workflows = session.query(String.format(
+                "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
+                doc.getId()));
+        assertEquals(1, workflows.size());
+        assertFalse(restartedWorkflowId.equals(workflows.get(0).getId()));
+    }
 }
