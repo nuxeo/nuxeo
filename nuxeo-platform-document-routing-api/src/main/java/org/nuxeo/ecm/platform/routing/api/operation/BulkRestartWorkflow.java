@@ -48,7 +48,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * nodeId</param> parameter is specified, then only the workflows suspened on
  * that node are restarted.
  *
- * @since 5.6
+ * @since 5.7
  */
 @Operation(id = BulkRestartWorkflow.ID, category = Constants.CAT_WORKFLOW, label = "BulkRestartWorkflow", description = "Bulk operation to restart workflows.")
 public class BulkRestartWorkflow {
