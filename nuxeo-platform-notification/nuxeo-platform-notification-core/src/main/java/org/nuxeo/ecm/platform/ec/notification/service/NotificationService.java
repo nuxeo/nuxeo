@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -340,12 +341,31 @@ public class NotificationService extends DefaultComponent implements
         Set<String> notificationNames = new HashSet<String>();
         for (Notification notification : getNotificationRegistry().getNotifications()) {
             if (!notificationNames.contains(notification.getName())) {
-                UserSubscription subscription = new UserSubscription(
-                        notification.getName(), username, doc.getId());
-                serviceBean.setAnnotation(subscription);
-                notificationNames.add(notification.getName());
+                // Check if notification is available for the current document
+                String availableIn = notification.getAvailableIn();
+                if (availableIn.equals(doc.getType())) {
+                    notificationNames.add(notification.getName());
+                    continue;
+                }
+                CoreSession session = doc.getCoreSession();
+                if (session != null) {
+                    for (DocumentModel parent : session.getParentDocuments(doc.getRef())) {
+                        if (availableIn.equals(parent.getType())) {
+                            notificationNames.add(notification.getName());
+                            continue;
+                        }
+                    }
+                }
             }
         }
+
+        // add subscriptions to every relevant notification
+        for (String name : notificationNames) {
+            UserSubscription subscription = new UserSubscription(
+                    name, username, doc.getId());
+            serviceBean.setAnnotation(subscription);
+        }
+
         // send event for email if necessary
         if (sendConfirmationEmail) {
             raiseConfirmationEvent(principal, doc, username,
