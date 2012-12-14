@@ -181,7 +181,9 @@ public class NXQLQueryBuilder {
                     }
                 } else {
                     if (params[i] == null) {
-                        queryBuilder.append("''");
+                        if (quoteParameters) {
+                        	queryBuilder.append("''");
+                        }
                     } else {
                         String queryParam = params[i].toString();
                         queryBuilder.append(prepareStringLiteral(queryParam,

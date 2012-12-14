@@ -54,11 +54,18 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
                 "SELECT * FROM Document WHERE dc:title LIKE 'bar' AND dc:modified IS NULL AND (ecm:parentId = 'foo') ORDER BY dc:title",
                 query);
 
-        // only boolean available in schema withour default value
+        // only boolean available in schema without default value
         model.setPropertyValue("search:isPresent", false);
         query = NXQLQueryBuilder.getQuery(model, whereClause, params, sortInfos);
         assertEquals(
                 "SELECT * FROM Document WHERE dc:title LIKE 'bar' AND dc:modified IS NOT NULL AND (ecm:parentId = 'foo') ORDER BY dc:title",
+                query);
+        
+        query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'",
+                new Object[] { "Document", "dc:title", null },
+                false, true);
+        assertEquals(
+                "SELECT * FROM Document WHERE dc:title = ''",
                 query);
 
     }
