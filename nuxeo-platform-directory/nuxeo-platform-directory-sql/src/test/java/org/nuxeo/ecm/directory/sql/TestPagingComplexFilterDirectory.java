@@ -17,27 +17,25 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.sql.filter.SQLBetweenFilter;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestPagingDirectory extends SQLDirectoryTestCase {
+public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.directory.sql.tests", "pagingDirectory-contrib.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "pagingDirectory-contrib.xml");
     }
 
     public Session getSession() throws ClientException {
@@ -49,7 +47,7 @@ public class TestPagingDirectory extends SQLDirectoryTestCase {
         Session session = getSession();
         try {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put("label","Label");
+            filter.put("label", "Label");
             List<DocumentModel> entries = session.query(filter, filter.keySet());
             assertEquals(12, entries.size());
             assertEquals("1", entries.get(0).getId());
@@ -65,6 +63,34 @@ public class TestPagingDirectory extends SQLDirectoryTestCase {
             entries = session.query(filter, filter.keySet(), null, false, 5, 11);
             assertEquals(1, entries.size());
             assertEquals("12", entries.get(0).getId());
+        } finally {
+            session.close();
+        }
+    }
+
+    @Test
+    public void testComplexFilter() throws ClientException {
+        Session session = getSession();
+        try {
+            Calendar d121110 = new DateTime(2012, 11, 10, 0, 0, 0, 0).toGregorianCalendar();
+            Calendar d121211 = new DateTime(2012, 12, 11, 0, 0, 0, 0).toGregorianCalendar();
+            Calendar d121224 = new DateTime(2012, 12, 24, 0, 0, 0, 0).toGregorianCalendar();
+
+            SQLBetweenFilter betweenFilter = new SQLBetweenFilter(d121110,
+                    d121224);
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put("date", betweenFilter);
+            List<DocumentModel> entries = session.query(filter);
+            assertEquals(12, entries.size());
+
+            betweenFilter = new SQLBetweenFilter(d121211, d121224);
+            filter.put("date", betweenFilter);
+            entries = session.query(filter);
+            assertEquals(2, entries.size());
+
+            filter.put("type", "something");
+            entries = session.query(filter);
+            assertEquals(1, entries.size());
         } finally {
             session.close();
         }

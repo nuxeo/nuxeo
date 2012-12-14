@@ -65,6 +65,7 @@ import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
+import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
 
 /**
  * This class represents a session against an SQLDirectory.
@@ -767,6 +768,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                             + columnName + "' for table: " + table);
                 }
                 String leftSide = column.getQuotedName();
+                String rightSide = "?";
                 String operator;
                 boolean substring = fulltext != null
                         && fulltext.contains(columnName);
@@ -776,7 +778,11 @@ public class SQLSession extends BaseSession implements EntrySource {
                     value = null;
                 }
                 if (value != null) {
-                    if (substring) {
+                    if (SQLComplexFilter.class.isAssignableFrom(value.getClass())) {
+                        SQLComplexFilter complexFilter = (SQLComplexFilter) value;
+                        operator = complexFilter.getOperator();
+                        rightSide = complexFilter.getRightSide();
+                    } else if (substring) {
                         // NB : remove double % in like query NXGED-833
                         String searchedValue = null;
                         switch (substringMatchType) {
@@ -805,14 +811,14 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
                 whereClause.append(separator).append(leftSide).append(operator);
                 if (value != null) {
-                    whereClause.append('?');
+                    whereClause.append(rightSide);
                     orderedColumns.add(column);
                 }
                 separator = " AND ";
             }
 
             int queryLimitSize = directory.getConfig().getQuerySizeLimit();
-            if (queryLimitSize != 0) {
+            if (queryLimitSize != 0 && (limit <= 0 || limit > queryLimitSize)) {
                 PreparedStatement ps = null;
                 try {
                     // create a preparedStatement for counting and bind the
@@ -830,13 +836,8 @@ public class SQLSession extends BaseSession implements EntrySource {
 
                     String countQuery = select.getStatement();
                     ps = sqlConnection.prepareStatement(countQuery);
-                    int index = 1;
-                    for (Column column : orderedColumns) {
-                        Object value = filterMap.get(column.getKey());
-                        setFieldValue(ps, index, column, value);
-                        index++;
-                    }
-                    addFilterValues(ps, index);
+                    fillPreparedStatementFields(filterMap, orderedColumns, ps);
+
                     ResultSet rs = ps.executeQuery();
                     rs.next();
                     int count = rs.getInt(1);
@@ -900,13 +901,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             PreparedStatement ps = null;
             try {
                 ps = sqlConnection.prepareStatement(query);
-                int index = 1;
-                for (Column column : orderedColumns) {
-                    Object value = filterMap.get(column.getKey());
-                    setFieldValue(ps, index, column, value);
-                    index++;
-                }
-                addFilterValues(ps, index);
+                fillPreparedStatementFields(filterMap, orderedColumns, ps);
 
                 // execute the query and create a documentModel list
                 ResultSet rs = ps.executeQuery();
@@ -946,6 +941,23 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             throw new DirectoryException("query failed", e);
         }
+    }
+
+    protected void fillPreparedStatementFields(Map<String, Object> filterMap,
+            List<Column> orderedColumns, PreparedStatement ps)
+            throws DirectoryException {
+        int index = 1;
+        for (Column column : orderedColumns) {
+            Object value = filterMap.get(column.getKey());
+
+            if (SQLComplexFilter.class.isAssignableFrom(value.getClass())) {
+                ((SQLComplexFilter) value).setFieldValue(ps, index, column);
+            } else {
+                setFieldValue(ps, index, column, value);
+                index++;
+            }
+        }
+        addFilterValues(ps, index);
     }
 
     @Override
