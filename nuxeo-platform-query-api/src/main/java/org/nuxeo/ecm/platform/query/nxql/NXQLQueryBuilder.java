@@ -182,7 +182,7 @@ public class NXQLQueryBuilder {
                 } else {
                     if (params[i] == null) {
                         if (quoteParameters) {
-                        	queryBuilder.append("''");
+                            queryBuilder.append("''");
                         }
                     } else {
                         String queryParam = params[i].toString();
@@ -416,12 +416,10 @@ public class NXQLQueryBuilder {
     public static final String IGNORED_CHARS_KEY = "org.nuxeo.query.builder.ignored.chars";
 
     /**
-     * Remove any special character that could be mis-interpreted as a low level
-     * full-text query operator.
-     *
-     * This method should be used by user facing callers of
-     * CoreQuery*PageProviders that use a fixed part or a pattern query. Fields
-     * in where clause already dealt with.
+     * Remove any special character that could be mis-interpreted as a low
+     * level full-text query operator. This method should be used by user
+     * facing callers of CoreQuery*PageProviders that use a fixed part or a
+     * pattern query. Fields in where clause already dealt with.
      *
      * @since 5.6
      * @return sanitized text value
@@ -438,7 +436,7 @@ public class NXQLQueryBuilder {
         value = value.trim();
         String[] tokens = value.split("[\\s]+");
         for (int i = 0; i < tokens.length; i++) {
-            if ("-".equals(tokens[i])){
+            if ("-".equals(tokens[i])) {
                 continue;
             }
             if (res.length() > 0) {

@@ -1,9 +1,10 @@
 package org.nuxeo.ecm.platform.query.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -60,14 +61,10 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
         assertEquals(
                 "SELECT * FROM Document WHERE dc:title LIKE 'bar' AND dc:modified IS NOT NULL AND (ecm:parentId = 'foo') ORDER BY dc:title",
                 query);
-        
-        query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'",
-                new Object[] { "Document", "dc:title", null },
-                false, true);
-        assertEquals(
-                "SELECT * FROM Document WHERE dc:title = ''",
-                query);
 
+        query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'",
+                new Object[] { "Document", "dc:title", null }, false, true);
+        assertEquals("SELECT * FROM Document WHERE dc:title = ''", query);
     }
 
     @Test
