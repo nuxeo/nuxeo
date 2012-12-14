@@ -15,7 +15,7 @@
       <nxu:set var="relatedRoute" value="#{routingActions.getRelatedRoute()}">
         <h:outputText value="#{messages[relatedRoute.name]} " />
         <h:outputText value="#{messages['label.route.started']} " />
-        <h:outputText value="#{nxu:userFullName(relatedRoute.document.dc.creator)}"/>
+        <h:outputText value="#{nxu:userFullName(relatedRoute.document.docri.initiator)}"/>
       </nxu:set>
 
       <script type="text/javascript">

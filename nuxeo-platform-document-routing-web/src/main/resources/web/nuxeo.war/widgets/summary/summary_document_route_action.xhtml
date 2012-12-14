@@ -12,7 +12,7 @@
       <h:outputText value="#{messages['label.route.info']} " />
       <h:outputText value="#{routingActions.getRelatedRoute().getName()} " /> 
       <h:outputText value="#{messages['label.route.started']} " />
-      <h:outputText value="#{routingActions.getRelatedRoute().document.dc.creator}"/>
+      <h:outputText value="#{routingActions.getRelatedRoute().document.docri.initiator}"/>
     </c:when>
     <c:otherwise>
 	  <nxl:layout value="#{routingActions}" mode="edit" name="document_related_route" />
