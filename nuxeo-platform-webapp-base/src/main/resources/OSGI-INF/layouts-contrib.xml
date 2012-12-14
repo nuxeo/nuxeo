@@ -1827,13 +1827,13 @@
     <widgetType name="toggleableLayoutWithForms">
       <configuration>
         <sinceVersion>5.6</sinceVersion>
-        <title>Toggleable layout</title>
+        <title>Toggleable form</title>
         <description>
-          This widget displays a layout which mode can be toggled,
-          with forms inside it.
+          This widget displays a form layout which mode can be
+          toggled, with forms inside it.
 
-          Note that usually layouts do not contain any
-          forms, but are surrounded by one, and nesting forms breaks the
+          Note that usually layouts do not contain
+          any forms, but are surrounded by one, and nesting forms breaks the
           available actions. So you should make sure there is no enclosing form
           around the layout, or around this widget, when using it.
         </description>
