@@ -71,7 +71,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 	@Override
 	public UserIdentificationInfo handleRetrieveIdentity(
 			HttpServletRequest req, HttpServletResponse res) {
-		String authorization = req.getHeader("Authorization");
+		String authorization = req.getHeader(AUTHORIZATION);
 		if (authorization == null) {
 			return null; // no auth
 		}
@@ -85,7 +85,9 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 				auth.process(token);
 				Principal principal = auth.getPrincipal();
 				String username = principal.getName().split("@")[0];
-				return new UserIdentificationInfo(username, null);
+				UserIdentificationInfo info = new UserIdentificationInfo(username, "Trust");
+				info.setLoginPluginName("Trusting_LM");
+				return info;
 			} catch (AuthenticationException e) {
 				logger.error("Cannot authenticate", e);
 			}
