@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.directory.shared.ldap.NotImplementedException;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -76,7 +75,7 @@ public class NuxeoDriveGetRootsOperation {
                 Set<IdRef> references = rootsEntry.getValue().refs;
                 rootDocumentModels.addAll(session.getDocuments(references.toArray(new DocumentRef[references.size()])));
             } else {
-                throw new NotImplementedException("Multi repo roots not yet implemented");
+                throw new RuntimeException("Multi repo roots not yet implemented");
             }
         }
         return rootDocumentModels;
