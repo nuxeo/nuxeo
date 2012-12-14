@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.directory.sql.filter;
 
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
-import org.nuxeo.ecm.directory.DirectoryException;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -28,7 +27,9 @@ import java.sql.SQLException;
  * Simple SQLComplexFilter to handle a different operator than =
  * It may be >, <, >=, <=
  *
- * Nothing is done on the right side part
+ * Nothing is done on the right side part.
+ *
+ * @since 5.7
  */
 public class SQLOperatorFilter extends SQLComplexFilter {
 
