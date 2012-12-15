@@ -12,6 +12,18 @@
     Nuxeo Enterprise Platform: Plugin for SPNEGO/Kerberos authentication
   </description>
 
+  <!-- use ja-sig (cas) repository for jcifs-ext -->
+  <repositories>
+    <repository>
+      <id>jasig-repository</id>
+      <name>Jasig Maven2 Repository</name>
+      <url>http://developer.ja-sig.org/maven2</url>
+	<snapshots>
+		<enabled>false</enabled>
+	</snapshots>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
