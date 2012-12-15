@@ -30,9 +30,6 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 	
 	private static final Log logger = LogFactory.getLog(Krb5Authenticator.class);
 	
-	private static final String JAVA_LOGIN_CONFIG = "javaLoginConfig";
-	private static final String REALM = "realm";
-	private static final String KDC = "kdc";
 	private static final String SERVICE_PRINCIPAL_NAME = "servicePrincipalName";
 	
 	private static final String WWW_AUTHENTICATE = "WWW-Authenticate";
@@ -40,9 +37,6 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 	private static final String NEGOTIATE = "Negotiate";
 	private static final String SKIP_KERBEROS = "X-Skip-Kerberos"; // magic header used by the reverse proxy to skip this authenticator
 	
-	private static final String JAVA_SECURITY_AUTH_LOGIN_CONFIG = "java.security.auth.login.config";
-	private static final String JAVA_SECURITY_KRB5_REALM = "java.security.krb5.realm";
-	private static final String JAVA_SECURITY_KRB5_KDC = "java.security.krb5.kdc";
 	private static final String JCIFS_SPNEGO_SERVICEPRINCIPAL = "jcifs.spnego.servicePrincipal";
 
 	private Authentication auth = new Authentication();
@@ -105,9 +99,6 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 	@Override
 	public void initPlugin(Map<String, String> parameters) {
 
-		System.setProperty(JAVA_SECURITY_AUTH_LOGIN_CONFIG, parameters.get(JAVA_LOGIN_CONFIG)); // for some reason this doesn't work?
-		System.setProperty(JAVA_SECURITY_KRB5_REALM, parameters.get(REALM));
-		System.setProperty(JAVA_SECURITY_KRB5_KDC, parameters.get(KDC));
 		Config.setProperty(JCIFS_SPNEGO_SERVICEPRINCIPAL, parameters.get(SERVICE_PRINCIPAL_NAME));
 	}
 
