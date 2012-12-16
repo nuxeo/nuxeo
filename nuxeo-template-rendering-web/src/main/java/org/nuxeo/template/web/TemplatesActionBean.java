@@ -48,6 +48,8 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     protected boolean showVersions = false;
 
+    protected boolean checkedInVersion = false;
+
     public String createTemplate() throws Exception {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         TemplateSourceDocument sourceTemplate = changeableDocument.getAdapter(TemplateSourceDocument.class);
@@ -241,6 +243,14 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     public void setShowVersions(boolean showVersions) {
         this.showVersions = showVersions;
+    }
+
+    public boolean isCheckedInVersion() {
+        return checkedInVersion;
+    }
+
+    public void setCheckedInVersion(boolean checkedInVersion) {
+        this.checkedInVersion = checkedInVersion;
     }
 
 }
