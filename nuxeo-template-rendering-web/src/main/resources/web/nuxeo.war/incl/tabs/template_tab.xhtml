@@ -90,6 +90,12 @@
             </h:selectBooleanCheckbox>
             <h:outputText
               value="#{messages['label.template.usage.showVersions']}" />
+            <br />
+            <h:selectBooleanCheckbox
+              value="#{templateActions.checkedInVersion}">
+              <a4j:support event="onclick"
+                reRender="templateUsageListing" />
+            </h:selectBooleanCheckbox>
             <h:outputText
               value="#{messages['label.template.usage.isCheckInVersions']}" />
           </h:form>
