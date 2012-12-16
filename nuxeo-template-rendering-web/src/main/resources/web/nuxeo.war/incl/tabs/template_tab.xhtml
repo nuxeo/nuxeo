@@ -54,55 +54,57 @@
   </div>
 
 
-<h:form>
-<h:panelGroup id="templateUsageListingPanel">
-
-  <div class="foldableBox">
-
-    <c:if test="#{templateActions.showUsageListing}">
-      <h3 class="folded">
-       <a4j:commandLink
-        action="#{templateActions.setShowUsageListing(false)}"
-        immediate="true"
-        reRender="templateUsageListingPanel"
-        eventsQueue="templateUsageQueue">
-            <h:outputText value="#{messages['label.template.usage.title']}"/>
-       </a4j:commandLink>
-      </h3>
-    </c:if>
-    <c:if test="#{!templateActions.showUsageListing}">
-      <h3 class="unfolded">
-        <a4j:commandLink
-          action="#{templateActions.setShowUsageListing(true)}"
-          immediate="true"
-          reRender="templateUsageListingPanel"
-          eventsQueue="templateUsageQueue">
-            <h:outputText value="#{messages['label.template.usage.title']}"/>
-        </a4j:commandLink>
-      </h3>
-    </c:if>
-
-    <c:if test="#{templateActions.showUsageListing}">
-     <div style="padding:4px">
-      <a4j:outputPanel id="templateUsageListing">
-
-       <h:selectBooleanCheckbox value="#{templateActions.showVersions}">
-        <a4j:support event="onclick" reRender="templateUsageListing" />
-       </h:selectBooleanCheckbox>
-       <h:outputText value="#{messages['label.template.usage.showVersions']}"/>
-
-        <nxu:set var="contentViewName" value="TEMPLATE_USAGE">
-          <ui:decorate template="/incl/content_view.xhtml">
-            <ui:define name="content_view_title" />
-            <ui:define name="content_view_syndication_buttons" />
-            <ui:define name="content_view_compat_actions"/>
-          </ui:decorate>
-        </nxu:set>
-       </a4j:outputPanel>
-      </div>
-    </c:if>
-  </div>
-</h:panelGroup>
-</h:form>
+  <h:panelGroup id="templateUsageListingPanel">
+    <div class="foldableBox">
+      <a4j:form>
+        <c:if test="#{templateActions.showUsageListing}">
+          <h3 class="folded">
+            <a4j:commandLink
+              action="#{templateActions.setShowUsageListing(false)}"
+              immediate="true" reRender="templateUsageListingPanel"
+              eventsQueue="templateUsageQueue">
+              <h:outputText
+                value="#{messages['label.template.usage.title']}" />
+            </a4j:commandLink>
+          </h3>
+        </c:if>
+        <c:if test="#{!templateActions.showUsageListing}">
+          <h3 class="unfolded">
+            <a4j:commandLink
+              action="#{templateActions.setShowUsageListing(true)}"
+              immediate="true" reRender="templateUsageListingPanel"
+              eventsQueue="templateUsageQueue">
+              <h:outputText
+                value="#{messages['label.template.usage.title']}" />
+            </a4j:commandLink>
+          </h3>
+        </c:if>
+      </a4j:form>
+      <c:if test="#{templateActions.showUsageListing}">
+        <div class="boxBody">
+          <h:form>
+            <h:selectBooleanCheckbox
+              value="#{templateActions.showVersions}">
+              <a4j:support event="onclick"
+                reRender="templateUsageListing" />
+            </h:selectBooleanCheckbox>
+            <h:outputText
+              value="#{messages['label.template.usage.showVersions']}" />
+            <h:outputText
+              value="#{messages['label.template.usage.isCheckInVersions']}" />
+          </h:form>
+          <h:panelGroup id="templateUsageListing">
+            <nxu:set var="contentViewName" value="TEMPLATE_USAGE">
+              <ui:decorate template="/incl/content_view.xhtml">
+                <ui:define name="content_view_title" />
+                <ui:define name="content_view_syndication_buttons" />
+                <ui:define name="content_view_compat_actions" />
+              </ui:decorate>
+            </nxu:set>
+          </h:panelGroup>
+        </div>
+      </c:if>
+    </div>
+  </h:panelGroup>
 
 </div>
