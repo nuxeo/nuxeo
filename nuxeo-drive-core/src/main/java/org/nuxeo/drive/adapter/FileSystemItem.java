@@ -43,11 +43,11 @@ public interface FileSystemItem {
 
     boolean isFolder();
 
-    String getCreator() throws ClientException;
+    String getCreator();
 
-    Calendar getCreationDate() throws ClientException;
+    Calendar getCreationDate();
 
-    Calendar getLastModificationDate() throws ClientException;
+    Calendar getLastModificationDate();
 
     void rename(String name) throws ClientException;
 

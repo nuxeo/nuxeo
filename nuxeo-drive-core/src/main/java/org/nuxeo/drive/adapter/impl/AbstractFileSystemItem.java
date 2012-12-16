@@ -40,11 +40,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     public abstract boolean isFolder();
 
-    public abstract String getCreator() throws ClientException;
+    public abstract String getCreator();
 
-    public abstract Calendar getCreationDate() throws ClientException;
+    public abstract Calendar getCreationDate();
 
-    public abstract Calendar getLastModificationDate() throws ClientException;
+    public abstract Calendar getLastModificationDate();
 
     public abstract void rename(String name) throws ClientException;
 

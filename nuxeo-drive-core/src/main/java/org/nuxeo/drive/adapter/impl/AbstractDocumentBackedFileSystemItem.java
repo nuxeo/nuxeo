@@ -77,15 +77,15 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         return sb.toString();
     }
 
-    public String getCreator() throws ClientException {
+    public String getCreator() {
         return creator;
     }
 
-    public Calendar getCreationDate() throws ClientException {
+    public Calendar getCreationDate() {
         return created;
     }
 
-    public Calendar getLastModificationDate() throws ClientException {
+    public Calendar getLastModificationDate() {
         return lastModificationDate;
     }
 
