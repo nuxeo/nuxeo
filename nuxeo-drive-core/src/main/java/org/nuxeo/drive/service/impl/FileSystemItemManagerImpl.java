@@ -112,24 +112,13 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         return folderItem.getChildren();
     }
 
-    @Override
-    public boolean canCreateChild(String id, Principal principal)
-            throws ClientException {
-        FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
-        if (fileSystemItem instanceof FolderItem) {
-            FolderItem folderItem = (FolderItem) fileSystemItem;
-            return folderItem.canCreateChild();
-        }
-        return false;
-    }
-
     /*------------- Write operations ---------------*/
     @Override
     public FolderItem createFolder(String parentId, String name,
             Principal principal) throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (!(parentFsItem instanceof FolderItem)
-                || !((FolderItem) parentFsItem).canCreateChild()) {
+                || !((FolderItem) parentFsItem).getCanCreateChild()) {
             throw new ClientException(String.format(
                     "Cannot create a folder in file system item with id %s.",
                     parentId));
@@ -143,7 +132,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
             throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (!(parentFsItem instanceof FolderItem)
-                || !((FolderItem) parentFsItem).canCreateChild()) {
+                || !((FolderItem) parentFsItem).getCanCreateChild()) {
             throw new ClientException(String.format(
                     "Cannot create a file in file system item with id %s.",
                     parentId));

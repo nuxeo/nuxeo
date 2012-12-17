@@ -99,7 +99,7 @@ public class DocumentBackedFolderItem extends
     }
 
     @Override
-    public boolean canCreateChild() {
+    public boolean getCanCreateChild() {
         return true;
     }
 

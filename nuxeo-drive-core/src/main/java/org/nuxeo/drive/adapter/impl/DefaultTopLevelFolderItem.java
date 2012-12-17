@@ -104,7 +104,7 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
     }
 
     @Override
-    public boolean canCreateChild() {
+    public boolean getCanCreateChild() {
         return false;
     }
 
