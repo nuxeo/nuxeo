@@ -45,9 +45,13 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
+import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -620,8 +624,20 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     @Override
     public void cancelTasks() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        CoreSession session = getSession();
+        TaskService taskService = Framework.getLocalService(TaskService.class);
+        try {
+            List<Task> tasks = taskService.getAllTaskInstances(
+                    getDocumentRoute(session).getDocument().getId(), getId(),
+                    session);
+            for (Task task : tasks) {
+                Framework.getLocalService(DocumentRoutingService.class).finishTask(
+                        session, graph, task, true); // delete
+            }
+            session.save();
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
     }
 
     @Override
@@ -734,5 +750,4 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
         return dueDate;
     }
-
 }

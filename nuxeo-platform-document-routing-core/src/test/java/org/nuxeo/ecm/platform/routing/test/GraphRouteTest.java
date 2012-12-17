@@ -1300,4 +1300,72 @@ public class GraphRouteTest {
         assertEquals(1, workflows.size());
         assertFalse(restartedWorkflowId.equals(workflows.get(0).getId()));
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testMergeOneWhenHavinOpenedTasks() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans12", "node2", "true"),
+                transition("trans13", "node3", "true"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
+        node2.setPropertyValue(GraphNode.PROP_HAS_TASK, "true");
+        setTransitions(node2, transition("trans25", "node5", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
+        setTransitions(node3, transition("trans34", "node4", "true"));
+        node3 = session.saveDocument(node3);
+
+        DocumentModel node4 = createNode(routeDoc, "node4");
+        node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr2");
+        setTransitions(node4, transition("trans45", "node5", "true"));
+        node4.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES,
+                new String[] { user1.getName() });
+        node4 = session.saveDocument(node4);
+
+        DocumentModel node5 = createNode(routeDoc, "node5");
+        node5.setPropertyValue(GraphNode.PROP_MERGE, "one");
+        node5.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node5.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node5 = session.saveDocument(node5);
+
+        DocumentRoute route = instantiateAndRun();
+        session.save(); // process invalidations
+        // verify that there are 2 open tasks
+        List<Task> tasks = taskService.getAllTaskInstances(
+                route.getDocument().getId(), session);
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+
+        tasks = taskService.getAllTaskInstances(route.getDocument().getId(),
+                user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        // process one of the tasks
+        CoreSession session1 = openSession(user1);
+        try {
+            routing.endTask(session1, tasks.get(0),
+                    new HashMap<String, Object>(), null);
+        } finally {
+            closeSession(session1);
+        }
+
+        // verify that route was done
+        session.save(); // process invalidations
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        // verify that the merge one canceled the other tasks
+        tasks = taskService.getAllTaskInstances(route.getDocument().getId(),
+                session);
+        assertNotNull(tasks);
+        assertEquals(0, tasks.size());
+    }
 }

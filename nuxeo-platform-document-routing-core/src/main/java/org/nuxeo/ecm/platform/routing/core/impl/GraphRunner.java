@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -370,16 +371,6 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             GraphNode node, Task task, boolean delete)
             throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
-        DocumentModelList docs = graph.getAttachedDocumentModels();
-        try {
-            routing.removePermissionFromTaskAssignees(session, docs, task);
-            // delete task
-            if (delete) {
-                session.removeDocument(new IdRef(task.getId()));
-            }
-        } catch (ClientException e) {
-            throw new DocumentRouteException("Cannot finish task", e);
-        }
+        routing.finishTask(session, (DocumentRoute) graph, task, delete);
     }
-
 }

@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -49,9 +50,9 @@ public interface DocumentRoutingService {
      * @param startInstance if the route is automatically started
      * @return the created route instance id
      */
-    String createNewInstance(String routeModelId,
-            List<String> docIds, Map<String, Serializable> map,
-            CoreSession session, boolean startInstance);
+    String createNewInstance(String routeModelId, List<String> docIds,
+            Map<String, Serializable> map, CoreSession session,
+            boolean startInstance);
 
     /**
      * Creates a new route instance and optionally starts it.
@@ -479,4 +480,20 @@ public interface DocumentRoutingService {
     List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task)
             throws ClientException;
 
+    /**
+     * Finishes an open task. Called by a cancel action in the workflow. All
+     * permissions granted to the tasks assignees on the document following the
+     * worklflow are removed. Doesn't resume the workflow as the
+     * <code>completeTask</code> method.
+     *
+     * @param session
+     * @param route
+     * @param task
+     * @param delete
+     * @throws DocumentRouteException
+     *
+     * @since 5.7
+     */
+    void finishTask(CoreSession session, DocumentRoute route, Task task,
+            boolean delete) throws DocumentRouteException;
 }
