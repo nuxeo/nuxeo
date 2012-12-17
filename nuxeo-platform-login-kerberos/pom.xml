@@ -12,35 +12,11 @@
     Nuxeo Enterprise Platform: Plugin for SPNEGO/Kerberos authentication
   </description>
 
-  <!-- use ja-sig (cas) repository for jcifs-ext -->
-  <repositories>
-    <repository>
-      <id>jasig-repository</id>
-      <name>Jasig Maven2 Repository</name>
-      <url>http://developer.ja-sig.org/maven2</url>
-	<snapshots>
-		<enabled>false</enabled>
-	</snapshots>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-login</artifactId>
-      <!--<type>jboss-sar</type> -->
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.samba.jcifs</groupId>
-      <artifactId>jcifs</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.samba.jcifs</groupId>
-      <artifactId>jcifs-ext</artifactId>
-      <version>0.9.4</version> <!-- TODO this should be pushed into dependencyManagement upwards of the pom structure -->
     </dependency>
 
     <dependency>
@@ -66,35 +42,5 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.samba.jcifs</groupId>
-                  <artifactId>jcifs</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.samba.jcifs</groupId>
-                  <artifactId>jcifs-ext</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.outputDirectory}/lib</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

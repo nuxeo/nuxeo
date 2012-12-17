@@ -3,11 +3,7 @@ Kerberos authenticator for Nuxeo
 
 BUILDING
 
-The build depends on jcifs-ext version 0.9.4 (Kerberos extension to JCifs). Unfortunately this library isn't present in common Maven repositories; hence the dependency added to ja-sig's repository.
-
-jcifs-ext has been superseded by jcifs-krb5; someday we'll use that library. But it's not in Maven Central either.
-
-(the short version of why we need the extra libraries, when we have Kerberos support in the Java standard library, is that the JRE does not include the decoding logic for SPNEGO tickets. Tickets are binary-encoded in ASN.1)
+Nothing special. All necessary classes are in JDK 6.
 
 HOWTO
 
@@ -87,13 +83,16 @@ set this to a regular file, e.g. /opt/nuxeo/java.login.config
 
 open the java.login.config file you've setup and add the following configuration:
 
-jcifs.spnego.accept { 
+Nuxeo { 
    com.sun.security.auth.module.Krb5LoginModule required
    debug=true
    storeKey=true
    useKeyTab=true
-   keyTab="/complete/path/to/keytab";
+   keyTab="/complete/path/to/keytab"
+   principal="HTTP/servername@REALM";
 };
+
+(Note that the login configuration MUST be called Nuxeo with an uppercase N!)
 
 - configure Nuxeo (we're almost there!)
 
@@ -116,9 +115,6 @@ create a $NUXEO_HOME/nxserver/config/kerberos-config.xml with the following:
                         enabled="true"
                         class="org.nuxeo.ecm.platform.ui.web.auth.krb5.Krb5Authenticator">
                         <loginModulePlugin>Trusting_LM</loginModulePlugin>
-                        <parameters>
-                                <parameter name="servicePrincipalName">HTTP/servername@REALM</parameter>
-                        </parameters>
                 </authenticationPlugin>
         </extension>
 
@@ -133,6 +129,8 @@ create a $NUXEO_HOME/nxserver/config/kerberos-config.xml with the following:
                 </authenticationChain>
         </extension>
 </component>
+
+(Note: for now we assume all configuration - realm, kdc, server principal, etc. − lives in the server's standard configuration, i.e. either java.login.config or krb5.conf. An interesting update would be to make these configurable in Nuxeo.)
 
 
 Start Nuxeo...
