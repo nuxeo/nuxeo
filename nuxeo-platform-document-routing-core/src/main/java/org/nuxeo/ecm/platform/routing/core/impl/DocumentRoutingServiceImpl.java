@@ -224,10 +224,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new RuntimeException(e);
         }
     }
+
     @Override
-    public String createNewInstance(String routeModelId,
-            List<String> docIds, CoreSession session, boolean startInstance) {
-        return createNewInstance(routeModelId, docIds, null, session, startInstance);
+    public String createNewInstance(String routeModelId, List<String> docIds,
+            CoreSession session, boolean startInstance) {
+        return createNewInstance(routeModelId, docIds, null, session,
+                startInstance);
     }
 
     @Override
@@ -236,7 +238,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         String id = createNewInstance(model.getDocument().getName(), docIds,
                 session, startInstance);
         try {
-            return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
+            return session.getDocument(new IdRef(id)).getAdapter(
+                    DocumentRoute.class);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -285,9 +288,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 @Override
                 public void run() throws ClientException {
                     DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
-                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+                    DocumentModel routeDoc = session.getDocument(new IdRef(
+                            routeId));
                     DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
-                    routingEngine.resume(routeInstance, nodeId, taskId, data, status, session);
+                    routingEngine.resume(routeInstance, nodeId, taskId, data,
+                            status, session);
                 }
             }.runUnrestricted();
         } catch (ClientException e) {
@@ -450,7 +455,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                         + " docri:participatingDocuments IN ('%s') ",
                 attachedDocId);
         try {
-            UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(session, RELATED_TOUTES_QUERY);
+            UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(
+                    session, RELATED_TOUTES_QUERY);
             list = queryRunner.runQuery();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -805,8 +811,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new DocumentRouteException(
                     "Can not resume workflow, no related route");
         }
-        completeTask(routeInstanceId, null, task.getId(), data, status,
-                session);
+        completeTask(routeInstanceId, null, task.getId(), data, status, session);
     }
 
     @Override
@@ -914,6 +919,21 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         public DocumentModelList runQuery() throws ClientException {
             runUnrestricted();
             return docs;
+        }
+    }
+
+    @Override
+    public void finishTask(CoreSession session, DocumentRoute route, Task task,
+            boolean delete) throws DocumentRouteException {
+        DocumentModelList docs = route.getAttachedDocuments(session);
+        try {
+            removePermissionFromTaskAssignees(session, docs, task);
+            // delete task
+            if (delete) {
+                session.removeDocument(new IdRef(task.getId()));
+            }
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Cannot finish task", e);
         }
     }
 }
