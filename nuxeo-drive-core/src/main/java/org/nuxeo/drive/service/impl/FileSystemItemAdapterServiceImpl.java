@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -44,9 +45,13 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     public static final String FILE_SYSTEM_ITEM_FACTORY_EP = "fileSystemItemFactory";
 
-    protected final FileSystemItemFactoryRegistry factoryRegistry = new FileSystemItemFactoryRegistry();
+    public static final String TOP_LEVEL_FOLDER_ITEM_FACTORY_EP = "topLevelFolderItemFactory";
 
-    protected List<FileSystemItemFactoryWrapper> factories;
+    protected final FileSystemItemFactoryRegistry fileSystemItemFactoryRegistry = new FileSystemItemFactoryRegistry();
+
+    protected final TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry = new TopLevelFolderItemFactoryRegistry();
+
+    protected List<FileSystemItemFactoryWrapper> fileSystemItemFactories;
 
     /*------------------------ DefaultComponent -----------------------------*/
     @Override
@@ -54,7 +59,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
-            factoryRegistry.addContribution((FileSystemItemFactoryDescriptor) contribution);
+            fileSystemItemFactoryRegistry.addContribution((FileSystemItemFactoryDescriptor) contribution);
+        } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
+            topLevelFolderItemFactoryRegistry.addContribution((TopLevelFolderItemFactoryDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -65,7 +72,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
-            factoryRegistry.removeContribution((FileSystemItemFactoryDescriptor) contribution);
+            fileSystemItemFactoryRegistry.removeContribution((FileSystemItemFactoryDescriptor) contribution);
+        } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
+            topLevelFolderItemFactoryRegistry.removeContribution((TopLevelFolderItemFactoryDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -73,7 +82,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        factories = null;
+        fileSystemItemFactories = null;
         super.deactivate(context);
     }
 
@@ -82,14 +91,14 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      */
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
-        sortFactories();
+        sortFileSystemItemFactories();
     }
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
     /**
-     * Iterates on the ordered contributed factories until it finds one that
-     * matches and retrieves a non null {@link FileSystemItem} adapter for the
-     * given doc. A factory matches if:
+     * Iterates on the ordered contributed file system item factories until it
+     * finds one that matches and retrieves a non null {@link FileSystemItem}
+     * for the given doc. A factory matches if:
      * <ul>
      * <li>It is not bound to any docType nor facet (this is the case for the
      * default factory contribution {@code defaultFileSystemItemFactory} bound
@@ -111,13 +120,13 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /**
-     * Iterates on the ordered contributed factories until if finds one that can
-     * handle the given {@link FileSystemItem} id.
+     * Iterates on the ordered contributed file system item factories until if
+     * finds one that can handle the given {@link FileSystemItem} id.
      */
     @Override
     public FileSystemItemFactory getFileSystemItemFactoryForId(String id)
             throws ClientException {
-        Iterator<FileSystemItemFactoryWrapper> factoriesIt = factories.iterator();
+        Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
             FileSystemItemFactoryWrapper factoryWrapper = factoriesIt.next();
             FileSystemItemFactory factory = factoryWrapper.getFactory();
@@ -131,18 +140,24 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                         id));
     }
 
-    /*------------------------- For test purpose ----------------------------------*/
-    public Map<String, FileSystemItemFactoryDescriptor> getFactoryDescriptors() {
-        return factoryRegistry.factoryDescriptors;
+    @Override
+    public TopLevelFolderItemFactory getTopLevelFolderItemFactory() {
+        return topLevelFolderItemFactoryRegistry.factory;
     }
 
-    public List<FileSystemItemFactoryWrapper> getFactories() {
-        return factories;
+    /*------------------------- For test purpose ----------------------------------*/
+    public Map<String, FileSystemItemFactoryDescriptor> getFileSystemItemFactoryDescriptors() {
+        return fileSystemItemFactoryRegistry.factoryDescriptors;
+    }
+
+    public List<FileSystemItemFactoryWrapper> getFileSystemItemFactories() {
+        return fileSystemItemFactories;
     }
 
     /*--------------------------- Protected ---------------------------------------*/
-    protected void sortFactories() throws Exception {
-        factories = factoryRegistry.getOrderedFactories();
+    protected void sortFileSystemItemFactories() throws Exception {
+        fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedFactories();
+    }
 
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean forceParentId, String parentId) throws ClientException {

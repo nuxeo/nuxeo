@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  *
  * @author Antoine Taillefer
  * @see AbstractDocumentBackedFileSystemItem
+ * @see DefaultTopLevelFolderItem
  */
 public abstract class AbstractFileSystemItem implements FileSystemItem {
 

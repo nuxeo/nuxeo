@@ -68,4 +68,27 @@
 
   </extension-point>
 
+  <extension-point name="topLevelFolderItemFactory">
+
+    <documentation>
+      @author Antoine Taillefer(ataillefer@nuxeo.com)
+
+      This extension point lets you contribute the factory
+      for the top level FolderItem.
+
+      Example of the DefaultTopLevelFolderItemFactory:
+      <code>
+        <extension
+          target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+          point="topLevelFolderItemFactory">
+          <topLevelFolderItemFactory class="org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory" />
+         </extension>
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.drive.service.impl.TopLevelFolderItemFactoryDescriptor" />
+
+  </extension-point>
+
 </component>

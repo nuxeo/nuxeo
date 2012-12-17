@@ -56,4 +56,9 @@ public interface FileSystemItemAdapterService {
     FileSystemItemFactory getFileSystemItemFactoryForId(String id)
             throws ClientException;
 
+    /**
+     * Gets the {@link TopLevelFolderItemFactory}.
+     */
+    TopLevelFolderItemFactory getTopLevelFolderItemFactory();
+
 }

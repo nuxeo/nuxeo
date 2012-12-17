@@ -37,7 +37,7 @@ public class FileSystemItemFactoryReloadListener implements EventListener {
         if (ReloadService.RELOAD_EVENT_ID.equals(event.getId())) {
             try {
                 FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getLocalService(FileSystemItemAdapterService.class);
-                fileSystemItemAdapterService.sortFactories();
+                fileSystemItemAdapterService.sortFileSystemItemFactories();
             } catch (Exception e) {
                 throw new ClientRuntimeException(
                         "Cannot sort fileSystemItemFactory contributions on reload.",
