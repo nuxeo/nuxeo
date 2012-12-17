@@ -228,4 +228,13 @@ public class DocumentTaskProvider implements TaskProvider {
                 : TaskEventNames.WORKFLOW_TASK_REJECTED;
         return seamEventName;
     }
+
+    @Override
+    public List<Task> getAllTaskInstances(String processId, String nodeId,
+            CoreSession session) throws ClientException {
+        String query = String.format(
+                TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_AND_NODE_ID_QUERY,
+                processId, nodeId);
+        return queryTasksUnrestricted(query, session);
+    }
 }

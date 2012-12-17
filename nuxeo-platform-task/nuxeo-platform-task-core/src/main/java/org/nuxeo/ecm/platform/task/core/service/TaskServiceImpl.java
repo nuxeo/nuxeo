@@ -481,4 +481,18 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         }
     }
 
+    @Override
+    public List<Task> getAllTaskInstances(String processId, String nodeId,
+            CoreSession session) throws ClientException {
+        List<Task> tasks = new ArrayList<Task>();
+        List<Task> newTasks;
+        for (TaskProvider taskProvider : tasksProviders.values()) {
+            newTasks = taskProvider.getAllTaskInstances(processId, nodeId,
+                    session);
+            if (newTasks != null) {
+                tasks.addAll(newTasks);
+            }
+        }
+        return tasks;
+    }
 }

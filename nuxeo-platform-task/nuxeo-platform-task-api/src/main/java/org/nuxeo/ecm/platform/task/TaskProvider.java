@@ -137,4 +137,16 @@ public interface TaskProvider extends Serializable {
     String endTask(CoreSession coreSession, NuxeoPrincipal principal,
             Task task, String comment, String eventName, boolean isValidated)
             throws ClientException;
+
+    /**
+     * Returns all the tasks instances for the given {@code processId}
+     * originating from the given {@code nodeId}.
+     * <p>
+     * The query is done in unrestricted mode and so the documents linked to the
+     * tasks are detached.
+     *
+     * @since 5.7
+     */
+    List<Task> getAllTaskInstances(String processId, String nodeId,
+            CoreSession session) throws ClientException;
 }
