@@ -97,6 +97,8 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
                 props.set(key, readArrayProperty(jp));
             } else if (tok == JsonToken.START_OBJECT) {
                 props.set(key, readObjectProperty(jp));
+            } else if (tok  == JsonToken.VALUE_NULL) {
+                props.set(key, (String)null);
             } else {
                 props.set(key, jp.getText());
             }

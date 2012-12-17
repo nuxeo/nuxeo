@@ -260,6 +260,7 @@ public class RestTest {
         }
     }
 
+    
     /**
      * Test documents input / output
      */
@@ -311,6 +312,22 @@ public class RestTest {
         assertThat(doc.getDate("dc:valid"), is(DateUtils.parseDate(now)));
     }
 
+    @Test
+    public void testNullProperties() throws Exception {
+        // get the root
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+        Document note = (Document)session.newRequest(CreateDocument.ID).setInput(root).set("type",
+                "Note").set("name", "note1").set("properties", "dc:title=Note1").execute();
+        note = (Document) session.newRequest(FetchDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value",
+                note.getPath()).execute();
+
+        PropertyMap props = note.getProperties();
+        assertTrue(props.getKeys().contains("dc:source"));
+        assertNull(note.getString("dc:source"));
+    }
+    
     /**
      * Test documents output - query and get children
      */
