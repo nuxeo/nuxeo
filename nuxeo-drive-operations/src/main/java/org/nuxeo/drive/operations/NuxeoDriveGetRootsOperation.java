@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.api.Framework;
 
 
-
 /**
  * Fetch the list of synchronization roots for the currently authenticated user.
  */
@@ -56,7 +55,6 @@ public class NuxeoDriveGetRootsOperation {
 
     @OperationMethod
     public DocumentModelList run() throws ClientException {
-
 
         // By default get synchronization roots from all repositories, except if
         // a specific repository name is passed as a request header
