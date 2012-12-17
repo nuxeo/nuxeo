@@ -61,7 +61,6 @@ public class FileSystemItemFactoryRegistry extends
         } else {
             factoryDescriptors.remove(id);
         }
-
     }
 
     @Override
