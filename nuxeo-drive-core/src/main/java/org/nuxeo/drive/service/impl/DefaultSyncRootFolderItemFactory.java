@@ -18,7 +18,7 @@ package org.nuxeo.drive.service.impl;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
+import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -26,7 +26,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * {@link FileSystemItemFactory} for a synchronization root {@link FolderItem}.
+ * Default {@link FileSystemItemFactory} for a synchronization root
+ * {@link FolderItem}.
  *
  * @author Antoine Taillefer
  */
@@ -49,7 +50,7 @@ public class DefaultSyncRootFolderItemFactory extends
                             "Doc %s is a synchronization root but is not Folderish, please check the consitency of the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
                             doc.getPathAsString()));
         }
-        return new DocumentBackedFolderItem(
+        return new DefaultSyncRootFolderItem(
                 name,
                 getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getSyncRootParentFolderItemId(
                         null), doc);
