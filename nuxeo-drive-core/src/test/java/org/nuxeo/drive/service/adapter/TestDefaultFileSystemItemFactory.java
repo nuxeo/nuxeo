@@ -48,8 +48,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -63,7 +61,6 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.filemanager.core",
