@@ -34,12 +34,12 @@ public class DummyFileItem extends DocumentBackedFileItem {
     }
 
     @Override
-    public String getName() throws ClientException {
+    public String getName() {
         return "Dummy file with id " + docId;
     }
 
     @Override
-    public String getFileName(DocumentModel doc) {
+    protected String getFileName(DocumentModel doc) throws ClientException {
         return null;
     }
 

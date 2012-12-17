@@ -36,15 +36,12 @@ public class DocumentBackedFileItem extends
     public DocumentBackedFileItem(String factoryName, DocumentModel doc)
             throws ClientException {
         super(factoryName, doc);
+        this.name = getFileName(doc);
+    }
+
     }
 
     /*--------------------- AbstractFileSystemItem ---------------------*/
-    @Override
-    public String getName() throws ClientException {
-        DocumentModel doc = getDocument(getSession());
-        return getFileName(doc);
-    }
-
     @Override
     public boolean isFolder() {
         return false;
@@ -56,14 +53,11 @@ public class DocumentBackedFileItem extends
         DocumentModel doc = getDocument(session);
         BlobHolder bh = getBlobHolder(doc);
         Blob blob = getBlob(bh);
-        // TODO: not sure about the behavior for the doc title
-        String fileName = blob.getFilename();
-        if (fileName.equals(doc.getPropertyValue("dc:title"))) {
-            doc.setPropertyValue("dc:title", name);
-        }
         blob.setFilename(name);
         bh.setBlob(blob);
+        updateDocTitleIfNeeded(doc, name);
         session.saveDocument(doc);
+        this.name = name;
     }
 
     /*--------------------- FileItem -----------------*/
@@ -75,7 +69,6 @@ public class DocumentBackedFileItem extends
 
     @Override
     public String getDownloadURL(String baseURL) throws ClientException {
-        DocumentModel doc = getDocument(getSession());
         StringBuilder downloadURLSb = new StringBuilder();
         downloadURLSb.append(baseURL);
         downloadURLSb.append("nxbigfile/");
@@ -85,8 +78,7 @@ public class DocumentBackedFileItem extends
         downloadURLSb.append("/");
         downloadURLSb.append("blobholder:0");
         downloadURLSb.append("/");
-        downloadURLSb.append(URIUtils.quoteURIPathComponent(getFileName(doc),
-                true));
+        downloadURLSb.append(URIUtils.quoteURIPathComponent(name, true));
         return downloadURLSb.toString();
     }
 
@@ -95,10 +87,13 @@ public class DocumentBackedFileItem extends
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
         BlobHolder bh = getBlobHolder(doc);
-        // If blob's filename is empty, set it to the current blob's
-        // filename
-        if (StringUtils.isEmpty(blob.getFilename())) {
-            blob.setFilename(getBlob(bh).getFilename());
+        String blobFileName = blob.getFilename();
+        // If blob's filename is empty, set it to the current name
+        if (StringUtils.isEmpty(blobFileName)) {
+            blob.setFilename(name);
+        } else {
+            updateDocTitleIfNeeded(doc, blobFileName);
+            name = blobFileName;
         }
         bh.setBlob(blob);
         session.saveDocument(doc);
@@ -133,6 +128,15 @@ public class DocumentBackedFileItem extends
 
     protected String getFileName(DocumentModel doc) throws ClientException {
         return getBlob(doc).getFilename();
+    }
+
+    protected void updateDocTitleIfNeeded(DocumentModel doc, String name)
+            throws ClientException {
+        // TODO: not sure about the behavior for the doc title
+        if (this.name.equals(docTitle)) {
+            doc.setPropertyValue("dc:title", name);
+            docTitle = name;
+        }
     }
 
 }

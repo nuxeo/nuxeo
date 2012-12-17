@@ -49,15 +49,12 @@ public class DocumentBackedFolderItem extends
     public DocumentBackedFolderItem(String factoryName, DocumentModel doc)
             throws ClientException {
         super(factoryName, doc);
+        this.name = docTitle;
+    }
+
     }
 
     /*--------------------- AbstractFileSystemItem ---------------------*/
-    @Override
-    public String getName() throws ClientException {
-        DocumentModel doc = getDocument(getSession());
-        return (String) doc.getPropertyValue("dc:title");
-    }
-
     @Override
     public boolean isFolder() {
         return true;
@@ -69,6 +66,8 @@ public class DocumentBackedFolderItem extends
         DocumentModel doc = getDocument(session);
         doc.setPropertyValue("dc:title", name);
         session.saveDocument(doc);
+        this.docTitle = name;
+        this.name = name;
     }
 
     /*--------------------- FolderItem -----------------*/

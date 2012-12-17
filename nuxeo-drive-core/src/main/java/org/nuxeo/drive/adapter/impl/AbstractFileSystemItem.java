@@ -36,7 +36,7 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     }
 
     /*--------------------- FileSystemItem ---------------------*/
-    public abstract String getName() throws ClientException;
+    public abstract String getName();
 
     public abstract boolean isFolder();
 

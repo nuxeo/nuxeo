@@ -46,6 +46,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     protected final String docId;
 
+    protected String name;
     protected final String docPath;
 
     protected final String creator;
@@ -54,6 +55,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     protected final Calendar lastModificationDate;
 
+    protected String docTitle;
+
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
             DocumentModel doc) throws ClientException {
         super(factoryName);
@@ -61,6 +64,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         principal = doc.getCoreSession().getPrincipal();
         docId = doc.getId();
         docPath = doc.getPathAsString();
+        docTitle = doc.getTitle();
         creator = (String) doc.getPropertyValue("dc:creator");
         created = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
@@ -75,6 +79,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         sb.append("/");
         sb.append(docId);
         return sb.toString();
+    public String getName() {
+        return name;
     }
 
     public String getCreator() {

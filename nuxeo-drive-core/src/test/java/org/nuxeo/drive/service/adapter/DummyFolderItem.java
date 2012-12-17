@@ -34,7 +34,7 @@ public class DummyFolderItem extends DocumentBackedFolderItem {
     }
 
     @Override
-    public String getName() throws ClientException {
+    public String getName() {
         return "Dummy folder with id " + docId;
     }
 

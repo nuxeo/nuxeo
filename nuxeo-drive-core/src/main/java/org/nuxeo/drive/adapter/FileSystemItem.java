@@ -39,7 +39,7 @@ public interface FileSystemItem {
     /**
      * Gets the name displayed in the file system.
      */
-    String getName() throws ClientException;
+    String getName();
 
     boolean isFolder();
 
