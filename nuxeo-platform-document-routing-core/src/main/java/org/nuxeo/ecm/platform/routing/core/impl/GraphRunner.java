@@ -118,7 +118,16 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             if (node == null) {
                 throw new DocumentRouteException("Invalid nodeId: " + nodeId);
             }
-            if (node.getState() != State.SUSPENDED) {
+            boolean forceResume = (varData != null
+                    && varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME) != null && (Boolean) varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME));
+
+            if (forceResume && node.getState() != State.SUSPENDED
+                    && node.getState() != State.WAITING) {
+                throw new DocumentRouteException(
+                        "Cannot force resume on non-suspended or non-waiting node: "
+                                + node);
+            }
+            if (!forceResume && node.getState() != State.SUSPENDED) {
                 throw new DocumentRouteException(
                         "Cannot resume on non-suspended node: " + node);
             }

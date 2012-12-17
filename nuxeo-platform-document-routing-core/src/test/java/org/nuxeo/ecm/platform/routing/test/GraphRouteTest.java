@@ -56,9 +56,11 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -222,7 +224,9 @@ public class GraphRouteTest {
         // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
         // draft -> validated
-        route = routing.validateRouteModel(route, session);
+        if (!route.isValidated()) {
+            route = routing.validateRouteModel(route, session);
+        }
         // create instance and start
         String id = routing.createNewInstance(route.getDocument().getName(),
                 Collections.singletonList(doc.getId()), map, session, true);
@@ -1367,5 +1371,79 @@ public class GraphRouteTest {
                 session);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testForceResumeOnMerge() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans12", "node2", "true"),
+                transition("trans13", "node3", "true"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
+        node2.setPropertyValue(GraphNode.PROP_HAS_TASK, "true");
+        setTransitions(node2, transition("trans25", "node5", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
+        setTransitions(node3, transition("trans34", "node4", "true"));
+        node3 = session.saveDocument(node3);
+
+        DocumentModel node4 = createNode(routeDoc, "node4");
+        node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr2");
+        setTransitions(node4, transition("trans45", "node5", "true"));
+        node4 = session.saveDocument(node4);
+
+        DocumentModel node5 = createNode(routeDoc, "node5");
+        node5.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node5.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_rights1");
+        node5.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node5 = session.saveDocument(node5);
+
+        DocumentRoute route = instantiateAndRun();
+        // force resume on normal node, shouldn't change anything
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME, true);
+        routing.resumeInstance(route.getDocument().getId(), "node2", data,
+                null, session);
+        session.save();
+        assertEquals(
+                "done",
+                session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
+
+        // force resume on merge on Waiting, but it shouldn't work
+        // since the type of merge is all
+        routeDoc = session.getDocument(routeDoc.getRef());
+        route = instantiateAndRun();
+        GraphRoute graph = (GraphRoute) route;
+        GraphNode nodeMerge = graph.getNode("node5");
+        assertTrue(State.WAITING.equals(nodeMerge.getState()));
+
+        data = new HashMap<String, Object>();
+        data.put(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME, true);
+        routing.resumeInstance(route.getDocument().getId(), "node5", data,
+                null, session);
+        session.save();
+
+        // verify that the route is still running
+        assertEquals(
+                "running",
+                session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
+
+        // change merge type on the route instance and force resume again
+        nodeMerge.getDocument().setPropertyValue(GraphNode.PROP_MERGE, "one");
+        session.saveDocument(nodeMerge.getDocument());
+        routing.resumeInstance(route.getDocument().getId(), "node5", data,
+                null, session);
+        session.save();
+
+        assertEquals(
+                "done",
+                session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
+
     }
 }
