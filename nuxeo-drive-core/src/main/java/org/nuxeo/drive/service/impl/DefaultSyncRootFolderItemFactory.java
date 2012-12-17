@@ -44,25 +44,23 @@ public class DefaultSyncRootFolderItemFactory extends
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
+        String userName = doc.getCoreSession().getPrincipal().getName();
+        return getFileSystemItem(
+                doc,
+                getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getSyncRootParentFolderItemId(
+                        userName));
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+            throws ClientException {
         if (!doc.isFolder()) {
             throw new IllegalArgumentException(
                     String.format(
                             "Doc %s is a synchronization root but is not Folderish, please check the consitency of the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
                             doc.getPathAsString()));
         }
-        return new DefaultSyncRootFolderItem(
-                name,
-                getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getSyncRootParentFolderItemId(
-                        null), doc);
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
-            throws ClientException {
-        throw new UnsupportedOperationException(
-                String.format(
-                        "Doc %s is a synchronization root, cannot get the related file system item by forcing its parent id.",
-                        doc.getPathAsString()));
+        return new DefaultSyncRootFolderItem(name, parentId, doc);
     }
 
     protected FileSystemItemAdapterService getFileSystemItemAdapterService() {

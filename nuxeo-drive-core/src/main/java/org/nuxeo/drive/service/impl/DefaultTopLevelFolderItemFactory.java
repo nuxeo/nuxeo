@@ -39,7 +39,7 @@ public class DefaultTopLevelFolderItemFactory implements
     @Override
     public FolderItem getTopLevelFolderItem(String userName)
             throws ClientException {
-        return new DefaultTopLevelFolderItem(getFactoryName());
+        return new DefaultTopLevelFolderItem(getFactoryName(), userName);
     }
 
     @Override

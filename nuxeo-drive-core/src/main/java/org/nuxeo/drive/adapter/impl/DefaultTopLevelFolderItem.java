@@ -18,13 +18,24 @@ package org.nuxeo.drive.adapter.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of the top level {@link FolderItem}.
@@ -34,8 +45,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
         FolderItem {
 
-    public DefaultTopLevelFolderItem(String factoryName) {
+    public DefaultTopLevelFolderItem(String factoryName, String userName)
+            throws ClientException {
         super(factoryName);
+        principal = Framework.getLocalService(UserManager.class).getPrincipal(
+                userName);
     }
 
     /*--------------------- AbstractFileSystemItem ---------------------*/
@@ -98,18 +112,20 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
     public List<FileSystemItem> getChildren() throws ClientException {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-        // TODO
-        // Set<IdRef> syncRootrefs = Framework.getLocalService(
-        // NuxeoDriveManager.class).getSynchronizationRootReferences(
-        // session.getPrincipal().getName(), session);
-        // Iterator<IdRef> syncRootrefsIt = syncRootrefs.iterator();
-        // while (syncRootrefsIt.hasNext()) {
-        // IdRef idRef = syncRootrefsIt.next();
-        //
-        // DocumentModel doc = session.getDocument(idRef);
-        // rootChildren.add(adapterService.getFileSystemItem(doc, getId()));
-        //
-        // }
+        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(
+                NuxeoDriveManager.class).getSynchronizationRoots(principal);
+        for (String repositoryName : syncRootsByRepo.keySet()) {
+            CoreSession session = getSession(repositoryName);
+            Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).refs;
+            Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
+            while (syncRootRefsIt.hasNext()) {
+                IdRef idRef = syncRootRefsIt.next();
+                DocumentModel doc = session.getDocument(idRef);
+                children.add(getFileSystemItemAdapterService().getFileSystemItem(
+                        doc, getId()));
+            }
+        }
+        Collections.sort(children);
         return children;
     }
 

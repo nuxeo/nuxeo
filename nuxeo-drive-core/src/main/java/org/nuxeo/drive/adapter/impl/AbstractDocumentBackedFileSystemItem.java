@@ -16,15 +16,12 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.FileSystemItem;
-import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -57,8 +54,6 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     /** Backing {@link DocumentModel} attributes */
     protected final String repositoryName;
-
-    protected final Principal principal;
 
     protected final String docId;
 
@@ -137,15 +132,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     /*--------------------- AbstractDocumentBackedFileSystemItem -----------------*/
     @JsonIgnore
     public CoreSession getSession() throws ClientException {
-        return Framework.getLocalService(FileSystemItemManager.class).getSession(
-                repositoryName, principal);
+        return getSession(repositoryName);
     }
 
     /*--------------------- Protected -------------------------*/
-    protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
-        return Framework.getLocalService(FileSystemItemAdapterService.class);
-    }
-
     protected String computeId(String docId) {
         StringBuilder sb = new StringBuilder();
         sb.append(super.getId());

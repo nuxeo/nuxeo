@@ -16,10 +16,16 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
+import java.security.Principal;
 import java.util.Calendar;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base class for {@link FileSystemItem} implementations.
@@ -31,6 +37,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected final String factoryName;
+
+    protected Principal principal;
 
     protected AbstractFileSystemItem(String factoryName) {
         this.factoryName = factoryName;
@@ -96,5 +104,16 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     public String toString() {
         return String.format("%s(id=\"%s\", name=\"%s\")",
                 getClass().getSimpleName(), getId(), getName());
+    }
+
+    /*--------------------- Protected ---------------------*/
+    protected CoreSession getSession(String repositoryName)
+            throws ClientException {
+        return Framework.getLocalService(FileSystemItemManager.class).getSession(
+                repositoryName, principal);
+    }
+
+    protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
+        return Framework.getLocalService(FileSystemItemAdapterService.class);
     }
 }
