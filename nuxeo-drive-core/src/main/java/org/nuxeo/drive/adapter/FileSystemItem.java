@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @see FolderItem
  * @see AbstractDocumentBackedFileSystemItem
  */
-public interface FileSystemItem {
+public interface FileSystemItem extends Comparable<FileSystemItem> {
 
     /**
      * Gets a unique id generated server-side.

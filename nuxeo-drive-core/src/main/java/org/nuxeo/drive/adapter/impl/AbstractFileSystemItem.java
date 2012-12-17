@@ -62,6 +62,24 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     public abstract void delete() throws ClientException;
 
+    /*--------------------- Comparable -------------*/
+    @Override
+    public int compareTo(FileSystemItem other) {
+        if (StringUtils.isEmpty(getName())
+                && StringUtils.isEmpty(other.getName())) {
+            return 0;
+        }
+        if (StringUtils.isEmpty(getName())
+                && !StringUtils.isEmpty(other.getName())) {
+            return -1;
+        }
+        if (!StringUtils.isEmpty(getName())
+                && StringUtils.isEmpty(other.getName())) {
+            return 1;
+        }
+        return getName().compareTo(other.getName());
+    }
+
     /*--------------------- Object -----------------*/
     @Override
     public boolean equals(Object obj) {
