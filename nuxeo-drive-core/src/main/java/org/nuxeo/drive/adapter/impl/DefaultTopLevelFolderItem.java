@@ -72,9 +72,19 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
     }
 
     @Override
+    public boolean getCanRename() {
+        return false;
+    }
+
+    @Override
     public void rename(String name) throws ClientException {
         throw new UnsupportedOperationException(
                 "Cannot rename a system folder item.");
+    }
+
+    @Override
+    public boolean getCanDelete() {
+        return false;
     }
 
     @Override
