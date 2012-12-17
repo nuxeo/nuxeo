@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -494,14 +495,20 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 workQueueDescriptor.maxThreads = maxPoolSize;
             }
             executor = new WorkThreadPoolExecutor(maxPoolSize, maxPoolSize, 0,
-                    TimeUnit.SECONDS, newBlockingQueue(), threadFactory);
+                    TimeUnit.SECONDS,
+                    newBlockingQueue(workQueueDescriptor.usePriority),
+                    threadFactory);
             executors.put(queueId, executor);
         }
         return executor;
     }
 
-    protected BlockingQueue<Runnable> newBlockingQueue() {
-        return new LinkedBlockingQueue<Runnable>();
+    protected BlockingQueue<Runnable> newBlockingQueue(boolean usePriority) {
+        if (usePriority) {
+            return new PriorityBlockingQueue<Runnable>();
+        } else {
+            return new LinkedBlockingQueue<Runnable>();
+        }
     }
 
     @Override

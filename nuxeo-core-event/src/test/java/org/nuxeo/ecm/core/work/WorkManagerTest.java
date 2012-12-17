@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.work;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.work.api.Work.State.CANCELED;
@@ -27,12 +28,14 @@ import static org.nuxeo.ecm.core.work.api.Work.State.SUSPENDED;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.Progress;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
@@ -134,6 +137,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals("SleepWork", qd.id);
         assertEquals("Sleep Work Queue", qd.name);
         assertEquals(2, qd.maxThreads);
+        assertFalse(qd.usePriority);
         assertEquals(1234, qd.clearCompletedAfterSeconds);
         assertEquals(Collections.singleton("SleepWork"), qd.categories);
     }
@@ -174,13 +178,20 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(COMPLETED, work.getState());
     }
 
-    protected static class SleepWorkWithEquals extends SleepWork {
+    protected static class SleepWorkWithEquals extends SleepWork implements
+            Comparable<SleepWorkWithEquals> {
 
         protected final String identity;
 
         public SleepWorkWithEquals(long durationMillis, boolean debug,
                 String identity) {
             super(durationMillis, debug);
+            this.identity = identity;
+        }
+
+        public SleepWorkWithEquals(long durationMillis, String category,
+                boolean debug, String identity) {
+            super(durationMillis, category, debug);
             this.identity = identity;
         }
 
@@ -195,6 +206,11 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         @Override
         public int hashCode() {
             return identity.hashCode();
+        }
+
+        @Override
+        public int compareTo(SleepWorkWithEquals o) {
+            return identity.compareTo(o.identity);
         }
     }
 
@@ -253,6 +269,32 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertTrue(work1 == service.find(work1, COMPLETED, false, null));
         assertTrue(work2 == service.find(work2, COMPLETED, false, null));
         assertTrue(work7 == service.find(work7, COMPLETED, false, null));
+    }
+
+    @Test
+    public void testWorkManagerPriority() throws Exception {
+        int duration = 1000; // 1s
+        Work work1 = new SleepWorkWithEquals(duration, "PrioritizedSleepWork",
+                false, "1");
+        Work work2 = new SleepWorkWithEquals(duration, "PrioritizedSleepWork",
+                false, "2");
+        Work work3 = new SleepWorkWithEquals(duration, "PrioritizedSleepWork",
+                false, "3");
+        Work work4 = new SleepWorkWithEquals(duration, "PrioritizedSleepWork",
+                false, "4");
+        service.schedule(work1); // 1 is immediately started
+        service.schedule(work4); // schedule in reverse order
+        service.schedule(work3); // but priority will reorder them
+        service.schedule(work2);
+
+        service.awaitCompletion("PrioritizedSleepWork", 5, TimeUnit.SECONDS);
+        List<Work> list = service.listWork("PrioritizedSleepWork", COMPLETED);
+        assertEquals(4, list.size());
+        // check that execution was done in priority order, not scheduling order
+        assertEquals("1", ((SleepWorkWithEquals) list.get(0)).identity);
+        assertEquals("2", ((SleepWorkWithEquals) list.get(1)).identity);
+        assertEquals("3", ((SleepWorkWithEquals) list.get(2)).identity);
+        assertEquals("4", ((SleepWorkWithEquals) list.get(3)).identity);
     }
 
     @Test

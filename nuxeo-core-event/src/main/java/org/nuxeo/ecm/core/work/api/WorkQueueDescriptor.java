@@ -40,6 +40,17 @@ public class WorkQueueDescriptor {
     @XNode("maxThreads")
     public int maxThreads;
 
+    /**
+     * If this is {@code true}, then a priority queue is used instead of a
+     * regular queue. In this case, the {@link Work} instances in the queue must
+     * implement {@link Comparable} and are prioritized according to their
+     * {@code compareTo()} method.
+     *
+     * @since 5.7
+     */
+    @XNode("usePriority")
+    public boolean usePriority;
+
     @XNode("clearCompletedAfterSeconds")
     public int clearCompletedAfterSeconds = 3600;
 
@@ -52,6 +63,7 @@ public class WorkQueueDescriptor {
         o.id = id;
         o.name = name;
         o.maxThreads = maxThreads;
+        o.usePriority = usePriority;
         o.clearCompletedAfterSeconds = clearCompletedAfterSeconds;
         o.categories = new HashSet<String>(categories);
         return o;
@@ -60,6 +72,7 @@ public class WorkQueueDescriptor {
     public void merge(WorkQueueDescriptor other) {
         name = other.name;
         maxThreads = other.maxThreads;
+        usePriority = other.usePriority;
         clearCompletedAfterSeconds = other.clearCompletedAfterSeconds;
         categories.addAll(other.categories);
     }
