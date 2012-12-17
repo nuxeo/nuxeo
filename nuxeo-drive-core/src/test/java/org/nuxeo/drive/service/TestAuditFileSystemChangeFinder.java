@@ -323,6 +323,9 @@ public class TestAuditFileSystemChangeFinder {
         doc5 = session.createDocument(doc5);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        changeSummary = getChangeSummary(admin);
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+        assertEquals(3, changeSummary.getFileSystemChanges().size());
 
         // No changes since last successful sync
         changeSummary = getChangeSummary(admin);
