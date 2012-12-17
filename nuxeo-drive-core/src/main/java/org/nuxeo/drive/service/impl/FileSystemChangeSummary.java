@@ -19,6 +19,8 @@ package org.nuxeo.drive.service.impl;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Summary of file system changes, including:
  * <ul>
@@ -84,4 +86,15 @@ public class FileSystemChangeSummary implements Serializable {
         return this.hasTooManyChanges;
     }
 
+    @Override
+    public String toString() {
+        if (hasTooManyChanges) {
+            return String.format("%s(syncDate=%d, hasTooManyChanges=true)",
+                    getClass().getSimpleName(), getSyncDate());
+        } else {
+            return String.format("%s(syncDate=%d, items=[%s])",
+                    getClass().getSimpleName(), getSyncDate(),
+                    StringUtils.join(fileSystemChanges, ", "));
+        }
+    }
 }

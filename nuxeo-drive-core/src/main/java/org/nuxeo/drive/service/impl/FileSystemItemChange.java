@@ -116,4 +116,17 @@ public class FileSystemItemChange implements Serializable {
         this.fileSystemItem = fileSystemItem;
     }
 
+    @Override
+    public String toString() {
+        if (fileSystemItem != null) {
+            return String.format(
+                    "%s(eventId=\"%s\", eventDate=%d, docPath=\"%s\", item=%s)",
+                    getClass().getSimpleName(), eventId, eventDate, docPath,
+                    fileSystemItem);
+        } else {
+            return String.format(
+                    "%s(eventId=\"%s\", eventDate=%d, docPath=\"%s\")",
+                    getClass().getSimpleName(), eventId, eventDate, docPath);
+        }
+    }
 }

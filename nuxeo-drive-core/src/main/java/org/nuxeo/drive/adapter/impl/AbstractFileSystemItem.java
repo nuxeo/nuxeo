@@ -74,4 +74,9 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
         return getId().equals(((FileSystemItem) obj).getId());
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s(id=\"%s\", name=\"%s\")",
+                getClass().getSimpleName(), getId(), getName());
+    }
 }
