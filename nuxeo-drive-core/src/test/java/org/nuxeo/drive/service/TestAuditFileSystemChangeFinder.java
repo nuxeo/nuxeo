@@ -239,13 +239,12 @@ public class TestAuditFileSystemChangeFinder {
         // Register sync roots => should find changes: the newly
         // synchronized root folders as they are updated by the synchronization
         // registration process
-        // TODO: uncomment if needed or remove
-        // TransactionHelper.startTransaction();
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
                 session);
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder2,
                 session);
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         changeSummary = getChangeSummary(admin);
         assertEquals(2, changeSummary.getFileSystemChanges().size());
@@ -268,6 +267,7 @@ public class TestAuditFileSystemChangeFinder {
         session.createDocument(session.createDocumentModel("/folder3", "doc3",
                 "File"));
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         changeSummary = getChangeSummary(admin);
 
@@ -297,6 +297,7 @@ public class TestAuditFileSystemChangeFinder {
         session.createDocument(session.createDocumentModel("/folder1",
                 "notSynchronizableDoc", "NotSynchronizable"));
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         changeSummary = getChangeSummary(admin);
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
@@ -321,6 +322,7 @@ public class TestAuditFileSystemChangeFinder {
                 "The content of file 5."));
         doc5 = session.createDocument(doc5);
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         // No changes since last successful sync
         changeSummary = getChangeSummary(admin);
@@ -332,6 +334,7 @@ public class TestAuditFileSystemChangeFinder {
         session.followTransition(doc1.getRef(), "delete");
         session.followTransition(doc2.getRef(), "delete");
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "1");
