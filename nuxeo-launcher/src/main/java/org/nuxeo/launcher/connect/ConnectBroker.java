@@ -1334,23 +1334,20 @@ public class ConnectBroker {
                 }
                 sb.append("\nTarget platforms: "
                         + ArrayUtils.toString(packageInfo.targetPlatforms));
-                sb.append("\nVendor: " + packageInfo.vendor);
+                appendIfNotEmpty(sb, "\nVendor: ", packageInfo.vendor);
                 sb.append("\nSupports hot-reload: "
                         + packageInfo.supportsHotReload);
                 sb.append("\nSupported: " + packageInfo.supported);
                 sb.append("\nProduction state: " + packageInfo.productionState);
                 sb.append("\nValidation state: " + packageInfo.validationState);
-                sb.append("\nProvides: "
-                        + ArrayUtils.toString(packageInfo.provides));
-                sb.append("\nDepends: "
-                        + ArrayUtils.toString(packageInfo.dependencies));
-                sb.append("\nConflicts: "
-                        + ArrayUtils.toString(packageInfo.conflicts));
-                sb.append("\nTitle: " + packageInfo.title);
-                sb.append("\nDescription: " + packageInfo.description);
-                sb.append("\nHomepage: " + packageInfo.homePage);
-                sb.append("\nLicense: " + packageInfo.licenseType);
-                sb.append("\nLicense URL: " + packageInfo.licenseUrl);
+                appendIfNotEmpty(sb, "\nProvides: ", packageInfo.provides);
+                appendIfNotEmpty(sb, "\nDepends: ", packageInfo.dependencies);
+                appendIfNotEmpty(sb, "\nConflicts: ", packageInfo.conflicts);
+                appendIfNotEmpty(sb, "\nTitle: ", packageInfo.title);
+                appendIfNotEmpty(sb, "\nDescription: ", packageInfo.description);
+                appendIfNotEmpty(sb, "\nHomepage: ", packageInfo.homePage);
+                appendIfNotEmpty(sb, "\nLicense: ", packageInfo.licenseType);
+                appendIfNotEmpty(sb, "\nLicense URL: ", packageInfo.licenseUrl);
                 sb.append("\n****************************************");
             } catch (PackageException e) {
                 cmdOk = false;
@@ -1360,6 +1357,18 @@ public class ConnectBroker {
         }
         log.info(sb.toString());
         return cmdOk;
+    }
+
+    private void appendIfNotEmpty(StringBuilder sb, String label, Object[] array) {
+        if (ArrayUtils.isNotEmpty(array)) {
+            sb.append(label + ArrayUtils.toString(array));
+        }
+    }
+
+    private void appendIfNotEmpty(StringBuilder sb, String label, String value) {
+        if (StringUtils.isNotEmpty(value)) {
+            sb.append(label + value);
+        }
     }
 
     /**
