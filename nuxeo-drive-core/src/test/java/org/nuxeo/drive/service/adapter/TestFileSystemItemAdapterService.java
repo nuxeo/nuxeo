@@ -35,7 +35,6 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
-import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultSyncRootFolderItemFactory;
@@ -48,8 +47,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -66,7 +65,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.runtime.reload" })
 @LocalDeploy({
         "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml",
@@ -78,9 +77,6 @@ public class TestFileSystemItemAdapterService {
 
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
-
-    @Inject
-    protected NuxeoDriveManager nuxeoDriveManager;
 
     @Inject
     protected RuntimeHarness harness;
@@ -98,19 +94,19 @@ public class TestFileSystemItemAdapterService {
 
         // TODO
         DocumentModel rootDoc = session.getRootDocument();
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator", rootDoc,
-                session);
-        rootDocFileSystemItemId = "defaultSyncRootFolderItemFactory/test/"
-                + rootDoc.getId();
+        rootDocFileSystemItemId = "dummyFacetFactory/test/" + rootDoc.getId();
 
         file = session.createDocumentModel("/", "aFile", "File");
+        file.setPropertyValue("dc:creator", "Joe");
         file = session.createDocument(file);
 
         folder = session.createDocumentModel("/", "aFolder", "Folder");
         folder.setPropertyValue("dc:title", "Jack's folder");
+        folder.setPropertyValue("dc:creator", "Jack");
         folder = session.createDocument(folder);
 
         custom = session.createDocumentModel("/", "aCustom", "Custom");
+        custom.setPropertyValue("dc:creator", "Bonnie");
         Blob blob = new StringBlob("Content of the custom document's blob.");
         blob.setFilename("Bonnie's file.txt");
         custom.setPropertyValue("file:content", (Serializable) blob);
@@ -212,7 +208,7 @@ public class TestFileSystemItemAdapterService {
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Dummy file with id " + file.getId(), fsItem.getName());
         assertFalse(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Joe", fsItem.getCreator());
 
         // Folder => should use the dummyFacetFactory bound to the
         // DummyFolderItemFactory class
@@ -224,7 +220,7 @@ public class TestFileSystemItemAdapterService {
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Dummy folder with id " + folder.getId(), fsItem.getName());
         assertTrue(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Jack", fsItem.getCreator());
 
         // Custom => should use the defaultFileSystemItemFactory bound to the
         // DefaultFileSystemItemFactory class
@@ -236,7 +232,7 @@ public class TestFileSystemItemAdapterService {
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Bonnie's file.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Bonnie", fsItem.getCreator());
         Blob fileFsItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Bonnie's file.txt", fileFsItemBlob.getFilename());
         assertEquals("Content of the custom document's blob.",
@@ -395,7 +391,7 @@ public class TestFileSystemItemAdapterService {
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
-        assertEquals("Administrator", fsItem.getCreator());
+        assertEquals("Jack", fsItem.getCreator());
 
         // Custom => should find no matching fileSystemItemFactory
         fsItem = fileSystemItemAdapterService.getFileSystemItem(custom);

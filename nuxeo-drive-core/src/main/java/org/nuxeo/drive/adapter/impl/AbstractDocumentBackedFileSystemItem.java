@@ -72,8 +72,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
                             "Doc %s has no parent document, please provide a FileSystemItem parentId to the constructor.",
                             doc.getPathAsString()));
         } else {
+            // Pass a mock parent id when fetching the parent file system item
+            // to avoid recursive calls
             this.parentId = getFileSystemItemAdapterService().getFileSystemItem(
-                    parentDoc).getId();
+                    parentDoc, "mockParentId").getId();
         }
     }
 

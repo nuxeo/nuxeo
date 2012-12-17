@@ -21,10 +21,6 @@
       <schema name="dublincore" />
     </doctype>
 
-    <doctype name="Root" extends="Folder">
-      <facet name="DriveSynchronized" />
-    </doctype>
-
   </extension>
 
 </component>
