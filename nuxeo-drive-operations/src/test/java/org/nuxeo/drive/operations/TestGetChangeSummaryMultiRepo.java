@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -210,46 +209,14 @@ public class TestGetChangeSummaryMultiRepo {
         otherSession.saveDocument(doc3);
         session.save();
         otherSession.save();
-
-        // Look in 'other' repository => should find only 1 change
-        changeSummary = getDocumentChangeSummary("other");
-        docChanges = changeSummary.getFileSystemChanges();
-        assertEquals(1, docChanges.size());
-        docChange = docChanges.get(0);
-        assertEquals("other", docChange.getRepositoryId());
-        assertEquals("documentChanged", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder3/doc3", docChange.getDocPath());
-        assertEquals(doc3.getId(), docChange.getDocUuid());
     }
 
-    /**
-     * Gets the document changes summary looking in all repositories for the
-     * user bound to the {@link #session} using the
-     * {@link NuxeoDriveGetChangeSummary} automation operation and
-     * updates the {@link #lastSuccessfulSync} date.
-     */
     protected FileSystemChangeSummary getDocumentChangeSummary() throws Exception {
-        return getDocumentChangeSummary(null);
-    }
-
-    /**
-     * Gets the document changes summary looking in the given repository for the
-     * user bound to the {@link #session} using the
-     * {@link NuxeoDriveGetChangeSummary} automation operation and
-     * updates the {@link #lastSuccessfulSync} date.
-     */
-    protected FileSystemChangeSummary getDocumentChangeSummary(
-            String repositoryName) throws Exception {
-
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
         OperationRequest opRequest = clientSession.newRequest(
                 NuxeoDriveGetChangeSummary.ID).set(
                 "lastSuccessfulSync", lastSuccessfulSync);
-        if (!StringUtils.isEmpty(repositoryName)) {
-            opRequest.setHeader("X-NXRepository", repositoryName);
-        }
         Blob docChangeSummaryJSON = (Blob) opRequest.execute();
         assertNotNull(docChangeSummaryJSON);
 
