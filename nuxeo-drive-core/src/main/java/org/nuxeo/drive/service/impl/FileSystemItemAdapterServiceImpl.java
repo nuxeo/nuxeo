@@ -206,10 +206,30 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     protected boolean facetFactoryMatches(FileSystemItemFactoryWrapper factory,
-            DocumentModel doc) {
+            DocumentModel doc) throws ClientException {
         if (!StringUtils.isEmpty(factory.getFacet())) {
             for (String docFacet : doc.getFacets()) {
                 if (factory.getFacet().equals(docFacet)) {
+                    // Handle synchronization root case
+                    if (NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET.equals(docFacet)) {
+                        return syncRootFactoryMatches(doc);
+                    } else {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected boolean syncRootFactoryMatches(DocumentModel doc)
+            throws ClientException {
+        String userName = doc.getCoreSession().getPrincipal().getName();
+        List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
+        for (Map<String, Object> subscription : subscriptions) {
+            if (userName.equals(subscription.get("username"))) {
+                if (Boolean.TRUE.equals(subscription.get("enabled"))) {
                     return true;
                 }
             }

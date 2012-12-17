@@ -36,6 +36,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.Blob;
@@ -45,8 +46,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -62,10 +63,9 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore",
-        "org.nuxeo.ecm.platform.query.api",
+@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml" })
@@ -79,6 +79,9 @@ public class TestDefaultFileSystemItemFactory {
 
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
+
+    @Inject
+    protected NuxeoDriveManager nuxeoDriveManager;
 
     protected Principal principal;
 
@@ -99,13 +102,16 @@ public class TestDefaultFileSystemItemFactory {
     protected FileSystemItemFactory defaultFileSystemItemFactory;
 
     @Before
-    public void createTestDocs() throws ClientException {
+    public void createTestDocs() throws Exception {
 
         principal = session.getPrincipal();
 
         // TODO
+        DocumentModel rootDoc = session.getRootDocument();
+        nuxeoDriveManager.registerSynchronizationRoot("Administrator", rootDoc,
+                session);
         rootDocFileSystemItemId = "defaultSyncRootFolderItemFactory/test/"
-                + session.getRootDocument().getId();
+                + rootDoc.getId();
 
         // File
         file = session.createDocumentModel("/", "aFile", "File");
