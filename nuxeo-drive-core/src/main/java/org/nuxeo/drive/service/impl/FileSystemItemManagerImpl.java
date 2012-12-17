@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+
 /**
  * Default implementation of the {@link FileSystemItemManager}.
  *
@@ -65,6 +66,10 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
             openedSessions.get().put(sessionKey, newSession);
             try {
                 Transaction t = TransactionHelper.lookupTransactionManager().getTransaction();
+                if (t == null) {
+                    throw new RuntimeException(
+                            "FileSystemItemManagerImpl requires an active transaction.");
+                }
                 t.registerSynchronization(new Synchronization() {
                     @Override
                     public void beforeCompletion() {
