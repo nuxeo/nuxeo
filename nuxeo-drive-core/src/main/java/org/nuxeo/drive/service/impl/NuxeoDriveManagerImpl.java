@@ -299,6 +299,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             DocumentModel doc = session.getDocument(ref);
             // TODO: check the facet, last root change and list of roots to have
             // a special handling for the roots.
+            // So will have to make a call like:
+            // Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(doc,
+            // syncRootId);
             FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
             if (fsItem == null) {
                 return false;
