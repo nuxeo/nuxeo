@@ -335,11 +335,17 @@ public class TestDefaultFileSystemItemFactory {
     @Test
     public void testFileItem() throws Exception {
 
+        // ------------------------------------------------------------
+        // FileSystemItem#getCanRename and FileSystemItem#getCanDelete
+        // ------------------------------------------------------------
+        FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        assertTrue(fileItem.getCanRename());
+        assertTrue(fileItem.getCanDelete());
+
         // ------------------------------------------------------
         // FileItem#getDownloadURL
         // ------------------------------------------------------
         String baseURL = "http://myServer/nuxeo/";
-        FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         String downloadURL = fileItem.getDownloadURL(baseURL);
         assertEquals("http://myServer/nuxeo/nxbigfile/test/" + file.getId()
                 + "/blobholder:0/Joe.odt", downloadURL);
@@ -368,10 +374,16 @@ public class TestDefaultFileSystemItemFactory {
     @Test
     public void testFolderItem() throws Exception {
 
+        // ------------------------------------------------------------
+        // FileSystemItem#getCanRename and FileSystemItem#getCanDelete
+        // ------------------------------------------------------------
+        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        assertTrue(folderItem.getCanRename());
+        assertTrue(folderItem.getCanDelete());
+
         // ------------------------------------------------------
         // FolderItem#canCreateChild
         // ------------------------------------------------------
-        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
         assertTrue(folderItem.getCanCreateChild());
 
         // ------------------------------------------------------

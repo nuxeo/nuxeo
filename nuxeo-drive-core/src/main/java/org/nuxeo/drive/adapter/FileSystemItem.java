@@ -54,7 +54,11 @@ public interface FileSystemItem {
 
     Calendar getLastModificationDate();
 
+    boolean getCanRename();
+
     void rename(String name) throws ClientException;
+
+    boolean getCanDelete();
 
     void delete() throws ClientException;
 

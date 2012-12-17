@@ -54,7 +54,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     public abstract Calendar getLastModificationDate();
 
+    public abstract boolean getCanRename();
+
     public abstract void rename(String name) throws ClientException;
+
+    public abstract boolean getCanDelete();
 
     public abstract void delete() throws ClientException;
 

@@ -52,6 +52,11 @@ public class DocumentBackedFileItem extends
     }
 
     @Override
+    public boolean getCanRename() {
+        return true;
+    }
+
+    @Override
     public void rename(String name) throws ClientException {
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
@@ -62,6 +67,11 @@ public class DocumentBackedFileItem extends
         updateDocTitleIfNeeded(doc, name);
         session.saveDocument(doc);
         this.name = name;
+    }
+
+    @Override
+    public boolean getCanDelete() {
+        return true;
     }
 
     /*--------------------- FileItem -----------------*/
