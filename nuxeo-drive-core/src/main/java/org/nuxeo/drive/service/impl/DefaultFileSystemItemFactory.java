@@ -67,16 +67,13 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
-        if (doc.isFolder()) {
-            return new DocumentBackedFolderItem(getName(), doc);
-        }
-        if (hasBlob(doc)) {
-            return new DocumentBackedFileItem(getName(), doc);
-        }
-        log.debug(String.format(
-                "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem => returning null.",
-                doc.getId()));
-        return null;
+        return getFileSystemItem(doc, false, null);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+            throws ClientException {
+        return getFileSystemItem(doc, true, parentId);
     }
 
     @Override
@@ -113,6 +110,28 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     }
 
     /*--------------------------- Protected ---------------------------------*/
+    protected FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean forceParentId, String parentId) throws ClientException {
+        if (doc.isFolder()) {
+            if (forceParentId) {
+                return new DocumentBackedFolderItem(name, parentId, doc);
+            } else {
+                return new DocumentBackedFolderItem(name, doc);
+            }
+        }
+        if (hasBlob(doc)) {
+            if (forceParentId) {
+                return new DocumentBackedFileItem(name, parentId, doc);
+            } else {
+                return new DocumentBackedFileItem(name, doc);
+            }
+        }
+        log.debug(String.format(
+                "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem => returning null.",
+                doc.getId()));
+        return null;
+    }
+
     protected boolean hasBlob(DocumentModel doc) throws ClientException {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {

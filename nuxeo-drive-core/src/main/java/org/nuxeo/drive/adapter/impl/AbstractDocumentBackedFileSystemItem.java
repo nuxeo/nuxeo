@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -40,14 +41,12 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractDocumentBackedFileSystemItem extends
         AbstractFileSystemItem {
 
-    protected final String repositoryName;
+    /** {@link FileSystemItem} attributes */
+    protected final String id;
 
-    protected final Principal principal;
-
-    protected final String docId;
+    protected String parentId;
 
     protected String name;
-    protected final String docPath;
 
     protected final String creator;
 
@@ -55,16 +54,48 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     protected final Calendar lastModificationDate;
 
+    /** Backing {@link DocumentModel} attributes */
+    protected final String repositoryName;
+
+    protected final Principal principal;
+
+    protected final String docId;
+
+    protected final String docPath;
+
     protected String docTitle;
 
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
             DocumentModel doc) throws ClientException {
+        this(factoryName, null, doc);
+        CoreSession docSession = doc.getCoreSession();
+        DocumentModel parentDoc = docSession.getParentDocument(doc.getRef());
+        if (parentDoc == null) {
+            throw new UnsupportedOperationException(
+                    String.format(
+                            "Doc %s has no parent document, please provide a FileSystemItem parentId to the constructor.",
+                            doc.getPathAsString()));
+        } else {
+            this.parentId = getFileSystemItemAdapterService().getFileSystemItem(
+                    parentDoc).getId();
+        }
+    }
+
+    protected AbstractDocumentBackedFileSystemItem(String factoryName,
+            String parentId, DocumentModel doc) throws ClientException {
+
         super(factoryName);
+
+        // Backing DocumentModel attributes
         repositoryName = doc.getRepositoryName();
         principal = doc.getCoreSession().getPrincipal();
         docId = doc.getId();
         docPath = doc.getPathAsString();
         docTitle = doc.getTitle();
+
+        // FileSystemItem attributes
+        id = computeId(docId);
+        this.parentId = parentId;
         creator = (String) doc.getPropertyValue("dc:creator");
         created = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
@@ -72,13 +103,13 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     /*--------------------- FileSystemItem ---------------------*/
     public String getId() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.getId());
-        sb.append("/");
-        sb.append(repositoryName);
-        sb.append("/");
-        sb.append(docId);
-        return sb.toString();
+        return id;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
     public String getName() {
         return name;
     }
@@ -109,6 +140,19 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     }
 
     /*--------------------- Protected -------------------------*/
+    protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
+        return Framework.getLocalService(FileSystemItemAdapterService.class);
+    }
+
+    protected String computeId(String docId) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.getId());
+        sb.append(repositoryName);
+        sb.append("/");
+        sb.append(docId);
+        return sb.toString();
+    }
+
     protected DocumentModel getDocument(CoreSession session)
             throws ClientException {
         return session.getDocument(new IdRef(docId));

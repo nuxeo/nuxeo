@@ -99,34 +99,15 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      * </ul>
      */
     @Override
-    public FileSystemItem getFileSystemItemAdapter(DocumentModel doc)
+    public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
+        return getFileSystemItem(doc, false, null);
+    }
 
-        FileSystemItemFactoryWrapper matchingFactory = null;
-        Iterator<FileSystemItemFactoryWrapper> factoriesIt = factories.iterator();
-        while (factoriesIt.hasNext()) {
-            FileSystemItemFactoryWrapper factory = factoriesIt.next();
-            if (generalFactoryMatches(factory)
-                    || docTypeFactoryMatches(factory, doc)
-                    || facetFactoryMatches(factory, doc)) {
-                matchingFactory = factory;
-                FileSystemItem fileSystemItem = factory.getFactory().getFileSystemItem(
-                        doc);
-                if (fileSystemItem != null) {
-                    return fileSystemItem;
-                }
-            }
-        }
-        if (matchingFactory == null) {
-            log.debug(String.format(
-                    "No fileSystemItemFactory found matching with document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
-                    doc.getId()));
-        } else {
-            log.debug(String.format(
-                    "None of the fileSystemItemFactories were able to get a FileSystemItem adapter for document %s => returning null.",
-                    doc.getId()));
-        }
-        return null;
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+            throws ClientException {
+        return getFileSystemItem(doc, true, parentId);
     }
 
     /**
@@ -162,6 +143,40 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     /*--------------------------- Protected ---------------------------------------*/
     protected void sortFactories() throws Exception {
         factories = factoryRegistry.getOrderedFactories();
+
+    protected FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean forceParentId, String parentId) throws ClientException {
+
+        FileSystemItem fileSystemItem = null;
+        FileSystemItemFactoryWrapper matchingFactory = null;
+        Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
+        while (factoriesIt.hasNext()) {
+            FileSystemItemFactoryWrapper factory = factoriesIt.next();
+            if (generalFactoryMatches(factory)
+                    || docTypeFactoryMatches(factory, doc)
+                    || facetFactoryMatches(factory, doc)) {
+                matchingFactory = factory;
+                if (forceParentId) {
+                    fileSystemItem = factory.getFactory().getFileSystemItem(
+                            doc, parentId);
+                } else {
+                    fileSystemItem = factory.getFactory().getFileSystemItem(doc);
+                }
+                if (fileSystemItem != null) {
+                    return fileSystemItem;
+                }
+            }
+        }
+        if (matchingFactory == null) {
+            log.debug(String.format(
+                    "No fileSystemItemFactory found matching with document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
+                    doc.getId()));
+        } else {
+            log.debug(String.format(
+                    "None of the fileSystemItemFactories were able to get a FileSystemItem adapter for document %s => returning null.",
+                    doc.getId()));
+        }
+        return fileSystemItem;
     }
 
     protected boolean generalFactoryMatches(FileSystemItemFactoryWrapper factory) {

@@ -33,6 +33,11 @@ public class DummyFolderItem extends DocumentBackedFolderItem {
         super(factoryName, doc);
     }
 
+    public DummyFolderItem(String factoryName, String parentId,
+            DocumentModel doc) throws ClientException {
+        super(factoryName, parentId, doc);
+    }
+
     @Override
     public String getName() {
         return "Dummy folder with id " + docId;

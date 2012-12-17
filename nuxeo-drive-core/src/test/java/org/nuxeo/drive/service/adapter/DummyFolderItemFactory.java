@@ -37,6 +37,11 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
             throws ClientException {
         return new DummyFolderItem(name, doc);
     }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+            throws ClientException {
+        return new DummyFolderItem(name, parentId, doc);
     }
 
     @Override

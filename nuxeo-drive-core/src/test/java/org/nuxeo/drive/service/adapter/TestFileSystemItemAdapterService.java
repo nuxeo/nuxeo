@@ -81,6 +81,8 @@ public class TestFileSystemItemAdapterService {
     @Inject
     protected RuntimeHarness harness;
 
+    protected String rootDocFileSystemItemId;
+
     protected DocumentModel file;
 
     protected DocumentModel folder;
@@ -89,6 +91,10 @@ public class TestFileSystemItemAdapterService {
 
     @Before
     public void createTestDocs() throws ClientException {
+
+        // TODO
+        rootDocFileSystemItemId = "defaultSyncRootFolderItemFactory/test/"
+                + session.getRootDocument().getId();
 
         file = session.createDocumentModel("/", "aFile", "File");
         file.setPropertyValue("dc:creator", "Joe");
@@ -175,35 +181,38 @@ public class TestFileSystemItemAdapterService {
                 "DefaultFileSystemItemFactory"));
 
         // ------------------------------------------------------
-        // Check #getFileSystemItemAdapter(DocumentModel doc)
+        // Check #getFileSystemItem(DocumentModel doc)
         // ------------------------------------------------------
         // File => should use the dummyDocTypeFactory bound to the
         // DummyFileItemFactory class
-        FileSystemItem fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(file);
+        FileSystemItem fsItem = fileSystemItemAdapterService.getFileSystemItem(file);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof DummyFileItem);
         assertEquals("dummyDocTypeFactory/test/" + file.getId(), fsItem.getId());
+        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Dummy file with id " + file.getId(), fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Joe", fsItem.getCreator());
 
         // Folder => should use the dummyFacetFactory bound to the
         // DummyFolderItemFactory class
-        fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(folder);
+        fsItem = fileSystemItemAdapterService.getFileSystemItem(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof DummyFolderItem);
         assertEquals("dummyFacetFactory/test/" + folder.getId(), fsItem.getId());
+        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Dummy folder with id " + folder.getId(), fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());
 
         // Custom => should use the defaultFileSystemItemFactory bound to the
         // DefaultFileSystemItemFactory class
-        fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(custom);
+        fsItem = fileSystemItemAdapterService.getFileSystemItem(custom);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
         assertEquals("defaultFileSystemItemFactory/test/" + custom.getId(),
                 fsItem.getId());
+        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Bonnie's file.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Bonnie", fsItem.getCreator());
@@ -211,6 +220,16 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Bonnie's file.txt", fileFsItemBlob.getFilename());
         assertEquals("Content of the custom document's blob.",
                 fileFsItemBlob.getString());
+
+        // ------------------------------------------------------
+        // Check #getFileSystemItem(DocumentModel doc, String parentId)
+        // ------------------------------------------------------
+        // File => should use the dummyDocTypeFactory bound to the
+        // DummyFileItemFactory class
+        fsItem = fileSystemItemAdapterService.getFileSystemItem(file,
+                "fileParentId");
+        assertNotNull(fsItem);
+        assertEquals("fileParentId", fsItem.getParentId());
 
         // -------------------------------------------------------------
         // Check #getFileSystemItemFactoryForId(String id)
@@ -311,28 +330,39 @@ public class TestFileSystemItemAdapterService {
         assertTrue(factory.getFactory().getClass().getName().endsWith(
                 "DefaultFileSystemItemFactory"));
 
-        // ------------------------------------------------------
-        // Check #getFileSystemItemAdapter(DocumentModel doc)
-        // ------------------------------------------------------
+        // -------------------------------------------------------------
+        // Check #getFileSystemItem(DocumentModel doc)
+        // -------------------------------------------------------------
         // File => should use the dummyDocTypeFactory bound to the
         // DefaultFileSystemItemFactory class, but return null because the
         // document has no file
-        FileSystemItem fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(file);
+        FileSystemItem fsItem = fileSystemItemAdapterService.getFileSystemItem(file);
         assertNull(fsItem);
 
         // Folder => should use the dummyFacetFactory bound to the
         // DefaultFileSystemItemFactory class
-        fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(folder);
+        fsItem = fileSystemItemAdapterService.getFileSystemItem(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals("dummyFacetFactory/test/" + folder.getId(), fsItem.getId());
+        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());
 
         // Custom => should find no matching fileSystemItemFactory
-        fsItem = fileSystemItemAdapterService.getFileSystemItemAdapter(custom);
+        fsItem = fileSystemItemAdapterService.getFileSystemItem(custom);
         assertNull(fsItem);
+
+        // -------------------------------------------------------------
+        // Check #getFileSystemItem(DocumentModel doc, String parentId)
+        // -------------------------------------------------------------
+        // Folder => should use the dummyFacetFactory bound to the
+        // DefaultFileSystemItemFactory class
+        fsItem = fileSystemItemAdapterService.getFileSystemItem(folder,
+                "folderParentId");
+        assertNotNull(fsItem);
+        assertEquals("folderParentId", fsItem.getParentId());
 
         // -------------------------------------------------------------
         // Check #getFileSystemItemFactoryForId(String id)

@@ -37,6 +37,11 @@ public interface FileSystemItem {
     String getId();
 
     /**
+     * Gets the parent {@link FileSystemItem} id.
+     */
+    String getParentId();
+
+    /**
      * Gets the name displayed in the file system.
      */
     String getName();

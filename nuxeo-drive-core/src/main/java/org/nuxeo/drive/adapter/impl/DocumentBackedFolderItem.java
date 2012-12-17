@@ -52,6 +52,10 @@ public class DocumentBackedFolderItem extends
         this.name = docTitle;
     }
 
+    public DocumentBackedFolderItem(String factoryName, String parentId,
+            DocumentModel doc) throws ClientException {
+        super(factoryName, parentId, doc);
+        this.name = docTitle;
     }
 
     /*--------------------- AbstractFileSystemItem ---------------------*/
@@ -85,7 +89,8 @@ public class DocumentBackedFolderItem extends
         List<FileSystemItem> children = new ArrayList<FileSystemItem>(
                 dmChildren.size());
         for (DocumentModel dmChild : dmChildren) {
-            FileSystemItem child = dmChild.getAdapter(FileSystemItem.class);
+            FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
+                    dmChild, id);
             if (child != null) {
                 children.add(child);
             }
@@ -104,7 +109,7 @@ public class DocumentBackedFolderItem extends
                                 "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check them.",
                                 name, docPath));
             }
-            return new DocumentBackedFolderItem(getFactoryName(), folder);
+            return new DocumentBackedFolderItem(factoryName, id, folder);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }
@@ -123,7 +128,7 @@ public class DocumentBackedFolderItem extends
                                 "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
                                 fileName, docPath));
             }
-            return new DocumentBackedFileItem(getFactoryName(), file);
+            return new DocumentBackedFileItem(factoryName, id, file);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }

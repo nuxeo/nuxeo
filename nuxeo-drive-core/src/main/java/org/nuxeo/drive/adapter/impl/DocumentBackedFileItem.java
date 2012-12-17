@@ -39,6 +39,10 @@ public class DocumentBackedFileItem extends
         this.name = getFileName(doc);
     }
 
+    public DocumentBackedFileItem(String factoryName, String parentId,
+            DocumentModel doc) throws ClientException {
+        super(factoryName, parentId, doc);
+        this.name = getFileName(doc);
     }
 
     /*--------------------- AbstractFileSystemItem ---------------------*/

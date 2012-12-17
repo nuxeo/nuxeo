@@ -36,6 +36,13 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     }
 
     /*--------------------- FileSystemItem ---------------------*/
+    @Override
+    public String getId() {
+        return factoryName + "/";
+    }
+
+    public abstract String getParentId();
+
     public abstract String getName();
 
     public abstract boolean isFolder();
@@ -50,11 +57,6 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     public abstract void delete() throws ClientException;
 
-    @Override
-    public String getId() {
-        return getFactoryName();
-    }
-
     /*--------------------- Object -----------------*/
     @Override
     public boolean equals(Object obj) {
@@ -65,11 +67,6 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
             return false;
         }
         return getId().equals(((FileSystemItem) obj).getId());
-    }
-
-    /*--------------------- Protected -----------------*/
-    protected String getFactoryName() {
-        return factoryName;
     }
 
 }

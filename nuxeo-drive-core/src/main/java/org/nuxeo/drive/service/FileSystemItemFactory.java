@@ -26,6 +26,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Interface for the classes contributed to the {@code fileSystemItemFactory}
  * extension point of the {@link FileSystemItemAdapterService}.
+ * <p>
+ * Allows to get a {@link FileSystemItem} for a given {@link DocumentModel} or a
+ * given {@link FileSystemItem} id.
  *
  * @author Antoine Taillefer
  * @see DefaultFileSystemItemFactory
@@ -50,8 +53,15 @@ public interface FileSystemItemFactory {
      */
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
 
-    // FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
-    // throws ClientException;
+    /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} and
+     * {@link FileSystemItem} parent id.
+     *
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
+     *         is not adaptable as a {@link FileSystemItem}
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+            throws ClientException;
 
     /**
      * Returns true if the given {@link FileSystemItem} id can be handled by

@@ -33,6 +33,11 @@ public class DummyFileItem extends DocumentBackedFileItem {
         super(factoryName, doc);
     }
 
+    public DummyFileItem(String factoryName, String parentId, DocumentModel doc)
+            throws ClientException {
+        super(factoryName, parentId, doc);
+    }
+
     @Override
     public String getName() {
         return "Dummy file with id " + docId;

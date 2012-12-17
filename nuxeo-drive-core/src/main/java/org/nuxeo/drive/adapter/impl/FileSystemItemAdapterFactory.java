@@ -34,7 +34,7 @@ public class FileSystemItemAdapterFactory implements DocumentAdapterFactory {
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
         try {
-            return getService().getFileSystemItemAdapter(doc);
+            return getService().getFileSystemItem(doc);
         } catch (ClientException e) {
             throw new ClientRuntimeException(
                     String.format(
