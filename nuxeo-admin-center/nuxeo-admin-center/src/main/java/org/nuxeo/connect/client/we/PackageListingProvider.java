@@ -242,37 +242,38 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public String getStateLabel(Package pkg) {
-        switch (pkg.getState()) {
-        case PackageState.REMOTE:
-            return "remote";
-        case PackageState.DOWNLOADED:
-            return "downloaded";
-        case PackageState.DOWNLOADING:
+        PackageState state = PackageState.getByValue(pkg.getState());
+        switch (state) {
+        case REMOTE:
+        case DOWNLOADED:
+        case INSTALLED:
+            return state.getLabel();
+        case DOWNLOADING:
             DownloadingPackage dpkg = (DownloadingPackage) pkg;
-            return "downloading (" + dpkg.getDownloadProgress() + "%)";
-        case PackageState.INSTALLING:
+            return state.getLabel() + " (" + dpkg.getDownloadProgress() + "%)";
+        case INSTALLING:
             return "installation in progress";
-        case PackageState.INSTALLED:
-            return "installed";
-        case PackageState.STARTED:
+        case STARTED:
             return "running";
+        case UNKNOWN:
+        default:
+            return "!?!";
         }
-        return "!?!";
     }
 
     public boolean canInstall(Package pkg) {
-        return PackageState.DOWNLOADED == pkg.getState()
+        return PackageState.DOWNLOADED.getValue() == pkg.getState()
                 && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
     }
 
     public boolean needsRestart(Package pkg) {
         return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId())
-                || PackageState.INSTALLED == pkg.getState()
+                || PackageState.INSTALLED.getValue() == pkg.getState()
                 || InstallAfterRestart.isMarkedForUninstallAfterRestart(pkg.getName());
     }
 
     public boolean canUnInstall(Package pkg) {
-        return (PackageState.INSTALLED == pkg.getState() || PackageState.STARTED == pkg.getState())
+        return (PackageState.getByValue(pkg.getState()).isInstalled())
                 && !InstallAfterRestart.isMarkedForUninstallAfterRestart(pkg.getName());
     }
 
@@ -284,11 +285,11 @@ public class PackageListingProvider extends DefaultObject {
      * @since 5.6
      */
     public boolean canCancel(Package pkg) {
-        return PackageState.DOWNLOADING == pkg.getState();
+        return PackageState.DOWNLOADING.getValue() == pkg.getState();
     }
 
     public boolean canDownload(Package pkg) {
-        return pkg.getState() == PackageState.REMOTE
+        return pkg.getState() == PackageState.REMOTE.getValue()
                 && (pkg.getType() == PackageType.STUDIO
                         || pkg.getVisibility() == PackageVisibility.PUBLIC //
                 || (ConnectStatusHolder.instance().isRegistred() //
@@ -313,7 +314,7 @@ public class PackageListingProvider extends DefaultObject {
      * @return true if registration is required for download
      */
     public boolean registrationRequired(Package pkg) {
-        return pkg.getState() == PackageState.REMOTE
+        return pkg.getState() == PackageState.REMOTE.getValue()
                 && pkg.getType() != PackageType.STUDIO
                 && pkg.getVisibility() != PackageVisibility.PUBLIC
                 && (!ConnectStatusHolder.instance().isRegistred() //

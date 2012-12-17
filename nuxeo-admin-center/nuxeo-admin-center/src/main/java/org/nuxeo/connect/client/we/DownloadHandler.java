@@ -99,7 +99,7 @@ public class DownloadHandler extends DefaultObject {
         if (pkg == null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             pkg = pm.getPackage(pkgId);
-            if (pkg.getState() != PackageState.DOWNLOADING) {
+            if (pkg.getState() != PackageState.DOWNLOADING.getValue()) {
                 downloadOver = true;
             }
         }
