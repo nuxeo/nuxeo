@@ -244,9 +244,6 @@ public class TestAuditFileSystemChangeFinder {
         // commitAndWaitForAsyncCompletion();
 
         changeSummary = getChangeSummary("Administrator");
-        Set<String> expectedSyncRootPaths = new HashSet<String>();
-        expectedSyncRootPaths.add("/folder1");
-        expectedSyncRootPaths.add("/folder2");
         assertEquals(2, changeSummary.getFileSystemChanges().size());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
@@ -321,13 +318,11 @@ public class TestAuditFileSystemChangeFinder {
         commitAndWaitForAsyncCompletion();
 
         changeSummary = getFolderChangeSummary("/folder1");
-        expectedSyncRootPaths.remove("/folder2");
         assertEquals(2, changeSummary.getFileSystemChanges().size());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // No changes since last successful sync
         changeSummary = getChangeSummary("Administrator");
-        expectedSyncRootPaths.add("/folder2");
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 

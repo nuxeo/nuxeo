@@ -22,10 +22,8 @@ import static org.junit.Assert.assertNotNull;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -181,11 +179,6 @@ public class TestGetChangeSummaryMultiRepo {
 
         // Look in all repositories => should find 3 changes
         FileSystemChangeSummary changeSummary = getDocumentChangeSummary();
-        Set<String> expectedSyncRootPaths = new HashSet<String>();
-        expectedSyncRootPaths.add("/folder1");
-        expectedSyncRootPaths.add("/folder2");
-        expectedSyncRootPaths.add("/folder3");
-
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
         assertEquals(3, docChanges.size());
         FileSystemItemChange docChange = docChanges.get(0);
@@ -220,9 +213,6 @@ public class TestGetChangeSummaryMultiRepo {
 
         // Look in 'other' repository => should find only 1 change
         changeSummary = getDocumentChangeSummary("other");
-        expectedSyncRootPaths = new HashSet<String>();
-        expectedSyncRootPaths.add("/folder3");
-
         docChanges = changeSummary.getFileSystemChanges();
         assertEquals(1, docChanges.size());
         docChange = docChanges.get(0);

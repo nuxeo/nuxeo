@@ -18,6 +18,7 @@ package org.nuxeo.drive.adapter;
 
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface FolderItem extends FileSystemItem {
 
+    @JsonIgnore
     List<FileSystemItem> getChildren() throws ClientException;
 
     FileItem createFile(Blob blob) throws ClientException;
