@@ -206,10 +206,10 @@ public abstract class AbstractCommandTest extends PackageTestCase {
         LocalPackage pkg = service.addPackage(zip);
         if (install(pkg)) {
             // check package installed
-            assertEquals(PackageState.STARTED, pkg.getState());
+            assertEquals(PackageState.STARTED.getValue(), pkg.getState());
             if (uninstall(pkg)) {
                 // check package uninstalled
-                assertEquals(PackageState.DOWNLOADED, pkg.getState());
+                assertEquals(PackageState.DOWNLOADED.getValue(), pkg.getState());
             }
         }
     }

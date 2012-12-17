@@ -62,11 +62,13 @@ public class PackageInfoTest {
                         + "<package>\n" + "    <state>REMOTE</state>\n"
                         + "    <version>1.0.0</version>\n"
                         + "    <name>test</name>\n"
+                        + "    <visibility>UNKNOWN</visibility>\n"
                         + "    <supportsHotReload>false</supportsHotReload>\n"
                         + "    <supported>false</supported>\n" //
                         + "</package>\n", xml.toString());
         assertEquals(
                 "{\"package\": {\n"
+                        + "  \"visibility\": \"UNKNOWN\",\n"
                         + "  \"supported\": \"false\",\n  \"name\": \"test\",\n"
                         + "  \"state\": \"REMOTE\",\n  \"supportsHotReload\": \"false\",\n"
                         + "  \"version\": \"1.0.0\"\n}}",
