@@ -213,6 +213,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
+        assertTrue(((FolderItem) fsItem).canCreateChild());
         assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
@@ -228,6 +229,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folderishFile);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
+        assertTrue(((FolderItem) fsItem).canCreateChild());
         assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folderishFile.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
@@ -316,6 +318,7 @@ public class TestDefaultFileSystemItemFactory {
                 DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
+        assertTrue(((FolderItem) fsItem).canCreateChild());
         assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
@@ -366,9 +369,15 @@ public class TestDefaultFileSystemItemFactory {
     public void testFolderItem() throws Exception {
 
         // ------------------------------------------------------
-        // FolderItem#createFile and FolderItem#createFolder
+        // FolderItem#canCreateChild
         // ------------------------------------------------------
         FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        assertTrue(folderItem.canCreateChild());
+
+        // ------------------------------------------------------
+        // FolderItem#createFile and FolderItem#createFolder
+        // ------------------------------------------------------
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
         // Note
         Blob childBlob = new StringBlob("This is the first child file.");
         childBlob.setFilename("First child file.txt");
@@ -451,6 +460,7 @@ public class TestDefaultFileSystemItemFactory {
         // Check sub-Folder
         fsItem = folderChildren.get(2);
         assertTrue(fsItem instanceof FolderItem);
+        assertTrue(((FolderItem) fsItem).canCreateChild());
         assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(),
                 fsItem.getId());
         assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),

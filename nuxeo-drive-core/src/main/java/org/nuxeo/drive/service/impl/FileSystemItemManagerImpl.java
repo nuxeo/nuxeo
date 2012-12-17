@@ -112,14 +112,27 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         return folderItem.getChildren();
     }
 
+    @Override
+    public boolean canCreateChild(String id, Principal principal)
+            throws ClientException {
+        FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
+        if (fileSystemItem instanceof FolderItem) {
+            FolderItem folderItem = (FolderItem) fileSystemItem;
+            return folderItem.canCreateChild();
+        }
+        return false;
+    }
+
     /*------------- Write operations ---------------*/
     @Override
     public FolderItem createFolder(String parentId, String name,
             Principal principal) throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
-        if (!(parentFsItem instanceof FolderItem)) {
-            throw new ClientException(
-                    "Cannot create a folder in a non folderish file system item.");
+        if (!(parentFsItem instanceof FolderItem)
+                || !((FolderItem) parentFsItem).canCreateChild()) {
+            throw new ClientException(String.format(
+                    "Cannot create a folder in file system item with id %s.",
+                    parentId));
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
         return parentFolder.createFolder(name);
@@ -129,9 +142,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileItem createFile(String parentId, Blob blob, Principal principal)
             throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
-        if (!(parentFsItem instanceof FolderItem)) {
-            throw new ClientException(
-                    "Cannot create a file in a non folderish file system item.");
+        if (!(parentFsItem instanceof FolderItem)
+                || !((FolderItem) parentFsItem).canCreateChild()) {
+            throw new ClientException(String.format(
+                    "Cannot create a file in file system item with id %s.",
+                    parentId));
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
         return parentFolder.createFile(blob);

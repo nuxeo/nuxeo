@@ -104,6 +104,11 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
     }
 
     @Override
+    public boolean canCreateChild() {
+        return false;
+    }
+
+    @Override
     public FolderItem createFolder(String name) throws ClientException {
         throw new UnsupportedOperationException(
                 "Cannot create a folder in a system folder item.");

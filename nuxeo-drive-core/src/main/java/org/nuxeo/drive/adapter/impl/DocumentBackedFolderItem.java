@@ -99,6 +99,11 @@ public class DocumentBackedFolderItem extends
     }
 
     @Override
+    public boolean canCreateChild() {
+        return true;
+    }
+
+    @Override
     public FolderItem createFolder(String name) throws ClientException {
         try {
             DocumentModel folder = getFileManager().createFolder(getSession(),

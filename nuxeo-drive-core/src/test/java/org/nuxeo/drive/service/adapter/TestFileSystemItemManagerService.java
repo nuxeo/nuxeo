@@ -284,6 +284,21 @@ public class TestFileSystemItemManagerService {
         children = fileSystemItemManagerService.getChildren(
                 DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(), principal);
         assertTrue(children.isEmpty());
+
+        // ------------------------------------------------------
+        // Check #canCreateChild
+        // ------------------------------------------------------
+        assertTrue(fileSystemItemManagerService.canCreateChild(
+                rootDocFileSystemItemId, principal));
+        assertTrue(fileSystemItemManagerService.canCreateChild(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), principal));
+        assertFalse(fileSystemItemManagerService.canCreateChild(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), principal));
+        assertFalse(fileSystemItemManagerService.canCreateChild(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(), principal));
+        assertTrue(fileSystemItemManagerService.canCreateChild(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + folderishFile.getId(),
+                principal));
     }
 
     @Test

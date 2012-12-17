@@ -89,6 +89,16 @@ public interface FileSystemItemManager {
     List<FileSystemItem> getChildren(String id, Principal principal)
             throws ClientException;
 
+    /**
+     * Returns true if a child can be created in the {@link FileSystemItem} with
+     * the given id. Uses a core session fetched with the given principal.
+     *
+     * @throws ClientException if the {@link FileSystemItem} with the given id
+     *             cannot be retrieved
+     */
+    boolean canCreateChild(String id, Principal principal)
+            throws ClientException;
+
     /*------------- Write operations ----------------*/
     /**
      * Creates a folder with the given name in the {@link FileSystemItem} with
