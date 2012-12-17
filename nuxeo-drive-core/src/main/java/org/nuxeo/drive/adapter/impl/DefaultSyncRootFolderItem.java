@@ -34,7 +34,6 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
     public DefaultSyncRootFolderItem(String factoryName, String parentId,
             DocumentModel doc) throws ClientException {
         super(factoryName, parentId, doc);
-        this.name = docTitle;
     }
 
     /*--------------------- AbstractFileSystemItem ---------------------*/
