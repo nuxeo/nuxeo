@@ -2,10 +2,10 @@
 function getInputValue(domInput) {
    if (domInput.tagName == "INPUT") {
      if (domInput.type == 'text' || domInput.type == 'hidden') {
-       return domInput.value;      
+       return domInput.value;
      } else if (domInput.type == 'radio' || domInput.type == 'checkbox') {
-       return domInput.checked;      
-     } 
+       return domInput.checked;
+     }
    }
    else if (domInput.tagName == "SELECT" ) {
      return jQuery(domInput).val();
@@ -22,9 +22,9 @@ function setInputValue(domInput, value) {
 
    if (domInput.tagName == "INPUT") {
      if ( domInput.type == 'text' || domInput.type == 'hidden') {
-       domInput.value = value;      
+       domInput.value = value;
      }
-     else if (domInput.type == 'radio' ) {  
+     else if (domInput.type == 'radio' ) {
        if (value==true || value =="true") {
           domInput.checked = true;
        } else {
@@ -38,7 +38,7 @@ function setInputValue(domInput, value) {
        }
      }
    } else if (domInput.tagName == "SELECT" || domInput.tagName == "TEXTAREA" ) {
-     jQuery(domInput).val(value).change();      
+     jQuery(domInput).val(value).change();
    } else if (domInput.tagName == "IFRAME" ) {
      return jQuery(domInput).contents().find("body").html(value);
    }
@@ -83,7 +83,7 @@ function saveForm(key, formSelector, savePeriod, saveCB) {
    var data=collectFormData(formSelector);
    var dataToStore = JSON.stringify(data);
    if (dataToStore == lastSavedJSONData) {
-     //console.log("skip save ... no change");     
+     //console.log("skip save ... no change");
    }
    else {
      localStorage.setItem(key,dataToStore);
@@ -99,13 +99,13 @@ function saveForm(key, formSelector, savePeriod, saveCB) {
 }
 
 function cleanupSavedData(key) {
-   //console.log("Cleanup custom storage");   
+   //console.log("Cleanup custom storage");
    localStorage.removeItem(key);
 }
 
 function restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB) {
    var dataStr=localStorage.getItem(key);
-   if (dataStr) { // there is some saved data 
+   if (dataStr) { // there is some saved data
 
      var currentData=JSON.stringify(collectFormData(formSelector));
      //console.log("restore check", currentData, dataStr);
@@ -115,7 +115,7 @@ function restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB) {
      }
 
      // create cleanup callback
-     jQuery(window).unload(function() { 
+     jQuery(window).unload(function() {
        // XXX
      });
      // block auto save until use choose to restore or not
@@ -126,14 +126,14 @@ function restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB) {
          // restore !
          var data = JSON.parse(dataStr);
          getFormItems(formSelector).each( function() {
-         if (!mustSkipField(this)) {   
+         if (!mustSkipField(this)) {
            var k = this.id;
            if (!k) {
              k = this.name;
-           }       
+           }
            setInputValue(this,data[k]);
          }
-         });     
+         });
        } else {
          // drop saved data !
          cleanupSavedData(key);
@@ -142,15 +142,15 @@ function restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB) {
        window.setTimeout(function(){saveForm(key,formSelector,savePeriod, saveCB)}, savePeriod);
      };
      if (loadCB!=null) {
-       if (!loadCB(doLoad)) {         
+       if (!loadCB(doLoad)) {
          return;
        }
      } else {
        doLoad();
-     }    
+     }
   } else {
     saveForm(key, formSelector, savePeriod, saveCB);
-  }   
+  }
 }
 
 function bindOnChange(formSelector, cb) {
@@ -161,24 +161,25 @@ function bindOnChange(formSelector, cb) {
       targetDomItem = jQuery(this).contents().find("body");
     }
     targetDomItem.change(cb);
-  });     
+  });
 }
 
 var dirtyPage = false;
 
 function detectDirtyPage(formSelector, message) {
-  bindOnChange(formSelector, function(event) { 
+  bindOnChange(formSelector, function(event) {
       if (!dirtyPage) {
         jQuery(window).bind('beforeunload', function(){
         return message;
       });
       }
-      dirtyPage=true;      
+      dirtyPage=true;
       });
+  jQuery(formSelector).submit(function(){dirtyPage=false;jQuery(window).unbind('beforeunload');return true;})
 }
 
-function initSafeEdit(key, formSelector, savePeriod, saveCB, loadCB) {   
-   restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB);   
+function initSafeEdit(key, formSelector, savePeriod, saveCB, loadCB) {
+   restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB);
 }
 
 
