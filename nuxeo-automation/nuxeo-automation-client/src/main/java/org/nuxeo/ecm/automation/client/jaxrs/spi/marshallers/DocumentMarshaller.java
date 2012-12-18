@@ -45,7 +45,8 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
         String type = null;
         String path = null;
         String state = null;
-        String lock = null;
+        String lockCreated = null;
+        String lockOwner = null;
         String repository = null;
         PropertyList facets = null;
         String changeToken = null;
@@ -64,8 +65,16 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             } else if (key.equals("state")) {
                 state = jp.getText();
             } else if (key.equals("lock")) {
-                lock = jp.getText();
-            } else if (key.equals("repository")) {
+                if (!JsonToken.VALUE_NULL.equals(jp.getCurrentToken())) {
+                    String[] lock = jp.getText().split(":");
+                    lockOwner = lock[0];
+                    lockCreated = lock[1];                    
+                }
+            } else if (key.equals("lockCreated")) {
+                lockCreated = jp.getText();
+            } else if (key.equals("lockOwner")) {
+                lockOwner = jp.getText();
+            }else if (key.equals("repository")) {
                 repository = jp.getText();
             } else if (key.equals("title")) {
                 props.set("dc:title", jp.getText());
@@ -85,7 +94,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             }
             tok = jp.nextToken();
         }
-        return new Document(uid, type, facets, changeToken, path, state, lock, repository, props);
+        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, props, null);
     }
 
     protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {

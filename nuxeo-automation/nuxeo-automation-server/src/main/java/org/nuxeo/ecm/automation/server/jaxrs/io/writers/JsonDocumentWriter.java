@@ -134,8 +134,6 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                     "lockCreated",
                     ISODateTimeFormat.dateTime().print(
                             new DateTime(lock.getCreated())));
-        } else {
-            jg.writeStringField("lock", doc.getLock()); // old
         }
         jg.writeStringField("title", doc.getTitle());
         try {
