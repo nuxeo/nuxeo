@@ -83,4 +83,10 @@
 
   </extension>
 
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notificationListenerVeto">
+    <veto name="versionVeto" class="org.nuxeo.ecm.platform.ec.notification.VersionVeto" />
+  </extension>
+
 </component>
