@@ -45,11 +45,9 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -94,14 +92,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                                     + " as it is either a readonly proxy or an archived version.",
                             newRootContainer.getTitle(),
                             newRootContainer.getRef()));
-        }
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        if (!session.hasPermission(userManager.getPrincipal(userName),
-                newRootContainer.getRef(), SecurityConstants.ADD_CHILDREN)) {
-            throw new SecurityException(String.format(
-                    "%s has no permission to create content in '%s' (%s).",
-                    userName, newRootContainer.getTitle(),
-                    newRootContainer.getRef()));
         }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) newRootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
@@ -299,11 +289,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             DocumentModel doc = session.getDocument(ref);
             // TODO: check the facet, last root change and list of roots to have
             // a special handling for the roots.
-            // For a sync root child, if the syncRootId is available, can make a
-            // call like:
-            // Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(doc,
-            // syncRootId);
-            // Otherwise let getAdapter do the job
             FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
             if (fsItem == null) {
                 return false;
