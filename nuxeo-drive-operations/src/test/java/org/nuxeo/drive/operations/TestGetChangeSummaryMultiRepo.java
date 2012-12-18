@@ -186,12 +186,14 @@ public class TestGetChangeSummaryMultiRepo {
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder3/doc3", docChange.getDocPath());
         assertEquals(doc3.getId(), docChange.getDocUuid());
+
         docChange = docChanges.get(1);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
         assertEquals("project", docChange.getDocLifeCycleState());
         assertEquals("/folder2/doc2", docChange.getDocPath());
         assertEquals(doc2.getId(), docChange.getDocUuid());
+
         docChange = docChanges.get(2);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
@@ -209,6 +211,10 @@ public class TestGetChangeSummaryMultiRepo {
         otherSession.saveDocument(doc3);
         session.save();
         otherSession.save();
+
+        changeSummary = getDocumentChangeSummary();
+        docChanges = changeSummary.getFileSystemChanges();
+        assertEquals(3, docChanges.size());
     }
 
     protected FileSystemChangeSummary getDocumentChangeSummary() throws Exception {
