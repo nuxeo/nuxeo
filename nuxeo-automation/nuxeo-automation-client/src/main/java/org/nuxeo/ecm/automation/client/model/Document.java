@@ -45,7 +45,9 @@ public class Document extends DocRef {
 
     protected final String state;
 
-    protected final String lock;
+    protected final String lockOwner;
+    
+    protected final String lockCreated;
 
     protected final PropertyMap properties;
 
@@ -60,7 +62,7 @@ public class Document extends DocRef {
      * unmarshalling documents.
      */
     public Document(String id, String type, PropertyList facets,
-            String changeToken, String path, String state, String lock,
+            String changeToken, String path, String state, String lockOwner, String lockCreated,
             String repository, PropertyMap properties,
             PropertyMap contextParameters) {
         super(id);
@@ -69,23 +71,12 @@ public class Document extends DocRef {
         this.path = path;
         this.type = type;
         this.state = state;
-        this.lock = lock;
+        this.lockOwner = lockOwner;
+        this.lockCreated = lockCreated;
         this.repository = repository;
         this.properties = properties == null ? new PropertyMap() : properties;
         this.contextParameters = contextParameters == null ? new PropertyMap()
                 : contextParameters;
-    }
-
-    /**
-     * @deprecated since 5.6. Use
-     *             {@link #Document(String, String, PropertyList, String, String, String, String, String, PropertyMap, PropertyMap)}
-     *             .
-     */
-    public Document(String id, String type, PropertyList facets,
-            String changeToken, String path, String state, String lock,
-            String repository, PropertyMap properties) {
-        this(id, type, facets, changeToken, path, state, lock, repository,
-                properties, null);
     }
 
     public String getRepository() {
@@ -110,9 +101,24 @@ public class Document extends DocRef {
     }
 
     public String getLock() {
-        return lock;
+        if (lockOwner != null && lockCreated != null) {
+            return lockOwner + ":" + lockCreated;
+        }
+        return null;
     }
-
+    
+    public String getLockOwner() {
+        return lockOwner;
+    }
+    
+    public String getLockCreated() {
+        return lockCreated;
+    }
+    
+    public boolean isLocked() {
+        return lockOwner != null;
+    }
+    
     public String getState() {
         return state;
     }

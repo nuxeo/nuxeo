@@ -70,6 +70,7 @@ import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
+import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
@@ -829,7 +830,6 @@ public class RestTest {
     }
 
     @Test
-    @Ignore
     public void testLock() throws Exception {
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
@@ -839,18 +839,20 @@ public class RestTest {
                 "properties", "dc:title=My Folder").execute();
 
         // Getting the document
-        Document doc = (Document) session.newRequest("Document.Fetch").setHeader(
+        Document doc = (Document) session.newRequest(FetchDocument.ID).setHeader(
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", folder.getPath()).execute();
 
-        session.newRequest("Document.Lock").setHeader(
+        assertNull(doc.getLock());
+        
+        session.newRequest(LockDocument.ID).setHeader(
                 Constants.HEADER_NX_VOIDOP, "*").setInput(doc).execute();
 
-        doc = (Document) session.newRequest("Document.Fetch").setHeader(
+        doc = (Document) session.newRequest(FetchDocument.ID).setHeader(
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", doc.getPath()).execute();
 
-        String lock = doc.getLock();
-
-        assertEquals(lock, "me");
+        assertNotNull(doc.getLock());
+        assertEquals("Administrator", doc.getLockOwner());
+        assertNotNull(doc.getLockCreated());
     }
 
 }
