@@ -854,5 +854,21 @@ public class RestTest {
         assertEquals("Administrator", doc.getLockOwner());
         assertNotNull(doc.getLockCreated());
     }
+    
+    @Test
+    public void testEncoding() throws Exception {
+        Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+
+        String title = "éèêëààäìîïùûù";
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Folder").set("name", "myfolder").set(
+                "properties", "dc:title="+title).execute();
+        
+        folder = (Document) session.newRequest(FetchDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value", folder.getPath()).execute();
+
+        assertEquals(folder.getTitle(), title);
+    }
 
 }
