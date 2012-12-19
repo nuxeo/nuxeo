@@ -82,15 +82,11 @@ public class BlobToPDF {
 
     @OperationMethod
     public BlobList run(BlobList blobs) throws Exception {
-        BlobHolder bh = new SimpleBlobHolder(blobs);
-        bh = service.convertToMimeType("application/pdf", bh,
-                new HashMap<String, Serializable>());
-        // TODO optimize this
-        List<Blob> result = bh.getBlobs();
-        for (int i = 0, size = result.size(); i < size; i++) {
-            adjustBlobName(blobs.get(i), result.get(i));
+        BlobList bl = new BlobList();
+        for (Blob blob : blobs) {
+            bl.add(this.run(blob));
         }
-        return new BlobList(result);
+        return bl;
     }
 
     protected void adjustBlobName(Blob in, Blob out) {
