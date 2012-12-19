@@ -55,7 +55,7 @@ public interface FileSystemItemFactory {
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} and
-     * {@link FileSystemItem} parent id.
+     * parent {@link FileSystemItem} id.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
      *         is not adaptable as a {@link FileSystemItem}
