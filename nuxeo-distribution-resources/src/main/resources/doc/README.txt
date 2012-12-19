@@ -1,6 +1,6 @@
-                  Nuxeo platform 5.4.2.1-SNAPSHOT Release Notes
+                  Nuxeo platform 5.4.2-HF31 Release Notes
 
-   Welcome to the Nuxeo platform 5.4.2.1-SNAPSHOT.
+   Welcome to the Nuxeo platform 5.4.2-HF31.
 
    You can always download the latest releases of Nuxeo applications based
    on the Nuxeo Enterprise Platform from

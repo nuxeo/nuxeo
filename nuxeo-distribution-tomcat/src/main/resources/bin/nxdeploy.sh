@@ -1,4 +1,4 @@
 #!/bin/sh
 
-java -DupdateWar=y -jar ../lib/nuxeo-runtime-tomcat-adapter-5.4.2.1-SNAPSHOT.jar
+java -DupdateWar=y -jar ../lib/nuxeo-runtime-tomcat-adapter-5.4.2-HF31.jar
  
