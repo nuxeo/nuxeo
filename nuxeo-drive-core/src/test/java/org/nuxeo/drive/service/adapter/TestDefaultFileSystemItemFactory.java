@@ -281,16 +281,9 @@ public class TestDefaultFileSystemItemFactory {
     @Test
     public void testGetFileSystemItemById() throws Exception {
 
-        // Non existent doc id
-        try {
-            defaultFileSystemItemFactory.getFileSystemItemById(
-                    DEFAULT_FILE_SYSTEM_ID_PREFIX + "nonExistentDocId",
-                    principal);
-            fail("No FileSystemItem should be found for non existant id.");
-        } catch (ClientException e) {
-            assertEquals("Failed to get document nonExistentDocId",
-                    e.getMessage());
-        }
+        // Non existent doc id, must return null
+        assertNull(defaultFileSystemItemFactory.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ID_PREFIX + "nonExistentDocId", principal));
         // File without a blob
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);

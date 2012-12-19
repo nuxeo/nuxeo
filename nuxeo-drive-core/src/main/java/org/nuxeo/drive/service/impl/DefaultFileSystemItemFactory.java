@@ -105,8 +105,19 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     @Override
     public FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException {
-        DocumentModel doc = getDocumentByFileSystemId(id, principal);
-        return getFileSystemItem(doc);
+        try {
+            DocumentModel doc = getDocumentByFileSystemId(id, principal);
+            return getFileSystemItem(doc);
+        } catch (ClientException e) {
+            if (e.getCause() instanceof NoSuchDocumentException) {
+                log.debug(String.format(
+                        "No doc related to id %s, returning null.", id));
+                return null;
+            } else {
+                throw e;
+            }
+        }
+
     }
 
     /*--------------------------- Protected ---------------------------------*/
