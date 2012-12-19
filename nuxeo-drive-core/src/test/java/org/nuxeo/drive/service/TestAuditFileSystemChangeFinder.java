@@ -110,7 +110,7 @@ public class TestAuditFileSystemChangeFinder {
 
     @Test
     public void testFindChanges() throws Exception {
-
+        TransactionHelper.startTransaction();
         // No sync roots
         List<FileSystemItemChange> changes = getDocumentChanges();
         assertNotNull(changes);
@@ -123,7 +123,6 @@ public class TestAuditFileSystemChangeFinder {
         assertTrue(changes.isEmpty());
 
         // Create 3 documents, only 2 in sync roots
-        TransactionHelper.startTransaction();
         DocumentModel doc1 = session.createDocument(session.createDocumentModel(
                 "/folder1", "doc1", "File"));
         Thread.sleep(1000);
@@ -132,6 +131,7 @@ public class TestAuditFileSystemChangeFinder {
         DocumentModel doc3 = session.createDocument(session.createDocumentModel(
                 "/folder3", "doc3", "File"));
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         changes = getDocumentChanges();
         assertEquals(2, changes.size());
@@ -161,6 +161,7 @@ public class TestAuditFileSystemChangeFinder {
                 "The content of file 2."));
         session.saveDocument(doc2);
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         syncRootPaths.remove("/folder2");
         changes = getDocumentChanges();
@@ -173,9 +174,9 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals(doc1.getId(), docChange.getDocUuid());
 
         // Delete a document
-        TransactionHelper.startTransaction();
         session.followTransition(doc1.getRef(), "delete");
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         changes = getDocumentChanges();
         assertEquals(1, changes.size());
@@ -193,6 +194,7 @@ public class TestAuditFileSystemChangeFinder {
         Thread.sleep(1000);
         session.move(doc3.getRef(), folder2.getRef(), null);
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         syncRootPaths.add("/folder2");
         changes = getDocumentChanges();
@@ -211,10 +213,10 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals(doc1.getId(), docChange.getDocUuid());
 
         // Too many changes
-        TransactionHelper.startTransaction();
         session.followTransition(doc1.getRef(), "delete");
         session.followTransition(doc2.getRef(), "delete");
         commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "1");
