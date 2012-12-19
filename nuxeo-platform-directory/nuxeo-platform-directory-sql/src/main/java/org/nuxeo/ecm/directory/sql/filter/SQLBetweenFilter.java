@@ -36,16 +36,17 @@ public class SQLBetweenFilter extends SQLComplexFilter {
     private Calendar to;
 
     public SQLBetweenFilter(Calendar from, Calendar to) {
-        super("BETWEEN", 2);
+        super("BETWEEN");
         this.from = from;
         this.to = to;
     }
 
     @Override
-    public void doSetFieldValue(PreparedStatement ps, int index, Column column)
+    public int doSetFieldValue(PreparedStatement ps, int index, Column column)
             throws SQLException {
         column.setToPreparedStatement(ps, index, from);
         column.setToPreparedStatement(ps, index + 1, to);
+        return index + 2;
     }
 
     @Override

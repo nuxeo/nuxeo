@@ -36,12 +36,13 @@ public class SQLOperatorFilter extends SQLComplexFilter {
     private Serializable value;
 
     public SQLOperatorFilter(String operator, Serializable value) {
-        super(operator, 1);
+        super(operator);
         this.value = value;
     }
 
     @Override
-    public void doSetFieldValue(PreparedStatement ps, int index, Column column) throws SQLException {
+    public int doSetFieldValue(PreparedStatement ps, int index, Column column) throws SQLException {
         column.setToPreparedStatement(ps, index, value);
+        return index + 1;
     }
 }

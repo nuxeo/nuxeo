@@ -778,7 +778,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     value = null;
                 }
                 if (value != null) {
-                    if (SQLComplexFilter.class.isAssignableFrom(value.getClass())) {
+                    if (value instanceof SQLComplexFilter) {
                         SQLComplexFilter complexFilter = (SQLComplexFilter) value;
                         operator = complexFilter.getOperator();
                         rightSide = complexFilter.getRightSide();
@@ -950,8 +950,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         for (Column column : orderedColumns) {
             Object value = filterMap.get(column.getKey());
 
-            if (SQLComplexFilter.class.isAssignableFrom(value.getClass())) {
-                ((SQLComplexFilter) value).setFieldValue(ps, index, column);
+            if (value instanceof SQLComplexFilter) {
+                index = ((SQLComplexFilter) value).setFieldValue(ps, index, column);
             } else {
                 setFieldValue(ps, index, column, value);
                 index++;

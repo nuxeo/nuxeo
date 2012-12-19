@@ -41,20 +41,16 @@ public abstract class SQLComplexFilter implements Serializable {
 
     protected String operator;
 
-    protected int numberOfFields;
-
     protected Serializable value;
 
-    public SQLComplexFilter(String operator, int numberOfFields) {
+    public SQLComplexFilter(String operator) {
         this.operator = operator;
-        this.numberOfFields = numberOfFields;
     }
 
-    public void setFieldValue(PreparedStatement ps, int index, Column column)
+    public int setFieldValue(PreparedStatement ps, int index, Column column)
             throws DirectoryException {
         try {
-            doSetFieldValue(ps, index, column);
-            index += numberOfFields;
+            return doSetFieldValue(ps, index, column);
         } catch (SQLException e) {
             throw new DirectoryException(
                     "SQLComplexFilter setFieldValue failed", e);
@@ -62,7 +58,7 @@ public abstract class SQLComplexFilter implements Serializable {
 
     }
 
-    public abstract void doSetFieldValue(PreparedStatement ps, int index,
+    public abstract int doSetFieldValue(PreparedStatement ps, int index,
             Column column) throws SQLException;
 
     public String getRightSide() {
