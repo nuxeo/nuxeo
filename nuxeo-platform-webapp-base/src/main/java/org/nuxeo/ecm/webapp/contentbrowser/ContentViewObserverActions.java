@@ -81,7 +81,7 @@ public class ContentViewObserverActions implements Serializable {
      *
      * @since 5.6
      */
-    @Observer(value = { EventNames.FLUSH_EVENT }, create = false)
+    @Observer(value = { EventNames.FLUSH_EVENT }, create = true)
     public void onHotReloadFlush() {
         contentViewActions.resetAll();
     }
