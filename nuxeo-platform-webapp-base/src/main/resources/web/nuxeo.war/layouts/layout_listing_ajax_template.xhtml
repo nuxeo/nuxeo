@@ -33,7 +33,7 @@
                 value="#{documents.selected}">
                 <a4j:support event="onclick"
                   action="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
-                  onclick="javascript:handleAllCheckBoxes('#{contentView.name}', this.checked)"
+                  onclick="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
                   reRender="ajax_selection_buttons, ajax_after_selection_buttons_form" />
               </h:selectBooleanCheckbox>
             </c:when>
@@ -42,7 +42,7 @@
                 title="#{messages['tooltip.content.select.all']}"
                 value="#{documents.selected}">
                 <a4j:support event="onclick"
-                  onclick="javascript:handleAllCheckBoxes('#{contentView.name}', this.checked)"
+                  onclick="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
                   action="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
                   reRender="ajax_selection_buttons, ajax_after_selection_buttons_form" />
               </h:selectBooleanCheckbox>
