@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemManager;
+import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.TooManyChangesException;
@@ -42,14 +43,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -87,6 +90,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (!newRootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             newRootContainer.addFacet(NUXEO_DRIVE_FACET);
         }
+        fireEvent(newRootContainer, session,
+                NuxeoDriveEvents.ABOUT_TO_REGISTER_ROOT, userName);
         if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
             throw new ClientException(
                     String.format(
@@ -94,14 +99,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                                     + " as it is either a readonly proxy or an archived version.",
                             newRootContainer.getTitle(),
                             newRootContainer.getRef()));
-        }
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        if (!session.hasPermission(userManager.getPrincipal(userName),
-                newRootContainer.getRef(), SecurityConstants.ADD_CHILDREN)) {
-            throw new SecurityException(String.format(
-                    "%s has no permission to create content in '%s' (%s).",
-                    userName, newRootContainer.getTitle(),
-                    newRootContainer.getRef()));
         }
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) newRootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
@@ -128,6 +125,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         session.saveDocument(newRootContainer);
         session.save();
         cache.clear();
+        fireEvent(newRootContainer, session, NuxeoDriveEvents.ROOT_REGISTERED,
+                userName);
     }
 
     @Override
@@ -137,6 +136,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (!rootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             rootContainer.addFacet(NUXEO_DRIVE_FACET);
         }
+        fireEvent(rootContainer, session,
+                NuxeoDriveEvents.ABOUT_TO_UNREGISTER_ROOT, userName);
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) rootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
         for (Map<String, Object> subscription : subscriptions) {
@@ -152,6 +153,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         session.saveDocument(rootContainer);
         session.save();
         cache.clear();
+        fireEvent(rootContainer, session, NuxeoDriveEvents.ROOT_UNREGISTERED,
+                userName);
     }
 
     @Override
@@ -164,6 +167,21 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     @Override
     public void handleFolderDeletion(IdRef deleted) throws ClientException {
         cache.clear();
+    }
+
+    protected void fireEvent(DocumentModel sourceDocument, CoreSession session,
+            String eventName, String impactedUserName) throws ClientException {
+        EventService eventService = Framework.getLocalService(EventService.class);
+        DocumentEventContext ctx = new DocumentEventContext(session,
+                session.getPrincipal(), sourceDocument);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME,
+                session.getRepositoryName());
+        ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
+        ctx.setProperty("category", NuxeoDriveEvents.EVENT_CATEGORY);
+        ctx.setProperty(NuxeoDriveEvents.IMPACTED_USERNAME_PROPERTY,
+                impactedUserName);
+        Event event = ctx.newEvent(eventName);
+        eventService.fireEvent(event);
     }
 
     /**
@@ -299,11 +317,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             DocumentModel doc = session.getDocument(ref);
             // TODO: check the facet, last root change and list of roots to have
             // a special handling for the roots.
-            // For a sync root child, if the syncRootId is available, can make a
-            // call like:
-            // Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(doc,
-            // syncRootId);
-            // Otherwise let getAdapter do the job
             FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
             if (fsItem == null) {
                 return false;

@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.TooManyChangesException;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.runtime.api.Framework;
@@ -48,9 +49,10 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
     @SuppressWarnings("unchecked")
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
             Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
-            int limit) throws TooManyChangesException {
-
+            int limit) throws ClientException, TooManyChangesException {
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
+
+        // Find changes from the log under active roots
         if (!rootPaths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
@@ -70,7 +72,7 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
             String repositoryName = session.getRepositoryName();
             String auditQuery = String.format(auditQuerySb.toString(),
                     repositoryName, getRootPathClause(rootPaths),
-                    getDateClause(lastSuccessfulSyncDate, syncDate));
+                    getJPADateClause(lastSuccessfulSyncDate, syncDate));
             log.debug("Querying audit logs for document changes: " + auditQuery);
 
             List<Object[]> queryResult = (List<Object[]>) auditService.nativeQuery(
@@ -107,11 +109,18 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
 
     // Round dates to the lower second to ensure consistency
     // in the case of databases that don't support milliseconds
-    protected String getDateClause(long lastSuccessfulSyncDate, long syncDate) {
+    protected String getJPADateClause(long lastSuccessfulSyncDate, long syncDate) {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return String.format("log.eventDate >= '%s' and log.eventDate < '%s'",
                 sdf.format(new Date(lastSuccessfulSyncDate)),
                 sdf.format(new Date(syncDate)));
+    }
+
+    protected String getNXQLDateClause(String datePropertyPath, long lastSuccessfulSyncDate, long syncDate) {
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return String.format("%s >= TIMESTAMP '%s' AND %s < TIMESTAMP '%s'",
+                datePropertyPath, sdf.format(new Date(lastSuccessfulSyncDate)),
+                datePropertyPath, sdf.format(new Date(syncDate)));
     }
 
 }

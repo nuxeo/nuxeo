@@ -18,7 +18,6 @@ package org.nuxeo.drive.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -230,30 +228,7 @@ public class TestNuxeoDriveManager {
         checkRootsCount(user1, 1);
         checkRootsCount(user2, 1);
 
-
-        // check that users cannot synchronize workspaces and folders where they
-        // don't have content creation access to.
-        try {
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    "user1",
-                    doc(user1Session, "/default-domain/workspaces/workspace-1"),
-                    user1Session);
-            fail("user1 should not have the permission to use Workspace 1 as sync root.");
-        } catch (SecurityException se) {
-            // expected
-        }
-
-        // this check should also fail even if the CoreSession is opened by the
-        // Administrator
-        try {
-            nuxeoDriveManager.registerSynchronizationRoot("user1",
-                    doc("/default-domain/workspaces/workspace-1"), session);
-        } catch (SecurityException se) {
-            // expected
-        }
-
-        // users can synchronize to workspaces and folder where they have
-        // write access
+        // users can synchronize to workspaces and folders
         nuxeoDriveManager.registerSynchronizationRoot("user1",
                 doc(user1Session, "/default-domain/workspaces/workspace-2"),
                 user1Session);

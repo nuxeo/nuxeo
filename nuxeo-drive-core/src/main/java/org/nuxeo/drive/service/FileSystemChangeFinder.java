@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.drive.service.impl.FileSystemItemChange;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -49,9 +50,11 @@ public interface FileSystemChangeFinder extends Serializable {
      * @return the list of document changes
      * @throws TooManyChangesException if the number of changes found has
      *             exceeded the limit
+     * @throws ClientException if the access to the repository fails for another
+     *             reason.
      */
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
             Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
-            int limit) throws TooManyChangesException;
+            int limit) throws TooManyChangesException, ClientException;
 
 }
