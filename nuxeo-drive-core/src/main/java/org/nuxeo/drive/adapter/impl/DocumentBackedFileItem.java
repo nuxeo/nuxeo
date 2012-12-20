@@ -45,6 +45,10 @@ public class DocumentBackedFileItem extends
         initialize(doc);
     }
 
+    protected DocumentBackedFileItem() {
+        // Needed for JSON deserialization
+    }
+
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {

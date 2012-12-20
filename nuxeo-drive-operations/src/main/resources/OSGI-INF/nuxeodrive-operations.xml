@@ -11,6 +11,8 @@
       class="org.nuxeo.drive.operations.NuxeoDriveGetTopLevelChildren" />
     <operation
       class="org.nuxeo.drive.operations.NuxeoDriveFileSystemItemExists" />
+    <operation
+      class="org.nuxeo.drive.operations.NuxeoDriveGetFileSystemItem" />
   </extension>
 
 </component>

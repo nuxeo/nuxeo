@@ -23,6 +23,7 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -120,6 +121,37 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     protected TrashService getTrashService() {
         return Framework.getLocalService(TrashService.class);
+    }
+
+    /*---------- Needed for JSON deserialization ----------*/
+    @Override
+    protected void setId(String id) {
+        try {
+            super.setId(id);
+            String[] idFragments = parseFileSystemId(id);
+            this.factoryName = idFragments[0];
+            this.repositoryName = idFragments[1];
+            this.docId = idFragments[2];
+
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(
+                    "Cannot set id as it cannot be parsed.", e);
+        }
+
+    }
+
+    protected String[] parseFileSystemId(String id) throws ClientException {
+
+        // Parse id, expecting pattern:
+        // fileSystemItemFactoryName/repositoryName/docId
+        String[] idFragments = id.split("/");
+        if (idFragments.length != 3) {
+            throw new ClientException(
+                    String.format(
+                            "FileSystemItem id %s is not valid. Should match the 'fileSystemItemFactoryName/repositoryName/docId' pattern.",
+                            id));
+        }
+        return idFragments;
     }
 
 }
