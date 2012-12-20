@@ -20,7 +20,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -31,8 +30,6 @@ import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.runtime.api.Framework;
 
@@ -54,29 +51,6 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
             Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
             int limit) throws ClientException, TooManyChangesException {
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
-
-        // Find deactivated roots
-        String unregisteredRootsQuery = String.format(
-                "SELECT * From Document WHERE "
-                        + "drv:subscriptions/*1/username = '%s' AND "
-                        + "((ecm:currentLifeCycleState = 'deleted' AND %s)"
-                        + " OR " + "(drv:subscriptions/*1/enabled = 0 AND %s))",
-                session.getPrincipal().getName(),
-                getNXQLDateClause("dc:modified", lastSuccessfulSyncDate,
-                        syncDate),
-                getNXQLDateClause("drv:subscriptions/*1/lastChangeDate",
-                        lastSuccessfulSyncDate, syncDate));
-
-        DocumentModelList unregisteredRootDocs = session.query(unregisteredRootsQuery);
-        for (DocumentModel unregisteredRootDoc: unregisteredRootDocs) {
-            // TODO: find the right event name and event date instead
-            changes.add(new FileSystemItemChange(session.getRepositoryName(),
-                    "deleted", unregisteredRootDoc.getCurrentLifeCycleState(),
-                    unregisteredRootDoc.getProperty("dc:modified").getValue(
-                            Calendar.class).getTimeInMillis(),
-                    unregisteredRootDoc.getPathAsString(),
-                    unregisteredRootDoc.getId()));
-        }
 
         // Find changes from the log under active roots
         if (!rootPaths.isEmpty()) {
