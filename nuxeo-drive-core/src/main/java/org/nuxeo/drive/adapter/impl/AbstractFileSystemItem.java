@@ -36,37 +36,87 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractFileSystemItem implements FileSystemItem {
 
-    protected final String factoryName;
+    /** {@link FileSystemItem} attributes */
+    protected String id;
+
+    protected String parentId;
+
+    protected String name;
+
+    protected boolean isFolder;
+
+    protected String creator;
+
+    protected Calendar creationDate;
+
+    protected Calendar lastModificationDate;
+
+    protected boolean canRename;
+
+    protected boolean canDelete;
+
+    /** Internal attributes */
+    protected String factoryName;
 
     protected Principal principal;
 
-    protected AbstractFileSystemItem(String factoryName) {
+    protected AbstractFileSystemItem(String factoryName, Principal principal) {
         this.factoryName = factoryName;
+        this.principal = principal;
+        this.id = this.factoryName + "/";
+    }
+
+    protected AbstractFileSystemItem() {
+        // Needed for JSON deserialization
     }
 
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public String getId() {
-        return factoryName + "/";
+        return id;
     }
 
-    public abstract String getParentId();
+    @Override
+    public String getParentId() {
+        return parentId;
+    }
 
-    public abstract String getName();
+    @Override
+    public String getName() {
+        return name;
+    }
 
-    public abstract boolean isFolder();
+    @Override
+    public boolean isFolder() {
+        return isFolder;
+    }
 
-    public abstract String getCreator();
+    @Override
+    public String getCreator() {
+        return creator;
+    }
 
-    public abstract Calendar getCreationDate();
+    @Override
+    public Calendar getCreationDate() {
+        return creationDate;
+    }
 
-    public abstract Calendar getLastModificationDate();
+    @Override
+    public Calendar getLastModificationDate() {
+        return lastModificationDate;
+    }
 
-    public abstract boolean getCanRename();
+    @Override
+    public boolean getCanRename() {
+        return canRename;
+    }
+
+    @Override
+    public boolean getCanDelete() {
+        return canDelete;
+    }
 
     public abstract void rename(String name) throws ClientException;
-
-    public abstract boolean getCanDelete();
 
     public abstract void delete() throws ClientException;
 
@@ -115,5 +165,42 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
         return Framework.getLocalService(FileSystemItemAdapterService.class);
+    }
+
+    /*---------- Needed for JSON deserialization ----------*/
+    protected void setId(String id) {
+        this.id = id;
+    }
+
+    protected void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    protected void setName(String name) {
+        this.name = name;
+    }
+
+    protected void setFolder(boolean isFolder) {
+        this.isFolder = isFolder;
+    }
+
+    protected void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    protected void setCreationDate(Calendar creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    protected void setLastModificationDate(Calendar lastModificationDate) {
+        this.lastModificationDate = lastModificationDate;
+    }
+
+    protected void setCanRename(boolean canRename) {
+        this.canRename = canRename;
+    }
+
+    protected void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
     }
 }

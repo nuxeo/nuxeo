@@ -34,23 +34,13 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
     public DefaultSyncRootFolderItem(String factoryName, String parentId,
             DocumentModel doc) throws ClientException {
         super(factoryName, parentId, doc);
-    }
-
-    /*--------------------- AbstractFileSystemItem ---------------------*/
-    @Override
-    public boolean getCanRename() {
-        return false;
+        this.canRename = false;
     }
 
     @Override
     public void rename(String name) throws ClientException {
         throw new UnsupportedOperationException(
                 "Cannot rename a synchronization root folder item.");
-    }
-
-    @Override
-    public boolean getCanDelete() {
-        return true;
     }
 
     @Override

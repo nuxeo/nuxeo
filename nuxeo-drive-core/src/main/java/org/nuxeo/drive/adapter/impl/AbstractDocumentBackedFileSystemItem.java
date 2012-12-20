@@ -39,19 +39,6 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractDocumentBackedFileSystemItem extends
         AbstractFileSystemItem {
 
-    /** {@link FileSystemItem} attributes */
-    protected final String id;
-
-    protected String parentId;
-
-    protected String name;
-
-    protected final String creator;
-
-    protected final Calendar created;
-
-    protected final Calendar lastModificationDate;
-
     /** Backing {@link DocumentModel} attributes */
     protected final String repositoryName;
 
@@ -82,11 +69,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
             String parentId, DocumentModel doc) throws ClientException {
 
-        super(factoryName);
+        super(factoryName, doc.getCoreSession().getPrincipal());
 
         // Backing DocumentModel attributes
         repositoryName = doc.getRepositoryName();
-        principal = doc.getCoreSession().getPrincipal();
         docId = doc.getId();
         docPath = doc.getPathAsString();
         docTitle = doc.getTitle();
@@ -95,35 +81,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         id = computeId(docId);
         this.parentId = parentId;
         creator = (String) doc.getPropertyValue("dc:creator");
-        created = (Calendar) doc.getPropertyValue("dc:created");
+        creationDate = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
     }
 
     /*--------------------- FileSystemItem ---------------------*/
-    public String getId() {
-        return id;
-    }
-
-    public String getParentId() {
-        return parentId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public Calendar getCreationDate() {
-        return created;
-    }
-
-    public Calendar getLastModificationDate() {
-        return lastModificationDate;
-    }
-
     public void delete() throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         DocumentModel doc = getDocument(getSession());

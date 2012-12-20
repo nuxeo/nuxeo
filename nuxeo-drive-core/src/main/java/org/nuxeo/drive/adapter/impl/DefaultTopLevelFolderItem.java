@@ -45,60 +45,34 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
         FolderItem {
 
+    protected boolean canCreateChild;
+
     public DefaultTopLevelFolderItem(String factoryName, String userName)
             throws ClientException {
-        super(factoryName);
-        principal = Framework.getLocalService(UserManager.class).getPrincipal(
-                userName);
-    }
-
-    /*--------------------- AbstractFileSystemItem ---------------------*/
-    @Override
-    public String getParentId() {
-        return null;
-    }
-
-    @Override
-    public String getName() {
-        return "Nuxeo Drive";
-    }
-
-    @Override
-    public boolean isFolder() {
-        return true;
-    }
-
-    @Override
-    public String getCreator() {
-        return "system";
-    }
-
-    @Override
-    public Calendar getCreationDate() {
+        super(factoryName,
+                Framework.getLocalService(UserManager.class).getPrincipal(
+                        userName));
+        this.parentId = null;
+        this.name = "Nuxeo Drive";
+        this.isFolder = true;
+        this.creator = "system";
         Calendar cal = Calendar.getInstance();
-        cal.set(2012, 11, 12, 12, 12, 12);
-        return cal;
+        this.creationDate = cal;
+        this.lastModificationDate = this.creationDate;
+        this.canRename = false;
+        this.canDelete = false;
+        this.canCreateChild = false;
     }
 
-    @Override
-    public Calendar getLastModificationDate() {
-        return getCreationDate();
+    public DefaultTopLevelFolderItem() {
+        // Needed for JSON deserialization
     }
 
-    @Override
-    public boolean getCanRename() {
-        return false;
-    }
-
+    /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
         throw new UnsupportedOperationException(
                 "Cannot rename a system folder item.");
-    }
-
-    @Override
-    public boolean getCanDelete() {
-        return false;
     }
 
     @Override
@@ -131,7 +105,7 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
 
     @Override
     public boolean getCanCreateChild() {
-        return false;
+        return canCreateChild;
     }
 
     @Override
@@ -144,6 +118,11 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
     public FileItem createFile(Blob blob) throws ClientException {
         throw new UnsupportedOperationException(
                 "Cannot create a file in a system folder item.");
+    }
+
+    /*---------- Needed for JSON deserialization ----------*/
+    protected void setCanCreateChild(boolean canCreateChild) {
+        this.canCreateChild = canCreateChild;
     }
 
 }

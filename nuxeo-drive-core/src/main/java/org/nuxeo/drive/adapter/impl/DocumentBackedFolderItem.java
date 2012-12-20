@@ -46,29 +46,21 @@ public class DocumentBackedFolderItem extends
 
     private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
 
+    protected boolean canCreateChild;
+
     public DocumentBackedFolderItem(String factoryName, DocumentModel doc)
             throws ClientException {
         super(factoryName, doc);
-        this.name = docTitle;
+        initialize();
     }
 
     public DocumentBackedFolderItem(String factoryName, String parentId,
             DocumentModel doc) throws ClientException {
         super(factoryName, parentId, doc);
-        this.name = docTitle;
+        initialize();
     }
 
-    /*--------------------- AbstractFileSystemItem ---------------------*/
-    @Override
-    public boolean isFolder() {
-        return true;
-    }
-
-    @Override
-    public boolean getCanRename() {
-        return true;
-    }
-
+    /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
         CoreSession session = getSession();
@@ -77,11 +69,6 @@ public class DocumentBackedFolderItem extends
         session.saveDocument(doc);
         this.docTitle = name;
         this.name = name;
-    }
-
-    @Override
-    public boolean getCanDelete() {
-        return true;
     }
 
     /*--------------------- FolderItem -----------------*/
@@ -110,7 +97,7 @@ public class DocumentBackedFolderItem extends
 
     @Override
     public boolean getCanCreateChild() {
-        return true;
+        return canCreateChild;
     }
 
     @Override
@@ -150,8 +137,21 @@ public class DocumentBackedFolderItem extends
     }
 
     /*--------------------- Protected -----------------*/
+    protected void initialize() throws ClientException {
+        this.name = docTitle;
+        this.isFolder = true;
+        this.canRename = true;
+        this.canDelete = true;
+        this.canCreateChild = true;
+    }
+
     protected FileManager getFileManager() {
         return Framework.getLocalService(FileManager.class);
+    }
+
+    /*---------- Needed for JSON deserialization ----------*/
+    protected void setCanCreateChild(boolean canCreateChild) {
+        this.canCreateChild = canCreateChild;
     }
 
 }

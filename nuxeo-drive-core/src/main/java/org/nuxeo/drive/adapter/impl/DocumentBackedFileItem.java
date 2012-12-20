@@ -36,26 +36,16 @@ public class DocumentBackedFileItem extends
     public DocumentBackedFileItem(String factoryName, DocumentModel doc)
             throws ClientException {
         super(factoryName, doc);
-        this.name = getFileName(doc);
+        initialize(doc);
     }
 
     public DocumentBackedFileItem(String factoryName, String parentId,
             DocumentModel doc) throws ClientException {
         super(factoryName, parentId, doc);
-        this.name = getFileName(doc);
+        initialize(doc);
     }
 
-    /*--------------------- AbstractFileSystemItem ---------------------*/
-    @Override
-    public boolean isFolder() {
-        return false;
-    }
-
-    @Override
-    public boolean getCanRename() {
-        return true;
-    }
-
+    /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
         CoreSession session = getSession();
@@ -67,11 +57,6 @@ public class DocumentBackedFileItem extends
         updateDocTitleIfNeeded(doc, name);
         session.saveDocument(doc);
         this.name = name;
-    }
-
-    @Override
-    public boolean getCanDelete() {
-        return true;
     }
 
     /*--------------------- FileItem -----------------*/
@@ -114,6 +99,13 @@ public class DocumentBackedFileItem extends
     }
 
     /*--------------------- Protected -----------------*/
+    protected void initialize(DocumentModel doc) throws ClientException {
+        this.name = getFileName(doc);
+        this.isFolder = false;
+        this.canRename = true;
+        this.canDelete = true;
+    }
+
     protected BlobHolder getBlobHolder(DocumentModel doc)
             throws ClientException {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
