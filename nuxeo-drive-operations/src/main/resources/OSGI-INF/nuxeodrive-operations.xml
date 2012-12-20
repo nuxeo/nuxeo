@@ -9,6 +9,8 @@
       class="org.nuxeo.drive.operations.NuxeoDriveSetSynchronizationOperation" />
     <operation
       class="org.nuxeo.drive.operations.NuxeoDriveGetTopLevelChildren" />
+    <operation
+      class="org.nuxeo.drive.operations.NuxeoDriveFileSystemItemExists" />
   </extension>
 
 </component>

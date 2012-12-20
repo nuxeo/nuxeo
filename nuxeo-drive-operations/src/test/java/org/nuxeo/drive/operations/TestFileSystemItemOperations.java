@@ -144,4 +144,29 @@ public class TestFileSystemItemOperations {
             TransactionHelper.commitOrRollbackTransaction();
         }
     }
+
+    @Test
+    public void testFileSystemItemExists() throws Exception {
+
+        // Non existing file system item
+        Blob fileSystemItemExistsJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveFileSystemItemExists.ID).set("id",
+                "defaultSyncRootFolderItemFactory/test/badId").execute();
+        assertNotNull(fileSystemItemExistsJSON);
+
+        String fileSystemItemExists = mapper.readValue(
+                fileSystemItemExistsJSON.getStream(), String.class);
+        assertEquals("false", fileSystemItemExists);
+
+        // Existing file system item
+        fileSystemItemExistsJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveFileSystemItemExists.ID).set("id",
+                "defaultSyncRootFolderItemFactory/test/" + syncRoot1.getId()).execute();
+        assertNotNull(fileSystemItemExistsJSON);
+
+        fileSystemItemExists = mapper.readValue(
+                fileSystemItemExistsJSON.getStream(), String.class);
+        assertEquals("true", fileSystemItemExists);
+
+    }
 }
