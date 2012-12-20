@@ -16,7 +16,6 @@
  */
 package org.nuxeo.drive.operations;
 
-import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -29,7 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -58,8 +57,8 @@ public class NuxeoDriveGetChangeSummary {
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, docChangeSummary);
-        return new InputStreamBlob(new ByteArrayInputStream(
-                writer.toString().getBytes("UTF-8")), "application/json");
+        return StreamingBlob.createFromString(writer.toString(),
+                "application/json");
     }
 
 }
