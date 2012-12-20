@@ -189,7 +189,6 @@ public class TestAuditFileSystemChangeFinder {
 
         // Restore a deleted document and move a document in a newly
         // synchronized root
-        TransactionHelper.startTransaction();
         session.followTransition(doc1.getRef(), "undelete");
         Thread.sleep(1000);
         session.move(doc3.getRef(), folder2.getRef(), null);

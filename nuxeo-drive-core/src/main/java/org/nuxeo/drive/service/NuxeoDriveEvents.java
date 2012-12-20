@@ -33,4 +33,6 @@ public interface NuxeoDriveEvents {
 
     Serializable EVENT_CATEGORY = "NuxeoDrive";
 
+    String DELETED_EVENT = "deleted";
+
 }

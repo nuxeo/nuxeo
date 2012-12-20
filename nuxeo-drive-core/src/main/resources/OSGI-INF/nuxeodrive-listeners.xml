@@ -19,6 +19,22 @@
       <event>documentRemoved</event>
     </listener>
 
+    <documentation>
+      Handle document removal or root unregistration in order to be able to
+      populate the audit log and hence compute consistent change
+      summaries for each user.
+
+      @author Olivier Grisel
+    </documentation>
+    <listener name="nuxeoDriveFileSystemDeletionListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.drive.listener.NuxeoDriveFileSystemDeletionListener"
+      priority="200">
+      <event>lifecycle_transition_event</event>
+      <event>aboutToRemove</event>
+      <event>aboutToUnRegisterRoot</event>
+    </listener>
+
   </extension>
 
 </component>
