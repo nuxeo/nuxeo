@@ -6,6 +6,7 @@
       <operation class="org.nuxeo.drive.operations.NuxeoDriveGetChangeSummary" />
       <operation class="org.nuxeo.drive.operations.NuxeoDriveGetRootsOperation" />
       <operation class="org.nuxeo.drive.operations.NuxeoDriveSetSynchronizationOperation" />
+      <operation class="org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolderItem" />
    </extension>
 
 </component>
