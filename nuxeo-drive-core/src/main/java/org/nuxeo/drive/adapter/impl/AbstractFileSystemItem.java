@@ -25,6 +25,7 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -58,11 +59,19 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     /** Internal attributes */
     protected String factoryName;
 
-    protected Principal principal;
+    // Must not be serialized => transient
+    protected transient Principal principal;
+
+    /**
+     * Needed for JSON serialization/deserialization since we don't serialize
+     * the principal
+     */
+    protected String userName;
 
     protected AbstractFileSystemItem(String factoryName, Principal principal) {
         this.factoryName = factoryName;
         this.principal = principal;
+        this.userName = principal.getName();
         this.id = this.factoryName + "/";
     }
 
@@ -119,6 +128,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     public abstract void rename(String name) throws ClientException;
 
     public abstract void delete() throws ClientException;
+
+    /*---------- Needed for JSON serialization ----------*/
+    public String getUserName() {
+        return userName;
+    }
 
     /*--------------------- Comparable -------------*/
     @Override
@@ -202,5 +216,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected void setCanDelete(boolean canDelete) {
         this.canDelete = canDelete;
+    }
+
+    protected void setUserName(String userName) throws ClientException {
+        this.userName = userName;
+        this.principal = Framework.getLocalService(UserManager.class).getPrincipal(
+                userName);
     }
 }
