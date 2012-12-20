@@ -35,6 +35,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -44,6 +52,7 @@ import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * The implementation of a {@link WorkManager}.
@@ -164,6 +173,71 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     /**
+     * Synchronization holding a {@link Work} instance until commit time, at
+     * which point it will be scheduled.
+     *
+     * @since 5.7
+     */
+    public static class WorkSchedulingSynchronization implements
+            Synchronization {
+
+        protected final Work work;
+
+        protected final WorkThreadPoolExecutor executor;
+
+        public WorkSchedulingSynchronization(Work work,
+                WorkThreadPoolExecutor executor) {
+            this.work = work;
+            this.executor = executor;
+        }
+
+        @Override
+        public void beforeCompletion() {
+        }
+
+        @Override
+        public void afterCompletion(int status) {
+            if (work.getState() != State.SCHEDULED) {
+                // work already suspended or canceled
+                return;
+            }
+            if (status == Status.STATUS_COMMITTED) {
+                executor.afterCommit(work);
+            } else if (status == Status.STATUS_ROLLEDBACK) {
+                executor.cancelScheduledAfterCommit(work);
+            } else {
+                log.error("Unexpected status after completion: " + status);
+            }
+        }
+    }
+
+    /**
+     * List of {@link Work} instances.
+     *
+     * @since 5.7
+     */
+    public static class WorkList extends LinkedList<Work> {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Remove by identity, not equals.
+         * <p>
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean remove(Object o) {
+            for (Iterator<Work> it = iterator(); it.hasNext();) {
+                Work w = it.next();
+                if (w == o) { // not equals()
+                    it.remove();
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
      * A {@link ThreadPoolExecutor} that keeps available the list of scheduled,
      * running and completed tasks and provides other methods.
      * <p>
@@ -176,23 +250,26 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
         protected Object monitor = new Object();
 
-        protected List<Work> scheduled;
+        protected WorkList scheduledAfterCommit;
 
-        protected List<Work> running;
+        protected WorkList scheduled;
 
-        protected List<Work> completed;
+        protected WorkList running;
 
-        protected List<Work> suspended;
+        protected WorkList completed;
+
+        protected WorkList suspended;
 
         public WorkThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
                 long keepAliveTime, TimeUnit unit,
                 BlockingQueue<Runnable> queue, ThreadFactory threadFactory) {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queue,
                     threadFactory);
-            scheduled = new LinkedList<Work>();
-            running = new LinkedList<Work>();
-            completed = new LinkedList<Work>();
-            suspended = new LinkedList<Work>();
+            scheduledAfterCommit = new WorkList();
+            scheduled = new WorkList();
+            running = new WorkList();
+            completed = new WorkList();
+            suspended = new WorkList();
         }
 
         /**
@@ -209,6 +286,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             }
             if (removed) {
                 synchronized (monitor) {
+                    for (Iterator<Work> it = scheduledAfterCommit.iterator(); it.hasNext();) {
+                        Work w = it.next();
+                        if (work.equals(w)) {
+                            it.remove();
+                            w.setCanceled();
+                        }
+                    }
                     for (Iterator<Work> it = scheduled.iterator(); it.hasNext();) {
                         Work w = it.next();
                         if (work.equals(w)) {
@@ -219,6 +303,20 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 }
             }
             return removed;
+        }
+
+        /**
+         * Called from {@link WorkSchedulingSynchronization} after commit to
+         * actually remove the work from the queue and cancel it.
+         */
+        public void cancelScheduledAfterCommit(Work work) {
+            boolean removed;
+            synchronized (monitor) {
+                removed = scheduledAfterCommit.remove(work);
+            }
+            if (removed) { // may have been removed before tx commit
+                work.setCanceled();
+            }
         }
 
         /**
@@ -240,10 +338,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (state == null) {
                 queues.add(running);
                 queues.add(scheduled);
+                queues.add(scheduledAfterCommit);
             } else if (state == State.RUNNING) {
                 queues.add(running);
             } else if (state == State.SCHEDULED) {
                 queues.add(scheduled);
+                queues.add(scheduledAfterCommit);
             } else if (state == State.COMPLETED) {
                 queues.add(completed);
             } else {
@@ -270,12 +370,76 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             return null;
         }
 
+        /**
+         * This method does not wait for transaction to be committed to schedule
+         * the task for execution.
+         * <p>
+         * {@inheritDoc}
+         *
+         * @param r the task to execute
+         */
         @Override
         public void execute(Runnable r) {
-            synchronized (monitor) {
-                scheduled.add((Work) r);
+            execute((Work) r, false);
+        }
+
+        /**
+         * Executes the given task sometime in the future.
+         *
+         * @param work the work to execute
+         * @param afterCommit if {@code true} and the work is scheduled, it will
+         *            only be run after the current transaction (if any) has
+         *            committed
+         * @see #execute(Runnable)
+         */
+        public void execute(Work work, boolean afterCommit) {
+            if (afterCommit) {
+                TransactionManager transactionManager;
+                try {
+                    transactionManager = TransactionHelper.lookupTransactionManager();
+                } catch (NamingException e) {
+                    transactionManager = null;
+                }
+                if (transactionManager != null) {
+                    try {
+                        Transaction transaction = transactionManager.getTransaction();
+                        if (transaction != null
+                                && transaction.getStatus() != Status.STATUS_MARKED_ROLLBACK) {
+                            transaction.registerSynchronization(new WorkSchedulingSynchronization(
+                                    work, this));
+                            synchronized (monitor) {
+                                scheduledAfterCommit.add(work);
+                            }
+                            return;
+                        }
+                    } catch (SystemException e) {
+                        // ignore
+                    } catch (RollbackException e) {
+                        // ignore, cannot happen
+                    }
+                }
             }
-            super.execute(r);
+            synchronized (monitor) {
+                scheduled.add(work);
+            }
+            super.execute(work);
+        }
+
+        /**
+         * Called from {@link WorkSchedulingSynchronization} after commit to
+         * actually schedule the work.
+         */
+        public void afterCommit(Work work) {
+            boolean removed;
+            synchronized (monitor) {
+                removed = scheduledAfterCommit.remove(work);
+                if (removed) { // may have been removed before tx commit
+                    scheduled.add(work);
+                }
+            }
+            if (removed) {
+                super.execute(work);
+            }
         }
 
         @Override
@@ -382,6 +546,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 for (Work work : scheduled) {
                     work.suspend();
                 }
+                for (Work work : scheduledAfterCommit) {
+                    work.suspend();
+                }
             }
         }
 
@@ -390,7 +557,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          */
         public List<Work> getScheduled() {
             synchronized (monitor) {
-                return new ArrayList<Work>(scheduled);
+                List<Work> list = new ArrayList<Work>(scheduled);
+                list.addAll(scheduledAfterCommit);
+                return list;
             }
         }
 
@@ -421,6 +590,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                         + scheduled.size());
                 list.addAll(running);
                 list.addAll(scheduled);
+                list.addAll(scheduledAfterCommit);
                 return list;
             }
         }
@@ -430,7 +600,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          */
         public int getNonCompletedWorkSize() {
             synchronized (monitor) {
-                return scheduled.size() + running.size();
+                return scheduled.size() + scheduledAfterCommit.size()
+                        + running.size();
             }
         }
 
@@ -569,11 +740,21 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void schedule(Work work) {
-        schedule(work, Scheduling.ENQUEUE);
+        schedule(work, Scheduling.ENQUEUE, false);
+    }
+
+    @Override
+    public void schedule(Work work, boolean afterCommit) {
+        schedule(work, Scheduling.ENQUEUE, afterCommit);
     }
 
     @Override
     public void schedule(Work work, Scheduling scheduling) {
+        schedule(work, scheduling, false);
+    }
+
+    @Override
+    public void schedule(Work work, Scheduling scheduling, boolean afterCommit) {
         if (work.getState() != State.SCHEDULED) {
             throw new IllegalStateException(String.valueOf(work.getState()));
         }
@@ -594,7 +775,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             }
             break;
         }
-        executor.execute(work);
+        executor.execute(work, afterCommit);
     }
 
     @Override

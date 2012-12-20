@@ -129,10 +129,37 @@ public interface WorkManager {
 
     /**
      * Schedules work for execution at a later time.
+     * <p>
+     * This method is identical to {@link #schedule(Work, boolean)} with
+     * {@code afterCommit = false}.
      *
      * @param work the work to execute
      */
     void schedule(Work work);
+
+    /**
+     * Schedules work for execution at a later time, after the current
+     * transaction (if any) has committed.
+     *
+     * @param work the work to execute
+     * @param afterCommit if {@code true} and the work is scheduled, it will
+     *            only be run after the current transaction (if any) has
+     *            committed
+     */
+    void schedule(Work work, boolean afterCommit);
+
+    /**
+     * Schedules work for execution at a later time, with a specific
+     * {@linkplain Scheduling scheduling} policy.
+     * <p>
+     * This method is identical to {@link #schedule(Work, Scheduling, boolean)}
+     * with {@code afterCommit = false}.
+     *
+     * @param work the work to execute
+     * @param scheduling the scheduling policy
+     * @see #schedule(Work)
+     */
+    void schedule(Work work, Scheduling scheduling);
 
     /**
      * Schedules work for execution at a later time, with a specific
@@ -140,9 +167,12 @@ public interface WorkManager {
      *
      * @param work the work to execute
      * @param scheduling the scheduling policy
+     * @param afterCommit if {@code true} and the work is scheduled, it will
+     *            only be run after the current transaction (if any) has
+     *            committed
      * @see #schedule(Work)
      */
-    void schedule(Work work, Scheduling scheduling);
+    void schedule(Work work, Scheduling scheduling, boolean afterCommit);
 
     /**
      * Finds a work instance by equality or identity.
