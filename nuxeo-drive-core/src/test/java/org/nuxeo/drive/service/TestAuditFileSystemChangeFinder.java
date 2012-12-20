@@ -296,7 +296,6 @@ public class TestAuditFileSystemChangeFinder {
         // Create a document that should not be synchronized because not
         // adaptable as a FileSystemItem (not Folderish nor a BlobHolder with a
         // blob) => should not be considered as a change
-        TransactionHelper.startTransaction();
         session.createDocument(session.createDocumentModel("/folder1",
                 "notSynchronizableDoc", "NotSynchronizable"));
         commitAndWaitForAsyncCompletion();
