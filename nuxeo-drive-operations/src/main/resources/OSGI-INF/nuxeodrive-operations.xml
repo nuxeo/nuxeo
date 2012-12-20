@@ -13,6 +13,8 @@
       class="org.nuxeo.drive.operations.NuxeoDriveFileSystemItemExists" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveGetFileSystemItem" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveGetChildren" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveCreateFolder" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveCreateFile" />
   </extension>
 
 </component>
