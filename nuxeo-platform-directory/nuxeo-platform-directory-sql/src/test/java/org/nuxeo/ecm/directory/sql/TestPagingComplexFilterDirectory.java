@@ -48,19 +48,23 @@ public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
         try {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("label", "Label");
+
+            Map<String, String> order = new HashMap<String, String>();
+            order.put("id", "ASC");
+
             List<DocumentModel> entries = session.query(filter, filter.keySet());
             assertEquals(12, entries.size());
             assertEquals("1", entries.get(0).getId());
 
-            entries = session.query(filter, filter.keySet(), null, false, 5, -1);
+            entries = session.query(filter, filter.keySet(), order, false, 5, -1);
             assertEquals(5, entries.size());
             assertEquals("1", entries.get(0).getId());
 
-            entries = session.query(filter, filter.keySet(), null, false, 5, 1);
+            entries = session.query(filter, filter.keySet(), order, false, 5, 1);
             assertEquals(5, entries.size());
             assertEquals("2", entries.get(0).getId());
 
-            entries = session.query(filter, filter.keySet(), null, false, 5, 11);
+            entries = session.query(filter, filter.keySet(), order, false, 5, 11);
             assertEquals(1, entries.size());
             assertEquals("12", entries.get(0).getId());
         } finally {
