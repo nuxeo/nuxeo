@@ -44,7 +44,7 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected String name;
 
-    protected boolean isFolder;
+    protected boolean folder;
 
     protected String creator;
 
@@ -97,7 +97,7 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     @Override
     public boolean isFolder() {
-        return isFolder;
+        return folder;
     }
 
     @Override
@@ -195,7 +195,7 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     }
 
     protected void setFolder(boolean isFolder) {
-        this.isFolder = isFolder;
+        this.folder = isFolder;
     }
 
     protected void setCreator(String creator) {

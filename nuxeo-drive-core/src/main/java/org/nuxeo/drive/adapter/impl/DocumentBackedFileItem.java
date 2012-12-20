@@ -101,7 +101,7 @@ public class DocumentBackedFileItem extends
     /*--------------------- Protected -----------------*/
     protected void initialize(DocumentModel doc) throws ClientException {
         this.name = getFileName(doc);
-        this.isFolder = false;
+        this.folder = false;
         this.canRename = true;
         this.canDelete = true;
     }

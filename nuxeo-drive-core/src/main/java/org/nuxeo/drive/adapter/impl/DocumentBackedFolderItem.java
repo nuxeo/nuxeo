@@ -139,7 +139,7 @@ public class DocumentBackedFolderItem extends
     /*--------------------- Protected -----------------*/
     protected void initialize() throws ClientException {
         this.name = docTitle;
-        this.isFolder = true;
+        this.folder = true;
         this.canRename = true;
         this.canDelete = true;
         this.canCreateChild = true;

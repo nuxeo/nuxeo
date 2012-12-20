@@ -54,7 +54,7 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
                         userName));
         this.parentId = null;
         this.name = "Nuxeo Drive";
-        this.isFolder = true;
+        this.folder = true;
         this.creator = "system";
         Calendar cal = Calendar.getInstance();
         this.creationDate = cal;
