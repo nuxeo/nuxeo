@@ -40,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractDocumentBackedFileSystemItem extends
         AbstractFileSystemItem {
 
+    private static final long serialVersionUID = 1L;
+
     /** Backing {@link DocumentModel} attributes */
     protected String repositoryName;
 

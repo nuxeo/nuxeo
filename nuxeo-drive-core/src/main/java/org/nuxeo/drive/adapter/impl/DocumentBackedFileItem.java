@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 public class DocumentBackedFileItem extends
         AbstractDocumentBackedFileSystemItem implements FileItem {
 
+    private static final long serialVersionUID = 1L;
+
     public DocumentBackedFileItem(String factoryName, DocumentModel doc)
             throws ClientException {
         super(factoryName, doc);

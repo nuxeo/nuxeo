@@ -45,6 +45,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
         FolderItem {
 
+    private static final long serialVersionUID = 1L;
+
     protected boolean canCreateChild;
 
     public DefaultTopLevelFolderItem(String factoryName, String userName)

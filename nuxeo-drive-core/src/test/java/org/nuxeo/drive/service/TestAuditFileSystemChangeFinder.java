@@ -153,7 +153,6 @@ public class TestAuditFileSystemChangeFinder {
         assertTrue(changes.isEmpty());
 
         // Update both synchronized documents and unsynchronize a root
-        TransactionHelper.startTransaction();
         doc1.setPropertyValue("file:content", new StringBlob(
                 "The content of file 1."));
         session.saveDocument(doc1);
@@ -306,7 +305,6 @@ public class TestAuditFileSystemChangeFinder {
 
         // Create 2 documents in the same sync root: "/folder1" and 1 document
         // in another sync root => should find 2 changes for "/folder1"
-        TransactionHelper.startTransaction();
         DocumentModel doc3 = session.createDocumentModel("/folder1", "doc3",
                 "File");
         doc3.setPropertyValue("file:content", new StringBlob(
@@ -324,6 +322,7 @@ public class TestAuditFileSystemChangeFinder {
         doc5 = session.createDocument(doc5);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+
         changeSummary = getChangeSummary(admin);
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
         assertEquals(3, changeSummary.getFileSystemChanges().size());
@@ -334,7 +333,6 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Test too many changes
-        TransactionHelper.startTransaction();
         session.followTransition(doc1.getRef(), "delete");
         session.followTransition(doc2.getRef(), "delete");
         commitAndWaitForAsyncCompletion();
@@ -403,7 +401,6 @@ public class TestAuditFileSystemChangeFinder {
                 fsItemChange.getFileSystemItem().getId());
 
         // Test deletion of a root
-        TransactionHelper.startTransaction();
         session.followTransition(folder1.getRef(), "delete");
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();

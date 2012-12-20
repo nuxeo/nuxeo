@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DummyFolderItem extends DocumentBackedFolderItem {
 
+    private static final long serialVersionUID = 1L;
+
     public DummyFolderItem(String factoryName, DocumentModel doc)
             throws ClientException {
         super(factoryName, doc);

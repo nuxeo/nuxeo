@@ -37,7 +37,6 @@ import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * Event listener to track events that should be mapped to file system item
  * deletions in the the ChangeSummary computation.
@@ -90,7 +89,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger == null) {
-            // The log is not deployed (probably in unittest)
+            // The log is not deployed (probably in unittest
             return;
         }
         FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
@@ -115,10 +114,8 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             extendedInfos.put("impactedUserName",
                     logger.newExtendedInfo(impactedUserName));
         }
-        // TODO: make FileSystemItem Serializable
-        //extendedInfos.put("fileSystemItem", fsItem);
+        extendedInfos.put("fileSystemItem", logger.newExtendedInfo(fsItem));
         entry.setExtendedInfos(extendedInfos);
-
         logger.addLogEntries(Collections.singletonList(entry));
     }
 

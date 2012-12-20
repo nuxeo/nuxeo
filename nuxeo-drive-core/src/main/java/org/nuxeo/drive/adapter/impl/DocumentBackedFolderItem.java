@@ -44,6 +44,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DocumentBackedFolderItem extends
         AbstractDocumentBackedFileSystemItem implements FolderItem {
 
+    private static final long serialVersionUID = 1L;
+
     private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
 
     protected boolean canCreateChild;

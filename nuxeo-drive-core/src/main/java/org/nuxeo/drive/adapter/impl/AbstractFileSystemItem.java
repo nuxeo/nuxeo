@@ -37,6 +37,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractFileSystemItem implements FileSystemItem {
 
+    private static final long serialVersionUID = 1L;
+
     /** {@link FileSystemItem} attributes */
     protected String id;
 

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.adapter;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import org.nuxeo.drive.adapter.impl.AbstractDocumentBackedFileSystemItem;
@@ -29,7 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @see FolderItem
  * @see AbstractDocumentBackedFileSystemItem
  */
-public interface FileSystemItem extends Comparable<FileSystemItem> {
+public interface FileSystemItem extends Comparable<FileSystemItem>, Serializable {
 
     /**
      * Gets a unique id generated server-side.
