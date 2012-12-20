@@ -59,12 +59,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <forkMode>pertest</forkMode> <!-- this is what triggers the problem, having it to "never" works also -->
-          <systemProperties>
-            <property>
-              <name>log4j.configuration</name>
-              <value>file:target/test-classes/log4j.properties</value>
-            </property>
-          </systemProperties>
+          <systemPropertyVariables>
+              <log4j.configuration>file:target/test-classes/log4j.properties</log4j.configuration>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
