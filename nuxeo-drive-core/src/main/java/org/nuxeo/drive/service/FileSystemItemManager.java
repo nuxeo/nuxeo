@@ -54,6 +54,16 @@ public interface FileSystemItemManager {
 
     /*------------- Read operations ----------------*/
     /**
+     * Gets the children of the top level {@link FolderItem} for the given
+     * principal.
+     *
+     * @throws ClientException if the top level {@link FolderItem} or its
+     *             children cannot be retrieved
+     */
+    List<FileSystemItem> getTopLevelChildren(Principal principal)
+            throws ClientException;
+
+    /**
      * Returns true if a {@link FileSystemItem} with the given id exists for the
      * given principal.
      *

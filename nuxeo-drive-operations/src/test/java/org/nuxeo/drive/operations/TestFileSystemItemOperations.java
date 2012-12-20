@@ -19,19 +19,25 @@ package org.nuxeo.drive.operations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
-import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
+import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -52,7 +58,17 @@ import com.google.inject.Inject;
 public class TestFileSystemItemOperations {
 
     @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected NuxeoDriveManager nuxeoDriveManager;
+
+    @Inject
     protected HttpAutomationClient automationClient;
+
+    protected DocumentModel syncRoot1;
+
+    protected DocumentModel syncRoot2;
 
     protected Session clientSession;
 
@@ -61,6 +77,18 @@ public class TestFileSystemItemOperations {
     @Before
     public void init() throws Exception {
 
+        // Create 2 sync roots
+        syncRoot1 = session.createDocument(session.createDocumentModel("/",
+                "folder1", "Folder"));
+        syncRoot2 = session.createDocument(session.createDocumentModel("/",
+                "folder2", "Folder"));
+
+        // Register sync roots
+        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+                syncRoot1, session);
+        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+                syncRoot2, session);
+
         // Get an Automation client session
         clientSession = automationClient.getSession("Administrator",
                 "Administrator");
@@ -68,32 +96,52 @@ public class TestFileSystemItemOperations {
     }
 
     @Test
-    public void testGetTopLevelFolderItem() throws Exception {
+    public void testGetTopLevelChildren() throws Exception {
 
-        Blob topLevelFolderItemJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetTopLevelFolderItem.ID).execute();
-        assertNotNull(topLevelFolderItemJSON);
+        Blob topLevelChildrenJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetTopLevelChildren.ID).execute();
+        assertNotNull(topLevelChildrenJSON);
 
-        DefaultTopLevelFolderItem topLevelFolderItem = mapper.readValue(
-                topLevelFolderItemJSON.getStream(),
-                DefaultTopLevelFolderItem.class);
+        List<DefaultSyncRootFolderItem> topLevelChildren = mapper.readValue(
+                topLevelChildrenJSON.getStream(),
+                new TypeReference<List<DefaultSyncRootFolderItem>>() {
+                });
 
         TransactionHelper.startTransaction();
         try {
-            assertNotNull(topLevelFolderItem);
-            assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
-            assertTrue(topLevelFolderItem.getId().endsWith(
+            assertNotNull(topLevelChildren);
+            assertEquals(2, topLevelChildren.size());
+
+            FileSystemItem child = topLevelChildren.get(0);
+            assertTrue(child instanceof DefaultSyncRootFolderItem);
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory/test/"
+                            + syncRoot1.getId(), child.getId());
+            assertTrue(child.getParentId().endsWith(
                     "DefaultTopLevelFolderItemFactory/"));
-            assertNull(topLevelFolderItem.getParentId());
-            assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
-            assertTrue(topLevelFolderItem.isFolder());
-            assertEquals("system", topLevelFolderItem.getCreator());
-            assertFalse(topLevelFolderItem.getCanRename());
-            assertFalse(topLevelFolderItem.getCanDelete());
-            assertFalse(topLevelFolderItem.getCanCreateChild());
+            assertEquals("folder1", child.getName());
+            assertTrue(child.isFolder());
+            assertEquals("Administrator", child.getCreator());
+            assertFalse(child.getCanRename());
+            assertTrue(child.getCanDelete());
+            assertTrue(((FolderItem) child).getCanCreateChild());
+
+            child = topLevelChildren.get(1);
+            assertTrue(child instanceof DefaultSyncRootFolderItem);
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory/test/"
+                            + syncRoot2.getId(), child.getId());
+            assertEquals(
+                    "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/",
+                    child.getParentId());
+            assertEquals("folder2", child.getName());
+            assertTrue(child.isFolder());
+            assertEquals("Administrator", child.getCreator());
+            assertFalse(child.getCanRename());
+            assertTrue(child.getCanDelete());
+            assertTrue(((FolderItem) child).getCanCreateChild());
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
     }
-
 }

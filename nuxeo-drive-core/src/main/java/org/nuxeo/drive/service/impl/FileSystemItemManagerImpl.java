@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-
 /**
  * Default implementation of the {@link FileSystemItemManager}.
  *
@@ -91,6 +90,13 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     /*------------- Read operations ----------------*/
+    @Override
+    public List<FileSystemItem> getTopLevelChildren(Principal principal)
+            throws ClientException {
+        return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(
+                principal.getName()).getChildren();
+    }
+
     @Override
     public boolean exists(String id, Principal principal)
             throws ClientException {
