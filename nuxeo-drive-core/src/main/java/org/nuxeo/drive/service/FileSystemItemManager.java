@@ -54,8 +54,8 @@ public interface FileSystemItemManager {
 
     /*------------- Read operations ----------------*/
     /**
-     * Returns true if a {@link FileSystemItem} with the given id exists. Uses a
-     * core session fetched with the given principal.
+     * Returns true if a {@link FileSystemItem} with the given id exists for the
+     * given principal.
      *
      * @throws ClientException if no {@link FileSystemItemFactory} can handle
      *             the given {@link FileSystemItem} id or if an error occurs
@@ -65,8 +65,8 @@ public interface FileSystemItemManager {
     boolean exists(String id, Principal principal) throws ClientException;
 
     /**
-     * Gets the {@link FileSystemItem} with the given id. Uses a core session
-     * fetched with the given principal.
+     * Gets the {@link FileSystemItem} with the given id for the given
+     * principal.
      *
      * @return the {@link FileSystemItem} or null if none matches the given id
      * @throws ClientException if no {@link FileSystemItemFactory} can handle
@@ -78,8 +78,8 @@ public interface FileSystemItemManager {
             throws ClientException;
 
     /**
-     * Gets the children of the {@link FileSystemItem} with the given id. Uses a
-     * core session fetched with the given principal.
+     * Gets the children of the {@link FileSystemItem} with the given id for the
+     * given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved, or if it is not a {@link FolderItem} or
@@ -92,7 +92,7 @@ public interface FileSystemItemManager {
     /*------------- Write operations ----------------*/
     /**
      * Creates a folder with the given name in the {@link FileSystemItem} with
-     * the given id. Uses a core session fetched with the given principal.
+     * the given id for the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved, or if it is not a {@link FolderItem} or
@@ -104,7 +104,7 @@ public interface FileSystemItemManager {
 
     /**
      * Creates a file with the given blob in the {@link FileSystemItem} with the
-     * given id. Uses a core session fetched with the given principal.
+     * given id for the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved, or if it is not a {@link FolderItem} or
@@ -115,8 +115,8 @@ public interface FileSystemItemManager {
             throws ClientException;
 
     /**
-     * Updates the {@link FileSystemItem} with the given id with the given blob.
-     * Uses a core session fetched with the given principal.
+     * Updates the {@link FileSystemItem} with the given id with the given blob
+     * for the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved, or if it is not a {@link FileItem} or if
@@ -127,8 +127,8 @@ public interface FileSystemItemManager {
             throws ClientException;
 
     /**
-     * Deletes the {@link FileSystemItem} with the given id. Uses a core session
-     * fetched with the given principal.
+     * Deletes the {@link FileSystemItem} with the given id for the given
+     * principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved or if an error occurs while deleting the
@@ -138,8 +138,8 @@ public interface FileSystemItemManager {
     void delete(String id, Principal principal) throws ClientException;
 
     /**
-     * Renames the {@link FileSystemItem} with the given id with the given name.
-     * Uses a core session fetched with the given principal.
+     * Renames the {@link FileSystemItem} with the given id with the given name
+     * for the given principal.
      *
      * @throws ClientException if the {@link FileSystemItem} with the given id
      *             cannot be retrieved or if an error occurs while renaming the
