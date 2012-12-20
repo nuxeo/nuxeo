@@ -37,6 +37,10 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
         this.canRename = false;
     }
 
+    protected DefaultSyncRootFolderItem() {
+        // Needed for JSON deserialization
+    }
+
     @Override
     public void rename(String name) throws ClientException {
         throw new UnsupportedOperationException(

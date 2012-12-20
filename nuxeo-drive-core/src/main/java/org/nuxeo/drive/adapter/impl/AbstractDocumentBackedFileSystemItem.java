@@ -40,11 +40,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         AbstractFileSystemItem {
 
     /** Backing {@link DocumentModel} attributes */
-    protected final String repositoryName;
+    protected String repositoryName;
 
-    protected final String docId;
+    protected String docId;
 
-    protected final String docPath;
+    protected String docPath;
 
     protected String docTitle;
 
@@ -83,6 +83,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         creator = (String) doc.getPropertyValue("dc:creator");
         creationDate = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
+    }
+
+    protected AbstractDocumentBackedFileSystemItem() {
+        // Needed for JSON deserialization
     }
 
     /*--------------------- FileSystemItem ---------------------*/

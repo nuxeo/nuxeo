@@ -60,6 +60,10 @@ public class DocumentBackedFolderItem extends
         initialize();
     }
 
+    protected DocumentBackedFolderItem() {
+        // Needed for JSON deserialization
+    }
+
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
