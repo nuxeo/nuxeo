@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -328,7 +329,21 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                 checkedGroups.add(groupName);
                 NuxeoGroup nxGroup = null;
                 if (userManager != null) {
-                    nxGroup = userManager.getGroup(groupName);
+                    try {
+                        nxGroup = userManager.getGroup(groupName);
+                    } catch (DirectoryException de) {
+                        if (virtualGroups.contains(groupName)) {
+                            // do not fail while retrieving a virtual group
+                            log.warn("Failed to get group '"
+                                    + groupName
+                                    + "' due to '"
+                                    + de.getMessage()
+                                    + "': permission resolution involving groups may not be correct");
+                            nxGroup = null;
+                        } else {
+                            throw de;
+                        }
+                    }
                 }
                 if (nxGroup == null) {
                     if (virtualGroups.contains(groupName)) {
