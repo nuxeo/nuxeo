@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -42,7 +43,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * Abstract class implementing {@code QuotaStatsUpdater} to handle common cases.
  * <p>
  * Provides abstract methods to override for common events.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -126,7 +127,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
     protected List<DocumentModel> getAncestors(CoreSession session,
             DocumentModel doc) throws ClientException {
         List<DocumentModel> ancestors = new ArrayList<DocumentModel>();
-        if (doc != null) {
+        if (doc != null && doc.getParentRef() != null) {
             doc = session.getDocument(doc.getParentRef());
             while (doc != null && !doc.getPath().isRoot()) {
                 ancestors.add(doc);
@@ -134,7 +135,6 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
             }
         }
         return ancestors;
-
     }
 
     protected abstract ClientException handleException(ClientException e,

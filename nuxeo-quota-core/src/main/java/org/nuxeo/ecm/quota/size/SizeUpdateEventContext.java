@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.quota.size;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -30,10 +31,10 @@ import org.nuxeo.ecm.quota.QuotaStatsService;
  * Custom EventContext used to propage info between the synchronous listener
  * that is run by the {@link QuotaStatsService} synchronously and the Asynchrous
  * listener ( {@link QuotaComputerProcessor} that actually does the work.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
- * 
+ *
  */
 public class SizeUpdateEventContext extends DocumentEventContext {
 
@@ -132,6 +133,7 @@ public class SizeUpdateEventContext extends DocumentEventContext {
     }
 
     public void setParentUUIds(List<String> parentUUIds) {
+        parentUUIds.removeAll(Collections.singleton(null));
         setProperty(PARENT_UUIDS_PROPERTY_KEY, (Serializable) parentUUIds);
     }
 

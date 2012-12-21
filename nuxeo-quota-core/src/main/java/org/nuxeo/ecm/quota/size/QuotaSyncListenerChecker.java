@@ -52,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
  * document. This default implementation does not track the space used by
  * versions, or the space used by non-Blob properties
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -317,6 +317,9 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             final DocumentRef docRef) throws ClientException {
 
         final List<String> result = new ArrayList<String>();
+        if (docRef == null || docRef.toString() == null) {
+            return result;
+        }
         DocumentRef[] parentRefs = unrestrictedSession.getParentDocumentRefs(docRef);
         for (DocumentRef parentRef : parentRefs) {
             result.add(parentRef.toString());
