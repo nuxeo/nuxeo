@@ -35,10 +35,10 @@
           <ldapUrl>ldap://localhost:389</ldapUrl>
           <ldapUrl>ldap://server2:389</ldapUrl>
           <ldapUrl>ldaps://server3:389</ldapUrl>
-          
+
           <!-- LDAP SRV DNS resolution on _ldap._tcp.example.com -->
           <ldapUrl>ldap:///dc=example,dc=com</ldapUrl>
-          
+
           <!-- LDAP SRV DNS resolution on _gc._tcp.example.com -->
           <ldapUrl srvPrefix="_gc._tcp">ldap:///dc=example,dc=com</ldapUrl>
 
@@ -55,7 +55,7 @@
       be replicated versions of a master server that should belong to
       the list.
 
-      The retries attribute indicates how many times the request will be retried 
+      The retries attribute indicates how many times the request will be retried
       if LDAP server returns a ServiceUnavailableException (Default value is 5)
 
       The bindDn and bindPassword credentials are used by Nuxeo EP to
@@ -160,15 +160,15 @@
           <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
           <searchFilter>(|(objectClass=groupOfUniqueNames)(objectClass=groupOfURLs))</searchFilter>
           <searchScope>subtree</searchScope>
-          
+
           <!-- Special entry adaptor that makes entries in the ou=editable branch editable
           other entries have the readonly flag. This require adding a "dn" xs:string field
           to the group schema.
           -->
-	      <entryAdaptor class="org.nuxeo.ecm.directory.impl.WritePolicyEntryAdaptor">
-	        <parameter name="fieldName">dn</parameter>
-	        <parameter name="regexp">.*,ou=editable,ou=groups,dc=example,dc=com</parameter>
-	      </entryAdaptor>
+        <entryAdaptor class="org.nuxeo.ecm.directory.impl.WritePolicyEntryAdaptor">
+          <parameter name="fieldName">dn</parameter>
+          <parameter name="regexp">.*,ou=editable,ou=groups,dc=example,dc=com</parameter>
+        </entryAdaptor>
 
           <readOnly>false</readOnly>
 
@@ -223,8 +223,8 @@
       single schema which is to be registered as any core document
       schema and that will be used to build a DocumentModel for each
       matching entry of the directory.
-      
-      
+
+
       Nuxeo EP provides group resolution for statically dn-referenced
       entries (in read and write mode) and for dynamically ldapUrl
       matched entries (readonly). You may also need to statically
@@ -236,24 +236,24 @@
       between users and groups or between parent groups and sub groups.
       It can also resole children and parents following the ldap tree
       structure.
-      
+
       You have two ways for declaring a dynamic reference in a 'references' tag.
-      You can use 'dynamicAttributeId' to point to an ldap attribute that 
-      contains an ldap url. 
-      
+      You can use 'dynamicAttributeId' to point to an ldap attribute that
+      contains an ldap url.
+
       <code>
       <ldapReference field="members" directory="userDirectory"
                dynamicAttributeId="memberURL"/>
       </code>
 
-      Or, you can use a subtag 'dynamicReference' to declare attributes that 
-      contain a DN, a filter and a type. This values will be used to selected 
+      Or, you can use a subtag 'dynamicReference' to declare attributes that
+      contain a DN, a filter and a type. This values will be used to selected
       the references.
 
       <code>
       <ldapReference field="members" directory="userDirectory" />
-         <dynamicReference filter="ldapAttribute" 
-            type="subtree/onelevel" 
+         <dynamicReference filter="ldapAttribute"
+            type="subtree/onelevel"
             baseDN ="ldapAttribute" />
       <ldapReference/>
       </code>
@@ -266,6 +266,21 @@
       "unchanged". It is useful when changing case on the LDAP without affecting
       Nuxeo (for rights management for instance which is case sensitive for
       instance).
+
+
+      Dependening on your LDAP Backend implementation, if you have some specific restriction
+      (for example on password, or logins ...), you may want Nuxeo to handle the validation
+      errors of your server on the Nuxeo side.
+
+      Since there error code and message may vary  depending on the LDAP server provider, you
+      may need to provide a custom class that knows how to handle the Exceptions returned by it.
+
+      For this you can specify a class that will be in charge of this task.
+      <code>
+        <ldapExceptionHandler>org.nuxeo.ecm.directory.ldap.DefaultLdapExceptionProcessor</ldapExceptionHandler>
+      </code>
+      This class should implement org.nuxeo.ecm.directory.ldap.LdapExceptionProcessor and return
+      a RecoverableClientException for any exception that should be displayed to the user.
 
     </documentation>
 

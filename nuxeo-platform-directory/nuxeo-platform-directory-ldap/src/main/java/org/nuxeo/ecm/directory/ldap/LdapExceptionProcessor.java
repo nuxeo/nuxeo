@@ -28,6 +28,14 @@ import org.nuxeo.ecm.core.api.RecoverableClientException;
  */
 public interface LdapExceptionProcessor {
 
+    /**
+     * Implementation should check the input Exception and turn it into a
+     * RecoverableClientException if the Exception should be displayed to the
+     * end user.
+     * 
+     * @param e
+     * @return a RecoverableClientException if needed and null otherwise
+     */
     RecoverableClientException extractRecoverableException(Exception e);
 
 }
