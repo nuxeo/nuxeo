@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -139,7 +140,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     @SuppressWarnings("unchecked")
     public DocumentModel createEntry(Map<String, Object> fieldMap)
-            throws DirectoryException {
+            throws ClientException {
         if (isReadOnly()) {
             return null;
         }
@@ -222,7 +223,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
             directory.invalidateCaches();
             return fieldMapToDocumentModel(fieldMap);
         } catch (Exception e) {
-            throw new DirectoryException("createEntry failed", e);
+            handleException(e, "createEntry failed");
+            return null;
         }
     }
 
@@ -366,7 +368,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void updateEntry(DocumentModel docModel) throws DirectoryException {
+    public void updateEntry(DocumentModel docModel) throws ClientException {
         if (isReadOnlyEntry(docModel)) {
             // do not edit readonly entries
             return;
@@ -456,19 +458,30 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 reference.setTargetIdsForSource(docModel.getId(), targetIds);
             }
         } catch (Exception e) {
-            throw new DirectoryException("updateEntry failed: "
-                    + e.getMessage(), e);
+            handleException(e, "updateEntry failed:");
         }
         directory.invalidateCaches();
     }
 
+    protected void handleException(Exception e, String message)
+            throws ClientException {
+        LdapExceptionProcessor processor = directory.getConfig().getExceptionProcessor();
+
+        RecoverableClientException userException = processor.extractRecoverableException(e);
+        if (userException != null) {
+            throw userException;
+        }
+        throw new DirectoryException(message + " " + e.getMessage(), e);
+
+    }
+
     @Override
-    public void deleteEntry(DocumentModel dm) throws DirectoryException {
+    public void deleteEntry(DocumentModel dm) throws ClientException {
         deleteEntry(dm.getId());
     }
 
     @Override
-    public void deleteEntry(String id) throws DirectoryException {
+    public void deleteEntry(String id) throws ClientException {
         if (isReadOnly()) {
             return;
         }
@@ -488,14 +501,14 @@ public class LDAPSession extends BaseSession implements EntrySource {
             }
             dirContext.destroySubcontext(result.getNameInNamespace());
         } catch (Exception e) {
-            throw new DirectoryException("deleteEntry failed for: " + id, e);
+            handleException(e, "deleteEntry failed for: " + id);
         }
         directory.invalidateCaches();
     }
 
     @Override
     public void deleteEntry(String id, Map<String, String> map)
-            throws DirectoryException {
+            throws ClientException {
         log.warn("Calling deleteEntry extended on LDAP directory");
         deleteEntry(id);
     }

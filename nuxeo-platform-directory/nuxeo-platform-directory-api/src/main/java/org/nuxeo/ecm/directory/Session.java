@@ -137,7 +137,7 @@ public interface Session {
      * @throws DirectoryException if a communication error occurs.
      */
     void deleteEntry(String id, Map<String, String> map)
-            throws DirectoryException;
+            throws ClientException, DirectoryException;
 
     /*
      * FIXME: Parses a query string and create a query object for this
@@ -243,15 +243,16 @@ public interface Session {
      * org.nuxeo.ecm.directory.BaseSession provides a default implementation
      * fetching all results to return the subset. Not recommended.
      * 
-     *
+     * 
      * @param limit maximum number of results ignored if less than 1
-     * @param offset number of rows skipped before starting, will be 0 if less than 0.
+     * @param offset number of rows skipped before starting, will be 0 if less
+     *            than 0.
      * @see #query(Map, Set, Map, boolean)
      * @since 5.7
      */
     DocumentModelList query(Map<String, Serializable> filter,
-                            Set<String> fulltext, Map<String, String> orderBy,
-                            boolean fetchReferences, int limit, int offset)
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences, int limit, int offset)
             throws ClientException, DirectoryException;
 
     // TODO: create an API to allow sql AND/OR/NOT/LIKE conditions

@@ -147,6 +147,15 @@ public class LDAPDirectoryDescriptor {
         }
     }
 
+    /**
+     * @since 5.7 : allow to contribute custom Exception Handler to extract LDAP
+     *        validation error messages
+     */
+    @XNode("ldapExceptionHandler")
+    protected Class<? extends LdapExceptionProcessor> exceptionProcessorClass;
+
+    protected LdapExceptionProcessor exceptionProcessor;
+
     // XXX: passwordEncryption?
     // XXX: ignoredFields?
     // XXX: referenceFields?
@@ -345,6 +354,23 @@ public class LDAPDirectoryDescriptor {
 
     public EntryAdaptor getEntryAdaptor() {
         return entryAdaptor;
+    }
+
+    public LdapExceptionProcessor getExceptionProcessor() {
+        if (exceptionProcessor == null) {
+            if (exceptionProcessorClass == null) {
+                exceptionProcessor = new DefaultLdapExceptionProcessor();
+            } else {
+                try {
+                    exceptionProcessor = exceptionProcessorClass.newInstance();
+                } catch (Exception e) {
+                    log.error("Unable to instanciate custom Exception handler",
+                            e);
+                    exceptionProcessor = new DefaultLdapExceptionProcessor();
+                }
+            }
+        }
+        return exceptionProcessor;
     }
 
 }
