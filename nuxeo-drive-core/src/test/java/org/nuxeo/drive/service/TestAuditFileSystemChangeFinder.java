@@ -224,6 +224,7 @@ public class TestAuditFileSystemChangeFinder {
         } catch (TooManyChangesException e) {
             // Expected
         }
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
     @Test
