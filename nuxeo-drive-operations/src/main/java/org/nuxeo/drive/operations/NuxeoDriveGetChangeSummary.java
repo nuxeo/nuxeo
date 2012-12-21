@@ -51,7 +51,7 @@ public class NuxeoDriveGetChangeSummary {
     @OperationMethod
     public Blob run() throws Exception {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        FileSystemChangeSummary docChangeSummary = driveManager.getDocumentChangeSummary(
+        FileSystemChangeSummary docChangeSummary = driveManager.getChangeSummary(
                 ctx.getPrincipal(), lastSuccessfulSync);
 
         ObjectMapper mapper = new ObjectMapper();

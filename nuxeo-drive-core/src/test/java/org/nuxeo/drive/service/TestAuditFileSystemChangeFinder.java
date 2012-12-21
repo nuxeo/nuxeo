@@ -34,7 +34,7 @@ import java.util.TimeZone;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.drive.service.impl.AuditDocumentChangeFinder;
+import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.drive.service.impl.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -58,7 +58,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- * Test the {@link AuditDocumentChangeFinder}.
+ * Test the {@link AuditChangeFinder}.
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
@@ -91,7 +91,7 @@ public class TestAuditFileSystemChangeFinder {
     @Before
     public void init() throws Exception {
 
-        changeFinder = new AuditDocumentChangeFinder();
+        changeFinder = new AuditChangeFinder();
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
         syncRootPaths = new HashSet<String>();
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
@@ -123,30 +123,39 @@ public class TestAuditFileSystemChangeFinder {
         assertTrue(changes.isEmpty());
 
         // Create 3 documents, only 2 in sync roots
-        DocumentModel doc1 = session.createDocument(session.createDocumentModel(
-                "/folder1", "doc1", "File"));
+        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
+                "File");
+        doc1.setPropertyValue("file:content", new StringBlob(
+                "The content of file 1."));
+        doc1 = session.createDocument(doc1);
         Thread.sleep(1000);
-        DocumentModel doc2 = session.createDocument(session.createDocumentModel(
-                "/folder2", "doc2", "File"));
-        DocumentModel doc3 = session.createDocument(session.createDocumentModel(
-                "/folder3", "doc3", "File"));
+        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
+                "File");
+        doc2.setPropertyValue("file:content", new StringBlob(
+                "The content of file 2."));
+        doc2 = session.createDocument(doc2);
+        DocumentModel doc3 = session.createDocumentModel("/folder3", "doc3",
+                "File");
+        doc3.setPropertyValue("file:content", new StringBlob(
+                "The content of file 3."));
+        doc3 = session.createDocument(doc3);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
         changes = getDocumentChanges();
         assertEquals(2, changes.size());
-        FileSystemItemChange docChange = changes.get(0);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("documentCreated", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder2/doc2", docChange.getDocPath());
-        assertEquals(doc2.getId(), docChange.getDocUuid());
-        docChange = changes.get(1);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("documentCreated", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", docChange.getDocPath());
-        assertEquals(doc1.getId(), docChange.getDocUuid());
+        FileSystemItemChange change = changes.get(0);
+        assertEquals("test", change.getRepositoryId());
+        assertEquals("documentCreated", change.getEventId());
+        assertEquals("project", change.getDocLifeCycleState());
+        assertEquals("/folder2/doc2", change.getDocPath());
+        assertEquals(doc2.getId(), change.getDocUuid());
+        change = changes.get(1);
+        assertEquals("test", change.getRepositoryId());
+        assertEquals("documentCreated", change.getEventId());
+        assertEquals("project", change.getDocLifeCycleState());
+        assertEquals("/folder1/doc1", change.getDocPath());
+        assertEquals(doc1.getId(), change.getDocUuid());
 
         // No changes since last successful sync
         changes = getDocumentChanges();
@@ -154,10 +163,10 @@ public class TestAuditFileSystemChangeFinder {
 
         // Update both synchronized documents and unsynchronize a root
         doc1.setPropertyValue("file:content", new StringBlob(
-                "The content of file 1."));
+                "The content of file 1, updated."));
         session.saveDocument(doc1);
         doc2.setPropertyValue("file:content", new StringBlob(
-                "The content of file 2."));
+                "The content of file 2, updated."));
         session.saveDocument(doc2);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
@@ -165,26 +174,27 @@ public class TestAuditFileSystemChangeFinder {
         syncRootPaths.remove("/folder2");
         changes = getDocumentChanges();
         assertEquals(1, changes.size());
-        docChange = changes.get(0);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("documentModified", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", docChange.getDocPath());
-        assertEquals(doc1.getId(), docChange.getDocUuid());
+        change = changes.get(0);
+        assertEquals("test", change.getRepositoryId());
+        assertEquals("documentModified", change.getEventId());
+        assertEquals("project", change.getDocLifeCycleState());
+        assertEquals("/folder1/doc1", change.getDocPath());
+        assertEquals(doc1.getId(), change.getDocUuid());
 
-        // Delete a document
+        // Delete a document with a lifecycle transition (trash)
         session.followTransition(doc1.getRef(), "delete");
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
         changes = getDocumentChanges();
         assertEquals(1, changes.size());
-        docChange = changes.get(0);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("lifecycle_transition_event", docChange.getEventId());
-        assertEquals("deleted", docChange.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", docChange.getDocPath());
-        assertEquals(doc1.getId(), docChange.getDocUuid());
+        change = changes.get(0);
+        assertEquals("test", change.getRepositoryId());
+        assertEquals("deleted", change.getEventId());
+        assertEquals("/folder1/doc1", change.getDocPath());
+        assertEquals(doc1.getId(), change.getDocUuid());
+        assertEquals("defaultFileSystemItemFactory/test/" + doc1.getId(),
+                change.getFileSystemItem().getId());
 
         // Restore a deleted document and move a document in a newly
         // synchronized root
@@ -197,18 +207,33 @@ public class TestAuditFileSystemChangeFinder {
         syncRootPaths.add("/folder2");
         changes = getDocumentChanges();
         assertEquals(2, changes.size());
-        docChange = changes.get(0);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("documentMoved", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder2/doc3", docChange.getDocPath());
-        assertEquals(doc3.getId(), docChange.getDocUuid());
-        docChange = changes.get(1);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("lifecycle_transition_event", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", docChange.getDocPath());
-        assertEquals(doc1.getId(), docChange.getDocUuid());
+        change = changes.get(0);
+        assertEquals("test", change.getRepositoryId());
+        assertEquals("documentMoved", change.getEventId());
+        assertEquals("project", change.getDocLifeCycleState());
+        assertEquals("/folder2/doc3", change.getDocPath());
+        assertEquals(doc3.getId(), change.getDocUuid());
+        change = changes.get(1);
+        assertEquals("test", change.getRepositoryId());
+        assertEquals("lifecycle_transition_event", change.getEventId());
+        assertEquals("project", change.getDocLifeCycleState());
+        assertEquals("/folder1/doc1", change.getDocPath());
+        assertEquals(doc1.getId(), change.getDocUuid());
+
+        // Physical deletion without triggering the delete transition first
+        session.removeDocument(doc3.getRef());
+        commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+
+        changes = getDocumentChanges();
+        assertEquals(1, changes.size());
+        change = changes.get(0);
+        assertEquals("test", change.getRepositoryId());
+        assertEquals("deleted", change.getEventId());
+        assertEquals("/folder2/doc3", change.getDocPath());
+        assertEquals(doc3.getId(), change.getDocUuid());
+        assertEquals("defaultFileSystemItemFactory/test/" + doc3.getId(),
+                change.getFileSystemItem().getId());
 
         // Too many changes
         session.followTransition(doc1.getRef(), "delete");
@@ -426,7 +451,7 @@ public class TestAuditFileSystemChangeFinder {
     }
 
     /**
-     * Gets the document changes using the {@link AuditDocumentChangeFinder} and
+     * Gets the document changes using the {@link AuditChangeFinder} and
      * updates the {@link #lastSuccessfulSync} date.
      * @throws ClientException
      */
@@ -457,7 +482,7 @@ public class TestAuditFileSystemChangeFinder {
             throws ClientException, InterruptedException {
         // Wait 1 second as the audit change finder relies on steps of 1 second
         Thread.sleep(1000);
-        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getDocumentChangeSummary(
+        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(
                 principal, lastSuccessfulSync);
         assertNotNull(changeSummary);
         lastSuccessfulSync = changeSummary.getSyncDate();

@@ -81,7 +81,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             4).softKeys().softValues().expiration(10, TimeUnit.MINUTES).makeMap();
 
     // TODO: make this overridable with an extension point
-    protected FileSystemChangeFinder changeFinder = new AuditDocumentChangeFinder();
+    protected FileSystemChangeFinder changeFinder = new AuditChangeFinder();
 
     @Override
     public void registerSynchronizationRoot(String userName,
@@ -185,7 +185,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     /**
-     * Uses the {@link AuditDocumentChangeFinder} to get the summary of document
+     * Uses the {@link AuditChangeFinder} to get the summary of document
      * changes for the given user and last successful synchronization date.
      * <p>
      * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
@@ -193,14 +193,14 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * is 1000.
      */
     @Override
-    public FileSystemChangeSummary getDocumentChangeSummary(
+    public FileSystemChangeSummary getChangeSummary(
             Principal principal, long lastSuccessfulSync)
             throws ClientException {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
-        return getDocumentChangeSummary(principal, roots, lastSuccessfulSync);
+        return getChangeSummary(principal, roots, lastSuccessfulSync);
     }
 
-    protected FileSystemChangeSummary getDocumentChangeSummary(
+    protected FileSystemChangeSummary getChangeSummary(
             Principal principal, Map<String, SynchronizationRoots> roots,
             long lastSuccessfulSync) throws ClientException {
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
@@ -296,7 +296,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             SynchronizationRoots synchronizationRoots) throws ClientException {
         List<FileSystemItemChange> filteredChanges = new ArrayList<FileSystemItemChange>();
         for (FileSystemItemChange docChange : docChanges) {
-            if (adaptDocument(docChange, session, synchronizationRoots)) {
+            if (docChange.getFileSystemItem() != null) {
+                // already adapted upstream (e.g. from the log entry data for
+                // deleted documents)
+                filteredChanges.add(docChange);
+            } else if (adaptDocument(docChange, session, synchronizationRoots)) {
                 filteredChanges.add(docChange);
             }
         }

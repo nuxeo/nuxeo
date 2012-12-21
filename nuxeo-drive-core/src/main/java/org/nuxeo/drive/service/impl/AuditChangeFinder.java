@@ -16,7 +16,6 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,11 +25,15 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
+import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -39,31 +42,30 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  */
-public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
+public class AuditChangeFinder implements FileSystemChangeFinder {
 
     private static final long serialVersionUID = 1963018967324857522L;
 
-    private static final Log log = LogFactory.getLog(AuditDocumentChangeFinder.class);
+    private static final Log log = LogFactory.getLog(AuditChangeFinder.class);
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
             Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
             int limit) throws ClientException, TooManyChangesException {
+        String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
         // Find changes from the log under active roots
         if (!rootPaths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
-            auditQuerySb.append("select log.repositoryId,log.eventId,log.docLifeCycle,log.eventDate,log.docPath,log.docUUID from LogEntry log where ");
             auditQuerySb.append("log.repositoryId = '%s' and ");
             auditQuerySb.append("(");
             auditQuerySb.append("log.category = 'eventDocumentCategory' and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved') ");
             auditQuerySb.append("or ");
-            auditQuerySb.append("log.category = 'eventLifeCycleCategory' and log.eventId = 'lifecycle_transition_event' ");
+            auditQuerySb.append("log.category = 'eventLifeCycleCategory' and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");
             auditQuerySb.append("or ");
-            auditQuerySb.append("log.category = 'nuxeoDriveCategory'");
+            auditQuerySb.append("log.category = '%s'");
             auditQuerySb.append(") ");
             auditQuerySb.append("and (%s) ");
             auditQuerySb.append("and (%s) ");
@@ -71,25 +73,30 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
 
             String repositoryName = session.getRepositoryName();
             String auditQuery = String.format(auditQuerySb.toString(),
-                    repositoryName, getRootPathClause(rootPaths),
+                    repositoryName, NuxeoDriveEvents.EVENT_CATEGORY,
+                    getRootPathClause(rootPaths),
                     getJPADateClause(lastSuccessfulSyncDate, syncDate));
             log.debug("Querying audit logs for document changes: " + auditQuery);
 
-            List<Object[]> queryResult = (List<Object[]>) auditService.nativeQuery(
-                    auditQuery, 1, limit);
-            if (queryResult.size() >= limit) {
+            List<LogEntry> entries = auditService.nativeQueryLogs(auditQuery, 1, limit);
+            if (entries.size() >= limit) {
                 throw new TooManyChangesException(
-                        "Too many document changes found in the audit logs.");
+                        "Too many changes found in the audit logs.");
             }
-            for (Object[] auditEntry : queryResult) {
-                String repositoryId = (String) auditEntry[0];
-                String eventId = (String) auditEntry[1];
-                String docLifeCycleState = (String) auditEntry[2];
-                Long eventDate = ((Timestamp) auditEntry[3]).getTime();
-                String docPath = (String) auditEntry[4];
-                String docUuid = (String) auditEntry[5];
-                changes.add(new FileSystemItemChange(repositoryId, eventId,
-                        docLifeCycleState, eventDate, docPath, docUuid));
+            for (LogEntry entry: entries) {
+                ExtendedInfo impactedUserInfo = entry.getExtendedInfos().get("impactedUserName");
+                if (impactedUserInfo != null && !principalName.equals(impactedUserInfo.getValue(String.class))) {
+                    // This change does not impact the current user, skip.
+                    continue;
+                }
+                FileSystemItemChange change = new FileSystemItemChange(entry.getRepositoryId(), entry.getEventId(),
+                        entry.getDocLifeCycle(), entry.getEventDate().getTime(), entry.getDocPath(), entry.getDocUUID());
+                ExtendedInfo fsItemInfo = entry.getExtendedInfos().get(
+                        "fileSystemItem");
+                if (fsItemInfo != null) {
+                    change.setFileSystemItem(fsItemInfo.getValue(FileSystemItem.class));
+                }
+                changes.add(change);
             }
         }
         return changes;
@@ -114,13 +121,6 @@ public class AuditDocumentChangeFinder implements FileSystemChangeFinder {
         return String.format("log.eventDate >= '%s' and log.eventDate < '%s'",
                 sdf.format(new Date(lastSuccessfulSyncDate)),
                 sdf.format(new Date(syncDate)));
-    }
-
-    protected String getNXQLDateClause(String datePropertyPath, long lastSuccessfulSyncDate, long syncDate) {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return String.format("%s >= TIMESTAMP '%s' AND %s < TIMESTAMP '%s'",
-                datePropertyPath, sdf.format(new Date(lastSuccessfulSyncDate)),
-                datePropertyPath, sdf.format(new Date(syncDate)));
     }
 
 }

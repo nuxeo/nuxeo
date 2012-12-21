@@ -120,7 +120,7 @@ public interface NuxeoDriveManager {
      *            initialization.
      * @return the summary of document changes
      */
-    public FileSystemChangeSummary getDocumentChangeSummary(
+    public FileSystemChangeSummary getChangeSummary(
             Principal principal, long lastSuccessfulSync)
             throws ClientException;
 
