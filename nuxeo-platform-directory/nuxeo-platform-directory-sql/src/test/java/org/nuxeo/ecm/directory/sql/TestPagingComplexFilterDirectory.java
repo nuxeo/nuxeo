@@ -67,7 +67,10 @@ public class TestPagingComplexFilterDirectory extends SQLDirectoryTestCase {
             entries = session.query(filter, filter.keySet(), order, false, 5, 11);
             assertEquals(1, entries.size());
             assertEquals("12", entries.get(0).getId());
-        } finally {
+        } catch (UnsupportedOperationException e) {
+            // Swallow it
+        }
+        finally {
             session.close();
         }
     }

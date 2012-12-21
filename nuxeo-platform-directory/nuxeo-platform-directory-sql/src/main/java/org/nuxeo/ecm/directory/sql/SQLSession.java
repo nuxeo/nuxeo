@@ -879,7 +879,12 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             select.setOrderBy(orderby.toString());
             String query = select.getStatement();
-            if (limit > 0 && dialect.supportsPaging()) {
+            if (limit > 0) {
+                if (!dialect.supportsPaging()) {
+                    throw new UnsupportedOperationException("Trying to use paging with an unsupported dialect: " +
+                            dialect.getClass().getName());
+                }
+
                 if (offset < 0) {
                     offset = 0;
                 }
