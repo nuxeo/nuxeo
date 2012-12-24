@@ -270,9 +270,24 @@ public class QueryModelDescriptor {
         queryBuilder.append('(');
         List<String> quotedParam = new ArrayList<String>(listParam.size());
         for (Object param : listParam) {
-            quotedParam.add(prepareStringLiteral(param.toString()));
+            if (param instanceof Number) {
+                quotedParam.add(param.toString());
+            } else {
+                quotedParam.add(prepareStringLiteral(param.toString()));
+            }
         }
         queryBuilder.append(StringUtils.join(quotedParam, ", "));
+        queryBuilder.append(')');
+    }
+
+    protected static void appendNumberArray(StringBuilder queryBuilder,
+            Number[] numbers) {
+        queryBuilder.append('(');
+        List<String> params = new ArrayList<String>(numbers.length);
+        for (Number param : numbers) {
+            params.add(param.toString());
+        }
+        queryBuilder.append(StringUtils.join(params, ", "));
         queryBuilder.append(')');
     }
 
@@ -296,6 +311,8 @@ public class QueryModelDescriptor {
                 if (params[i] instanceof String[]) {
                     appendQuotedStringList(queryBuilder,
                             Arrays.asList((String[]) params[i]));
+                } else if (params[i] instanceof Number[]) {
+                    appendNumberArray(queryBuilder, (Number[]) params[i]);
                 } else if (params[i] instanceof List) {
                     appendQuotedStringList(queryBuilder,
                             (List<?>) params[i]);
