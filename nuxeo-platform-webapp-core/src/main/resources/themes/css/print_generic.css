@@ -14,7 +14,8 @@ div { background-color: #fff; float: none }
 
 img { padding: .2em .5em }
 
-a:link, a:visited { background: transparent; color: #000; text-decoration: none }
+a:link,
+a:visited { background: transparent; color: #000; text-decoration: none }
 
 /* Page layout */
 .nxMainContainer { margin: 0 auto; width: 95% }
@@ -24,14 +25,31 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .breadcrumbs { float:left; font-size: .8em; margin-bottom: 1.8em }
 
 /* Tables */
-.labelColumn { width: 12em }
-.fieldColumn { line-height: 160%; padding: .4em }
+.labelColumn { font-weight: bold; text-align: left; width: 12em }
 .labelColumn, .fieldColumn { border-bottom: 1px solid #eee }
+.labelColumn span { padding: .2em 0 0 0 }
+.fieldColumn { line-height: 160%; padding: .4em }
 .fieldColumn img { margin-bottom: -4px }
-.dataOutput th, .dataList th { background-color: #eee; padding: .4em .5em; text-align: left;  }
-.dataOutput .iconColumn img, .dataInput .iconColumn img, .dataList .iconColumn img { display: block }
-.dataInput, .dataOutput, .dataOutput2Columns, .dataList { border: 1px solid #dbdbdb; border-collapse: collapse }
-.dataOutput td, .dataList td, .dataInput td { border-width: 1px; border-style: solid none; border-color: #dbdbdb; padding: .5em .3em }
+.fieldColumn .widgetPanel td.fieldColumn { padding: 0 }
+
+.dataOutput th,
+.dataList th { background-color: #eee; padding: .4em .5em; text-align: left }
+
+.dataOutput .iconColumn img,
+.dataInput .iconColumn img,
+.dataList .iconColumn img { display: block }
+
+.dataOutput,
+.dataOutput2Columns,
+.dataList { border: 1px solid #dbdbdb; border-collapse: collapse }
+
+.dataOutput td,
+.dataList td,
+.dataInput td { border-width: 1px; border-style: solid none; border-color: #dbdbdb; padding: .5em .3em }
+
+.dataInput td td,
+.dataInput td td td { border: none 0 }
+
 .dataOutput2Columns td { padding: .5em .3em; vertical-align: top }
 .dataOutput thead th { white-space: nowrap }
 
@@ -41,41 +59,89 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 /* Document view*/
 .tabsContent { padding: 1.5em 0 }
 .currentDocumentDescription { padding: .3em 0}
-.summary_div_0 img { max-width: 15cm; max-height: 15cm }
+
+.summary_div_0 img { max-width: 15em; max-height: 15em }
 .note_content_block { border: 1px solid #ddd; padding: 1em }
-.content_block, .metadata_block, .comments_block, .entitiesBlock, .relation_block, .summary_div_2, .summary_div_3 { margin: 1em 0 }
-.content_block { page-break-after: always /* Flute Parser remove it */}
+.gridBox img { max-width: 15cm; max-height: 15cm }
+
+.content_block,
+.metadata_block,
+.comments_block,
+.entitiesBlock,
+.relation_block,
+.widgetPanel { margin: 1em 0 2em }
+.widgetPanel { padding: 0 10px 10px }
+
+.widgetTable { width: 100% }
+
+.dataInput .listWidgetPanel { margin: 0; padding: 0 }
+
+.content_block { margin: 1em 0 3em;	page-break-after: always /* Flute Parser remove it */}
 .content_block table { width: 100% }
 
 .metadata_block .dataInput { width: 100% }
-.summary_div_1 > div, .content_block .actionsColumn, .globalActionBar { display: none }
+
+.content_block .actionsColumn,
+.globalActionBar { display: none }
 
 .summary_div_1 .description_block { border: 1px solid #ddd; display: block;	font-size: 110%; font-weight: bold; line-height: 130%; padding: 1em; margin-top: 2em }
 .description_block .documentDescription { display: block; padding: 0 0 1em }
-.description_block .createdBy, .description_block .creationDate, .description_block .versionNumber { padding-right: 1em }
+
+.description_block .createdBy,
+.description_block .creationDate,
+.description_block .versionNumber { padding-right: 1em }
+
 .description_block .creationDate {  color: #888; font-weight: normal }
 
 /* Note view */
-.note_content_block span, .note_content_block div, .note_content_block p { font-size: 1.05em; line-height: 170% }
-.note_content_block i, .note_content_block cite, .note_content_block em, .note_content_block var, .note_content_block dfn { font-style: italic }
-.note_content_block div, .note_content_block p { padding: .2em 0 .9em }
-.note_content_block h1, .note_content_block h2, .note_content_block h3, .note_content_block h4, .note_content_block h5, .note_content_block h6 { font-weight: bold; line-height: normal; margin: 0 }
+.note_content_block { border: 1px solid #ddd; border-radius: 3px; font-size: 110%;
+    margin-bottom: 2em; padding: 1em }
+
+.note_content_block span,
+.note_content_block div,
+.note_content_block p { line-height: 170% }
+
+.note_content_block i,
+.note_content_block cite,
+.note_content_block em,
+.note_content_block var,
+.note_content_block dfn { font-style: italic }
+
+.note_content_block div,
+.note_content_block p { padding: .2em 0 .9em }
+
+.note_content_block h1,
+.note_content_block h2,
+.note_content_block h3,
+.note_content_block h4,
+.note_content_block h5,
+.note_content_block h6 { font-weight: bold; line-height: normal; margin: 0 }
+
 .note_content_block h1 { font-size: 2em; padding: .5em 0 .8em }
 .note_content_block h2 { font-size: 1.6em; padding: .6em 0 .4em }
 .note_content_block h3 { font-size: 1.4em; padding: .45em 0 .38em }
 .note_content_block h4 { color: "title.major (__FLAVOR__ color)"; font-size: 1.3em; padding: .45em 0 .35em }
 .note_content_block h5 { color: "title.major (__FLAVOR__ color)";font-size: 1.1em; padding: .35em 0 .25em }
 .note_content_block h6 { color: "title.minor (__FLAVOR__ color)";font-size: 1.1em; padding: .35em 0 .25em }
-.note_content_block ul, .note_content_block ol { list-style: disc outside none; padding: 0 0 0 2.7em ; margin: 0 0 .4em }
-.note_content_block li { line-height: 1.6em; list-style: inherit }
-.note_content_block ul ul ul, .note_content_block ul ul ul ul ul { list-style-type: disc }
-.note_content_block ul ul, .note_content_block ul ul ul ul, .note_content_block ul ul ul ul ul ul { list-style-type: circle }
-.note_content_block ul ul ul { list-style-type: disc }
-.note_content_block ol, .note_content_block ol ol ol ol { list-style-type: decimal }
-.note_content_block ol ol, .note_content_block ol ol ol ol ol { list-style-type: lower-alpha }
-.note_content_block ol ol ol, .note_content_block ol ol ol ol ol { list-style-type: lower-roman }
 
-.note_content_block pre, .note_content_block code { background-color: #F7F7F7; border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 3px; font-family: "Lucida Console","Monaco","Courier",monospace; font-size: 90%;	line-height: normal; overflow: auto; padding: 0 .2em }
+.note_content_block ul,
+.note_content_block ol { list-style: disc outside none; padding: 0 0 0 2.7em ; margin: 0 0 .4em }
+.note_content_block li { line-height: 1.6em; list-style: inherit }
+.note_content_block ul ul ul,
+.note_content_block ul ul ul ul ul { list-style-type: disc }
+.note_content_block ul ul,
+.note_content_block ul ul ul ul,
+.note_content_block ul ul ul ul ul ul { list-style-type: circle }
+.note_content_block ul ul ul { list-style-type: disc }
+.note_content_block ol,
+.note_content_block ol ol ol ol { list-style-type: decimal }
+.note_content_block ol ol,
+.note_content_block ol ol ol ol ol { list-style-type: lower-alpha }
+.note_content_block ol ol ol,
+.note_content_block ol ol ol ol ol { list-style-type: lower-roman }
+
+.note_content_block pre,
+.note_content_block code { background-color: #F7F7F7; border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 3px; font-family: "Lucida Console","Monaco","Courier",monospace; font-size: 90%;	line-height: normal; overflow: auto; padding: 0 .2em }
 .note_content_block pre { border-color: "neutral.light (__FLAVOR__ border)"; margin: 0 0 1em; padding: .4em }
 .note_content_block pre code { border: none; font-size: 100% }
 
@@ -85,11 +151,26 @@ a:link, a:visited { background: transparent; color: #000; text-decoration: none 
 .commentBlock .commentCreationDate { font-weight: normal }
 .commentBlock .commentQuote { line-height: 150% }
 
-
 /* Workflow */
-.reviewers, .reviewTable .dataInput, .abandonProcess { display: none }
+.reviewers,
+.reviewTable .dataInput,
+.abandonProcess { display: none }
 .reviewTable { padding-top: 1em }
 .reviewTable .dataOutput table td { border: none }
 
-/* Display:none :) for inputs, tabs, actions, tips, layout selector, rss links, filter, action icons, ... */
-input, .tabsBar, .action_bar, .tooltip, .listingLayoutSelector, .syndicationLinks, .foldableLightBox, .contentViewHeaderSortTooltip img, h1 img, .pageNavigationControls, .popupTarget img { display: none }
+/* Tags */
+.tagLink { background-color: #f1f2f3; border: 1px solid #aaa; border-radius: 3px; margin: 0 .5em 0 0;
+    padding: 0 .2em .1em .3em }
+.tagLink img,
+.summaryTitle img { display: none }
+
+/* Display:none :) for tabs, actions, tips, layout selector, rss links, filter, action icons, ... */
+.tabsBar,
+.action_bar,
+.tooltip,
+.listingLayoutSelector,
+.syndicationLinks,
+.contentViewHeaderSortTooltip img,
+h1 img,
+.pageNavigationControls,
+.popupTarget img { display: none }
