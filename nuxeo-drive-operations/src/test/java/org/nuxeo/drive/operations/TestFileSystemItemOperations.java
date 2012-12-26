@@ -46,7 +46,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -62,6 +61,10 @@ import com.google.inject.Inject;
 @Jetty(port = 18080)
 public class TestFileSystemItemOperations {
 
+    private static final String SYNC_ROOT_FOLDER_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory/test/";
+
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
+
     @Inject
     protected CoreSession session;
 
@@ -75,9 +78,15 @@ public class TestFileSystemItemOperations {
 
     protected DocumentModel syncRoot2;
 
-    protected DocumentModel doc1;
+    protected DocumentModel file1;
 
-    protected DocumentModel doc2;
+    protected DocumentModel file2;
+
+    protected DocumentModel file3;
+
+    protected DocumentModel file4;
+
+    protected DocumentModel subFolder1;
 
     protected Session clientSession;
 
@@ -98,18 +107,36 @@ public class TestFileSystemItemOperations {
         nuxeoDriveManager.registerSynchronizationRoot("Administrator",
                 syncRoot2, session);
 
-        // Create 1 doc in each sync root
-        doc1 = session.createDocumentModel("/folder1", "doc1", "File");
+        // Create 1 file in each sync root
+        file1 = session.createDocumentModel("/folder1", "file1", "File");
         org.nuxeo.ecm.core.api.Blob blob = new StringBlob(
                 "The content of file 1.");
         blob.setFilename("First file.odt");
-        doc1.setPropertyValue("file:content", (Serializable) blob);
-        doc1 = session.createDocument(doc1);
-        doc2 = session.createDocumentModel("/folder2", "doc2", "File");
+        file1.setPropertyValue("file:content", (Serializable) blob);
+        file1 = session.createDocument(file1);
+        file2 = session.createDocumentModel("/folder2", "file2", "File");
         blob = new StringBlob("The content of file 2.");
         blob.setFilename("Second file.odt");
-        doc2.setPropertyValue("file:content", (Serializable) blob);
-        doc2 = session.createDocument(doc2);
+        file2.setPropertyValue("file:content", (Serializable) blob);
+        file2 = session.createDocument(file2);
+
+        // Create a sub-folder in sync root 1
+        subFolder1 = session.createDocument(session.createDocumentModel(
+                "/folder1", "subFolder1", "Folder"));
+
+        // Create 2 files in sub-folder
+        file3 = session.createDocumentModel("/folder1/subFolder1", "file3",
+                "File");
+        blob = new StringBlob("The content of file 3.");
+        blob.setFilename("Third file.odt");
+        file3.setPropertyValue("file:content", (Serializable) blob);
+        file3 = session.createDocument(file3);
+        file4 = session.createDocumentModel("/folder1/subFolder1", "file4",
+                "File");
+        blob = new StringBlob("The content of file 4.");
+        blob.setFilename("Fourth file.odt");
+        file4.setPropertyValue("file:content", (Serializable) blob);
+        file4 = session.createDocument(file4);
 
         session.save();
 
@@ -130,41 +157,32 @@ public class TestFileSystemItemOperations {
                 topLevelChildrenJSON.getStream(),
                 new TypeReference<List<DefaultSyncRootFolderItem>>() {
                 });
+        assertNotNull(topLevelChildren);
+        assertEquals(2, topLevelChildren.size());
 
-        TransactionHelper.startTransaction();
-        try {
-            assertNotNull(topLevelChildren);
-            assertEquals(2, topLevelChildren.size());
+        DefaultSyncRootFolderItem child = topLevelChildren.get(0);
+        assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(),
+                child.getId());
+        assertTrue(child.getParentId().endsWith(
+                "DefaultTopLevelFolderItemFactory/"));
+        assertEquals("folder1", child.getName());
+        assertTrue(child.isFolder());
+        assertEquals("Administrator", child.getCreator());
+        assertFalse(child.getCanRename());
+        assertTrue(child.getCanDelete());
+        assertTrue(child.getCanCreateChild());
 
-            DefaultSyncRootFolderItem child = topLevelChildren.get(0);
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory/test/"
-                            + syncRoot1.getId(), child.getId());
-            assertTrue(child.getParentId().endsWith(
-                    "DefaultTopLevelFolderItemFactory/"));
-            assertEquals("folder1", child.getName());
-            assertTrue(child.isFolder());
-            assertEquals("Administrator", child.getCreator());
-            assertFalse(child.getCanRename());
-            assertTrue(child.getCanDelete());
-            assertTrue(child.getCanCreateChild());
-
-            child = topLevelChildren.get(1);
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory/test/"
-                            + syncRoot2.getId(), child.getId());
-            assertEquals(
-                    "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/",
-                    child.getParentId());
-            assertEquals("folder2", child.getName());
-            assertTrue(child.isFolder());
-            assertEquals("Administrator", child.getCreator());
-            assertFalse(child.getCanRename());
-            assertTrue(child.getCanDelete());
-            assertTrue(child.getCanCreateChild());
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+        child = topLevelChildren.get(1);
+        assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId(),
+                child.getId());
+        assertTrue(child.getParentId().endsWith(
+                "DefaultTopLevelFolderItemFactory/"));
+        assertEquals("folder2", child.getName());
+        assertTrue(child.isFolder());
+        assertEquals("Administrator", child.getCreator());
+        assertFalse(child.getCanRename());
+        assertTrue(child.getCanDelete());
+        assertTrue(child.getCanCreateChild());
     }
 
     @Test
@@ -173,7 +191,7 @@ public class TestFileSystemItemOperations {
         // Non existing file system item
         Blob fileSystemItemExistsJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveFileSystemItemExists.ID).set("id",
-                "defaultSyncRootFolderItemFactory/test/badId").execute();
+                SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + "badId").execute();
         assertNotNull(fileSystemItemExistsJSON);
 
         String fileSystemItemExists = mapper.readValue(
@@ -183,7 +201,7 @@ public class TestFileSystemItemOperations {
         // Existing file system item
         fileSystemItemExistsJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveFileSystemItemExists.ID).set("id",
-                "defaultSyncRootFolderItemFactory/test/" + syncRoot1.getId()).execute();
+                SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId()).execute();
         assertNotNull(fileSystemItemExistsJSON);
 
         fileSystemItemExists = mapper.readValue(
@@ -198,14 +216,13 @@ public class TestFileSystemItemOperations {
         // Get sync root
         Blob fileSystemItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetFileSystemItem.ID).set("id",
-                "defaultSyncRootFolderItemFactory/test/" + syncRoot1.getId()).execute();
+                SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId()).execute();
         assertNotNull(fileSystemItemJSON);
 
         DefaultSyncRootFolderItem fileSystemItem = mapper.readValue(
                 fileSystemItemJSON.getStream(), DefaultSyncRootFolderItem.class);
         assertNotNull(fileSystemItem);
-        assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + syncRoot1.getId(),
+        assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(),
                 fileSystemItem.getId());
         assertTrue(fileSystemItem.getParentId().endsWith(
                 "DefaultTopLevelFolderItemFactory/"));
@@ -216,27 +233,71 @@ public class TestFileSystemItemOperations {
         assertTrue(fileSystemItem.getCanDelete());
         assertTrue(fileSystemItem.getCanCreateChild());
 
-        // Get doc in sync root
+        // Get file in sync root
         fileSystemItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetFileSystemItem.ID).set("id",
-                "defaultFileSystemItemFactory/test/" + doc1.getId()).execute();
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).execute();
         assertNotNull(fileSystemItemJSON);
 
         DocumentBackedFileItem fileSystemItem1 = mapper.readValue(
                 fileSystemItemJSON.getStream(), DocumentBackedFileItem.class);
         assertNotNull(fileSystemItem1);
-        assertEquals("defaultFileSystemItemFactory/test/" + doc1.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId(),
                 fileSystemItem1.getId());
-        assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + syncRoot1.getId(),
+        assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(),
                 fileSystemItem1.getParentId());
         assertEquals("First file.odt", fileSystemItem1.getName());
         assertFalse(fileSystemItem1.isFolder());
         assertEquals("Administrator", fileSystemItem1.getCreator());
         assertTrue(fileSystemItem1.getCanRename());
         assertTrue(fileSystemItem1.getCanDelete());
-        assertEquals("http://my-server/nuxeo/nxbigfile/test/" + doc1.getId()
+        assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file1.getId()
                 + "/blobholder:0/First%20file.odt",
                 fileSystemItem1.getDownloadURL("http://my-server/nuxeo/"));
+    }
+
+    @Test
+    public void testGetChildren() throws Exception {
+
+        // Get children of sub-folder of sync root 1
+        Blob childrenJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetChildren.ID).set("id",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId()).execute();
+        assertNotNull(childrenJSON);
+
+        List<DocumentBackedFileItem> children = mapper.readValue(
+                childrenJSON.getStream(),
+                new TypeReference<List<DocumentBackedFileItem>>() {
+                });
+        assertNotNull(children);
+        assertEquals(2, children.size());
+
+        DocumentBackedFileItem child = children.get(0);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file3.getId(),
+                child.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId(),
+                child.getParentId());
+        assertEquals("Third file.odt", child.getName());
+        assertFalse(child.isFolder());
+        assertEquals("Administrator", child.getCreator());
+        assertTrue(child.getCanRename());
+        assertTrue(child.getCanDelete());
+        assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file3.getId()
+                + "/blobholder:0/Third%20file.odt",
+                child.getDownloadURL("http://my-server/nuxeo/"));
+
+        child = children.get(1);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file4.getId(),
+                child.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId(),
+                child.getParentId());
+        assertEquals("Fourth file.odt", child.getName());
+        assertFalse(child.isFolder());
+        assertEquals("Administrator", child.getCreator());
+        assertTrue(child.getCanRename());
+        assertTrue(child.getCanDelete());
+        assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file4.getId()
+                + "/blobholder:0/Fourth%20file.odt",
+                child.getDownloadURL("http://my-server/nuxeo/"));
     }
 }
