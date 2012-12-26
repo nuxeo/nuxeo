@@ -593,9 +593,13 @@ public class NXQLQueryBuilder {
         }
         for (Object element : (Object[]) rawValue) {
             if (element != null) {
-                String value = element.toString().trim();
-                if (!value.equals("")) {
-                    values.add(prepareStringLiteral(value, true, true));
+                if (element instanceof Number) {
+                    values.add(element.toString());
+                } else {
+                    String value = element.toString().trim();
+                    if (!value.equals("")) {
+                        values.add(prepareStringLiteral(value, true, true));
+                    }
                 }
             }
         }

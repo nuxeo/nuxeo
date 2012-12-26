@@ -18,9 +18,15 @@
  */
 package org.nuxeo.ecm.platform.query.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -94,6 +100,50 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
         model.setPropertyValue("dc:subjects", new String[] {});
         query = NXQLQueryBuilder.getQuery(model, whereClause, null);
         assertEquals("SELECT * FROM Document", query);
+    }
+
+    @Test
+    public void testBuidInIntegersQuery() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "TEST_IN_INTEGERS").getWhereClause();
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+
+        @SuppressWarnings("boxing")
+        Integer[] array1 = new Integer[] { 1, 2, 3 };
+        model.setPropertyValue("search:integerlist", array1);
+        String query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)",
+                query);
+
+        @SuppressWarnings("boxing")
+        Integer[] array2 = new Integer[] { 1 };
+        model.setPropertyValue("search:integerlist", array2);
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE size = 1", query);
+
+        // criteria with no values are removed
+        Integer[] array3 = new Integer[0];
+        model.setPropertyValue("search:integerlist", array3);
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document", query);
+
+        // arrays of long work too
+        @SuppressWarnings("boxing")
+        Long[] array4 = new Long[] { 1L, 2L, 3L };
+        model.setPropertyValue("search:integerlist", array4);
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)",
+                query);
+
+        // lists work too
+        @SuppressWarnings("boxing")
+        List<Long> list = Arrays.asList(1L, 2L, 3L);
+        model.setPropertyValue("search:integerlist", (Serializable) list);
+        query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)",
+                query);
     }
 
 }

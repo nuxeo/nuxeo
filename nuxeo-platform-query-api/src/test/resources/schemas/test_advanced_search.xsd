@@ -6,6 +6,10 @@
 
   <xs:include schemaLocation="base.xsd" />
 
+  <xs:simpleType name="intList">
+    <xs:list itemType="xs:int" />
+  </xs:simpleType>
+
   <xs:element name="title" type="xs:string" />
   <xs:element name="description" type="xs:string"/>
   <xs:element name="rights" type="xs:string"/>
@@ -41,7 +45,9 @@
   <xs:element name="fulltext_one_of" type="xs:string" />
   <xs:element name="sortColumn" type="xs:string" />
   <xs:element name="sortAscending" type="xs:boolean" />
-  
+
   <xs:element name="isPresent" type="xs:boolean" />
+
+  <xs:element name="integerlist" type="nxs:intList" />
 
 </xs:schema>
