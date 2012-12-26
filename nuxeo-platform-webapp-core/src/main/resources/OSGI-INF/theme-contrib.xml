@@ -201,6 +201,17 @@
         <flavor>rainbow</flavor>
       </flavors>
       <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>navigation</style>
+        <style>forms</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>tabs_content</style>
+        <style>helpers</style>
         <style>print_generic</style>
       </styles>
     </themePage>
