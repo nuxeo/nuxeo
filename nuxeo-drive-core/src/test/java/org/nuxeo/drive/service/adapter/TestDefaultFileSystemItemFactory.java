@@ -141,9 +141,9 @@ public class TestDefaultFileSystemItemFactory {
 
         session.save();
 
-        // TODO
-        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories().get(
-                1).getFactory();
+        // Get default file system item factory
+        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors().get(
+                "defaultFileSystemItemFactory").getFactory();
         assertTrue(defaultFileSystemItemFactory instanceof DefaultFileSystemItemFactory);
     }
 
