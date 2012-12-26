@@ -33,9 +33,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,8 +45,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -58,7 +60,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features({ TransactionalFeature.class, PlatformFeature.class })
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore",
         "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.filemanager.core",
@@ -75,9 +77,16 @@ public class TestFileSystemItemManagerService {
     @Inject
     protected FileSystemItemManager fileSystemItemManagerService;
 
+    @Inject
+    protected NuxeoDriveManager nuxeoDriveManager;
+
     protected Principal principal;
 
     protected String rootDocFileSystemItemId;
+
+    protected DocumentModel syncRoot1;
+
+    protected DocumentModel syncRoot2;
 
     protected DocumentModel folder;
 
@@ -99,6 +108,16 @@ public class TestFileSystemItemManagerService {
         principal = session.getPrincipal();
         rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ID_PREFIX
                 + session.getRootDocument().getId();
+
+        // Create and register 2 synchronization roots for Administrator
+        syncRoot1 = session.createDocument(session.createDocumentModel("/",
+                "syncRoot1", "Folder"));
+        syncRoot2 = session.createDocument(session.createDocumentModel("/",
+                "syncRoot2", "Folder"));
+        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+                syncRoot1, session);
+        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+                syncRoot2, session);
 
         // Folder
         folder = session.createDocumentModel("/", "aFolder", "Folder");
@@ -153,6 +172,31 @@ public class TestFileSystemItemManagerService {
         // Check #getSession
         // ------------------------------------------------------
         // TODO
+
+        // ------------------------------------------------------
+        // Check #getTopLevelChildren
+        // ------------------------------------------------------
+        List<FileSystemItem> topLevelChildren = fileSystemItemManagerService.getTopLevelChildren(principal);
+        assertNotNull(topLevelChildren);
+        assertEquals(2, topLevelChildren.size());
+
+        FileSystemItem childFsItem = topLevelChildren.get(0);
+        assertTrue(childFsItem instanceof DefaultSyncRootFolderItem);
+        assertEquals(
+                "defaultSyncRootFolderItemFactory/test/" + syncRoot1.getId(),
+                childFsItem.getId());
+        assertTrue(childFsItem.getParentId().endsWith(
+                "DefaultTopLevelFolderItemFactory/"));
+        assertEquals("syncRoot1", childFsItem.getName());
+
+        childFsItem = topLevelChildren.get(1);
+        assertTrue(childFsItem instanceof DefaultSyncRootFolderItem);
+        assertEquals(
+                "defaultSyncRootFolderItemFactory/test/" + syncRoot2.getId(),
+                childFsItem.getId());
+        assertTrue(childFsItem.getParentId().endsWith(
+                "DefaultTopLevelFolderItemFactory/"));
+        assertEquals("syncRoot2", childFsItem.getName());
 
         // ------------------------------------------------------
         // Check #exists
