@@ -92,9 +92,8 @@ public class TestFileSystemItemAdapterService {
     @Before
     public void createTestDocs() throws Exception {
 
-        // TODO
-        DocumentModel rootDoc = session.getRootDocument();
-        rootDocFileSystemItemId = "dummyFacetFactory/test/" + rootDoc.getId();
+        rootDocFileSystemItemId = "dummyFacetFactory/test/"
+                + session.getRootDocument().getId();
 
         file = session.createDocumentModel("/", "aFile", "File");
         file.setPropertyValue("dc:creator", "Joe");

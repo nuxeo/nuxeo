@@ -99,11 +99,8 @@ public class TestDefaultFileSystemItemFactory {
     public void createTestDocs() throws Exception {
 
         principal = session.getPrincipal();
-
-        // TODO
-        DocumentModel rootDoc = session.getRootDocument();
         rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ID_PREFIX
-                + rootDoc.getId();
+                + session.getRootDocument().getId();
 
         // File
         file = session.createDocumentModel("/", "aFile", "File");
