@@ -24,6 +24,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,6 +47,9 @@ import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -72,6 +76,9 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
     @In(create = true)
     protected transient LocaleSelector localeSelector;
 
+    @In(create = true)
+    protected transient ResourcesAccessor resourcesAccessor;
+
     // cache duration in seconds
     //protected static int MAX_CACHE_LIFE = 60 * 10;
 
@@ -81,9 +88,6 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
-
-        // Forward locale from HttpRequest to Seam context
-        localeSelector.setLocale(getHttpRequest(req).getLocale());
 
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
@@ -124,6 +128,8 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             return;
         }
 
+        localeSetup(req);
+
         List<Blob> previewBlobs;
         try {
             previewBlobs = initCachedBlob(res, xpath, blobPostProcessing);
@@ -155,6 +161,26 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         } catch (IOException e) {
             handleError(res, e);
         }
+    }
+
+    /**
+     * @since 5.7
+     */
+    private void localeSetup(Request req) {
+        // Forward locale from HttpRequest to Seam context if not set into DM
+        Locale locale = null;
+        try {
+            locale = Framework.getLocalService(LocaleProvider.class).getLocale(
+                    documentManager);
+        } catch (ClientException e) {
+            log.warn(
+                    "Couldn't get locale from LocaleProvider, trying request locale and default locale",
+                    e);
+        }
+        if (locale == null) {
+            locale = getHttpRequest(req).getLocale();
+        }
+        localeSelector.setLocale(locale);
     }
 
     private List<Blob> initCachedBlob(Response res, String xpath, boolean blobPostProcessing)
@@ -199,9 +225,14 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
 
         sb.append("<html><body><center><h1>");
         if (e == null) {
-            sb.append("No preview is available for this document</h1>");
+            sb.append(resourcesAccessor.getMessages().get(
+                    "label.not.available.preview")
+                    + "</h1>");
         } else {
-            sb.append("Preview can not be generated for this document</h1>");
+            sb.append(resourcesAccessor.getMessages().get(
+                    "label.cannot.generated.preview")
+                    + "</h1>");
+            sb.append("<pre>Technical issue:</pre>");
             sb.append("<pre>Blob path: ");
             sb.append(xpath);
             sb.append("</pre>");
