@@ -74,8 +74,6 @@ public class TestDefaultTopLevelFolderItemFactory {
 
     protected DocumentModel syncRoot2;
 
-    protected DocumentModel syncRoot1Child;
-
     protected TopLevelFolderItemFactory defaultTopLevelFolderItemFactory;
 
     @Before
@@ -92,14 +90,12 @@ public class TestDefaultTopLevelFolderItemFactory {
                 syncRoot2, session);
 
         // Add a child file to syncRoot1
-        syncRoot1Child = session.createDocumentModel("/syncRoot1",
-                "syncRoot1Child", "File");
+        DocumentModel syncRoot1Child = session.createDocumentModel(
+                "/syncRoot1", "syncRoot1Child", "File");
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe.odt");
         syncRoot1Child.setPropertyValue("file:content", (Serializable) blob);
         syncRoot1Child = session.createDocument(syncRoot1Child);
-
-        session.save();
 
         // Get default top level folder item factory
         defaultTopLevelFolderItemFactory = fileSystemItemAdapterService.getTopLevelFolderItemFactory();
