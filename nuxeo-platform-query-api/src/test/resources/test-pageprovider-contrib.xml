@@ -74,6 +74,14 @@
       </whereClause>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="TEST_IN_INTEGERS">
+      <whereClause docType="File">
+        <predicate parameter="size" operator="IN">
+          <field schema="advanced_search" name="integerlist" />
+        </predicate>
+      </whereClause>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>
