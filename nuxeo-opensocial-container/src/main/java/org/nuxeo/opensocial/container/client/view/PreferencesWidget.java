@@ -45,10 +45,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class PreferencesWidget extends DialogBox implements
         PreferencesPresenter.Display {
 
-    private ColorsPanelWidget borderColors;
-
-    private ColorsPanelWidget headerColors;
-
     private ColorsPanelWidget titleColors;
 
     private Button saveButton;
@@ -83,28 +79,14 @@ public class PreferencesWidget extends DialogBox implements
         titleTextBox.setStyleName("preferences-title");
         preferencePanel.setWidget(0, 1, titleTextBox);
 
-        Label header = new Label(constants.headerColor() + " :");
-        header.setStyleName("preferences-label");
-        preferencePanel.setWidget(1, 0, header);
-
-        headerColors = new ColorsPanelWidget();
-        preferencePanel.setWidget(1, 1, headerColors);
-
         Label titleColor = new Label(constants.titleColor() + " :");
         titleColor.setStyleName("preferences-label");
-        preferencePanel.setWidget(2, 0, titleColor);
+        preferencePanel.setWidget(1, 0, titleColor);
 
         titleColors = new ColorsPanelWidget();
-        preferencePanel.setWidget(2, 1, titleColors);
-
-        Label border = new Label(constants.borderColor() + " :");
-        border.setStyleName("preferences-label");
-        preferencePanel.setWidget(3, 0, border);
+        preferencePanel.setWidget(1, 1, titleColors);
 
         layout.add(preferencePanel);
-
-        borderColors = new ColorsPanelWidget();
-        preferencePanel.setWidget(3, 1, borderColors);
 
         Grid buttonsPanel = new Grid(1, 2);
         buttonsPanel.setWidth("100%");
@@ -120,22 +102,6 @@ public class PreferencesWidget extends DialogBox implements
         layout.add(buttonsPanel);
 
         this.add(layout);
-    }
-
-    public HasClickHandlers getBorderColors() {
-        return borderColors;
-    }
-
-    public void setBorderColor(String color) {
-        borderColors.setSelectedColor(color);
-    }
-
-    public HasClickHandlers getHeaderColors() {
-        return headerColors;
-    }
-
-    public void setHeaderColor(String color) {
-        headerColors.setSelectedColor(color);
     }
 
     public HasClickHandlers getTitleColors() {
