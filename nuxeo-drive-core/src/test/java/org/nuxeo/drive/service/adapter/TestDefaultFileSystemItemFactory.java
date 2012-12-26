@@ -69,7 +69,7 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
 
-    private static final String DEFAULT_FILE_SYSTEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
 
     @Inject
     protected CoreSession session;
@@ -99,7 +99,7 @@ public class TestDefaultFileSystemItemFactory {
     public void createTestDocs() throws Exception {
 
         principal = session.getPrincipal();
-        rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ID_PREFIX
+        rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + session.getRootDocument().getId();
 
         // File
@@ -157,7 +157,7 @@ public class TestDefaultFileSystemItemFactory {
         FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Joe.odt", fsItem.getName());
@@ -171,7 +171,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("aNote.txt", fsItem.getName());
@@ -185,7 +185,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + custom.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Bonnie's file.odt", fsItem.getName());
@@ -209,7 +209,7 @@ public class TestDefaultFileSystemItemFactory {
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
@@ -225,7 +225,8 @@ public class TestDefaultFileSystemItemFactory {
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folderishFile.getId(),
+        assertEquals(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Sarah's folderish file", fsItem.getName());
@@ -262,16 +263,17 @@ public class TestDefaultFileSystemItemFactory {
         }
         // Non existent doc id
         assertFalse(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + "nonExistentDocId", principal));
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentDocId",
+                principal));
         // File
         assertTrue(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), principal));
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
         // Note
         assertTrue(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(), principal));
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), principal));
         // Not adaptable as a FileSystemItem
         assertFalse(defaultFileSystemItemFactory.exists(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + notAFileSystemItem.getId(),
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal));
     }
 
@@ -280,20 +282,21 @@ public class TestDefaultFileSystemItemFactory {
 
         // Non existent doc id, must return null
         assertNull(defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + "nonExistentDocId", principal));
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentDocId",
+                principal));
         // File without a blob
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);
         session.save();
         FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal);
         assertNull(fsItem);
         // Note
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("aNote.txt", fsItem.getName());
@@ -303,11 +306,11 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
         // Folder
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
@@ -315,7 +318,7 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
         // Not adaptable as a FileSystemItem
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + notAFileSystemItem.getId(),
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal);
         assertNull(fsItem);
     }
@@ -436,9 +439,9 @@ public class TestDefaultFileSystemItemFactory {
         // Check Note
         FileSystemItem fsItem = folderChildren.get(0);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
                 fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("First child file.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -448,9 +451,9 @@ public class TestDefaultFileSystemItemFactory {
         // Check File
         fsItem = folderChildren.get(1);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
                 fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("Second child file.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -461,9 +464,9 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = folderChildren.get(2);
         assertTrue(fsItem instanceof FolderItem);
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
                 fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("Sub-folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
@@ -473,9 +476,10 @@ public class TestDefaultFileSystemItemFactory {
         // Check other File
         fsItem = folderChildren.get(3);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + adaptableChild.getId(),
+        assertEquals(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + adaptableChild.getId(),
                 fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("Another file.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());

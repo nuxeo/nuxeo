@@ -69,7 +69,7 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestFileSystemItemManagerService {
 
-    private static final String DEFAULT_FILE_SYSTEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
 
     @Inject
     protected CoreSession session;
@@ -106,7 +106,7 @@ public class TestFileSystemItemManagerService {
     public void createTestDocs() throws Exception {
 
         principal = session.getPrincipal();
-        rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ID_PREFIX
+        rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + session.getRootDocument().getId();
 
         // Create and register 2 synchronization roots for Administrator
@@ -203,13 +203,13 @@ public class TestFileSystemItemManagerService {
         // ------------------------------------------------------
         // Non existent doc id
         assertFalse(fileSystemItemManagerService.exists(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + "nonExistentId", principal));
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentId", principal));
         // File
         assertTrue(fileSystemItemManagerService.exists(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), principal));
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
         // Not adaptable as a FileSystemItem
         assertFalse(fileSystemItemManagerService.exists(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + notAFileSystemItem.getId(),
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal));
 
         // ------------------------------------------------------
@@ -217,10 +217,10 @@ public class TestFileSystemItemManagerService {
         // ------------------------------------------------------
         // Folder
         FileSystemItem fsItem = fileSystemItemManagerService.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
@@ -231,12 +231,12 @@ public class TestFileSystemItemManagerService {
 
         // File
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
                 fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("Joe.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -246,13 +246,13 @@ public class TestFileSystemItemManagerService {
 
         // FolderishFile
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + folderishFile.getId(),
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
                 principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folderishFile.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
                 fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("Sarah's folderish file", fsItem.getName());
         assertTrue(fsItem.isFolder());
@@ -260,18 +260,18 @@ public class TestFileSystemItemManagerService {
 
         // Not adaptable as a FileSystemItem
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + notAFileSystemItem.getId(),
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal);
         assertNull(fsItem);
 
         // Sub folder
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
                 fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("Tony's sub folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
@@ -281,47 +281,47 @@ public class TestFileSystemItemManagerService {
         // Check #getChildren
         // ------------------------------------------------------
         children = fileSystemItemManagerService.getChildren(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(children);
         assertEquals(5, children.size());
         FileSystemItem child = children.get(0);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
                 child.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 child.getParentId());
         assertEquals("Joe.odt", child.getName());
         assertFalse(child.isFolder());
         child = children.get(1);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + note.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
                 child.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 child.getParentId());
         assertEquals("aNote.txt", child.getName());
         assertFalse(child.isFolder());
         child = children.get(2);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + custom.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
                 child.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 child.getParentId());
         assertEquals("Bonnie's file.odt", child.getName());
         assertFalse(child.isFolder());
         child = children.get(3);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folderishFile.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
                 child.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 child.getParentId());
         assertEquals("Sarah's folderish file", child.getName());
         assertTrue(child.isFolder());
         child = children.get(4);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
                 child.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 child.getParentId());
         assertEquals("Tony's sub folder", child.getName());
         assertTrue(child.isFolder());
 
         children = fileSystemItemManagerService.getChildren(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + subFolder.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(), principal);
         assertTrue(children.isEmpty());
     }
 
@@ -334,21 +334,21 @@ public class TestFileSystemItemManagerService {
         // Not allowed to create a folder in a non FolderItem
         try {
             fileSystemItemManagerService.createFolder(
-                    DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId(),
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
                     "A new folder", principal);
             fail("Folder creation in a non folder item should fail.");
         } catch (ClientException e) {
             assertEquals(String.format(
                     "Cannot create a folder in file system item with id %s.",
-                    DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId()),
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId()),
                     e.getMessage());
         }
         // Folder creation
         FolderItem newFolderItem = fileSystemItemManagerService.createFolder(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(), "A new folder",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), "A new folder",
                 principal);
         assertNotNull(newFolderItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 newFolderItem.getParentId());
         assertEquals("A new folder", newFolderItem.getName());
         DocumentModelList folderChildren = session.query(String.format(
@@ -362,7 +362,7 @@ public class TestFileSystemItemManagerService {
         assertEquals(
                 6,
                 fileSystemItemManagerService.getChildren(
-                        DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+                        DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                         principal).size());
 
         // ------------------------------------------------------
@@ -430,7 +430,7 @@ public class TestFileSystemItemManagerService {
         // Check #delete
         // ------------------------------------------------------
         // File deletion
-        fileSystemItemManagerService.delete(DEFAULT_FILE_SYSTEM_ID_PREFIX
+        fileSystemItemManagerService.delete(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + updatedFile.getId(), principal);
 
         // Parent folder children check
@@ -449,7 +449,7 @@ public class TestFileSystemItemManagerService {
         // Check #rename
         // ------------------------------------------------------
         // Folder rename
-        String fsItemId = DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId();
+        String fsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId();
         FileSystemItem fsItem = fileSystemItemManagerService.rename(fsItemId,
                 "Jack's folder has a new name", principal);
         assertEquals(fsItemId, fsItem.getId());
@@ -467,11 +467,11 @@ public class TestFileSystemItemManagerService {
         assertEquals("aFile", file.getTitle());
         assertEquals("Joe.odt",
                 ((Blob) file.getPropertyValue("file:content")).getFilename());
-        fsItemId = DEFAULT_FILE_SYSTEM_ID_PREFIX + file.getId();
+        fsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId();
         fsItem = fileSystemItemManagerService.rename(fsItemId,
                 "File new name.odt", principal);
         assertEquals(fsItemId, fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ID_PREFIX + folder.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("File new name.odt", fsItem.getName());
         ((DocumentBackedFileItem) fsItem).getSession().save();
@@ -497,7 +497,7 @@ public class TestFileSystemItemManagerService {
         assertEquals("Title-filename equality.odt",
                 ((Blob) newFile.getPropertyValue("file:content")).getFilename());
         fsItem = fileSystemItemManagerService.rename(
-                DEFAULT_FILE_SYSTEM_ID_PREFIX + newFile.getId(),
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + newFile.getId(),
                 "Renamed title-filename equality.odt", principal);
         assertEquals("Renamed title-filename equality.odt", fsItem.getName());
         ((DocumentBackedFileItem) fsItem).getSession().save();
