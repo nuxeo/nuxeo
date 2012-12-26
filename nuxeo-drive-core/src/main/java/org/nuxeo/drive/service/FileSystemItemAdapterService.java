@@ -43,8 +43,8 @@ public interface FileSystemItemAdapterService {
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} and
-     * parent {@link FileSystemItem} id.
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
+     * forcing its parent id with the given id.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
      *         is not adaptable as a {@link FileSystemItem}

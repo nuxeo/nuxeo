@@ -54,8 +54,8 @@ public interface FileSystemItemFactory {
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} and
-     * parent {@link FileSystemItem} id.
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
+     * forcing its parent id with the given id.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
      *         is not adaptable as a {@link FileSystemItem}
@@ -71,8 +71,8 @@ public interface FileSystemItemFactory {
     boolean canHandleFileSystemItemId(String id);
 
     /**
-     * Returns true if a {@link FileSystemItem} with the given id exists. Uses a
-     * core session fetched with the given principal.
+     * Returns true if a {@link FileSystemItem} with the given id exists for the
+     * given principal.
      */
     boolean exists(String id, Principal principal) throws ClientException;
 

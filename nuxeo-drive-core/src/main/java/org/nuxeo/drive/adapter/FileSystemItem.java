@@ -20,17 +20,20 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 import org.nuxeo.drive.adapter.impl.AbstractDocumentBackedFileSystemItem;
+import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Representation of a file system item, typically a file or a folder.
  *
  * @author Antoine Taillefer
+ * @see AbstractFileSystemItem
+ * @see AbstractDocumentBackedFileSystemItem
  * @see FileItem
  * @see FolderItem
- * @see AbstractDocumentBackedFileSystemItem
  */
-public interface FileSystemItem extends Comparable<FileSystemItem>, Serializable {
+public interface FileSystemItem extends Comparable<FileSystemItem>,
+        Serializable {
 
     /**
      * Gets a unique id generated server-side.
