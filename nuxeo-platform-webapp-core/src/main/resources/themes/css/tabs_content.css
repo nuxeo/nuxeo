@@ -48,6 +48,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .actionsWidgetPanel, .widgetPanel { padding: 0 5% 5% 2% }
 .listWidgetPanel { display: block; margin-left: -5% }
 .contextActions .actionsWidgetPanel { padding: 0 }
+.containerField { padding-bottom: 5% }
 
 .contentViewTitle { float: left; line-height: normal; margin: 0 1em 1em 0 }
 

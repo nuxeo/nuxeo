@@ -151,6 +151,8 @@ table.trashTable tbody tr:hover { background-color: "info (__FLAVOR__ background
 
 .dataTableNoHeader th { background-color: transparent }
 
+.widgetTable .widgetPanel { margin: 0; padding: 0 }
+
 /* Local configuration table styles */
 .palettePreviewLogo { float: left ;width: 100px }
 table.palettePreviewColors { border-collapse: separate; border-spacing: 3px; display: inline; float: left; vertical-align: middle }
