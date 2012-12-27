@@ -336,6 +336,10 @@ public class TestFileSystemItemOperations {
                 newFolderJSON.getStream(), DocumentBackedFolderItem.class);
         assertNotNull(newFolder);
 
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
         session.save();
 
         DocumentModel newFolderDoc = session.getDocument(new PathRef(
@@ -370,6 +374,10 @@ public class TestFileSystemItemOperations {
                 newFileJSON.getStream(), DocumentBackedFileItem.class);
         assertNotNull(newFile);
 
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
         session.save();
 
         DocumentModel newFileDoc = session.getDocument(new PathRef(
