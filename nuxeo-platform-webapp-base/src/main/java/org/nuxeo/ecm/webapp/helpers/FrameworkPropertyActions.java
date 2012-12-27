@@ -27,7 +27,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Seam component that exposes getters for all properties managements by the
  * runtime {@link Framework}
- *
+ * 
  * @since 5.5
  */
 @Name("frameworkPropertyActions")
@@ -37,6 +37,10 @@ public class FrameworkPropertyActions {
 
     public String getProperty(String propertyName) {
         return Framework.getProperty(propertyName);
+    }
+
+    public String getProperty(String propertyName, String defaultValue) {
+        return Framework.getProperty(propertyName, defaultValue);
     }
 
 }

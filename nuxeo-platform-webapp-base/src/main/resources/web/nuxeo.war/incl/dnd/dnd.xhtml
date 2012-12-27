@@ -2,17 +2,20 @@
  xmlns:c="http://java.sun.com/jstl/core">
 
   <ui:include src="/incl/dnd/dnd-ui.xhtml" />
-  
-  <script>    
+
+  <script>
     jQuery(document).ready(function(){
       // init Browser DnD import
       jQuery(".dropzone").nxDropZone({
-        url : "#{contextPath}/site/automation/batch/",
+        url : "#{contextPath}/site/automation/",
         uploadRateRefreshTime : 500,
         numConcurrentUploads : 3,
-        dropContext : ctx
+        dropContext : ctx,
+        uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+        execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+        extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")}
       });
     });
   </script>
-  
+
 </div>
