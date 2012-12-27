@@ -62,6 +62,10 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
 
         void addTool(Widget widget);
 
+        void setBorderColor(String color);
+
+        void setHeaderColor(String color);
+
         void setTitleColor(String color);
 
         void addContent(Widget widget);
@@ -90,6 +94,12 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
 
     private void fetchLayoutContent() {
         display.addContent(((WidgetDisplay) getContentPresenter().getDisplay()).asWidget());
+
+        setBorderColor(data.getPreferences().get(
+                WebContentData.WC_BORDER_COLOR.toString()));
+
+        setHeaderColor(data.getPreferences().get(
+                WebContentData.WC_HEADER_COLOR.toString()));
 
         setTitleColor(data.getPreferences().get(
                 WebContentData.WC_TITLE_COLOR.toString()));
@@ -152,6 +162,14 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
         display.setTitle(data.getTitle());
     }
 
+    public void setBorderColor(String color) {
+        display.setBorderColor(color);
+    }
+
+    public void setHeaderColor(String color) {
+        display.setHeaderColor(color);
+    }
+
     public void setTitleColor(String color) {
         display.setTitleColor(color);
     }
@@ -159,6 +177,16 @@ public class PortletPresenter extends WidgetPresenter<PortletPresenter.Display> 
     public String getTitleColor() {
         return data.getPreferences().get(
                 WebContentData.WC_TITLE_COLOR.toString());
+    }
+
+    public String getBorderColor() {
+        return data.getPreferences().get(
+                WebContentData.WC_BORDER_COLOR.toString());
+    }
+
+    public String getHeaderColor() {
+        return data.getPreferences().get(
+                WebContentData.WC_HEADER_COLOR.toString());
     }
 
     public void setTitle(String title) {
