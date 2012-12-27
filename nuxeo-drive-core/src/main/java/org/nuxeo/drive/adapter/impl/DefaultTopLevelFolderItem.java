@@ -70,13 +70,13 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
     @Override
     public void rename(String name) throws ClientException {
         throw new UnsupportedOperationException(
-                "Cannot rename a system folder item.");
+                "Cannot rename the top level folder item.");
     }
 
     @Override
     public void delete() throws ClientException {
         throw new UnsupportedOperationException(
-                "Cannot delete a system folder item.");
+                "Cannot delete the top level folder item.");
     }
 
     /*--------------------- FolderItem -----------------*/
@@ -109,13 +109,13 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
     @Override
     public FolderItem createFolder(String name) throws ClientException {
         throw new UnsupportedOperationException(
-                "Cannot create a folder in a system folder item.");
+                "Cannot create a folder in the top level folder item.");
     }
 
     @Override
     public FileItem createFile(Blob blob) throws ClientException {
         throw new UnsupportedOperationException(
-                "Cannot create a file in a system folder item.");
+                "Cannot create a file in the top level folder item.");
     }
 
     /*---------- Needed for JSON deserialization ----------*/

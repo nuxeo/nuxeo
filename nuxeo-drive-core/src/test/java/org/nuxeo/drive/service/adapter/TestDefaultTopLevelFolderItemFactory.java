@@ -124,14 +124,16 @@ public class TestDefaultTopLevelFolderItemFactory {
             topLevelFolderItem.rename("newName");
             fail("Should not be able to rename the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot rename a system folder item.", e.getMessage());
+            assertEquals("Cannot rename the top level folder item.",
+                    e.getMessage());
         }
         assertFalse(topLevelFolderItem.getCanDelete());
         try {
             topLevelFolderItem.delete();
             fail("Should not be able to delete the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot delete a system folder item.", e.getMessage());
+            assertEquals("Cannot delete the top level folder item.",
+                    e.getMessage());
         }
         List<FileSystemItem> children = topLevelFolderItem.getChildren();
         assertNotNull(children);
@@ -141,14 +143,15 @@ public class TestDefaultTopLevelFolderItemFactory {
             topLevelFolderItem.createFile(new StringBlob("Child file content."));
             fail("Should not be able to create a file in the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot create a file in a system folder item.",
+            assertEquals("Cannot create a file in the top level folder item.",
                     e.getMessage());
         }
         try {
             topLevelFolderItem.createFolder("subFolder");
             fail("Should not be able to create a folder in the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot create a folder in a system folder item.",
+            assertEquals(
+                    "Cannot create a folder in the top level folder item.",
                     e.getMessage());
         }
 
