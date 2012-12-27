@@ -33,11 +33,19 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -83,6 +91,10 @@ public abstract class AbstractWork implements Work {
     // when they want to manage their transaction manually (e.g. for long running tasks
     // that only need access to transactional resources at specific times)
     protected volatile boolean isTransactionStarted = false;
+
+    protected LoginContext loginContext;
+
+    protected CoreSession session;
 
     public AbstractWork() {
         state = SCHEDULED;
@@ -210,6 +222,31 @@ public abstract class AbstractWork implements Work {
     }
 
     /**
+     * May be called by implementing classes to open a session on the given
+     * repository.
+     *
+     * @param repositoryName the repository name
+     * @return the session (also available in {@code session} field)
+     */
+    public CoreSession initSession(String repositoryName) throws Exception {
+        try {
+            loginContext = Framework.login();
+        } catch (LoginException e) {
+            log.error("Cannot log in", e);
+        }
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        Repository repository;
+        if (repositoryName != null) {
+            repository = repositoryManager.getRepository(repositoryName);
+        } else {
+            repository = repositoryManager.getDefaultRepository();
+            repositoryName = repository.getName();
+        }
+        session = repository.open();
+        return session;
+    }
+
+    /**
      * This method is called after {@link #work} is done in a finally block,
      * whether work completed normally or was in error or was interrupted.
      *
@@ -217,10 +254,22 @@ public abstract class AbstractWork implements Work {
      * @param e the exception, if available
      */
     public void cleanUp(boolean ok, Exception e) {
-        if (ok || e instanceof InterruptedException) {
-            return;
+        if (!ok && !(e instanceof InterruptedException)) {
+            log.error("Exception during work: " + this, e);
         }
-        log.error("Exception during work: " + this, e);
+        try {
+            if (session != null) {
+                CoreInstance.getInstance().close(session);
+            }
+        } finally {
+            if (loginContext != null) {
+                try {
+                    loginContext.logout();
+                } catch (LoginException le) {
+                    log.error("Error while logging out", le);
+                }
+            }
+        }
     }
 
     /**
