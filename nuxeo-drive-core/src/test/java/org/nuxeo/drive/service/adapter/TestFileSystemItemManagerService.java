@@ -248,7 +248,8 @@ public class TestFileSystemItemManagerService {
                 principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
+        assertEquals(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
                 fsItem.getId());
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
@@ -264,7 +265,8 @@ public class TestFileSystemItemManagerService {
 
         // Sub folder
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
+                principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
@@ -304,7 +306,8 @@ public class TestFileSystemItemManagerService {
         assertEquals("Bonnie's file.odt", child.getName());
         assertFalse(child.isFolder());
         child = children.get(3);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
+        assertEquals(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
                 child.getId());
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 child.getParentId());
@@ -319,7 +322,8 @@ public class TestFileSystemItemManagerService {
         assertTrue(child.isFolder());
 
         children = fileSystemItemManagerService.getChildren(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(), principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
+                principal);
         assertTrue(children.isEmpty());
     }
 
@@ -343,8 +347,8 @@ public class TestFileSystemItemManagerService {
         }
         // Folder creation
         FolderItem newFolderItem = fileSystemItemManagerService.createFolder(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), "A new folder",
-                principal);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
+                "A new folder", principal);
         assertNotNull(newFolderItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 newFolderItem.getParentId());
