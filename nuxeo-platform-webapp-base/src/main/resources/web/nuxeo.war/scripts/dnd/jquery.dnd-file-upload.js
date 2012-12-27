@@ -52,7 +52,9 @@
     uploadRateRefreshTime : 1000,
     // time to enable extended mode
     extendedModeTimeout : 1500,
-
+    // http requests timeout
+    uploadTimeout : 30000,
+    execTimeout : 30000,
     handler : {
       // invoked when new files are dropped
       batchStarted : function() {return "X"},
@@ -81,7 +83,7 @@
     event.preventDefault();
 
     var dragoverTimer = zone.data("dragoverTimer");
-    if (!dragoverTimer) {
+    if (!dragoverTimer && opts.extendedModeTimeout>0) {
       dragoverTimer = window.setTimeout(function() {opts.handler.enableExtendedMode(id);}, opts.extendedModeTimeout);
       zone.data("dragoverTimer", dragoverTimer);
     }
@@ -184,7 +186,16 @@
       // propagate callback
       upload.uploadFiles = uploadFiles;
 
-      xhr.open(opts.method, opts.url + "upload");
+      // compute timeout in seconds and integer
+      uploadTimeoutS = 5+(opts.uploadTimeout/1000)|0;
+
+      var targetUrl = opts.url;
+      if (targetUrl.indexOf("/", targetUrl.length - 1)==-1) {
+        targetUrl = targetUrl + "/";
+      }
+      targetUrl =  targetUrl + "batch/upload";
+
+      xhr.open(opts.method, targetUrl);
       xhr.setRequestHeader("Cache-Control", "no-cache");
       xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
       xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.name));
@@ -193,6 +204,7 @@
       xhr.setRequestHeader("X-Batch-Id", batchId);
       xhr.setRequestHeader("X-File-Idx", uploadIdx);
 
+      xhr.setRequestHeader('Nuxeo-Transaction-Timeout', uploadTimeoutS);
       xhr.setRequestHeader("Content-Type", "multipart/form-data");
       nbUploadInprogress++;
 

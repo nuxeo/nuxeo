@@ -86,7 +86,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   this.cancelled=false;
   this.extendedMode=false;
   this.executionPending=false;
-
+  this.opts = options;
 
   DropZoneUIHandler.prototype.uploadStarted = function(fileIndex, file){
       this.nxUploadStarted++;
@@ -194,7 +194,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       window.clearTimeout(dragoverTimer);
       dzone.removeData("dragoverTimer");
     }
-    var targetUrl = this.url + 'drop/' + this.batchId;
+    var targetUrl = this.url + 'batch/drop/' + this.batchId;
     jQuery.ajax({
         type: 'GET',
         contentType : 'application/json+nxrequest',
@@ -381,9 +381,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       jQuery("#dndContinueButtonWait").css("display","block");
       continueButton.css("display","block")
 
-      var batchExec=jQuery().automation(operationId);
-      var timeout = this.nxUploaded > 10 ? batchExec.opts.timeout * 10 : this.nxUploaded * batchExec.opts.timeout;
-      batchExec.setTimeout(timeout)
+      var batchExec=jQuery().automation(operationId, this.opts);
       log(this.ctx);
       batchExec.setContext(this.ctx);
       batchExec.addParameters(params);
@@ -398,9 +396,9 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
           function(xhr,status,errorMessage) {
             cancelHandler.cancelUpload();
             if (status == "timeout") {
-            	alert("Request timeout, unknown status");
+              alert("Request timeout");
             } else if (xhr.readyState != 4) {
-            	alert("No response from server");
+              alert("No response from server");
             } else {
               if (xhr.status==403) {
                 alert("Security Error : \n" + errorMessage);
