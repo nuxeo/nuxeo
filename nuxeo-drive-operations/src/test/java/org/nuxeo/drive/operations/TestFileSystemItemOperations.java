@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
@@ -41,6 +43,7 @@ import org.nuxeo.ecm.automation.client.model.StringBlob;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -48,6 +51,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -72,6 +76,9 @@ public class TestFileSystemItemOperations {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
@@ -452,5 +459,55 @@ public class TestFileSystemItemOperations {
                         + updatedFileDoc.getId()
                         + "/blobholder:0/Updated%20file%201.odt",
                 updatedFile.getDownloadURL("http://my-server/nuxeo/"));
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+
+        // ------------------------------------------------------
+        // Delete file in sync root: should trash it
+        // ------------------------------------------------------
+        clientSession.newRequest(NuxeoDriveDelete.ID).set("id",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).execute();
+
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
+        session.save();
+
+        DocumentModel deletedFileDoc = session.getDocument(new IdRef(
+                file1.getId()));
+        assertEquals("deleted", deletedFileDoc.getCurrentLifeCycleState());
+
+        // ------------------------------------------------------
+        // Delete sync root: should unregister it
+        // ------------------------------------------------------
+        clientSession.newRequest(NuxeoDriveDelete.ID).set("id",
+                SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+        // Need a transaction to open a session by calling
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
+        TransactionHelper.startTransaction();
+        try {
+            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(
+                    session).contains(new IdRef(syncRoot2.getId())));
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+
+        // ------------------------------------------------------
+        // Delete top level folder: should be unsupported
+        // ------------------------------------------------------
+        try {
+            clientSession.newRequest(NuxeoDriveDelete.ID).set(
+                    "id",
+                    fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
+                            session.getPrincipal().getName()).getId()).execute();
+            fail("Top level folder item deletion should be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to execute operation: NuxeoDrive.Delete",
+                    e.getMessage());
+        }
     }
 }
