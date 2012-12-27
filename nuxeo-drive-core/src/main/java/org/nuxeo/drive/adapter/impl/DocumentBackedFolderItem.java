@@ -73,6 +73,7 @@ public class DocumentBackedFolderItem extends
         DocumentModel doc = getDocument(session);
         doc.setPropertyValue("dc:title", name);
         session.saveDocument(doc);
+        session.save();
         this.docTitle = name;
         this.name = name;
     }

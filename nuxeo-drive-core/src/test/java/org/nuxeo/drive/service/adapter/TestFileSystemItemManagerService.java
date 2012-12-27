@@ -34,8 +34,6 @@ import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
-import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
-import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.Blob;
@@ -408,10 +406,6 @@ public class TestFileSystemItemManagerService {
         assertEquals(fileItemId, fileItem.getId());
         assertEquals(fileItemParentId, fileItem.getParentId());
         assertEquals("New file.odt", fileItem.getName());
-        ((DocumentBackedFileItem) fileItem).getSession().save();
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item
-        session.save();
         folderChildren = session.query(String.format(
                 "select * from Document where ecm:parentId = '%s'",
                 newFolder.getId()));
@@ -455,10 +449,6 @@ public class TestFileSystemItemManagerService {
         assertEquals(fsItemId, fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Jack's folder has a new name", fsItem.getName());
-        ((DocumentBackedFolderItem) fsItem).getSession().save();
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item
-        session.save();
         folder = session.getDocument(folder.getRef());
         assertEquals("Jack's folder has a new name", folder.getTitle());
 
@@ -474,10 +464,6 @@ public class TestFileSystemItemManagerService {
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getParentId());
         assertEquals("File new name.odt", fsItem.getName());
-        ((DocumentBackedFileItem) fsItem).getSession().save();
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item
-        session.save();
         file = session.getDocument(file.getRef());
         assertEquals("aFile", file.getTitle());
         assertEquals("File new name.odt",
@@ -500,10 +486,6 @@ public class TestFileSystemItemManagerService {
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + newFile.getId(),
                 "Renamed title-filename equality.odt", principal);
         assertEquals("Renamed title-filename equality.odt", fsItem.getName());
-        ((DocumentBackedFileItem) fsItem).getSession().save();
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item
-        session.save();
         newFile = session.getDocument(newFile.getRef());
         assertEquals("Renamed title-filename equality.odt", newFile.getTitle());
         assertEquals("Renamed title-filename equality.odt",

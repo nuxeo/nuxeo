@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
@@ -351,10 +350,6 @@ public class TestDefaultFileSystemItemFactory {
         Blob newBlob = new StringBlob("This is a new file.");
         newBlob.setFilename("New blob.txt");
         fileItem.setBlob(newBlob);
-        ((DocumentBackedFileItem) fileItem).getSession().save();
-        // Need to flush VCS cache to be aware of changes in the session used by
-        // the file system item
-        session.save();
 
         file = session.getDocument(file.getRef());
         Blob updatedBlob = (Blob) file.getPropertyValue("file:content");

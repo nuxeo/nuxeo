@@ -62,6 +62,7 @@ public class DocumentBackedFileItem extends
         bh.setBlob(blob);
         updateDocTitleIfNeeded(doc, name);
         session.saveDocument(doc);
+        session.save();
         this.name = name;
     }
 
@@ -102,6 +103,7 @@ public class DocumentBackedFileItem extends
         }
         bh.setBlob(blob);
         session.saveDocument(doc);
+        session.save();
     }
 
     /*--------------------- Protected -----------------*/
