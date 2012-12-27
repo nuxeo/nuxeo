@@ -404,4 +404,53 @@ public class TestFileSystemItemOperations {
                         + "/blobholder:0/New%20file.odt",
                 newFile.getDownloadURL("http://my-server/nuxeo/"));
     }
+
+    @Test
+    public void testUpdateFile() throws Exception {
+
+        StringBlob blob = new StringBlob(
+                "This is the updated content of file 1.");
+        blob.setFileName("Updated file 1.odt");
+        Blob updatedFileJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveUpdateFile.ID).set("id",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).setInput(
+                blob).execute();
+        assertNotNull(updatedFileJSON);
+
+        DocumentBackedFileItem updatedFile = mapper.readValue(
+                updatedFileJSON.getStream(), DocumentBackedFileItem.class);
+        assertNotNull(updatedFile);
+
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
+        session.save();
+
+        DocumentModel updatedFileDoc = session.getDocument(new PathRef(
+                "/folder1/file1"));
+        assertEquals("File", updatedFileDoc.getType());
+        assertEquals("file1", updatedFileDoc.getTitle());
+        org.nuxeo.ecm.core.api.Blob updatedFileBlob = (org.nuxeo.ecm.core.api.Blob) updatedFileDoc.getPropertyValue("file:content");
+        assertNotNull(updatedFileBlob);
+        assertEquals("Updated file 1.odt", updatedFileBlob.getFilename());
+        assertEquals("This is the updated content of file 1.",
+                updatedFileBlob.getString());
+
+        assertEquals(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + updatedFileDoc.getId(),
+                updatedFile.getId());
+        assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(),
+                updatedFile.getParentId());
+        assertEquals("Updated file 1.odt", updatedFile.getName());
+        assertFalse(updatedFile.isFolder());
+        assertEquals("Administrator", updatedFile.getCreator());
+        assertTrue(updatedFile.getCanRename());
+        assertTrue(updatedFile.getCanDelete());
+        assertEquals(
+                "http://my-server/nuxeo/nxbigfile/test/"
+                        + updatedFileDoc.getId()
+                        + "/blobholder:0/Updated%20file%201.odt",
+                updatedFile.getDownloadURL("http://my-server/nuxeo/"));
+    }
 }
