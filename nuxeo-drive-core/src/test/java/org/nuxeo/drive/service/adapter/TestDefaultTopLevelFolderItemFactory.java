@@ -41,7 +41,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -196,7 +196,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertTrue(childFsItem.getCanDelete());
         childFsItem.delete();
         assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session).contains(
-                new PathRef("/syncRoot1")));
+                new IdRef(syncRoot1.getId())));
         assertTrue(childFsItem instanceof FolderItem);
         FolderItem childFolderItem = (FolderItem) childFsItem;
         List<FileSystemItem> childFsItemChildren = childFolderItem.getChildren();
