@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @author Antoine Taillefer
  * @see DefaultTopLevelFolderItemFactory
  */
-public interface TopLevelFolderItemFactory {
+public interface TopLevelFolderItemFactory extends FileSystemItemFactory {
 
     FolderItem getTopLevelFolderItem(String userName) throws ClientException;
 

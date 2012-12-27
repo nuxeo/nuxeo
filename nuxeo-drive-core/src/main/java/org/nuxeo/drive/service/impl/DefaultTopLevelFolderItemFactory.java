@@ -16,10 +16,14 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import java.security.Principal;
+
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Default implementation of a {@link TopLevelFolderItemFactory}.
@@ -36,10 +40,11 @@ public class DefaultTopLevelFolderItemFactory implements
     protected DefaultTopLevelFolderItemFactory() {
     }
 
+    /*--------------------------- TopLevelFolderItemFactory ----------------------------*/
     @Override
     public FolderItem getTopLevelFolderItem(String userName)
             throws ClientException {
-        return new DefaultTopLevelFolderItem(getFactoryName(), userName);
+        return new DefaultTopLevelFolderItem(getName(), userName);
     }
 
     @Override
@@ -48,8 +53,55 @@ public class DefaultTopLevelFolderItemFactory implements
         return getTopLevelFolderItem(userName).getId();
     }
 
-    protected String getFactoryName() {
+    /*--------------------------- FileSystemItemFactory --------------------------------*/
+    @Override
+    public void setName(String name) {
+        throw new UnsupportedOperationException(
+                "Cannot set the name of a TopLevelFolderItemFactory.");
+    }
+
+    @Override
+    public String getName() {
         return getClass().getName();
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc)
+            throws ClientException {
+        throw new UnsupportedOperationException(
+                "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.");
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+            throws ClientException {
+        throw new UnsupportedOperationException(
+                "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.");
+    }
+
+    @Override
+    public boolean canHandleFileSystemItemId(String id) {
+        return (getName() + "/").equals(id);
+    }
+
+    @Override
+    public boolean exists(String id, Principal principal)
+            throws ClientException {
+        if (!canHandleFileSystemItemId(id)) {
+            throw new UnsupportedOperationException(
+                    "Cannot check if a file system item with a given id exists for an id different than the top level folder item one from a TopLevelFolderItemFactory.");
+        }
+        return true;
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItemById(String id, Principal principal)
+            throws ClientException {
+        if (!canHandleFileSystemItemId(id)) {
+            throw new UnsupportedOperationException(
+                    "Cannot get the file system item for an id different than the top level folder item one from a TopLevelFolderItemFactory.");
+        }
+        return getTopLevelFolderItem(principal.getName());
     }
 
 }

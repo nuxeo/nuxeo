@@ -259,6 +259,16 @@ public class TestFileSystemItemAdapterService {
                 "DefaultFileSystemItemFactory"));
         assertTrue(fsItemFactory.canHandleFileSystemItemId(fsItemId));
 
+        // Top level folder item factory
+        fsItemId = "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/";
+        fsItemFactory = fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
+        assertNotNull(fsItemFactory);
+        assertTrue(fsItemFactory.getName().endsWith(
+                "DefaultTopLevelFolderItemFactory"));
+        assertTrue(fsItemFactory.getClass().getName().endsWith(
+                "DefaultTopLevelFolderItemFactory"));
+        assertTrue(fsItemFactory.canHandleFileSystemItemId(fsItemId));
+
         // Factory with #canHandleFileSystemItemId returning false
         fsItemId = "dummyDocTypeFactory/test/someId";
         try {
@@ -436,6 +446,16 @@ public class TestFileSystemItemAdapterService {
         assertEquals("dummyFacetFactory", fsItemFactory.getName());
         assertTrue(fsItemFactory.getClass().getName().endsWith(
                 "DefaultFileSystemItemFactory"));
+        assertTrue(fsItemFactory.canHandleFileSystemItemId(fsItemId));
+
+        // Top level folder item factory
+        fsItemId = "org.nuxeo.drive.service.adapter.DummyTopLevelFolderItemFactory/";
+        fsItemFactory = fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
+        assertNotNull(fsItemFactory);
+        assertTrue(fsItemFactory.getName().endsWith(
+                "DummyTopLevelFolderItemFactory"));
+        assertTrue(fsItemFactory.getClass().getName().endsWith(
+                "DummyTopLevelFolderItemFactory"));
         assertTrue(fsItemFactory.canHandleFileSystemItemId(fsItemId));
 
         // -------------------------------------------------------------

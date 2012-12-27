@@ -134,6 +134,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                 return factory;
             }
         }
+        // No fileSystemItemFactory found, try the topLevelFolderItemFactory
+        TopLevelFolderItemFactory topLevelFolderItemFactory = getTopLevelFolderItemFactory();
+        if (topLevelFolderItemFactory.canHandleFileSystemItemId(id)) {
+            return topLevelFolderItemFactory;
+        }
         throw new ClientException(
                 String.format(
                         "No fileSystemItemFactory found for FileSystemItem with id %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",

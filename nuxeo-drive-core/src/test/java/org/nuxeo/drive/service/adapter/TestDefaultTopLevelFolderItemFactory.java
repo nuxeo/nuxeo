@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -208,6 +209,76 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertTrue(childFsItem.getParentId().endsWith(
                 "DefaultTopLevelFolderItemFactory/"));
         assertEquals("syncRoot2", childFsItem.getName());
+    }
+
+    @Test
+    public void testFileSystemItemFactory() throws ClientException {
+
+        // #setName(String name)
+        try {
+            defaultTopLevelFolderItemFactory.setName("testName");
+            fail("Should be unsupported.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals("Cannot set the name of a TopLevelFolderItemFactory.",
+                    e.getMessage());
+        }
+        // #getName()
+        assertEquals(
+                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory",
+                defaultTopLevelFolderItemFactory.getName());
+        // #getFileSystemItem(DocumentModel doc)
+        try {
+            defaultTopLevelFolderItemFactory.getFileSystemItem(new DocumentModelImpl(
+                    "File"));
+            fail("Should be unsupported.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals(
+                    "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.",
+                    e.getMessage());
+        }
+        // #getFileSystemItem(DocumentModel doc, String parentId)
+        try {
+            defaultTopLevelFolderItemFactory.getFileSystemItem(
+                    new DocumentModelImpl("File"), "testParentId");
+            fail("Should be unsupported.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals(
+                    "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.",
+                    e.getMessage());
+        }
+        // #canHandleFileSystemItemId(String id)
+        assertTrue(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/"));
+        assertFalse(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory/"));
+        // #exists(String id, Principal principal)
+        assertTrue(defaultTopLevelFolderItemFactory.exists(
+                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/",
+                session.getPrincipal()));
+        try {
+            defaultTopLevelFolderItemFactory.exists("testId",
+                    session.getPrincipal());
+            fail("Should be unsupported.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals(
+                    "Cannot check if a file system item with a given id exists for an id different than the top level folder item one from a TopLevelFolderItemFactory.",
+                    e.getMessage());
+        }
+        // #getFileSystemItemById(String id, Principal principal)
+        FileSystemItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getFileSystemItemById(
+                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/",
+                session.getPrincipal());
+        assertNotNull(topLevelFolderItem);
+        assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
+        assertNull(topLevelFolderItem.getParentId());
+        assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
+        try {
+            defaultTopLevelFolderItemFactory.getFileSystemItemById("otestId",
+                    session.getPrincipal());
+            fail("Should be unsupported.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals(
+                    "Cannot get the file system item for an id different than the top level folder item one from a TopLevelFolderItemFactory.",
+                    e.getMessage());
+        }
     }
 
 }
