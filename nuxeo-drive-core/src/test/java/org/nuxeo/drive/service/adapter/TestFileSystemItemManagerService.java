@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -430,18 +431,12 @@ public class TestFileSystemItemManagerService {
         // File deletion
         fileSystemItemManagerService.delete(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + updatedFile.getId(), principal);
+        updatedFile = session.getDocument(new IdRef(updatedFile.getId()));
+        assertEquals("deleted", updatedFile.getCurrentLifeCycleState());
 
         // Parent folder children check
         assertTrue(fileSystemItemManagerService.getChildren(
                 newFolderItem.getId(), principal).isEmpty());
-
-        // Parent folder trash check
-        assertEquals(
-                1,
-                session.query(
-                        String.format(
-                                "select * from Document where ecm:parentId = '%s' and ecm:currentLifeCycleState = 'deleted'",
-                                newFolder.getId())).size());
 
         // ------------------------------------------------------
         // Check #rename
