@@ -37,11 +37,11 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.StringBlob;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -128,13 +128,14 @@ public class TestFileSystemItemOperations {
 
         // Create 1 file in each sync root
         file1 = session.createDocumentModel("/folder1", "file1", "File");
-        org.nuxeo.ecm.core.api.Blob blob = new StringBlob(
+        org.nuxeo.ecm.core.api.Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
                 "The content of file 1.");
         blob.setFilename("First file.odt");
         file1.setPropertyValue("file:content", (Serializable) blob);
         file1 = session.createDocument(file1);
         file2 = session.createDocumentModel("/folder2", "file2", "File");
-        blob = new StringBlob("The content of file 2.");
+        blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
+                "The content of file 2.");
         blob.setFilename("Second file.odt");
         file2.setPropertyValue("file:content", (Serializable) blob);
         file2 = session.createDocument(file2);
@@ -146,13 +147,15 @@ public class TestFileSystemItemOperations {
         // Create 2 files in sub-folder
         file3 = session.createDocumentModel("/folder1/subFolder1", "file3",
                 "File");
-        blob = new StringBlob("The content of file 3.");
+        blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
+                "The content of file 3.");
         blob.setFilename("Third file.odt");
         file3.setPropertyValue("file:content", (Serializable) blob);
         file3 = session.createDocument(file3);
         file4 = session.createDocumentModel("/folder1/subFolder1", "file4",
                 "File");
-        blob = new StringBlob("The content of file 4.");
+        blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
+                "The content of file 4.");
         blob.setFilename("Fourth file.odt");
         file4.setPropertyValue("file:content", (Serializable) blob);
         file4 = session.createDocument(file4);
@@ -335,12 +338,12 @@ public class TestFileSystemItemOperations {
 
         session.save();
 
-        DocumentModel newfolderDoc = session.getDocument(new PathRef(
+        DocumentModel newFolderDoc = session.getDocument(new PathRef(
                 "/folder2/newFolder"));
-        assertEquals("Folder", newfolderDoc.getType());
-        assertEquals("newFolder", newfolderDoc.getTitle());
+        assertEquals("Folder", newFolderDoc.getType());
+        assertEquals("newFolder", newFolderDoc.getTitle());
 
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + newfolderDoc.getId(),
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + newFolderDoc.getId(),
                 newFolder.getId());
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId(),
                 newFolder.getParentId());
@@ -350,5 +353,47 @@ public class TestFileSystemItemOperations {
         assertTrue(newFolder.getCanRename());
         assertTrue(newFolder.getCanDelete());
         assertTrue(newFolder.getCanCreateChild());
+    }
+
+    @Test
+    public void testCreateFile() throws Exception {
+
+        StringBlob blob = new StringBlob("This is the content of a new file.");
+        blob.setFileName("New file.odt");
+        Blob newFileJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCreateFile.ID).set("id",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId()).setInput(
+                blob).execute();
+        assertNotNull(newFileJSON);
+
+        DocumentBackedFileItem newFile = mapper.readValue(
+                newFileJSON.getStream(), DocumentBackedFileItem.class);
+        assertNotNull(newFile);
+
+        session.save();
+
+        DocumentModel newFileDoc = session.getDocument(new PathRef(
+                "/folder1/subFolder1/New file.odt"));
+        assertEquals("File", newFileDoc.getType());
+        assertEquals("New file.odt", newFileDoc.getTitle());
+        org.nuxeo.ecm.core.api.Blob newFileBlob = (org.nuxeo.ecm.core.api.Blob) newFileDoc.getPropertyValue("file:content");
+        assertNotNull(newFileBlob);
+        assertEquals("New file.odt", newFileBlob.getFilename());
+        assertEquals("This is the content of a new file.",
+                newFileBlob.getString());
+
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + newFileDoc.getId(),
+                newFile.getId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId(),
+                newFile.getParentId());
+        assertEquals("New file.odt", newFile.getName());
+        assertFalse(newFile.isFolder());
+        assertEquals("Administrator", newFile.getCreator());
+        assertTrue(newFile.getCanRename());
+        assertTrue(newFile.getCanDelete());
+        assertEquals(
+                "http://my-server/nuxeo/nxbigfile/test/" + newFileDoc.getId()
+                        + "/blobholder:0/New%20file.odt",
+                newFile.getDownloadURL("http://my-server/nuxeo/"));
     }
 }
