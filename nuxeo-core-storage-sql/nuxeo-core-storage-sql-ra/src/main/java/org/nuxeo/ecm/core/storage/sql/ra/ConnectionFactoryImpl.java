@@ -64,8 +64,6 @@ public class ConnectionFactoryImpl implements Repository,
 
     private SecurityManager securityManager;
 
-    private SchemaManager schemaManager;
-
     private Reference reference;
 
     /**
@@ -76,8 +74,6 @@ public class ConnectionFactoryImpl implements Repository,
      */
     @SuppressWarnings("unused")
     private final boolean managed;
-
-    private boolean servicesInitialized;
 
     public ConnectionFactoryImpl(
             ManagedConnectionFactoryImpl managedConnectionFactory,
@@ -91,33 +87,6 @@ public class ConnectionFactoryImpl implements Repository,
     // NXP 3992 -- exposed this for clean shutdown on cluster
     public ManagedConnectionFactoryImpl getManagedConnectionFactory() {
         return managedConnectionFactory;
-    }
-
-    protected void initializeServices() {
-        if (!servicesInitialized) {
-            servicesInitialized = true;
-            /*
-             * Look up the configuration for this repository.
-             */
-            try {
-                RepositoryService repositoryService = Framework.getService(RepositoryService.class);
-                if (repositoryService != null) {
-                    RepositoryDescriptor descriptor = repositoryService.getRepositoryManager().getDescriptor(
-                            name);
-                    if (descriptor.getSecurityManagerClass() != null) {
-                        securityManager = descriptor.getSecurityManager();
-                    }
-                }
-                if (securityManager == null) {
-                    securityManager = new SQLSecurityManager();
-                }
-                schemaManager = Framework.getService(SchemaManager.class);
-            } catch (RuntimeException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     /*
@@ -231,15 +200,33 @@ public class ConnectionFactoryImpl implements Repository,
     }
 
     @Override
-    public SecurityManager getNuxeoSecurityManager() {
-        initializeServices();
+    public synchronized SecurityManager getNuxeoSecurityManager() {
+        if (securityManager != null) {
+            return securityManager;
+        }
+        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+        if (repositoryService != null) {
+            RepositoryDescriptor descriptor = repositoryService.getRepositoryManager().getDescriptor(
+                    name);
+            if (descriptor.getSecurityManagerClass() != null) {
+                try {
+                    securityManager = descriptor.getSecurityManager();
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        if (securityManager == null) {
+            securityManager = new SQLSecurityManager();
+        }
         return securityManager;
     }
 
     @Override
     public SchemaManager getTypeManager() {
-        initializeServices();
-        return schemaManager;
+        return Framework.getLocalService(SchemaManager.class);
     }
 
     /*
