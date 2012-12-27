@@ -97,7 +97,6 @@ Nuxeo {
 - configure Nuxeo (we're almost there!)
 
 deploy the bundle in $NUXEO_HOME/nxserver/bundles
-add jcifs-1.2.25.jar and jcifs-ext-0.9.4.jar in $NUXEO_HOME/lib
 create a $NUXEO_HOME/nxserver/config/kerberos-config.xml with the following:
 
 <?xml version="1.0"?>
