@@ -90,18 +90,21 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * Read the byte stream as a string assuming a UTF-8 encoding.
+     *
+     * @deprecated use org.apache.commons.io.IOUtils.toString(in, "UTF-8")
+     *             explicitly instead (or any other encoding when provided by
+     *             the source of the byte stream).
+     */
+    @Deprecated
     public static String read(InputStream in) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        byte[] buffer = createBuffer(in.available());
-        try {
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                sb.append(new String(buffer, 0, read));
-            }
-        } finally {
-            in.close();
-        }
-        return sb.toString();
+        // UTF-8 should is configured as the default "file.encoding" in a system
+        // property configured in the nuxeo.conf file.
+        // However this option might not be passed when running the Nuxeo as a
+        // library or using the maven test runner. Therefore we hardcode the
+        // default charset to "UTF-8" to ensure consistency.
+        return IOUtils.toString(in, "UTF-8");
     }
 
     public static byte[] readBytes(URL url) throws IOException {
