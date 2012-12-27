@@ -24,10 +24,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentInputResolver;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentsInputResolver;
@@ -80,8 +80,13 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             return readRequest(in,headers);
     }
 
-    public static ExecutionRequest readRequest(InputStream in, MultivaluedMap<String, String> headers) throws IOException {
-        String content = FileUtils.read(in);
+    public static ExecutionRequest readRequest(InputStream in,
+            MultivaluedMap<String, String> headers) throws IOException {
+        // As stated in http://tools.ietf.org/html/rfc4627.html UTF-8 is the
+        // default encoding for JSON content
+        // TODO: add introspection on the first bytes to detect other admissible
+        // json encodings, namely: UTF-8, UTF-16 (BE or LE), or UTF-32 (BE or LE)
+        String content = IOUtils.toString(in, "UTF-8");
         return readRequest(content, headers);
     }
 
