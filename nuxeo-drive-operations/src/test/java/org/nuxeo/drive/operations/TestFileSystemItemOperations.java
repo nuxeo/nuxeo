@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
+import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -56,7 +58,10 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RestFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
+@Deploy({ "org.nuxeo.ecm.platform.filemanager.core",
+        "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
+        "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18080)
 public class TestFileSystemItemOperations {
@@ -92,6 +97,20 @@ public class TestFileSystemItemOperations {
 
     protected ObjectMapper mapper;
 
+    /**
+     * Initializes the test hierarchy.
+     *
+     * <pre>
+     * topLevel
+     *   |-- folder1 (syncRoot1)
+     *   |     |-- file1
+     *   |     |-- subFolder1
+     *   |           |-- file3
+     *   |           |-- file4
+     *   |-- folder2 (syncRoot2)
+     *   |     |-- file2
+     * </pre>
+     */
     @Before
     public void init() throws Exception {
 
@@ -299,5 +318,37 @@ public class TestFileSystemItemOperations {
         assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file4.getId()
                 + "/blobholder:0/Fourth%20file.odt",
                 child.getDownloadURL("http://my-server/nuxeo/"));
+    }
+
+    @Test
+    public void testCreateFolder() throws Exception {
+
+        Blob newFolderJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCreateFolder.ID).set("id",
+                SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).set(
+                "name", "newFolder").execute();
+        assertNotNull(newFolderJSON);
+
+        DocumentBackedFolderItem newFolder = mapper.readValue(
+                newFolderJSON.getStream(), DocumentBackedFolderItem.class);
+        assertNotNull(newFolder);
+
+        session.save();
+
+        DocumentModel newfolderDoc = session.getDocument(new PathRef(
+                "/folder2/newFolder"));
+        assertEquals("Folder", newfolderDoc.getType());
+        assertEquals("newFolder", newfolderDoc.getTitle());
+
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + newfolderDoc.getId(),
+                newFolder.getId());
+        assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId(),
+                newFolder.getParentId());
+        assertEquals("newFolder", newFolder.getName());
+        assertTrue(newFolder.isFolder());
+        assertEquals("Administrator", newFolder.getCreator());
+        assertTrue(newFolder.getCanRename());
+        assertTrue(newFolder.getCanDelete());
+        assertTrue(newFolder.getCanCreateChild());
     }
 }
