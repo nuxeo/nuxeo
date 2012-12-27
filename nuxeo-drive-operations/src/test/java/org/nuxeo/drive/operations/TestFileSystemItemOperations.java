@@ -427,8 +427,8 @@ public class TestFileSystemItemOperations {
         // repositoryName, Principal principal)
         session.save();
 
-        DocumentModel updatedFileDoc = session.getDocument(new PathRef(
-                "/folder1/file1"));
+        DocumentModel updatedFileDoc = session.getDocument(new IdRef(
+                file1.getId()));
         assertEquals("File", updatedFileDoc.getType());
         assertEquals("file1", updatedFileDoc.getTitle());
         org.nuxeo.ecm.core.api.Blob updatedFileBlob = (org.nuxeo.ecm.core.api.Blob) updatedFileDoc.getPropertyValue("file:content");
