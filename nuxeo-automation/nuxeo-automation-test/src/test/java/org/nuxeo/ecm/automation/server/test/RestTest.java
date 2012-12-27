@@ -263,7 +263,7 @@ public class RestTest {
         }
     }
 
-    
+
     /**
      * Test documents input / output
      */
@@ -330,7 +330,7 @@ public class RestTest {
         assertTrue(props.getKeys().contains("dc:source"));
         assertNull(note.getString("dc:source"));
     }
-    
+
     /**
      * Test documents output - query and get children
      */
@@ -843,7 +843,7 @@ public class RestTest {
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", folder.getPath()).execute();
 
         assertNull(doc.getLock());
-        
+
         session.newRequest(LockDocument.ID).setHeader(
                 Constants.HEADER_NX_VOIDOP, "*").setInput(doc).execute();
 
@@ -854,17 +854,20 @@ public class RestTest {
         assertEquals("Administrator", doc.getLockOwner());
         assertNotNull(doc.getLockCreated());
     }
-    
+
     @Test
     public void testEncoding() throws Exception {
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
 
-        String title = "éèêëààäìîïùûù";
+        // Latin vowels with various French accents (avoid non-ascii literals in
+        // java source code to avoid issues when working with developers who do
+        // not configure there editor charset to UTF-8).
+        String title = "\u00e9\u00e8\u00ea\u00eb\u00e0\u00e0\u00e4\u00ec\u00ee\u00ef\u00f9\u00fb\u00f9";
         Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(
                 root).set("type", "Folder").set("name", "myfolder").set(
-                "properties", "dc:title="+title).execute();
-        
+                "properties", "dc:title=" + title).execute();
+
         folder = (Document) session.newRequest(FetchDocument.ID).setHeader(
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", folder.getPath()).execute();
 
