@@ -117,7 +117,8 @@ public class DocumentBackedFolderItem extends
                                 "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check them.",
                                 name, docPath));
             }
-            return new DocumentBackedFolderItem(factoryName, id, folder);
+            return (FolderItem) getFileSystemItemAdapterService().getFileSystemItem(
+                    folder, id);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }
@@ -136,7 +137,8 @@ public class DocumentBackedFolderItem extends
                                 "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
                                 fileName, docPath));
             }
-            return new DocumentBackedFileItem(factoryName, id, file);
+            return (FileItem) getFileSystemItemAdapterService().getFileSystemItem(
+                    file, id);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }
