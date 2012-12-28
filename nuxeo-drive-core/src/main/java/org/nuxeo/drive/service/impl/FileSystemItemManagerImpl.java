@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 
@@ -69,24 +70,39 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
                     throw new RuntimeException(
                             "FileSystemItemManagerImpl requires an active transaction.");
                 }
-                t.registerSynchronization(new Synchronization() {
-                    @Override
-                    public void beforeCompletion() {
-                        CoreInstance.getInstance().close(newSession);
-                        openedSessions.get().remove(sessionKey);
-                    }
-
-                    @Override
-                    public void afterCompletion(int status) {
-                        // Nothing to do
-                    }
-                });
+                t.registerSynchronization(new SessionCloser(newSession,
+                        sessionKey));
             } catch (Exception e) {
                 throw new ClientRuntimeException(e);
             }
             session = newSession;
         }
         return session;
+    }
+
+    protected class SessionCloser implements Synchronization {
+
+        protected final CoreSession session;
+
+        protected final String sessionKey;
+
+        protected SessionCloser(CoreSession session, String sessionKey) {
+            this.session = session;
+            this.sessionKey = sessionKey;
+        }
+
+        @Override
+        public void beforeCompletion() {
+            CoreInstance.getInstance().close(session);
+        }
+
+        @Override
+        public void afterCompletion(int status) {
+            openedSessions.get().remove(sessionKey);
+            if (status != Status.STATUS_COMMITTED) {
+                CoreInstance.getInstance().close(session);
+            }
+        }
     }
 
     /*------------- Read operations ----------------*/
