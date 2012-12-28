@@ -66,6 +66,10 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
         this.canCreateChild = false;
     }
 
+    protected DefaultTopLevelFolderItem() {
+        // Needed for JSON deserialization
+    }
+
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
