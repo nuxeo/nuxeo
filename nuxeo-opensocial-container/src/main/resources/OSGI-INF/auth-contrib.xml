@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.container.auth.contrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="openUrl">
+    <openUrl name="OpenSocialLogin">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/opensocial_login.jsp</grantPattern>
+    </openUrl>
+  </extension>
+
+  <extension point="authenticators" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <authenticationPlugin class="org.nuxeo.ecm.platform.ui.web.auth.plugins.FormAuthenticator" enabled="true" name="OPENSOCIAL_FORM_AUTH">
+      <needStartingURLSaving>true</needStartingURLSaving>
+      <parameters>
+        <parameter name="LoginPage">opensocial_login.jsp</parameter>
+        <parameter name="UsernameKey">user_name</parameter>
+        <parameter name="PasswordKey">user_password</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+  <extension point="specificChains" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <specificAuthenticationChain name="Opensocial">
+        <urlPatterns>
+            <url>${org.nuxeo.ecm.contextPath}/opensocial/gadgets/ifr.*</url>
+        </urlPatterns>
+        <replacementChain>
+            <plugin>OPENSOCIAL_FORM_AUTH</plugin>
+        </replacementChain>
+    </specificAuthenticationChain>
+  </extension>
+
+</component>
