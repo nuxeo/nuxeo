@@ -17,6 +17,7 @@
     <operation class="org.nuxeo.drive.operations.NuxeoDriveCreateFile" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveUpdateFile" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveDelete" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveRename" />
   </extension>
 
 </component>

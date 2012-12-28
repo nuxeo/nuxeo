@@ -531,4 +531,87 @@ public class TestFileSystemItemOperations {
                     e.getMessage());
         }
     }
+
+    @Test
+    public void testRename() throws Exception {
+
+        // ------------------------------------------------------
+        // File
+        // ------------------------------------------------------
+        Blob renamedFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveRename.ID).set("id",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set("name",
+                "Renamed file 1.odt").execute();
+        assertNotNull(renamedFSItemJSON);
+
+        DocumentBackedFileItem renamedFileItem = mapper.readValue(
+                renamedFSItemJSON.getStream(), DocumentBackedFileItem.class);
+        assertNotNull(renamedFileItem);
+        assertEquals("Renamed file 1.odt", renamedFileItem.getName());
+
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
+        session.save();
+
+        DocumentModel renamedFileDoc = session.getDocument(new IdRef(
+                file1.getId()));
+        assertEquals("file1", renamedFileDoc.getTitle());
+        org.nuxeo.ecm.core.api.Blob renamedFileBlob = (org.nuxeo.ecm.core.api.Blob) renamedFileDoc.getPropertyValue("file:content");
+        assertNotNull(renamedFileBlob);
+        assertEquals("Renamed file 1.odt", renamedFileBlob.getFilename());
+
+        // ------------------------------------------------------
+        // Folder
+        // ------------------------------------------------------
+        renamedFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveRename.ID).set(
+                "id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId()).set(
+                "name", "Renamed sub-folder 1").execute();
+        assertNotNull(renamedFSItemJSON);
+
+        DocumentBackedFolderItem renamedFolderItem = mapper.readValue(
+                renamedFSItemJSON.getStream(), DocumentBackedFolderItem.class);
+        assertNotNull(renamedFolderItem);
+        assertEquals("Renamed sub-folder 1", renamedFolderItem.getName());
+
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
+        session.save();
+
+        DocumentModel renamedFolderDoc = session.getDocument(new IdRef(
+                subFolder1.getId()));
+        assertEquals("Renamed sub-folder 1", renamedFolderDoc.getTitle());
+
+        // ------------------------------------------------------
+        // Sync root
+        // ------------------------------------------------------
+        try {
+            clientSession.newRequest(NuxeoDriveRename.ID).set("id",
+                    SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId()).set(
+                    "name", "New name for sync root").execute();
+            fail("Sync root renaming shoud be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to execute operation: NuxeoDrive.Rename",
+                    e.getMessage());
+        }
+
+        // ------------------------------------------------------
+        // Top level folder
+        // ------------------------------------------------------
+        try {
+            clientSession.newRequest(NuxeoDriveRename.ID).set(
+                    "id",
+                    fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
+                            session.getPrincipal().getName()).getId()).set(
+                    "name", "New name for top level folder").execute();
+            fail("Top level folder renaming shoud be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to execute operation: NuxeoDrive.Rename",
+                    e.getMessage());
+        }
+
+    }
 }
