@@ -7,11 +7,20 @@
 
 <h:form enctype="multipart/form-data" id="document_edit">
 
+  <script src="#{contextPath}/scripts/safeEdit.js"></script>
+
   <script>
     jQuery(document).ready(function() {
       jQuery('#document_edit').focusFirst();
     });
   </script>
+
+  <c:if test="false">
+  <ui:include src="/incl/safeEdit.xhtml">
+     <ui:param name="safeEdit_form" value="document_edit" />
+     <ui:param name="safeEdit_mode" value="edit" />
+  </ui:include>
+  </c:if>
 
   <nxl:documentLayout mode="edit" value="#{currentDocument}" />
 

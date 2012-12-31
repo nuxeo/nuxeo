@@ -15,17 +15,22 @@
       jQuery("#confirmRestore").css({"display" : "inline"});
     }
 
-    function initSafeEditOnForm(formId, key) {
+    function initSafeEditOnForm(formId, key, message) {
 
        if (!formId.startsWith('#')) {
          formId= "#" + formId;
        }
+
        if (jQuery(formId).size()>0) {
-         initSafeEdit(key,formId,10*1000, formSavedCallback,
-            function(doLoadCB){return restoreDataCallbackPrompt(doLoadCB, formId, key);});
+         if (localStorage) {
+           // leverage localStorage if available
+           initSafeEdit(key,formId,10*1000, formSavedCallback,
+              function(doLoadCB){return restoreDataCallbackPrompt(doLoadCB, formId, key);}, message);
+         } else {
+           // limit to simple warn
+           detectDirtyPage(formId, message);
+         }
        }
-       else {
-         //console.log("No target form was found for id " + formId);
-       }
+
     }
 

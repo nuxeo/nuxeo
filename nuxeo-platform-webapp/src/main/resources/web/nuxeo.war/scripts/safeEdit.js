@@ -111,7 +111,7 @@ function restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB) {
      //console.log("restore check", currentData, dataStr);
      if (currentData==dataStr) {
        // don't propose to restore if there is nothing new !
-       return;
+       return false;
      }
 
      // create cleanup callback
@@ -139,18 +139,20 @@ function restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB) {
          cleanupSavedData(key);
        }
        blockAutoSave = false;
-       window.setTimeout(function(){saveForm(key,formSelector,savePeriod, saveCB)}, savePeriod);
+       if (savePeriod>0) {
+         window.setTimeout(function(){saveForm(key,formSelector,savePeriod, saveCB)}, savePeriod);
+       }
      };
      if (loadCB!=null) {
        if (!loadCB(doLoad)) {
-         return;
+         return true;
        }
      } else {
        doLoad();
      }
-  } else {
-    saveForm(key, formSelector, savePeriod, saveCB);
+     return true;
   }
+  return false;
 }
 
 function bindOnChange(formSelector, cb) {
@@ -178,8 +180,20 @@ function detectDirtyPage(formSelector, message) {
   jQuery(formSelector).submit(function(){dirtyPage=false;jQuery(window).unbind('beforeunload');return true;})
 }
 
-function initSafeEdit(key, formSelector, savePeriod, saveCB, loadCB) {
-   restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB);
+function initSafeEdit(key, formSelector, savePeriod, saveCB, loadCB, message) {
+   var loaded = restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB);
+   bindOnChange(formSelector, function(event) {
+        if (!dirtyPage) {
+          jQuery(window).bind('beforeunload', function(){
+            // force save
+            saveForm(key, formSelector, savePeriod, saveCB);
+            // return message
+            return message;
+        });
+        }
+        dirtyPage=true;
+        });
+   jQuery(formSelector).submit(function(){dirtyPage=false;jQuery(window).unbind('beforeunload');cleanupSavedData(key);return true;})
 }
 
 
