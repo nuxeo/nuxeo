@@ -58,13 +58,6 @@ import com.google.inject.Inject;
 public class PreferencesPresenter extends
         WidgetPresenter<PreferencesPresenter.Display> {
     public interface Display extends WidgetDisplay {
-        HasClickHandlers getBorderColors();
-
-        void setBorderColor(String color);
-
-        HasClickHandlers getHeaderColors();
-
-        void setHeaderColor(String color);
 
         HasClickHandlers getTitleColors();
 
@@ -122,11 +115,6 @@ public class PreferencesPresenter extends
         display.getTitleBox().setText(data.getTitle());
         display.setTitleColor(data.getPreferences().get(
                 WebContentData.WC_TITLE_COLOR));
-        display.setBorderColor(data.getPreferences().get(
-                WebContentData.WC_BORDER_COLOR));
-        display.setHeaderColor(data.getPreferences().get(
-                WebContentData.WC_HEADER_COLOR));
-
         // TODO Should be done with any type of WebContentData ! To be improved
         // ...
         if (data instanceof OpenSocialData) {
@@ -224,8 +212,6 @@ public class PreferencesPresenter extends
         fetchContent();
 
         registerTitleChangement();
-        registerBorderColorChangement();
-        registerHeaderColorChangement();
         registerTitleColorChangement();
         registerPreferencesSave();
         registerPreferencesCancel();
@@ -243,14 +229,9 @@ public class PreferencesPresenter extends
     public void rollBack() {
         portletPresenter.setTitle(data.getTitle());
 
-        portletPresenter.setBorderColor(data.getPreferences().get(
-                WebContentData.WC_BORDER_COLOR));
-
         portletPresenter.setTitleColor(data.getPreferences().get(
                 WebContentData.WC_TITLE_COLOR));
 
-        portletPresenter.setHeaderColor(data.getPreferences().get(
-                WebContentData.WC_HEADER_COLOR));
     }
 
     private void registerPreferencesSave() {
@@ -263,14 +244,6 @@ public class PreferencesPresenter extends
                         data.addPreference(
                                 WebContentData.WC_TITLE_COLOR,
                                 ((ColorsPanelWidget) display.getTitleColors()).getSelectedColor().getColorAsString());
-
-                        data.addPreference(
-                                WebContentData.WC_BORDER_COLOR,
-                                ((ColorsPanelWidget) display.getBorderColors()).getSelectedColor().getColorAsString());
-
-                        data.addPreference(
-                                WebContentData.WC_HEADER_COLOR,
-                                ((ColorsPanelWidget) display.getHeaderColors()).getSelectedColor().getColorAsString());
 
                         // TODO Should be done with any type of WebContentData !
                         // To be improved ...
@@ -297,26 +270,6 @@ public class PreferencesPresenter extends
                     public void onClick(ClickEvent event) {
                         rollBack();
                         display.hidePopup();
-                    }
-                }));
-    }
-
-    private void registerHeaderColorChangement() {
-        registerHandler(display.getHeaderColors().addClickHandler(
-                new ClickHandler() {
-                    public void onClick(ClickEvent arg0) {
-                        String color = ((ColorsPanelWidget) display.getHeaderColors()).getSelectedColor().getColorAsString();
-                        portletPresenter.setHeaderColor(color);
-                    }
-                }));
-    }
-
-    private void registerBorderColorChangement() {
-        registerHandler(display.getBorderColors().addClickHandler(
-                new ClickHandler() {
-                    public void onClick(ClickEvent arg0) {
-                        String color = ((ColorsPanelWidget) display.getBorderColors()).getSelectedColor().getColorAsString();
-                        portletPresenter.setBorderColor(color);
                     }
                 }));
     }

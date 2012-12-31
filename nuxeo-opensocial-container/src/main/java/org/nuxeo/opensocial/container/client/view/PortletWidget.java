@@ -44,10 +44,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class PortletWidget extends Composite implements
         PortletPresenter.Display {
 
-    private static final String BORDER_COLOR_PREFIX_CSS = "border-color-";
-
-    private static final String HEADER_COLOR_PREFIX_CSS = "header-color-";
-
     private static final String TITLE_COLOR_PREFIX_CSS = "title-color-";
 
     private static final String HIDEICON_CLASS = "hideicon";
@@ -133,33 +129,6 @@ public class PortletWidget extends Composite implements
 
     public void setTitle(String title) {
         this.title.setHTML(title);
-    }
-
-    public void setBorderColor(String color) {
-        ElementUtils.removeStyle(this.getElement(), BORDER_COLOR_PREFIX_CSS);
-        ElementUtils.removeStyle(headerContent.getElement(), HIDEICON_CLASS);
-        ElementUtils.removeStyle(this.getElement(), NOSHADOW_CLASS);
-        if (color != null) {
-            this.addStyleName(BORDER_COLOR_PREFIX_CSS + color);
-            if (ColorsEnum.WHITE.getCssColor().equals(color)) {
-                headerContent.addStyleName(HIDEICON_CLASS);
-                this.addStyleName(NOSHADOW_CLASS);
-            }
-        } else {
-            this.addStyleName(BORDER_COLOR_PREFIX_CSS
-                    + ColorsEnum.NONE.getCssColor());
-        }
-    }
-
-    public void setHeaderColor(String color) {
-        ElementUtils.removeStyle(headerPanel.getElement(),
-                HEADER_COLOR_PREFIX_CSS);
-        if (color != null) {
-            headerPanel.addStyleName(HEADER_COLOR_PREFIX_CSS + color);
-        } else {
-            headerPanel.addStyleName(HEADER_COLOR_PREFIX_CSS
-                    + ColorsEnum.NONE.getCssColor());
-        }
     }
 
     public void setTitleColor(String color) {

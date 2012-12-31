@@ -10,11 +10,7 @@ import java.util.Map;
 public interface WebContentData extends Serializable {
     public static final String WC_TITLE_PREFERENCE = "WC_TITLE";
 
-    public static final String WC_BORDER_COLOR = "WC_BORDER_COLOR";
-
     public static final String WC_TITLE_COLOR = "WC_TITLE_COLOR";
-
-    public static final String WC_HEADER_COLOR = "WC_HEADER_COLOR";
 
     public boolean isCollapsed();
 
