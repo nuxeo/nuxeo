@@ -58,7 +58,7 @@ jQuery.noConflict();
       ctxMenuImg: options.ctxMenuImg || defaults.ctxMenuImg
     });
     var index = hash.length - 1;
-    
+
     if (!menu) {                                      // Create singleton menu
         menu = jQuery('<div id="jqContextMenu"></div>')
                  .hide()
@@ -74,7 +74,7 @@ jQuery.noConflict();
                    .appendTo(hash[index].anchor)
                    .hide();
       }
-      
+
     jQuery(this).bind(hash[index].bind, function(e) {
       // Check if onContextMenu() defined
       var bShowContext = (!!hash[index].onContextMenu) ? hash[index].onContextMenu(e) : true;
@@ -87,14 +87,14 @@ jQuery.noConflict();
   function display(index, trigger, e, options) {
     var cur = hash[index];
     content = jQuery('#'+cur.id).find('ul:first').clone(true);
-    		content.addClass(options.ctxMenuStyle);
-			content.find('li').addClass(options.ctxMenuItemStyle).hover( function() {
-				jQuery(this).toggleClass(options.ctxMenuItemHoverStyle);
-				jQuery(this).toggleClass(options.ctxMenuItemStyle);
-			}, function() {
-				jQuery(this).toggleClass(options.ctxMenuItemHoverStyle);
-				jQuery(this).toggleClass(options.ctxMenuItemStyle);
-			}).find('img').addClass(options.ctxMenuImg);
+        content.addClass(options.ctxMenuStyle);
+      content.find('li').addClass(options.ctxMenuItemStyle).hover( function() {
+        jQuery(this).toggleClass(options.ctxMenuItemHoverStyle);
+        jQuery(this).toggleClass(options.ctxMenuItemStyle);
+      }, function() {
+        jQuery(this).toggleClass(options.ctxMenuItemHoverStyle);
+        jQuery(this).toggleClass(options.ctxMenuItemStyle);
+      }).find('img').addClass(options.ctxMenuImg);
     content.find('li').bind('click', hide);
     // Send the content to the menu
     menu.html(content);
@@ -128,7 +128,7 @@ jQuery.noConflict();
     });
 
     jQuery(document).one('click', hide);
-	beforeDisplayCallBack(e,cur,menu,shadow,trigger,e.pageX,e.pageY, options.useFilter);
+  beforeDisplayCallBack(e,cur,menu,shadow,trigger,e.pageX,e.pageY, options.useFilter);
   }
 
   function show() {
@@ -181,18 +181,18 @@ function getMenuItemsToHideCallBacks(actionsToRemove)
     menuX=currentMenuContext['menuX'];
     menuY=currentMenuContext['menuY'];
     if (actionsToRemove) {
-		// filter menu items
-		var deleteQuery = null;
-		for (i = 0; i < actionsToRemove.length; i++) {
-			if (!deleteQuery)
-				deleteQuery = '#ctxMenu_' + actionsToRemove[i];
-			else
-				deleteQuery = deleteQuery + ',#ctxMenu_' + actionsToRemove[i];
-		}
+    // filter menu items
+    var deleteQuery = null;
+    for (i = 0; i < actionsToRemove.length; i++) {
+      if (!deleteQuery)
+        deleteQuery = '#ctxMenu_' + actionsToRemove[i];
+      else
+        deleteQuery = deleteQuery + ',#ctxMenu_' + actionsToRemove[i];
+    }
 
-		if (actionsToRemove.length > 0)
-			jQuery(deleteQuery, menu).remove();
-	}
+    if (actionsToRemove.length > 0)
+      jQuery(deleteQuery, menu).remove();
+  }
     // display menu
     menu.css({'left':menuX,'top':menuY}).show();
     if (cur.shadow) shadow.css({width:menu.width(),height:menu.height(),left:menuX+2,top:menuY+2}).show();
@@ -213,11 +213,11 @@ function beforeDisplayCallBack(e,cur,menu,shadow,trigger,menuX,menuY,useFilter)
     var docRef=getDocRef(trigger);
 
     if (useFilter) {
-		// trigger Seam filter call
-		getMenuItemsToHide(docRef);
-	} else {
-		getMenuItemsToHideCallBacks();
-	}
+    // trigger Seam filter call
+    getMenuItemsToHide(docRef);
+  } else {
+    getMenuItemsToHideCallBacks();
+  }
 }
 
 function hideMenu()
@@ -234,17 +234,15 @@ function setupContextMenu(target, id, options)
   if (id) menuId = id;
   else menuId = "popupMenu";
   if (options) {
-		if (options.bind)
-			options.onContextMenu = function(e) {
-				if (e.type == options.bind)
-					return true;
-				else
-					return false;
-			}
-	}
-  if (window.addEventListener) {
-    window.addEventListener("load", function (e) {jQuery(target).contextMenu(menuId, options )}, true);
-  } else if (window.attachEvent) {
-  window.attachEvent("onload", function (e) {jQuery(target).contextMenu(menuId, options)});
+    if (options.bind)
+      options.onContextMenu = function(e) {
+        if (e.type == options.bind)
+          return true;
+        else
+          return false;
+      }
   }
+  jQuery(document).ready(function(){
+    jQuery(target).contextMenu(menuId, options);
+  });
 }
