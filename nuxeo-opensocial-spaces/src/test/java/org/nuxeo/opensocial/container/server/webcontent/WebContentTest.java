@@ -48,7 +48,7 @@ public class WebContentTest {
         DocumentModel unit = createNxUnit();
 
         Map<String, String> preferences = new HashMap<String, String>();
-        preferences.put(WebContentData.WC_BORDER_COLOR, "blue");
+        preferences.put(WebContentData.WC_TITLE_COLOR, "blue");
 
         data.setUnitId(unit.getId());
         data.setPosition(2);
@@ -82,7 +82,7 @@ public class WebContentTest {
         assertEquals(true, dataToTest.isCollapsed());
         assertEquals(1, dataToTest.getPreferences().size());
         assertEquals("blue", dataToTest.getPreferences().get(
-                WebContentData.WC_BORDER_COLOR.toString()));
+                WebContentData.WC_TITLE_COLOR.toString()));
         assertEquals(session.getPrincipal().getName(), data.getViewer());
     }
 
