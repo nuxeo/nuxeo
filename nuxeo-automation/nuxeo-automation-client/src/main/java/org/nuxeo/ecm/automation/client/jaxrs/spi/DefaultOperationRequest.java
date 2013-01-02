@@ -21,8 +21,8 @@ import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
-import org.nuxeo.ecm.automation.client.model.OperationInput;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation.Param;
+import org.nuxeo.ecm.automation.client.model.OperationInput;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -39,7 +39,7 @@ public class DefaultOperationRequest implements OperationRequest {
 
     protected final Map<String, String> headers;
 
-    protected OperationInput input;
+    protected Object input;
 
     public DefaultOperationRequest(DefaultSession session,
             OperationDocumentation op) {
@@ -94,17 +94,17 @@ public class DefaultOperationRequest implements OperationRequest {
         return null;
     }
 
-    public OperationRequest setInput(OperationInput input) {
+    public OperationRequest setInput(Object input) {
         if (input == null) {
             checkInput("void");
-        } else {
-            checkInput(input.getInputType());
+        } else if (input instanceof OperationInput) {
+            checkInput(((OperationInput) input).getInputType());
         }
         this.input = input;
         return this;
     }
 
-    public OperationInput getInput() {
+    public Object getInput() {
         return input;
     }
 
@@ -133,7 +133,7 @@ public class DefaultOperationRequest implements OperationRequest {
         if (value.getClass() == Date.class) {
             params.put(key, DateUtils.formatDate((Date) value));
         } else {
-            params.put(key, value.toString());
+            params.put(key, value);
         }
         return this;
     }

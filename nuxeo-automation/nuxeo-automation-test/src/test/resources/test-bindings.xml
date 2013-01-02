@@ -89,6 +89,8 @@
       class="org.nuxeo.ecm.automation.server.test.ReturnOperation" />
     <operation
       class="org.nuxeo.ecm.automation.server.test.WaitForTxTimeoutOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation" />
   </extension>
   
 </component>

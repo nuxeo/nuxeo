@@ -103,6 +103,13 @@
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.ArrayStringToList"
       accept="[Ljava.lang.String;"
       produce="org.nuxeo.ecm.automation.core.util.StringList" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.ObjectNodeToMap"
+      accept="org.codehaus.jackson.node.ObjectNode"
+      produce="java.util.Map" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.ArrayNodeToList"
+      accept="org.codehaus.jackson.node.ArrayNode"
+      produce="java.util.List" />
+
   </extension>
 
 

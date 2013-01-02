@@ -116,18 +116,29 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("input".equals(key)) {
-                String input = jp.getText();
-                if (input != null) {
-                    req.setInput(resolveInput(input));
+                JsonToken inputToken = jp.getCurrentToken();
+                if (inputToken != null && inputToken.isScalarValue()) {
+                    if (inputToken.isNumeric()) {
+                        req.setInput(jp.getNumberValue());
+                    } else {
+                        // string values are expected to be micro-parsed with
+                        // the "type:value" syntax
+                        req.setInput(resolveInput(jp.getText()));
+                    }
+                } else {
+                    // pass the raw json datastructure to the operation and rely
+                    // upon type adapters for further mapping.
+                    req.setInput(jp.readValueAsTree());
                 }
             } else if ("params".equals(key)) {
                 readParams(jp, req);
             } else if ("context".equals(key)) {
                 readContext(jp, req);
             } else if ("documentProperties".equals(key)) {
-                //TODO XXX - this is wrong - headers are ready only! see with td
+                // TODO XXX - this is wrong - headers are ready only! see with
+                // td
                 String documentProperties = jp.getText();
-                if (documentProperties!=null) {
+                if (documentProperties != null) {
                     headers.putSingle(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER, documentProperties);
                 }
             }
@@ -142,11 +153,17 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             if (tok.isScalarValue()) {
-                req.setParam(key, jp.getText());
+                if (tok.isNumeric()) {
+                    req.setParam(key, jp.getNumberValue());
+                } else {
+                    req.setParam(key, jp.getText());
+                }
             } else {
                 if (jp.getCodec() == null) {
                     jp.setCodec(new ObjectMapper());
                 }
+                // Pass the raw JSON datastructure and let the TypeAdapter
+                // configuration handle the mapping to concrete implementations.
                 req.setParam(key, jp.readValueAsTree());
             }
             tok = jp.nextToken();

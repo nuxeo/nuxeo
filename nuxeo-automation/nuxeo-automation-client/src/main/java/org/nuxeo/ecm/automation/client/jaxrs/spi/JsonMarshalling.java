@@ -50,6 +50,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.util.JsonOperationMarshaller;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.model.OperationInput;
 import org.nuxeo.ecm.automation.client.model.OperationRegistry;
+import org.nuxeo.ecm.automation.client.model.PropertyMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -57,7 +58,7 @@ import org.nuxeo.ecm.automation.client.model.OperationRegistry;
 public class JsonMarshalling {
 
     /**
-     * 
+     *
      * @author matic
      * @since 5.5
      */
@@ -270,21 +271,39 @@ public class JsonMarshalling {
         String etype = jp.getText();
         JsonMarshaller<?> jm = marshallersByType.get(etype);
         if (jm == null) {
-            throw new IllegalArgumentException("no marshaller for " + etype);
+            // fall-back on generic java class loading in case etype matches a
+            // valid class name
+            try {
+                Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass(
+                        etype);
+                ObjectMapper mapper = new ObjectMapper();
+                jp.nextToken(); // move to next field
+                jp.nextToken(); // value field name
+                jp.nextToken(); // value field content
+                return mapper.readValue(jp, loadClass);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("No marshaller for " + etype
+                        + " and not a valid Java class name either.", e);
+            }
         }
         return jm.read(jp);
     }
 
     public static String writeRequest(OperationRequest req) throws Exception {
         StringWriter writer = new StringWriter();
-        OperationInput input = req.getInput();
+        Object input = req.getInput();
         JsonGenerator jg = factory.createJsonGenerator(writer);
         jg.writeStartObject();
-        if (input != null && !input.isBinary()) {
-            String ref = input.getInputRef();
+        if (input instanceof OperationInput) {
+            // Custom String serialization
+            OperationInput operationInput = (OperationInput) input;
+            String ref = operationInput.getInputRef();
             if (ref != null) {
                 jg.writeStringField("input", ref);
             }
+        } else if (input != null) {
+            // fall-back to direct POJO to JSON mapping
+            jg.writeObjectField("input", input);
         }
         jg.writeObjectFieldStart("params");
         writeMap(jg, req.getParameters());
@@ -301,10 +320,13 @@ public class JsonMarshalling {
             throws Exception {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             Object obj = entry.getValue();
-            if (obj.getClass() == String.class) {
-                jg.writeStringField(entry.getKey(), (String) entry.getValue());
+            if (obj instanceof String) {
+                jg.writeStringField(entry.getKey(), (String) obj);
+            } else if (obj instanceof PropertyMap || obj instanceof OperationInput) {
+                jg.writeStringField(entry.getKey(), obj.toString());
             } else {
-                throw new UnsupportedOperationException("Not yet implemented"); // TODO
+                jg.writeFieldName(entry.getKey());
+                jg.writeObject(obj);
             }
         }
     }

@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -81,6 +83,8 @@ import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOp
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
+import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
+import org.nuxeo.ecm.automation.server.test.json.POJOObject;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -921,6 +925,67 @@ public class RestTest {
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", folder.getPath()).execute();
 
         assertEquals(folder.getTitle(), title);
+    }
+
+    @Test
+    public void testRawJSONDatastructuresAsParameters() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        POJOObject obj1 = new POJOObject("[obj1 text]", Arrays.asList("1", "2"));
+        POJOObject obj2 = new POJOObject("[obj2 text]", Arrays.asList("2", "3"));
+
+        String obj1JSON = mapper.writeValueAsString(obj1);
+        String obj2JSON = mapper.writeValueAsString(obj2);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map1 = mapper.readValue(obj1JSON, Map.class);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map2 = mapper.readValue(obj2JSON, Map.class);
+
+        // Expected result when passing obj1 and obj2 as input to the
+        POJOObject expectedObj12 = new POJOObject(
+                "Merged texts: [obj1 text][obj2 text]", Arrays.asList("1", "2",
+                        "2", "3"));
+
+        // The pojo and the map parameters can be passed as java objects
+        // directly in the client call, the generic Jackson-based parser /
+        // serialization will be used
+        POJOObject returnedObj12 = (POJOObject) session.newRequest(
+                NestedJSONOperation.ID).set("pojo", obj1).set("map", map2).execute();
+        assertEquals(expectedObj12, returnedObj12);
+
+        // It is also possible to pass alternative Java representation of the
+        // input parameters as long as they share the same JSON representation
+        // for the transport.
+        returnedObj12 = (POJOObject) session.newRequest(NestedJSONOperation.ID).set(
+                "pojo", map1).set("map", obj2).execute();
+        assertEquals(expectedObj12, returnedObj12);
+
+        // Check scalar parameters can be passed as argument
+        POJOObject expectedObj1AndDouble = new POJOObject(
+                "Merged texts: [obj1 text]", Arrays.asList("1", "2", "3.0"));
+        POJOObject returnedObj1AndDouble = (POJOObject) session.newRequest(
+                NestedJSONOperation.ID).set("pojo", map1).set("doubleParam",
+                3.0).execute();
+        assertEquals(expectedObj1AndDouble, returnedObj1AndDouble);
+    }
+
+    @Test
+    public void testRawJSONDatastructuresAsInput() throws Exception {
+        // It is possible to pass arbitrary Java objects as the input as
+        // long as the JSON representation is a valid representation for the
+        // expected input type of the operation
+        POJOObject expectedListObj = new POJOObject("Merged texts: ",
+                Arrays.asList("a", "b", "c"));
+        POJOObject returnedListObj = (POJOObject) session.newRequest(
+                NestedJSONOperation.ID).setInput(Arrays.asList("a", "b", "c")).execute();
+        assertEquals(expectedListObj, returnedListObj);
+    }
+
+    @Test
+    public void testNumericalValuesAsInputAndOuput() throws Exception {
+        Object result = session.newRequest(NestedJSONOperation.ID).setInput(4.3).execute();
+        assertEquals(4, result);
     }
 
     @Test

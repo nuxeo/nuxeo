@@ -17,6 +17,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.AdapterNotFoundException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
@@ -241,6 +243,11 @@ public class OperationServiceImpl implements AutomationService {
         }
         TypeAdapter adapter = getTypeAdapter(toAdaptClass, targetType);
         if (adapter == null) {
+            if (toAdapt instanceof JsonNode) {
+                // fall-back to generic jackson adapter
+                ObjectMapper mapper = new ObjectMapper();
+                return (T) mapper.convertValue(toAdapt, targetType);
+            }
             throw new AdapterNotFoundException(
                     "No type adapter found for input: " + toAdapt.getClass()
                             + " and output " + targetType, ctx);

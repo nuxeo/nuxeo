@@ -37,7 +37,6 @@ import org.nuxeo.ecm.automation.client.model.OperationRegistry;
  * the {@link Session} interface.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class JavaSession implements Session {
 

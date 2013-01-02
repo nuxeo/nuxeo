@@ -14,7 +14,6 @@ package org.nuxeo.ecm.automation.client;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
-import org.nuxeo.ecm.automation.client.model.OperationInput;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,9 +31,9 @@ public interface OperationRequest {
      */
     OperationDocumentation getOperation();
 
-    OperationRequest setInput(OperationInput input);
+    OperationRequest setInput(Object input);
 
-    OperationInput getInput();
+    Object getInput();
 
     OperationRequest set(String key, Object value);
 

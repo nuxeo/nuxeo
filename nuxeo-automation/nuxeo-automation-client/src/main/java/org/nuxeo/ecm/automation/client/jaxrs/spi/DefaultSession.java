@@ -77,8 +77,9 @@ public class DefaultSession implements Session {
         Request req;
         String content = JsonMarshalling.writeRequest(request);
         String ctype;
-        OperationInput input = request.getInput();
-        if (input != null && input.isBinary()) {
+        Object input = request.getInput();
+        if (input instanceof OperationInput
+                && ((OperationInput) input).isBinary()) {
             MultipartInput mpinput = new MultipartInput();
             mpinput.setRequest(content);
             ctype = mpinput.getContentType();
