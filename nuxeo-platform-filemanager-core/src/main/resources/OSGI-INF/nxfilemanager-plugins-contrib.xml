@@ -33,13 +33,16 @@
       class="org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter"
       order="10">
       <filter>application/zip</filter>
+	  <filter>application/x-zip-compressed</filter>
+
     </plugin>
 
     <plugin name="CSVArchivePlugin"
       class="org.nuxeo.ecm.platform.filemanager.service.extension.CSVZipImporter"
       order="11">
       <filter>application/zip</filter>
-    </plugin>
+ 	  <filter>application/x-zip-compressed</filter>
+   </plugin>
 
     <documentation>
       Use a query model to find the list of all Workspaces the user has the
