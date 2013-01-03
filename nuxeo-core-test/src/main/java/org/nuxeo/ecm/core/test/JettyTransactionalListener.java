@@ -4,10 +4,18 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jetty.JettyComponent;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 public class JettyTransactionalListener implements ServletContextListener {
-
+        
+    JettyComponent component = fetchComponent();
+    
+    protected static JettyComponent fetchComponent() {
+        return (JettyComponent)Framework.getRuntime().getComponent(JettyComponent.NAME);
+    }
+    
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
@@ -16,6 +24,7 @@ public class JettyTransactionalListener implements ServletContextListener {
             throw new RuntimeException(
                     "Cannot install jtajca in jetty naming context", e);
         }
+        component.setNuxeoClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
     @Override
