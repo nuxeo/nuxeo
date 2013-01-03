@@ -37,5 +37,8 @@ public @interface Jetty {
     int port() default 8080;
 
     String config() default "";
+    
+    // allow runtime fixture get access to the web-app naming context
+    boolean propagateNaming() default false; 
 
 }

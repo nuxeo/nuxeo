@@ -76,6 +76,8 @@ public class JettyFeature extends SimpleFeature implements
         if (config.length() > 0) {
             System.setProperty("org.nuxeo.jetty.config", config);
         }
+        
+        System.setProperty("org.nuxeo.jetty.propagateNaming", Boolean.toString(jetty.propagateNaming()));
     }
 
     @Override

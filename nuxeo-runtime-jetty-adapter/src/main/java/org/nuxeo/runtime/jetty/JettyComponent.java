@@ -24,8 +24,6 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mortbay.component.LifeCycle;
-import org.mortbay.component.LifeCycle.Listener;
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
@@ -59,7 +57,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Third, the root collection is registered. This way all requests not handled
  * by regular wars are directed to the root war, which usually is the webengine
  * war in a nxserver application.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JettyComponent extends DefaultComponent {
@@ -279,6 +277,29 @@ public class JettyComponent extends DefaultComponent {
         return null;
     }
 
+    // let's nuxeo runtime get access to the JNDI context
+    // injected through the JettyTransactionalListener
+    protected ClassLoader nuxeoCL; 
+    
+    public void setNuxeoClassLoader(ClassLoader cl) {
+        nuxeoCL = cl;
+    }
+
+    protected ClassLoader getClassLoader(ClassLoader cl) {
+        if (!Boolean.valueOf(System.getProperty("org.nuxeo.jetty.propagateNaming"))) {
+            return cl;
+        }
+        if (nuxeoCL == null) {
+            return cl;
+        }
+        return nuxeoCL;
+    }
+    
+    @Override
+    public int getApplicationStartedOrder() {
+        return -100;
+    }
+
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         if (server == null) {
@@ -292,12 +313,11 @@ public class JettyComponent extends DefaultComponent {
             try {
                 server.start();
             } finally {
-                t.setContextClassLoader(oldcl);
+                t.setContextClassLoader(getClassLoader(oldcl));
             }
         } catch (Exception e) {
             logger.error("Failed to start Jetty server", e);
         }
-
     }
 
     private void scanForWars(File dir) {
