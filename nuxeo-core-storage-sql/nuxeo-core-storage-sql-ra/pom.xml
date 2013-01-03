@@ -151,6 +151,16 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.javasimon</groupId>
+      <artifactId>javasimon-jdbc3</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.javasimon</groupId>
+      <artifactId>javasimon-jmx</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
       <scope>provided</scope>

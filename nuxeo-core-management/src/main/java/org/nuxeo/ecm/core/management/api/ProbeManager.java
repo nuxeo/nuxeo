@@ -12,14 +12,15 @@
 
 package org.nuxeo.ecm.core.management.api;
 
+import java.util.Collection;
 
 public interface ProbeManager extends ProbeRunnerMBean {
 
-    ProbeInfo[] getAllProbeInfos();
+    Collection<ProbeInfo> getAllProbeInfos();
 
-    ProbeInfo[] getInSuccessProbeInfos();
+    Collection<ProbeInfo> getInSuccessProbeInfos();
 
-    ProbeInfo[] getInFailureProbeInfos();
+    Collection<ProbeInfo> getInFailureProbeInfos();
 
     ProbeInfo runProbe(ProbeInfo probe);
 

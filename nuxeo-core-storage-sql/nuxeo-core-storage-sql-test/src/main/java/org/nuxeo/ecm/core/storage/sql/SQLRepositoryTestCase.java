@@ -70,9 +70,6 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
         initialSingleConnections = ConnectionHelper.countConnectionReferences();
         super.setUp();
-        deployBundle("org.nuxeo.runtime.management");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
