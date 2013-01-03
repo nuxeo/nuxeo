@@ -142,7 +142,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 		@Override
 		public GSSCredential run() throws GSSException {
 			return MANAGER.createCredential(null,
-					GSSCredential.DEFAULT_LIFETIME, new Oid("1.3.6.1.5.5.2"), /* Oid for Kerberos */
+					GSSCredential.DEFAULT_LIFETIME, new Oid[] {new Oid("1.3.6.1.5.5.2") /* Oid for Kerberos */, new Oid("1.2.840.113554.1.2.2") /* Oid for SPNEGO */}, 
 					GSSCredential.ACCEPT_ONLY);
 		}
 	};
