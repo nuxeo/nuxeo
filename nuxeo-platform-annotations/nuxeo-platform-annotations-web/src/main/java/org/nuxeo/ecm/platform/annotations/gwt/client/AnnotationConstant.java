@@ -43,4 +43,6 @@ public final class AnnotationConstant {
 
     public static final String IGNORED_ELEMENT = "ignoredElement";
 
+    public static final String COMMENT_ANNOTATION_NAME = "Comment";
+
 }
