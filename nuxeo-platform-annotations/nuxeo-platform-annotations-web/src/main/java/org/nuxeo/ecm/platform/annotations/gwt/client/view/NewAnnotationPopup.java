@@ -158,9 +158,16 @@ public class NewAnnotationPopup extends PopupPanel {
                     annotationType));
             if (annotationDefs.size() == 1) {
                 selectedAnnotationType = annotationDefs.get(0).getName();
+                String label = selectedAnnotationType;
+                // If this is the default annotation (Comment), internationalize the
+                // title
+                if (label.equals(AnnotationConstant.COMMENT_ANNOTATION_NAME)) {
+                    TranslationConstants translationContants = GWT.create(TranslationConstants.class);
+                    label = translationContants.comment();
+                }
 
                 // Add into the view
-                verticalPanel.add(new Label(selectedAnnotationType));
+                verticalPanel.add(new Label(label));
             } else {
                 for (AnnotationDefinition annotationDef : annotationDefs) {
                     listBox.addItem(annotationDef.getName());

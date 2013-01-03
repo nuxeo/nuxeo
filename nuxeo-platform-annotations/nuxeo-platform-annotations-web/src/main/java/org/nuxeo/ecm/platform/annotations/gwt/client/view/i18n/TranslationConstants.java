@@ -39,4 +39,6 @@ public interface TranslationConstants extends Constants {
 
     String menuConfirmDelete();
 
+    String comment();
+
 }
