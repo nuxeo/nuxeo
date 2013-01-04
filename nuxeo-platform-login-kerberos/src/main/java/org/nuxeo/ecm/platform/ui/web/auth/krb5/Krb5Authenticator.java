@@ -58,6 +58,13 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 		
 		logger.debug("Sending login prompt...");
 		res.setHeader(WWW_AUTHENTICATE, NEGOTIATE);
+		// hack to support fallback to form auth in case the
+		// client does not answer the SPNEGO challenge.
+		// This will obviously break if form auth is disabled; but this isn't
+		// much of an issue since other sso filters will not work nicely after
+		// this one (as this one takes over the response and flushes it to start
+		// negotiation).
+		res.setHeader("Refresh", "1;url=login.jsp");
 		res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		res.setContentLength(0);
 		try {
