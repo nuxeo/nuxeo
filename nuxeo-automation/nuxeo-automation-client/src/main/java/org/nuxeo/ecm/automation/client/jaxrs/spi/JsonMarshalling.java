@@ -41,11 +41,15 @@ import org.codehaus.jackson.map.type.TypeModifier;
 import org.codehaus.jackson.type.JavaType;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.BooleanMarshaller;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DateMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentsMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.LoginMarshaller;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.NumberMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.RecordSetMarshaller;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.StringMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.util.JsonOperationMarshaller;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.model.OperationInput;
@@ -183,6 +187,10 @@ public class JsonMarshalling {
         addMarshaller(new ExceptionMarshaller());
         addMarshaller(new LoginMarshaller());
         addMarshaller(new RecordSetMarshaller());
+        addMarshaller(new StringMarshaller());
+        addMarshaller(new BooleanMarshaller());
+        addMarshaller(new NumberMarshaller());
+        addMarshaller(new DateMarshaller());
     }
 
     public static void addMarshaller(JsonMarshaller<?> marshaller) {
@@ -302,8 +310,16 @@ public class JsonMarshalling {
                 jg.writeStringField("input", ref);
             }
         } else if (input != null) {
-            // fall-back to direct POJO to JSON mapping
-            jg.writeObjectField("input", input);
+
+            JsonMarshaller<?> marshaller = getMarshaller(input.getClass());
+            if (marshaller != null) {
+                // use the registered marshaller for this type
+                jg.writeFieldName("input");
+                marshaller.write(jg, input);
+            } else {
+                // fall-back to direct POJO to JSON mapping
+                jg.writeObjectField("input", input);
+            }
         }
         jg.writeObjectFieldStart("params");
         writeMap(jg, req.getParameters());

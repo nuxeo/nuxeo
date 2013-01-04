@@ -68,7 +68,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
                 if (!JsonToken.VALUE_NULL.equals(jp.getCurrentToken())) {
                     String[] lock = jp.getText().split(":");
                     lockOwner = lock[0];
-                    lockCreated = lock[1];                    
+                    lockCreated = lock[1];
                 }
             } else if (key.equals("lockCreated")) {
                 lockCreated = jp.getText();
@@ -138,7 +138,9 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
     }
 
     @Override
-    public void write(JsonGenerator jg, Document value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws Exception {
+        // TODO: extend the server json API to allow for document refs passed as
+        // JSON data-structures instead of the input ref microsyntax used by
         throw new UnsupportedOperationException();
     }
 

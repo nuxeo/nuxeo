@@ -22,7 +22,7 @@ import org.nuxeo.ecm.automation.client.model.RecordSet;
 
 /**
  * Manage JSON Decoding of RecordSet object returned by QueryAndFetch
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
@@ -91,6 +91,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
             throws Exception {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
+            @SuppressWarnings("unchecked")
             Map<String, Serializable> entry = jp.readValueAs(Map.class);
             record.add(entry);
             tok = jp.nextToken();
@@ -98,7 +99,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
     }
 
     @Override
-    public void write(JsonGenerator jg, RecordSet value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws Exception {
     }
 
 }

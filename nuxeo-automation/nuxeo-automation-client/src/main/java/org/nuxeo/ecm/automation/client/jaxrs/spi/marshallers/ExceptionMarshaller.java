@@ -66,14 +66,14 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
                 message = jp.getText();
             } else if ("cause".equals(key)) {
                 cause = jp.readValueAs(Throwable.class);
-            } 
+            }
             tok = jp.nextToken();
         }
         return new RemoteException(status, type, message, cause);
     }
 
     @Override
-    public void write(JsonGenerator jg, RemoteException value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws Exception {
         throw new UnsupportedOperationException();
     }
 

@@ -51,6 +51,6 @@ public interface JsonMarshaller<T> {
      * @param o
      * @param value
      */
-    void write(JsonGenerator jg, T value) throws Exception;
+    void write(JsonGenerator jg, Object value) throws Exception;
 
 }

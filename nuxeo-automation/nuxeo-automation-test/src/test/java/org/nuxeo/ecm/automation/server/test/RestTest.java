@@ -33,11 +33,11 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -51,9 +51,9 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Blobs;
-import org.nuxeo.ecm.automation.client.model.DateInput;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.DocRefs;
@@ -62,7 +62,6 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
-import org.nuxeo.ecm.automation.client.model.PrimitiveInput;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.client.model.RecordSet;
@@ -461,7 +460,7 @@ public class RestTest {
         assertNotNull(blob);
         assertEquals(filename, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc</doc>", FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc</doc>", IOUtils.toString(blob.getStream(), "utf-8"));
         blob.getFile().delete();
 
         // now test the GetBlob operation on the same blob
@@ -470,7 +469,7 @@ public class RestTest {
         assertNotNull(blob);
         assertEquals(filename, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc</doc>", FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc</doc>", IOUtils.toString(blob.getStream(), "utf-8"));
         blob.getFile().delete();
     }
 
@@ -529,7 +528,7 @@ public class RestTest {
         assertNotNull(blob);
         assertEquals(filename1, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc1</doc>", FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc1</doc>", IOUtils.toString(blob.getStream(), "utf-8"));
         blob.getFile().delete();
 
         // the same for the second file
@@ -543,7 +542,7 @@ public class RestTest {
         assertNotNull(blob);
         assertEquals(filename2, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc2</doc>", FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc2</doc>", IOUtils.toString(blob.getStream(), "utf-8"));
         blob.getFile().delete();
 
         // now test the GetDocumentBlobs operation on the note document
@@ -556,14 +555,14 @@ public class RestTest {
         blob = (FileBlob) blobs.get(0);
         assertEquals(filename1, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc1</doc>", FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc1</doc>", IOUtils.toString(blob.getStream(), "utf-8"));
         blob.getFile().delete();
 
         // test the second one
         blob = (FileBlob) blobs.get(1);
         assertEquals(filename2, blob.getFileName());
         assertEquals("text/xml", blob.getMimeType());
-        assertEquals("<doc>mydoc2</doc>", FileUtils.read(blob.getStream()));
+        assertEquals("<doc>mydoc2</doc>", IOUtils.toString(blob.getStream(), "utf-8"));
         blob.getFile().delete();
     }
 
@@ -792,32 +791,31 @@ public class RestTest {
     @Test
     public void testCodecs() throws Exception {
         JsonMarshalling.addMarshaller(new MyObjectMarshaller());
-        // session.getClient().addCodec(new MyObjectCodec());
         MyObject msg = (MyObject) session.newRequest(MyObjectOperation.ID).execute();
         assertEquals("hello world", msg.getMessage());
     }
 
     @Test
-    @Ignore
-    public void testReturnValues() throws Exception {
+    public void testBaseInputAndReturnValues() throws Exception {
         Object r;
-        r = session.newRequest(ReturnOperation.ID).setInput(
-                new PrimitiveInput<Boolean>(Boolean.TRUE)).execute();
+        r = session.newRequest(ReturnOperation.ID).setInput(Boolean.TRUE).execute();
         assertThat((Boolean) r, is(Boolean.TRUE));
-        r = session.newRequest(ReturnOperation.ID).setInput(
-                new PrimitiveInput<String>("hello")).execute();
+
+        r = session.newRequest(ReturnOperation.ID).setInput("hello").execute();
         assertThat((String) r, is("hello"));
+
+        r = session.newRequest(ReturnOperation.ID).setInput(1).execute();
+        assertThat(((Number) r).intValue(), is(1));
+
         r = session.newRequest(ReturnOperation.ID).setInput(
-                new PrimitiveInput<Integer>(1)).execute();
-        assertThat((Integer) r, is(1));
-        r = session.newRequest(ReturnOperation.ID).setInput(
-                new PrimitiveInput<Long>(1000000000000000000L)).execute();
-        assertThat((Long) r, is(1000000000000000000L));
-        r = session.newRequest(ReturnOperation.ID).setInput(
-                new PrimitiveInput<Double>(1.1d)).execute();
-        assertThat((Double) r, IsCloseTo.closeTo(1.1d, 0.1));
+                1000000000000000000L).execute();
+        assertThat(((Number) r).longValue(), is(1000000000000000000L));
+
+        r = session.newRequest(ReturnOperation.ID).setInput(1.1d).execute();
+        assertThat(((Number) r).doubleValue(), IsCloseTo.closeTo(1.1d, 0.1));
+
         Date now = DateUtils.parseDate(DateUtils.formatDate(new Date(0)));
-        r = session.newRequest(ReturnOperation.ID).setInput(new DateInput(now)).execute();
+        r = session.newRequest(ReturnOperation.ID).setInput(now).execute();
         assertThat((Date) r, is(now));
     }
 
@@ -979,6 +977,33 @@ public class RestTest {
                 Arrays.asList("a", "b", "c"));
         POJOObject returnedListObj = (POJOObject) session.newRequest(
                 NestedJSONOperation.ID).setInput(Arrays.asList("a", "b", "c")).execute();
+        assertEquals(expectedListObj, returnedListObj);
+
+        // Try with alternative input type datastructures to check input type
+        // negotiation: note, as no special codec has been rejustered for
+        // POJOObject, the operation must be able to consume Map instances with
+        // the same inner structure as the POJOObject class.
+        POJOObject pojoInput = new POJOObject("input pojo", Arrays.asList("a",
+                "b", "c"));
+        returnedListObj = (POJOObject) session.newRequest(
+                NestedJSONOperation.ID).setInput(pojoInput).execute();
+        assertEquals(expectedListObj, returnedListObj);
+
+        // Pojo can be mapped to java Map datastructure and passed as input to
+        // operations
+        ObjectMapper mapper = new ObjectMapper();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> mapInput = mapper.convertValue(pojoInput, Map.class);
+        returnedListObj = (POJOObject) session.newRequest(
+                NestedJSONOperation.ID).setInput(mapInput).execute();
+        assertEquals(expectedListObj, returnedListObj);
+
+        // It is also possible to serialize an explicitly typed represenation of
+        // the pojo if both the client and the server are expected to have the
+        // same class definition available in their classloading context.
+        JsonMarshalling.addMarshaller(PojoMarshaller.forClass(POJOObject.class));
+        returnedListObj = (POJOObject) session.newRequest(
+                NestedJSONOperation.ID).setInput(pojoInput).execute();
         assertEquals(expectedListObj, returnedListObj);
     }
 

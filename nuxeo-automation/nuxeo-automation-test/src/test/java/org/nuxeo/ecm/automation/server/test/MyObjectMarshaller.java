@@ -48,7 +48,8 @@ public class MyObjectMarshaller implements JsonMarshaller<MyObject> {
         return jp.readValueAs(MyObject.class);
     }
 
-    public void write(JsonGenerator jg, MyObject value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws Exception {
+        throw new UnsupportedOperationException();
     }
 
 }

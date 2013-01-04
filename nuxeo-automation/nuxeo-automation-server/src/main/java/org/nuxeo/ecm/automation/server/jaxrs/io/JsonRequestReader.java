@@ -26,13 +26,14 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentInputResolver;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentsInputResolver;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -58,15 +59,17 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     public static Object resolveInput(String input) throws Exception {
         int p = input.indexOf(':');
         if (p <= 0) {
-            throw new IllegalArgumentException(input + " is not formatted using type:value");
+            // pass the String object directly
+            return input;
         }
-        String type = input.substring(0,p);
-        String ref = input.substring(p+1);
+        String type = input.substring(0, p);
+        String ref = input.substring(p + 1);
         InputResolver<?> ir = inputResolvers.get(type);
         if (ir != null) {
             return ir.getInput(ref);
         }
-        throw new IllegalArgumentException("Unsupported managed object. Don't know how to get referebce from: "+input);
+        // no resolver found, pass the String object directly.
+        return input;
     }
 
     @Override
@@ -108,7 +111,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     public static ExecutionRequest readRequest0(String content, MultivaluedMap<String, String> headers) throws Exception {
         ExecutionRequest req = new ExecutionRequest();
-
+        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonParser jp = JsonWriter.getFactory().createJsonParser(content);
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
@@ -116,19 +119,14 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("input".equals(key)) {
-                JsonToken inputToken = jp.getCurrentToken();
-                if (inputToken != null && inputToken.isScalarValue()) {
-                    if (inputToken.isNumeric()) {
-                        req.setInput(jp.getNumberValue());
-                    } else {
-                        // string values are expected to be micro-parsed with
-                        // the "type:value" syntax
-                        req.setInput(resolveInput(jp.getText()));
-                    }
+                JsonNode inputNode = jp.readValueAsTree();
+                if (inputNode.isTextual()) {
+                    // string values are expected to be micro-parsed with
+                    // the "type:value" syntax for backward compatibility
+                    // reasons.
+                    req.setInput(resolveInput(inputNode.getTextValue()));
                 } else {
-                    // pass the raw json datastructure to the operation and rely
-                    // upon type adapters for further mapping.
-                    req.setInput(jp.readValueAsTree());
+                    req.setInput(codecService.readNode(inputNode));
                 }
             } else if ("params".equals(key)) {
                 readParams(jp, req);
@@ -148,41 +146,24 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     }
 
     private static void readParams(JsonParser jp, ExecutionRequest req) throws Exception {
+        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
-            if (tok.isScalarValue()) {
-                if (tok.isNumeric()) {
-                    req.setParam(key, jp.getNumberValue());
-                } else {
-                    req.setParam(key, jp.getText());
-                }
-            } else {
-                if (jp.getCodec() == null) {
-                    jp.setCodec(new ObjectMapper());
-                }
-                // Pass the raw JSON datastructure and let the TypeAdapter
-                // configuration handle the mapping to concrete implementations.
-                req.setParam(key, jp.readValueAsTree());
-            }
+            req.setParam(key, codecService.readNode(jp.readValueAsTree()));
             tok = jp.nextToken();
         }
     }
 
     private static void readContext(JsonParser jp, ExecutionRequest req) throws Exception {
+        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
-            if (tok.isScalarValue()) {
-                req.setContextParam(key, jp.getText());
-            } else {
-                if (jp.getCodec() == null) {
-                    jp.setCodec(new ObjectMapper());
-                }
-                req.setContextParam(key, jp.readValueAsTree());
-            }
+            req.setContextParam(key,
+                    codecService.readNode(jp.readValueAsTree()));
             tok = jp.nextToken();
         }
     }

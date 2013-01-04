@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -24,7 +25,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 /**
  * A simple operation that takes raw nested datastructures as input and
  * parameters.
- *
  */
 @Operation(id = NestedJSONOperation.ID, category = Constants.CAT_EXECUTION, label = "NestedJSONOperation")
 public class NestedJSONOperation {
@@ -67,6 +67,19 @@ public class NestedJSONOperation {
     @OperationMethod
     public POJOObject run() {
         return run(new ArrayList<String>());
+    }
+
+    @OperationMethod
+    public POJOObject run(Map<String, Object> input) {
+        // perform the mapping from a Map datastructure expected to match the
+        // inner structure of POJOObject.
+        ObjectMapper mapper = new ObjectMapper();
+        return run(mapper.convertValue(input, POJOObject.class).getItems());
+    }
+
+    @OperationMethod
+    public POJOObject run(POJOObject input) {
+        return run(input.getItems());
     }
 
     @OperationMethod

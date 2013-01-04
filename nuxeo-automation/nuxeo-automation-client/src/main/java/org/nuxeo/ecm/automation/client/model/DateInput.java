@@ -13,10 +13,15 @@ package org.nuxeo.ecm.automation.client.model;
 
 import java.util.Date;
 
+import org.nuxeo.ecm.automation.client.OperationRequest;
+
 /**
  * @author matic
  *
+ * @deprecated in 5.7 (did not work in 5.6 either): pass Date instance
+ *             directly to the {@link OperationRequest#setInput} method.
  */
+@Deprecated
 public class DateInput implements OperationInput {
 
     private static final long serialVersionUID = -240778472381265434L;

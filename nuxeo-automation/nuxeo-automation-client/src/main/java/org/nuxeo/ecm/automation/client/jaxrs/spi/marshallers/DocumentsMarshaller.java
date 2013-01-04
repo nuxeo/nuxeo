@@ -35,7 +35,7 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
     }
 
     @Override
-    public void write(JsonGenerator jg, Documents value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws Exception {
         throw new UnsupportedOperationException();
     }
 

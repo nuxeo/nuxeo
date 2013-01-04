@@ -72,11 +72,12 @@ public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
     }
 
     @Override
-    public void write(JsonGenerator jg, LoginInfo value) throws Exception {
-        jg.writeStringField("username", value.getUsername());
-        jg.writeBooleanField("isAdministrator", value.isAdministrator());
+    public void write(JsonGenerator jg, Object value) throws Exception {
+        LoginInfo loginInfo = (LoginInfo) value;
+        jg.writeStringField("username", loginInfo.getUsername());
+        jg.writeBooleanField("isAdministrator", loginInfo.isAdministrator());
         jg.writeArrayFieldStart("groups");
-        String[] groups = value.getGroups();
+        String[] groups = loginInfo.getGroups();
         if (groups != null) {
             for (String g : groups) {
                 jg.writeString(g);

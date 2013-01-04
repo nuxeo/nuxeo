@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -213,6 +214,41 @@ public class ObjectCodecService {
         }
     }
 
+    public Object readNode(JsonNode node, ClassLoader cl) throws IOException, ClassNotFoundException {
+        // Handle simple scalar types
+        if (node.isNumber()) {
+            return node.getNumberValue();
+        } else if (node.isBoolean()) {
+            return node.getBooleanValue();
+        } else if (node.isTextual()) {
+            return node.getTextValue();
+        }
+        JsonNode entityTypeNode = node.get("entity-type");
+        JsonNode valueNode = node.get("value");
+        if (entityTypeNode != null && entityTypeNode.isTextual()) {
+            // handle structured entity with an explicit type declaration
+            if (valueNode == null) {
+                return null;
+            }
+            String type = entityTypeNode.getTextValue();
+            ObjectCodec<?> codec = codecsByName.get(type);
+            JsonParser valueParser = valueNode.traverse();
+            if (valueParser.getCurrentToken() == null) {
+                valueParser.nextToken();
+            }
+            if (codec == null) {
+                return readGenericObject(valueParser, type, cl);
+            } else {
+                return codec.read(valueParser);
+            }
+        }
+        // fallback to returning the original json node
+        return node;
+    }
+
+    public Object readNode(JsonNode node) throws IOException, ClassNotFoundException {
+        return readNode(node, null);
+    }
 
     protected final void writeGenericObject(JsonGenerator jg, Class<?> clazz, Object object) throws IOException {
         jg.writeStartObject();
@@ -222,7 +258,7 @@ public class ObjectCodecService {
                 jg.writeBooleanField("value", (Boolean)object);
             } else if (clazz == Double.TYPE || clazz == Float.TYPE) {
                 jg.writeStringField("entity-type", "number");
-                jg.writeNumberField("value", ((Number)object).longValue());
+                jg.writeNumberField("value", ((Number)object).doubleValue());
             } else if (clazz == Integer.TYPE || clazz == Long.TYPE || clazz == Short.TYPE || clazz == Byte.TYPE) {
                 jg.writeStringField("entity-type", "number");
                 jg.writeNumberField("value", ((Number)object).longValue());
