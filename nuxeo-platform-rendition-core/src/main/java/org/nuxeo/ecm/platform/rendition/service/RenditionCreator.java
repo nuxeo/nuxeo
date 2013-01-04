@@ -111,7 +111,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         DocumentModel rendition = session.createDocumentModel(null,
                 versionDocument.getName(), versionDocument.getType());
         rendition.copyContent(versionDocument);
-        rendition.getContextData().put(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME, versionDocument.getCurrentLifeCycleState());
+        rendition.getContextData().putScopedValue(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME, versionDocument.getCurrentLifeCycleState());
         
         rendition.addFacet(RENDITION_FACET);
         rendition.setPropertyValue(RENDITION_SOURCE_ID_PROPERTY,
