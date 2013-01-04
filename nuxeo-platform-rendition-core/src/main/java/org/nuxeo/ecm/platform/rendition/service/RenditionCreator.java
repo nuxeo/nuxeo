@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -109,7 +111,8 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         DocumentModel rendition = session.createDocumentModel(null,
                 versionDocument.getName(), versionDocument.getType());
         rendition.copyContent(versionDocument);
-
+        rendition.getContextData().put(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME, versionDocument.getCurrentLifeCycleState());
+        
         rendition.addFacet(RENDITION_FACET);
         rendition.setPropertyValue(RENDITION_SOURCE_ID_PROPERTY,
                 versionDocument.getId());

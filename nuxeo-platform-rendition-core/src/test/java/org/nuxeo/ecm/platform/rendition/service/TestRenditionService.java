@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -181,6 +183,10 @@ public class TestRenditionService {
     public void doRenditionVersioning() throws ClientException {
         DocumentModel file = createBlobFile();
 
+        assertEquals("project", file.getCurrentLifeCycleState());
+        file.followTransition("approve");
+        assertEquals("approved", file.getCurrentLifeCycleState());
+
         // create a version of the document
         file.putContextData(VersioningService.VERSIONING_OPTION,
                 VersioningOption.MINOR);
@@ -204,6 +210,8 @@ public class TestRenditionService {
 
         // check that the redition is a version
         assertTrue(renditionDocument.isVersion());
+        // check same life-cycle state
+        assertEquals(file.getCurrentLifeCycleState(), renditionDocument.getCurrentLifeCycleState());
         // check that version label of the rendition is the same as the source
         assertEquals(file.getVersionLabel(),
                 renditionDocument.getVersionLabel());
@@ -285,7 +293,7 @@ public class TestRenditionService {
                 "/"));
         renditionService.storeRendition(proxy, PDF_RENDITION_DEFINITION);
     }
-
+    
     @Test
     public void shouldNotCreateANewVersionForACheckedInDocument()
             throws ClientException {
