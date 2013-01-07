@@ -81,8 +81,8 @@
     <c:if test="#{not currentUser.anonymous}">
       <div class="opensocial_buttons">
         <ul>
-          <li><a onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}">#{messages['label.opensocial.container.change.layout']}</a></li>
-          <li><a id="addGadgetButton" href="#{baseURL}site/gadgets?language=#{localeSelector.language}">#{messages['label.opensocial.container.add.gadget']}</a></li>
+          <li><a onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}" class="button">#{messages['label.opensocial.container.change.layout']}</a></li>
+          <li><a id="addGadgetButton" href="#{baseURL}site/gadgets?language=#{localeSelector.language}" class="button">#{messages['label.opensocial.container.add.gadget']}</a></li>
         </ul>
       </div>
     </c:if>
