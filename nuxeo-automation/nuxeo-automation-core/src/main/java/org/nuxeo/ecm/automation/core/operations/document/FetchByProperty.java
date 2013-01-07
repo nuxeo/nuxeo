@@ -11,6 +11,9 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.util.Iterator;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -20,6 +23,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 
 /**
  *
@@ -44,21 +48,35 @@ public class FetchByProperty {
 
     @OperationMethod
     public DocumentModelList run() throws Exception {
-        // TODO use SQLQueryParser.prepareStringLiteral to escape the string
-        // values.
-        if (query != null && query.trim().length() == 0) {
+        if (values.isEmpty()) {
+            return new DocumentModelListImpl();
+        }
+        if (StringUtils.isBlank(query)) {
             query = null;
         }
-        String queryWhereClause = "SELECT * FROM Document WHERE %s=\"%s\" AND (%s)";
-        String queryNoWhereClause = "SELECT * FROM Document WHERE %s=\"%s\"";
-        DocumentModelList result = new DocumentModelListImpl();
-        for (String value : values) {
-            String q = query != null ? String.format(queryWhereClause,
-                    property, value, query) : String.format(queryNoWhereClause,
-                    property, value);
-            DocumentModelList docs = session.query(q);
-            result.addAll(docs);
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM Document WHERE ");
+        sb.append(property);
+        if (values.size() == 1) {
+            sb.append(" = ");
+            sb.append(SQLQueryParser.prepareStringLiteral(values.get(0)));
+        } else {
+            sb.append(" IN (");
+            for (Iterator<String> it = values.iterator(); it.hasNext();) {
+                sb.append(SQLQueryParser.prepareStringLiteral(it.next()));
+                if (it.hasNext()) {
+                    sb.append(", ");
+                }
+            }
+            sb.append(")");
         }
-        return result;
+        if (query != null) {
+            sb.append(" AND (");
+            sb.append(query);
+            sb.append(")");
+        }
+        String q = sb.toString();
+        return session.query(q);
     }
+
 }
