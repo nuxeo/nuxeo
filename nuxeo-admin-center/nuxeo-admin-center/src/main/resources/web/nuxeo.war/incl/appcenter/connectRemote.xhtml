@@ -11,7 +11,7 @@
       <span class="label"><a class="connectLink" target="_blank" href="https://connect.nuxeo.com/nuxeo/site/marketplace"><h:outputText value="#{messages['label.tab.applisting.marketplace']}"/></a></span>
     </div>
     <div class="actionBar">
-      <h:form>
+      <h:form rendered="false">
         <h:outputText value="#{messages['label.packagetype']}" />
         <h:selectOneListbox class="dataInputText" size="1"
           value="#{appsViews.packageTypeFilter}"
@@ -20,7 +20,7 @@
             itemValue="#{itype.value}" itemLabel="#{messages[itype.label]}" />
         </h:selectOneListbox>
         <div style="display: none;">
-          <a4j:commandButton value="submit" reRender="connectAppListing"
+          <a4j:commandButton value="submit" reRender="connectAppListing" eventsQueue="adminCenterQueue"
             styleClass="button" />
         </div>
       </h:form>
@@ -30,9 +30,9 @@
           onchange="Element.next(Element.next(this)).firstChild.click();"
           id="showNewPackages">
         </h:selectBooleanCheckbox>
-        <h:outputLabel for="showNewPackages" value="#{messages['label.appcenter.show.new.packages']}" />
+        <h:outputLabel for="showNewPackages" value="#{messages['label.appcenter.hide.local.packages']}" />
         <div style="display: none;">
-          <a4j:commandButton value="submit" reRender="connectAppListing"
+          <a4j:commandButton value="submit" reRender="connectAppListing" eventsQueue="adminCenterQueue"
             styleClass="button" />
         </div>
       </h:form>
@@ -44,12 +44,12 @@
         </h:selectBooleanCheckbox>
         <h:outputLabel for="platformFilter" value="#{messages['label.appcenter.platform.filter']}" />
         <div style="display: none;">
-          <a4j:commandButton value="submit" reRender="connectAppListing"
+          <a4j:commandButton value="submit" reRender="connectAppListing" eventsQueue="adminCenterQueue"
             styleClass="button" />
         </div>
       </h:form>
       <h:form>
-        <a4j:commandButton value="#{messages['admCommand.refresh']}"
+        <a4j:commandButton value="#{messages['admCommand.refresh']}" eventsQueue="adminCenterQueue"
           actionListener="#{appsViews.flushCache()}"
           reRender="connectAppListing" styleClass="button" />
       </h:form>
@@ -75,7 +75,7 @@
     <c:if test="#{connectServerReachable}">
       <c:if test="#{!adminViews.hasExternalPackageDownloadRequest()}">
         <iframe id="connectIframe"
-          src="#{contextPath}/site/connectClient/packages/remote?type=#{appsViews.packageTypeFilter}&amp;onlyRemote=#{appsViews.onlyRemote}&amp;filterOnPlatform=#{appsViews.platformFilter}"
+          src="#{contextPath}/site/connectClient/packages/remote?type=addon&amp;onlyRemote=#{appsViews.onlyRemote}&amp;filterOnPlatform=#{appsViews.platformFilter}"
           frameborder="0" scrolling="auto" width="100%" style="display: none"
           onload="javascript:displayConnectIframe();"> </iframe>
       </c:if>
