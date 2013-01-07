@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 
@@ -67,8 +67,8 @@ public class CheckMailUnicity extends AbstractMailAction {
         // mail folder
         StringBuilder query = new StringBuilder();
         query.append(String.format(MAIL_SEARCH_QUERY,
-                SQLQueryParser.prepareStringLiteral(messageId),
-                SQLQueryParser.prepareStringLiteral(parentPath.toString())));
+                NXQL.escapeString(messageId),
+                NXQL.escapeString(parentPath.toString())));
 
         DocumentModelList duplicatedMail = session.query(query.toString());
 

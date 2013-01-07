@@ -23,7 +23,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
  *
@@ -59,11 +59,11 @@ public class FetchByProperty {
         sb.append(property);
         if (values.size() == 1) {
             sb.append(" = ");
-            sb.append(SQLQueryParser.prepareStringLiteral(values.get(0)));
+            sb.append(NXQL.escapeString(values.get(0)));
         } else {
             sb.append(" IN (");
             for (Iterator<String> it = values.iterator(); it.hasNext();) {
-                sb.append(SQLQueryParser.prepareStringLiteral(it.next()));
+                sb.append(NXQL.escapeString(it.next()));
                 if (it.hasNext()) {
                     sb.append(", ");
                 }

@@ -24,8 +24,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 /**
  * Helper class to manage:
@@ -64,7 +64,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder
         // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot'
         // )
         String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH "
-                + NXQLQueryBuilder.prepareStringLiteral(path, true, true) + " and (";
+                + NXQL.escapeString(path) + " AND (";
 
         int i = 0;
         for (String type : getSectionTypes()) {
