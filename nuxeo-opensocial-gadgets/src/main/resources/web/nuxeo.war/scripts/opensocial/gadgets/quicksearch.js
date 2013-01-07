@@ -55,7 +55,7 @@ function doSaveSearch() {
 }
 
 function loadSearch() {
-  var txt = prefs.getString('savedQuery');
+  var txt = gadgets.util.unescapeString(prefs.getString('savedQuery'));
   if (txt) {
     runSearch(txt);
     _gel("queryText").innerHTML = txt;
