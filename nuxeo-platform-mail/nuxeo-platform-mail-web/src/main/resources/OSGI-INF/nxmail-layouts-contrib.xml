@@ -156,28 +156,47 @@
 
     <layout name="mail_listing">
       <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml</template>
       </templates>
       <columns>
         <column>
           <properties mode="any">
+            <property name="isListingSelectionBoxWithCurrentDocument">
+              true
+            </property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>
-          <widget>listing_selection_box_with_current_document</widget>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
         <column>
           <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>
           <widget>listing_icon_type</widget>
         </column>
         <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="isSortable">false</property>
+          </properties>
           <widget>listing_mail_object</widget>
           <widget>listing_mail_sending_date</widget>
           <widget>listing_mail_contact</widget>
           <widget>listing_mail_body</widget>
         </column>
         <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="isSortable">false</property>
+          </properties>
           <widget>listing_mail_attachments</widget>
         </column>
       </columns>
