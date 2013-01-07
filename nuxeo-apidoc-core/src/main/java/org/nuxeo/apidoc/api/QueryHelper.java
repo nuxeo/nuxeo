@@ -42,7 +42,8 @@ public class QueryHelper {
      */
     public static String select(String type, DocumentModel doc) {
         return "SELECT * FROM " + type + " WHERE " + NXQL.ECM_PATH
-                + " STARTSWITH " + quoted(doc.getPathAsString());
+                + " STARTSWITH " + quoted(doc.getPathAsString())
+                + " AND ecm:currentLifeCycleState != 'deleted'";
     }
 
     /**

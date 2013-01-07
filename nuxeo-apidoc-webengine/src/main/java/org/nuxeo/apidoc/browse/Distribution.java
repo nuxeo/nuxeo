@@ -30,9 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationService;
@@ -44,6 +42,7 @@ import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -345,6 +344,46 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
+    @Path("uploadDistribTmp")
+    @Produces("text/html")
+    public Object uploadDistribTmp() throws Exception {
+        if (!isEditor()) {
+            return null;
+        }
+        Blob blob = getContext().getForm().getFirstBlob();
+        if (blob == null || blob.getLength() == 0) {
+            return null;
+        }
+        DocumentModel snap = getSnapshotManager().importTmpSnapshot(
+                getContext().getCoreSession(), blob.getStream());
+        DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
+        return getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject",
+                snapObject);
+    }
+
+    @POST
+    @Path("uploadDistribTmpValid")
+    @Produces("text/html")
+    public Object uploadDistribTmpValid() throws Exception {
+        if (!isEditor()) {
+            return null;
+        }
+
+        FormData formData = getContext().getForm();
+        String name = formData.getString("name");
+        String version = formData.getString("version");
+        String pathSegment = formData.getString("pathSegment");
+        String title = formData.getString("title");
+
+        getSnapshotManager().validateImportedSnapshot(
+                getContext().getCoreSession(), name, version, pathSegment,
+                title);
+        getSnapshotManager().readPersistentSnapshots(
+                getContext().getCoreSession());
+        return getView("importDone");
+    }
+
+    @POST
     @Path("uploadDoc")
     @Produces("text/html")
     public Object uploadDoc() throws Exception {
@@ -353,13 +392,16 @@ public class Distribution extends ModuleRoot {
         }
 
         Blob blob = getContext().getForm().getFirstBlob();
+        if (blob == null || blob.getLength() == 0) {
+            return null;
+        }
 
         DocumentationService ds = Framework.getService(DocumentationService.class);
         ds.importDocumentation(getContext().getCoreSession(), blob.getStream());
 
         log.info("Documents imported.");
 
-        return getView("index");
+        return getView("docImportDone");
     }
 
     public boolean isEmbeddedMode() {

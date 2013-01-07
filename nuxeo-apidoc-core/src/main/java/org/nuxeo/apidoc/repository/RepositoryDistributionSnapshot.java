@@ -51,7 +51,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
             String containerPath, String label) throws ClientException {
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(distrib.getKey());
-        if (label!=null) {
+        if (label != null) {
             name = computeDocumentName(label);
         }
         String targetPath = new Path(containerPath).append(name).toString();
@@ -63,7 +63,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         }
 
         doc.setPathInfo(containerPath, name);
-        if (label==null) {
+        if (label == null) {
             doc.setPropertyValue("dc:title", distrib.getKey());
             doc.setPropertyValue(PROP_KEY, distrib.getKey());
             doc.setPropertyValue(PROP_NAME, distrib.getName());
@@ -86,7 +86,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     public static List<DistributionSnapshot> readPersistentSnapshots(
             CoreSession session) {
         List<DistributionSnapshot> result = new ArrayList<DistributionSnapshot>();
-        String query = "SELECT * FROM " + TYPE_NAME;
+        String query = "SELECT * FROM " + TYPE_NAME
+                + " where ecm:currentLifeCycleState != 'deleted'";
         try {
             DocumentModelList docs = session.query(query);
             for (DocumentModel child : docs) {
@@ -156,7 +157,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
 
     protected DocumentModel getBundleContainer() {
         try {
-            return getCoreSession().getChild(doc.getRef(), SnapshotPersister.Bundle_Root_NAME);
+            return getCoreSession().getChild(doc.getRef(),
+                    SnapshotPersister.Bundle_Root_NAME);
         } catch (ClientException e) {
             // for compatibility with the previous persistence model
             return doc;

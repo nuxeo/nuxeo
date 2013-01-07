@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface SnapshotManager {
 
@@ -62,5 +63,11 @@ public interface SnapshotManager {
 
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
             String name, SnapshotFilter filter) throws ClientException;
+
+    void validateImportedSnapshot(CoreSession session, String name,
+            String version, String pathSegment, String title) throws Exception;
+
+    DocumentModel importTmpSnapshot(CoreSession session, InputStream is)
+            throws Exception;
 
 }

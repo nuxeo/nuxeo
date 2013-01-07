@@ -116,7 +116,7 @@ Here are the currently available distributions:
 <#if Root.isEditor()>
 <p> You can use the form below to upload a distribution that has been exported as a zip:
 </p>
-<form method="POST" action="${Root.path}/uploadDistrib" enctype="multipart/form-data" >
+<form method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data" >
   <input type="file" name="archive">
   <input type="submit" value="Upload">
 </form>

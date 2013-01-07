@@ -43,6 +43,8 @@ import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -61,6 +63,8 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     public static final String RUNTIME = "current";
 
     public static final String RUNTIME_ADM = "adm";
+
+    protected static final String IMPORT_TMP = "tmpImport";
 
     protected static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
 
@@ -267,6 +271,74 @@ public class SnapshotManagerComponent extends DefaultComponent implements
             writer.close();
         } catch (Exception e) {
             log.error("Error while importing snapshot", e);
+        }
+    }
+
+    @Override
+    public void validateImportedSnapshot(CoreSession session, String name,
+            String version, String pathSegment, String title) throws Exception {
+
+        DocumentModel container = persister.getDistributionRoot(session);
+        DocumentRef tmpRef = new PathRef(container.getPathAsString(),
+                IMPORT_TMP);
+
+        DocumentModel tmp = null;
+
+        if (session.exists(tmpRef)) {
+            tmp = session.getChild(container.getRef(), IMPORT_TMP);
+            DocumentModel snapDoc = session.getChildren(tmp.getRef()).get(0);
+            snapDoc.setPropertyValue("nxdistribution:name", name);
+            snapDoc.setPropertyValue("nxdistribution:version", version);
+            snapDoc.setPropertyValue("nxdistribution:key", name + "-" + version);
+            snapDoc.setPropertyValue("dc:title", title);
+            snapDoc = session.saveDocument(snapDoc);
+
+            DocumentModel targetContainer = session.getParentDocument(tmp.getRef());
+
+            session.move(snapDoc.getRef(), targetContainer.getRef(),
+                    pathSegment);
+            session.removeDocument(tmp.getRef());
+        }
+
+    }
+
+    @Override
+    public DocumentModel importTmpSnapshot(CoreSession session, InputStream is)
+            throws Exception {
+        try {
+
+            DocumentModel container = persister.getDistributionRoot(session);
+            DocumentRef tmpRef = new PathRef(container.getPathAsString(),
+                    IMPORT_TMP);
+
+            DocumentModel tmp = null;
+
+            if (session.exists(tmpRef)) {
+                tmp = session.getChild(container.getRef(), IMPORT_TMP);
+                session.removeChildren(tmp.getRef());
+            } else {
+                tmp = session.createDocumentModel(container.getPathAsString(),
+                        IMPORT_TMP, "Workspace");
+                tmp.setPropertyValue("dc:title", "tmpImport");
+                tmp = session.createDocument(tmp);
+                session.save();
+            }
+
+            DocumentReader reader = new NuxeoArchiveReader(is);
+            DocumentWriter writer = new DocumentModelWriter(session,
+                    tmp.getPathAsString());
+
+            DocumentPipe pipe = new DocumentPipeImpl(10);
+            pipe.setReader(reader);
+            pipe.setWriter(writer);
+            pipe.run();
+            reader.close();
+            writer.close();
+
+            return session.getChildren(tmp.getRef()).get(0);
+        } catch (Exception e) {
+            log.error("Error while importing snapshot", e);
+            return null;
         }
     }
 
