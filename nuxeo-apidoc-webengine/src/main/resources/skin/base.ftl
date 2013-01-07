@@ -135,10 +135,10 @@
     function showAddDoc(docId) {
       if (lastDisplayedDoc) {
        if (lastDisplayedDoc!=docId) {
-         $('#' + lastDisplayedDoc).toggle("fold",{horizFirst: true},1000);
+         $('#' + lastDisplayedDoc).toggle();
        }
       }
-      $('#' + docId).toggle("fold",{horizFirst: true},1000);
+      $('#' + docId).toggle();
       lastDisplayedDoc=docId;
     }
 
