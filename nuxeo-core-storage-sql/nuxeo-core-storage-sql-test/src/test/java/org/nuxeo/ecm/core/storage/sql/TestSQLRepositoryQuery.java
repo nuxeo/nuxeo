@@ -879,6 +879,11 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         sql = "SELECT * FROM Document WHERE dc:subjects STARTSWITH 'gee/moo/blah'";
         assertEquals(0, session.query(sql).size());
+
+        // System properties are also supported to have a coherent behavior
+        // even if it's useless: (primaryType='Folder' OR primaryType LIKE 'Folder/%')
+        sql = "SELECT * FROM Document WHERE ecm:primaryType STARTSWITH 'Folder'";
+        assertTrue(session.query(sql).size() > 0);
     }
 
     @Test

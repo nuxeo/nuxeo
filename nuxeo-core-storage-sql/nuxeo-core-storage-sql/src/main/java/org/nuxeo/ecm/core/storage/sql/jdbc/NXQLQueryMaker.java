@@ -1610,22 +1610,30 @@ public class NXQLQueryMaker implements QueryMaker {
         protected void visitExpressionStartsWithNonPath(Expression node,
                 String path) {
             String name = ((Reference) node.lvalue).name;
-            ColumnInfo info = getColumnInfo(name); // may throw
-            if (info.needsSubSelect) {
-                // use EXISTS with subselect clause
-                generateExistsStart(buf, info.column.getTable());
+            boolean needsSubSelect = false;
+            Column column;
+            if (name.startsWith(NXQL.ECM_PREFIX)) {
+                column = getSpecialColumn(name);
+            } else {
+                ColumnInfo info = getColumnInfo(name); // may throw
+                if (info.needsSubSelect) {
+                    // use EXISTS with subselect clause
+                    generateExistsStart(buf, info.column.getTable());
+                    needsSubSelect = true;
+                }
+                column = info.column;
             }
             buf.append('(');
-            visitReference(info.column);
+            visitReference(column);
             buf.append(" = ");
             visitStringLiteral(path);
             buf.append(" OR ");
-            visitReference(info.column);
+            visitReference(column);
             buf.append(" LIKE ");
             // TODO escape % chars...
             visitStringLiteral(path + PATH_SEP + '%');
             buf.append(')');
-            if (info.needsSubSelect) {
+            if (needsSubSelect) {
                 generateExistsEnd(buf);
             }
         }
