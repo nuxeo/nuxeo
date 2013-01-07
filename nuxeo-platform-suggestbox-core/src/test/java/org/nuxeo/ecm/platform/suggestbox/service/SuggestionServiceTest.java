@@ -332,7 +332,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertEquals("Search documents by Bob Marley", sugg3.getLabel());
         assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
 
-        // Check that user suggestion for entries without firstname and lastname return the user id
+        // Check that user suggestion for entries without firstname and lastname
+        // return the user id
         // perform some test lookups to check the deployment of extension points
         suggestions = suggestionService.suggest("nonam", context);
         assertNotNull(suggestions);
@@ -340,7 +341,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
 
         sugg0 = suggestions.get(0);
         assertEquals("searchDocuments", sugg0.getType());
-        assertEquals("Search documents with keywords: 'nonam'", sugg0.getLabel());
+        assertEquals("Search documents with keywords: 'nonam'",
+                sugg0.getLabel());
         assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
 
         sugg1 = suggestions.get(1);
@@ -386,7 +388,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(
                 Locale.US).withSession(session).withMessages(messages);
 
-        // smoke test to perform suggestion against suggesters registered by default
+        // smoke test to perform suggestion against suggesters registered by
+        // default
         List<Suggestion> suggestions = suggestionService.suggest(
                 "!@#$%^&*()--", context);
         assertNotNull(suggestions);
@@ -403,8 +406,8 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
                 "A {1} interpolated message {0}", "\\", "$");
         assertEquals("A $ interpolated message \\", interpolated);
 
-        interpolated = I18nHelper.interpolate(
-                "A {1} interpolated message {0}", "\\\\", "$");
+        interpolated = I18nHelper.interpolate("A {1} interpolated message {0}",
+                "\\\\", "$");
         assertEquals("A $ interpolated message \\\\", interpolated);
     }
 }

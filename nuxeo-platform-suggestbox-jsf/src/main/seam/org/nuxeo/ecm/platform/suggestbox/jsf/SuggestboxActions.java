@@ -14,7 +14,6 @@
  * Contributors:
  *     Olivier Grisel
  *
- * $Id$
  */
 package org.nuxeo.ecm.platform.suggestbox.jsf;
 

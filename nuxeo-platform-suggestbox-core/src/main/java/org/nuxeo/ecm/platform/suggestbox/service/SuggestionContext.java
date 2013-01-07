@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Olivier Grisel
+ */
 package org.nuxeo.ecm.platform.suggestbox.service;
 
 import java.security.Principal;
@@ -11,11 +27,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Base class and default implementation for passing contextual information to
  * the suggestion service.
- * 
+ *
  * This is primarily a hash map to store arbitrary context element that might be
  * useful for suggester along with a few mandatory and common optional
  * attributes for direct access.
- * 
+ *
  * @author ogrisel
  */
 public class SuggestionContext extends HashMap<String, Object> {

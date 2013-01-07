@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-13 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,12 +14,10 @@
  * Contributors:
  *    Olivier Grisel
  *
- * $Id$
  */
 package org.nuxeo.ecm.platform.suggestbox.jsf;
 
 import java.io.Serializable;
-
 
 /**
  * Simple cached item holder with time + key invalidation strategy
@@ -52,7 +50,7 @@ public class Cached<T> implements Serializable {
     }
 
     public void expire() {
-        expired  = true;
+        expired = true;
         value = null;
         keys = new Object[0];
     }
