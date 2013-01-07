@@ -91,7 +91,6 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 .listingLayoutSelector .langSelect { float: left; font-size: .8em; padding: .1em }
 
 /* =Actionbar in Home */
-.headerTitleAndTools { margin-bottom: 4em }
 .headerTitleAndTools h1 { display: inline }
 .headerTitleAndTools h1 span { color: "gray.light (__FLAVOR__ color)"; font-weight: normal }
 .headerTitleAndTools .globalActionBar { float: right } /* Clean headerTitleAndTools style, inheritance issue with globalActionBar class*/
