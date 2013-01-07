@@ -29,7 +29,13 @@ public class XDocReportBindingResolver extends AbstractBindingResolver {
     @Override
     protected String handleHtmlField(String paramName, String htmlValue) {
         metadata.addFieldAsTextStyling(paramName, SyntaxKind.Html);
-        return super.handleHtmlField(paramName, htmlValue);
+        String html = super.handleHtmlField(paramName, htmlValue);
+        // Temporary hack to avoid letting XDocReport generating non valid XML
+        // This should be fixed directly inside XDocReport in the
+        // ContentHandlers that should to the escaping when writing XML
+        html = html.replace("&amp;", "");
+        // html = html.replace("&", "&amp;");
+        return html;
     }
 
     @Override
