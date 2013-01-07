@@ -12,6 +12,9 @@
   <a4j:outputPanel ajaxRendered="true">
     <a4j:form ajaxSubmit="true" id="publishTreeForm">
 
+      <h:outputText value="#{messages['label.sections.not.defined']}"
+        rendered="#{empty availablePublicationTrees}" />
+
       <h:panelGroup rendered="#{!empty availablePublicationTrees}">
 
         <h:panelGrid styleClass="dataInput"
