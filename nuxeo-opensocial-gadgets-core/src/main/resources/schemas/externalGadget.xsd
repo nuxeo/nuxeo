@@ -5,7 +5,7 @@
 
   <xs:element name="id" type="xs:string"/>
   <xs:element name="label" type="xs:string"/>
-  <xs:element name="enabled" type="xs:integer"/>
+  <xs:element name="enabled" type="xs:integer" default="1"/>
   <xs:element name="category" type="xs:string"/>
   <xs:element name="url" type="xs:string"/>
   <xs:element name="iconUrl" type="xs:string"/>
