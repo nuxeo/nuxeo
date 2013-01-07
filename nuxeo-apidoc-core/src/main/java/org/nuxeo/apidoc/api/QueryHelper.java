@@ -31,10 +31,14 @@ public class QueryHelper {
     }
 
     public static final String NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " <> "
-            + quoted(LifeCycleConstants.DELETED_STATE);
+            + LifeCycleConstants.DELETED_STATE;
 
+    /**
+     * @deprecated since 5.7, 5.6.0-HF08 use {{@link NXQL#escapeString} instead
+     */
+    @Deprecated
     public static String quoted(String string) {
-        return SQLQueryParser.prepareStringLiteral(string);
+        return NXQL.escapeString(string);
     }
 
     /**
@@ -42,7 +46,7 @@ public class QueryHelper {
      */
     public static String select(String type, DocumentModel doc) {
         return "SELECT * FROM " + type + " WHERE " + NXQL.ECM_PATH
-                + " STARTSWITH " + quoted(doc.getPathAsString());
+                + " STARTSWITH " + NXQL.escapeString(doc.getPathAsString());
     }
 
     /**
@@ -51,7 +55,8 @@ public class QueryHelper {
      */
     public static String select(String type, DocumentModel doc, String prop,
             String value) {
-        return select(type, doc) + " AND " + prop + " = " + quoted(value);
+        return select(type, doc) + " AND " + prop + " = "
+                + NXQL.escapeString(value);
     }
 
 }
