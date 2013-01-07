@@ -71,6 +71,23 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
                 new TransactionalCoreSessionWrapper(session));
     }
 
+    /**
+     * Unwrap core session if needed
+     * 
+     * @since 5.7
+     * @param session
+     * @return
+     */
+    public static CoreSession unwrap(CoreSession session) {
+        if (Proxy.isProxyClass(session.getClass())) {
+            InvocationHandler h = Proxy.getInvocationHandler(session);
+            if (h instanceof TransactionalCoreSessionWrapper) {
+                return ((TransactionalCoreSessionWrapper)h).session;                
+            }
+        }
+        return session;
+    }
+    
     protected void checkTxActiveRequired(Method m) {
         if (threadBound.get() != null) {
             return; // tx is active, no ckeck needed
