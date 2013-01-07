@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
+import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -242,7 +243,11 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         }
 
         sb.append("</center></body></html>");
-        log.error("could not build preview for missing blob at " + xpath, e);
+        if (e instanceof NothingToPreviewException) {
+            // Not an error, don't log
+        } else {
+            log.error("Could not build preview for missing blob at " + xpath, e);
+        }
 
         res.setEntity(sb.toString(), MediaType.TEXT_HTML);
         HttpServletResponse response = getHttpResponse(res);

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
+import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -134,8 +135,8 @@ public class ConverterBasedHtmlPreviewAdapter extends
         }
 
         if (blob2Preview == null) {
-            throw new PreviewException(
-                    "can not preview a document without blob");
+            throw new NothingToPreviewException(
+                    "Can not preview a document without blob");
         }
         List<Blob> blobResults = new ArrayList<Blob>();
 
