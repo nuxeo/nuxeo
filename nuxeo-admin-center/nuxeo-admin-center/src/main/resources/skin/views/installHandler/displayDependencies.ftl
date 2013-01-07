@@ -138,29 +138,29 @@ $(document).ready(function() {
    <h1> Installation of ${pkg.title} (${pkg.id}) </h1>
 
    <div class="installWarningsTitle">
-     <h2>The package you want to install requires some dependencies changes</h2>
+     <h2>${Context.getMessage('label.displayDependencies.messages.warning')}</h2>
 
       <br/>
-      <input type="checkbox" id="manualModeCheckBox" onClick="switchMode()"> Manual installation mode</input>
+      <input type="checkbox" id="manualModeCheckBox" onClick="switchMode()">${Context.getMessage('label.displayDependencies.titles.manual')}</input>
       <br/>
       <#if (resolution.getRemovePackageIds()?size>0) >
-      <h3>Packages that need to be removed from your instance:</h3>
+      <h3>${Context.getMessage('label.displayDependencies.titles.toberemoved')}</h3>
       <table>
         <#list resolution.getRemovePackageIds() as pkgId>
           <tr>
           <td> ${pkgId} </td>
-          <td><a href="javascript:rmPackage('${pkgId}')" class="manualModeCmd">Manual removal</a></td>
+          <td><a href="javascript:rmPackage('${pkgId}')" class="manualModeCmd">${Context.getMessage('label.displayDependencies.links.manualremoval')}</a></td>
           </tr>
         </#list>
       </table>
       </#if>
 
       <#if (resolution.getUpgradePackageIds()?size>0) >
-      <h3>Already installed packages that need to be upgraded:</h3>
+      <h3>${Context.getMessage('label.displayDependencies.titles.upgrade')}</h3>
       <table>
         <#list resolution.getUpgradePackageIds() as pkgId>
         <tr><td> ${pkgId} </td>
-            <td><a href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">Manual upgrade</a></td>
+            <td><a href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">${Context.getMessage('label.displayDependencies.links.manualupgrade')}</a></td>
             <td><div id="progress_${pkgId}" class="progressDownloadContainer"> </div></td>
         </tr>
         </#list>
@@ -168,21 +168,21 @@ $(document).ready(function() {
       </#if>
 
       <#if (resolution.getLocalToInstallIds()?size>0) >
-      <h3>Already downloaded packages that need to be installed:</h3>
+      <h3>${Context.getMessage('label.displayDependencies.titles.needinstall')}</h3>
       <table>
         <#list resolution.getLocalToInstallIds() as pkgId>
-          <tr><td> ${pkgId} </td><td><a</a href="javascript:installPackage('${pkgId}', false)" class="manualModeCmd">Manual installation</a></td></tr>
+          <tr><td> ${pkgId} </td><td><a</a href="javascript:installPackage('${pkgId}', false)" class="manualModeCmd">${Context.getMessage('label.displayDependencies.links.manualinstall')}</a></td></tr>
         </#list>
       </table>
       </#if>
 
       <#if (resolution.getDownloadPackageIds()?size>0) >
-      <h3>New packages that need to be downloaded and installed:</h3>
+      <h3>${Context.getMessage('label.displayDependencies.titles.needdownload')}</h3>
       <table>
         <#list resolution.getDownloadPackageIds() as pkgId>
           <tr>
           <td> ${pkgId} </td>
-          <td><a href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">Manual download and install</a></td>
+          <td><a href="javascript:installPackage('${pkgId}', true)" class="manualModeCmd">${Context.getMessage('label.displayDependencies.links.manualdownloadinstall')}</a></td>
           <td><div id="progress_${pkgId}" class="progressDownloadContainer"> </td>
           </tr>
         </#list>
@@ -190,7 +190,7 @@ $(document).ready(function() {
       </#if>
 
       <#if (resolution.getUnchangedPackageIds()?size>0) >
-      <h3>Dependencies that are already installed on your instance and won't be changed:</h3>
+      <h3>${Context.getMessage('label.displayDependencies.titles.alreadyinstalled')}</h3>
       <table>
         <#list resolution.getUnchangedPackageIds() as pkgId>
           <tr><td> ${pkgId}</td></tr>
@@ -200,10 +200,10 @@ $(document).ready(function() {
    </div>
 
    <br/>
-   <a href="javascript:downloadAllPackages()" id="downloadAllButton" class="button installButton" style="display:none"> Download all packages </a>
+   <a href="javascript:downloadAllPackages()" id="downloadAllButton" class="button installButton" style="display:none">${Context.getMessage('label.displayDependencies.links.downloadall')}</a>
    <a href="${Root.path}/packages/${source}" class="button"> Cancel </a> &nbsp;
-   <a href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}" class="button installButton" id="installAutoButton"> Installation of package ${pkg.id} and dependencies </a>
-   <a href="${Root.path}/install/start/${pkg.id}/?source=${source}" class="button installButton" id="installManualButton"> Continue installation of package ${pkg.id} </a>
+   <a href="${Root.path}/install/bulkRun/${pkg.id}/?source=${source}" class="button installButton" id="installAutoButton">${Context.getMessage('label.displayDependencies.links.install.start')} ${pkg.id} ${Context.getMessage('label.displayDependencies.links.install.stop')}</a>
+   <a href="${Root.path}/install/start/${pkg.id}/?source=${source}" class="button installButton" id="installManualButton">${Context.getMessage('label.displayDependencies.links.continue')} ${pkg.id} </a>
 
   </div>
 

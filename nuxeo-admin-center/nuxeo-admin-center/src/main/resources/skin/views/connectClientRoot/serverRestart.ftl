@@ -19,8 +19,8 @@ html, body {
 <div id="loading"><h1>${nuxeoctl.restartServer()}</h1><br/><br/>
 <img src="${Context.getServerURL().toString()}${contextPath}/img/big_loading.gif" /></div>
 <br/><br/>
-You will be automatically redirected to the login page when Nuxeo server is back online.<br>
-(please, do not refresh this page)
+${Context.getMessage('label.serverRestart.message')}<br>
+${Context.getMessage('label.serverRestart.message2')}
 </center>
 
 <script type="text/javascript">

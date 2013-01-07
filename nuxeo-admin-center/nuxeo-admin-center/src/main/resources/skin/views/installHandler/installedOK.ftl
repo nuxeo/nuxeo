@@ -10,23 +10,24 @@ function closePopup() {
 
 <@block name="body">
   <div class="successfulDownloadBox">
-   <h3> Installation of ${pkg.title} (${pkg.id}) completed </h3>
+   <h3>${Context.getMessage('label.installedOk.title.start')} ${pkg.title} (${pkg.id}) ${Context.getMessage('label.installedOk.title.end')}</h3>
 
     <#if installTask.isRestartRequired()>
      <div>
-         You will need to restart your server to complete the installation.
+         ${Context.getMessage('label.installedOk.info.needrestart')}
          <br/>
          <form method="GET" action="${Root.path}/restartView">
-         Click on the restart button to restart the server now : <input type="submit" value="Restart"/>
+	         ${Context.getMessage('label.installedOk.info.needclick')}
+	         <input type="submit" value="Restart"/>
          </form>.
      </div>
     </#if>
 
     <br/>
     <#if source=="installer">
-      <a href="javascript:closePopup()" class="button installButton"> Finish </a>
+      <a href="javascript:closePopup()" class="button installButton">${Context.getMessage('label.installedOk.end')}</a>
     <#else>
-      <a href="${Root.path}/packages/${source}" class="button installButton"> Finish </a>
+      <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.installedOk.end')}</a>
     </#if>
   </div>
 </@block>

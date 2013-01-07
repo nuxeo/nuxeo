@@ -5,11 +5,11 @@
 
 <@block name="body">
   <div class="errorDownloadBox">
-   <h3> Installation of ${pkg.title} (${pkg.id}) is not possible </h3>
+   <h3>${Context.getMessage('label.dependencyError.title.start')} ${pkg.title} (${pkg.id}) ${Context.getMessage('label.dependencyError.title.end')}</h3>
 
     <div class="installErrorTitle">
-         Some dependencies can not be resolved.<br/>
-         Installation process can not continue.
+         ${Context.getMessage('label.dependencyError.message')}<br/>
+         ${Context.getMessage('label.dependencyError.message2')}
     </div>
     <br/>
     <br/>
@@ -18,7 +18,7 @@
     </ul>
     <br/>
     <br/>
-    <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
+    <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.dependencyError.buttons.cancel')}</a>
   </div>
 
 </@block>

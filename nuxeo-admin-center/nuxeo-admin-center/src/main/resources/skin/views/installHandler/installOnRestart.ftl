@@ -10,19 +10,19 @@ function closePopup() {
 
 <@block name="body">
   <div class="successfulDownloadBox">
-   <h3> Installation of ${pkg.title} (${pkg.id}) will be done at next restart.</h3>
+   <h3>${Context.getMessage('label.installOnRestart.title.start')} ${pkg.title} (${pkg.id}) ${Context.getMessage('label.installOnRestart.title.end')}</h3>
     <br/>
     <div>
-     To complete the installation of the package, please restart your server.
+     ${Context.getMessage('label.installOnRestart.message.restart')}
     </div>
     <div>
-     <string>Please read carefully the description of the package, in case any manual update is needed.</strong>
+     <strong>${Context.getMessage('label.installOnRestart.message.read')}</strong>
     </div>
     <br/>
     <#if source=="installer">
-      <a href="javascript:closePopup()" class="button installButton"> Finish </a>
+      <a href="javascript:closePopup()" class="button installButton">${Context.getMessage('label.installOnRestart.buttons.finish')}</a>
     <#else>
-      <a href="${Root.path}/packages/${source}" class="button installButton"> Finish </a>
+      <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.installOnRestart.buttons.finish')}</a>
     </#if>
   </div>
 </@block>

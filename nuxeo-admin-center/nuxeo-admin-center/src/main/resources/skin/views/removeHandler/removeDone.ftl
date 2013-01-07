@@ -6,11 +6,9 @@
 <@block name="body">
 
  <div class="successfulDownloadBox">
-        <h3> Removal of ${pkgId} completed </h3>
-
+        <h3>${Context.getMessage('label.removeDone.message.start')} ${pkgId} ${Context.getMessage('label.removeDone.message.end')}</h3>
     <br/>
-
-    <a href="${Root.path}/packages/${source}" class="button installButton"> Finish </a>
+    <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.removeDone.links.finish')}</a>
  </div>
 
 </@block>

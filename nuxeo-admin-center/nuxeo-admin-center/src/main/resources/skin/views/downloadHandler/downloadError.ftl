@@ -1,6 +1,6 @@
 <html>
 <div class="errorDownloadBox">
- Download was not started because of a server error : ${e.message}.
+ ${Context.getMessage('label.downloadError.message')} ${e.message}.
 </div>
 
 </html>

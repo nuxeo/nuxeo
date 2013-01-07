@@ -16,16 +16,16 @@
         <span class="packageInfo">
          <table>
          <tr>
-            <td class="packageLabel">Description :</td>
+            <td class="packageLabel">${Context.getMessage('label.pkgDetails.titles.description')}</td>
             <td class="packageField" style="white-space:pre-line"> ${pkg.description} </td>
            </tr>
           <tr>
-            <td class="packageLabel">Home Page :</td>
+            <td class="packageLabel">${Context.getMessage('label.pkgDetails.titles.home')}</td>
             <td class="packageField">
             <#if pkg.homePage?? || pkg.homePage=="" >
-               <A href="${This.getConnectBaseUrl()}marketplace/package/${pkg.id}" target="pkgHomePage"> Home Page on Nuxeo Connect </A>
+               <A href="${This.getConnectBaseUrl()}marketplace/package/${pkg.id}" target="pkgHomePage">${Context.getMessage('label.pkgDetails.titles.home.connect')}</A>
             <#else>
-               <A href="${pkg.homePage}" target="pkgHomePage"> Home Page </A>
+               <A href="${pkg.homePage}" target="pkgHomePage">${Context.getMessage('label.pkgDetails.links.home')}</A>
             </#if>
              </td>
          </tr>
@@ -33,20 +33,20 @@
            <td class="packageLabel">
            <#if pkg.isLocal()==false>
            ${pkg.commentsNumber}
-           </#if> comments :</td>
+           </#if> ${Context.getMessage('label.pkgDetails.titles.comments')}</td>
            <td class="packageField">
            <#if pkg.commentsNumber==0 && !pkg.isLocal() >
            &nbsp;
            <#else>
            <span class="commentArea" id="commentArea-${pkg.id}">
-           <A href="javascript:fetchComments('${pkg.id}')">get comments...</A>
+           <A href="javascript:fetchComments('${pkg.id}')">${Context.getMessage('label.pkgDetails.links.comments')}</A>
            </span>
            </#if>
            </td>
           </tr>
           <#if pkg.isLocal()==false>
           <tr>
-            <td class="packageLabel">Download count :</td>
+            <td class="packageLabel">${Context.getMessage('label.pkgDetails.titles.downloadcount')}</td>
              <td class="packageField"> ${pkg.downloadsCount} </td>
           </tr>
           </#if>
@@ -57,16 +57,16 @@
         <span class="packageInfo">
           <table>
             <tr>
-      <td><span class="boldLabel">Target platforms</span></td>
+      	    <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.target')}</span></td>
             <td class="packageField"><#list pkg.getTargetPlatforms() as pf>
                 ${pf} &nbsp;
                 </#list>
             </td>
             </tr><tr>
-          <td><span class="boldLabel">Package dependencies</span></td>
+          <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.package.dependencies')}</span></td>
           <td class="packageField">
           <#if (pkg.getDependencies()?size==0)>
-              None
+              ${Context.getMessage('label.pkgDetails.messages.package.dependencies.none')}
               <#else>
                 <#list pkg.getDependencies() as dep>
                 ${dep.name} &nbsp; (${dep.versionRange.minVersion} -&gt; ${dep.versionRange.maxVersion})<br/>
@@ -75,17 +75,17 @@
           </td>
       </tr>
       <tr>
-        <td><span class="boldLabel">Production state</span></td>
+        <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.production')}</span></td>
         <td class="packageField"> ${Context.getMessage('label.productionState.'+pkg.productionState)}</td>
       </tr><tr>
-        <td><span class="boldLabel">Certification status</span></td>
+        <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.certification')}</span></td>
         <td class="packageField"> ${Context.getMessage('label.validationState.'+pkg.validationState)}</td>
       <tr>
         <td><span class="boldLabel">Nuxeo support</span></td>
         <td class="packageField"><#if pkg.isSupported()>
-             Yes
+             ${Context.getMessage('label.pkgDetails.titles.package.issupported.yes')}
           <#else>
-             No
+             ${Context.getMessage('label.pkgDetails.titles.package.issupported.no')}
           </#if>
         </td>
       </tr>

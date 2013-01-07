@@ -40,7 +40,7 @@ function install() {
 
     <#if (over || pkg.completed)>
       <div class="successfulDownloadBox">
-        <p>Download for package ${pkg.id} complete </p>
+        <p>${Context.getMessage('label.downloadStarted.title.start')} ${pkg.id} ${Context.getMessage('label.downloadStarted.title.end')}</p>
         <#if !install>
 	        <script>
 	         window.setTimeout(back,1000);
@@ -60,7 +60,7 @@ function install() {
           <div class="downloadProgressBar alignCenter" style="width:${pkg.getDownloadProgress()}px;">&nbsp;</div>
         </div>
         <div class="downloadSize">
-        Total package size : ${pkg.getSourceSize()} bytes
+        ${Context.getMessage('label.downloadStarted.size.label')} ${pkg.getSourceSize()} ${Context.getMessage('label.downloadStarted.size.label')}
         </div>
         <script>
          window.setTimeout(refresh,1500);

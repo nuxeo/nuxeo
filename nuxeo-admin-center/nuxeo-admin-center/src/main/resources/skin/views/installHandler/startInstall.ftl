@@ -12,11 +12,11 @@ function closePopup() {
 
   <div class="genericBox">
 
-   <h1> Installation of ${pkg.title} (${pkg.id}) </h1>
+   <h1>${Context.getMessage('label.startInstall.title')} ${pkg.title} (${pkg.id}) </h1>
 
    <#if status.hasWarnings()>
       <div class="installWarningsTitle">
-         Some warnings were found when checking the package
+      	 ${Context.getMessage('label.startInstall.message.haswarning')}
       </div>
       <ul class="installWarnings">
         <#list status.getWarnings() as warning>
@@ -27,27 +27,27 @@ function closePopup() {
 
    <#if installTask.isRestartRequired()>
      <div>
-         After installation, you will need to restart your server.
+         ${Context.getMessage('label.startInstall.message.restartrequired')}
      </div>
    </#if>
 
    <br/>
 
    <#if needWizard>
-      Click the start link to start the installation wizard. <br/><br/><br/>
-      <a href="${Root.path}/install/form/${pkg.id}/0?source=${source}" class="button installButton"> Start </a>
+      ${Context.getMessage('label.startInstall.message.clickstart')}<br/><br/><br/>
+      <a href="${Root.path}/install/form/${pkg.id}/0?source=${source}" class="button installButton">${Context.getMessage('label.startInstall.buttons.start')}</a>
    </#if>
 
    <#if !needWizard>
-      Click the start link to start the installation process. <br/><br/><br/>
-      <a href="${Root.path}/install/run/${pkg.id}?source=${source}" class="button installButton"> Start </a>
+      ${Context.getMessage('label.startInstall.message.clickstartnowizard')} <br/><br/><br/>
+      <a href="${Root.path}/install/run/${pkg.id}?source=${source}" class="button installButton">${Context.getMessage('label.startInstall.buttons.start')}</a>
    </#if>
 
    &nbsp;
    <#if source=="installer">
-     <a href="javascript:closePopup()" class="button installButton"> Cancel </a>
+     <a href="javascript:closePopup()" class="button installButton">${Context.getMessage('label.startInstall.buttons.cancel')}</a>
    <#else>
-     <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
+     <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.startInstall.buttons.cancel')}</a>
    </#if>
   </div>
 

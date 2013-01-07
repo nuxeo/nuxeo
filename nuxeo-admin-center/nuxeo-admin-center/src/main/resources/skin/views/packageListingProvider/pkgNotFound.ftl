@@ -5,7 +5,7 @@
 
 <@block name="body">
 <div class="infoMessage">
- Can not find package '${pkgId}'.
+ ${Context.getMessage('label.pkgNotFound.message')} '${pkgId}'.
 </div>
 </@block>
 </@extends>

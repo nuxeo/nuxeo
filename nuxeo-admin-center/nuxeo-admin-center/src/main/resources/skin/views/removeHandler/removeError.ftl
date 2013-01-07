@@ -6,11 +6,11 @@
 <@block name="body">
 
   <div class="errorDownloadBox">
-    <h3>Removal failed : ${e.message}.</h3>
+    <h3>${Context.getMessage('label.removeError.message')} ${e.message}.</h3>
 
     <br/>
-    <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
+    <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.removeError.cancel')}</a>
   </div>
- 
+
 </@block>
 </@extends>

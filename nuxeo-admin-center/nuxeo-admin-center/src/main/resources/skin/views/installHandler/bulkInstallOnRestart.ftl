@@ -10,7 +10,7 @@ function closePopup() {
 
 <@block name="body">
   <div class="infoDownloadBox">
-   <h1> You have scheduled installation of the following packages</h1>
+   <h1>${Context.getMessage('label.bulkInstallOnRestart.title.install')}</h1>
 
    <ul>
        <#list pkgIds as pkgId>
@@ -19,7 +19,7 @@ function closePopup() {
    </ul>
 
    <#if (rmPkgIds?size>0) >
-   <h1> You have scheduled uninstallation of the following packages</h1>
+   <h1>${Context.getMessage('label.bulkInstallOnRestart.title.uninstall')}</h1>
    <ul>
        <#list rmPkgIds as pkgId>
        <li>${pkgId}</li>
@@ -29,13 +29,13 @@ function closePopup() {
 
     <br/>
     <div>
-     Installation will be completed on next server restart.
+		${Context.getMessage('label.bulkInstallOnRestart.message')}
     </div>
 
     <#if source=="installer">
-      <a href="javascript:closePopup()" class="button installButton"> Finish </a>
+      <a href="javascript:closePopup()" class="button installButton">${Context.getMessage('label.bulkInstallOnRestart.buttons.finish')}</a>
     <#else>
-      <a href="${Root.path}/packages/${source}" class="button installButton"> Finish </a>
+      <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.bulkInstallOnRestart.buttons.finish')}</a>
     </#if>
   </div>
 </@block>
