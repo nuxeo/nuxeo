@@ -29,14 +29,14 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.core.operations.document.AtomicFolderCreator;
+import org.nuxeo.ecm.automation.core.operations.document.AtomicGetOrCreateFolderRunner;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.critical.AtomicGetOrCreateFolderRunner;
+import org.nuxeo.ecm.core.api.critical.AtomicFolderCreator;
 import org.nuxeo.ecm.core.api.critical.CriticalSectionRunner;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TestRepositoryHandler;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -53,11 +52,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Deploy("org.nuxeo.runner.critical-section")
 @Features({ RestFeature.class })
 @Jetty(port = 18080, propagateNaming=true)
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
-public class CanRunCriticalFoldersTest {
+public class CanGetOrCreateFolderAtomicallyTest {
 
     @Inject
     CoreSession session;
