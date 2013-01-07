@@ -6,7 +6,7 @@
 
 <p class="explore"><a href="${Root.path}"> See all available distributions </A></p>
 
-<p class="explored"><a href="${Root.path}/current/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
+<p class="explored"><a href="${Root.path}/${Root.currentDistribution.key}/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
 <#if Root.currentDistribution.isLive()>
  (Live)
 </#if>
@@ -48,7 +48,7 @@
           <#if navPoint=="viewBundle">
           <ul><li class="selected">view Bundle</li></ul>
           </#if>
-           
+
             <li <#if navPoint=="listComponents">class="selected"</#if> >
             <a href="${Root.path}/${distId}/listComponents">
        Components
@@ -56,7 +56,7 @@
             <#if navPoint=="viewComponent">
             <ul><li class="selected">view Component</li></ul>
             </#if>
-            
+
             <ul>
             <li <#if navPoint=="listServices">class="selected"</#if> >
             <a href="${Root.path}/${distId}/listServices">
@@ -64,7 +64,7 @@
       </a>
             <#if navPoint=="viewService">
             <ul><li class="selected">view Service</li></ul>
-            </#if>          
+            </#if>
           </li>
            <li <#if navPoint=="listExtensionPoints">class="selected"</#if> >
             <a href="${Root.path}/${distId}/listExtensionPoints">
@@ -72,7 +72,7 @@
       </a>
             <#if navPoint=="viewExtensionPoint">
             <ul><li class="selected">view Extension Point</li></ul>
-            </#if>          
+            </#if>
           </li>
            <li <#if navPoint=="listContributions">class="selected"</#if> >
             <a href="${Root.path}/${distId}/listContributions">
@@ -80,15 +80,15 @@
       </a>
             <#if navPoint=="viewContribution">
             <ul><li class="selected">view Contribution</li></ul>
-            </#if>          
+            </#if>
           </li>
             </ul>
-            
+
           </li>
-          
-          
+
+
          </li>
-          
+
          </li>
       </ul>
   </li>
@@ -131,7 +131,7 @@
 <h4>Browse documentation</h4>
 <ul><li <#if navPoint=="documentation"> class="selected"</#if> >
 <A href="${Root.path}/${distId}/doc"> FAQ and How to </A>
-</li></ul>     
+</li></ul>
 </div>
 </#if>
 
