@@ -113,6 +113,17 @@ public class TestQueryParser {
     }
 
     @Test
+    public void testDoubleBackslash() {
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE title='a\\\\b'");
+        StringLiteral sl = (StringLiteral) query.getWhereClause().predicate.rvalue;
+        assertEquals("a\\b", sl.value);
+
+        query = SQLQueryParser.parse("SELECT p FROM t WHERE title='a\\\\'");
+        sl = (StringLiteral) query.getWhereClause().predicate.rvalue;
+        assertEquals("a\\", sl.value);
+    }
+
+    @Test
     public void testNamespace() {
         SQLQuery query = SQLQueryParser.parse("SELECT dc:title FROM Document WHERE dc:description = 'test'");
         SelectClause select = query.getSelectClause();
