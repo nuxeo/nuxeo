@@ -3,6 +3,15 @@
 
 é è à
 
+Add a
+
+
+YYY &
+
+&amp;
+
+==>
+
 ## What is this plugin for ?
 
 This Nuxeo Platform plugin provides a way to associate a Nuxeo Document with a Template.
@@ -15,7 +24,7 @@ For exemple you can define in your template a field that will be replaced by the
 
 Each format (WordML / OpenOffice) has his own logic for defining merge fields.
 
-In the case of OpenOffice document, you can actually generate the full document since it uses JODReports 
+In the case of OpenOffice document, you can actually generate the full document since it uses JODReports
 (that use Freemarker to render an ODT file).
 
 ## History
@@ -24,13 +33,13 @@ This plugin is based on the DocX prototype done a long time ago here : http://hg
 
 ## Building
 
-	mvn clean install
+  mvn clean install
 
 ## Deploying
 
 You first need to deploy the plugin inside your Nuxeo server.
 
-	cp target/nuxeo-platform-rendering-templates-X.Y.Z.jar into nxserver/bundles or nxserver/plugins
+  cp target/nuxeo-platform-rendering-templates-X.Y.Z.jar into nxserver/bundles or nxserver/plugins
 
 You also need to copy the additional libs (there is no Marketplace package for now)
 
@@ -43,7 +52,7 @@ The main templating engine is now <A href="http://code.google.com/p/xdocreport/"
 ## Task list
 
  See the <A href="https://jira.nuxeo.com/browse/NXP-8201">Jira tickets</A>
-	
+
 # Quick User guide
 
 ## Template Document
@@ -150,7 +159,7 @@ Once your Document is associated to a template (manually or automatically) you w
 
  - a new Associated Template tab
 
-#### Rendering 
+#### Rendering
 
 It will render the template against the current Document and return you the resulting file.
 
@@ -165,6 +174,5 @@ This tab provides :
  - a "render to file" action : same as rendering but stores the result as attachement of the current document
 
  - a "update template parameters" action : will resync the document with the Template Document parameters (useful if you edited the Template Document since the initial association)
-
 
 

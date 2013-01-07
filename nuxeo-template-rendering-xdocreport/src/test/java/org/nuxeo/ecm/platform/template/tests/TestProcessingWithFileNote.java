@@ -1,5 +1,10 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,6 +14,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.DocumentHelper;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -24,7 +30,6 @@ import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
-import static org.junit.Assert.*;
 
 public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
 
@@ -149,6 +154,11 @@ public class TestProcessingWithFileNote extends SQLRepositoryTestCase {
 
         String xmlContent = ZipXmlHelper.readXMLContent(blob,
                 ZipXmlHelper.OOO_MAIN_FILE);
+
+        // System.out.println(xmlContent);
+
+        // verify that XML is valid !
+        DocumentHelper.parseText(xmlContent);
 
         // verify that note content has been merged in ODT
         assertTrue(xmlContent.contains("TemplateBasedDocument"));
