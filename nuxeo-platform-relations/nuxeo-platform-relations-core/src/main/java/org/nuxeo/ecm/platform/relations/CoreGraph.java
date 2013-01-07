@@ -327,6 +327,8 @@ public class CoreGraph implements Graph {
                 rel.setPropertyValue(REL_TARGET_STRING, target.string);
             }
             if (author != null) {
+                // will usually get overwritten by DublinCoreListener
+                // but not in tests
                 rel.setPropertyValue(DC_CREATOR, author);
             }
             if (created != null) {
