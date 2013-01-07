@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -153,11 +154,11 @@ public class DocumentationComponent extends DefaultComponent implements
 
         if (category != null) {
             query += " AND " + DocumentationItem.PROP_TYPE + " = "
-                    + QueryHelper.quoted(category);
+                    + NXQL.escapeString(category);
         }
         if (targetType != null) {
             query += " AND " + DocumentationItem.PROP_TARGET_TYPE + " = "
-                    + QueryHelper.quoted(targetType);
+                    + NXQL.escapeString(targetType);
         }
 
         query += " ORDER BY " + DocumentationItem.PROP_DOCUMENTATION_ID
@@ -212,9 +213,9 @@ public class DocumentationComponent extends DefaultComponent implements
         String type = nxItem.getArtifactType();
         String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME
                 + " WHERE " + DocumentationItem.PROP_TARGET + " = "
-                + QueryHelper.quoted(id) + " AND "
+                + NXQL.escapeString(id) + " AND "
                 + DocumentationItem.PROP_TARGET_TYPE + " = "
-                + QueryHelper.quoted(type) + " AND " + QueryHelper.NOT_DELETED
+                + NXQL.escapeString(type) + " AND " + QueryHelper.NOT_DELETED
                 + " ORDER BY " + DocumentationItem.PROP_DOCUMENTATION_ID
                 + ", dc:modified";
         List<DocumentModel> docs = session.query(query);
@@ -281,9 +282,9 @@ public class DocumentationComponent extends DefaultComponent implements
         String type = item.getTargetType();
         String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME
                 + " WHERE " + DocumentationItem.PROP_DOCUMENTATION_ID + " = "
-                + QueryHelper.quoted(id) + " AND "
+                + NXQL.escapeString(id) + " AND "
                 + DocumentationItem.PROP_TARGET_TYPE + " = "
-                + QueryHelper.quoted(type) + " AND " + QueryHelper.NOT_DELETED;
+                + NXQL.escapeString(type) + " AND " + QueryHelper.NOT_DELETED;
         query += " ORDER BY dc:created";
         return session.query(query);
     }

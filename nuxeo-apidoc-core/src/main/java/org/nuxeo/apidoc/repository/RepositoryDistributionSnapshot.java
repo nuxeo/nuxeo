@@ -126,7 +126,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     protected <T> T getChild(Class<T> adapter, String docType, String idField,
             String id) {
         String query = QueryHelper.select(docType, doc) + " AND " + idField
-                + " = " + QueryHelper.quoted(id);
+                + " = " + NXQL.escapeString(id);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             if (docs.isEmpty()) {
@@ -329,7 +329,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     public ServiceInfo getService(String id) {
         String query = QueryHelper.select(ServiceInfo.TYPE_NAME, getDoc())
                 + " AND " + ServiceInfo.PROP_CLASS_NAME + " = "
-                + QueryHelper.quoted(id);
+                + NXQL.escapeString(id);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             if (docs.size() == 1) {
@@ -390,7 +390,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
                 + " AND "
                 + SeamComponentInfo.PROP_COMPONENT_NAME
                 + " = "
-                + QueryHelper.quoted(name);
+                + NXQL.escapeString(name);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             return docs.get(0).getAdapter(SeamComponentInfo.class);
@@ -442,7 +442,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         }
         String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc())
                 + " AND " + OperationInfo.PROP_NAME + " = "
-                + QueryHelper.quoted(id);
+                + NXQL.escapeString(id);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             return docs.size() == 0 ? null : docs.get(0).getAdapter(

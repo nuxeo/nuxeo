@@ -87,7 +87,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         String query = q.toString();
         if (fulltext != null) {
             query += " AND " + NXQL.ECM_FULLTEXT + " = "
-                    + QueryHelper.quoted(fulltext);
+                    + NXQL.escapeString(fulltext);
         }
         DocumentModelList docs = session.query(query);
         for (DocumentModel doc : docs) {
@@ -110,7 +110,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
                 NXQL.ECM_FULLTEXT, fulltext);
         if (targetType != null) {
             query += " AND " + DocumentationItem.PROP_TARGET_TYPE + " = "
-                    + QueryHelper.quoted(targetType);
+                    + NXQL.escapeString(targetType);
         }
         DocumentModelList docs = session.query(query);
         List<DocumentationItem> result = new ArrayList<DocumentationItem>();
