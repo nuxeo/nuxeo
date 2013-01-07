@@ -139,10 +139,14 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         }
     }
 
+    /**
+     * Finds the first domain by name, and creates under it the root container
+     * for the structure containing the route instances.
+     */
     protected DocumentModel createDocumentRoutesStructure(
             String routeStructureDocType, String id, CoreSession session)
             throws ClientException {
-        String query = "SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID
+        String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_PARENTID
                 + " = '%s' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
                 + LifeCycleConstants.DELETED_STATE + "' AND "
                 + NXQL.ECM_MIXINTYPE + " <> '"

@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.DocumentRoutingTreePersister;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
 
@@ -62,6 +62,28 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
         closeSession(membersSession);
     }
 
+    /**
+     * Test creation when there's a non-folderish doc at the root.
+     */
+    @Test
+    public void testDocumentRouteInstancesRootCreation()
+            throws Exception {
+        deployBundle(TEST_BUNDLE);
+        // create a document coming before '/default-domain' in name order
+        DocumentModel firstDoc = session.createDocumentModel("/", "aaa", "File");
+        firstDoc = session.createDocument(firstDoc);
+        session.save();
+        DocumentModel doc = persister.getOrCreateRootOfDocumentRouteInstanceStructure(session);
+        assertNotNull(doc);
+        assertEquals(doc.getPathAsString(),
+                TestConstants.DEFAULT_DOMAIN_DOCUMENT_ROUTE_INSTANCES_ROOT);
+        session.save();
+        closeSession();
+        CoreSession membersSession = openSessionAs("members");
+        assertFalse(membersSession.hasPermission(doc.getRef(),
+                SecurityConstants.READ));
+        closeSession(membersSession);
+    }
     @Test
     public void testGetParentFolderForDocumentRouteInstance() {
         DocumentModel parent = persister.getParentFolderForDocumentRouteInstance(
