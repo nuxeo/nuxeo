@@ -53,11 +53,11 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
@@ -770,7 +770,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throws ClientException {
         DocumentModelList list = null;
         String query = String.format(ROUTE_MODEL_WITH_ID_QUERY,
-                NXQLQueryBuilder.prepareStringLiteral(id, true, true));
+                NXQL.escapeString(id));
         try {
             list = session.query(query);
         } catch (ClientException e) {
