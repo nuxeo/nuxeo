@@ -21,10 +21,10 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Perform a lookup by name query on the UserManager service and suggest to
  * navigate to the top user and / or group profiles matching that query.
- * 
+ *
  * If searchFields are provided in the parameters, suggestion for searching
  * document with reference to the users are also generated.
- * 
+ *
  * @author ogrisel
  */
 public class UserGroupLookupSuggester implements Suggester {
@@ -59,12 +59,15 @@ public class UserGroupLookupSuggester implements Suggester {
             int count = 0;
             for (DocumentModel user : userManager.searchUsers(userInput)) {
                 // suggest to navigate to the user profile
-                String userLabel = user.getProperty("user:firstName").getValue(
+                String firstName = user.getProperty("user:firstName").getValue(
+                        String.class);
+                String userLabel = firstName != null ? firstName : "";
+                String lastName = user.getProperty("user:lastName").getValue(
                         String.class);
                 userLabel += " ";
-                userLabel += user.getProperty("user:lastName").getValue(
-                        String.class);
-                if (userLabel.trim().isEmpty()) {
+                userLabel += lastName != null ? lastName : "";
+                userLabel = userLabel.trim();
+                if (userLabel.isEmpty()) {
                     userLabel = user.getProperty("user:username").getValue(
                             String.class);
                 }
