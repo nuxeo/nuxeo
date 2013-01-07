@@ -64,4 +64,32 @@ public class NXQL {
     /** @since 5.4.2 */
     public static final String ECM_LOCK_CREATED = "ecm:lockCreated";
 
+    /**
+     * Escapes a string into a single-quoted string for NXQL.
+     * <p>
+     * Any single quote or backslash characters are escaped with a backslash.
+     *
+     * @param s the string to escape
+     * @return the escaped string
+     * @since 5.7, 5.6.0-HF08
+     */
+    public static String escapeString(String s) {
+        return "'" + escapeStringInner(s) + "'";
+    }
+
+    /**
+     * Escapes a string (assumed to be single quoted) for NXQL.
+     * <p>
+     * Any single quote or backslash characters are escaped with a backslash.
+     *
+     * @param s the string to escape
+     * @return the escaped string, without external quotes
+     * @since 5.7, 5.6.0-HF08
+     */
+    public static String escapeStringInner(String s) {
+        // backslash -> backslash backslash
+        // quote -> backslash quote
+        return s.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'");
+    }
+
 }
