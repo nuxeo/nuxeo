@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -49,9 +50,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.relations",
-        "org.nuxeo.ecm.relations.default.config:OSGI-INF/graph-contrib.xml",
-        "org.nuxeo.ecm.platform.dublincore" })
+@Deploy({ "org.nuxeo.ecm.relations", "org.nuxeo.ecm.platform.dublincore" })
+@LocalDeploy("org.nuxeo.ecm.relations:relation-core-test-contrib.xml")
 public class TestRelationDocument {
 
     @Inject
@@ -81,8 +81,7 @@ public class TestRelationDocument {
         Statement statement = new StatementImpl(docResource, predicate, object);
         statement.addProperty(RelationConstants.COMMENT, new LiteralImpl(
                 "The relation comment"));
-        Graph graph = relationManager.getGraph(RelationConstants.GRAPH_NAME,
-                session);
+        Graph graph = relationManager.getGraph("myrelations", session);
         graph.add(statement);
 
         // Check file1 relation document
