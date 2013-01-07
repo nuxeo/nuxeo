@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.task;
 import java.util.Iterator;
 import java.util.List;
 
+import org.nuxeo.ecm.core.query.sql.NXQL;
+
 /**
  * @since 5.5
  */
@@ -74,9 +76,7 @@ public class TaskQueryConstant {
         Iterator<String> actorIterator = actors.iterator();
         while (actorIterator.hasNext()) {
             String userName = actorIterator.next();
-            sb.append('\'');
-            sb.append(userName.replaceAll("'", "\\\\'"));
-            sb.append('\'');
+            sb.append(NXQL.escapeString(userName));
             if (actorIterator.hasNext()) {
                 sb.append(',');
             }
