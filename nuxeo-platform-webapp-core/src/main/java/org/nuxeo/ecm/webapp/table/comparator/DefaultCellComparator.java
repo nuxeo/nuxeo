@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
-@SuppressWarnings({"ALL"})
+@SuppressWarnings({"all"})
 @Deprecated
 public class DefaultCellComparator implements Comparator<TableRow>, Serializable {
 
