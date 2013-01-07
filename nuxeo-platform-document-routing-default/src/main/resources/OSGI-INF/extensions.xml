@@ -60,6 +60,10 @@ else if (NodeVariables["button"] == "submit") {
       <operation id="Document.SetLifeCycle">
         <param type="string" name="value">approve</param>
       </operation>
+      <operation id="Document.CheckIn">
+        <param type="string" name="version">minor</param>
+        <param type="string" name="comment">Automatic checkin after validation</param>
+      </operation>
     </chain>
     <chain id="voidChain">
       <operation id="Context.FetchDocument"/>
