@@ -105,22 +105,22 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Version", "Everything"),
+        assertEquals(
+                Arrays.asList("Read", "ReadWrite", "ReadRemove", "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Version", "Everything"),
+        assertEquals(
+                Arrays.asList("Read", "ReadWrite", "ReadRemove", "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove",
-                "Version", "Everything"),
+        assertEquals(
+                Arrays.asList("Read", "ReadWrite", "ReadRemove", "Everything"),
                 permStrings(orderedVisiblePermissions));
     }
 
@@ -174,7 +174,7 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite",
-                "ReadRemove", "Version", "Everything"),
+                "ReadRemove", "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         // Section is overridden
@@ -182,7 +182,7 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite",
-                "ReadRemove", "Version", "Everything"),
+                "ReadRemove", "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
@@ -190,7 +190,7 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertNotNull(orderedVisiblePermissions);
 
         assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite",
-                "ReadRemove", "Version", "Everything"),
+                "ReadRemove", "Everything"),
                 permStrings(orderedVisiblePermissions));
     }
 
@@ -223,21 +223,21 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove",
                 "Everything"), permStrings(orderedVisiblePermissions));
 
         // custom settings for the Section type
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove",
                 "Everything"), permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove",
                 "Everything"), permStrings(orderedVisiblePermissions));
     }
 
@@ -250,7 +250,7 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove",
                 "Everything"), permStrings(orderedVisiblePermissions));
 
         // custom settings for the Section type
@@ -260,12 +260,12 @@ public class TestSecurityService extends NXRuntimeTestCase {
         assertEquals(
                 Arrays.asList("Write", "ReadRemove", "Everything", "Read"),
                 permStrings(orderedVisiblePermissions));
-        
+
         // Workspace falls back to default thus is overridden too
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Version",
+        assertEquals(Arrays.asList("Write", "Read", "ReadRemove",
                 "Everything"), permStrings(orderedVisiblePermissions));
     }
 
