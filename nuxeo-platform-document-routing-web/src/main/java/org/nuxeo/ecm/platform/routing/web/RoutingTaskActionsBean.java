@@ -41,7 +41,9 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.util.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
@@ -54,6 +56,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -104,6 +107,9 @@ public class RoutingTaskActionsBean implements Serializable {
     
     @In(create = true, required = false)
     protected transient ActionContextProvider actionContextProvider;
+    
+    @In(create = true, required = false)
+    protected ContentViewActions contentViewActions;
 
     protected Task currentTask;
 
@@ -504,4 +510,13 @@ public class RoutingTaskActionsBean implements Serializable {
         return actionService;
     }
 
+    /***
+     * @since 5.7
+     */
+    @Observer(value = { TaskEventNames.WORKFLOW_TASK_COMPLETED })
+    @BypassInterceptors
+    public void OnTaskCompleted() {
+        contentViewActions.refreshOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+        contentViewActions.resetPageProviderOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+    }
 }

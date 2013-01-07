@@ -11,20 +11,22 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <parameter>#{currentDocument.id}</parameter>
+        <parameter>#{routingActions.getRelatedRoute().getDocument().getId()}</parameter>
         <whereClause docType="TaskDoc">
           <fixedPart>
-            nt:targetDocumentId = ? AND
+            nt:targetDocumentId = ? AND 
+            nt:processId = ? AND
             ecm:currentLifeCycleState = 'ended'
           </fixedPart>
         </whereClause>
-        <pageSize>0</pageSize>
+        <pageSize>10</pageSize>
       </coreQueryPageProvider>
       <showFilterForm>false</showFilterForm>
       <showPageSizeSelector>false</showPageSizeSelector>
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
-        <event>documentChanged</event>
         <event>documentCreated</event>
+        <event>workflowTaskCompleted</event>
       </refresh>
       <cacheSize>10</cacheSize>
       <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
