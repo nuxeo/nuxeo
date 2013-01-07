@@ -16,13 +16,21 @@
  */
 package org.nuxeo.apidoc.documentation;
 
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.runtime.api.Framework;
+
 public class JavaDocHelper {
 
     public static final String BASE_URL = "http://community.nuxeo.com/api/";
+
     public static final String CM_BASE = "nuxeo-case-management";
+
     public static final String DM_BASE = "nuxeo";
+
     public static final String DAM_BASE = "nuxeo-dam";
+
     public static final String DEFAULT_DIST = DM_BASE;
+
     public static final String DEFAULT_VERSION = "5.5";
 
     protected final String defaultPrefix;
@@ -31,6 +39,17 @@ public class JavaDocHelper {
 
     public JavaDocHelper(String prefix, String version) {
         defaultPrefix = prefix;
+
+        if (version.equalsIgnoreCase("current")) {
+            SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
+            version = sm.getRuntimeSnapshot().getVersion();
+        }
+
+        if (version.endsWith("-SNAPSHOT")) {
+            version = version.replace("-SNAPSHOT", "");
+        } else {
+            version = "release-" + version;
+        }
         docVersion = version;
     }
 
@@ -48,7 +67,8 @@ public class JavaDocHelper {
                 base = DEFAULT_DIST;
             }
         }
-        return BASE_URL + base + "/" + docVersion ;
+
+        return BASE_URL + base + "/" + docVersion;
     }
 
     public static JavaDocHelper getHelper(String distribName,
@@ -64,9 +84,7 @@ public class JavaDocHelper {
                 base = DAM_BASE;
             }
         }
-
-        String version = distribVersion.substring(0, 3);
-        return new JavaDocHelper(base, version);
+        return new JavaDocHelper(base, distribVersion);
     }
 
 }
