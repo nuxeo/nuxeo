@@ -244,8 +244,7 @@ public class PredicateDescriptor {
             }
             res += "+" + tokens[i];
         }
-        // TODO move back to SQLQueryParser at org.nuxeo.ecm.core v 1.4
-        return "= " + QueryModelDescriptor.prepareStringLiteral(res);
+        return "= " + NXQL.escapeString(res);
     }
 
     protected String serializeUnary(String operator, String rvalue) {
