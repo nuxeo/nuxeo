@@ -129,6 +129,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
             }
             if (checkProxies && doc.isProxy()) {
                 info.proxies++;
+                continue;
             }
             if (doc.isLocked()) {
                 String locker = getDocumentLocker(doc);
