@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.user.registration.webengine;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 import static org.nuxeo.ecm.user.registration.UserRegistrationService.REGISTRATION_DATA_DOC;
 
 import java.io.Serializable;
@@ -63,7 +64,9 @@ public class UserRegistrationObject extends ModuleRoot {
             return getView("ValidationErrorTemplate").arg("error", e);
         }
 
-        return redirect(redirectUrl);
+        getContext().getRequest().getSession().setAttribute(
+                START_PAGE_SAVE_KEY, redirectUrl);
+        return redirect("/" + BaseURL.getWebAppName() + "/logout");
     }
 
     protected Map<String, Serializable> buildAdditionalInfos() {
