@@ -9,6 +9,10 @@
               class="org.nuxeo.ecm.user.registration.UserRegistrationListener" priority="140">
       <event>registrationValidated</event>
     </listener>
+    <listener name="registrationCleaner" async="false" postCommit="false"
+              class="org.nuxeo.ecm.user.registration.RegistrationCleanerListener" priority="200">
+      <event>documentRemoved</event>
+    </listener>
 
   </extension>
 

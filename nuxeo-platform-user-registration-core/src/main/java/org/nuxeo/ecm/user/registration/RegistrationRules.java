@@ -81,6 +81,7 @@ public class RegistrationRules {
 
     public boolean allowDirectValidationForNonExistingUser() {
         return Boolean.parseBoolean(Framework.getProperty(
-                "nuxeo.user.registration.force.validation.non.existing", "false"));
+                "nuxeo.user.registration.force.validation.non.existing",
+                "false"));
     }
 }
