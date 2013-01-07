@@ -263,8 +263,8 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             if (graph instanceof JenaGraph) {
                 // add old statements, BBB
                 Resource oldDocResource = getOldDocumentResource(currentDoc);
-                outgoingStatements.addAll(graph.getStatements(oldDocResource, null,
-                        null));
+                outgoingStatements.addAll(graph.getStatements(oldDocResource,
+                        null, null));
             }
             outgoingStatementsInfo = getStatementsInfo(outgoingStatements);
             // sort by modification date, reverse
@@ -441,12 +441,14 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             // make sure statements will be recomputed
             resetStatements();
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.relation.created"));
             resetCreateFormValues();
         } else {
-            facesMessages.add(StatusMessage.Severity.WARN,
+            facesMessages.add(
+                    StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
                             "label.relation.already.exists"));
         }
@@ -517,7 +519,8 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             // make sure statements will be recomputed
             resetStatements();
 
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.relation.deleted"));
         }
