@@ -467,7 +467,6 @@ public class UserRegistrationComponent extends DefaultComponent implements
         msg.setContent(content, "text/html; charset=utf-8");
 
         Transport.send(msg);
-
     }
 
     public String submitRegistrationRequest(UserRegistrationInfo userInfo,
@@ -506,10 +505,15 @@ public class UserRegistrationComponent extends DefaultComponent implements
             // accessible.
             if (!additionnalInfo.containsKey("validationBaseUrl")) {
                 String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
-                Path path = new Path(StringUtils.isBlank(baseUrl) ? "/"
-                        : baseUrl);
-                path = path.append(getConfiguration(configurationName).getValidationRelUrl());
-                additionnalInfo.put("validationBaseURL", path.toString());
+
+                baseUrl = StringUtils.isBlank(baseUrl) ? "/" : baseUrl;
+                if (!baseUrl.endsWith("/")) {
+                    baseUrl += "/";
+                }
+                String url = baseUrl + getConfiguration(configurationName).getValidationRelUrl();
+                url = url.replace("//", "/");
+
+                additionnalInfo.put("validationBaseURL", url);
             }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
@@ -778,7 +782,9 @@ public class UserRegistrationComponent extends DefaultComponent implements
         new UnrestrictedSessionRunner(getTargetRepositoryName()) {
             @Override
             public void run() throws ClientException {
-                String query = "SELECT * FROM Document WHERE ecm:mixinType = 'UserRegistration' AND docinfo:documentId = '%s' AND userinfo:login = '%s' AND ecm:isCheckedInVersion = 0";
+                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND" +
+                        " ecm:mixinType = 'UserRegistration' AND docinfo:documentId = '%s' AND" +
+                        " userinfo:login = '%s' AND ecm:isCheckedInVersion = 0";
                 query = String.format(query, docId, username);
                 registrationDocs.addAll(session.query(query));
             }
