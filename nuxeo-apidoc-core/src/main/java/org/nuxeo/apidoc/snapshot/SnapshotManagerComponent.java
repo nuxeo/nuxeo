@@ -40,6 +40,7 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
+import org.nuxeo.apidoc.studio.MavenJarSnapshot;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -78,6 +79,10 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     public DistributionSnapshot getSnapshot(String key, CoreSession session) {
         if (key == null || RUNTIME.equals(key) || RUNTIME_ADM.equals(key)) {
             return getRuntimeSnapshot();
+        }
+
+        if (key.startsWith("mvn:")) {
+            return MavenJarSnapshot.resolve(key);
         }
         DistributionSnapshot snap = getPersistentSnapshots(session).get(key);
         if (snap == null) {

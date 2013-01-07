@@ -28,6 +28,8 @@ import javax.ws.rs.Produces;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.ext.ExtensionRenderer;
+import org.nuxeo.apidoc.ext.ExtensionRendererRegistry;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -71,4 +73,28 @@ public class ContributionWO extends NuxeoArtifactWebObject {
                 "selectedContribs", selectedContribs).arg("ep", ep);
     }
 
+    public boolean hasRendere() {
+        return getRender() != null;
+    }
+
+    public ExtensionRenderer getRender() {
+        return ExtensionRendererRegistry.getRenderer(getTargetExtensionInfo());
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path("render")
+    public Object getRenderView() throws Exception {
+        ExtensionInfo ei = getTargetExtensionInfo();
+
+        ExtensionRenderer renderer = getRender();
+        NuxeoArtifact nxItem = getNxArtifact();
+
+        if (renderer == null) {
+            return getView("view").arg("contribution", ei).arg("nxItem", nxItem);
+        } else {
+            return getView(renderer.getViewName()).arg("contribution", ei).arg(
+                    "renderer", renderer).arg("nxItem", nxItem);
+        }
+    }
 }

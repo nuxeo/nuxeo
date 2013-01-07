@@ -18,9 +18,7 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
@@ -28,25 +26,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PropertyResourceBundle;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
@@ -54,7 +45,6 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.osgi.framework.Bundle;
-import org.w3c.dom.Document;
 
 /**
  * The entry point to the server runtime introspection To build a description of
@@ -180,106 +170,10 @@ public class ServerInfo {
         if (jarFile == null) {
             return binfo;
         }
-        try {
-            if (jarFile.isDirectory()) {
-                // directory: run from Eclipse in unit tests
-                // .../nuxeo-runtime/nuxeo-runtime/bin
-                // or sometimes
-                // .../nuxeo-runtime/nuxeo-runtime/bin/main
-                File manifest = new File(jarFile, META_INF_MANIFEST_MF);
-                if (manifest.exists()) {
-                    InputStream is = new FileInputStream(manifest);
-                    String mf = FileUtils.read(is);
-                    binfo.setManifest(mf);
-                }
-                // find and parse pom.xml
-                File up = new File(jarFile, "..");
-                File pom = new File(up, POM_XML);
-                if (!pom.exists()) {
-                    pom = new File(new File(up, ".."), POM_XML);
-                    if (!pom.exists()) {
-                        pom = null;
-                    }
-                }
-                if (pom != null) {
-                    DocumentBuilder b = documentBuilderFactory.newDocumentBuilder();
-                    Document doc = b.parse(new FileInputStream(pom));
-                    XPath xpath = xpathFactory.newXPath();
-                    String groupId = (String) xpath.evaluate(
-                            "//project/groupId", doc, XPathConstants.STRING);
-                    if ("".equals(groupId)) {
-                        groupId = (String) xpath.evaluate(
-                                "//project/parent/groupId", doc,
-                                XPathConstants.STRING);
-                    }
-                    String artifactId = (String) xpath.evaluate(
-                            "//project/artifactId", doc, XPathConstants.STRING);
-                    if ("".equals(artifactId)) {
-                        artifactId = (String) xpath.evaluate(
-                                "//project/parent/artifactId", doc,
-                                XPathConstants.STRING);
-                    }
-                    String version = (String) xpath.evaluate(
-                            "//project/version", doc, XPathConstants.STRING);
-                    if ("".equals(version)) {
-                        version = (String) xpath.evaluate(
-                                "//project/parent/version", doc,
-                                XPathConstants.STRING);
-                    }
-                    binfo.setArtifactId(artifactId);
-                    binfo.setGroupId(groupId);
-                    binfo.setArtifactVersion(version);
-                }
-            } else {
-                ZipFile zFile = new ZipFile(jarFile);
-                ZipEntry mfEntry = zFile.getEntry(META_INF_MANIFEST_MF);
-                if (mfEntry != null) {
-                    InputStream mfStream = zFile.getInputStream(mfEntry);
-                    String mf = FileUtils.read(mfStream);
-                    binfo.setManifest(mf);
-                }
-                Enumeration<? extends ZipEntry> entries = zFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    if (entry.getName().endsWith(POM_PROPERTIES)) {
-                        InputStream is = zFile.getInputStream(entry);
-                        PropertyResourceBundle prb = new PropertyResourceBundle(
-                                is);
-                        String groupId = prb.getString("groupId");
-                        String artifactId = prb.getString("artifactId");
-                        String version = prb.getString("version");
-                        binfo.setArtifactId(artifactId);
-                        binfo.setGroupId(groupId);
-                        binfo.setArtifactVersion(version);
-                        is.close();
-                        break;
-                    }
-                }
-                zFile.close();
-                zFile = new ZipFile(jarFile);
-                EmbeddedDocExtractor.extractEmbeddedDoc(zFile, binfo);
-                zFile.close();
-            }
-        } catch (Exception e) {
-            log.error(e, e);
-        }
-        return binfo;
-    }
 
-    protected static List<Class<?>> getSPI(Class<?> klass) {
-        List<Class<?>> spi = new ArrayList<Class<?>>();
-        for (Field field : klass.getDeclaredFields()) {
-            String cName = field.getType().getCanonicalName();
-            if (cName.startsWith("org.nuxeo")) {
-                // remove XObjects
-                Class<?> fieldClass = field.getType();
-                Annotation[] annotations = fieldClass.getDeclaredAnnotations();
-                if (annotations.length == 0) {
-                    spi.add(fieldClass);
-                }
-            }
-        }
-        return spi;
+        binfo.read(jarFile);
+
+        return binfo;
     }
 
     public static ServerInfo build(String name, String version) {
@@ -316,54 +210,8 @@ public class ServerInfo {
             }
 
             // TODO binfo.setRequirements(requirements);
-            ComponentInfoImpl component = new ComponentInfoImpl(binfo, cname);
-            if (ri.getExtensionPoints() != null) {
-                for (ExtensionPoint xp : ri.getExtensionPoints()) {
-                    ExtensionPointInfoImpl xpinfo = new ExtensionPointInfoImpl(
-                            component, xp.getName());
-                    Class<?>[] ctypes = xp.getContributions();
-                    String[] descriptors = new String[ctypes.length];
+            binfo.addComponent(ri, server, xpRegistry, contribRegistry);
 
-                    for (int i = 0; i < ctypes.length; i++) {
-                        descriptors[i] = ctypes[i].getCanonicalName();
-                        List<Class<?>> spi = getSPI(ctypes[i]);
-                        xpinfo.addSpi(spi);
-                        server.allSpi.addAll(spi);
-                    }
-                    xpinfo.setDescriptors(descriptors);
-                    xpinfo.setDocumentation(xp.getDocumentation());
-                    xpRegistry.put(xpinfo.getId(), xpinfo);
-                    component.addExtensionPoint(xpinfo);
-                }
-            }
-
-            component.setXmlFileUrl(ri.getXmlFileUrl());
-
-            if (ri.getProvidedServiceNames() != null) {
-                for (String serviceName : ri.getProvidedServiceNames()) {
-                    component.addService(serviceName);
-                }
-            }
-
-            if (ri.getExtensions() != null) {
-                for (Extension xt : ri.getExtensions()) {
-                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component,
-                            xt.getExtensionPoint());
-                    xtinfo.setTargetComponentName(xt.getTargetComponent());
-                    xtinfo.setContribution(xt.getContributions());
-                    xtinfo.setDocumentation(xt.getDocumentation());
-                    xtinfo.setXml(DocumentationHelper.secureXML(xt.toXML()));
-
-                    contribRegistry.add(xtinfo);
-
-                    component.addExtension(xtinfo);
-                }
-            }
-
-            component.setComponentClass(ri.getImplementation());
-            component.setDocumentation(ri.getDocumentation());
-
-            binfo.addComponent(component);
             server.addBundle(binfo);
         }
 
@@ -425,5 +273,4 @@ public class ServerInfo {
     public List<Class<?>> getAllSpi() {
         return allSpi;
     }
-
 }

@@ -124,6 +124,8 @@ public class Distribution extends ModuleRoot {
             Boolean embeddedMode = Boolean.FALSE;
             if ("adm".equals(distributionId)) {
                 embeddedMode = Boolean.TRUE;
+            } else if (distributionId.startsWith("mvn:")) {
+                // NOP
             } else {
                 List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots(
                         (ctx.getCoreSession()));
