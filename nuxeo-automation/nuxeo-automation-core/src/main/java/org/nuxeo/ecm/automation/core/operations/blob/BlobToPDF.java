@@ -13,8 +13,6 @@ package org.nuxeo.ecm.automation.core.operations.blob;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;

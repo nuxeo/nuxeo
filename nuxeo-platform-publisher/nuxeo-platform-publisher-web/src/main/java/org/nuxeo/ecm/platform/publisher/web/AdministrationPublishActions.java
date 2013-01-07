@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
 import org.nuxeo.ecm.webapp.tree.DocumentTreeNode;
 import org.nuxeo.ecm.webapp.tree.DocumentTreeNodeImpl;

@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.annotations.gwt.client;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.junit.Test;
-
 import org.nuxeo.ecm.platform.annotations.gwt.client.annotea.GwtTestRDFParser;
 import org.nuxeo.ecm.platform.annotations.gwt.client.annotea.GwtTestStatement;
 import org.nuxeo.ecm.platform.annotations.gwt.client.model.GwtTestOneAnnotation;

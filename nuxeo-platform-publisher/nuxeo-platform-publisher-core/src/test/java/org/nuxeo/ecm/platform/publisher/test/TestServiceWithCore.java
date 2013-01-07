@@ -19,9 +19,6 @@ package org.nuxeo.ecm.platform.publisher.test;
 
 import java.util.List;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;

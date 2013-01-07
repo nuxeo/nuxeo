@@ -24,8 +24,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;

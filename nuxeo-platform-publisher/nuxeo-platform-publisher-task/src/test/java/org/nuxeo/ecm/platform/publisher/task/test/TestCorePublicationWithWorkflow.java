@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>

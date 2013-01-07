@@ -22,10 +22,6 @@ package org.nuxeo.ecm.platform.annotations.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.naming.CompositeName;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-
 import org.junit.Before;
 import org.junit.After;
 import static org.junit.Assert.*;

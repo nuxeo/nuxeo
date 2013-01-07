@@ -25,7 +25,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.junit.runner.RunWith;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
