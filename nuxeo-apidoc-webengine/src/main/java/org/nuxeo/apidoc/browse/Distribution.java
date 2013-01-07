@@ -347,24 +347,18 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("uploadDoc")
     @Produces("text/html")
-    // @Guard(value=SecurityConstants.Write_Group,type=GroupGuard.class)
     public Object uploadDoc() throws Exception {
         if (!isEditor()) {
             return null;
         }
-        UserTransaction tx = TransactionHelper.lookupUserTransaction();
-        if (tx != null) {
-            tx.begin();
-        }
+
         Blob blob = getContext().getForm().getFirstBlob();
 
         DocumentationService ds = Framework.getService(DocumentationService.class);
         ds.importDocumentation(getContext().getCoreSession(), blob.getStream());
 
         log.info("Documents imported.");
-        if (tx != null) {
-            tx.commit();
-        }
+
         return getView("index");
     }
 
