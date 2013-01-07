@@ -61,7 +61,6 @@ import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 /**
  * The session is the main high level access point to data from the underlying

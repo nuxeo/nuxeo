@@ -3,7 +3,6 @@ package org.nuxeo.ecm.core.test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
-import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector.KillListener;
 
 public class ThreadDeadlocksRunner {
 

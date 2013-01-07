@@ -18,11 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.security.MessageDigest;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,15 +27,11 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
-import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
-import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
-import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public class TestImportModifiedZipArchive extends SQLRepositoryTestCase {
