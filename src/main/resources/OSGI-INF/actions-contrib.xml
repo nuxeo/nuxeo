@@ -28,7 +28,7 @@
 
     <!-- Tenant Administration tabs -->
     <action id="TAB_TENANT_ADMINISTRATION" link="/incl/tabs/document_manage.xhtml" order="240"
-      label="action.view.tenant.administration" icon="/icons/file.gif">
+      label="action.view.manage" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
       <filter-id>allowForTenantConfig</filter-id>
