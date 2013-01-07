@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,10 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.query.sql.parser;
 
@@ -249,6 +247,7 @@ Exponent = [eE] [+-]? [0-9]+
     \\n                 { string.append('\n'); }
     \\r                 { string.append('\r'); }
     \\\"                { string.append('\"'); }
+    \\\\                { string.append('\\'); }
     \\                  { string.append('\\'); }
 }
 
@@ -261,6 +260,7 @@ Exponent = [eE] [+-]? [0-9]+
     \\n                 { string.append('\n'); }
     \\r                 { string.append('\r'); }
     \\\'                { string.append('\''); }
+    \\\\                { string.append('\\'); }
     \\                  { string.append('\\'); }
 }
 
