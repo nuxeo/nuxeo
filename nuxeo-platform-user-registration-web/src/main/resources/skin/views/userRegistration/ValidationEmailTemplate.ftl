@@ -6,6 +6,7 @@ You have been invited to access ${registrationDoc.docinfo.documentTitle}.
 <br />
 
 <p>Click on the following link to validate your invitation:</p>
+<p>After clicking on validate link, you'll be logged out and prompted to log you again.</p>
 <br/>
 <a href="${info['validationBaseURL']}${registrationDoc.id}">Validate my invitation</a>
 
