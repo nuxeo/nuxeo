@@ -64,7 +64,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder
         // and (ecm:primaryType = 'Section' or ecm:primaryType = 'SectionRoot'
         // )
         String query = "SELECT * FROM Document WHERE ecm:path STARTSWITH "
-                + NXQL.escapeString(path) + " AND (";
+                + NXQL.escapeString(path) + " and (";
 
         int i = 0;
         for (String type : getSectionTypes()) {
