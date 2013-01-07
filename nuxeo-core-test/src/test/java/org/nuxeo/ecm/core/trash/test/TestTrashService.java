@@ -171,6 +171,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
         assertEquals("project", doc2.getCurrentLifeCycleState());
     }
 
+    @Test
     public void testTrashFolderContainingProxy() throws Exception {
         createDocuments();
         DocumentRef versionRef = session.checkIn(doc3.getRef(),
@@ -193,6 +194,20 @@ public class TestTrashService extends SQLRepositoryTestCase {
         assertEquals("deleted", fold.getCurrentLifeCycleState());
         assertEquals("project", version.getCurrentLifeCycleState());
         assertFalse(session.exists(proxy.getRef()));
+    }
+
+    @Test
+    public void testProxy() throws Exception {
+        createDocuments();
+        DocumentRef verRef = doc3.checkIn(null, null);
+        DocumentModel proxy = session.createProxy(verRef, fold.getRef());
+        session.save();
+        assertTrue(trashService.canDelete(Collections.singletonList(proxy),
+                principal, false));
+        assertFalse(trashService.canDelete(Collections.singletonList(proxy),
+                principal, true));
+        assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(proxy),
+                principal));
     }
 
     private void waitForEventsDispatched() {
