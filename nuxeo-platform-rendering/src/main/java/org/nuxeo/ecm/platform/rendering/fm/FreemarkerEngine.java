@@ -77,6 +77,16 @@ public class FreemarkerEngine implements RenderingEngine {
         this.cfg.setClassicCompatible(true);
         this.cfg.setObjectWrapper(wrapper);
 
+        // Output encoding must not be left to null to make sure that the "?url"
+        // escape utility works consistently with the expected output charset.
+        // We hard-code it to UTF-8 as it's already hard-coded to UTF-8 in
+        // various other places where rendering is called (such as WebEngine's
+        // TemplateView or automation's FreemarkerRender).
+        // TODO: expose a public getEncoding method in the RenderingEngine
+        // interface and reuse it in the callers instead of hard coding the
+        // charset everywhere.
+        this.cfg.setOutputEncoding("UTF-8");
+
         // custom directives goes here
         this.cfg.setSharedVariable("block", new BlockDirective());
         this.cfg.setSharedVariable("superBlock", new SuperBlockDirective());
@@ -156,12 +166,13 @@ public class FreemarkerEngine implements RenderingEngine {
      * @param template
      * @param input
      * @param writer
-     * @param baseUrl a base URL used for resolving referenced files in extends directive.
+     * @param baseUrl a base URL used for resolving referenced files in extends
+     *            directive.
      * @throws RenderingException
      */
     @Override
     public void render(String template, Object input, Writer writer)
-    throws RenderingException {
+            throws RenderingException {
         try {
             /*
              * A special method to get the absolute path as an URI to be used
@@ -170,6 +181,7 @@ public class FreemarkerEngine implements RenderingEngine {
              * of URI like path freemarker is not modifying the path <p>
              *
              * @see TemplateCache#normalizeName()
+             *
              * @see ResourceTemplateLoader#findTemplateSource()
              */
             if (template.startsWith("/")) {

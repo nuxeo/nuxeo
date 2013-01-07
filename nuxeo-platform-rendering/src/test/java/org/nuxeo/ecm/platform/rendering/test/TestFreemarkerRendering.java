@@ -136,4 +136,12 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         // }
     }
 
+    @Test
+    public void testUrlEscaping() throws Exception {
+        StringWriter writer = new StringWriter();
+        Map<String, Object> input = new HashMap<String, Object>();
+        input.put("parameter", "\u00e9/");
+        engine.render("testdata/url.ftl", input, writer);
+        assertEquals("<p>http://google.com?q=%C3%A9%2F</p>", writer.toString());
+    }
 }
