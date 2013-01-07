@@ -158,32 +158,42 @@ public class UserRegistrationActions implements Serializable {
         return getValidationBaseUrl(DEFAULT_CONFIGURATION_NAME);
     }
 
-    public void acceptRegistrationRequest(DocumentModel request)
-            throws UserRegistrationException, ClientException {
-        Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
-        additionalInfo.put("validationBaseURL", getValidationBaseUrl());
-        userRegistrationService.acceptRegistrationRequest(request.getId(),
-                additionalInfo);
-        // EventManager.raiseEventsOnDocumentChange(request);
-        Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+    public void acceptRegistrationRequest(DocumentModel request) {
+        try {
+            Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
+            additionalInfo.put("validationBaseURL", getValidationBaseUrl());
+            userRegistrationService.acceptRegistrationRequest(request.getId(),
+                    additionalInfo);
+            // EventManager.raiseEventsOnDocumentChange(request);
+            Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+        } catch (ClientException e) {
+            facesMessages.add(ERROR, e.getMessage());
+        }
     }
 
-    public void rejectRegistrationRequest(DocumentModel request)
-            throws UserRegistrationException, ClientException {
-        Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
-        additionalInfo.put("validationBaseURL", getValidationBaseUrl());
-        userRegistrationService.rejectRegistrationRequest(request.getId(),
-                additionalInfo);
-        // EventManager.raiseEventsOnDocumentChange(request);
-        Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+    public void rejectRegistrationRequest(DocumentModel request) {
+        try {
+            Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
+            additionalInfo.put("validationBaseURL", getValidationBaseUrl());
+            userRegistrationService.rejectRegistrationRequest(request.getId(),
+                    additionalInfo);
+            // EventManager.raiseEventsOnDocumentChange(request);
+            Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+        } catch (ClientException e) {
+            facesMessages.add(ERROR, e.getMessage());
+        }
     }
 
-    public void submitUserRegistration(String configurationName) throws ClientException {
-        docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
-        docinfo.setDocumentTitle(navigationContext.getCurrentDocument().getTitle());
-        doSubmitUserRegistration(configurationName);
-        resetPojos();
-        Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+    public void submitUserRegistration(String configurationName) {
+        try {
+            docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
+            docinfo.setDocumentTitle(navigationContext.getCurrentDocument().getTitle());
+            doSubmitUserRegistration(configurationName);
+            resetPojos();
+            Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+        } catch (ClientException e) {
+            facesMessages.add(ERROR, e.getMessage());
+        }
     }
 
     public void submitMultipleUserRegistration(String configurationName) {
