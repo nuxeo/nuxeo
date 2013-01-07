@@ -26,7 +26,6 @@ import static org.nuxeo.common.Environment.NUXEO_WEB_DIR;
 import static org.nuxeo.common.Environment.TOMCAT_HOST;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
