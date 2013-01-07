@@ -77,7 +77,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Seam bean manages the publishing tab.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 @Name("publishActions")
@@ -362,6 +362,22 @@ public class PublishActionsBean extends AbstractPublishActions implements
         return null;
     }
 
+    public String rePublish(PublishedDocument publishedDocument)
+            throws ClientException {
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        if (tree != null) {
+            for (PublicationNode node : tree.getChildrenNodes()) {
+                if (node.getPath().equals(publishedDocument.getParentPath())) {
+                    return doPublish(tree, node);
+                }
+            }
+        }
+        facesMessages.add(
+                StatusMessage.Severity.ERROR,
+                resourcesAccessor.getMessages().get("error.document_republished"));
+        return null;
+    }
+
     public boolean canPublishTo(PublicationNode publicationNode)
             throws ClientException {
         DocumentModel doc = navigationContext.getCurrentDocument();
@@ -376,6 +392,25 @@ public class PublishActionsBean extends AbstractPublishActions implements
             throws ClientException {
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
         return tree != null ? tree.canUnpublish(publishedDocument) : false;
+    }
+
+    public boolean canRepublish(PublishedDocument publishedDocument)
+            throws ClientException {
+        if (!canUnpublish(publishedDocument)) {
+            return false;
+        }
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        // version label is different, what means it is a previous version
+        if (!publishedDocument.getSourceVersionLabel().equals(
+                doc.getVersionLabel())) {
+            return true;
+        }
+        // in case it is the same version, we have to check if the current
+        // document has been modified since last publishing
+        if (doc.isDirty()) {
+            return true;
+        }
+        return false;
     }
 
     public boolean isPublishedDocument() {

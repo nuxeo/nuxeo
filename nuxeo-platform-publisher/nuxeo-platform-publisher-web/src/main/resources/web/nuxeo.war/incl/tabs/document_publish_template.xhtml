@@ -139,10 +139,17 @@
             <f:facet name="header">
               <h:outputText value="Action"/>
             </f:facet>
-            <a4j:commandLink immediate="true"
+            <a4j:commandLink immediate="true" styleClass="button"
                              value="#{messages['command.document.unpublish']}"
                              action="#{publishActions.unPublish(publishedDocument)}"
                              rendered="#{publishActions.canUnpublish(publishedDocument)}"
+                             reRender="publishingInfoList"
+                             ignoreDupResponses="true">
+            </a4j:commandLink>
+            <a4j:commandLink immediate="true" styleClass="button"
+                             value="#{messages['command.document.republish']}"
+                             action="#{publishActions.rePublish(publishedDocument)}"
+                             rendered="#{publishActions.canRepublish(publishedDocument)}"
                              reRender="publishingInfoList"
                              ignoreDupResponses="true">
             </a4j:commandLink>
