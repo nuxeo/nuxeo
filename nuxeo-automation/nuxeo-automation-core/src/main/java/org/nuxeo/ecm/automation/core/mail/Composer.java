@@ -66,10 +66,12 @@ public class Composer {
         }
         engine = new FreemarkerEngine();
         engine.setResourceLocator(new ResourceLocator() {
+            @Override
             public URL getResourceURL(String key) {
                 return urls.get(key);
             }
 
+            @Override
             public File getResourceFile(String key) {
                 return null;
             }
@@ -176,14 +178,14 @@ public class Composer {
     public Mailer.Message newHtmlMessage(URL template, Object ctx)
             throws Exception {
         Mailer.Message msg = mailer.newMessage();
-        msg.setContent(render(template, ctx), "text/html");
+        msg.setContent(render(template, ctx), "text/html; charset=utf-8");
         return msg;
     }
 
     public Mailer.Message newHtmlMessage(String templateContent, Object ctx)
     throws Exception {
         Mailer.Message msg = mailer.newMessage();
-        msg.setContent(render(templateContent, ctx), "text/html");
+        msg.setContent(render(templateContent, ctx), "text/html; charset=utf-8");
         return msg;
     }
 

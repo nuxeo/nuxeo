@@ -122,7 +122,7 @@ public class SendMail {
             map.put("Runtime", Framework.getRuntime());
             Mailer.Message msg = createMessage(doc, getContent(), map);
             msg.setFrom(from);
-            msg.setSubject(subject);
+            msg.setSubject(subject, "UTF-8");
             for (String r : getRecipients()) {
                 msg.addTo(r);
             }
