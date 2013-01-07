@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,11 +27,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -109,6 +110,10 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
             bob.put("firstName", "Bob");
             bob.put("lastName", "Marley");
             userSession.createEntry(bob);
+
+            Map<String, Object> noname = new HashMap<String, Object>();
+            noname.put("username", "noname");
+            userSession.createEntry(noname);
         } finally {
             userSession.close();
         }
@@ -326,6 +331,27 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         assertEquals("searchDocuments", sugg3.getType());
         assertEquals("Search documents by Bob Marley", sugg3.getLabel());
         assertEquals("/img/facetedSearch.png", sugg3.getIconURL());
+
+        // Check that user suggestion for entries without firstname and lastname return the user id
+        // perform some test lookups to check the deployment of extension points
+        suggestions = suggestionService.suggest("nonam", context);
+        assertNotNull(suggestions);
+        assertEquals(3, suggestions.size());
+
+        sugg0 = suggestions.get(0);
+        assertEquals("searchDocuments", sugg0.getType());
+        assertEquals("Search documents with keywords: 'nonam'", sugg0.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg0.getIconURL());
+
+        sugg1 = suggestions.get(1);
+        assertEquals("user", sugg1.getType());
+        assertEquals("noname", sugg1.getLabel());
+        assertEquals("/icons/user.png", sugg1.getIconURL());
+
+        sugg2 = suggestions.get(2);
+        assertEquals("searchDocuments", sugg2.getType());
+        assertEquals("Search documents by noname", sugg2.getLabel());
+        assertEquals("/img/facetedSearch.png", sugg2.getIconURL());
     }
 
     protected Map<String, String> getTestMessages() {
