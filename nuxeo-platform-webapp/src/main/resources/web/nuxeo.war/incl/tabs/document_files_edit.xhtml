@@ -49,7 +49,7 @@
 
           <h:panelGrid columns="2">
             <a4j:commandLink immediate="true"
-              onclick="document.NXContextKeeper.removeFromKeeper(#{model.rowIndex});"
+              onclick="document.NXContextKeeper.removeFromKeeper(#{model.rowIndex});if( !confirmRemoveFiles('#{currentDocument.files.files[model.rowIndex].filename}')) return false;"
               oncomplete="document.NXContextKeeper.onReturnAnswer();"
               actionListener="#{FileManageActions.performAction}"
               id="files_delete" reRender="files_input"
