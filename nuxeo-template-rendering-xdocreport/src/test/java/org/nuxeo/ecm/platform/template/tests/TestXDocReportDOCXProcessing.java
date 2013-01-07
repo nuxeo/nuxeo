@@ -1,9 +1,11 @@
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +18,6 @@ import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.xdocreport.ZipXmlHelper;
-import static org.junit.Assert.*;
 
 public class TestXDocReportDOCXProcessing extends SimpleTemplateDocTestCase {
 
