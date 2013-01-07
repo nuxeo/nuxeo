@@ -91,6 +91,7 @@ import org.nuxeo.ecm.automation.core.operations.stack.PushDocument;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocumentList;
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocument;
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocumentFeed;
+import org.nuxeo.ecm.core.api.critical.AtomicGetOrCreateFolderRunner;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -143,6 +144,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(RunFileChain.class);
         service.putOperation(CopyDocument.class);
         service.putOperation(CreateDocument.class);
+        service.putOperation(AtomicGetOrCreateFolderRunner.class);
         service.putOperation(CreateVersion.class);
         service.putOperation(CheckInDocument.class);
         service.putOperation(CheckOutDocument.class);
