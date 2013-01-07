@@ -425,7 +425,8 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                     options, eventComment);
 
             // add statement
-            Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
+            Graph graph = relationManager.getGraph(
+                    RelationConstants.GRAPH_NAME, documentManager);
             graph.add(stmt);
 
             // XXX AT: try to refetch it from the graph so that resources are
