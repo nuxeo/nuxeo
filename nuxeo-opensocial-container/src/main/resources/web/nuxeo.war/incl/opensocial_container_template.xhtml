@@ -72,23 +72,25 @@
     }
   </script>
 
-  <div class="opensocial_title">
-  <ui:insert name="opensocial_container_title">
-  </ui:insert>
+  <div class="titleBlock">
+    <ui:insert name="opensocial_container_title">
+    </ui:insert>
   </div>
 
-  <ui:insert name="opensocial_container_actions">
-    <c:if test="#{not currentUser.anonymous}">
-      <div class="opensocial_buttons">
-        <ul>
-          <li><a onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}" class="button">#{messages['label.opensocial.container.change.layout']}</a></li>
-          <li><a id="addGadgetButton" href="#{baseURL}site/gadgets?language=#{localeSelector.language}" class="button">#{messages['label.opensocial.container.add.gadget']}</a></li>
-        </ul>
+  <div class="globalActions">
+    <div class="globalActionBar">
+      <div class="contextActions">
+        <ui:insert name="opensocial_container_actions">
+          <c:if test="#{not currentUser.anonymous}">
+            <a onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}" class="button">#{messages['label.opensocial.container.change.layout']}</a>
+            <a id="addGadgetButton" href="#{baseURL}site/gadgets?language=#{localeSelector.language}" class="button">#{messages['label.opensocial.container.add.gadget']}</a>
+          </c:if>
+        </ui:insert>
       </div>
-    </c:if>
-  </ui:insert>
+    </div>
+  </div>
 
-  <div style="clear:both;"></div>
+  <div class="clear"></div>
 
   <script type="text/javascript" language="javascript" src="#{baseURL}site/gwt-container/gwtContainer/gwtContainer.nocache.js"></script>
   <div id="containerPanel">
