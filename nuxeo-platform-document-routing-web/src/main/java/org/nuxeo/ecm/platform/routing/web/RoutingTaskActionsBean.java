@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
@@ -183,7 +184,14 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         clear();
-        return null;
+        if (documentManager.hasPermission(
+                navigationContext.getCurrentDocument().getRef(),
+                SecurityConstants.READ)) {
+            return null;
+        }
+        // if the user only had temporary permissions on the current doc given
+        // by the workflow
+        return navigationContext.goHome();
     }
 
     private void clear() {
