@@ -127,7 +127,7 @@
     <apache.httpcomponents.version>4.1</apache.httpcomponents.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0</jxls.version>
-    <xdocreport.version>0.9.8</xdocreport.version>
+    <xdocreport.version>1.0.0</xdocreport.version>
     <itext.version>2.1.7</itext.version>
     <jclouds.version>1.5.3</jclouds.version>
 
