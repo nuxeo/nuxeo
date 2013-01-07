@@ -2935,8 +2935,8 @@
         </fields>
         <widgetModes>
           <mode value="edit">
-            #{nxu:test(currentUser.administrator, 'edit',
-            'view')}
+            #{nxu:test(currentUser.administrator or currentUser.isMemberOf('powerusers'),
+             'edit', 'view')}
           </mode>
           <mode value="editPassword">hidden</mode>
         </widgetModes>
