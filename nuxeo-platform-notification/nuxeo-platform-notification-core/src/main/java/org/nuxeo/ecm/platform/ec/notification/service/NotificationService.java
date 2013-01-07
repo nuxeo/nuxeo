@@ -198,7 +198,11 @@ public class NotificationService extends DefaultComponent implements
 
     protected void registerGeneralSettings(GeneralSettingsDescriptor desc) {
         generalSettings = desc;
-        generalSettings.serverPrefix = Framework.expandVars(generalSettings.serverPrefix);
+        String serverPrefix = Framework.expandVars(generalSettings.serverPrefix);
+        if (serverPrefix != null) {
+            generalSettings.serverPrefix = serverPrefix.endsWith("//") ? serverPrefix.substring(
+                    0, serverPrefix.length() - 1) : serverPrefix;
+        }
         generalSettings.eMailSubjectPrefix = Framework.expandVars(generalSettings.eMailSubjectPrefix);
         generalSettings.mailSessionJndiName = Framework.expandVars(generalSettings.mailSessionJndiName);
     }
