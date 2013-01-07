@@ -69,6 +69,7 @@
     </doctype>
 
     <doctype name="StepFolder" extends="OrderedFolder">
+      <facet name="HiddenInNavigation" />
       <facet name="StepFolder" />
       <facet name="SystemDocument" />
       <schema name="step_folder" />
@@ -97,6 +98,7 @@
     </doctype>
 
     <doctype name="RouteNode" extends="Document">
+      <facet name="HiddenInNavigation" />
       <facet name="SystemDocument" />
       <facet name="NotFulltextIndexable" />
       <schema name="dublincore" />
