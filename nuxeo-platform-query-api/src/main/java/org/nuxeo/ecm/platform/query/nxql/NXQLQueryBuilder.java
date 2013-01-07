@@ -214,16 +214,19 @@ public class NXQLQueryBuilder {
      */
     public static String prepareStringLiteral(String s, boolean quoteParameter,
             boolean escape) {
-        String res;
         if (escape) {
-            res = s.replaceAll("'", "\\\\'");
+            if (quoteParameter) {
+                return NXQL.escapeString(s);
+            } else {
+                return NXQL.escapeStringInner(s);
+            }
         } else {
-            res = s;
+            if (quoteParameter) {
+                return "'" + s + "'";
+            } else {
+                return s;
+            }
         }
-        if (quoteParameter) {
-            res = "'" + res + "'";
-        }
-        return res;
     }
 
     public static String getQueryElement(DocumentModel model,
@@ -453,7 +456,7 @@ public class NXQLQueryBuilder {
 
     public static String serializeFullText(String value) {
         value = sanitizeFulltextInput(value);
-        return "= " + prepareStringLiteral(value, true, true);
+        return "= " + NXQL.escapeString(value);
     }
 
     protected static String serializeUnary(String parameter, String operator,
@@ -569,7 +572,7 @@ public class NXQLQueryBuilder {
                     || "double".equals(fieldType)) {
                 return value;
             } else {
-                return prepareStringLiteral(value, true, true);
+                return NXQL.escapeString(value);
             }
         }
         return value;
@@ -598,7 +601,7 @@ public class NXQLQueryBuilder {
                 } else {
                     String value = element.toString().trim();
                     if (!value.equals("")) {
-                        values.add(prepareStringLiteral(value, true, true));
+                        values.add(NXQL.escapeString(value));
                     }
                 }
             }

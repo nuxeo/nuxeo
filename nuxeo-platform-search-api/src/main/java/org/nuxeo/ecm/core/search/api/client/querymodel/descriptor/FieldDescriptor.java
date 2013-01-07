@@ -29,6 +29,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -162,8 +163,7 @@ public class FieldDescriptor {
             if ("long".equals(fieldType) || "integer".equals(fieldType) || "double".equals(fieldType)) {
                 return value;
             } else {
-                // TODO switch back to SQLQueryParser for org.nuxeo.core 1.4
-                return QueryModelDescriptor.prepareStringLiteral(value);
+                return NXQL.escapeString(value);
             }
         }
         return value;

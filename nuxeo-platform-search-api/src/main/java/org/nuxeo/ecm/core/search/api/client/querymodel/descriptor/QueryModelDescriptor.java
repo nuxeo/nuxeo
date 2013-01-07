@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.runtime.model.RuntimeContext;
 
@@ -255,14 +256,15 @@ public class QueryModelDescriptor {
 
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
-     * TODO remove this once we work on org.nuxeo.core, v 1.4
      *
      * @param s
      * @return
+     *
+     * @deprecated since 5.7, 5.6.0-HF08 use {{@link NXQL#escapeString} instead
      */
-    // TODO remove this once we work on org.nuxeo.core, v 1.4
+    @Deprecated
     public static String prepareStringLiteral(String s) {
-        return "'" + s.replaceAll("'", "\\\\'") + "'";
+        return NXQL.escapeString(s);
     }
 
     private static void appendQuotedStringList(StringBuilder queryBuilder,
@@ -273,7 +275,7 @@ public class QueryModelDescriptor {
             if (param instanceof Number) {
                 quotedParam.add(param.toString());
             } else {
-                quotedParam.add(prepareStringLiteral(param.toString()));
+                quotedParam.add(NXQL.escapeString(param.toString()));
             }
         }
         queryBuilder.append(StringUtils.join(quotedParam, ", "));
@@ -328,7 +330,7 @@ public class QueryModelDescriptor {
                     // this will escape everything as if it where a string
                     // use a literal if you want to do your own custom stuff
                     // TODO replug escaper from SQLQueryParser
-                    queryBuilder.append(prepareStringLiteral(queryParam));
+                    queryBuilder.append(NXQL.escapeString(queryParam));
                 }
                 queryBuilder.append(queryStrList[i + 1]);
             }
