@@ -21,6 +21,7 @@
       class="org.nuxeo.ecm.core.lifecycle.event.BulkLifeCycleChangeListener">
       <event>lifecycle_transition_event</event>
       <event>documentUndeleted</event>
+      <event>documentCreatedByCopy</event>
     </listener>
 
   </extension>
