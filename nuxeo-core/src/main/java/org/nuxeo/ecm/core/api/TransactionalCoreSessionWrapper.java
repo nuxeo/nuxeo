@@ -116,7 +116,7 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
                 main = TransactionHelper.lookupTransactionManager().getTransaction();
 
                 if (main != null) {
-                    if (main.getStatus() != Status.STATUS_MARKED_ROLLBACK) {
+                    if (main.getStatus() == Status.STATUS_ACTIVE) {
                         main.registerSynchronization(this);
                         session.afterBegin();
                         threadBound.set(main);
