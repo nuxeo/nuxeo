@@ -86,7 +86,7 @@
          <#if This.canDownload(pkg)>
            <a class="button download" href="${Root.path}/download/start/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.download')}</a>
          </#if>
-         <#if This.registrationRequired(pkg)${Context.getMessage('label.simpleListing.messages.registrationrequired')}</#if>
+         <#if This.registrationRequired(pkg)>${Context.getMessage('label.simpleListing.messages.registrationrequired')}</#if>
          <#if This.canCancel(pkg)>
            <a class="button cancel" href="${Root.path}/download/cancel/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.cancel')}</a>
          </#if>
