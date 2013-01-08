@@ -527,8 +527,10 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         // XXX flush method is not implemented for Event context :)
         Contexts.getEventContext().set("currentDocument", currentDocument);
 
-        // flush changeableDocument
-        setChangeableDocument(null);
+        // Don't flush changeable document with a null id (NXP-10732)
+        if ((getChangeableDocument() != null) && (getChangeableDocument().getId() != null)) {
+            setChangeableDocument(null);
+        }
 
         if (currentDocument == null) {
             currentDocumentParents = null;
