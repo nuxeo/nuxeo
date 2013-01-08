@@ -18,15 +18,17 @@
 
 package org.nuxeo.ecm.lifeCycle;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
@@ -84,6 +86,44 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
                 session.getCurrentLifeCycleState(testFile1.getRef()));
         assertEquals("approved",
                 session.getCurrentLifeCycleState(testFile2.getRef()));
+    }
+
+    @Test
+    public void testCopyLifeCycleHandler() throws ClientException {
+        DocumentModel folderDoc = session.createDocumentModel("/",
+                "testFolder", "Folder");
+        folderDoc = session.createDocument(folderDoc);
+        DocumentModel testFile1 = session.createDocumentModel(
+                folderDoc.getPathAsString(), "testFile1", "File");
+        testFile1 = session.createDocument(testFile1);
+        DocumentModel testFile2 = session.createDocumentModel(
+                folderDoc.getPathAsString(), "testFile2", "File");
+        testFile2 = session.createDocument(testFile2);
+        session.saveDocument(folderDoc);
+        session.saveDocument(testFile1);
+        session.saveDocument(testFile2);
+        session.followTransition(folderDoc.getRef(), "approve");
+        session.save();
+        waitForAsyncExec();
+        session.save(); // process async invalidations
+
+        // All documents in approve life cycle state
+        // Checking document copy lifecycle handler
+        DocumentModel folderCopy = session.createDocumentModel("/",
+                "folderCopy", "Folder");
+        folderCopy = session.createDocument(folderCopy);
+        folderCopy = session.copy(folderDoc.getRef(), folderCopy.getRef(),
+                "folderCopy");
+        session.save();
+        waitForAsyncExec();
+        session.save();// process async invalidations
+        DocumentModelList childrenCopy = session.getChildren(folderCopy.getRef());
+        assertEquals("project",
+                session.getCurrentLifeCycleState(folderCopy.getRef()));
+        for (DocumentModel child : childrenCopy) {
+            assertEquals("project",
+                    session.getCurrentLifeCycleState(child.getRef()));
+        }
     }
 
 }
