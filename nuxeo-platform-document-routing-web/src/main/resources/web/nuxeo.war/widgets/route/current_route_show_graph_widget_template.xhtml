@@ -7,9 +7,10 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
   <script type="text/javascript">
-    <h:outputText  value="var routeDocId='#{value.document.id}'" />
+    <h:outputText  value="var routeDocId='#{value.document.id}';" />
+    <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>  
     function showGraph() {
-      loadGraph(routeDocId);
+      loadGraph(routeDocId, currentLang);
       jQuery('&lt;a href="##{widget.id}_graphView_box"&gt;&lt;/a&gt;').fancybox({
         'autoScale': true,
         'autoDimensions': false,

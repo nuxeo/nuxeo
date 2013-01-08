@@ -19,9 +19,10 @@
       </nxu:set>
 
       <script type="text/javascript">
-        <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}'" />
+        <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}';" />
+        <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>   
         function showGraph() {
-          loadGraph(routeDocId);
+          loadGraph(routeDocId, currentLang);
           jQuery('&lt;a href="#graphView_box"&gt;&lt;/a&gt;').fancybox({
             'autoScale': true,
             'autoDimensions': false,

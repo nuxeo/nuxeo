@@ -21,9 +21,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -56,27 +58,35 @@ public class GetGraphOperation {
     @Param(name = "routeDocId", required = true)
     protected String routeDocId;
 
+    /***
+     * @since 5.7
+     */
+    @Param(name = "language", required = false)
+    protected String language;
+
     @Context
     protected CoreSession session;
 
     @OperationMethod
     public Blob run() throws Exception {
+        Locale locale = language != null && !language.isEmpty() ? new Locale(
+                language) : Locale.ENGLISH;
         GetRouteAsJsonUnrestricted unrestrictedRunner = new GetRouteAsJsonUnrestricted(
-                session, routeDocId);
+                session, routeDocId, locale);
         String json = unrestrictedRunner.getJSON();
         return new InputStreamBlob(new ByteArrayInputStream(
                 json.getBytes("UTF-8")), "application/json");
 
     }
 
-    public static String toJSON(GraphRoute route) {
+    public static String toJSON(GraphRoute route, Locale locale) {
         try {
             Map<String, Object> graph = new HashMap<String, Object>();
             List<NodeView> nodeViews = new ArrayList<NodeView>();
             Map<String, TransitionView> tranViews = new HashMap<String, TransitionView>();
 
             for (GraphNode node : route.getNodes()) {
-                nodeViews.add(new NodeView(node));
+                nodeViews.add(new NodeView(node, locale));
                 List<Transition> transitions = node.getOutputTransitions();
                 for (Transition transition : transitions) {
                     GraphNode targetNode = route.getNode(transition.getTarget());
@@ -96,22 +106,27 @@ public class GetGraphOperation {
             throw new ClientRuntimeException(e);
         }
     }
-    
+
     class GetRouteAsJsonUnrestricted extends UnrestrictedSessionRunner {
 
         String docId;
+
         String json;
 
-        protected GetRouteAsJsonUnrestricted(CoreSession session, String docId) {
+        Locale locale;
+
+        protected GetRouteAsJsonUnrestricted(CoreSession session, String docId,
+                Locale locale) {
             super(session);
             this.docId = docId;
+            this.locale = locale;
         }
 
         @Override
         public void run() throws ClientException {
             DocumentModel doc = session.getDocument(new IdRef(docId));
             GraphRoute route = doc.getAdapter(GraphRoute.class);
-            json = toJSON(route);
+            json = toJSON(route, locale);
         }
 
         public String getJSON() throws ClientException {
@@ -123,7 +138,7 @@ public class GetGraphOperation {
 
 class NodeView {
 
-    public NodeView(GraphNode node) throws ClientException {
+    public NodeView(GraphNode node, Locale locale) throws ClientException {
         this.x = Integer.parseInt((String) node.getDocument().getPropertyValue(
                 GraphNode.PROP_NODE_X_COORDINATE));
         this.y = Integer.parseInt((String) node.getDocument().getPropertyValue(
@@ -131,8 +146,9 @@ class NodeView {
         this.isEndNode = node.isStart();
         this.isEndNode = node.isStop();
         this.id = node.getId();
-        this.title = (String) node.getDocument().getPropertyValue(
+        String titleProp = (String) node.getDocument().getPropertyValue(
                 GraphNode.PROP_TITLE);
+        this.title = getI18nLabel(titleProp, locale);
         this.state = node.getState().getLifeCycleState();
     }
 
@@ -176,6 +192,13 @@ class NodeView {
 
     public String getState() {
         return state;
+    }
+
+    protected String getI18nLabel(String label, Locale locale) {
+        if (label == null) {
+            label = "";
+        }
+        return I18NUtils.getMessageString("messages", label, null, locale);
     }
 }
 
