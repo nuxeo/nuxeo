@@ -30,8 +30,8 @@ public class QueryHelper {
     private QueryHelper() {
     }
 
-    public static final String NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " <> "
-            + LifeCycleConstants.DELETED_STATE;
+    public static final String NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " <> '"
+            + LifeCycleConstants.DELETED_STATE + "'";
 
     /**
      * @deprecated since 5.7, 5.6.0-HF08 use {{@link NXQL#escapeString} instead
@@ -47,7 +47,7 @@ public class QueryHelper {
     public static String select(String type, DocumentModel doc) {
         return "SELECT * FROM " + type + " WHERE " + NXQL.ECM_PATH
                 + " STARTSWITH " + NXQL.escapeString(doc.getPathAsString())
-                + " AND ecm:currentLifeCycleState != 'deleted'";
+                + " AND " + NOT_DELETED;
     }
 
     /**
