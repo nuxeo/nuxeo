@@ -10,8 +10,9 @@
 
 <script>
 jQuery(function(){
-   <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}'" />
-    loadGraph(routeDocId);
+  <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>   
+  <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}';" />
+    loadGraph(routeDocId, currentLang);
   });
 </script>
 

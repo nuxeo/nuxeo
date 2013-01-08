@@ -68,17 +68,14 @@ function displayGraph(data) {
 	});
 };
 
-function invokeGetGraphOp(routeId) {
+function invokeGetGraphOp(routeId, currentLang) {
 	var ctx = {
-		currentDocument : '#{currentDocument.id}',
-		conversationId : '#{org.jboss.seam.core.manager.currentConversationId}',
-		lang : '#{localeSelector.localeString}',
-		repository : '#{currentDocument.repositoryName}'
 	};
 
 	var getGraphNodesExec = jQuery().automation('Document.Routing.GetGraph');
 	getGraphNodesExec.setContext(ctx);
 	getGraphNodesExec.addParameter("routeDocId", routeId);
+	getGraphNodesExec.addParameter("language", currentLang);
 	getGraphNodesExec.executeGetBlob(function(data, status, xhr) {
 		displayGraph(data);
 	}, function(xhr, status, errorMessage) {
@@ -86,7 +83,7 @@ function invokeGetGraphOp(routeId) {
 	}, true);
 };
 
-function loadGraph(routeDocId) {
+function loadGraph(routeDocId, currentLang) {
 	jsPlumbInitializeDefault();
-	invokeGetGraphOp(routeDocId);
+	invokeGetGraphOp(routeDocId, currentLang);
 };
