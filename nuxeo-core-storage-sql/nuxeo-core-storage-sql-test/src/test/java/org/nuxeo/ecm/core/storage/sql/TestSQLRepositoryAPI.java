@@ -71,6 +71,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -78,6 +79,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.EventConstants;
+import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 import org.nuxeo.runtime.api.Framework;
@@ -3494,6 +3496,70 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         assertTrue(DummyTestListener.EVENTS_RECEIVED.isEmpty());
+    }
+
+    public static final List<String> IGNORED_EVENTS = Arrays.asList(BinaryTextListener.EVENT_NAME);
+
+    public static void assertEvents(List<Event> events,
+            String... expectedEventNames) {
+        List<String> actual = new ArrayList<String>();
+        for (Event event : events) {
+            String eventName = event.getName();
+            if (IGNORED_EVENTS.contains(eventName)) {
+                continue;
+            }
+            DocumentModel doc = ((DocumentEventContext) event.getContext()).getSourceDocument();
+            if (doc.isProxy()) {
+                eventName += "/p";
+            } else if (doc.isVersion()) {
+                eventName += "/v";
+            } else if (doc.isFolder()) {
+                eventName += "/f";
+            }
+            actual.add(eventName);
+        }
+        assertEquals(Arrays.asList(expectedEventNames), actual);
+    }
+
+    @Test
+    public void testVersioningEvents() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-listeners-all-contrib.xml");
+
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentModel folder = new DocumentModelImpl("/", "fold", "Folder");
+        folder = session.createDocument(folder);
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.checkIn(doc.getRef(), null, null);
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+                "aboutToCheckIn", //
+                "documentCheckedIn", //
+                "documentCreated/v");
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.checkOut(doc.getRef());
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+                "aboutToCheckout", //
+                "documentCheckedOut");
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.createProxy(doc.getRef(), folder.getRef()); // live proxy
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+                "documentCreated/p", //
+                "documentProxyPublished/p", //
+                "sectionContentPublished/f");
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.publishDocument(doc, folder, false);
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+                // "aboutToCheckIn", // TODO
+                "documentCheckedIn", //
+                "documentCreated/v", //
+                "documentCreated/p", //
+                "documentProxyPublished/p", //
+                "sectionContentPublished/f");
     }
 
     @SuppressWarnings("unchecked")

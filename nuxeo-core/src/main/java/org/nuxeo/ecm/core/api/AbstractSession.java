@@ -2243,18 +2243,14 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             Document version = getVersioningService().doCheckIn(doc, option,
                     checkinComment);
-            DocumentModel versionModel = readModel(version);
-
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, versionModel,
-                    options, null, null, true, false);
 
             docModel = readModel(doc);
-            DocumentRef checkedInVersionRef = versionModel.getRef();
+            DocumentRef checkedInVersionRef = new IdRef(version.getUUID());
             notifyCheckedInVersion(docModel, checkedInVersionRef, options,
                     checkinComment);
             writeModel(doc, docModel);
 
-            return versionModel.getRef();
+            return checkedInVersionRef;
         } catch (DocumentException e) {
             throw new ClientException("Failed to check in document " + docRef,
                     e);
