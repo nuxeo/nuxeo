@@ -244,6 +244,7 @@ public class TestFileSystemItemManagerService {
         assertFalse(fsItem.isFolder());
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
+        assertTrue(((FileItem) fsItem).getCanUpdate());
         Blob fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());

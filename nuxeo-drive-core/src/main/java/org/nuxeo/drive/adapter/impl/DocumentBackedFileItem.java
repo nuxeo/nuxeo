@@ -35,6 +35,8 @@ public class DocumentBackedFileItem extends
 
     private static final long serialVersionUID = 1L;
 
+    protected boolean canUpdate;
+
     public DocumentBackedFileItem(String factoryName, DocumentModel doc)
             throws ClientException {
         super(factoryName, doc);
@@ -67,6 +69,11 @@ public class DocumentBackedFileItem extends
     }
 
     /*--------------------- FileItem -----------------*/
+    @Override
+    public boolean getCanUpdate() {
+        return canUpdate;
+    }
+
     @Override
     public Blob getBlob() throws ClientException {
         DocumentModel doc = getDocument(getSession());
@@ -110,6 +117,7 @@ public class DocumentBackedFileItem extends
     protected void initialize(DocumentModel doc) throws ClientException {
         this.name = getFileName(doc);
         this.folder = false;
+        this.canUpdate = this.canRename;
     }
 
     protected BlobHolder getBlobHolder(DocumentModel doc)
@@ -149,6 +157,11 @@ public class DocumentBackedFileItem extends
             doc.setPropertyValue("dc:title", name);
             docTitle = name;
         }
+    }
+
+    /*---------- Needed for JSON deserialization ----------*/
+    protected void setCanUpdate(boolean canUpdate) {
+        this.canUpdate = canUpdate;
     }
 
 }

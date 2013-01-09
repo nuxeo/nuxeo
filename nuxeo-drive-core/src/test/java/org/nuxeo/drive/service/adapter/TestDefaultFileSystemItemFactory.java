@@ -367,9 +367,33 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("http://myServer/nuxeo/nxbigfile/test/" + file.getId()
                 + "/blobholder:0/Joe.odt", downloadURL);
 
+        // ------------------------------------------------------------
+        // FileItem#getCanUpdate
+        // ------------------------------------------------------------
+        // As Administrator
+        assertTrue(fileItem.getCanUpdate());
+
+        // As a user with READ permission
+        DocumentModel rootDoc = session.getRootDocument();
+        setPermission(rootDoc, "joe", SecurityConstants.READ, true);
+        CoreSession joeSession = repository.openSessionAs("joe");
+        file = joeSession.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        assertFalse(fileItem.getCanUpdate());
+
+        // As a user with WRITE permission
+        setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        assertTrue(fileItem.getCanUpdate());
+
+        CoreInstance.getInstance().close(joeSession);
+        resetPermissions(rootDoc, "joe");
+
         // ------------------------------------------------------
         // FileItem#setBlob
         // ------------------------------------------------------
+        file = session.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         Blob fileItemBlob = fileItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());

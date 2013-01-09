@@ -38,6 +38,8 @@ public interface FileItem extends FileSystemItem {
 
     String getDownloadURL(String baseURL) throws ClientException;
 
+    boolean getCanUpdate();
+
     void setBlob(Blob blob) throws ClientException;
 
 }

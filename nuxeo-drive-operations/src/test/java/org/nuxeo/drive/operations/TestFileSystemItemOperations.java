@@ -301,6 +301,7 @@ public class TestFileSystemItemOperations {
         assertEquals("Administrator", fileItem.getCreator());
         assertTrue(fileItem.getCanRename());
         assertTrue(fileItem.getCanDelete());
+        assertTrue(fileItem.getCanUpdate());
         assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file1.getId()
                 + "/blobholder:0/First%20file.odt",
                 fileItem.getDownloadURL("http://my-server/nuxeo/"));
@@ -332,6 +333,7 @@ public class TestFileSystemItemOperations {
         assertEquals("Administrator", child.getCreator());
         assertTrue(child.getCanRename());
         assertTrue(child.getCanDelete());
+        assertTrue(child.getCanUpdate());
         assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file3.getId()
                 + "/blobholder:0/Third%20file.odt",
                 child.getDownloadURL("http://my-server/nuxeo/"));
@@ -346,6 +348,7 @@ public class TestFileSystemItemOperations {
         assertEquals("Administrator", child.getCreator());
         assertTrue(child.getCanRename());
         assertTrue(child.getCanDelete());
+        assertTrue(child.getCanUpdate());
         assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file4.getId()
                 + "/blobholder:0/Fourth%20file.odt",
                 child.getDownloadURL("http://my-server/nuxeo/"));
@@ -427,6 +430,7 @@ public class TestFileSystemItemOperations {
         assertEquals("Administrator", newFile.getCreator());
         assertTrue(newFile.getCanRename());
         assertTrue(newFile.getCanDelete());
+        assertTrue(newFile.getCanUpdate());
         assertEquals(
                 "http://my-server/nuxeo/nxbigfile/test/" + newFileDoc.getId()
                         + "/blobholder:0/New%20file.odt",
@@ -475,6 +479,7 @@ public class TestFileSystemItemOperations {
         assertEquals("Administrator", updatedFile.getCreator());
         assertTrue(updatedFile.getCanRename());
         assertTrue(updatedFile.getCanDelete());
+        assertTrue(updatedFile.getCanUpdate());
         assertEquals(
                 "http://my-server/nuxeo/nxbigfile/test/"
                         + updatedFileDoc.getId()
