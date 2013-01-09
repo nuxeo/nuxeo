@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 /**
  * Asynchronous listener triggered by the {@link QuotaSyncListenerChecker} when
  * Quota needs to be recomputed
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -200,7 +200,6 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 log.debug("   add Quota Facet on parent "
                         + parent.getPathAsString());
                 quotaDoc = QuotaAwareDocumentFactory.make(parent, false);
-                quotaDoc.getDoc().setPropertyValue("dc:nature", "samere");
             } else {
                 log.debug("   update Quota Facet on parent "
                         + parent.getPathAsString());
