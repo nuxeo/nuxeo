@@ -464,7 +464,9 @@ public class RoutingTaskActionsBean implements Serializable {
     @Observer(value = { TaskEventNames.WORKFLOW_TASK_COMPLETED })
     @BypassInterceptors
     public void OnTaskCompleted() {
-        contentViewActions.refreshOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
-        contentViewActions.resetPageProviderOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+        if (contentViewActions != null) {
+            contentViewActions.refreshOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+            contentViewActions.resetPageProviderOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+        }
     }
 }
