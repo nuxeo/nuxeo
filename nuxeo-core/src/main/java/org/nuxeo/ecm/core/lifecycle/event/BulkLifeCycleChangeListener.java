@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
@@ -88,7 +89,9 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         }
         String transition;
         String targetState;
-        if (DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
+        if (DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())
+                && event.getContext().getProperties().get(
+                        CoreEventConstants.RESET_LIFECYCLE).equals(true)) {
             try {
                 DocumentModelList docs = new DocumentModelListImpl();
                 docs.add(doc);

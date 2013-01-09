@@ -71,6 +71,14 @@ public final class CoreEventConstants {
 
     public static final String SOURCE_REF = "sourceRef";
 
+    /**
+     * Passed with documentCreatedbyCopy event to be able to reset the life
+     * cycle or not
+     *
+     * @since 5.7
+     */
+    public static final String RESET_LIFECYCLE = "resetLifeCycle";
+
     // Constant utility class
     private CoreEventConstants() {
     }

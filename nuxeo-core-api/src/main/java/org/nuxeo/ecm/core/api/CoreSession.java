@@ -721,6 +721,28 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Copies the source document to the destination folder under the given
+     * name. If the name is null the original name is preserved.
+     * <p>
+     * If the destination document is not a folder or it doesn't exists then
+     * throws an exception.
+     * <p>
+     * If the source is a proxy the destination will be a copy of the proxy.
+     *
+     * @param src the source document reference
+     * @param dst the destination folder reference
+     * @param name the new name of the file or null if the original name must be
+     *            preserved
+     * @param resetLifeCycle the property that flagged whether reset destination
+     *            document lifecycle or not
+     * @return
+     * @throws ClientException
+     * @since 5.7
+     */
+    DocumentModel copy(DocumentRef src, DocumentRef dst, String name,
+            boolean resetLifeCycle) throws ClientException;
+
+    /**
      * Bulk copy. Destination must be a folder document.
      *
      * @param src the documents to copy
@@ -730,6 +752,20 @@ public interface CoreSession {
      */
     List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst)
             throws ClientException;
+
+    /**
+     * Bulk copy. Destination must be a folder document.
+     *
+     * @param src the documents to copy
+     * @param dst the destination folder
+     * @param resetLifeCycle the property that flagged whether reset destination
+     *            document lifecycle or not
+     * @return
+     * @throws ClientException
+     * @since 5.7
+     */
+    List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst,
+            boolean resetLifeCycle) throws ClientException;
 
     /**
      * Work like copy but in the case of a source proxy the destination will be
@@ -748,6 +784,23 @@ public interface CoreSession {
             String name) throws ClientException;
 
     /**
+     * Work like copy but in the case of a source proxy the destination will be
+     * a new document instead of a proxy.
+     *
+     * @param src the source document reference
+     * @param dst the destination folder reference
+     * @param name the new name of the file or null if the original name must be
+     *            preserved
+     * @param resetLifeCycle the property that flagged whether reset destination
+     *            document lifecycle or not
+     * @return
+     * @throws ClientException
+     * @since 5.7
+     */
+    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst,
+            String name, boolean resetLifeCycle) throws ClientException;
+
+    /**
      * Bulk copyProxyAsDocument. Destination must be a folder document.
      *
      * @param src the documents to copy
@@ -757,6 +810,20 @@ public interface CoreSession {
      */
     List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src,
             DocumentRef dst) throws ClientException;
+
+    /**
+     * Bulk copyProxyAsDocument. Destination must be a folder document.
+     *
+     * @param src the documents to copy
+     * @param dst the destination folder
+     * @param resetLifeCycle the property that flagged whether reset destination
+     *            document lifecycle or not
+     * @return
+     * @throws ClientException
+     * @since 5.7
+     */
+    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst,
+            boolean resetLifeCycle) throws ClientException;
 
     /**
      * Moves the source document to the destination folder under the given name.

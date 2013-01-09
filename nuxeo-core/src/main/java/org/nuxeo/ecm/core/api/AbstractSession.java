@@ -526,8 +526,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name)
-            throws ClientException {
+    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name,
+            boolean resetLifeCycle) throws ClientException {
         try {
             Document srcDoc = resolveReference(src);
             Document dstDoc = resolveReference(dst);
@@ -535,11 +535,12 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
-            // add the destination name, destination and source references in
+            // add the destination name, destination, resetLifeCycle flag and source references in
             // the options of the event
             options.put(CoreEventConstants.SOURCE_REF, src);
             options.put(CoreEventConstants.DESTINATION_REF, dst);
             options.put(CoreEventConstants.DESTINATION_NAME, name);
+            options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
             DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options,
                     null, null, true, true);
@@ -572,20 +573,31 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst)
+    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name) throws ClientException{
+        return copy(src, dst, name, false);
+    }
+
+    @Override
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle)
             throws ClientException {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
         for (DocumentRef ref : src) {
-            newDocuments.add(copy(ref, dst, null));
+            newDocuments.add(copy(ref, dst, null,resetLifeCycle));
         }
 
         return newDocuments;
     }
 
     @Override
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst)
+            throws ClientException {
+        return copy(src, dst, false);
+    }
+
+    @Override
     public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst,
-            String name) throws ClientException {
+            String name, boolean resetLifeCycle) throws ClientException {
         try {
             Document srcDoc = resolveReference(src);
             if (!srcDoc.isProxy()) {
@@ -606,6 +618,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             Document doc = resolveReference(docModel.getRef());
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
+            // add resetLifeCycle flag to the event
+            options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
             // notify document created by copy
             String comment = srcDoc.getRepository().getName() + ':'
                     + src.toString();
@@ -626,15 +640,27 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
+    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst,
+            String name) throws ClientException {
+        return copyProxyAsDocument(src, dst, name, false);
+    }
+
+    @Override
     public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src,
-            DocumentRef dst) throws ClientException {
+            DocumentRef dst,boolean resetLifeCycle) throws ClientException {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
         for (DocumentRef ref : src) {
-            newDocuments.add(copyProxyAsDocument(ref, dst, null));
+            newDocuments.add(copyProxyAsDocument(ref, dst, null,resetLifeCycle));
         }
 
         return newDocuments;
+    }
+
+    @Override
+    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src,
+            DocumentRef dst) throws ClientException {
+        return copyProxyAsDocument(src, dst, false);
     }
 
     @Override
