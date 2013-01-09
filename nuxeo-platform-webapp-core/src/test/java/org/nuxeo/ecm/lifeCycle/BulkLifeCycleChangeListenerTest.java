@@ -113,7 +113,7 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
                 "folderCopy", "Folder");
         folderCopy = session.createDocument(folderCopy);
         folderCopy = session.copy(folderDoc.getRef(), folderCopy.getRef(),
-                "folderCopy");
+                "folderCopy",true);
         session.save();
         waitForAsyncExec();
         session.save();// process async invalidations
