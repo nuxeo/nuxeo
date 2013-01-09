@@ -120,14 +120,15 @@ public class CSVImporterWork extends AbstractWork {
 
     public CSVImporterWork(String repositoryName, String parentPath,
             String username, Blob csvBlob, CSVImporterOptions options) {
-        this.startDate = new Date();
-        this.id = CSVImportId.create(repositoryName, parentPath, csvBlob, startDate);
+        this.id = CSVImportId.create(repositoryName, parentPath, csvBlob);
         this.repositoryName = repositoryName;
         this.parentPath = parentPath;
         this.username = username;
         this.csvBlob = csvBlob;
         this.options = options;
         this.dateformat = new SimpleDateFormat(options.getDateFormat());
+        this.startDate = new Date();
+
     }
 
     public CSVImportId getId() {
@@ -420,8 +421,7 @@ public class CSVImporterWork extends AbstractWork {
             Map<String, Serializable> properties) throws ClientException {
         String targetPath = new Path(parentPath).append(name).toString();
         DocumentRef docRef = new PathRef(targetPath);
-        if (options.getCSVImporterDocumentFactory().exists(session,
-                parentPath, name, type, properties)) {
+        if (session.exists(docRef)) {
             return updateDocument(lineNumber, session, docRef, properties);
         } else {
             return createDocument(lineNumber, session, parentPath, name, type,
