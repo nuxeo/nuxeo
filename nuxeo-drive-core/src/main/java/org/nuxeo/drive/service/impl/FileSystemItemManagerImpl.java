@@ -133,7 +133,9 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
         if (!(fileSystemItem instanceof FolderItem)) {
             throw new ClientException(
-                    "Cannot get the children of a non folderish file system item.");
+                    String.format(
+                            "Cannot get the children of file system item with id %s because it is not a folder.",
+                            id));
         }
         FolderItem folderItem = (FolderItem) fileSystemItem;
         return folderItem.getChildren();
@@ -174,7 +176,9 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         if (!(fsItem instanceof FileItem)) {
             throw new ClientException(
-                    "Cannot update the content of a file system item that is not a file.");
+                    String.format(
+                            "Cannot update the content of file system item with id %s because it is not a file.",
+                            id));
         }
         FileItem file = (FileItem) fsItem;
         file.setBlob(blob);
