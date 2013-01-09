@@ -497,10 +497,10 @@ public class ClipboardActionsBean extends InputController implements
         }
         if (!proxyRefs.isEmpty()) {
             newDocuments.addAll(documentManager.copyProxyAsDocument(proxyRefs,
-                    parent.getRef()));
+                    parent.getRef(),true));
         }
         if (!docRefs.isEmpty()) {
-            newDocuments.addAll(documentManager.copy(docRefs, parent.getRef()));
+            newDocuments.addAll(documentManager.copy(docRefs, parent.getRef(),true));
         }
         if (destinationIsDeleted) {
             for (DocumentModel d : newDocuments) {
