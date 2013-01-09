@@ -217,7 +217,6 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
@@ -233,7 +232,6 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folderishFile);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertEquals(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
                 fsItem.getId());
@@ -344,7 +342,6 @@ public class TestDefaultFileSystemItemFactory {
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
-        assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
@@ -500,7 +497,6 @@ public class TestDefaultFileSystemItemFactory {
         // Check sub-Folder
         fsItem = folderChildren.get(2);
         assertTrue(fsItem instanceof FolderItem);
-        assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
                 fsItem.getId());
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),

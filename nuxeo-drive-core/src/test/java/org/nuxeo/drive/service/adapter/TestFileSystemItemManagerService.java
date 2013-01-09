@@ -226,6 +226,7 @@ public class TestFileSystemItemManagerService {
         assertTrue(fsItem.isFolder());
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
+        assertTrue(((FolderItem) fsItem).getCanCreateChild());
         List<FileSystemItem> children = ((FolderItem) fsItem).getChildren();
         assertNotNull(children);
         assertEquals(5, children.size());
@@ -262,6 +263,7 @@ public class TestFileSystemItemManagerService {
         assertTrue(fsItem.isFolder());
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
+        assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
 
         // Not adaptable as a FileSystemItem
@@ -284,6 +286,7 @@ public class TestFileSystemItemManagerService {
         assertTrue(fsItem.isFolder());
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
+        assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
 
         // ------------------------------------------------------
@@ -349,11 +352,13 @@ public class TestFileSystemItemManagerService {
                     "A new folder", principal);
             fail("Folder creation in a non folder item should fail.");
         } catch (ClientException e) {
-            assertEquals(String.format(
-                    "Cannot create a folder in file system item with id %s.",
-                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId()),
+            assertEquals(
+                    String.format(
+                            "Cannot create a folder in file system item with id %s because it is not a folder.",
+                            DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId()),
                     e.getMessage());
         }
+
         // Folder creation
         FolderItem newFolderItem = fileSystemItemManagerService.createFolder(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),

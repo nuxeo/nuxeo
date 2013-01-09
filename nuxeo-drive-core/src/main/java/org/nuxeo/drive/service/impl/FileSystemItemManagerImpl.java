@@ -144,11 +144,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FolderItem createFolder(String parentId, String name,
             Principal principal) throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
-        if (!(parentFsItem instanceof FolderItem)
-                || !((FolderItem) parentFsItem).getCanCreateChild()) {
-            throw new ClientException(String.format(
-                    "Cannot create a folder in file system item with id %s.",
-                    parentId));
+        if (!(parentFsItem instanceof FolderItem)) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot create a folder in file system item with id %s because it is not a folder.",
+                            parentId));
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
         return parentFolder.createFolder(name);
@@ -158,11 +158,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileItem createFile(String parentId, Blob blob, Principal principal)
             throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
-        if (!(parentFsItem instanceof FolderItem)
-                || !((FolderItem) parentFsItem).getCanCreateChild()) {
-            throw new ClientException(String.format(
-                    "Cannot create a file in file system item with id %s.",
-                    parentId));
+        if (!(parentFsItem instanceof FolderItem)) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot create a file in file system item with id %s because it is not a folder.",
+                            parentId));
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
         return parentFolder.createFile(blob);
