@@ -49,7 +49,7 @@ public class StartWorkflowOperation {
     protected String id;
 
     @Param(name = "start", required = false)
-    protected Boolean start;
+    protected Boolean start = true;
 
     @Context
     protected DocumentRoutingService documentRoutingService;
