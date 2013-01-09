@@ -953,4 +953,17 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
         return "";
     }
+    
+    /**
+     * since 5.7
+     */
+    public boolean isCurrentRouteGraph() throws ClientException {
+        DocumentRoute currentRoute = getRelatedRoute();
+        if (currentRoute != null) {
+            return ExecutionTypeValues.graph.toString().equals(
+                    (String) currentRoute.getDocument().getPropertyValue(
+                            DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
+        }
+        return false;
+    }
 }

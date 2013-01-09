@@ -149,7 +149,7 @@ class NodeView {
         String titleProp = (String) node.getDocument().getPropertyValue(
                 GraphNode.PROP_TITLE);
         this.title = getI18nLabel(titleProp, locale);
-        this.state = node.getState().getLifeCycleState();
+        this.state = node.getDocument().getCurrentLifeCycleState();
     }
 
     public int x;

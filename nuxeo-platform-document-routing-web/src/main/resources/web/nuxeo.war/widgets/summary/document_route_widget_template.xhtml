@@ -4,7 +4,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 
   <h3 class="summaryTitle">
     <h:outputText value="#{messages['label.document.routing.workflow']}" />
@@ -18,35 +19,9 @@
         <h:outputText value="#{nxu:userFullName(relatedRoute.document.docri.initiator)}"/>
       </nxu:set>
 
-      <script type="text/javascript">
-        <h:outputText  value="var routeDocId='#{routingActions.getRelatedRoute().document.id}';" />
-        <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>   
-        function showGraph() {
-          loadGraph(routeDocId, currentLang);
-          jQuery('&lt;a href="#graphView_box"&gt;&lt;/a&gt;').fancybox({
-            'autoScale': true,
-            'autoDimensions': false,
-            'type': 'inline',
-            'width': '90%',
-            'height': '90%',
-            'transitionIn': 'none',
-            'transitionOut': 'none',
-            'enableEscapeButton': true,
-            'centerOnScroll': true
-          }).click();
-          return false;
-        }
-      </script>
-
-      <a href="#" onclick="showGraph();return false;" class="button">#{messages['label.document.routing.show.graph']}</a>
-
-      <div style="display:none">
-        <div id="graphView_box">
-          <!-- div container for the graph -->
-          <div id="target" class="targetDiv"></div>
-        </div>
-      </div>
-
+     <c:if test="#{routingActions.isCurrentRouteGraph()}">
+      <ui:include src="/incl/route_graph_view.xhtml" />
+     </c:if>  
 
     </c:when>
     <c:otherwise>
