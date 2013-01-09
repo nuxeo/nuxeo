@@ -83,6 +83,17 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
                 "Cannot delete the top level folder item.");
     }
 
+    @Override
+    public boolean canMove(FolderItem dest) throws ClientException {
+        return false;
+    }
+
+    @Override
+    public FileSystemItem move(FolderItem dest) throws ClientException {
+        throw new UnsupportedOperationException(
+                "Cannot move the top level folder item.");
+    }
+
     /*--------------------- FolderItem -----------------*/
     @Override
     public List<FileSystemItem> getChildren() throws ClientException {

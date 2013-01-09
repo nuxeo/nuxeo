@@ -66,4 +66,8 @@ public interface FileSystemItem extends Comparable<FileSystemItem>,
 
     void delete() throws ClientException;
 
+    boolean canMove(FolderItem dest) throws ClientException;
+
+    FileSystemItem move(FolderItem dest) throws ClientException;
+
 }

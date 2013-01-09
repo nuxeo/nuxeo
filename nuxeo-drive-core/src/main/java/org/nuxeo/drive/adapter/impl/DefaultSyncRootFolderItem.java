@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -59,6 +60,17 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
         DocumentModel doc = getDocument(session);
         Framework.getLocalService(NuxeoDriveManager.class).unregisterSynchronizationRoot(
                 principal.getName(), doc, session);
+    }
+
+    @Override
+    public boolean canMove(FolderItem dest) throws ClientException {
+        return false;
+    }
+
+    @Override
+    public FileSystemItem move(FolderItem dest) throws ClientException {
+        throw new UnsupportedOperationException(
+                "Cannot move a synchronization root folder item.");
     }
 
 }

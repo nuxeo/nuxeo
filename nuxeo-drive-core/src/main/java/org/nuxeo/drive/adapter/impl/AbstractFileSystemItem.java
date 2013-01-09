@@ -21,6 +21,7 @@ import java.util.Calendar;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -130,6 +131,10 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     public abstract void rename(String name) throws ClientException;
 
     public abstract void delete() throws ClientException;
+
+    public abstract boolean canMove(FolderItem dest) throws ClientException;
+
+    public abstract FileSystemItem move(FolderItem dest) throws ClientException;
 
     /*---------- Needed for JSON serialization ----------*/
     public String getUserName() {

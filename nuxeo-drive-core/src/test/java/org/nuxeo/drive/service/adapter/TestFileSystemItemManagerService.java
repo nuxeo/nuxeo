@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
@@ -44,8 +45,13 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -338,6 +344,44 @@ public class TestFileSystemItemManagerService {
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
                 principal);
         assertTrue(children.isEmpty());
+
+        // ------------------------------------------------------
+        // Check #canMove
+        // ------------------------------------------------------
+        // Not allowed to move a file system item to a non FolderItem
+        String srcFsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId();
+        String destFsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId();
+        assertFalse(fileSystemItemManagerService.canMove(srcFsItemId,
+                destFsItemId, principal));
+
+        // Not allowed to move a file system item if no REMOVE permission on the
+        // source backing doc
+        Principal joePrincipal = new NuxeoPrincipalImpl("joe");
+        DocumentModel rootDoc = session.getRootDocument();
+        setPermission(rootDoc, "joe", SecurityConstants.READ, true);
+        destFsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId();
+        assertFalse(fileSystemItemManagerService.canMove(srcFsItemId,
+                destFsItemId, joePrincipal));
+
+        // Not allowed to move a file system item if no ADD_CHILDREN permission
+        // on the destination backing doc
+        setPermission(folder, "joe", SecurityConstants.WRITE, true);
+        setPermission(subFolder, "joe", SecurityConstants.WRITE, false);
+        assertFalse(fileSystemItemManagerService.canMove(srcFsItemId,
+                destFsItemId, joePrincipal));
+
+        // OK: REMOVE permission on the source backing doc + REMOVE_CHILDREN
+        // permission on its parent + ADD_CHILDREN permission on the destination
+        // backing doc
+        resetPermissions(subFolder, "joe");
+        setPermission(subFolder, "joe", SecurityConstants.WRITE, true);
+        assertTrue(fileSystemItemManagerService.canMove(srcFsItemId,
+                destFsItemId, joePrincipal));
+
+        // Reset permissions
+        resetPermissions(rootDoc, "joe");
+        resetPermissions(folder, "joe");
+        resetPermissions(subFolder, "joe");
     }
 
     @Test
@@ -503,5 +547,59 @@ public class TestFileSystemItemManagerService {
         assertEquals("Renamed title-filename equality.odt", newFile.getTitle());
         assertEquals("Renamed title-filename equality.odt",
                 ((Blob) newFile.getPropertyValue("file:content")).getFilename());
+
+        // ------------------------------------------------------
+        // Check #move
+        // ------------------------------------------------------
+        // Not allowed to move a file system item to a non FolderItem
+        String srcFsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId();
+        String destFsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId();
+        try {
+            fileSystemItemManagerService.move(srcFsItemId, destFsItemId,
+                    principal);
+            fail("Move to a non folder item should fail.");
+        } catch (ClientException e) {
+            assertEquals(
+                    String.format(
+                            "Cannot move a file system item to file system item with id %s because it is not a folder.",
+                            DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId()),
+                    e.getMessage());
+        }
+
+        // Move to a FolderItem
+        destFsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId();
+        FileSystemItem movedFsItem = fileSystemItemManagerService.move(
+                srcFsItemId, destFsItemId, principal);
+        assertEquals(srcFsItemId, movedFsItem.getId());
+        assertEquals(destFsItemId, movedFsItem.getParentId());
+        assertEquals("aNote.txt", movedFsItem.getName());
+        note = session.getDocument(note.getRef());
+        assertEquals("/aFolder/aSubFolder/aNote", note.getPathAsString());
+        assertEquals("aNote", note.getTitle());
     }
+
+    protected void setPermission(DocumentModel doc, String userName,
+            String permission, boolean isGranted) throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        localACL.add(new ACE(userName, permission, isGranted));
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
+    }
+
+    protected void resetPermissions(DocumentModel doc, String userName)
+            throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        Iterator<ACE> localACLIt = localACL.iterator();
+        while (localACLIt.hasNext()) {
+            ACE ace = localACLIt.next();
+            if (userName.equals(ace.getUsername())) {
+                localACLIt.remove();
+            }
+        }
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
+    }
+
 }

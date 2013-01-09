@@ -135,6 +135,14 @@ public class TestDefaultTopLevelFolderItemFactory {
             assertEquals("Cannot delete the top level folder item.",
                     e.getMessage());
         }
+        assertFalse(topLevelFolderItem.canMove(null));
+        try {
+            topLevelFolderItem.move(null);
+            fail("Should not be able to move the default top level folder item.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals("Cannot move the top level folder item.",
+                    e.getMessage());
+        }
         List<FileSystemItem> children = topLevelFolderItem.getChildren();
         assertNotNull(children);
         assertEquals(2, children.size());
@@ -197,6 +205,14 @@ public class TestDefaultTopLevelFolderItemFactory {
         childFsItem.delete();
         assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session).contains(
                 new IdRef(syncRoot1.getId())));
+        assertFalse(childFsItem.canMove(null));
+        try {
+            childFsItem.move(null);
+            fail("Should not be able to move a synchronization root folder item.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals("Cannot move a synchronization root folder item.",
+                    e.getMessage());
+        }
         assertTrue(childFsItem instanceof FolderItem);
         FolderItem childFolderItem = (FolderItem) childFsItem;
         List<FileSystemItem> childFsItemChildren = childFolderItem.getChildren();

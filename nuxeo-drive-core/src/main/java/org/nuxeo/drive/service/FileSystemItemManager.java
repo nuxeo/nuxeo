@@ -99,6 +99,18 @@ public interface FileSystemItemManager {
     List<FileSystemItem> getChildren(String id, Principal principal)
             throws ClientException;
 
+    /**
+     * Return true if the {@link FileSystemItem} with the given source id can be
+     * moved to the {@link FileSystemItem} with the given destination id for the
+     * given principal.
+     *
+     * @throws ClientException if the {@link FileSystemItem} with the given
+     *             source or destination id cannot be retrieved
+     * @see FileSystemItem#getCanMove(String)
+     */
+    boolean canMove(String srcId, String destId, Principal principal)
+            throws ClientException;
+
     /*------------- Write operations ----------------*/
     /**
      * Creates a folder with the given name in the {@link FileSystemItem} with
@@ -159,10 +171,18 @@ public interface FileSystemItemManager {
     FileSystemItem rename(String id, String name, Principal principal)
             throws ClientException;
 
+    /**
+     * Moves the {@link FileSystemItem} with the given source id to the
+     * {@link FileSystemItem} with the given destination id for the given
+     * principal.
+     *
+     * @throws ClientException if the {@link FileSystemItem} with the given
+     *             source or destination id cannot be retrieved, if the
+     *             {@link FileSystemItem} with the given destination id is not a
+     *             folder or if an error occurs while moving the item
+     * @see FileSystemItem#move(String)
+     */
     FileSystemItem move(String srcId, String destId, Principal principal)
-            throws ClientException;
-
-    FileSystemItem copy(String srcId, String destId, Principal principal)
             throws ClientException;
 
 }

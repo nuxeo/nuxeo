@@ -24,7 +24,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -43,12 +46,18 @@ import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.StringBlob;
 import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -78,6 +87,9 @@ public class TestFileSystemItemOperations {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected DirectoryService directoryService;
 
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
@@ -617,6 +629,228 @@ public class TestFileSystemItemOperations {
             assertEquals("Failed to execute operation: NuxeoDrive.Rename",
                     e.getMessage());
         }
+    }
 
+    @Test
+    public void testCanMove() throws Exception {
+
+        // ------------------------------------------------------
+        // File to File => false
+        // ------------------------------------------------------
+        Blob canMoveFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCanMove.ID).set("srcId",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+                "destId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId()).execute();
+        assertNotNull(canMoveFSItemJSON);
+
+        String canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
+                String.class);
+        assertEquals("false", canMoveFSItem);
+
+        // ------------------------------------------------------
+        // Sync root => false
+        // ------------------------------------------------------
+        canMoveFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCanMove.ID).set("srcId",
+                SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId()).set(
+                "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+        assertNotNull(canMoveFSItemJSON);
+
+        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
+                String.class);
+        assertEquals("false", canMoveFSItem);
+
+        // ------------------------------------------------------
+        // Top level folder => false
+        // ------------------------------------------------------
+        canMoveFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCanMove.ID).set(
+                "srcId",
+                fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
+                        session.getPrincipal().getName()).getId()).set(
+                "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+        assertNotNull(canMoveFSItemJSON);
+
+        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
+                String.class);
+        assertEquals("false", canMoveFSItem);
+
+        // --------------------------------------------------------
+        // No REMOVE permission on the source backing doc => false
+        // --------------------------------------------------------
+        createUser("joe", "joe");
+        DocumentModel rootDoc = session.getRootDocument();
+        setPermission(rootDoc, "joe", SecurityConstants.READ, true);
+        clientSession = automationClient.getSession("joe", "joe");
+        canMoveFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCanMove.ID).set("srcId",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+                "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+        assertNotNull(canMoveFSItemJSON);
+
+        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
+                String.class);
+        assertEquals("false", canMoveFSItem);
+
+        // -------------------------------------------------------------------
+        // No ADD_CHILDREN permission on the destination backing doc => false
+        // -------------------------------------------------------------------
+        setPermission(syncRoot1, "joe", SecurityConstants.WRITE, true);
+        canMoveFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCanMove.ID).set("srcId",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+                "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+        assertNotNull(canMoveFSItemJSON);
+
+        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
+                String.class);
+        assertEquals("false", canMoveFSItem);
+
+        // ----------------------------------------------------------------------
+        // REMOVE permission on the source backing doc + REMOVE_CHILDREN
+        // permission on its parent + ADD_CHILDREN permission on the destination
+        // backing doc => true
+        // ----------------------------------------------------------------------
+        setPermission(syncRoot2, "joe", SecurityConstants.WRITE, true);
+        canMoveFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCanMove.ID).set("srcId",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+                "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+        assertNotNull(canMoveFSItemJSON);
+
+        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
+                String.class);
+        assertEquals("true", canMoveFSItem);
+
+        // ----------------------------------------------------------------------
+        // Reset permissions
+        // ----------------------------------------------------------------------
+        resetPermissions(rootDoc, "joe");
+        resetPermissions(syncRoot1, "joe");
+        resetPermissions(syncRoot2, "joe");
+    }
+
+    @Test
+    public void testMove() throws Exception {
+
+        // ------------------------------------------------------
+        // File to File => fail
+        // ------------------------------------------------------
+        try {
+            clientSession.newRequest(NuxeoDriveMove.ID).set("srcId",
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+                    "destId",
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId()).execute();
+            fail("Move to a non folder item should fail.");
+        } catch (Exception e) {
+            assertEquals("Failed to execute operation: NuxeoDrive.Move",
+                    e.getMessage());
+        }
+
+        // ------------------------------------------------------
+        // Sync root => fail
+        // ------------------------------------------------------
+        try {
+            clientSession.newRequest(NuxeoDriveMove.ID).set("srcId",
+                    SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId()).set(
+                    "destId",
+                    SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+            fail("Should not be able to move a synchronization root folder item.");
+        } catch (Exception e) {
+            assertEquals("Failed to execute operation: NuxeoDrive.Move",
+                    e.getMessage());
+        }
+
+        // ------------------------------------------------------
+        // Top level folder => fail
+        // ------------------------------------------------------
+        try {
+            clientSession.newRequest(NuxeoDriveMove.ID).set(
+                    "srcId",
+                    fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
+                            session.getPrincipal().getName()).getId()).set(
+                    "destId",
+                    SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+            fail("Should not be able to move the top level folder item.");
+        } catch (Exception e) {
+            assertEquals("Failed to execute operation: NuxeoDrive.Move",
+                    e.getMessage());
+        }
+
+        // ------------------------------------------------------
+        // File to Folder => succeed
+        // ------------------------------------------------------
+        Blob movedFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveMove.ID).set("srcId",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+                "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+        assertNotNull(movedFSItemJSON);
+
+        DocumentBackedFileItem movedFileItem = mapper.readValue(
+                movedFSItemJSON.getStream(), DocumentBackedFileItem.class);
+        assertNotNull(movedFileItem);
+        assertEquals("First file.odt", movedFileItem.getName());
+
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String repositoryName, Principal
+        // principal)
+        session.save();
+
+        DocumentModel movedFileDoc = session.getDocument(new IdRef(
+                file1.getId()));
+        assertEquals("/folder2/file1", movedFileDoc.getPathAsString());
+        assertEquals("file1", movedFileDoc.getTitle());
+        org.nuxeo.ecm.core.api.Blob movedFileBlob = (org.nuxeo.ecm.core.api.Blob) movedFileDoc.getPropertyValue("file:content");
+        assertNotNull(movedFileBlob);
+        assertEquals("First file.odt", movedFileBlob.getFilename());
+    }
+
+    protected void createUser(String userName, String password)
+            throws ClientException {
+        org.nuxeo.ecm.directory.Session userDir = directoryService.getDirectory(
+                "userDirectory").getSession();
+        try {
+            Map<String, Object> user = new HashMap<String, Object>();
+            user.put("username", userName);
+            user.put("password", password);
+            userDir.createEntry(user);
+        } finally {
+            userDir.close();
+        }
+    }
+
+    protected void deleteUser(String userName) throws ClientException {
+        org.nuxeo.ecm.directory.Session userDir = directoryService.getDirectory(
+                "userDirectory").getSession();
+        try {
+            userDir.deleteEntry(userName);
+        } finally {
+            userDir.close();
+        }
+    }
+
+    protected void setPermission(DocumentModel doc, String userName,
+            String permission, boolean isGranted) throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        localACL.add(new ACE(userName, permission, isGranted));
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
+    }
+
+    protected void resetPermissions(DocumentModel doc, String userName)
+            throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        Iterator<ACE> localACLIt = localACL.iterator();
+        while (localACLIt.hasNext()) {
+            ACE ace = localACLIt.next();
+            if (userName.equals(ace.getUsername())) {
+                localACLIt.remove();
+            }
+        }
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
     }
 }

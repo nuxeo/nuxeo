@@ -141,6 +141,17 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         return folderItem.getChildren();
     }
 
+    @Override
+    public boolean canMove(String srcId, String destId, Principal principal)
+            throws ClientException {
+        FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
+        FileSystemItem destFsItem = getFileSystemItemById(destId, principal);
+        if (!(destFsItem instanceof FolderItem)) {
+            return false;
+        }
+        return srcFsItem.canMove((FolderItem) destFsItem);
+    }
+
     /*------------- Write operations ---------------*/
     @Override
     public FolderItem createFolder(String parentId, String name,
@@ -202,15 +213,15 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     @Override
     public FileSystemItem move(String srcId, String destId, Principal principal)
             throws ClientException {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public FileSystemItem copy(String srcId, String destId, Principal principal)
-            throws ClientException {
-        // TODO
-        return null;
+        FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
+        FileSystemItem destFsItem = getFileSystemItemById(destId, principal);
+        if (!(destFsItem instanceof FolderItem)) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot move a file system item to file system item with id %s because it is not a folder.",
+                            destId));
+        }
+        return srcFsItem.move((FolderItem) destFsItem);
     }
 
     /*------------- Protected ---------------*/

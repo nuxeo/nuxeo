@@ -20,12 +20,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.trash.TrashService;
@@ -108,13 +109,55 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         getTrashService().trashDocuments(docs);
     }
 
-    /*--------------------- AbstractDocumentBackedFileSystemItem -----------------*/
-    @JsonIgnore
-    public CoreSession getSession() throws ClientException {
-        return getSession(repositoryName);
+    public boolean canMove(FolderItem dest) throws ClientException {
+        // Check source doc deletion
+        if (!canDelete) {
+            return false;
+        }
+        // Check add children on destination doc
+        AbstractDocumentBackedFileSystemItem docBackedDest = (AbstractDocumentBackedFileSystemItem) dest;
+        String destRepoName = docBackedDest.getRepositoryName();
+        DocumentRef destDocRef = new IdRef(docBackedDest.getDocId());
+        // If source and destination repository are different, use a core
+        // session bound to the destination repository
+        CoreSession session;
+        if (repositoryName.equals(destRepoName)) {
+            session = getSession();
+        } else {
+            session = getSession(destRepoName);
+        }
+        if (!session.hasPermission(destDocRef, SecurityConstants.ADD_CHILDREN)) {
+            return false;
+        }
+        return true;
+    }
+
+    public FileSystemItem move(FolderItem dest) throws ClientException {
+        DocumentRef sourceDocRef = new IdRef(docId);
+        AbstractDocumentBackedFileSystemItem docBackedDest = (AbstractDocumentBackedFileSystemItem) dest;
+        String destRepoName = docBackedDest.getRepositoryName();
+        DocumentRef destDocRef = new IdRef(docBackedDest.getDocId());
+        // If source and destination repository are different, delete source and
+        // create doc in destination
+        if (repositoryName.equals(destRepoName)) {
+            CoreSession session = getSession();
+            DocumentModel movedDoc = session.move(sourceDocRef, destDocRef,
+                    null);
+            session.save();
+            return getFileSystemItemAdapterService().getFileSystemItem(
+                    movedDoc, dest.getId());
+        } else {
+            // TODO: implement move to another repository
+            throw new UnsupportedOperationException(
+                    "Multi repository move is not supported yet.");
+        }
     }
 
     /*--------------------- Protected -------------------------*/
+    protected CoreSession getSession() throws ClientException {
+        return getSession(repositoryName);
+    }
+
     protected String computeId(String docId) {
         StringBuilder sb = new StringBuilder();
         sb.append(super.getId());
@@ -122,6 +165,18 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         sb.append("/");
         sb.append(docId);
         return sb.toString();
+    }
+
+    protected String getRepositoryName() {
+        return repositoryName;
+    }
+
+    protected String getDocId() {
+        return docId;
+    }
+
+    protected String getDocPath() {
+        return docPath;
     }
 
     protected DocumentModel getDocument(CoreSession session)
