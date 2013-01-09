@@ -31,8 +31,13 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 public interface CSVImporterDocumentFactory {
 
     public void createDocument(CoreSession session, String parentPath,
-            String name, String type, Map<String, Serializable> values) throws ClientException;
+            String name, String type, Map<String, Serializable> values)
+            throws ClientException;
 
     public void updateDocument(CoreSession session, DocumentRef docRef,
             Map<String, Serializable> values) throws ClientException;
+
+    public boolean exists(CoreSession session, String parentPath, String name,
+            String type, Map<String, Serializable> values)
+            throws ClientException;
 }

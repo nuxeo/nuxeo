@@ -19,14 +19,15 @@ package org.nuxeo.ecm.csv;
 
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.util.Date;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 
-import org.apache.commons.codec.binary.Base64;
 /**
  *
  *
@@ -43,21 +44,24 @@ public class CSVImportId {
 
     protected final String csvBlobDigest;
 
+    protected final Date importDate;
+
     public static CSVImportId create(String repositoryName, String path,
-            Blob csvBlob) {
-        return create(repositoryName, path, computeDigest(csvBlob));
+            Blob csvBlob, Date importDate) {
+        return create(repositoryName, path, computeDigest(csvBlob), importDate);
     }
 
     public static CSVImportId create(String repositoryName, String path,
-            String csvBlobDigest) {
-        return new CSVImportId(repositoryName, path, csvBlobDigest);
+            String csvBlobDigest, Date importDate) {
+        return new CSVImportId(repositoryName, path, csvBlobDigest, importDate);
     }
 
     protected CSVImportId(String repositoryName, String path,
-            String csvBlobDigest) {
+            String csvBlobDigest, Date importDate) {
         this.repositoryName = repositoryName;
         this.path = path;
         this.csvBlobDigest = csvBlobDigest;
+        this.importDate = importDate;
     }
 
     @Override
@@ -94,7 +98,8 @@ public class CSVImportId {
             byte[] b = md.digest();
             return Base64.encodeBase64String(b);
         } catch (Exception e) {
-            log.error(String.format("Error while computing Blob digest: %s", e.getMessage()));
+            log.error(String.format("Error while computing Blob digest: %s",
+                    e.getMessage()));
             log.debug(e, e);
             return "";
         }

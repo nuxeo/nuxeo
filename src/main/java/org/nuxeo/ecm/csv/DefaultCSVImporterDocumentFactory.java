@@ -20,20 +20,24 @@ package org.nuxeo.ecm.csv;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFactory {
+public class DefaultCSVImporterDocumentFactory implements
+        CSVImporterDocumentFactory {
 
     @Override
     public void createDocument(CoreSession session, String parentPath,
-            String name, String type, Map<String, Serializable> values) throws ClientException {
+            String name, String type, Map<String, Serializable> values)
+            throws ClientException {
         DocumentModel doc = session.createDocumentModel(parentPath, name, type);
         for (Map.Entry<String, Serializable> entry : values.entrySet()) {
             doc.setPropertyValue(entry.getKey(), entry.getValue());
@@ -51,4 +55,12 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
         session.saveDocument(doc);
     }
 
+    @Override
+    public boolean exists(CoreSession session, String parentPath, String name,
+            String type, Map<String, Serializable> values)
+            throws ClientException {
+        String targetPath = new Path(parentPath).append(name).toString();
+        DocumentRef docRef = new PathRef(targetPath);
+        return session.exists(docRef);
+    }
 }
