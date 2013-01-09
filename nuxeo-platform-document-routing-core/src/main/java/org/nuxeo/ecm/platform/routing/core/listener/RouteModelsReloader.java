@@ -75,10 +75,12 @@ public class RouteModelsReloader implements EventListener {
                         }
                     }
                 }.runUnrestricted();
+                txSucceed = true;
             } finally {
                 if (txStarted) {
                     if (!txSucceed) {
                         TransactionHelper.setTransactionRollbackOnly();
+                        log.warn("Rollbacking import of route models");
                     }
                     TransactionHelper.commitOrRollbackTransaction();
                 }
