@@ -175,8 +175,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     /*--------------------- Protected ---------------------*/
     protected CoreSession getSession(String repositoryName)
             throws ClientException {
-        return Framework.getLocalService(FileSystemItemManager.class).getSession(
-                repositoryName, principal);
+        return getFileSystemItemManager().getSession(repositoryName, principal);
+    }
+
+    protected FileSystemItemManager getFileSystemItemManager() {
+        return Framework.getLocalService(FileSystemItemManager.class);
     }
 
     protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
