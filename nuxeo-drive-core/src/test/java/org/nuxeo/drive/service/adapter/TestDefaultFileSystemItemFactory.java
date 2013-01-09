@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
@@ -39,12 +40,18 @@ import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -72,6 +79,9 @@ public class TestDefaultFileSystemItemFactory {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected RepositorySettings repository;
 
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
@@ -246,6 +256,32 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("noteParentId", fsItem.getParentId());
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(note, null);
         assertNull(fsItem.getParentId());
+
+        // ------------------------------------------------------------------
+        // Check FileSystemItem#getCanRename and FileSystemItem#getCanDelete
+        // ------------------------------------------------------------------
+        // As Administrator
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
+
+        // As a user with READ permission
+        DocumentModel rootDoc = session.getRootDocument();
+        setPermission(rootDoc, "joe", SecurityConstants.READ, true);
+        CoreSession joeSession = repository.openSessionAs("joe");
+        note = joeSession.getDocument(note.getRef());
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
+        assertFalse(fsItem.getCanRename());
+        assertFalse(fsItem.getCanDelete());
+
+        // As a user with WRITE permission
+        setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
+
+        CoreInstance.getInstance().close(joeSession);
+        resetPermissions(rootDoc, "joe");
     }
 
     @Test
@@ -325,16 +361,10 @@ public class TestDefaultFileSystemItemFactory {
     @Test
     public void testFileItem() throws Exception {
 
-        // ------------------------------------------------------------
-        // FileSystemItem#getCanRename and FileSystemItem#getCanDelete
-        // ------------------------------------------------------------
-        FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-        assertTrue(fileItem.getCanRename());
-        assertTrue(fileItem.getCanDelete());
-
         // ------------------------------------------------------
         // FileItem#getDownloadURL
         // ------------------------------------------------------
+        FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         String baseURL = "http://myServer/nuxeo/";
         String downloadURL = fileItem.getDownloadURL(baseURL);
         assertEquals("http://myServer/nuxeo/nxbigfile/test/" + file.getId()
@@ -360,21 +390,33 @@ public class TestDefaultFileSystemItemFactory {
     @Test
     public void testFolderItem() throws Exception {
 
-        // ------------------------------------------------------------
-        // FileSystemItem#getCanRename and FileSystemItem#getCanDelete
-        // ------------------------------------------------------------
-        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-        assertTrue(folderItem.getCanRename());
-        assertTrue(folderItem.getCanDelete());
-
         // ------------------------------------------------------
         // FolderItem#canCreateChild
         // ------------------------------------------------------
+        // As Administrator
+        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
         assertTrue(folderItem.getCanCreateChild());
+
+        // As a user with READ permission
+        DocumentModel rootDoc = session.getRootDocument();
+        setPermission(rootDoc, "joe", SecurityConstants.READ, true);
+        CoreSession joeSession = repository.openSessionAs("joe");
+        folder = joeSession.getDocument(folder.getRef());
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        assertFalse(folderItem.getCanCreateChild());
+
+        // As a user with WRITE permission
+        setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        assertTrue(folderItem.getCanCreateChild());
+
+        CoreInstance.getInstance().close(joeSession);
+        resetPermissions(rootDoc, "joe");
 
         // ------------------------------------------------------
         // FolderItem#createFile and FolderItem#createFolder
         // ------------------------------------------------------
+        folder = session.getDocument(folder.getRef());
         folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
         // Note
         Blob childBlob = new StringBlob("This is the first child file.");
@@ -481,6 +523,30 @@ public class TestDefaultFileSystemItemFactory {
         fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Another file.odt", fileItemBlob.getFilename());
         assertEquals("Content of another file.", fileItemBlob.getString());
+    }
+
+    protected void setPermission(DocumentModel doc, String userName,
+            String permission, boolean isGranted) throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        localACL.add(new ACE(userName, permission, isGranted));
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
+    }
+
+    protected void resetPermissions(DocumentModel doc, String userName)
+            throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        Iterator<ACE> localACLIt = localACL.iterator();
+        while (localACLIt.hasNext()) {
+            ACE ace = localACLIt.next();
+            if (userName.equals(ace.getUsername())) {
+                localACLIt.remove();
+            }
+        }
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
     }
 
 }

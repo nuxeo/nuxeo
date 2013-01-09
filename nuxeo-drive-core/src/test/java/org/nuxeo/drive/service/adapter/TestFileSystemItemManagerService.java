@@ -224,6 +224,8 @@ public class TestFileSystemItemManagerService {
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
         List<FileSystemItem> children = ((FolderItem) fsItem).getChildren();
         assertNotNull(children);
         assertEquals(5, children.size());
@@ -239,6 +241,8 @@ public class TestFileSystemItemManagerService {
                 fsItem.getParentId());
         assertEquals("Joe.odt", fsItem.getName());
         assertFalse(fsItem.isFolder());
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
         Blob fileItemBlob = ((FileItem) fsItem).getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
@@ -256,6 +260,8 @@ public class TestFileSystemItemManagerService {
                 fsItem.getParentId());
         assertEquals("Sarah's folderish file", fsItem.getName());
         assertTrue(fsItem.isFolder());
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
 
         // Not adaptable as a FileSystemItem
@@ -276,6 +282,8 @@ public class TestFileSystemItemManagerService {
                 fsItem.getParentId());
         assertEquals("Tony's sub folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
 
         // ------------------------------------------------------

@@ -110,8 +110,6 @@ public class DocumentBackedFileItem extends
     protected void initialize(DocumentModel doc) throws ClientException {
         this.name = getFileName(doc);
         this.folder = false;
-        this.canRename = true;
-        this.canDelete = true;
     }
 
     protected BlobHolder getBlobHolder(DocumentModel doc)

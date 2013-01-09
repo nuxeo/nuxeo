@@ -36,7 +36,11 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
     public DefaultSyncRootFolderItem(String factoryName, String parentId,
             DocumentModel doc) throws ClientException {
         super(factoryName, parentId, doc);
+        // A sync root cannot be renamed
         this.canRename = false;
+        // A sync root can be deleted since deletion is implemented as
+        // unregistration
+        this.canDelete = true;
     }
 
     protected DefaultSyncRootFolderItem() {

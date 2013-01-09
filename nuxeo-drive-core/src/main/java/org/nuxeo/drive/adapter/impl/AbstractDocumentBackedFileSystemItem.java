@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -86,6 +87,13 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         creator = (String) doc.getPropertyValue("dc:creator");
         creationDate = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
+        CoreSession docSession = doc.getCoreSession();
+        canRename = docSession.hasPermission(doc.getRef(),
+                SecurityConstants.WRITE_PROPERTIES);
+        canDelete = docSession.hasPermission(doc.getRef(),
+                SecurityConstants.REMOVE)
+                && docSession.hasPermission(doc.getParentRef(),
+                        SecurityConstants.REMOVE_CHILDREN);
     }
 
     protected AbstractDocumentBackedFileSystemItem() {

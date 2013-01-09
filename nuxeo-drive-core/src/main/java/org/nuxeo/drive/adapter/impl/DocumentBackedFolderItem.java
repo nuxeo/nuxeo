@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -53,13 +54,13 @@ public class DocumentBackedFolderItem extends
     public DocumentBackedFolderItem(String factoryName, DocumentModel doc)
             throws ClientException {
         super(factoryName, doc);
-        initialize();
+        initialize(doc);
     }
 
     public DocumentBackedFolderItem(String factoryName, String parentId,
             DocumentModel doc) throws ClientException {
         super(factoryName, parentId, doc);
-        initialize();
+        initialize(doc);
     }
 
     protected DocumentBackedFolderItem() {
@@ -146,12 +147,11 @@ public class DocumentBackedFolderItem extends
     }
 
     /*--------------------- Protected -----------------*/
-    protected void initialize() throws ClientException {
+    protected void initialize(DocumentModel doc) throws ClientException {
         this.name = docTitle;
         this.folder = true;
-        this.canRename = true;
-        this.canDelete = true;
-        this.canCreateChild = true;
+        this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(),
+                SecurityConstants.ADD_CHILDREN);
     }
 
     protected FileManager getFileManager() {
