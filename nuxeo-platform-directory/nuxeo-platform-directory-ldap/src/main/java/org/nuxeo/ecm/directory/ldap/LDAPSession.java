@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SimpleTimeZone;
+
 import javax.naming.Context;
 import javax.naming.LimitExceededException;
 import javax.naming.NameNotFoundException;
@@ -50,6 +51,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -809,7 +811,14 @@ public class LDAPSession extends BaseSession implements EntrySource {
             throws DirectoryException {
         Attribute attribute = new BasicAttribute(
                 directory.getFieldMapper().getBackendField(fieldName));
-        Type type = schemaFieldMap.get(fieldName).getType();
+        Field field = schemaFieldMap.get(fieldName);
+        if (field == null) {
+            String message = String.format(
+                    "Invalid field name '%s' for directory '%s' with schema '%s'",
+                    fieldName, directory.getName(), directory.getSchema());
+            throw new DirectoryException(message);
+        }
+        Type type = field.getType();
         String typeName = type.getName();
 
         if ("string".equals(typeName)) {
@@ -1135,7 +1144,15 @@ public class LDAPSession extends BaseSession implements EntrySource {
     public DocumentModel createEntry(DocumentModel entry)
             throws ClientException {
         Map<String, Object> fieldMap = entry.getProperties(directory.getSchema());
-        return createEntry(fieldMap);
+        Map<String, Object> simpleNameFieldMap = new HashMap<String, Object>();
+        for (Map.Entry<String, Object> fieldEntry : fieldMap.entrySet()) {
+            String fieldKey = fieldEntry.getKey();
+            if (fieldKey.contains(":")) {
+                fieldKey = fieldKey.split(":")[1];
+            }
+            simpleNameFieldMap.put(fieldKey, fieldEntry.getValue());
+        }
+        return createEntry(simpleNameFieldMap);
     }
 
 }

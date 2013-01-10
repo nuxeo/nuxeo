@@ -18,3 +18,8 @@ objectClass: top
 objectClass: groupOfURLs
 cn: dyngroup2
 
+dn: cn=dyngroup3,ou=dyngroups,ou=editable,ou=groups,dc=example,dc=com
+memberURL: ldap:///ou=people,dc=example,dc=com??one?(&(cn=User*)(preferredLanguage=*dollars$*))
+objectClass: top
+objectClass: groupOfURLs
+cn: dyngroup3
