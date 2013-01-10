@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,10 +13,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.filemanager;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +30,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -63,6 +59,9 @@ public class TestVersionning {
     @Inject
     protected CoreSession coreSession;
 
+    @Inject
+    protected FileManager fm;
+
     private void createTestDocuments() throws Exception {
         wsRoot = coreSession.getDocument(new PathRef(
                 "default-domain/workspaces"));
@@ -86,7 +85,6 @@ public class TestVersionning {
     public void testVersioning() throws Exception {
         createTestDocuments();
 
-        FileManager fm = Framework.getService(FileManager.class);
         Blob blob = new StringBlob("Something");
         blob.setMimeType("something");
         blob.setFilename("mytest.something");
@@ -94,22 +92,18 @@ public class TestVersionning {
                 destWS.getPathAsString(), true, "mytest.something");
         waitForAsyncCompletion();
         assertEquals("mytest.something", doc.getTitle());
-        VersioningManager vm = Framework.getLocalService(VersioningManager.class);
-        String vl = vm.getVersionLabel(doc);
-        assertEquals("0.0", vl);
+        assertEquals("0.0", doc.getVersionLabel());
 
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytest.something");
         waitForAsyncCompletion();
-        String vl2 = vm.getVersionLabel(doc);
-        assertEquals("0.1", vl2);
+        assertEquals("0.1+", doc.getVersionLabel());
 
         blob.setFilename("mytest2.something");
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytest2.something");
         waitForAsyncCompletion();
-        vl = vm.getVersionLabel(doc);
-        assertEquals("0.0", vl);
+        assertEquals("0.0", doc.getVersionLabel());
 
         blob.setFilename("mytxt.txt");
         blob.setMimeType("text/plain");
@@ -117,14 +111,12 @@ public class TestVersionning {
                 destWS.getPathAsString(), true, "mytxt.txt");
         waitForAsyncCompletion();
         assertEquals("Note", doc.getType());
-        vl = vm.getVersionLabel(doc);
-        assertEquals("0.0", vl);
+        assertEquals("0.0", doc.getVersionLabel());
 
         doc = fm.createDocumentFromBlob(coreSession, blob,
                 destWS.getPathAsString(), true, "mytxt.txt");
         waitForAsyncCompletion();
-        vl = vm.getVersionLabel(doc);
-        assertEquals("0.1", vl);
+        assertEquals("0.1+", doc.getVersionLabel());
     }
 
 }

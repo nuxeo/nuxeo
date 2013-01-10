@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.filemanager.service.tests.versioning">
+<component name="org.nuxeo.ecm.platform.filemanager.service.tests.versioning2">
 
   <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" point="versioning">
     <versioning>
-      <defaultVersioningOption>MAJOR</defaultVersioningOption>
-      <versionAfterAdd>false</versionAfterAdd>
+      <defaultVersioningOption>MINOR</defaultVersioningOption>
+      <versionAfterAdd>true</versionAfterAdd>
     </versioning>
   </extension>
 
