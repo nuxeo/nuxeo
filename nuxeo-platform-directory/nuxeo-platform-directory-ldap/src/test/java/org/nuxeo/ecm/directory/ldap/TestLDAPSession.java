@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,8 +39,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -115,19 +120,22 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 // LDAP references do not work with the internal test server
                 if (HAS_DYNGROUP_SCHEMA) {
                     assertEquals(Arrays.asList("dyngroup1", "dyngroup2",
-                            "members", "subgroup"), entry2.getProperty(
-                            USER_SCHEMANAME, "groups"));
+                            "dyngroup3", "members", "subgroup"),
+                            entry2.getProperty(USER_SCHEMANAME, "groups"));
                 } else {
                     assertEquals(Arrays.asList("members", "subgroup"),
                             entry2.getProperty(USER_SCHEMANAME, "groups"));
                 }
-
-                Blob avatar = (Blob) entry2.getProperty(USER_SCHEMANAME, "avatar");
-                assertNotNull(avatar);
-                File file = FileUtils.getResourceFileFromContext("sample.jpg");
-                assertNotNull(file);
-                FileBlob expectedBlob = new FileBlob(file);
-                assertTrue(Arrays.equals(expectedBlob.getByteArray(), avatar.getByteArray()));
+                if (!(this instanceof TestLDAPPOSIXSession)) {
+                    Blob avatar = (Blob) entry2.getProperty(USER_SCHEMANAME,
+                            "avatar");
+                    assertNotNull(avatar);
+                    File file = FileUtils.getResourceFileFromContext("sample.jpg");
+                    assertNotNull(file);
+                    FileBlob expectedBlob = new FileBlob(file);
+                    assertTrue(Arrays.equals(expectedBlob.getByteArray(),
+                            avatar.getByteArray()));
+                }
             }
 
             DocumentModel entry3 = session.getEntry("UnexistingEntry");
@@ -617,15 +625,19 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
                 map.put("employeeType", Collections.<String>emptyList());
 
-                Blob cert = new ByteArrayBlob("Hello world!".getBytes());
-                map.put("certificate", cert);
+                if (!(this instanceof TestLDAPPOSIXSession)) {
+                    Blob cert = new ByteArrayBlob("Hello world!".getBytes());
+                    map.put("certificate", cert);
 
-                user = session.getEntry(session.createEntry(map).getId());
-                assertNotNull(user);
-                assertEquals(Collections.<String> emptyList(),
-                        user.getProperty(USER_SCHEMANAME, "employeeType"));
-                cert = (Blob) user.getProperty(USER_SCHEMANAME, "certificate");
-                assertEquals("Hello world!", new String(cert.getByteArray()));
+                    user = session.getEntry(session.createEntry(map).getId());
+                    assertNotNull(user);
+                    assertEquals(Collections.<String> emptyList(),
+                            user.getProperty(USER_SCHEMANAME, "employeeType"));
+                    cert = (Blob) user.getProperty(USER_SCHEMANAME,
+                            "certificate");
+                    assertEquals("Hello world!",
+                            new String(cert.getByteArray()));
+                }
             }
         } finally {
             if (session != null) {
@@ -673,7 +685,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                         entry.getProperty(USER_SCHEMANAME, "employeeType"));
                 if (HAS_DYNGROUP_SCHEMA) {
                     assertEquals(Arrays.asList("administrators", "dyngroup1",
-                            "dyngroup2", "members"), entry.getProperty(
+                            "dyngroup2", "dyngroup3", "members"), entry.getProperty(
                             USER_SCHEMANAME, "groups"));
                 } else {
                     assertEquals(Arrays.asList("administrators", "members"),
@@ -950,10 +962,10 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
             DocumentModelList entries = session.getEntries();
             if (HAS_DYNGROUP_SCHEMA) {
-                // 2 dynamic groups
-                assertEquals(9, entries.size());
+                // 3 dynamic groups
+                assertEquals(10, entries.size());
             } else {
-                assertEquals(6, entries.size());
+                assertEquals(7, entries.size());
             }
         } finally {
             session.close();

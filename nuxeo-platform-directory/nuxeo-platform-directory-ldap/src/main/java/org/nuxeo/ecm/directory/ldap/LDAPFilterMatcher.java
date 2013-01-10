@@ -111,20 +111,30 @@ public class LDAPFilterMatcher {
      *
      * @return true if the equality holds
      */
-    private static boolean simpleMatch(Attributes attributes,
+    protected static boolean simpleMatch(Attributes attributes,
             SimpleNode simpleElement) throws DirectoryException {
         Attribute attribute = attributes.get(simpleElement.getAttribute());
         if (attribute == null) {
             // null attribute cannot match any equality statement
             return false;
         }
+        boolean isCaseSensitive = isCaseSensitiveMatch(attribute);
         try {
             NamingEnumeration<?> rawValues = attribute.getAll();
             try {
                 while (rawValues.hasMore()) {
                     String rawValue = rawValues.next().toString();
-                    if (simpleElement.getValue().equals(rawValue)) {
-                        return true;
+                    if (isCaseSensitive || !(rawValue instanceof String)
+                            || !(simpleElement.getValue() instanceof String)) {
+                        if (simpleElement.getValue().equals(rawValue)) {
+                            return true;
+                        }
+                    } else {
+                        String stringValue = (String) rawValue;
+                        String stringElementValue = (String) simpleElement.getValue();
+                        if (stringElementValue.equalsIgnoreCase(stringValue)) {
+                            return true;
+                        }
                     }
                 }
             } finally {
@@ -138,15 +148,33 @@ public class LDAPFilterMatcher {
         return false;
     }
 
+    protected static boolean isCaseSensitiveMatch(Attribute attribute) {
+        // TODO: introspect the content of
+        // attribute.getAttributeSyntaxDefinition() to know whether the
+        // attribute is case sensitive for exact match and cache the results.
+        // fallback to case in-sensitive if syntax definition is missing
+        return false;
+    }
+
+    protected static boolean isCaseSensitiveSubstringMatch(Attribute attribute) {
+        // TODO: introspect the content of
+        // attribute.getAttributeSyntaxDefinition() to know whether the
+        // attribute is case sensitive for substring match and cache the
+        // results.
+        // fallback to case in-sensitive if syntax definition is missing
+        return false;
+    }
+
     /**
      * Implement the substring match on any non-null value of a string attribute
      * (eg: <tt>(attr3=val*)</tt>).
      *
      * @return the result of the regex evaluation
      */
-    private boolean substringMatch(Attributes attributes,
+    protected boolean substringMatch(Attributes attributes,
             SubstringNode substringElement) throws DirectoryException {
         try {
+
             Attribute attribute = attributes.get(substringElement.getAttribute());
             if (attribute == null) {
                 // null attribute cannot match any regex
@@ -157,9 +185,30 @@ public class LDAPFilterMatcher {
                 while (rawValues.hasMore()) {
                     String rawValue = rawValues.next().toString();
                     Normalizer normalizer = getNormalizer();
+                    StringBuffer sb = new StringBuffer();
+                    String initial = substringElement.getInitial();
+                    String finalSegment = substringElement.getFinal();
+                    if (initial != null && !initial.isEmpty()) {
+                        sb.append(Pattern.quote((String) normalizer.normalize(initial)));
+                    }
+                    sb.append(".*");
+                    for (Object segment: substringElement.getAny()) {
+                        if (segment instanceof String) {
+                            sb.append(Pattern.quote((String) normalizer.normalize(segment)));
+                            sb.append(".*");
+                        }
+                    }
+                    if (finalSegment != null && !finalSegment.isEmpty()) {
+                        sb.append(Pattern.quote((String) normalizer.normalize(finalSegment)));
+                    }
                     Pattern pattern;
                     try {
-                        pattern = substringElement.getRegex(normalizer);
+                        if (isCaseSensitiveSubstringMatch(attribute)) {
+                            pattern = Pattern.compile(sb.toString());
+                        } else {
+                            pattern = Pattern.compile(sb.toString(),
+                                    Pattern.CASE_INSENSITIVE);
+                        }
                     } catch (Exception e) {
                         throw new DirectoryException(
                                 "could not build regexp for substring: "
