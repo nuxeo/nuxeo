@@ -264,7 +264,8 @@ public class StandardVersioningService implements ExtendableVersioningService {
             VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
         option = validateOption(doc, option);
-        if (!doc.isCheckedOut() && isDirty) {
+        boolean disableAutoCheckOut = Boolean.TRUE.equals(options.get(VersioningService.DISABLE_AUTO_CHECKOUT));
+        if (!doc.isCheckedOut() && isDirty && !disableAutoCheckOut) {
             doCheckOut(doc);
             followTransitionByOption(doc, option);
         }

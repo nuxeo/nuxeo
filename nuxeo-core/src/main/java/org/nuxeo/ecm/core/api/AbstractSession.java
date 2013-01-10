@@ -1878,6 +1878,11 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
             String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
             docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
+            Boolean disableAutoCheckOut = (Boolean) docModel.getContextData(VersioningService.DISABLE_AUTO_CHECKOUT);
+            docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                    null);
+            options.put(VersioningService.DISABLE_AUTO_CHECKOUT,
+                    disableAutoCheckOut);
             // compat
             boolean snapshot = Boolean.TRUE.equals(docModel.getContextData(
                     ScopeType.REQUEST,

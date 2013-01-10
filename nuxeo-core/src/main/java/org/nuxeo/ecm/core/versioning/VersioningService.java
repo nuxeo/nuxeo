@@ -50,6 +50,16 @@ public interface VersioningService {
     String VERSIONING_OPTION = "VersioningOption";
 
     /**
+     * Context data to disable auto-checkout of checked-in documents at pre-save
+     * time. This option should only be used when updating a facet that's
+     * considered pure metadata and holds information about the document but
+     * external to it. Value is a {@link Boolean}.
+     *
+     * @since 5.7, 5.6.0-HF09
+     */
+    String DISABLE_AUTO_CHECKOUT = "DisableAutoCheckOut";
+
+    /**
      * Context data to provide a checkin comment for operations that potentially
      * check in (save, publish, checkin).
      */
