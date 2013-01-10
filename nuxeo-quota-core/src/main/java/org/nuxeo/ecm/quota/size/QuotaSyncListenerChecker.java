@@ -17,17 +17,19 @@
 
 package org.nuxeo.ecm.quota.size;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -111,12 +113,28 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             BlobSizeInfo bsi = computeSizeImpact(target, false);
             SizeUpdateEventContext quotaCtx = new SizeUpdateEventContext(
                     unrestrictedSession, bsi, DOCUMENT_CREATED, target);
+
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " started update");
             }
             processor.processQuotaComputation(quotaCtx);
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " update completed");
+            }
+            // if doc is in trash compute trash size also
+            if (DELETED_STATE.equals(target.getCurrentLifeCycleState())) {
+                quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
+                        DELETE_TRANSITION, target);
+
+                if (log.isTraceEnabled()) {
+                    log.trace("doc with uuid " + uuid
+                            + " started update on trash size");
+                }
+                processor.processQuotaComputation(quotaCtx);
+                if (log.isTraceEnabled()) {
+                    log.trace("doc with uuid " + uuid
+                            + " update completed on trash size");
+                }
             }
 
         } else {
@@ -439,6 +457,33 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             return result;
         } catch (Exception e) {
             throw new ClientException("Unable to extract Blob size", e);
+        }
+    }
+
+    @Override
+    protected void processDocumentTrashOp(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException {
+        String transition = (String) docCtx.getProperties().get(
+                TRANSTION_EVENT_OPTION_TRANSITION);
+        if (transition != null
+                && (!(DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition)))) {
+            return;
+        }
+
+        QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
+        if (quotaDoc != null) {
+            long total = quotaDoc.getTotalSize();
+            BlobSizeInfo bsi = new BlobSizeInfo();
+            bsi.blobSize = total;
+            bsi.blobSizeDelta = total;
+            if (total > 0) {
+                // check constrains not needed, since the documents stays in
+                // the same folder
+                SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                        session, docCtx, bsi, transition);
+                sendUpdateEvents(asyncEventCtx);
+            }
         }
     }
 

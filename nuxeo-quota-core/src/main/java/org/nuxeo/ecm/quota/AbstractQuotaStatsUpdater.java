@@ -17,16 +17,16 @@
 
 package org.nuxeo.ecm.quota;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -115,6 +115,8 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
                 processDocumentUpdated(session, doc, docCtx);
             } else if (BEFORE_DOC_UPDATE.equals(eventName)) {
                 processDocumentBeforeUpdate(session, doc, docCtx);
+            } else if (TRANSITION_EVENT.equals(eventName)) {
+                processDocumentTrashOp(session, doc, docCtx);
             }
         } catch (ClientException e) {
             ClientException e2 = handleException(e, event);
@@ -166,4 +168,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
     protected abstract void processDocumentBeforeUpdate(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException;
+    
+    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc,
+            DocumentEventContext docCtx) throws ClientException;
 }

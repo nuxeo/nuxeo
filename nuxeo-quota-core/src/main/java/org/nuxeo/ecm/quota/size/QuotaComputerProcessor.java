@@ -17,10 +17,12 @@
 
 package org.nuxeo.ecm.quota.size;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 
 import java.util.ArrayList;
@@ -150,7 +152,6 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 parents.remove(0);
             }
         } else {
-
             if (sourceDocument.getRef() == null) {
                 log.error("SourceDocument has no ref");
             } else {
@@ -174,6 +175,11 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 }
                 if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
                     quotaDoc.addTotalSize(quotaCtx.getBlobSize(), true);
+                } else if (DELETE_TRANSITION.equals(sourceEvent)
+                        || UNDELETE_TRANSITION.equals(sourceEvent)) {
+                    long blobDelta = (DELETE_TRANSITION.equals(sourceEvent) == true ? quotaCtx.getBlobDelta()
+                            : -quotaCtx.getBlobDelta());
+                    quotaDoc.addTrashSize(blobDelta, true);
                 } else {
                     quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
                 }
@@ -181,15 +187,20 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         }
         if (parents.size() > 0) {
             if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize());
+                processOnParents(parents, quotaCtx.getBlobSize(), true, false);
+            } else if (DELETE_TRANSITION.equals(sourceEvent)
+                    || UNDELETE_TRANSITION.equals(sourceEvent)) {
+                long blobDelta = (DELETE_TRANSITION.equals(sourceEvent) == true ? quotaCtx.getBlobDelta()
+                        : -quotaCtx.getBlobDelta());
+                processOnParents(parents, blobDelta, false, true);
             } else {
-                processOnParents(parents, quotaCtx.getBlobDelta());
+                processOnParents(parents, quotaCtx.getBlobDelta(), true, false);
             }
         }
     }
 
-    protected void processOnParents(List<DocumentModel> parents, long delta)
-            throws ClientException {
+    protected void processOnParents(List<DocumentModel> parents, long delta,
+            boolean total, boolean trashOp) throws ClientException {
         for (DocumentModel parent : parents) {
             if (parent.getPathAsString().equals("/")) {
                 continue;
@@ -204,7 +215,12 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 log.debug("   update Quota Facet on parent "
                         + parent.getPathAsString());
             }
-            quotaDoc.addTotalSize(delta, true);
+            if (total) {
+                quotaDoc.addTotalSize(delta, true);
+            }
+            if (trashOp) {
+                quotaDoc.addTrashSize(delta, true);
+            }
         }
     }
 }

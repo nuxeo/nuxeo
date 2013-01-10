@@ -13,6 +13,13 @@
      </h:outputText>
      <h:outputText value=" #{messages[formatedSize.unit]} #{formatedSize.percent}"/>
   </nxu:set>
+  
+  <nxu:set var="formatedTrashSize" value="#{currentQuotaDoc.quotaInfo.trashSize}">
+     <h:outputText value=" #{messages['label.quota.trashSize']} #{formatedTrashSize.valueInUnit}">
+       <f:convertNumber maxFractionDigits="2" />
+     </h:outputText>
+     <h:outputText value=" #{messages[formatedTrashSize.unit]} #{formatedTrashSize.percent}"/>
+  </nxu:set>
 
   </c:if>
 

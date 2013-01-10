@@ -29,12 +29,18 @@ public class QuotaInfo {
     protected final QuotaDisplayValue innerSize;
 
     protected final QuotaDisplayValue totalSize;
+    
+    protected final QuotaDisplayValue sizeTrash;
+    
+    protected final QuotaDisplayValue sizeVersions;
 
     protected final QuotaDisplayValue maxQuota;
 
-    public QuotaInfo(long innerSize, long totalSize, long maxQuota) {
+    public QuotaInfo(long innerSize, long totalSize, long trashSize, long versionsSize, long maxQuota) {
         this.innerSize = new QuotaDisplayValue(innerSize, maxQuota);
         this.totalSize = new QuotaDisplayValue(totalSize, maxQuota);
+        this.sizeTrash = new QuotaDisplayValue(trashSize, maxQuota);
+        this.sizeVersions = new QuotaDisplayValue(versionsSize, maxQuota); 
         this.maxQuota = new QuotaDisplayValue(maxQuota);
     }
 
@@ -49,5 +55,12 @@ public class QuotaInfo {
     public QuotaDisplayValue getMaxQuota() {
         return maxQuota;
     }
+    
+    public QuotaDisplayValue getTrashSize() {
+        return sizeTrash;
+    }
 
+    public QuotaDisplayValue getSizeVersions() {
+        return sizeVersions;
+    }
 }

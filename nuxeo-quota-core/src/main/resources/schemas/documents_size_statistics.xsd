@@ -6,6 +6,8 @@
   <!-- -1 means not computed yet -->
   <xs:element name="innerSize" type="xs:long" default="0"/>
   <xs:element name="totalSize" type="xs:long" default="0"/>
+  <xs:element name="sizeTrash" type="xs:long" default="0"/>
+  <xs:element name="sizeVersions" type="xs:long" default="0"/>
   <xs:element name="maxSize" type="xs:long" default="-1"/>
 
 </xs:schema>

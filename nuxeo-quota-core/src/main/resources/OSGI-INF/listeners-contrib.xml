@@ -13,6 +13,7 @@
       <event>documentModified</event>
       <event>beforeDocumentModification</event>
       <event>aboutToRemoveVersion</event>
+      <event>lifecycle_transition_event</event>
     </listener>
 
     <listener name="quotaProcessor" async="true"

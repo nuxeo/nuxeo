@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
@@ -320,6 +321,24 @@ public class TestDocumentsSizeUpdater {
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
     }
+    
+    protected void doDeleteFileContent() throws Exception {
+        TransactionHelper.startTransaction();
+        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        docs.add(session.getDocument(firstFileRef));
+        Framework.getLocalService(TrashService.class).trashDocuments(docs);
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void doUndeleteFileContent() throws Exception {
+        TransactionHelper.startTransaction();
+        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        docs.add(session.getDocument(firstFileRef));
+        Framework.getLocalService(TrashService.class).undeleteDocuments(docs);
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+    }
 
     protected void doCopyContent() throws Exception {
         TransactionHelper.startTransaction();
@@ -372,6 +391,15 @@ public class TestDocumentsSizeUpdater {
         assertNotNull(qa);
         assertEquals(innerSize, qa.getInnerSize());
         assertEquals(totalSize, qa.getTotalSize());
+    }
+    
+    protected void assertQuota(DocumentModel doc, long innerSize,
+            long totalSize, long trashSize) {
+        QuotaAware qa = doc.getAdapter(QuotaAware.class);
+        assertNotNull(qa);
+        assertEquals(innerSize, qa.getInnerSize());
+        assertEquals(totalSize, qa.getTotalSize());
+        assertEquals(trashSize, qa.getTrashSize());
     }
 
     @Test
@@ -961,6 +989,40 @@ public class TestDocumentsSizeUpdater {
         session.save();
 
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
+    }
+    
+    @Test
+    public void testQuotaOnDeleteContent() throws Exception {
+        addContent();
+
+        dump();
+
+        doDeleteFileContent();
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        DocumentModel ws = session.getDocument(wsRef);
+        DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+
+        assertQuota(firstFile, 100L, 100L, 100L);
+        assertQuota(firstFolder, 0L, 300L, 100L);
+        assertQuota(ws, 0L, 300L, 100L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
+        doUndeleteFileContent();
+        TransactionHelper.startTransaction();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstFile = session.getDocument(firstFileRef);
+
+        assertQuota(firstFile, 100L, 100L, 0L);
+        assertQuota(firstFolder, 0L, 300L, 0L);
+        assertQuota(ws, 0L, 300L, 0L);
     }
 
 }

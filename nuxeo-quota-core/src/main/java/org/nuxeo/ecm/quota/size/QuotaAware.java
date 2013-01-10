@@ -31,12 +31,20 @@ public interface QuotaAware {
     long getInnerSize();
 
     long getTotalSize();
+    
+    long getTrashSize();
+    
+    long getVersionsSize();
 
     long getMaxQuota();
 
     void addInnerSize(long additionalSize, boolean save) throws ClientException;
 
     void addTotalSize(long additionalSize, boolean save) throws ClientException;
+    
+    void addTrashSize(long additionalSize, boolean save) throws ClientException;
+    
+    void addVersionsSize(long additionalSize, boolean save) throws ClientException;
 
     void save() throws ClientException;
 

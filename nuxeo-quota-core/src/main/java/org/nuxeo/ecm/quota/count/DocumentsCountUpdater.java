@@ -332,4 +332,9 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         public long descendantsCount = 0;
     }
 
+    @Override
+    protected void processDocumentTrashOp(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx) {
+        // do nothing for count
+    }
 }
