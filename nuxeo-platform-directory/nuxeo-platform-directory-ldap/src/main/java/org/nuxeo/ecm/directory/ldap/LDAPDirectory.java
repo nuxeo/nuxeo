@@ -240,7 +240,11 @@ public class LDAPDirectory extends AbstractDirectory {
         // only fetch attributes that are defined in the schema or needed to
         // compute LDAPReferences
         Set<String> attrs = new HashSet<String>();
-        attrs.addAll(fieldMapper.getBackendFields(schemaFieldMap.keySet()));
+        for (String fieldName : schemaFieldMap.keySet()) {
+            if (!references.containsKey(fieldName)) {
+                attrs.add(fieldMapper.getBackendField(fieldName));
+            }
+        }
         attrs.add("objectClass");
 
         for (Reference reference : references.values()) {
