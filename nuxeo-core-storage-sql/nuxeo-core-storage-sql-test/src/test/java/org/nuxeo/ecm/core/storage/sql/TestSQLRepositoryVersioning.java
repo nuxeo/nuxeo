@@ -254,6 +254,39 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testAutoCheckOut() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "file", "File");
+        doc.setPropertyValue("dc:title", "t0");
+        doc = session.createDocument(doc);
+        assertTrue(doc.isCheckedOut());
+        session.checkIn(doc.getRef(), null, null);
+        doc.refresh();
+        assertFalse(doc.isCheckedOut());
+
+        // auto-checkout
+        doc.setPropertyValue("dc:title", "t1");
+        doc = session.saveDocument(doc);
+        assertTrue(doc.isCheckedOut());
+
+        session.checkIn(doc.getRef(), null, null);
+        doc.refresh();
+        assertFalse(doc.isCheckedOut());
+
+        // disable auto-checkout
+        doc.setPropertyValue("dc:title", "t2");
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                Boolean.TRUE);
+        doc = session.saveDocument(doc);
+        assertFalse(doc.isCheckedOut());
+        assertEquals("t2", doc.getPropertyValue("dc:title"));
+
+        // can still be checked out normally afterwards
+        doc.checkOut();
+        assertTrue(doc.isCheckedOut());
+        assertEquals("t2", doc.getPropertyValue("dc:title"));
+    }
+
+    @Test
     public void testRestoreToVersion() throws Exception {
         String name2 = "file#456";
         DocumentModel doc = new DocumentModelImpl("/", name2, "File");
