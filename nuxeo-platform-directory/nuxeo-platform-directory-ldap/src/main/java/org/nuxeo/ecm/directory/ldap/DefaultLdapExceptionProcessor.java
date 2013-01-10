@@ -26,10 +26,10 @@ import org.nuxeo.ecm.core.api.RecoverableClientException;
 /**
  * Default implementation of the {@link LdapExceptionProcessor} based on Errors
  * returned by OpenDS
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
- * 
+ *
  */
 public class DefaultLdapExceptionProcessor implements LdapExceptionProcessor {
 
@@ -38,6 +38,9 @@ public class DefaultLdapExceptionProcessor implements LdapExceptionProcessor {
     public RecoverableClientException extractRecoverableException(Exception e) {
 
         String errMsg = e.getMessage();
+        if (errMsg == null) {
+            return null;
+        }
         Matcher matcher53 = err53.matcher(errMsg);
 
         if (matcher53.matches()) {
