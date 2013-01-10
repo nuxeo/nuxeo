@@ -26,8 +26,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
@@ -104,10 +106,19 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     private boolean computeDigest = false;
 
+    public static final VersioningOption DEF_VERSIONING_OPTION = VersioningOption.MINOR;
+
+    public static final boolean DEF_VERSIONING_AFTER_ADD = false;
+
     /**
      * @since 5.7
      */
-    private VersioningOption defaultVersioningOption = VersioningOption.MINOR;
+    private VersioningOption defaultVersioningOption = DEF_VERSIONING_OPTION;
+
+    /**
+     * @since 5.7
+     */
+    private boolean versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
 
     private TypeManager typeService;
 
@@ -313,7 +324,15 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
                 if (contrib instanceof VersioningDescriptor) {
-                    defaultVersioningOption = VersioningOption.valueOf(((VersioningDescriptor) contrib).getDefaultVersioningOption().toUpperCase());
+                    VersioningDescriptor descr = (VersioningDescriptor) contrib;
+                    String defver = descr.defaultVersioningOption;
+                    if (!StringUtils.isBlank(defver)) {
+                        defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
+                    }
+                    Boolean veradd = descr.versionAfterAdd;
+                    if (veradd != null) {
+                        versioningAfterAdd = veradd.booleanValue();
+                    }
                 }
             }
         } else {
@@ -340,7 +359,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         } else if (extension.getExtensionPoint().equals("versioning")) {
             // set to default value
-            defaultVersioningOption = VersioningOption.MINOR;
+            defaultVersioningOption = DEF_VERSIONING_OPTION;
+            versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
         } else {
             log.warn(String.format("Unknown contribution %s: ignored",
                     extension.getExtensionPoint()));
@@ -585,10 +605,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return digestAlgorithm;
     }
 
-    /**
-     * @since 5.7
-     */
+    @Override
     public VersioningOption getVersioningOption() {
         return defaultVersioningOption;
     }
+
+    @Override
+    public boolean doVersioningAfterAdd() {
+        return versioningAfterAdd;
+    }
+
 }

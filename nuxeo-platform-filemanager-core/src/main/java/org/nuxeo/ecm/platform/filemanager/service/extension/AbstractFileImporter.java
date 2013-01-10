@@ -19,18 +19,24 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
+import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
@@ -101,10 +107,103 @@ public abstract class AbstractFileImporter implements FileImporter {
         this.docType = docType;
     }
 
-    public DocumentModel create(CoreSession documentManager, File file,
-            String path, boolean overwrite, String mimeType,
-            TypeManager typService) {
-        return null;
+    /**
+     * Gets the doc type to use in the given container.
+     */
+    public String getDocType(DocumentModel container) {
+        return getDocType(); // use XML configuration
+    }
+
+    /**
+     * Default document type to use when the plugin XML configuration does not
+     * specify one.
+     * <p>
+     * To implement when the default {@link #create} method is used.
+     */
+    public String getDefaultDocType() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Whether document overwrite is detected by checking title or filename.
+     * <p>
+     * To implement when the default {@link #create} method is used.
+     */
+    public boolean isOverwriteByTitle() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Creates the document (sets its properties). {@link #updateDocument} will
+     * be called after this.
+     * <p>
+     * Default implementation sets the title.
+     */
+    public void createDocument(DocumentModel doc, Blob content, String title)
+            throws ClientException {
+        doc.setPropertyValue("dc:title", title);
+    }
+
+    /**
+     * Updates the document (sets its properties).
+     * <p>
+     * Default implementation sets the content.
+     */
+    public void updateDocument(DocumentModel doc, Blob content)
+            throws ClientException {
+        try {
+            content = content.persist();
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
+        doc.getAdapter(BlobHolder.class).setBlob(content);
+    }
+
+    @Override
+    public DocumentModel create(CoreSession session, Blob content, String path,
+            boolean overwrite, String fullname, TypeManager typeService)
+            throws ClientException, IOException {
+        path = getNearestContainerPath(session, path);
+        DocumentModel container = session.getDocument(new PathRef(path));
+        String docType = getDocType(container); // from override or descriptor
+        if (docType == null) {
+            docType = getDefaultDocType();
+        }
+        doSecurityCheck(session, path, docType, typeService);
+        String filename = FileManagerUtils.fetchFileName(fullname);
+        String title = FileManagerUtils.fetchTitle(filename);
+        content.setFilename(filename);
+        // look for an existing document with same title or filename
+        DocumentModel doc;
+        if (isOverwriteByTitle()) {
+            doc = FileManagerUtils.getExistingDocByTitle(session, path, title);
+        } else {
+            doc = FileManagerUtils.getExistingDocByFileName(session, path,
+                    filename);
+        }
+        if (overwrite && doc != null) {
+            // make sure we save any existing data
+            checkIn(doc);
+            // update data
+            updateDocument(doc, content);
+            // save
+            doc = doc.getCoreSession().saveDocument(doc);
+        } else {
+            // create document model
+            doc = session.createDocumentModel(docType);
+            createDocument(doc, content, title);
+            // set path
+            PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+            doc.setPathInfo(path, pss.generatePathSegment(doc));
+            // update data
+            updateDocument(doc, content);
+            // create
+            doc = session.createDocument(doc);
+        }
+        // check in if requested
+        checkInAfterAdd(doc);
+        session.save();
+        return doc;
     }
 
     public FileManagerService getFileManagerService() {
@@ -168,6 +267,26 @@ public abstract class AbstractFileImporter implements FileImporter {
         return path;
     }
 
+    protected void checkIn(DocumentModel doc) throws ClientException {
+        VersioningOption option = fileManagerService.getVersioningOption();
+        if (option != null && option != VersioningOption.NONE) {
+            if (doc.isCheckedOut()) {
+                doc.checkIn(option, null);
+            }
+        }
+    }
+
+    protected void checkInAfterAdd(DocumentModel doc) throws ClientException {
+        if (fileManagerService.doVersioningAfterAdd()) {
+            checkIn(doc);
+        }
+    }
+
+    /**
+     * @deprecated use {@link #checkIn} instead, noting that it does not save
+     *             the document
+     */
+    @Deprecated
     protected DocumentModel overwriteAndIncrementversion(
             CoreSession documentManager, DocumentModel doc)
             throws ClientException {

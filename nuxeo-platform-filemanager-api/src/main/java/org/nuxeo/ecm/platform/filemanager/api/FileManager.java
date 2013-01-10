@@ -112,8 +112,19 @@ public interface FileManager {
     boolean isDigestComputingEnabled();
 
     /**
+     * Gets the versioning applied on an overwritten document before it is
+     * overwritten.
+     *
      * @since 5.7
      */
     VersioningOption getVersioningOption();
+
+    /**
+     * Checks whether versioning should also be applied after a document is
+     * added.
+     *
+     * @since 5.7
+     */
+    boolean doVersioningAfterAdd();
 
 }
