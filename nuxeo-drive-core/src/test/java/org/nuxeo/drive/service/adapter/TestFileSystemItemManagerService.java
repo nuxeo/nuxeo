@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -250,8 +251,12 @@ public class TestFileSystemItemManagerService {
         assertFalse(fsItem.isFolder());
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
-        assertTrue(((FileItem) fsItem).getCanUpdate());
-        Blob fileItemBlob = ((FileItem) fsItem).getBlob();
+        FileItem fileFsItem = (FileItem) fsItem;
+        assertTrue(fileFsItem.getCanUpdate());
+        assertEquals("MD5", fileFsItem.getDigestAlgorithm());
+        assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(),
+                fileFsItem.getDigest());
+        Blob fileItemBlob = fileFsItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
 
@@ -450,6 +455,8 @@ public class TestFileSystemItemManagerService {
         Blob newFileBlob = (Blob) newFile.getPropertyValue("file:content");
         assertEquals("New file.odt", newFileBlob.getFilename());
         assertEquals("Content of a new file.", newFileBlob.getString());
+        assertEquals("MD5", fileItem.getDigestAlgorithm());
+        assertEquals(newFileBlob.getDigest(), fileItem.getDigest());
 
         // Parent folder children check
         assertEquals(
@@ -482,6 +489,8 @@ public class TestFileSystemItemManagerService {
         assertEquals("New file.odt", updatedFileBlob.getFilename());
         assertEquals("Modified content of an existing file.",
                 updatedFileBlob.getString());
+        assertEquals("MD5", fileItem.getDigestAlgorithm());
+        assertEquals(updatedFileBlob.getDigest(), fileItem.getDigest());
 
         // ------------------------------------------------------
         // Check #delete
@@ -523,8 +532,10 @@ public class TestFileSystemItemManagerService {
         assertEquals("File new name.odt", fsItem.getName());
         file = session.getDocument(file.getRef());
         assertEquals("aFile", file.getTitle());
-        assertEquals("File new name.odt",
-                ((Blob) file.getPropertyValue("file:content")).getFilename());
+        Blob fileBlob = (Blob) file.getPropertyValue("file:content");
+        assertEquals("File new name.odt", fileBlob.getFilename());
+        assertEquals("MD5", ((FileItem) fsItem).getDigestAlgorithm());
+        assertEquals(fileBlob.getDigest(), ((FileItem) fsItem).getDigest());
 
         // File rename with title == filename
         // => should rename filename and title
@@ -545,8 +556,11 @@ public class TestFileSystemItemManagerService {
         assertEquals("Renamed title-filename equality.odt", fsItem.getName());
         newFile = session.getDocument(newFile.getRef());
         assertEquals("Renamed title-filename equality.odt", newFile.getTitle());
+        newFileBlob = (Blob) newFile.getPropertyValue("file:content");
         assertEquals("Renamed title-filename equality.odt",
-                ((Blob) newFile.getPropertyValue("file:content")).getFilename());
+                newFileBlob.getFilename());
+        assertEquals("MD5", ((FileItem) fsItem).getDigestAlgorithm());
+        assertEquals(newFileBlob.getDigest(), ((FileItem) fsItem).getDigest());
 
         // ------------------------------------------------------
         // Check #move

@@ -317,6 +317,10 @@ public class TestFileSystemItemOperations {
         assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file1.getId()
                 + "/blobholder:0/First%20file.odt",
                 fileItem.getDownloadURL("http://my-server/nuxeo/"));
+        assertEquals("MD5", fileItem.getDigestAlgorithm());
+        assertEquals(
+                ((org.nuxeo.ecm.core.api.Blob) file1.getPropertyValue("file:content")).getDigest(),
+                fileItem.getDigest());
     }
 
     @Test
@@ -349,6 +353,10 @@ public class TestFileSystemItemOperations {
         assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file3.getId()
                 + "/blobholder:0/Third%20file.odt",
                 child.getDownloadURL("http://my-server/nuxeo/"));
+        assertEquals("MD5", child.getDigestAlgorithm());
+        assertEquals(
+                ((org.nuxeo.ecm.core.api.Blob) file3.getPropertyValue("file:content")).getDigest(),
+                child.getDigest());
 
         child = children.get(1);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file4.getId(),
@@ -364,6 +372,10 @@ public class TestFileSystemItemOperations {
         assertEquals("http://my-server/nuxeo/nxbigfile/test/" + file4.getId()
                 + "/blobholder:0/Fourth%20file.odt",
                 child.getDownloadURL("http://my-server/nuxeo/"));
+        assertEquals("MD5", child.getDigestAlgorithm());
+        assertEquals(
+                ((org.nuxeo.ecm.core.api.Blob) file4.getPropertyValue("file:content")).getDigest(),
+                child.getDigest());
     }
 
     @Test
@@ -447,6 +459,8 @@ public class TestFileSystemItemOperations {
                 "http://my-server/nuxeo/nxbigfile/test/" + newFileDoc.getId()
                         + "/blobholder:0/New%20file.odt",
                 newFile.getDownloadURL("http://my-server/nuxeo/"));
+        assertEquals("MD5", newFile.getDigestAlgorithm());
+        assertEquals(newFileBlob.getDigest(), newFile.getDigest());
     }
 
     @Test
@@ -497,6 +511,8 @@ public class TestFileSystemItemOperations {
                         + updatedFileDoc.getId()
                         + "/blobholder:0/Updated%20file%201.odt",
                 updatedFile.getDownloadURL("http://my-server/nuxeo/"));
+        assertEquals("MD5", updatedFile.getDigestAlgorithm());
+        assertEquals(updatedFileBlob.getDigest(), updatedFile.getDigest());
     }
 
     @Test
@@ -578,6 +594,8 @@ public class TestFileSystemItemOperations {
         org.nuxeo.ecm.core.api.Blob renamedFileBlob = (org.nuxeo.ecm.core.api.Blob) renamedFileDoc.getPropertyValue("file:content");
         assertNotNull(renamedFileBlob);
         assertEquals("Renamed file 1.odt", renamedFileBlob.getFilename());
+        assertEquals("MD5", renamedFileItem.getDigestAlgorithm());
+        assertEquals(renamedFileBlob.getDigest(), renamedFileItem.getDigest());
 
         // ------------------------------------------------------
         // Folder
@@ -804,6 +822,8 @@ public class TestFileSystemItemOperations {
         org.nuxeo.ecm.core.api.Blob movedFileBlob = (org.nuxeo.ecm.core.api.Blob) movedFileDoc.getPropertyValue("file:content");
         assertNotNull(movedFileBlob);
         assertEquals("First file.odt", movedFileBlob.getFilename());
+        assertEquals("MD5", movedFileItem.getDigestAlgorithm());
+        assertEquals(movedFileBlob.getDigest(), movedFileItem.getDigest());
     }
 
     protected void createUser(String userName, String password)

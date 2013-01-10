@@ -35,6 +35,12 @@ public class DocumentBackedFileItem extends
 
     private static final long serialVersionUID = 1L;
 
+    private static final String MD5_DIGEST_ALGORITHM = "MD5";
+
+    protected String digestAlgorithm;
+
+    protected String digest;
+
     protected boolean canUpdate;
 
     public DocumentBackedFileItem(String factoryName, DocumentModel doc)
@@ -70,11 +76,6 @@ public class DocumentBackedFileItem extends
 
     /*--------------------- FileItem -----------------*/
     @Override
-    public boolean getCanUpdate() {
-        return canUpdate;
-    }
-
-    @Override
     public Blob getBlob() throws ClientException {
         DocumentModel doc = getDocument(getSession());
         return getBlob(doc);
@@ -96,6 +97,21 @@ public class DocumentBackedFileItem extends
     }
 
     @Override
+    public String getDigestAlgorithm() {
+        return digestAlgorithm;
+    }
+
+    @Override
+    public String getDigest() {
+        return digest;
+    }
+
+    @Override
+    public boolean getCanUpdate() {
+        return canUpdate;
+    }
+
+    @Override
     public void setBlob(Blob blob) throws ClientException {
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
@@ -110,6 +126,7 @@ public class DocumentBackedFileItem extends
         }
         bh.setBlob(blob);
         session.saveDocument(doc);
+        updateDigest();
         session.save();
     }
 
@@ -117,6 +134,10 @@ public class DocumentBackedFileItem extends
     protected void initialize(DocumentModel doc) throws ClientException {
         this.name = getFileName(doc);
         this.folder = false;
+        // TODO: should get the digest algorithm from the binary store
+        // configuration, but it is not exposed as a public API for now
+        this.digestAlgorithm = MD5_DIGEST_ALGORITHM;
+        updateDigest();
         this.canUpdate = this.canRename;
     }
 
@@ -159,7 +180,19 @@ public class DocumentBackedFileItem extends
         }
     }
 
+    protected void updateDigest() throws ClientException {
+        digest = getBlob().getDigest();
+    }
+
     /*---------- Needed for JSON deserialization ----------*/
+    protected void setDigestAlgorithm(String digestAlgorithm) {
+        this.digestAlgorithm = digestAlgorithm;
+    }
+
+    protected void setDigest(String digest) {
+        this.digest = digest;
+    }
+
     protected void setCanUpdate(boolean canUpdate) {
         this.canUpdate = canUpdate;
     }

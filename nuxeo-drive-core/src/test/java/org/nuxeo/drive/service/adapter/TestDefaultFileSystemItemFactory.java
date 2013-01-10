@@ -368,6 +368,23 @@ public class TestDefaultFileSystemItemFactory {
                 + "/blobholder:0/Joe.odt", downloadURL);
 
         // ------------------------------------------------------------
+        // FileItem#getDigestAlgorithm
+        // ------------------------------------------------------------
+        assertEquals("MD5", fileItem.getDigestAlgorithm());
+
+        // ------------------------------------------------------------
+        // FileItem#getDigest
+        // ------------------------------------------------------------
+        assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(),
+                fileItem.getDigest());
+        assertEquals(
+                note.getAdapter(BlobHolder.class).getBlob().getDigest(),
+                ((FileItem) defaultFileSystemItemFactory.getFileSystemItem(note)).getDigest());
+        assertEquals(
+                custom.getAdapter(BlobHolder.class).getBlob().getDigest(),
+                ((FileItem) defaultFileSystemItemFactory.getFileSystemItem(custom)).getDigest());
+
+        // ------------------------------------------------------------
         // FileItem#getCanUpdate
         // ------------------------------------------------------------
         // As Administrator

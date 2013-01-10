@@ -97,6 +97,9 @@ public class TestFileSystemItemAdapterService {
 
         file = session.createDocumentModel("/", "aFile", "File");
         file.setPropertyValue("dc:creator", "Joe");
+        Blob blob = new StringBlob("Content of Joe's file.");
+        blob.setFilename("Joe's file.txt");
+        file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
 
         folder = session.createDocumentModel("/", "aFolder", "Folder");
@@ -106,7 +109,7 @@ public class TestFileSystemItemAdapterService {
 
         custom = session.createDocumentModel("/", "aCustom", "Custom");
         custom.setPropertyValue("dc:creator", "Bonnie");
-        Blob blob = new StringBlob("Content of the custom document's blob.");
+        blob = new StringBlob("Content of the custom document's blob.");
         blob.setFilename("Bonnie's file.txt");
         custom.setPropertyValue("file:content", (Serializable) blob);
         custom = session.createDocument(custom);
@@ -387,6 +390,8 @@ public class TestFileSystemItemAdapterService {
         // File => should use the dummyDocTypeFactory bound to the
         // DefaultFileSystemItemFactory class, but return null because the
         // document has no file
+        file.setPropertyValue("file:content", null);
+        session.saveDocument(file);
         FileSystemItem fsItem = fileSystemItemAdapterService.getFileSystemItem(file);
         assertNull(fsItem);
 
