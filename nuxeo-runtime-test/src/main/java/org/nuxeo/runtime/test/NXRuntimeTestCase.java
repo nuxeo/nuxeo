@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@
 
 package org.nuxeo.runtime.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -36,18 +40,16 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.runner.RunWith;
-import org.junit.Before;
 import org.junit.After;
-import static org.junit.Assert.*;
-
+import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.DirectoryBundleFile;
@@ -121,7 +123,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     }
 
     public NXRuntimeTestCase(String name) {
-        //super(name);
+        // super(name);
     }
 
     @Override
@@ -157,7 +159,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     @Before
     public void setUp() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
-        //super.setUp();
+        // super.setUp();
         wipeRuntime();
         initUrls();
         if (urls == null) {
@@ -181,14 +183,14 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         wipeRuntime();
         if (workingDir != null) {
             if (!restart) {
-                FileUtils.deleteTree(workingDir);
+                FileUtils.deleteQuietly(workingDir);
                 workingDir = null;
             }
         }
         readUris = null;
         bundles = null;
         ServiceManager.getInstance().reset();
-        //super.tearDown();
+        // super.tearDown();
         if (NuxeoContainer.isInstalled()) {
             throw new RuntimeException("Nuxeo container is still installed",
                     NuxeoContainer.getInstallContext());
@@ -231,7 +233,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         BundleFile bf = new SystemBundleFile(workingDir);
         bundleLoader = new StandaloneBundleLoader(osgi,
                 NXRuntimeTestCase.class.getClassLoader());
-        SystemBundle systemBundle = new SystemBundle(osgi, bf, bundleLoader.getSharedClassLoader().getLoader());
+        SystemBundle systemBundle = new SystemBundle(osgi, bf,
+                bundleLoader.getSharedClassLoader().getLoader());
         osgi.setSystemBundle(systemBundle);
         Thread.currentThread().setContextClassLoader(
                 bundleLoader.getSharedClassLoader().getLoader());
@@ -287,43 +290,51 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                     + "\nWon't be able to load OSGI bundles");
             return;
         }
-        // special case for maven surefire with useManifestOnlyJar
-        if (urls.length == 1) {
+        // special cases such as Surefire with useManifestOnlyJar or Jacoco
+        // Look for nuxeo-runtime
+        boolean found = false;
+        JarFile surefirebooterJar = null;
+        for (URL url : urls) {
+            URI uri = url.toURI();
+            if (uri.getPath().contains("nuxeo-runtime")) {
+                found = true;
+                break;
+            } else if (uri.getScheme().equals("file")
+                    && uri.getPath().contains("surefirebooter")) {
+                surefirebooterJar = new JarFile(new File(uri));
+            }
+        }
+        if (!found && surefirebooterJar != null) {
             try {
-                URI uri = urls[0].toURI();
-                if (uri.getScheme().equals("file")
-                        && uri.getPath().contains("surefirebooter")) {
-                    JarFile jar = new JarFile(new File(uri));
-                    try {
-                        String cp = jar.getManifest().getMainAttributes().getValue(
-                                Attributes.Name.CLASS_PATH);
-                        if (cp != null) {
-                            String[] cpe = cp.split(" ");
-                            URL[] newUrls = new URL[cpe.length];
-                            for (int i = 0; i < cpe.length; i++) {
-                                // Don't need to add 'file:' with maven surefire
-                                // >= 2.4.2
-                                String newUrl = cpe[i].startsWith("file:") ? cpe[i]
-                                        : "file:" + cpe[i];
-                                newUrls[i] = new URL(newUrl);
-                            }
-                            urls = newUrls;
-                        }
-                    } finally {
-                        jar.close();
+                String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(
+                        Attributes.Name.CLASS_PATH);
+                if (cp != null) {
+                    String[] cpe = cp.split(" ");
+                    URL[] newUrls = new URL[cpe.length];
+                    for (int i = 0; i < cpe.length; i++) {
+                        // Don't need to add 'file:' with maven surefire
+                        // >= 2.4.2
+                        String newUrl = cpe[i].startsWith("file:") ? cpe[i]
+                                : "file:" + cpe[i];
+                        newUrls[i] = new URL(newUrl);
                     }
+                    urls = newUrls;
                 }
             } catch (Exception e) {
                 // skip
+            } finally {
+                surefirebooterJar.close();
             }
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("URLs on the classpath: ");
-        for (URL url : urls) {
-            sb.append(url.toString());
-            sb.append('\n');
+        if (log.isDebugEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("URLs on the classpath: ");
+            for (URL url : urls) {
+                sb.append(url.toString());
+                sb.append('\n');
+            }
+            log.debug(sb.toString());
         }
-        log.debug(sb.toString());
         readUris = new HashSet<URI>();
         bundles = new HashMap<String, BundleFile>();
     }
