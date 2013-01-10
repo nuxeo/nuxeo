@@ -296,7 +296,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         JarFile surefirebooterJar = null;
         for (URL url : urls) {
             URI uri = url.toURI();
-            if (uri.getPath().contains("nuxeo-runtime")) {
+            if (uri.getPath().matches("/nuxeo-runtime-.*.jar")) {
                 found = true;
                 break;
             } else if (uri.getScheme().equals("file")
