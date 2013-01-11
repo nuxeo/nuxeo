@@ -21,7 +21,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
@@ -78,11 +80,14 @@ public class TestGetChangeSummary {
 
     protected ObjectMapper mapper;
 
+    protected Map<String, List<String>> lastSyncActiveRoots;
+
     @Before
     public void init() throws Exception {
 
         nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
+        lastSyncActiveRoots = Collections.emptyMap();
 
         folder1 = session.createDocument(session.createDocumentModel("/",
                 "folder1", "Folder"));
@@ -98,9 +103,9 @@ public class TestGetChangeSummary {
     public void testGetChangesSummary() throws Exception {
 
         // No sync roots => shouldn't find any changes
-        FileSystemChangeSummary docChangeSummary = getChangeSummary();
-        assertTrue(docChangeSummary.getFileSystemChanges().isEmpty());
-        assertEquals(Boolean.FALSE, docChangeSummary.getHasTooManyChanges());
+        FileSystemChangeSummary changeSummary = getChangeSummary();
+        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Register sync roots and create 2 documents => should find 2 changes
         nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
@@ -122,8 +127,8 @@ public class TestGetChangeSummary {
 
         session.save();
 
-        docChangeSummary = getChangeSummary();
-        List<FileSystemItemChange> docChanges = docChangeSummary.getFileSystemChanges();
+        changeSummary = getChangeSummary();
+        List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
         assertEquals(2, docChanges.size());
         FileSystemItemChange docChange = docChanges.get(0);
         assertEquals("test", docChange.getRepositoryId());
@@ -133,7 +138,7 @@ public class TestGetChangeSummary {
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
         assertEquals(doc1.getId(), docChange.getDocUuid());
-        assertEquals(Boolean.FALSE, docChangeSummary.getHasTooManyChanges());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Create 2 documents in the same sync root: "/folder1" and 1 document
         // in another sync root => should find 2 changes for "/folder1"
@@ -162,20 +167,21 @@ public class TestGetChangeSummary {
      * automation operation and updates the {@link #lastSuccessfulSync} date.
      */
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
-
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
-        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetChangeSummary.ID).set(
-                "lastSuccessfulSync", lastSuccessfulSync).execute();
-        assertNotNull(docChangeSummaryJSON);
+        Blob changeSummaryJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
+                lastSuccessfulSync).set("lastSyncActiveRoots",
+                lastSyncActiveRoots).execute();
+        assertNotNull(changeSummaryJSON);
 
-        FileSystemChangeSummary docChangeSummary = mapper.readValue(
-                docChangeSummaryJSON.getStream(), FileSystemChangeSummary.class);
-        assertNotNull(docChangeSummary);
+        FileSystemChangeSummary changeSummary = mapper.readValue(
+                changeSummaryJSON.getStream(), FileSystemChangeSummary.class);
+        assertNotNull(changeSummary);
 
-        lastSuccessfulSync = docChangeSummary.getSyncDate();
-        return docChangeSummary;
+        lastSuccessfulSync = changeSummary.getSyncDate();
+        lastSyncActiveRoots = changeSummary.getActiveSynchronizationRootRefs();
+        return changeSummary;
     }
 
 }

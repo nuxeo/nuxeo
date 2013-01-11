@@ -111,6 +111,9 @@ public interface NuxeoDriveManager {
      * @param userName the id of the Nuxeo Drive user
      * @param session active CoreSession instance to the repository hosting the
      *            user's synchronization roots
+     * @param lastSyncRootRefs the map keyed by repository names of document
+     *            refs for the synchronization roots that were active during
+     *            last synchornization
      * @param lastSuccessfulSync the last successful synchronization date of the
      *            user's device. This time is expected to be in milliseconds
      *            since 1970-01-01 UTC as measured on the Nuxeo server clock,
@@ -122,8 +125,9 @@ public interface NuxeoDriveManager {
      *            initialization.
      * @return the summary of document changes
      */
-    public FileSystemChangeSummary getChangeSummary(Principal principal,
-            long lastSuccessfulSync) throws ClientException;
+    public FileSystemChangeSummary getChangeSummary(
+            Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs, long lastSuccessfulSync)
+            throws ClientException;
 
     /**
      * Sets the {@link FileSystemChangeFinder} member.

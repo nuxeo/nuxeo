@@ -17,9 +17,14 @@
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.IdRef;
 
 /**
  * Summary of file system changes, including:
@@ -41,16 +46,28 @@ public class FileSystemChangeSummary implements Serializable {
 
     protected Boolean hasTooManyChanges = Boolean.FALSE;
 
+    protected Map<String, List<String>> activeRootRefs = new HashMap<String, List<String>>();
+
     public FileSystemChangeSummary() {
         // Needed for JSON deserialization
     }
 
     public FileSystemChangeSummary(
-            List<FileSystemItemChange> fileSystemChanges, Long syncDate,
+            List<FileSystemItemChange> fileSystemChanges,
+            Map<String, Set<IdRef>> activeRootRefs, Long syncDate,
             Boolean tooManyChanges) {
         this.fileSystemChanges = fileSystemChanges;
         this.syncDate = syncDate;
         this.hasTooManyChanges = tooManyChanges;
+        for (Map.Entry<String, Set<IdRef>> activeRootEntry : activeRootRefs.entrySet()) {
+            // convert to datastructure with a direct json mapping
+            List<String> rootIds = new ArrayList<String>(
+                    activeRootEntry.getValue().size());
+            for (IdRef ref : activeRootEntry.getValue()) {
+                rootIds.add(ref.toString());
+            }
+            this.activeRootRefs.put(activeRootEntry.getKey(), rootIds);
+        }
     }
 
     public List<FileSystemItemChange> getFileSystemChanges() {
@@ -72,6 +89,10 @@ public class FileSystemChangeSummary implements Serializable {
      */
     public Long getSyncDate() {
         return syncDate;
+    }
+
+    public Map<String, List<String>> getActiveSynchronizationRootRefs() {
+        return activeRootRefs;
     }
 
     public void setSyncDate(Long syncDate) {

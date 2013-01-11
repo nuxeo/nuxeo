@@ -17,8 +17,15 @@
 package org.nuxeo.drive.operations;
 
 import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -28,6 +35,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
@@ -45,20 +53,34 @@ public class NuxeoDriveGetChangeSummary {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "lastSuccessfulSync")
-    protected Long lastSuccessfulSync;
+    @Param(name = "lastSyncDate")
+    protected Long lastSyncDate;
+
+    // Expect a JSON structure with form:
+    // {'repo-1': ['root-ref-1', 'root-ref-2'], 'repo-2': ['root-ref-3']}
+    @Param(name = "lastSyncActiveRoots", required = false)
+    protected ObjectNode lastSyncActiveRoots;
 
     @OperationMethod
     public Blob run() throws Exception {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        Map<String, Set<IdRef>> lastActiveRootRefs = new LinkedHashMap<String, Set<IdRef>>();
+        if (lastSyncActiveRoots != null) {
+            for (Iterator<Map.Entry<String, JsonNode>> iter = lastSyncActiveRoots.getFields(); iter.hasNext();) {
+                Map.Entry<String, JsonNode> rootEntry = iter.next();
+                Set<IdRef> refs = new LinkedHashSet<IdRef>();
+                for (JsonNode refNode : rootEntry.getValue()) {
+                    refs.add(new IdRef(refNode.getTextValue()));
+                }
+                lastActiveRootRefs.put(rootEntry.getKey(), refs);
+            }
+        }
         FileSystemChangeSummary docChangeSummary = driveManager.getChangeSummary(
-                ctx.getPrincipal(), lastSuccessfulSync);
-
+                ctx.getPrincipal(), lastActiveRootRefs, lastSyncDate);
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, docChangeSummary);
         return StreamingBlob.createFromString(writer.toString(),
                 "application/json");
     }
-
 }

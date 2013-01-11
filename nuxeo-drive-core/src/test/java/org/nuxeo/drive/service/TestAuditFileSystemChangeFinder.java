@@ -26,10 +26,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.security.Principal;
 import java.util.Calendar;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -78,11 +78,9 @@ public class TestAuditFileSystemChangeFinder {
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
 
-    protected FileSystemChangeFinder changeFinder;
-
     protected long lastSuccessfulSync;
 
-    protected Set<String> syncRootPaths;
+    protected Map<String, List<String>> lastSyncActiveRootRefs;
 
     protected DocumentModel folder1;
 
@@ -90,10 +88,8 @@ public class TestAuditFileSystemChangeFinder {
 
     @Before
     public void init() throws Exception {
-
-        changeFinder = new AuditChangeFinder();
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
-        syncRootPaths = new HashSet<String>();
+        lastSyncActiveRootRefs = Collections.emptyMap();
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "10");
 
@@ -117,8 +113,8 @@ public class TestAuditFileSystemChangeFinder {
         assertTrue(changes.isEmpty());
 
         // Sync roots but no changes
-        syncRootPaths.add("/folder1");
-        syncRootPaths.add("/folder2");
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal().getName(), folder1, session);
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal().getName(), folder2, session);
         changes = getDocumentChanges();
         assertTrue(changes.isEmpty());
 
@@ -167,7 +163,7 @@ public class TestAuditFileSystemChangeFinder {
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
-        syncRootPaths.remove("/folder2");
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal().getName(), folder2, session);
         changes = getDocumentChanges();
         assertEquals(1, changes.size());
         change = changes.get(0);
@@ -197,7 +193,7 @@ public class TestAuditFileSystemChangeFinder {
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
-        syncRootPaths.add("/folder2");
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal().getName(), folder2, session);
         changes = getDocumentChanges();
         assertEquals(2, changes.size());
         change = changes.get(0);
@@ -254,9 +250,9 @@ public class TestAuditFileSystemChangeFinder {
         // Register sync roots => should find changes: the newly
         // synchronized root folders as they are updated by the synchronization
         // registration process
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
+        nuxeoDriveManager.registerSynchronizationRoot(admin.getName(), folder1,
                 session);
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder2,
+        nuxeoDriveManager.registerSynchronizationRoot(admin.getName(), folder2,
                 session);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
@@ -443,20 +439,7 @@ public class TestAuditFileSystemChangeFinder {
      */
     protected List<FileSystemItemChange> getDocumentChanges()
             throws InterruptedException, ClientException {
-        // Wait 1 second as the audit change finder relies on steps of 1 second
-        Thread.sleep(1000);
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.set(Calendar.MILLISECOND, 0);
-        long syncDate = cal.getTimeInMillis();
-        List<FileSystemItemChange> changes = changeFinder.getFileSystemChanges(
-                session,
-                syncRootPaths,
-                lastSuccessfulSync,
-                syncDate,
-                Integer.parseInt(Framework.getProperty("org.nuxeo.drive.document.change.limit")));
-        assertNotNull(changes);
-        lastSuccessfulSync = syncDate;
-        return changes;
+        return getChangeSummary(session.getPrincipal()).getFileSystemChanges();
     }
 
     /**
@@ -469,9 +452,10 @@ public class TestAuditFileSystemChangeFinder {
         // Wait 1 second as the audit change finder relies on steps of 1 second
         Thread.sleep(1000);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(
-                principal, lastSuccessfulSync);
+                principal, lastSyncActiveRootRefs, lastSuccessfulSync);
         assertNotNull(changeSummary);
         lastSuccessfulSync = changeSummary.getSyncDate();
+        lastSyncActiveRootRefs = changeSummary.getActiveSynchronizationRootRefs();
         return changeSummary;
     }
 

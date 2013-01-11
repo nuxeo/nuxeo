@@ -23,6 +23,7 @@ import java.util.Set;
 import org.nuxeo.drive.service.impl.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
 
 /**
  * Allows to find document changes.
@@ -42,7 +43,9 @@ public interface FileSystemChangeFinder extends Serializable {
      * client does not have to deal with.
      *
      * @param session the session bound to a specific repository
-     * @param rootPaths the synchronization root paths
+     * @param lastActiveRootRefs docrefs of the roots as reported by the last
+     *            successful synchronization (can be empty or null)
+     * @param activeRoots the currently active synchronization roots
      * @param lastSuccessfulSyncDate the last successful synchronization date of
      *            the user's device
      * @param syncDate the current synchronization date
@@ -53,8 +56,9 @@ public interface FileSystemChangeFinder extends Serializable {
      * @throws ClientException if the access to the repository fails for another
      *             reason.
      */
-    public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
-            Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
-            int limit) throws TooManyChangesException, ClientException;
+    List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
+            Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots,
+            long lastSuccessfulSyncDate, long syncDate, int limit)
+            throws ClientException, TooManyChangesException;
 
 }

@@ -32,9 +32,6 @@ import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -55,13 +52,14 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
-            Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
-            int limit) throws ClientException, TooManyChangesException {
+            Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots,
+            long lastSuccessfulSyncDate, long syncDate, int limit)
+            throws ClientException, TooManyChangesException {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
         // Find changes from the log under active roots
-        if (!rootPaths.isEmpty()) {
+        if (!activeRoots.paths.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
             auditQuerySb.append("log.repositoryId = '%s' and ");
@@ -79,7 +77,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             String repositoryName = session.getRepositoryName();
             String auditQuery = String.format(auditQuerySb.toString(),
                     repositoryName, NuxeoDriveEvents.EVENT_CATEGORY,
-                    getRootPathClause(rootPaths),
+                    getRootPathClause(activeRoots.paths),
                     getJPADateClause(lastSuccessfulSyncDate, syncDate));
             log.debug("Querying audit logs for document changes: " + auditQuery);
 

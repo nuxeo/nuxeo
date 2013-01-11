@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -56,6 +57,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.google.common.collect.MapMaker;
+
 
 /**
  * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo
@@ -201,12 +203,15 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      */
     @Override
     public FileSystemChangeSummary getChangeSummary(Principal principal,
-            long lastSuccessfulSync) throws ClientException {
+            Map<String, Set<IdRef>> lastSyncRootRefs, long lastSuccessfulSync)
+            throws ClientException {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
-        return getChangeSummary(principal, roots, lastSuccessfulSync);
+        return getChangeSummary(principal, lastSyncRootRefs, roots,
+                lastSuccessfulSync);
     }
 
     protected FileSystemChangeSummary getChangeSummary(Principal principal,
+            Map<String, Set<IdRef>> lastActiveRootRefs,
             Map<String, SynchronizationRoots> roots, long lastSuccessfulSync)
             throws ClientException {
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
@@ -219,15 +224,30 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         Boolean hasTooManyChanges = Boolean.FALSE;
         int limit = Integer.parseInt(Framework.getProperty(
                 DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
-        if (!roots.isEmpty()) {
-            for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {
+
+        // Compute the list of all repositories to consider for the aggregate
+        // summary
+        Set<String> allRepositories = new LinkedHashSet<String>();
+        allRepositories.addAll(roots.keySet());
+        allRepositories.addAll(lastActiveRootRefs.keySet());
+
+        if (!allRepositories.isEmpty()) {
+            for (String repositoryName : allRepositories) {
                 try {
                     // Get document changes
-                    CoreSession session = fsManager.getSession(
-                            rootsEntry.getKey(), principal);
+                    CoreSession session = fsManager.getSession(repositoryName,
+                            principal);
+                    Set<IdRef> lastRefs = lastActiveRootRefs.get(repositoryName);
+                    if (lastRefs == null) {
+                        lastRefs = Collections.emptySet();
+                    }
+                    SynchronizationRoots activeRoots = roots.get(repositoryName);
+                    if (activeRoots == null) {
+                        activeRoots = SynchronizationRoots.getEmptyRoots(repositoryName);
+                    }
                     List<FileSystemItemChange> changes = changeFinder.getFileSystemChanges(
-                            session, rootsEntry.getValue().paths,
-                            lastSuccessfulSync, syncDate, limit);
+                            session, lastRefs, activeRoots, lastSuccessfulSync,
+                            syncDate, limit);
                     allChanges.addAll(changes);
                 } catch (TooManyChangesException e) {
                     hasTooManyChanges = Boolean.TRUE;
@@ -236,8 +256,16 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 }
             }
         }
-        return new FileSystemChangeSummary(allChanges, syncDate,
-                hasTooManyChanges);
+
+        // Send back to the client the list of currently active roots to be able
+        // to efficiently detect root unregistration events for the next
+        // incremental change summary
+        Map<String, Set<IdRef>> activeRootRefs = new HashMap<String, Set<IdRef>>();
+        for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {
+            activeRootRefs.put(rootsEntry.getKey(), rootsEntry.getValue().refs);
+        }
+        return new FileSystemChangeSummary(allChanges, activeRootRefs,
+                syncDate, hasTooManyChanges);
     }
 
     public Map<String, SynchronizationRoots> getSynchronizationRoots(
