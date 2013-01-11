@@ -49,6 +49,7 @@ public class RestoreDocumentsInputFromScript {
         if (expr == null) {
             String text = script.replaceAll("&lt;", "<");
             text = text.replaceAll("&gt;", ">");
+            text = text.replaceAll("&amp;", "&");
             expr = Scripting.newExpression(text);
         }
         return (DocumentModelList) expr.eval(ctx);

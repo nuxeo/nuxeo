@@ -106,6 +106,7 @@ public class EventHandler {
     protected String convertExpr(String expr) {
         String res = expr.replaceAll("&lt;", "<");
         res = res.replaceAll("&gt;", ">");
+        res = res.replaceAll("&amp;", "&");
         return res;
     }
 

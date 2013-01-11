@@ -27,8 +27,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
@@ -143,6 +145,20 @@ public class CoreOperationsTest {
         chain.add(RunScript.ID).set("script",
                 "This.setPropertyValue(\"dc:title\",\"modified from mvel\");");
 
+        service.run(ctx, chain);
+        String title = src.getProperty("dc:title").getValue(String.class);
+        assertThat(title, is("modified from mvel"));
+    }
+
+    @Test
+    public void testRunScriptWithCondition() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(RunScript.ID).set(
+                "script",
+                "if (This.id != null &amp;&amp; This.id != '') {This.setPropertyValue(\"dc:title\",\"modified from mvel\");}");
         service.run(ctx, chain);
         String title = src.getProperty("dc:title").getValue(String.class);
         assertThat(title, is("modified from mvel"));
