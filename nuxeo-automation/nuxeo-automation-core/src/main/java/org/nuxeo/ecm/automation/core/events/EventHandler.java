@@ -80,6 +80,7 @@ public class EventHandler {
 
     @XNode("filters/expression")
     protected void _setExpression(String expr) {
+        expr = expr.replaceAll("&amp;", "&");
         expr = expr.replaceAll("&lt;", "<");
         expression = expr.replaceAll("&gt;", ">");
     }
