@@ -17,8 +17,11 @@
  */
 package org.nuxeo.ecm.automation.seam.operations;
 
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.ServletLifecycle;
 import org.jboss.seam.core.ConversationPropagation;
@@ -33,15 +36,17 @@ import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 
 /**
  * Utility class used to manage Seam init and cleanup
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class SeamOperationFilter {
 
+    protected static final Log log = LogFactory.getLog(SeamOperationFilter.class);
+
     /**
-     * Initialise a workable Seam context as well as a conversion if needed
-     *
+     * Initialize a workable Seam context as well as a conversion if needed
+     * 
      * @param context
      * @param conversationId
      */
@@ -50,6 +55,18 @@ public class SeamOperationFilter {
 
         CoreSession session = context.getCoreSession();
         HttpServletRequest request = (HttpServletRequest) context.get("request");
+
+        if (request == null) {
+            FacesContext faces = FacesContext.getCurrentInstance();
+            if (faces != null) {
+                request = (HttpServletRequest) faces.getExternalContext().getRequest();
+            }
+        }
+
+        if (request == null) {
+            log.error("Can not init Seam context : no HttpServletRequest was found");
+            return;
+        }
         ServletLifecycle.beginRequest(request);
         ServletContexts.instance().setRequest(request);
 
@@ -77,7 +94,7 @@ public class SeamOperationFilter {
 
     /**
      * Manages Seam context and lifecycle cleanup
-     *
+     * 
      * @param context
      * @param conversationId
      */
