@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
@@ -247,6 +248,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
                     session, docCtx, bsi, DOCUMENT_MOVED);
+            long versSize = quotaDoc.getVersionsSize();
+            asyncEventCtx.setVersionsSize(versSize);
             sendUpdateEvents(asyncEventCtx);
 
             // also need to trigger update on source tree
@@ -256,6 +259,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
             asyncEventCtx = new SizeUpdateEventContext(session, docCtx,
                     sourceParent, bsiRemove, DOCUMENT_MOVED);
+            versSize = -quotaDoc.getVersionsSize();
+            asyncEventCtx.setVersionsSize(versSize);
             List<String> sourceParentUUIDs = getParentUUIDS(session,
                     sourceParent);
             sourceParentUUIDs.add(0, sourceParent.getId());
@@ -278,7 +283,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     new IdRef(targetDoc.getSourceId())));
             BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                    session, docCtx, bsi.getBlobSize(), ABOUT_TO_REMOVE);
+                    session, docCtx, bsi.getBlobSize(), ABOUT_TO_REMOVE_VERSION);
             asyncEventCtx.setParentUUIds(parentUUIDs);
             sendUpdateEvents(asyncEventCtx);
             return;
@@ -291,7 +296,13 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 List<String> parentUUIDs = getParentUUIDS(session, targetDoc);
                 SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
                         session, docCtx, total, ABOUT_TO_REMOVE);
+                // remove size for all its versions from sizeVersions on parents
+                long versSize = -quotaDoc.getVersionsSize();
+                asyncEventCtx.setVersionsSize(versSize);
                 asyncEventCtx.setParentUUIds(parentUUIDs);
+                asyncEventCtx.getProperties().put(
+                        SizeUpdateEventContext._UPDATE_TRASH_SIZE,
+                        DELETED_STATE.equals(targetDoc.getCurrentLifeCycleState()));
                 sendUpdateEvents(asyncEventCtx);
             }
         }
@@ -473,13 +484,17 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
         QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
         if (quotaDoc != null) {
-            long total = quotaDoc.getTotalSize();
+            long absSize = quotaDoc.getTotalSize();
+            long total = (DELETE_TRANSITION.equals(transition) == true ? absSize
+                    : -absSize);
             BlobSizeInfo bsi = new BlobSizeInfo();
             bsi.blobSize = total;
             bsi.blobSizeDelta = total;
-            if (total > 0) {
+            if (absSize > 0) {
                 // check constrains not needed, since the documents stays in
                 // the same folder
+                // TODO move this check to QuotaSyncListenerChecker
+                
                 SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
                         session, docCtx, bsi, transition);
                 sendUpdateEvents(asyncEventCtx);

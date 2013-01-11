@@ -45,6 +45,9 @@ public class SizeUpdateEventContext extends DocumentEventContext {
     public static final String BLOB_SIZE_PROPERTY_KEY = "blobSize";
 
     public static final String BLOB_DELTA_PROPERTY_KEY = "blobDelta";
+    
+    //used when permanently deleting a document, remove all versions
+    public static final String VERSIONS_SIZE_PROPERTY_KEY = "versionsSize";
 
     public static final String PARENT_UUIDS_PROPERTY_KEY = "parentUUIDs";
 
@@ -53,6 +56,9 @@ public class SizeUpdateEventContext extends DocumentEventContext {
     public static final String MARKER_KEY = "contextType";
 
     public static final String MARKER_VALUE = "SizeUpdateEventContext";
+    
+    // mark that an update trash is needed, used when permanently deleting a doc
+    public static final String _UPDATE_TRASH_SIZE = "_UPDATE_TRASH";
 
     protected SizeUpdateEventContext(CoreSession session,
             DocumentEventContext evtCtx) {
@@ -117,6 +123,17 @@ public class SizeUpdateEventContext extends DocumentEventContext {
 
     public void setBlobSize(long blobSize) {
         setProperty(BLOB_SIZE_PROPERTY_KEY, new Long(blobSize));
+    }
+
+    public void setVersionsSize(long versionsSize){
+        setProperty(VERSIONS_SIZE_PROPERTY_KEY, new Long(versionsSize));
+    }
+    
+    public long getVersionsSize() {
+        if (getProperty(VERSIONS_SIZE_PROPERTY_KEY) != null) {
+            return (Long) getProperty(VERSIONS_SIZE_PROPERTY_KEY);
+        }
+        return 0L;
     }
 
     public long getBlobDelta() {

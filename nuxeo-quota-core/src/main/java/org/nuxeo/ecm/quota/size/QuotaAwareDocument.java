@@ -131,8 +131,11 @@ public class QuotaAwareDocument implements QuotaAware {
     @Override
     public void addVersionsSize(long additionalSize, boolean save)
             throws ClientException {
-        // TODO Auto-generated method stub
-        
+        Long total = getVersionsSize() + additionalSize;
+        doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, total);
+        if (save) {
+            save();
+        }
     }
 
     public void save() throws ClientException {
