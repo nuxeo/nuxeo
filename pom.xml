@@ -116,6 +116,7 @@
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-web-mobile</module>
     <module>nuxeo-csv</module>
+    <module>nuxeo-tree-snapshot</module>
   </modules>
 
   <dependencyManagement>
@@ -1049,6 +1050,13 @@
         <groupId>org.nuxeo.csv</groupId>
         <artifactId>nuxeo-csv</artifactId>
         <version>${nuxeo.csv.version}</version>
+      </dependency>
+
+      <!-- Tree snapshot -->
+      <dependency>
+          <groupId>org.nuxeo.features</groupId>
+          <artifactId>nuxeo-tree-snapshot</artifactId>
+          <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
