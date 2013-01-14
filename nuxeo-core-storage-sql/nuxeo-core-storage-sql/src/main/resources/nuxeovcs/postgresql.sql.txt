@@ -138,12 +138,12 @@ LANGUAGE sql
 VOLATILE;
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION nx_get_ancestors(id character varying) RETURNS character varying[]
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id uuid) RETURNS uuid[]
     AS $$
 DECLARE
-  curid varchar(36) := id;
-  newid varchar(36);
-  ret varchar(36)[];
+  curid ${idType} := id;
+  newid ${idType};
+  ret ${idType}[];
 BEGIN
   WHILE curid IS NOT NULL LOOP
     IF curid IS DISTINCT FROM id THEN
@@ -422,7 +422,7 @@ SELECT 1 FROM pg_tables WHERE tablename='aclr_modified';
 
 #IF: emptyResult
 CREATE ${unlogged} TABLE aclr_modified (
-  hierarchy_id character varying(36),
+  hierarchy_id ${idType},
   is_new boolean
 );
 
@@ -453,7 +453,7 @@ INSERT INTO aclr_permission VALUES ${readPermissions};
 
 
 
-CREATE OR REPLACE FUNCTION nx_get_local_read_acl(id varchar)
+CREATE OR REPLACE FUNCTION nx_get_local_read_acl(id ${idType})
 RETURNS varchar
 AS $$
 -- Compute the read acl for a hierarchy id using a local acl
@@ -487,7 +487,7 @@ LANGUAGE plpgsql
 STABLE;
 
 
-CREATE OR REPLACE FUNCTION nx_get_read_acl(id varchar)
+CREATE OR REPLACE FUNCTION nx_get_read_acl(id uuid)
 RETURNS varchar
 AS $$
 -- Compute the read acl for a hierarchy id using inherited acl

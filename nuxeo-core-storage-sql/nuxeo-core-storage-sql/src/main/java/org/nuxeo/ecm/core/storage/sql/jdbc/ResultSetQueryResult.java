@@ -82,7 +82,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
                         Types.VARCHAR, (Object[]) object, mapper.connection);
                 ps.setArray(i++, array);
             } else {
-                ps.setObject(i++, object);
+                ps.setObject(i++, object, Types.OTHER);
             }
         }
         rs = ps.executeQuery();
