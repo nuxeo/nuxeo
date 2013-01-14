@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
              point="operations">
 
-    <operation class="org.nuxeo.snapshot.operation.CreateSnapshot"/>
+    <operation class="org.nuxeo.snapshot.operation.CreateTreeSnapshot"/>
 
   </extension>
 </component>

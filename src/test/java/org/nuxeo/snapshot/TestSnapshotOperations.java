@@ -14,7 +14,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.snapshot.operation.CreateSnapshot;
+import org.nuxeo.snapshot.operation.CreateTreeSnapshot;
 
 import java.util.HashMap;
 
@@ -40,7 +40,7 @@ public class TestSnapshotOperations extends AbstractTestSnapshot {
 
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("versioning option", VersioningOption.MAJOR.name());
-        DocumentModel version = (DocumentModel) as.run(ctx, CreateSnapshot.ID,
+        DocumentModel version = (DocumentModel) as.run(ctx, CreateTreeSnapshot.ID,
                 params);
 
         assertTrue(version.isVersion());

@@ -12,9 +12,9 @@ import org.nuxeo.snapshot.Snapshotable;
 import static org.nuxeo.ecm.automation.core.Constants.CAT_DOCUMENT;
 import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 
-@Operation(id = CreateSnapshot.ID, category = CAT_DOCUMENT, label = "Create snapshot", description = "Create a tree snapshot, input document must be eligible to Snapshotable adapter and output will the snapshot")
-public class CreateSnapshot {
-    public static final String ID = "Document.CreateSnapshot";
+@Operation(id = CreateTreeSnapshot.ID, category = CAT_DOCUMENT, label = "Create snapshot", description = "Create a tree snapshot, input document must be eligible to Snapshotable adapter and output will the snapshot")
+public class CreateTreeSnapshot {
+    public static final String ID = "Document.CreateTreeSnapshot";
 
     @Param(name = "versioning option", required = false)
     String versioningOption = MINOR.name();
