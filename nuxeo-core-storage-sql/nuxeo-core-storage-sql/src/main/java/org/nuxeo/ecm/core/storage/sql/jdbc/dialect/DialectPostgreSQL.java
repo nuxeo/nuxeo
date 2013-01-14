@@ -182,9 +182,11 @@ public class DialectPostgreSQL extends Dialect {
         case NODEIDFKNULL:
         case NODEIDPK:
         case NODEVAL:
-            return jdbcInfo("varchar(36)", Types.VARCHAR);
+            return jdbcInfo("uuid", Types.OTHER);
+            // return jdbcInfo("varchar(36)", Types.VARCHAR);
         case NODEARRAY:
-            return jdbcInfo("varchar(36)[]", Types.ARRAY);
+            return jdbcInfo("uuid[]", Types.ARRAY);
+            // return jdbcInfo("varchar(36)[]", Types.ARRAY);
         case SYSNAME:
             return jdbcInfo("varchar(250)", Types.VARCHAR);
         case SYSNAMEARRAY:
@@ -271,7 +273,15 @@ public class DialectPostgreSQL extends Dialect {
             ps.setArray(index, array);
             return;
         case Types.OTHER:
-            if (column.getType() == ColumnType.FTSTORED) {
+            ColumnType type = column.getType();
+            if (type == ColumnType.NODEID || type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFKMUL ||
+            type == ColumnType.NODEIDFKNP || type == ColumnType.NODEIDFKNULL || type == ColumnType.NODEIDPK || type == ColumnType.NODEVAL) {
+                Serializable val = value;
+                ps.setObject(index, value, Types.OTHER);
+                // log.error("setParam other value:" + value, new Throwable());
+                return;
+            }
+            if (type == ColumnType.FTSTORED) {
                 ps.setString(index, (String) value);
                 return;
             }
@@ -303,6 +313,8 @@ public class DialectPostgreSQL extends Dialect {
         case Types.ARRAY:
             Array array = rs.getArray(index);
             return array == null ? null : (Serializable) array.getArray();
+        case Types.OTHER:
+            return getFromResultSetString(rs, index, column);
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
@@ -667,7 +679,7 @@ public class DialectPostgreSQL extends Dialect {
     public String getInTreeSql(String idColumnName) {
         if (pathOptimizationsEnabled) {
             return String.format(
-                    "EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?] <@ ancestors)",
+                    "EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]::uuid[] <@ ancestors)",
                     idColumnName);
         } else {
             return String.format("NX_IN_TREE(%s, ?)", idColumnName);
@@ -678,7 +690,7 @@ public class DialectPostgreSQL extends Dialect {
     public String getMatchMixinType(Column mixinsColumn, String mixin,
             boolean positive, String[] returnParam) {
         returnParam[0] = mixin;
-        String sql = "ARRAY[?] <@ " + mixinsColumn.getFullQuotedName();
+        String sql = "ARRAY[?]::varchar[] <@ " + mixinsColumn.getFullQuotedName();
         return positive ? sql : "NOT(" + sql + ")";
     }
 
@@ -702,6 +714,9 @@ public class DialectPostgreSQL extends Dialect {
         switch (type) {
         case Types.VARCHAR:
             typeName = "varchar";
+            break;
+        case Types.OTHER:
+            typeName = "uuid";
             break;
         default:
             // TODO others not used yet
@@ -842,7 +857,8 @@ public class DialectPostgreSQL extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("idType", "varchar(36)");
+        // properties.put("idType", "varchar(36)");
+        properties.put("idType", "uuid");
         properties.put("aclOptimizationsEnabled",
                 Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled",

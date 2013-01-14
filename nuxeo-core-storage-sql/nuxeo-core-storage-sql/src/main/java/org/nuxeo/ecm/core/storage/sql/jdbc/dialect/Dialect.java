@@ -261,7 +261,7 @@ public abstract class Dialect {
         } else {
             v = (String) value;
         }
-        ps.setString(index, v);
+        ps.setObject(index, v, Types.OTHER);
     }
 
     protected void setToPreparedStatementTimestamp(PreparedStatement ps,

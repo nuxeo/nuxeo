@@ -16,6 +16,7 @@ import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -259,7 +260,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             try {
                 int i = 1;
                 for (Serializable id : ids) {
-                    ps.setObject(i++, id);
+                    ps.setObject(i++, id, Types.OTHER);
                 }
                 ResultSet rs = ps.executeQuery();
                 countExecute();
@@ -731,7 +732,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             try {
                 int i = 1;
                 for (Serializable id : ids) {
-                    ps.setObject(i++, id);
+                    ps.setObject(i++, id, Types.OTHER);
                 }
                 int count = ps.executeUpdate();
                 countExecute();
@@ -769,7 +770,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
                 List<Column> columns = sqlInfo.selectFragmentById.get(tableName).whatColumns;
-                ps.setObject(1, id); // assumes only one primary column
+                ps.setObject(1, id, Types.OTHER); // assumes only one primary column
                 ResultSet rs = ps.executeQuery();
                 countExecute();
 
@@ -918,7 +919,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     Serializable value = values.get(r);
                     table.getColumn(key).setToPreparedStatement(ps, i++, value);
                 }
-                ps.setObject(i, row.id); // id last in SQL
+                ps.setObject(i, row.id, Types.OTHER); // id last in SQL
                 int count = ps.executeUpdate();
                 countExecute();
                 logger.logCount(count);
@@ -1058,7 +1059,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             if (logger.isLogEnabled()) {
                 debugValues = new LinkedList<String>();
             }
-            ps.setObject(1, id); // parent id
+            ps.setObject(1, id, Types.OTHER); // parent id
             ResultSet rs = ps.executeQuery();
             countExecute();
             while (rs.next()) {
@@ -1124,7 +1125,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         logger.logSQL(deleteSql,
                                 Collections.singletonList(newId));
                     }
-                    deletePs.setObject(1, newId);
+                    deletePs.setObject(1, newId, Types.OTHER);
                     int delCount = deletePs.executeUpdate();
                     countExecute();
                     logger.logCount(delCount);
@@ -1176,7 +1177,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             if (logger.isLogEnabled()) {
                 debugValues = new LinkedList<String>();
             }
-            ps.setObject(1, rootId); // parent id
+            ps.setObject(1, rootId, Types.OTHER); // parent id
             ResultSet rs = ps.executeQuery();
             countExecute();
             while (rs.next()) {
