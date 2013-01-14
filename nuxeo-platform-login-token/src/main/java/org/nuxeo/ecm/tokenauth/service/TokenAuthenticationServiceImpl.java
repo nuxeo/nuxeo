@@ -72,16 +72,23 @@ public class TokenAuthenticationServiceImpl implements
     protected static final String CREATION_DATE_FIELD = "creationDate";
 
     @Override
-    public String getToken(String userName, String applicationName,
+    public String acquireToken(String userName, String applicationName,
             String deviceId, String deviceDescription, String permission)
             throws TokenAuthenticationException {
 
-        if (StringUtils.isEmpty(userName)
-                || StringUtils.isEmpty(applicationName)
-                || StringUtils.isEmpty(deviceId)
-                || StringUtils.isEmpty(permission)) {
+        // Look for a token bound to the (userName,
+        // applicationName, deviceId) triplet, if it exists return it,
+        // else generate a unique one
+        String token = getToken(userName, applicationName, deviceId);
+        if (token != null) {
+            return token;
+        }
+
+        // Check required parameters (userName, applicationName and deviceId are
+        // already checked in #getToken)
+        if (StringUtils.isEmpty(permission)) {
             throw new TokenAuthenticationException(
-                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceId, permission.");
+                    "The permission parameter is mandatory to acquire an authentication token.");
         }
 
         Session session = null;
@@ -90,34 +97,9 @@ public class TokenAuthenticationServiceImpl implements
             DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
             session = directoryService.open(DIRECTORY_NAME);
 
-            // Look for a token bound to the (userName,
-            // applicationName, deviceId) triplet, if it exists return it,
-            // else generate a unique one
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put(USERNAME_FIELD, userName);
-            filter.put(APPLICATION_NAME_FIELD, applicationName);
-            filter.put(DEVICE_ID_FIELD, deviceId);
-            DocumentModelList tokens = session.query(filter);
-            if (!tokens.isEmpty()) {
-                // Multiple tokens found for the same triplet, this is
-                // inconsistent
-                if (tokens.size() > 1) {
-                    throw new ClientRuntimeException(
-                            String.format(
-                                    "Found multiple tokens for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), this is inconsistent.",
-                                    userName, applicationName, deviceId));
-                }
-                // Return token
-                log.debug(String.format(
-                        "Found token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
-                        userName, applicationName, deviceId));
-                DocumentModel tokenModel = tokens.get(0);
-                return tokenModel.getId();
-            }
-
             // Generate random token, store the binding and return the token
             UUID uuid = UUID.randomUUID();
-            String token = uuid.toString();
+            token = uuid.toString();
 
             DocumentModel entry = getBareAuthTokenModel(directoryService);
             entry.setProperty(DIRECTORY_SCHEMA, TOKEN_FIELD, token);
@@ -140,6 +122,66 @@ public class TokenAuthenticationServiceImpl implements
                     "Generated unique token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
                     userName, applicationName, deviceId));
             return token;
+
+        } catch (ClientException ce) {
+            throw new ClientRuntimeException(ce);
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (DirectoryException de) {
+                    throw new ClientRuntimeException(de);
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getToken(String userName, String applicationName,
+            String deviceId) throws TokenAuthenticationException {
+
+        if (StringUtils.isEmpty(userName)
+                || StringUtils.isEmpty(applicationName)
+                || StringUtils.isEmpty(deviceId)) {
+            throw new TokenAuthenticationException(
+                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceId.");
+        }
+
+        Session session = null;
+        try {
+            // Open directory session
+            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+            session = directoryService.open(DIRECTORY_NAME);
+
+            // Look for a token bound to the (userName,
+            // applicationName, deviceId) triplet, if it exists return it,
+            // else return null
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put(USERNAME_FIELD, userName);
+            filter.put(APPLICATION_NAME_FIELD, applicationName);
+            filter.put(DEVICE_ID_FIELD, deviceId);
+            DocumentModelList tokens = session.query(filter);
+            if (!tokens.isEmpty()) {
+                // Multiple tokens found for the same triplet, this is
+                // inconsistent
+                if (tokens.size() > 1) {
+                    throw new ClientRuntimeException(
+                            String.format(
+                                    "Found multiple tokens for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), this is inconsistent.",
+                                    userName, applicationName, deviceId));
+                }
+                // Return token
+                log.debug(String.format(
+                        "Found token for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning it.",
+                        userName, applicationName, deviceId));
+                DocumentModel tokenModel = tokens.get(0);
+                return tokenModel.getId();
+            }
+
+            log.debug(String.format(
+                    "No token found for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning null.",
+                    userName, applicationName, deviceId));
+            return null;
 
         } catch (ClientException ce) {
             throw new ClientRuntimeException(ce);

@@ -60,6 +60,8 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
     protected static final String PERMISSION_PARAM = "permission";
 
+    protected static final String REVOKE_PARAM = "revoke";
+
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -69,13 +71,21 @@ public class TokenAuthenticationServlet extends HttpServlet {
         String deviceId = req.getParameter(DEVICE_ID_PARAM);
         String deviceDescription = req.getParameter(DEVICE_DESCRIPTION_PARAM);
         String permission = req.getParameter(PERMISSION_PARAM);
+        String revokeParam = req.getParameter(REVOKE_PARAM);
+        boolean revoke = Boolean.valueOf(revokeParam);
 
         // If one of the required parameters is null or empty, send an
         // error with the 400 status
-        if (StringUtils.isEmpty(applicationName)
-                || StringUtils.isEmpty(deviceId)
-                || StringUtils.isEmpty(permission)) {
-            log.error("The following request parameters are mandatory to get an authentication token: applicationName, deviceId, permission.");
+        if (!revoke
+                && (StringUtils.isEmpty(applicationName)
+                        || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(permission))) {
+            log.error("The following request parameters are mandatory to acquire an authentication token: applicationName, deviceId, permission.");
+            resp.sendError(HttpStatus.SC_BAD_REQUEST);
+            return;
+        }
+        if (revoke
+                && (StringUtils.isEmpty(applicationName) || StringUtils.isEmpty(deviceId))) {
+            log.error("The following request parameters are mandatory to revoke an authentication token: applicationName, deviceId.");
             resp.sendError(HttpStatus.SC_BAD_REQUEST);
             return;
         }
@@ -86,17 +96,40 @@ public class TokenAuthenticationServlet extends HttpServlet {
         if (!StringUtils.isEmpty(deviceDescription)) {
             deviceDescription = URIUtil.decode(deviceDescription);
         }
-        permission = URIUtil.decode(permission);
+        if (!StringUtils.isEmpty(permission)) {
+            permission = URIUtil.decode(permission);
+        }
 
         // Get user name from request Principal
         String userName = req.getUserPrincipal().getName();
 
-        // Get token and write it to the response body
+        // Write response
+        String response = null;
+        TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
         try {
-            TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
-            String token = tokenAuthService.getToken(userName, applicationName,
-                    deviceId, deviceDescription, permission);
-            sendTextResponse(resp, token);
+            // Token acquisition: acquire token and write it to the response
+            // body
+            if (!revoke) {
+                response = tokenAuthService.acquireToken(userName,
+                        applicationName, deviceId, deviceDescription,
+                        permission);
+            }
+            // Token revocation
+            else {
+                String token = tokenAuthService.getToken(userName,
+                        applicationName, deviceId);
+                if (token == null) {
+                    response = String.format(
+                            "No token found for userName %s, applicationName %s and deviceId %s; nothing to do.",
+                            userName, applicationName, deviceId);
+                } else {
+                    tokenAuthService.revokeToken(token);
+                    response = String.format(
+                            "Token revoked for userName %s, applicationName %s and deviceId %s.",
+                            userName, applicationName, deviceId);
+                }
+            }
+            sendTextResponse(resp, response);
         } catch (TokenAuthenticationException e) {
             // Should never happen as parameters have already been checked
             resp.sendError(HttpStatus.SC_NOT_FOUND);

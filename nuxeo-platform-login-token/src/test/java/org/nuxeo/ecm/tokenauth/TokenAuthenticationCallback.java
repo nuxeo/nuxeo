@@ -85,7 +85,7 @@ public class TokenAuthenticationCallback implements TokenCallback {
 
         try {
             TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
-            return tokenAuthenticationService.getToken(userName,
+            return tokenAuthenticationService.acquireToken(userName,
                     applicationName, deviceId, deviceDescription, permission);
         } catch (TokenAuthenticationException e) {
             throw new ClientRuntimeException(
