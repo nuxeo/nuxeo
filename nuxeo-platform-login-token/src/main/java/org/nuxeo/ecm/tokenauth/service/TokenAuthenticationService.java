@@ -41,7 +41,7 @@ import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 public interface TokenAuthenticationService extends Serializable {
 
     /**
-     * Gets a unique token for the specified user, application, and device.
+     * Acquires a unique token for the specified user, application, and device.
      * <p>
      * If such a token exist in the back-end for the specified (userName,
      * applicationName, deviceId) triplet, just returns it, else generates it
@@ -55,8 +55,21 @@ public interface TokenAuthenticationService extends Serializable {
      *             triplet
      *
      */
-    String getToken(String userName, String applicationName, String deviceId,
-            String deviceDescription, String permission)
+    String acquireToken(String userName, String applicationName,
+            String deviceId, String deviceDescription, String permission)
+            throws TokenAuthenticationException;
+
+    /**
+     * Gets the token for the specified user, application, and device.
+     *
+     * @return null if such a token doesn't exist
+     * @throws TokenAuthenticationException if one of the required parameters is
+     *             null or empty (all parameters are required except for the
+     *             device description)
+     * @throws ClientRuntimeException if multiple tokens are found for the same
+     *             (userName, applicationName, deviceId) triplet
+     */
+    String getToken(String userName, String applicationName, String deviceId)
             throws TokenAuthenticationException;
 
     /**

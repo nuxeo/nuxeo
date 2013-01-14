@@ -18,6 +18,8 @@ package org.nuxeo.ecm.tokenauth;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URI;
@@ -30,7 +32,9 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -60,8 +64,16 @@ public class TestTokenAuthenticationServlet {
             assertEquals(404, status);
 
             // ------------ Test omitting required parameters ----------------
+            // Token acquisition
             getMethod = new GetMethod(
                     "http://localhost:18080/authentication/token?applicationName=myFavoriteApp");
+            status = executeGetMethod(httpClient, getMethod, "Administrator",
+                    "Administrator");
+            assertEquals(400, status);
+
+            // Token revocation
+            getMethod = new GetMethod(
+                    "http://localhost:18080/authentication/token?applicationName=myFavoriteApp&revoke=true");
             status = executeGetMethod(httpClient, getMethod, "Administrator",
                     "Administrator");
             assertEquals(400, status);
@@ -77,12 +89,49 @@ public class TestTokenAuthenticationServlet {
             assertEquals(200, status);
             String token = getMethod.getResponseBodyAsString();
             assertNotNull(token);
+            assertNotNull(getTokenAuthenticationService().getUserName(token));
+            assertEquals(
+                    1,
+                    getTokenAuthenticationService().getTokenBindings(
+                            "Administrator").size());
 
             // Acquire existing token
             status = httpClient.executeMethod(getMethod);
             assertEquals(200, status);
             String existingToken = getMethod.getResponseBodyAsString();
             assertEquals(token, existingToken);
+
+            // ------------ Test revoking token ----------------
+            // Non existing token, should do nothing
+            getMethod = new GetMethod(
+                    "http://localhost:18080/authentication/token?applicationName=nonExistingApp&deviceId=dead-beaf-cafe-babe&revoke=true");
+            status = executeGetMethod(httpClient, getMethod, "Administrator",
+                    "Administrator");
+            assertEquals(200, status);
+            String response = getMethod.getResponseBodyAsString();
+            assertEquals(
+                    String.format(
+                            "No token found for userName %s, applicationName %s and deviceId %s; nothing to do.",
+                            "Administrator", "nonExistingApp",
+                            "dead-beaf-cafe-babe"), response);
+
+            // Existing token
+            queryParams = URIUtil.encodeQuery("applicationName=Nuxeo Drive&deviceId=dead-beaf-cafe-babe&revoke=true");
+            uri = new URI("http", null, "localhost", 18080,
+                    "/authentication/token", queryParams, null);
+            getMethod = new GetMethod(uri.toString());
+            status = executeGetMethod(httpClient, getMethod, "Administrator",
+                    "Administrator");
+            assertEquals(200, status);
+            response = getMethod.getResponseBodyAsString();
+            assertEquals(
+                    String.format(
+                            "Token revoked for userName %s, applicationName %s and deviceId %s.",
+                            "Administrator", "Nuxeo Drive",
+                            "dead-beaf-cafe-babe"), response);
+            assertNull(getTokenAuthenticationService().getUserName(token));
+            assertTrue(getTokenAuthenticationService().getTokenBindings(
+                    "Administrator").isEmpty());
         } finally {
             getMethod.releaseConnection();
         }
@@ -92,7 +141,7 @@ public class TestTokenAuthenticationServlet {
      * Executes the specified HTTP method on the specified HTTP client with a
      * basic authentication header given the specified credentials.
      */
-    protected static final int executeGetMethod(HttpClient httpClient,
+    protected final int executeGetMethod(HttpClient httpClient,
             HttpMethod httpMethod, String userName, String password)
             throws HttpException, IOException {
 
@@ -101,5 +150,9 @@ public class TestTokenAuthenticationServlet {
                 + new String(Base64.encodeBase64(authString.getBytes()));
         httpMethod.setRequestHeader("Authorization", basicAuthHeader);
         return httpClient.executeMethod(httpMethod);
+    }
+
+    protected TokenAuthenticationService getTokenAuthenticationService() {
+        return Framework.getLocalService(TokenAuthenticationService.class);
     }
 }

@@ -72,21 +72,21 @@ public class TestTokenAuthenticationService {
     }
 
     @Test
-    public void testGetToken() throws ClientException {
+    public void testAcquireToken() throws ClientException {
 
         // Test omitting required parameters
         try {
-            tokenAuthenticationService.getToken("joe", "myFavoriteApp", null,
-                    null, null);
+            tokenAuthenticationService.acquireToken("joe", "myFavoriteApp",
+                    null, null, null);
             fail("Getting token should have failed since required parameters are missing.");
         } catch (TokenAuthenticationException e) {
             assertEquals(
-                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceId, permission.",
+                    "The following parameters are mandatory to get an authentication token: userName, applicationName, deviceId.",
                     e.getMessage());
         }
 
         // Test token generation
-        String token = tokenAuthenticationService.getToken("joe",
+        String token = tokenAuthenticationService.acquireToken("joe",
                 "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal box", "rw");
         assertNotNull(token);
@@ -112,17 +112,31 @@ public class TestTokenAuthenticationService {
             directorySession.close();
         }
 
-        // Test existing token retrieval
-        String sameToken = tokenAuthenticationService.getToken("joe",
+        // Test existing token acquisition
+        String sameToken = tokenAuthenticationService.acquireToken("joe",
                 "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal box", "rw");
         assertEquals(token, sameToken);
 
         // Test token uniqueness
-        String otherToken = tokenAuthenticationService.getToken("jack",
+        String otherToken = tokenAuthenticationService.acquireToken("jack",
                 "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal box", "rw");
         assertTrue(!otherToken.equals(token));
+    }
+
+    @Test
+    public void testGetToken() throws TokenAuthenticationException {
+
+        // Test non existing token retrieval
+        assertNull(tokenAuthenticationService.getToken("john", "myFavoriteApp",
+                "Ubuntu box 64 bits"));
+
+        // Test existing token retrieval
+        tokenAuthenticationService.acquireToken("joe", "myFavoriteApp",
+                "Ubuntu box 64 bits", "This is my personal box", "rw");
+        assertNotNull(tokenAuthenticationService.getToken("joe",
+                "myFavoriteApp", "Ubuntu box 64 bits"));
     }
 
     @Test
@@ -134,7 +148,7 @@ public class TestTokenAuthenticationService {
         assertNull(userName);
 
         // Test valid token
-        token = tokenAuthenticationService.getToken("joe", "myFavoriteApp",
+        token = tokenAuthenticationService.acquireToken("joe", "myFavoriteApp",
                 "Ubuntu box 64 bits", "This is my personal box", "rw");
         userName = tokenAuthenticationService.getUserName(token);
         assertEquals("joe", userName);
@@ -147,7 +161,7 @@ public class TestTokenAuthenticationService {
         tokenAuthenticationService.revokeToken("unexistingToken");
 
         // Test revoking an existing token
-        String token = tokenAuthenticationService.getToken("joe",
+        String token = tokenAuthenticationService.acquireToken("joe",
                 "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal box", "rw");
         assertEquals("joe", tokenAuthenticationService.getUserName(token));
@@ -164,15 +178,15 @@ public class TestTokenAuthenticationService {
                 tokenAuthenticationService.getTokenBindings("john").size());
 
         // Test existing token bindings
-        String token1 = tokenAuthenticationService.getToken("joe",
+        String token1 = tokenAuthenticationService.acquireToken("joe",
                 "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal Linux box", "rw");
         log.debug("token1 = " + token1);
-        String token2 = tokenAuthenticationService.getToken("joe",
+        String token2 = tokenAuthenticationService.acquireToken("joe",
                 "myFavoriteApp", "Windows box 32 bits",
                 "This is my personal Windows box", "rw");
         log.debug("token2 = " + token2);
-        String token3 = tokenAuthenticationService.getToken("joe",
+        String token3 = tokenAuthenticationService.acquireToken("joe",
                 "nuxeoDrive", "Mac OSX VM", "This is my personal Mac box", "rw");
         log.debug("token3 = " + token3);
 
