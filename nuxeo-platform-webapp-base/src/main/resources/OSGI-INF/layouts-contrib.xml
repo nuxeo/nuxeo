@@ -2935,8 +2935,7 @@
         </fields>
         <widgetModes>
           <mode value="edit">
-            #{nxu:test(currentUser.administrator or currentUser.isMemberOf('powerusers'),
-             'edit', 'view')}
+            #{nxu:test(webActions.checkFilter('usersGroupsManagementAccess'), 'edit', 'view')}
           </mode>
           <mode value="editPassword">hidden</mode>
         </widgetModes>
