@@ -18,6 +18,8 @@
 package org.nuxeo.ecm.quota;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
@@ -44,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Listener handling default events to update statistics through the
  * {@link org.nuxeo.ecm.quota.QuotaStatsService}.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -54,6 +56,7 @@ public class QuotaStatsListener implements EventListener {
             Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY,
                     DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
                     BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION,
+                    DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT,
                     TRANSITION_EVENT)));
 
     @Override

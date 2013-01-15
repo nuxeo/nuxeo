@@ -48,7 +48,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * documents.
  * <p>
  * Store the descendant and children count on {@code Folderish} documents.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
@@ -62,6 +62,9 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     protected void processDocumentCreated(CoreSession session,
             DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
+        if (doc.isVersion()) {
+            return;
+        }
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
         updateCountStatistics(session, doc, ancestors, docCount);
@@ -74,6 +77,20 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
         updateCountStatistics(session, doc, ancestors, docCount);
+    }
+
+    @Override
+    protected void processDocumentCheckedIn(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException {
+        // NOP
+    }
+
+    @Override
+    protected void processDocumentCheckedOut(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException {
+        // NOP
     }
 
     @Override

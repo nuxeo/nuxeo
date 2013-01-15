@@ -14,6 +14,8 @@
       <event>beforeDocumentModification</event>
       <event>aboutToRemoveVersion</event>
       <event>lifecycle_transition_event</event>
+      <event>documentCheckedIn</event>
+      <event>documentCheckedOut</event>
     </listener>
 
     <listener name="quotaProcessor" async="true"

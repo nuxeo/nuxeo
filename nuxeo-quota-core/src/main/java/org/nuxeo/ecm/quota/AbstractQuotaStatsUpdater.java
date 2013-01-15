@@ -25,6 +25,10 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +121,10 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
                 processDocumentBeforeUpdate(session, doc, docCtx);
             } else if (TRANSITION_EVENT.equals(eventName)) {
                 processDocumentTrashOp(session, doc, docCtx);
+            } else if (DOCUMENT_CHECKEDIN.equals(eventName)) {
+                processDocumentCheckedIn(session, doc, docCtx);
+            } else if (DOCUMENT_CHECKEDOUT.equals(eventName)) {
+                processDocumentCheckedOut(session, doc, docCtx);
             }
         } catch (ClientException e) {
             ClientException e2 = handleException(e, event);
@@ -153,6 +161,14 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
             DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 
+    protected abstract void processDocumentCheckedIn(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException;
+
+    protected abstract void processDocumentCheckedOut(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException;
+
     protected abstract void processDocumentUpdated(CoreSession session,
             DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
@@ -168,7 +184,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
     protected abstract void processDocumentBeforeUpdate(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException;
-    
+
     protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc,
             DocumentEventContext docCtx) throws ClientException;
 }

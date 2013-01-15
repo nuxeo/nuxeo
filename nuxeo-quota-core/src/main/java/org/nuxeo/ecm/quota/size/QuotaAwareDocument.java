@@ -22,10 +22,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * Adapter to manage a DocumentModel that supports Quotas
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -141,6 +142,7 @@ public class QuotaAwareDocument implements QuotaAware {
     public void save() throws ClientException {
         doc.getContextData().putScopedValue(ScopeType.REQUEST,
                 QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER, true);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
         doc = doc.getCoreSession().saveDocument(doc);
     }
 
