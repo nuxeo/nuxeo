@@ -48,6 +48,15 @@ public class CompatVersioningService extends StandardVersioningService {
         setVersion(doc, 1, 0);
     }
 
+    @Override
+    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty,
+            VersioningOption option, Map<String, Serializable> options)
+            throws DocumentException {
+        option = validateOption(doc, option);
+        boolean increment = option != VersioningOption.NONE;
+        return increment || (isDirty && !doc.isCheckedOut());
+    }
+
     /*
      * Create a pre-save snapshot, and re-checkout the document if there's a
      * pending save or we want to increment the version.

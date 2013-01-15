@@ -260,12 +260,19 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
+    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty,
+            VersioningOption option, Map<String, Serializable> options)
+            throws DocumentException {
+        boolean disableAutoCheckOut = Boolean.TRUE.equals(options.get(VersioningService.DISABLE_AUTO_CHECKOUT));
+        return !doc.isCheckedOut() && isDirty && !disableAutoCheckOut;
+    }
+
+    @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty,
             VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
         option = validateOption(doc, option);
-        boolean disableAutoCheckOut = Boolean.TRUE.equals(options.get(VersioningService.DISABLE_AUTO_CHECKOUT));
-        if (!doc.isCheckedOut() && isDirty && !disableAutoCheckOut) {
+        if (isPreSaveDoingCheckOut(doc, isDirty, option, options)) {
             doCheckOut(doc);
             followTransitionByOption(doc, option);
         }
@@ -287,12 +294,18 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
+    public boolean isPostSaveDoingCheckIn(Document doc,
+            VersioningOption option, Map<String, Serializable> options)
+            throws DocumentException {
+        // option = validateOption(doc, option); // validated before
+        return doc.isCheckedOut() && option != NONE;
+    }
+
+    @Override
     public Document doPostSave(Document doc, VersioningOption option,
             String checkinComment, Map<String, Serializable> options)
             throws DocumentException {
-        // option = validateOption(doc, option); // validated before
-        boolean increment = option != NONE;
-        if (doc.isCheckedOut() && increment) {
+        if (isPostSaveDoingCheckIn(doc, option, options)) {
             incrementByOption(doc, option);
             return doc.checkIn(null, checkinComment); // auto-label
         }

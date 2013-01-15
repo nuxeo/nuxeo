@@ -197,10 +197,25 @@ public class VersioningComponent extends DefaultComponent implements
     }
 
     @Override
+    public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty,
+            VersioningOption option, Map<String, Serializable> options)
+            throws DocumentException {
+        return getService().isPreSaveDoingCheckOut(doc, isDirty, option,
+                options);
+    }
+
+    @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty,
             VersioningOption option, String checkinComment,
             Map<String, Serializable> options) throws DocumentException {
         return getService().doPreSave(doc, isDirty, option, checkinComment, options);
+    }
+
+    @Override
+    public boolean isPostSaveDoingCheckIn(Document doc,
+            VersioningOption option, Map<String, Serializable> options)
+            throws DocumentException {
+        return getService().isPostSaveDoingCheckIn(doc, option, options);
     }
 
     @Override
