@@ -1925,8 +1925,19 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             if (!docModel.isImmutable()) {
                 // pre-save versioning
+                boolean checkout = getVersioningService().isPreSaveDoingCheckOut(doc, dirty,
+                        versioningOption, options);
+                if (checkout) {
+                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options,
+                            null, null, true, true);
+                }
                 versioningOption = getVersioningService().doPreSave(doc, dirty,
                         versioningOption, checkinComment, options);
+                if (checkout) {
+                    DocumentModel checkedOutDoc = readModel(doc);
+                    notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT,
+                            checkedOutDoc, options, null, null, true, false);
+                }
             }
 
             // actual save
@@ -1935,6 +1946,12 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             if (!docModel.isImmutable()) {
                 // post-save versioning
+                boolean checkin = getVersioningService().isPostSaveDoingCheckIn(
+                        doc, versioningOption, options);
+                if (checkin) {
+                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options,
+                            null, null, true, true);
+                }
                 checkedInDoc = getVersioningService().doPostSave(doc,
                         versioningOption, checkinComment, options);
             }
@@ -2151,14 +2168,20 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             DocumentModel docModel = readModel(doc);
 
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+
             // we're about to overwrite the document, make sure it's archived
             if (!skipSnapshotCreation && doc.isCheckedOut()) {
                 String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
                 docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
-                getVersioningService().doCheckIn(doc, null, checkinComment);
+                notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel,
+                        options, null, null, true, true);
+                Document ver = getVersioningService().doCheckIn(doc, null,
+                        checkinComment);
+                docModel.refresh(DocumentModel.REFRESH_STATE, null);
+                notifyCheckedInVersion(docModel, new IdRef(ver.getUUID()),
+                        null, checkinComment);
             }
-
-            final Map<String, Serializable> options = new HashMap<String, Serializable>();
 
             // FIXME: the fields are hardcoded. should be moved in versioning
             // component
@@ -2183,17 +2206,21 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             writeModel(doc, docModel);
 
             doc.restore(version);
-
-            if (!skipCheckout) {
-                // restore gives us a checked in document, so do a checkout
-                getVersioningService().doCheckOut(doc);
-            }
-
             // re-read doc model after restoration
             docModel = readModel(doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_RESTORED, docModel,
                     options, null, null, true, false);
             docModel = writeModel(doc, docModel);
+
+            if (!skipCheckout) {
+                // restore gives us a checked in document, so do a checkout
+                notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
+                        options, null, null, true, true);
+                getVersioningService().doCheckOut(doc);
+                docModel = readModel(doc);
+                notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel,
+                        options, null, null, true, false);
+            }
 
             log.debug("Document restored to version:" + version.getUUID());
             return docModel;
@@ -3001,8 +3028,15 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     if (!doc.isCheckedOut()) {
                         // last version was deleted while leaving a checked in
                         // doc. recreate a version
+                        notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
+                                options, null, null, true, true);
                         getVersioningService().doCheckOut(doc);
+                        docModel = readModel(doc);
+                        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel,
+                                options, null, null, true, false);
                     }
+                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options,
+                            null, null, true, true);
                     Document version = getVersioningService().doCheckIn(doc,
                             null, checkinComment);
                     docModel.refresh(DocumentModel.REFRESH_STATE, null);

@@ -82,6 +82,7 @@ import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -3532,7 +3533,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         folder = session.createDocument(folder);
 
         DummyTestListener.EVENTS_RECEIVED.clear();
-        session.checkIn(doc.getRef(), null, null);
+        DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
         assertEvents(DummyTestListener.EVENTS_RECEIVED, //
                 "aboutToCheckIn", //
                 "documentCheckedIn", //
@@ -3554,12 +3555,49 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DummyTestListener.EVENTS_RECEIVED.clear();
         session.publishDocument(doc, folder, false);
         assertEvents(DummyTestListener.EVENTS_RECEIVED, //
-                // "aboutToCheckIn", // TODO
+                "aboutToCheckIn", //
                 "documentCheckedIn", //
                 "documentCreated/v", //
                 "documentCreated/p", //
                 "documentProxyPublished/p", //
                 "sectionContentPublished/f");
+
+        // auto-checkout
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        doc.setPropertyValue("dc:title", "title2");
+        doc = session.saveDocument(doc);
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+                "beforeDocumentModification", //
+                "aboutToCheckout", //
+                "documentCheckedOut", //
+                "documentModified");
+
+        // save with versioning
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        doc.setPropertyValue("dc:title", "title2");
+        doc.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.MINOR);
+        doc = session.saveDocument(doc);
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+                "beforeDocumentModification", //
+                "aboutToCheckIn", //
+                "documentCheckedIn", //
+                "documentCreated/v", //
+                "documentModified");
+
+        doc.checkOut();
+
+        // restore to version
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.restoreToVersion(doc.getRef(), verRef, false, false);
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+                "aboutToCheckIn", //
+                "documentCheckedIn", //
+                "documentCreated/v", //
+                "beforeRestoringDocument", //
+                "documentRestored", //
+                "aboutToCheckout", //
+                "documentCheckedOut");
     }
 
     @SuppressWarnings("unchecked")
