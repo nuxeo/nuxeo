@@ -13,6 +13,8 @@
       <event>documentModified</event>
       <event>beforeDocumentModification</event>
       <event>aboutToRemoveVersion</event>
+      <event>documentCheckedIn</event>
+      <event>documentCheckedOut</event>
     </listener>
 
     <listener name="quotaProcessor" async="true"

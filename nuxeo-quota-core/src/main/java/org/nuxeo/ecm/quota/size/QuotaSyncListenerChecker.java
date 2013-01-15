@@ -20,6 +20,7 @@ package org.nuxeo.ecm.quota.size;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
@@ -52,7 +53,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
  * document. This default implementation does not track the space used by
  * versions, or the space used by non-Blob properties
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -144,29 +145,41 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected void processDocumentCreated(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
-        BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
-
-        DocumentModel targetDocumentToCheck = targetDoc;
-        DocumentEventContext targetDocCtx = docCtx;
-        String sourceEvent = DOCUMENT_CREATED;
-
         if (targetDoc.isVersion()) {
-            targetDocumentToCheck = session.getDocument(new IdRef(
-                    targetDoc.getSourceId()));
-            targetDocCtx = new DocumentEventContext(docCtx.getCoreSession(),
-                    docCtx.getPrincipal(), targetDocumentToCheck);
-            targetDocCtx.setCategory(docCtx.getCategory());
-            targetDocCtx.setProperties(docCtx.getProperties());
-            sourceEvent = DOCUMENT_CHECKEDIN;
+            // version taken into account by checkout
+            // TODO 5.7 version accounting should be different
+            return;
         }
-
-        // only process if Blobs where added or removed
-        if (bsi.getBlobSizeDelta() != 0 || targetDoc.isVersion()) {
-            checkConstraints(session, targetDocumentToCheck,
-                    targetDocumentToCheck.getParentRef(), bsi,
-                    targetDoc.isVersion());
+        BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
+        // only process if blobs are present
+        if (bsi.getBlobSizeDelta() != 0) {
+            checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                    session, targetDocCtx, bsi, sourceEvent);
+                    session, docCtx, bsi, DOCUMENT_CREATED);
+            sendUpdateEvents(asyncEventCtx);
+        }
+    }
+
+    @Override
+    protected void processDocumentCheckedIn(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException {
+        // for checkin the total size is not incremented, as this goes
+        // against user expectations
+        // TODO 5.7 version accounting should be different
+    }
+
+    @Override
+    protected void processDocumentCheckedOut(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException {
+        // on checkout we account for the last version size
+        BlobSizeInfo bsi = computeSizeImpact(doc, false);
+        // only process if blobs are present
+        if (bsi.getBlobSize() != 0) {
+            checkConstraints(session, doc, doc.getParentRef(), bsi, true);
+            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                    session, docCtx, bsi, DOCUMENT_CHECKEDOUT);
             sendUpdateEvents(asyncEventCtx);
         }
     }

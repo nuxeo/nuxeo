@@ -20,7 +20,7 @@ package org.nuxeo.ecm.quota.size;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 
 import java.util.ArrayList;
@@ -150,6 +150,10 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 parents.remove(0);
             }
         } else {
+            // BEFORE_DOC_UPDATE
+            // DOCUMENT_CREATED
+            // DOCUMENT_CREATED_BY_COPY
+            // DOCUMENT_CHECKEDOUT
 
             if (sourceDocument.getRef() == null) {
                 log.error("SourceDocument has no ref");
@@ -172,15 +176,16 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     log.debug("  update Quota Facet on "
                             + sourceDocument.getPathAsString());
                 }
-                if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
+                if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
                     quotaDoc.addTotalSize(quotaCtx.getBlobSize(), true);
                 } else {
                     quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
                 }
             }
+            // else for DOCUMENT_CREATED_BY_COPY the quota info is already there
         }
         if (parents.size() > 0) {
-            if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
+            if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
                 processOnParents(parents, quotaCtx.getBlobSize());
             } else {
                 processOnParents(parents, quotaCtx.getBlobDelta());
