@@ -276,4 +276,40 @@ public class TestSchemaManager extends NXRuntimeTestCase {
                 Arrays.asList(f.getSchemaNames()));
     }
 
+    @Test
+    public void testMergeDocumentType() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/CoreTestExtensions.xml");
+        DocumentType t = schemaManager.getDocumentType("myDoc");
+        assertEquals(Collections.singletonList("schema2"),
+                Arrays.asList(t.getSchemaNames()));
+        assertEquals(
+                new HashSet<String>(Arrays.asList("viewable", "writable")),
+                t.getFacets());
+
+        t = schemaManager.getDocumentType("myDoc2");
+        Set<String> ts = new HashSet<String>(Arrays.asList(t.getSchemaNames()));
+        assertEquals(new HashSet<String>(Arrays.asList("schema1", "schema2")),
+                ts);
+        assertEquals(Collections.singleton("myfacet"), t.getFacets());
+
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/test-merge-doctype.xml");
+        t = schemaManager.getDocumentType("myDoc");
+        assertEquals(Collections.singletonList("schema2"),
+                Arrays.asList(t.getSchemaNames()));
+        assertEquals(
+                new HashSet<String>(Arrays.asList("viewable", "writable",
+                        "NewFacet")), t.getFacets());
+
+        t = schemaManager.getDocumentType("myDoc2");
+        ts = new HashSet<String>(Arrays.asList(t.getSchemaNames()));
+        assertEquals(
+                new HashSet<String>(Arrays.asList("schema1", "schema2",
+                        "newschema", "newschema2")), ts);
+        assertEquals(
+                new HashSet<String>(Arrays.asList("myfacet", "NewFacet2")),
+                t.getFacets());
+    }
+
 }

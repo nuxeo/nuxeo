@@ -384,7 +384,11 @@ public class SchemaManagerImpl implements SchemaManager {
         Map<String, DocumentTypeDescriptor> dtds = new LinkedHashMap<String, DocumentTypeDescriptor>();
         for (DocumentTypeDescriptor dtd : allDocumentTypes) {
             String name = dtd.name;
-            dtds.put(name, dtd);
+            DocumentTypeDescriptor newDtd = dtd;
+            if (dtd.append && dtds.containsKey(dtd.name)) {
+                newDtd = mergeDocumentTypeDescriptors(dtd, dtds.get(name));
+            }
+            dtds.put(name, newDtd);
         }
         // recompute all types, parents first
         documentTypes.clear();
@@ -408,6 +412,11 @@ public class SchemaManagerImpl implements SchemaManager {
             }
         }
 
+    }
+
+    protected DocumentTypeDescriptor mergeDocumentTypeDescriptors(
+            DocumentTypeDescriptor src, DocumentTypeDescriptor dst) {
+        return dst.clone().merge(src);
     }
 
     protected DocumentType recomputeDocumentType(String name,

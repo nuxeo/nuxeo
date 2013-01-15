@@ -18,6 +18,12 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Document Type Descriptor.
  * <p>
@@ -48,6 +54,9 @@ public class DocumentTypeDescriptor {
     @XNode("prefetch")
     public String prefetch;
 
+    @XNode("@append")
+    public boolean append = false;
+
     public DocumentTypeDescriptor() {
     }
 
@@ -62,6 +71,49 @@ public class DocumentTypeDescriptor {
     @Override
     public String toString() {
         return "DocType: "+name;
+    }
+
+    public DocumentTypeDescriptor clone() {
+        DocumentTypeDescriptor clone = new DocumentTypeDescriptor();
+        clone.name = name;
+        clone.schemas = schemas;
+        clone.superTypeName = superTypeName;
+        clone.facets = facets;
+        clone.prefetch = prefetch;
+        clone.append = append;
+        return clone;
+    }
+
+    public DocumentTypeDescriptor merge(DocumentTypeDescriptor other) {
+        // only merge schemas, facets and prefetch
+        if (schemas == null) {
+            schemas = other.schemas;
+        } else {
+            if (other.schemas != null) {
+                List<SchemaDescriptor> mergedSchemas = new ArrayList<SchemaDescriptor>(
+                        Arrays.asList(schemas));
+                mergedSchemas.addAll(Arrays.asList(other.schemas));
+                schemas = mergedSchemas.toArray(new SchemaDescriptor[mergedSchemas.size()]);
+            }
+        }
+        if (facets == null) {
+            facets = other.facets;
+        } else {
+            if (other.facets != null) {
+                List<String> mergedFacets = new ArrayList<String>(
+                        Arrays.asList(facets));
+                mergedFacets.addAll(Arrays.asList(other.facets));
+                facets = mergedFacets.toArray(new String[mergedFacets.size()]);
+            }
+        }
+        if (prefetch == null) {
+            prefetch = other.prefetch;
+        } else {
+            if (other.prefetch != null) {
+                prefetch = prefetch + " " + other.prefetch;
+            }
+        }
+        return this;
     }
 
 }
