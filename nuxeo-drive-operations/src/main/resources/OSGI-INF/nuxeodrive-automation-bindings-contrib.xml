@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.automation.server.bindings"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="bindings">
+    <!-- Protect NuxeoDrive test operations -->
+    <binding name="NuxeoDrive.CreateTestUser">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="NuxeoDrive.DeleteTestUser">
+      <administrator>true</administrator>
+    </binding>
+  </extension>
+
+</component>

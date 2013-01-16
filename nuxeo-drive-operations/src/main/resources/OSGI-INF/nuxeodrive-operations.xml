@@ -20,6 +20,11 @@
     <operation class="org.nuxeo.drive.operations.NuxeoDriveRename" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveCanMove" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveMove" />
+    <!-- For test purpose -->
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveCreateTestUser" />
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveDeleteTestUser" />
   </extension>
 
 </component>
