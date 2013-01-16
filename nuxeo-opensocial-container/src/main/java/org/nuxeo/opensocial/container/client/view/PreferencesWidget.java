@@ -61,7 +61,7 @@ public class PreferencesWidget extends DialogBox implements
 
     public PreferencesWidget() {
         super(true, true);
-        this.setAnimationEnabled(true);
+        this.setAnimationEnabled(false);
         this.setGlassEnabled(true);
         this.setText(constants.preferences());
         this.addStyleName("preferences");

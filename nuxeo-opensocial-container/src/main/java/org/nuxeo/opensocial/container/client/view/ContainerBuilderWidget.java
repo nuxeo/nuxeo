@@ -20,6 +20,7 @@ package org.nuxeo.opensocial.container.client.view;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.opensocial.container.client.ContainerConfiguration;
 import org.nuxeo.opensocial.container.client.ContainerConstants;
 import org.nuxeo.opensocial.container.client.presenter.AppPresenter;
 import org.nuxeo.opensocial.container.client.presenter.ContainerBuilderPresenter;
@@ -80,22 +81,20 @@ public class ContainerBuilderWidget extends DialogBox implements
     private Button closeButton;
 
     public ContainerBuilderWidget() {
-        this.setModal(false);
-        this.setAutoHideEnabled(false);
+        super(true, true);
+        this.setGlassEnabled(true);
         this.setAnimationEnabled(false);
-        this.setPopupPosition(10, Window.getScrollTop() + 10);
         this.setText(constants.windowTitle());
-        this.addStyleName("builder");
 
         builderContent = new VerticalPanel();
         this.add(builderContent);
-        builderContent.setWidth("200px");
+        builderContent.setWidth("185px");
         builderContent.setStyleName("builder");
     }
 
     public void showContainerSizePanel() {
         CaptionPanel bodySize = new CaptionPanel(constants.containerSizeTitle());
-        bodySize.setWidth("185px");
+        bodySize.setWidth("100%");
 
         final VerticalPanel content = new VerticalPanel();
 
@@ -138,19 +137,18 @@ public class ContainerBuilderWidget extends DialogBox implements
     }
 
     public void showZonesPanel() {
-        CaptionPanel splitContent = new CaptionPanel(
-                constants.customContentTitle());
-        splitContent.setWidth("185px");
+        CaptionPanel splitContent = new CaptionPanel();
+        splitContent.setWidth("100%");
 
         listOfZoneDesigner = new FlexTable();
         listOfZoneDesigner.setWidth("100%");
 
         addRowButton = new Button(constants.addRow());
+        addRowButton.setStyleName("button smallButton");
 
         listOfZoneDesigner.setWidget(0, 1, addRowButton);
 
         splitContent.setContentWidget(listOfZoneDesigner);
-
         builderContent.add(splitContent);
     }
 
@@ -182,20 +180,15 @@ public class ContainerBuilderWidget extends DialogBox implements
     }
 
     public void showCloseButtonPanel() {
-        CaptionPanel closePanel = new CaptionPanel(constants.closeTitle());
-        closePanel.setWidth("185px");
-
         VerticalPanel vp = new VerticalPanel();
-        vp.setWidth("100%");
+        vp.setWidth("185px");
         vp.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-        closeButton = new Button(constants.close());
+        closeButton = new Button(constants.save());
+        closeButton.setStyleName("button");
 
         vp.add(closeButton);
-
-        closePanel.setContentWidget(vp);
-
-        builderContent.add(closePanel);
+        builderContent.add(vp);
     }
 
     public HasMultipleValue<String> getContainerSizeListBox() {
@@ -271,7 +264,7 @@ public class ContainerBuilderWidget extends DialogBox implements
     }
 
     public int addZone() {
-        Image deleteZone = new Image(AppPresenter.images.closeIcon().getURL());
+        Image deleteZone = new Image(ContainerConfiguration.getBaseUrl() + "icons/delete.png");
         int rowIndex = listOfZoneDesigner.getRowCount();
 
         deleteZone.getElement().getStyle().setCursor(Cursor.POINTER);
@@ -350,7 +343,7 @@ public class ContainerBuilderWidget extends DialogBox implements
     }
 
     public void showPopup() {
-        this.setPopupPosition(10, Window.getScrollTop() + 10);
+        this.center();
         this.show();
     }
 
