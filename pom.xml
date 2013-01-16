@@ -99,6 +99,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+    <sonar.host.url>https://sonar.nuxeo.org/</sonar.host.url>
+
     <nuxeo.common.version>5.7-SNAPSHOT</nuxeo.common.version>
     <nuxeo.runtime.version>5.7-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.core.version>5.7-SNAPSHOT</nuxeo.core.version>
@@ -4251,6 +4253,10 @@
             </reports>
           </reportSet>
         </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.sonar-plugins</groupId>
+        <artifactId>maven-report</artifactId>
       </plugin>
     </plugins>
   </reporting>
