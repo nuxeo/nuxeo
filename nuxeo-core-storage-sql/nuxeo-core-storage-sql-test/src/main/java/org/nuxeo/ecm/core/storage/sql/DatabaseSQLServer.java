@@ -112,7 +112,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
         properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         properties.put("UseCursors", "true");
         descriptor.properties = properties;
-        descriptor.fulltextAnalyzer = "french";
+        descriptor.fulltextAnalyzer = "French";
         descriptor.fulltextCatalog = "nuxeo";
         return descriptor;
     }

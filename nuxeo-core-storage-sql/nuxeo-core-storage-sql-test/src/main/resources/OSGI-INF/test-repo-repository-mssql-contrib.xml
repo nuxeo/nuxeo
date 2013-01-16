@@ -14,7 +14,7 @@
           <field type="largetext">relatedtext</field>
         </schema>
         <indexing>
-          <fulltext catalog="nuxeo" analyzer="french"/>
+          <fulltext catalog="nuxeo" analyzer="French"/>
         </indexing>
         <xa-datasource>${nuxeo.test.vcs.xadatasource}</xa-datasource>
         <property name="ServerName">${nuxeo.test.vcs.server}</property>

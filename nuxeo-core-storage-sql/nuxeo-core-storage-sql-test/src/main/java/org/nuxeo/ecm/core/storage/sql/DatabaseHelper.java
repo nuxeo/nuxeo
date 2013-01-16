@@ -134,6 +134,10 @@ public abstract class DatabaseHelper {
                 // skip Oracle 10g flashback/fulltext-index tables
                 continue;
             }
+            if (tableName.toLowerCase().startsWith("trace_xe_")) {
+                // Skip mssql 2012 system table
+                continue;
+            }
             if ("ACLR_USER_USERS".equals(tableName)) {
                 // skip nested table that is dropped by the main table
                 continue;
