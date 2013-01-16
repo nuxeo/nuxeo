@@ -45,7 +45,7 @@ import org.nuxeo.ecm.platform.ui.web.multipart.ByteSequenceMatcher.BytesHandler;
 
 /**
  * Request wrapper for supporting multipart requests, used for file uploading.
- *
+ * 
  * @author Shane Bryzak
  */
 public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
@@ -102,7 +102,14 @@ public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
         this.createTempFiles = createTempFiles;
 
         String contentLength = request.getHeader("Content-Length");
-        this.contentLength = Long.parseLong(contentLength);
+        if (contentLength != null) {
+            try {
+                this.contentLength = Long.parseLong(contentLength);
+            } catch (NumberFormatException e) {
+                this.contentLength = 0;
+            }
+        }
+
         if (contentLength != null && maxRequestSize > 0
                 && this.contentLength > maxRequestSize) {
             // TODO : we should make decision if can generate exception in this
