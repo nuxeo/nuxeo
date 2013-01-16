@@ -14,8 +14,9 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 import static org.junit.Assert.*;
 
-public class TestFMProcessing extends SimpleTemplateDocTestCase {
+public class TestFMTextProcessing extends SimpleTemplateDocTestCase {
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");
@@ -40,22 +41,22 @@ public class TestFMProcessing extends SimpleTemplateDocTestCase {
 
         Blob newBlob = adapter.renderWithTemplate(TEMPLATE_NAME);
 
-        String xmlContent = newBlob.getString();
+        String txtContent = newBlob.getString();
 
-        assertEquals("text/html", newBlob.getMimeType());
-        assertTrue(newBlob.getFilename().endsWith(".html"));
+        assertTrue(newBlob.getMimeType().equals("text/plain"));
+        assertTrue(newBlob.getFilename().endsWith(".txt"));
 
-        assertTrue(xmlContent.contains(testDoc.getTitle()));
-        assertTrue(xmlContent.contains(testDoc.getId()));
-        assertTrue(xmlContent.contains("YoVar1"));
+        assertTrue(txtContent.contains(testDoc.getTitle()));
+        assertTrue(txtContent.contains(testDoc.getId()));
+        assertTrue(txtContent.contains("YoVar1"));
 
     }
 
     @Override
     protected Blob getTemplateBlob() {
-        File file = FileUtils.getResourceFileFromContext("data/test.ftl");
+        File file = FileUtils.getResourceFileFromContext("data/testText.ftl");
         Blob fileBlob = new FileBlob(file);
-        fileBlob.setFilename("test.ftl");
+        fileBlob.setFilename("testText.ftl");
         return fileBlob;
     }
 
