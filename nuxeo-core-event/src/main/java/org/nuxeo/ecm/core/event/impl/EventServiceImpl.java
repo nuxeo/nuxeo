@@ -253,7 +253,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
                 }
             }
         }
-
+        
         if (!event.isInline()) { // record the event
             // don't record the complete event, only a shallow copy
             ShallowEvent shallowEvent = ShallowEvent.create(event);

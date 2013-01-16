@@ -5,6 +5,8 @@
     <listener async="true" postCommit="false" class="org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener" name="testPostCommit">
       <event>testasync</event>
     </listener>
+    <listener async="false" postCommit="false" name="inlineListener"
+      class="org.nuxeo.ecm.core.event.test.DummyInlineListener" />
   </extension>
 
 </component>
