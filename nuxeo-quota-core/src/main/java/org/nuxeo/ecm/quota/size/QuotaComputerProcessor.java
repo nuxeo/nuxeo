@@ -21,7 +21,6 @@ import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
@@ -155,10 +154,20 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 parents.remove(0);
             }
         } else {
+            // DELETE_TRANSITION
+            // UNDELETE_TRANSITION
             // BEFORE_DOC_UPDATE
             // DOCUMENT_CREATED
             // DOCUMENT_CREATED_BY_COPY
+            // DOCUMENT_CHECKEDIN
             // DOCUMENT_CHECKEDOUT
+
+            // several events in the bundle may impact the same doc,
+            // so it may have already been modified
+            sourceDocument = session.getDocument(sourceDocument.getRef());
+            // TODO fix DocumentModel.refresh() to correctly take into account
+            // dynamic facets, then use this instead:
+            // sourceDocument.refresh();
 
             if (sourceDocument.getRef() == null) {
                 log.error("SourceDocument has no ref");
@@ -181,21 +190,25 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     log.debug("  update Quota Facet on "
                             + sourceDocument.getPathAsString());
                 }
-                if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
-                    quotaDoc.addTotalSize(quotaCtx.getBlobSize(), true);
-                    // keep the versionsSize on the working copy
+                if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
                     quotaDoc.addVersionsSize(quotaCtx.getBlobSize(), true);
+                } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
+                    quotaDoc.addTotalSize(quotaCtx.getBlobSize(), true);
                 } else if (DELETE_TRANSITION.equals(sourceEvent)
                         || UNDELETE_TRANSITION.equals(sourceEvent)) {
                     quotaDoc.addTrashSize(quotaCtx.getBlobSize(), true);
                 } else {
+                    // BEFORE_DOC_UPDATE
+                    // DOCUMENT_CREATED
                     quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
                 }
             }
             // else for DOCUMENT_CREATED_BY_COPY the quota info is already there
         }
         if (parents.size() > 0) {
-            if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
+            if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
+                processOnParents(parents, 0, quotaCtx.getBlobSize(), true, false, true);
+            } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
                 processOnParents(parents, quotaCtx.getBlobSize(), true, false);
             } else if (DELETE_TRANSITION.equals(sourceEvent)
                     || UNDELETE_TRANSITION.equals(sourceEvent)) {

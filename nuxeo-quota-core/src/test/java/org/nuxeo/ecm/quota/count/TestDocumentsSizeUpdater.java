@@ -62,7 +62,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -84,12 +83,6 @@ public class TestDocumentsSizeUpdater {
 
     @Inject
     protected EventService eventService;
-
-    @Inject
-    protected FeaturesRunner featureRunner;
-
-    @Inject
-    protected RuntimeHarness harness;
 
     protected DocumentRef wsRef;
 
@@ -441,19 +434,22 @@ public class TestDocumentsSizeUpdater {
             long totalSize, long trashSize) {
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals(innerSize, qa.getInnerSize());
-        assertEquals(totalSize, qa.getTotalSize());
-        assertEquals(trashSize, qa.getTrashSize());
+        assertEquals("inner:" + innerSize + " total:" + totalSize + " trash:"
+                + trashSize,
+                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize()
+                        + " trash:" + qa.getTrashSize());
     }
 
     protected void assertQuota(DocumentModel doc, long innerSize,
             long totalSize, long trashSize, long versionsSize) {
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals(innerSize, qa.getInnerSize());
-        assertEquals(totalSize, qa.getTotalSize());
-        assertEquals(trashSize, qa.getTrashSize());
-        assertEquals(versionsSize, qa.getVersionsSize());
+        assertEquals(
+                "inner:" + innerSize + " total:" + totalSize + " trash:"
+                        + trashSize + " versions: " + versionsSize,
+                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize()
+                        + " trash:" + qa.getTrashSize() + " versions: "
+                        + qa.getVersionsSize());
     }
 
     @Test
@@ -546,11 +542,12 @@ public class TestDocumentsSizeUpdater {
         assertFalse(firstFile.isCheckedOut());
         assertEquals("0.1", firstFile.getVersionLabel());
 
-        assertQuota(firstFile, 100L, 100L); // checked in: not counted twice
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(ws, 0L, 300L);
+        // checked in: not counted twice in total
+        assertQuota(firstFile, 100, 100, 0, 100);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 300, 0, 100);
+        assertQuota(firstFolder, 0, 300, 0, 100);
+        assertQuota(ws, 0, 300, 0, 100);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -572,11 +569,11 @@ public class TestDocumentsSizeUpdater {
 
         secondFile = session.getDocument(secondFileRef);
 
-        assertQuota(firstFile, 380L, 760L, 0L, 380L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 960L, 0L, 380L);
-        assertQuota(firstFolder, 0L, 960L, 0L, 380L);
-        assertQuota(ws, 50L, 1010L, 0L, 380L);
+        assertQuota(firstFile, 100, 200, 0, 100);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 400, 0, 100);
+        assertQuota(firstFolder, 0, 400, 0, 100);
+        assertQuota(ws, 0, 400, 0, 100);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -600,11 +597,11 @@ public class TestDocumentsSizeUpdater {
         assertTrue(firstFile.isCheckedOut());
         assertEquals("0.0", firstFile.getVersionLabel());
 
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(ws, 0L, 300L);
+        assertQuota(firstFile, 100, 100, 0, 0);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 300, 0, 0);
+        assertQuota(firstFolder, 0, 300, 0, 0);
+        assertQuota(ws, 0, 300, 0, 0);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -625,11 +622,12 @@ public class TestDocumentsSizeUpdater {
         assertFalse(firstFile.isCheckedOut());
         assertEquals("0.1", firstFile.getVersionLabel());
 
-        assertQuota(firstFile, 100L, 100L); // checked in: not counted twice
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(ws, 0L, 300L);
+        // checked in: not counted twice in total
+        assertQuota(firstFile, 100, 100, 0, 100);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 300, 0, 100);
+        assertQuota(firstFolder, 0, 300, 0, 100);
+        assertQuota(ws, 0, 300, 0, 100);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -645,18 +643,17 @@ public class TestDocumentsSizeUpdater {
         firstFolder = session.getDocument(firstFolderRef);
         firstSubFolder = session.getDocument(firstSubFolderRef);
         firstFile = session.getDocument(firstFileRef);
+        secondFile = session.getDocument(secondFileRef);
 
         assertTrue(firstFile.isCheckedOut());
         assertEquals("0.1+", firstFile.getVersionLabel());
 
-        secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 380L, 1140L, 0L, 760L);
-        assertQuota(firstFile, 380L, 1140L);
-        assertQuota(firstFile, 100L, 200L);
-        assertQuota(firstSubFolder, 0L, 1340L, 0L, 760L);
-        assertQuota(firstFolder, 0L, 1340L, 0L, 760L);
-        assertQuota(ws, 50L, 1390L, 0L, 760L);
+        // after checkout total includes all versions
+        assertQuota(firstFile, 100, 200, 0, 100);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 400, 0, 100);
+        assertQuota(firstFolder, 0, 400, 0, 100);
+        assertQuota(ws, 0, 400, 0, 100);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -677,11 +674,11 @@ public class TestDocumentsSizeUpdater {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         DocumentModel secondFile = session.getDocument(secondFileRef);
 
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(ws, 0L, 300L);
+        assertQuota(firstFile, 100, 100, 0, 0);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 300, 0, 0);
+        assertQuota(firstFolder, 0, 300, 0, 0);
+        assertQuota(ws, 0, 300, 0, 0);
 
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -702,11 +699,11 @@ public class TestDocumentsSizeUpdater {
         assertFalse(firstFile.isCheckedOut());
         assertEquals("0.1", firstFile.getVersionLabel());
 
-        assertQuota(firstFile, 380L, 380L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 580L);
-        assertQuota(firstFolder, 0L, 580L);
-        assertQuota(ws, 50L, 630L);
+        assertQuota(firstFile, 380, 380, 0, 380);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 580, 0, 380);
+        assertQuota(firstFolder, 0, 580, 0, 380);
+        assertQuota(ws, 50, 630, 0, 380);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -727,11 +724,11 @@ public class TestDocumentsSizeUpdater {
         assertFalse(firstFile.isCheckedOut());
         assertEquals("0.2", firstFile.getVersionLabel());
 
-        assertQuota(firstFile, 380L, 760L, 0L, 380L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 960L, 0L, 380L);
-        assertQuota(firstFolder, 0L, 960L, 0L, 380L);
-        assertQuota(ws, 50L, 1010L, 0L, 380L);
+        assertQuota(firstFile, 380, 760, 0, 760);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 960, 0, 760);
+        assertQuota(firstFolder, 0, 960, 0, 760);
+        assertQuota(ws, 50, 1010, 0, 760);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -752,11 +749,11 @@ public class TestDocumentsSizeUpdater {
         assertFalse(firstFile.isCheckedOut());
         assertEquals("0.2", firstFile.getVersionLabel());
 
-        assertQuota(firstFile, 380L, 380L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 580L);
-        assertQuota(firstFolder, 0L, 580L);
-        assertQuota(ws, 50L, 630L);
+        assertQuota(firstFile, 380, 380, 0, 380);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 580, 0, 380);
+        assertQuota(firstFolder, 0, 580, 0, 380);
+        assertQuota(ws, 50, 630, 0, 380);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -777,7 +774,7 @@ public class TestDocumentsSizeUpdater {
 
         assertFalse(session.exists(firstFileRef));
 
-        assertQuota(secondFile, 200L, 200L);
+        assertQuota(secondFile, 200, 200, 0, 0);
         assertQuota(firstSubFolder, 0L, 200L, 0L, 0L);
         assertQuota(firstFolder, 0L, 200L, 0L, 0L);
         assertQuota(ws, 50L, 250L, 0L, 0L);
@@ -1243,13 +1240,15 @@ public class TestDocumentsSizeUpdater {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         DocumentModel secondFile = session.getDocument(secondFileRef);
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
         DocumentModel secondFolder = session.getDocument(secondFolderRef);
 
 
-        assertQuota(firstFile, 380L, 760L, 0L, 380L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstFolder, 0L, 960L, 0L, 380L);
-        assertQuota(ws, 50L, 1010L, 0L, 380L);
+        assertQuota(firstFile, 380, 380, 0, 380);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 580, 0, 380);
+        assertQuota(firstFolder, 0, 580, 0, 380);
+        assertQuota(ws, 50, 630, 0, 380);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
@@ -1259,14 +1258,17 @@ public class TestDocumentsSizeUpdater {
 
         ws = session.getDocument(wsRef);
         firstFile = session.getDocument(firstFileRef);
+        secondFile = session.getDocument(secondFileRef);
         firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
         secondFolder = session.getDocument(secondFolderRef);
 
-
-        assertQuota(firstFile, 380L, 760L, 0L, 380L);
-        assertQuota(firstFolder, 0L, 200L, 0L, 0L);
-        assertQuota(secondFolder, 0L, 760L, 0L, 380L);
-        assertQuota(ws, 50L, 1010L, 0L, 380L);
+        assertQuota(firstFile, 380, 380, 0, 380);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 200, 0, 0);
+        assertQuota(firstFolder, 0, 200, 0, 0);
+        assertQuota(secondFolder, 0, 380, 0, 380);
+        assertQuota(ws, 50, 630, 0, 380);
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();

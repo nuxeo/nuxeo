@@ -179,16 +179,22 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected void processDocumentCheckedIn(CoreSession session,
             DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
-        // for checkin the total size is not incremented, as this goes
-        // against user expectations
-        // TODO 5.7 version accounting should be different
+        // on checkin the versions size is incremented (but not the total)
+        BlobSizeInfo bsi = computeSizeImpact(doc, false);
+        // only process if blobs are present
+        if (bsi.getBlobSize() != 0) {
+            // no checkConstraints as total size not impacted
+            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                    session, docCtx, bsi, DOCUMENT_CHECKEDIN);
+            sendUpdateEvents(asyncEventCtx);
+        }
     }
 
     @Override
     protected void processDocumentCheckedOut(CoreSession session,
             DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
-        // on checkout we account for the last version size
+        // on checkout we account in the total for the last version size
         BlobSizeInfo bsi = computeSizeImpact(doc, false);
         // only process if blobs are present
         if (bsi.getBlobSize() != 0) {
@@ -507,7 +513,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 // check constrains not needed, since the documents stays in
                 // the same folder
                 // TODO move this check to QuotaSyncListenerChecker
-                
+
                 SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
                         session, docCtx, bsi, transition);
                 sendUpdateEvents(asyncEventCtx);
