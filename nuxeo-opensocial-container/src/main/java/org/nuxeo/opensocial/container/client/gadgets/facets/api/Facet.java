@@ -38,6 +38,10 @@ public class Facet extends Composite implements HasClickHandlers {
 
     private FocusPanel facet;
 
+    private String title1 = null;
+
+    private String title2 = null;
+
     private String cssClassForState1 = null;
 
     private String cssClassForState2 = null;
@@ -48,12 +52,14 @@ public class Facet extends Composite implements HasClickHandlers {
 
     private boolean isInState1 = true;
 
-    public Facet(String cssClass, GwtEvent<?> eventToFireOnState1) {
+    public Facet(String title, String cssClass, GwtEvent<?> eventToFireOnState1) {
+        title1 = title;
         cssClassForState1 = cssClass;
 
         facet = new FocusPanel();
         facet.setStyleName("facet");
         facet.addStyleName(cssClass);
+        facet.setTitle(title);
 
         facet.addMouseOverHandler(new MouseOverHandler() {
             public void onMouseOver(MouseOverEvent event) {
@@ -78,10 +84,11 @@ public class Facet extends Composite implements HasClickHandlers {
         this.eventToFireOnState1 = eventToFireOnState1;
     }
 
-    public Facet(String cssClassForState1, GwtEvent<?> eventToFireOnState1,
-            String cssClassForState2, GwtEvent<?> eventToFireOnState2) {
-        this(cssClassForState1, eventToFireOnState1);
+    public Facet(String title1, String cssClassForState1, GwtEvent<?> eventToFireOnState1,
+            String title2, String cssClassForState2, GwtEvent<?> eventToFireOnState2) {
+        this(title1, cssClassForState1, eventToFireOnState1);
 
+        this.title2 = title2;
         this.cssClassForState2 = cssClassForState2;
         this.eventToFireOnState2 = eventToFireOnState2;
     }
@@ -91,10 +98,12 @@ public class Facet extends Composite implements HasClickHandlers {
             if (isInFirstState()) {
                 facet.removeStyleName(cssClassForState1);
                 facet.addStyleName(cssClassForState2);
+                facet.setTitle(title2);
                 isInState1 = false;
             } else {
                 facet.removeStyleName(cssClassForState2);
                 facet.addStyleName(cssClassForState1);
+                facet.setTitle(title1);
                 isInState1 = true;
             }
         }

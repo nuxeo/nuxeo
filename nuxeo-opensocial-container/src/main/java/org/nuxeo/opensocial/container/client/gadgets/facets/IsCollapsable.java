@@ -20,13 +20,16 @@ package org.nuxeo.opensocial.container.client.gadgets.facets;
 import org.nuxeo.opensocial.container.client.event.priv.app.portlet.CollapsePortletEvent;
 import org.nuxeo.opensocial.container.client.event.priv.app.portlet.UncollapsePortletEvent;
 import org.nuxeo.opensocial.container.client.gadgets.facets.api.Facet;
+import org.nuxeo.opensocial.container.client.presenter.AppPresenter;
 
 /**
  * @author Stéphane Fourrier
  */
 public class IsCollapsable extends Facet {
     public IsCollapsable() {
-        super("facet-collapse", new CollapsePortletEvent(), "facet-collapsed",
+        super(AppPresenter.containerConstants.fold(), "facet-collapse",
+                new CollapsePortletEvent(),
+                AppPresenter.containerConstants.unfold(), "facet-collapsed",
                 new UncollapsePortletEvent());
     }
 }

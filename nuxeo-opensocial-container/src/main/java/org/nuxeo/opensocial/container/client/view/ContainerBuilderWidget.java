@@ -82,7 +82,7 @@ public class ContainerBuilderWidget extends DialogBox implements
     public ContainerBuilderWidget() {
         this.setModal(false);
         this.setAutoHideEnabled(false);
-        this.setAnimationEnabled(true);
+        this.setAnimationEnabled(false);
         this.setPopupPosition(10, Window.getScrollTop() + 10);
         this.setText(constants.windowTitle());
         this.addStyleName("builder");

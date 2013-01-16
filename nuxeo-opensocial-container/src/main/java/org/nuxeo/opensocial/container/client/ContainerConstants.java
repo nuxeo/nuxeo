@@ -72,4 +72,14 @@ public interface ContainerConstants extends Constants {
     String folderSelection();
 
     String cantDeleteLastZoneError();
+
+    String fold();
+
+    String unfold();
+
+    String configure();
+
+    String maximize();
+
+    String minimize();
 }

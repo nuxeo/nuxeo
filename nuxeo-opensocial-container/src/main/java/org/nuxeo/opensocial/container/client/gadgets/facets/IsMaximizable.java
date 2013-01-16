@@ -20,13 +20,16 @@ package org.nuxeo.opensocial.container.client.gadgets.facets;
 import org.nuxeo.opensocial.container.client.event.priv.app.portlet.MaximizePortletEvent;
 import org.nuxeo.opensocial.container.client.event.priv.app.portlet.MinimizePortletEvent;
 import org.nuxeo.opensocial.container.client.gadgets.facets.api.Facet;
+import org.nuxeo.opensocial.container.client.presenter.AppPresenter;
 
 /**
  * @author Stéphane Fourrier
  */
 public class IsMaximizable extends Facet {
     public IsMaximizable() {
-        super("facet-maximize", new MaximizePortletEvent(), "facet-minimize",
+        super(AppPresenter.containerConstants.maximize(), "facet-maximize",
+                new MaximizePortletEvent(),
+                AppPresenter.containerConstants.minimize(), "facet-minimize",
                 new MinimizePortletEvent());
     }
 }
