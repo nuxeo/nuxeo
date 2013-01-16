@@ -19,6 +19,7 @@ package org.nuxeo.drive.seam;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -246,6 +247,9 @@ public class NuxeoDriveActions implements Serializable {
         FacesContext ctx = FacesContext.getCurrentInstance();
         Set<String> paths = ctx.getExternalContext().getResourcePaths(
                 "/nuxeo-drive");
+        if (paths == null) {
+            return Collections.emptyList();
+        }
         String baseURL = VirtualHostHelper.getBaseURL((ServletRequest) ctx.getExternalContext().getRequest());
         List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
         for (String path : paths) {
