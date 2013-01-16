@@ -203,22 +203,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
     @Override
     public void fireEvent(Event event) throws ClientException {
 
-        if (!event.isInline()) { // record the event
-            // don't record the complete event, only a shallow copy
-            ShallowEvent shallowEvent = ShallowEvent.create(event);
-            if (event.isImmediate()) {
-                EventBundleImpl b = new EventBundleImpl();
-                b.push(shallowEvent);
-                fireEventBundle(b);
-            } else {
-                CompositeEventBundle b = compositeBundle.get();
-                b.push(shallowEvent);
-                // check for commit events to flush the event bundle
-                if (!b.transacted && event.isCommitEvent()) {
-                    handleTxCommited();
-                }
-            }
-        }
         String ename = event.getName();
         EventStats stats = getEventStats();
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledInlineListenersDescriptors()) {
@@ -274,6 +258,23 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
                     if (event.isCanceled()) {
                         return;
                     }
+                }
+            }
+        }
+
+        if (!event.isInline()) { // record the event
+            // don't record the complete event, only a shallow copy
+            ShallowEvent shallowEvent = ShallowEvent.create(event);
+            if (event.isImmediate()) {
+                EventBundleImpl b = new EventBundleImpl();
+                b.push(shallowEvent);
+                fireEventBundle(b);
+            } else {
+                CompositeEventBundle b = compositeBundle.get();
+                b.push(shallowEvent);
+                // check for commit events to flush the event bundle
+                if (!b.transacted && event.isCommitEvent()) {
+                    handleTxCommited();
                 }
             }
         }

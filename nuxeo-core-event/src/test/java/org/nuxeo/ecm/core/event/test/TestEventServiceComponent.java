@@ -102,6 +102,9 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         service.waitForAsyncCompletion();
         assertEquals(DummyPostCommitEventListener.handledCount, 1);
         assertEquals(1, DummyPostCommitEventListener.eventCount);
+
+        // check new information from sync event are retrieved in postcommit listener
+        assertEquals("bar", DummyPostCommitEventListener.properties.get("foo"));
     }
 
     /**
