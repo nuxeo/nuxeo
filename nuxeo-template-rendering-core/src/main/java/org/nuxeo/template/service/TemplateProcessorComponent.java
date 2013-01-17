@@ -27,6 +27,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.api.context.ContextExtensionFactory;
 import org.nuxeo.template.api.context.DocumentWrapper;
 import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
+import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 import org.nuxeo.template.context.AbstractContextBuilder;
 
@@ -46,9 +47,13 @@ public class TemplateProcessorComponent extends DefaultComponent implements
 
     public static final String CONTEXT_EXTENSION_XP = "contextExtension";
 
+    public static final String OUTPUT_FORMAT_EXTENSION_XP = "outputFormat";
+
     protected ContextFactoryRegistry contextExtensionRegistry;
 
     protected TemplateProcessorRegistry processorRegistry;
+
+    protected OutputFormatRegistry outputFormatRegistry;
 
     protected ConcurrentHashMap<String, List<String>> type2Template = null;
 
@@ -56,12 +61,14 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     public void activate(ComponentContext context) throws Exception {
         processorRegistry = new TemplateProcessorRegistry();
         contextExtensionRegistry = new ContextFactoryRegistry();
+        outputFormatRegistry = new OutputFormatRegistry();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         processorRegistry = null;
         contextExtensionRegistry = null;
+        outputFormatRegistry = null;
     }
 
     public void registerContribution(Object contribution,
@@ -71,6 +78,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             processorRegistry.addContribution((TemplateProcessorDescriptor) contribution);
         } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
             contextExtensionRegistry.addContribution((ContextExtensionFactoryDescriptor) contribution);
+        } else if (OUTPUT_FORMAT_EXTENSION_XP.equals(extensionPoint)) {
+            outputFormatRegistry.addContribution((OutputFormatDescriptor) contribution);
         }
     }
 
@@ -81,6 +90,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             processorRegistry.removeContribution((TemplateProcessorDescriptor) contribution);
         } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
             contextExtensionRegistry.removeContribution((ContextExtensionFactoryDescriptor) contribution);
+        } else if (OUTPUT_FORMAT_EXTENSION_XP.equals(extensionPoint)) {
+            outputFormatRegistry.removeContribution((OutputFormatDescriptor) contribution);
         }
     }
 
@@ -377,4 +388,13 @@ public class TemplateProcessorComponent extends DefaultComponent implements
         return targetDoc;
     }
 
+    @Override
+    public Collection<OutputFormatDescriptor> getOutputFormats() {
+        return outputFormatRegistry.getRegistredOutputFormat();
+    }
+
+    @Override
+    public OutputFormatDescriptor getOutputFormatDescriptor(String outputFormatId) {
+        return outputFormatRegistry.getOutputFormatById(outputFormatId);
+    }
 }

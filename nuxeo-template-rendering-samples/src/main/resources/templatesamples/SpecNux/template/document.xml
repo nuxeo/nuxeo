@@ -77,7 +77,7 @@
     <tmpl:applicableTypes>
       <item>all</item>
     </tmpl:applicableTypes>
-    <tmpl:outputFormat>application/pdf</tmpl:outputFormat>
+    <tmpl:outputFormat>pdf</tmpl:outputFormat>
     <tmpl:targetRenditionName>delivery</tmpl:targetRenditionName>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/"

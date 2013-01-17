@@ -49,6 +49,7 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.automation.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.api");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.core.convert");
@@ -156,7 +157,7 @@ public class TestODTProcessingWithConverter extends SQLRepositoryTestCase {
         // test Converter
         templateDoc.setPropertyValue(
                 TemplateSourceDocumentAdapterImpl.TEMPLATE_OUTPUT_PROP,
-                "application/pdf");
+                "pdf");
         templateDoc = session.saveDocument(templateDoc);
         session.save();
 

@@ -21,6 +21,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,6 +38,8 @@ import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
+import org.nuxeo.template.automation.ConvertBlob;
 import org.nuxeo.template.processors.convert.ConvertHelper;
 
 /**
@@ -235,17 +240,13 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         adaptedDoc.getAdapter(BlobHolder.class).setBlob(blob);
     }
 
-    protected Blob convertBlob(Blob blob, String format) throws Exception {
-        return convertHelper.convertBlob(blob, format);
-    }
-
     public Blob renderWithTemplate(String templateName) throws Exception {
         TemplateProcessor processor = getTemplateProcessor(templateName);
         if (processor != null) {
             Blob blob = processor.renderTemplate(this, templateName);
             String format = getSourceTemplate(templateName).getOutputFormat();
             if (blob != null && format != null && !format.isEmpty()) {
-                return convertBlob(blob, format);
+                return convertBlob(templateName, blob, format);
             } else {
                 return blob;
             }
@@ -261,6 +262,40 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
                                 + templateType);
             }
         }
+    }
+
+    private Blob convertBlob(String templateName, Blob blob, String outputFormat)
+            throws Exception {
+        OutputFormatDescriptor outFormat = getOutputFormatDescriptor(outputFormat);
+        String chainId = outFormat.getChainId();
+        String mimeType = outFormat.getMimeType();
+        AutomationService automationService = Framework.getLocalService(AutomationService.class);
+        OperationContext ctx = initOperationContext(blob, templateName);
+        Object result = null;
+        if (chainId != null) {
+            ctx.put("templateSourceDocument",
+                    getSourceTemplateDoc(templateName));
+            ctx.put("templateBasedDocument", adaptedDoc);
+            result = automationService.run(ctx, chainId);
+        } else if (mimeType != null) {
+            OperationChain chain = new OperationChain("convertToMimeType");
+            chain.add(ConvertBlob.ID).set("mimeType", mimeType);
+            result = automationService.run(ctx, chain);
+        }
+        if (result != null && result instanceof Blob) {
+            return (Blob) result;
+        } else {
+            return blob;
+        }
+    }
+
+    protected OperationContext initOperationContext(Blob blob, String templateName) throws Exception {
+        OperationContext ctx = new OperationContext();
+        ctx.put("templateName", templateName);
+        ctx.setInput(blob);
+        ctx.setCommit(false);
+        ctx.setCoreSession(getSession());
+        return ctx;
     }
 
     public Blob renderAndStoreAsAttachment(String templateName, boolean save)
@@ -343,6 +378,12 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
     protected TemplateProcessor getTemplateProcessor(String templateName) {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         return tps.getProcessor(getTemplateType(templateName));
+    }
+
+    protected OutputFormatDescriptor getOutputFormatDescriptor(
+            String outputFormat) {
+        TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+        return tps.getOutputFormatDescriptor(outputFormat);
     }
 
     public boolean hasEditableParams(String templateName)

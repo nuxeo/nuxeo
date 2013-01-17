@@ -9,10 +9,13 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 
 import org.nuxeo.common.utils.i18n.I18NUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.context.DocumentWrapper;
 
@@ -153,5 +156,13 @@ public class ContextFunctions {
         SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 
         return dateFormat.format(calendar);
+    }
+
+    public NuxeoPrincipal getNuxeoPrincipal(String username) throws ClientException {
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        if (userManager == null) {
+            return null;
+        }
+        return userManager.getPrincipal(username);
     }
 }

@@ -17,10 +17,9 @@
       required="#{widget.properties['required']}"
       id="#{widget.id}">
       <f:selectItem  itemLabel="None" itemValue="" />
-      <f:selectItem  itemLabel="PDF" itemValue="application/pdf" />
-      <f:selectItem  itemLabel="ODT" itemValue="application/vnd.oasis.opendocument.text" />
-      <f:selectItem  itemLabel="DOC" itemValue="application/msword" />
-      <f:selectItem  itemLabel="DOCX" itemValue="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+      <nxu:selectItems var="outputFormat" value="#{templateActions.getOutputFormatDescriptors()}"
+        itemValue="#{outputFormat.id}"
+        itemLabel="#{messages[outputFormat.label]}" />
     </h:selectOneMenu>
     <h:message for="#{widget.id}" styleClass="errorMessage" />
   </c:if>

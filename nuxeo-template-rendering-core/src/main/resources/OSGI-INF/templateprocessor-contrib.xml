@@ -27,7 +27,8 @@
 
   <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="contextExtension">
 
-    <documentation>Adds utility functions in the context
+    <documentation>
+      Adds utility functions in the context
       <ul>
         <li>functions.getVocabularyTranslatedLabel(vocname, key, lang)</li>
         <li>functions.getVocabularyLabel(vocname, key)</li>
@@ -35,6 +36,7 @@
         <li>functions.formatDate(calendar)</li>
         <li>functions.formatDateTime(calendar)</li>
         <li>functions.formatTime(calendar)</li>
+        <li>functions.getNuxeoPrincipal(username)</li>
       </ul>
     </documentation>
 
@@ -72,5 +74,21 @@
 
   </extension>
 
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="outputFormat">
+
+    <documentation>Adds outputFormat for the following mime type 
+      <ul>
+        <li>pdf</li>
+        <li>odt</li>
+        <li>doc</li>
+        <li>docx</li>
+      </ul>
+    </documentation>
+
+    <outputFormat id="pdf" label="PDF" mimetype="application/pdf"/>
+    <outputFormat id="odt" label="ODT" mimetype="application/vnd.oasis.opendocument.text"/>
+    <outputFormat id="doc" label="DOC" mimetype="application/msword"/>
+    <outputFormat id="docx" label="DOCX" mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+  </extension>
 
  </component>

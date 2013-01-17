@@ -22,6 +22,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
+import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 @Name("templateActions")
@@ -204,6 +205,10 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     public Collection<TemplateProcessorDescriptor> getRegistredTemplateProcessors() {
         return Framework.getLocalService(TemplateProcessorService.class).getRegisteredTemplateProcessors();
+    }
+
+    public Collection<OutputFormatDescriptor> getOutputFormatDescriptors() {
+        return Framework.getLocalService(TemplateProcessorService.class).getOutputFormats();
     }
 
     public List<String> getTemplateAndVersionsUUIDs() throws ClientException {

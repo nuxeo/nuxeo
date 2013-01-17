@@ -51,6 +51,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, user = "Administrator", cleanup = Granularity.CLASS)
 @Deploy({ "org.nuxeo.ecm.platform.content.template",
+        "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.convert.api",
         "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core", "org.nuxeo.ecm.core.convert",

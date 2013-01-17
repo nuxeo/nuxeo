@@ -12,6 +12,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
+import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 import org.nuxeo.template.processors.fm.FreeMarkerProcessor;
 import org.nuxeo.template.processors.xslt.XSLTProcessor;
@@ -153,6 +154,18 @@ public class TestService extends NXRuntimeTestCase {
 
         List<String> aliases = functions.getAliases();
         assertEquals(2, aliases.size());
+
+        Collection<OutputFormatDescriptor> outFormats = tps.getOutputFormats();
+        assertNotNull(outFormats);
+        assertFalse(outFormats.isEmpty());
+        assertEquals(4, outFormats.size());
+
+        OutputFormatDescriptor pdfDesc = tps.getOutputFormatDescriptor("pdf");
+        assertNotNull(pdfDesc);
+        assertEquals("PDF", pdfDesc.getLabel());
+        assertEquals("application/pdf", pdfDesc.getMimeType());
+        assertNull(pdfDesc.getChainId());
+        assertTrue(pdfDesc.isEnabled());
     }
 
 }

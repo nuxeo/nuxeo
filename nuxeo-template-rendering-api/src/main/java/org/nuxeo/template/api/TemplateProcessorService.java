@@ -12,6 +12,7 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.api.context.DocumentWrapper;
 import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
+import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 /**
@@ -156,4 +157,19 @@ public interface TemplateProcessorService {
     Map<String, ContextExtensionFactoryDescriptor> getRegistredContextExtensions();
 
     List<String> getReservedContextKeywords();
+
+    /**
+     * @return the list of registered Ouput formats used to convert output of a
+     *         rendered document.
+     */
+    Collection<OutputFormatDescriptor> getOutputFormats();
+
+    /**
+     * The returned {@link OutputFormatDescriptor} contains either an operation
+     * chain or a mime-type use to convert the output of a rendered document.
+     * 
+     * @param outputFormatId
+     * @return {@link OutputFormatDescriptor}
+     */
+    OutputFormatDescriptor getOutputFormatDescriptor(String outputFormatId);
 }

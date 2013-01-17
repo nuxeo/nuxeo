@@ -70,7 +70,7 @@
     <tmpl:applicableTypes>
       <item><![CDATA[InterventionStatement]]></item>
     </tmpl:applicableTypes>
-    <tmpl:outputFormat><![CDATA[application/pdf]]></tmpl:outputFormat>
+    <tmpl:outputFormat><![CDATA[pdf]]></tmpl:outputFormat>
     <tmpl:targetRenditionName><![CDATA[delivery]]></tmpl:targetRenditionName>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
