@@ -22,9 +22,9 @@
     <operation class="org.nuxeo.drive.operations.NuxeoDriveMove" />
     <!-- For test purpose -->
     <operation
-      class="org.nuxeo.drive.operations.test.NuxeoDriveCreateTestUser" />
+      class="org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests" />
     <operation
-      class="org.nuxeo.drive.operations.test.NuxeoDriveDeleteTestUser" />
+      class="org.nuxeo.drive.operations.test.NuxeoDriveTearDownIntegrationTests" />
   </extension>
 
 </component>

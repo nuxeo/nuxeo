@@ -17,31 +17,30 @@
 package org.nuxeo.drive.operations.test;
 
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Deletes a user created for Nuxeo Drive test purpose.
- * <p>
- * Fails if the user doesn't exist.
+ * Tears down the Nuxeo Drive integration tests environment by:
+ * <ul>
+ * <li>Deleting the test users and their personal workspace</li>
+ * <li>Deleting the test workspace</li>
+ * </ul>
  *
  * @author Antoine Taillefer
  */
-@Operation(id = NuxeoDriveDeleteTestUser.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Delete test user")
-public class NuxeoDriveDeleteTestUser {
+@Operation(id = NuxeoDriveTearDownIntegrationTests.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Tear down integration tests")
+public class NuxeoDriveTearDownIntegrationTests {
 
-    public static final String ID = "NuxeoDrive.DeleteTestUser";
+    public static final String ID = "NuxeoDrive.TearDownIntegrationTests";
 
-    @Param(name = "userName", required = false)
-    protected String userName = "nuxeoDriveTestUser";
+    @Context
+    protected CoreSession session;
 
     @OperationMethod
     public void run() throws Exception {
-
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        userManager.deleteUser(userName);
+        NuxeoDriveIntegrationTestsHelper.cleanUp(session);
     }
 }

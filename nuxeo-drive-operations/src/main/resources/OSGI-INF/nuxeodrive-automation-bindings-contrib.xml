@@ -4,11 +4,11 @@
 
   <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
     point="bindings">
-    <!-- Protect NuxeoDrive test operations -->
-    <binding name="NuxeoDrive.CreateTestUser">
+    <!-- Protect Nuxeo Drive integration test operations -->
+    <binding name="NuxeoDrive.SetupIntegrationTests">
       <administrator>true</administrator>
     </binding>
-    <binding name="NuxeoDrive.DeleteTestUser">
+    <binding name="NuxeoDrive.TearDownIntegrationTests">
       <administrator>true</administrator>
     </binding>
   </extension>
