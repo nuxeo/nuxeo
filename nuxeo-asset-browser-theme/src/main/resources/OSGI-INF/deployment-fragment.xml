@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxdam/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>assets</from-outcome>
+      <to-view-id>/dam/assets.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>
+
+</fragment>

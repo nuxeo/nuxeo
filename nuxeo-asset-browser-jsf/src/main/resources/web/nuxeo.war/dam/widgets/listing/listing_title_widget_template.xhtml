@@ -1,0 +1,16 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
+  <nxu:set var="label" value="#{empty typeLabel ? field_2 : messages[typeLabel]}">
+
+    <span title="#{label}">
+      #{nxd:titleOrId(field_0)}
+    </span>
+
+  </nxu:set>
+  </nxu:set>
+
+</c:if>

@@ -1,9 +1,0 @@
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Manifest-Version: 1.0
-Bundle-Name: nuxeo-asset-browser
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-Vendor: Nuxeo
-Bundle-Version: 1.0.qualifier
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: nuxeo-asset-browser

@@ -1,0 +1,12 @@
+<c:if test="true"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <div style="background-color: #20b2aa; width: 100%; height: 500px">
+    Asset details
+    <c:if test="#{not empty damActions.selectedDocument}">
+      #{damActions.selectedDocument.name}
+    </c:if>
+  </div>
+
+</c:if>

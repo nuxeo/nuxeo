@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.dam</groupId>
+    <artifactId>nuxeo-asset-browser-parent</artifactId>
+    <version>5.7-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.dam</groupId>
+  <artifactId>nuxeo-asset-browser-theme</artifactId>
+  <name>Nuxeo Asset Browser Theme</name>
+  <description>Nuxeo Asset Browser Theme</description>
+
+</project>

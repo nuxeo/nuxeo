@@ -1,0 +1,32 @@
+<c:if test="true"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <div style="background-color: #20b2aa;">
+    <nxu:set var="displaySelector"
+      value="#{facetedSearchActions.contentViewNames.size > 1}">
+      <c:if test="${displaySelector}">
+
+        <p><h:outputText value="#{messages['label.faceted.searches']}" /></p>
+        <h:selectOneMenu
+          value="#{facetedSearchActions.currentContentViewName}"
+          id="facetedSearchSelector" styleClass="langSelect"
+          onchange="Element.next(this).firstChild.click();">
+          <c:forEach var="contentViewHeader"
+            items="#{facetedSearchActions.contentViewHeaders}"
+            varStatus="contentViewListStatus">
+            <f:selectItem itemValue="#{contentViewHeader.name}"
+              itemLabel="#{nxu:test(contentViewHeader.translateTitle,
+              messages[contentViewHeader.title], contentViewHeader.title)}" />
+          </c:forEach>
+        </h:selectOneMenu>
+
+        <div style="display: none;"><h:commandButton value="submit" /></div>
+
+      </c:if>
+    </nxu:set>
+  </div>
+
+</c:if>

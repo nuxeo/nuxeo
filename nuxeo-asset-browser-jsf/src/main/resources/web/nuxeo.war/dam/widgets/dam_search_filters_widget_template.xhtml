@@ -1,0 +1,24 @@
+<c:if test="true"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <div style="background-color: #9acd32;" class="facetedSearchBlock">
+
+    <nxu:set var="contentViewName"
+      value="#{damSearchActions.currentContentViewName}">
+    <nxu:set var="contentView"
+      value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
+      cache="true">
+
+      <c:if test="#{contentView != null}">
+        <nxl:layout name="#{contentView.searchLayout.name}" mode="search"
+          value="#{contentView.searchDocumentModel}" />
+      </c:if>
+
+    </nxu:set>
+    </nxu:set>
+  </div>
+
+</c:if>

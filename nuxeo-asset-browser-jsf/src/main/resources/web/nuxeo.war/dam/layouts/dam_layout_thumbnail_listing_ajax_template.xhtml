@@ -1,0 +1,37 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  id="#{layout.id}">
+
+  <c:if test="false">
+    Layout template applying to an item instance of PageSelections&lt;DocumentModel&gt; named "documents"
+
+    Other needed parameters are:
+    - provider: instance of a PageProvider&lt;DocumentModel&gt; to handle sort
+    - layoutListingStatus: iteration status, used to print table header
+    matching widget label.
+    - formId: the surrounding form id
+  </c:if>
+
+  <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
+  <c:set var="onRowClick" value="selectDocument('#{value.data.id}')" />
+  <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
+    <nxl:layoutColumn>
+      <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto"
+        onclick="#{nxu:test(layoutColumn.properties.isListingSelectionBox, '', onRowClick)}">
+        <nxl:layoutColumnWidget>
+          <nxl:widget widget="#{widget}" value="#{value}" />
+          <c:if test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1 and widgetIndex > 0}">
+            <br />
+          </c:if>
+        </nxl:layoutColumnWidget>
+      </td>
+    </nxl:layoutColumn>
+  </tr>
+
+</f:subview>

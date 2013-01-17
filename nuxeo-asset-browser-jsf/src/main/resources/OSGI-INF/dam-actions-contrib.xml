@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="dam" link="assets" label="label.main.tab.dam" order="50">
+      <category>MAIN_TABS</category>
+    </action>
+
+  </extension>
+
+</component>

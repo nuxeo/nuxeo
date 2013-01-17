@@ -8,50 +8,15 @@
     <version>5.7-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.asset.browser</groupId>
-  <artifactId>nuxeo-asset-browser</artifactId>
-  <version>5.7-SNAPSHOT</version>
-  <name>nuxeo-asset-browser</name>
-  <description>
+  <groupId>org.nuxeo.dam</groupId>
+  <artifactId>nuxeo-asset-browser-parent</artifactId>
+  <name>Nuxeo Asset Browser Parent</name>
+  <description>Nuxeo Asset Browser Parent</description>
+  <packaging>pom</packaging>
 
-  </description>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.common</groupId>
-      <artifactId>nuxeo-common</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-query</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-schema</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi-core</artifactId>
-    </dependency>
-
-  </dependencies>
+  <modules>
+    <module>nuxeo-asset-browser-jsf</module>
+    <module>nuxeo-asset-browser-theme</module>
+  </modules>
 
 </project>

@@ -1,0 +1,243 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.contentviews">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="dam_search">
+      <title>label.faceted.search.default</title>
+      <translateTitle>true</translateTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <whereClause docType="FacetedSearchDefault">
+          <fixedPart>
+            ecm:mixinType = 'Asset' AND ecm:mixinType != 'HiddenInNavigation'
+            AND ecm:mixinType != 'HiddenInFacetedSearch'
+            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="faceted_search_default" name="ecm_fulltext" />
+          </predicate>
+          <predicate parameter="dc:created" operator="BETWEEN">
+            <field schema="faceted_search_default" name="dc_created_min" />
+            <field schema="faceted_search_default" name="dc_created_max" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="faceted_search_default" name="dc_modified_min" />
+            <field schema="faceted_search_default" name="dc_modified_max" />
+          </predicate>
+          <predicate parameter="dc:creator" operator="IN">
+            <field schema="faceted_search_default" name="dc_creator" />
+          </predicate>
+          <predicate parameter="dc:nature" operator="IN">
+            <field schema="faceted_search_default" name="dc_nature" />
+          </predicate>
+          <predicate parameter="dc:coverage" operator="STARTSWITH">
+            <field schema="faceted_search_default" name="dc_coverage" />
+          </predicate>
+          <predicate parameter="dc:subjects" operator="STARTSWITH">
+            <field schema="faceted_search_default" name="dc_subjects" />
+          </predicate>
+          <predicate parameter="ecm:path" operator="STARTSWITH">
+            <field schema="faceted_search_default" name="ecm_path" />
+          </predicate>
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="faceted_search_default" />
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="dam_listing_ajax" title="dam_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
+        <layout name="dam_thumbnail_listing_ajax" title="dam_thumbnail_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+      <flags>
+        <flag>DAM</flag>
+      </flags>
+    </contentView>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+    <widgetType name="dam_listing_title">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Title</title>
+        <description>
+          <p>
+            This widget type displays a link to navigate to a document, as well
+            as a download link for the document binary content.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the document link and its title
+              </li>
+            </ul>
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/listing/listing_title_widget_template.xhtml
+      </property>
+
+    </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="dam_listing_title" type="dam_listing_title">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.dc.description</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="dam_listing_ajax">
+      <templates>
+        <template mode="any">
+          /dam/layouts/dam_layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>dam_listing_title</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="dam_thumbnail_listing_ajax">
+      <templates>
+        <template mode="any">
+          /layouts/dam_layout_thumbnail_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>
