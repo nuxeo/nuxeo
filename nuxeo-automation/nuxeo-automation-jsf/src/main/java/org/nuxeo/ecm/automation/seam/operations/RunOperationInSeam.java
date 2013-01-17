@@ -29,10 +29,11 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.jsf.OperationHelper;
 
 /**
- * Execute an operation within the Seam context
- *(doing automatically the needed init and cleanup)
+ * Execute an operation within the Seam context (doing automatically the needed
+ * init and cleanup)
  *
  * @author Tiry (tdelprat@nuxeo.com)
  *
@@ -45,7 +46,7 @@ public class RunOperationInSeam {
     @Context
     protected OperationContext ctx;
 
-    @Param(name="conversationId", required=false)
+    @Param(name = "conversationId", required = false)
     protected String conversationId;
 
     @Context
@@ -54,28 +55,39 @@ public class RunOperationInSeam {
     @Param(name = "id")
     protected String chainId;
 
-    @Param(name="isolate", required = false, values = "false")
+    @Param(name = "isolate", required = false, values = "false")
     protected boolean isolate = false;
 
     @OperationMethod
     public Object run() throws Exception {
 
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
+                ctx.getVars()) : ctx.getVars();
 
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
+                vars);
         subctx.setInput(ctx.getInput());
-        SeamOperationFilter.handleBeforeRun(ctx, conversationId);
-        try {
-            if (chainId.startsWith("Chain.")) {
-                return service.run(subctx, chainId.substring(6));
-            } else {
-                OperationChain chain = new OperationChain("operation");
-                OperationParameters oparams = new OperationParameters(chainId,vars);
-                chain.add(oparams);
-                return service.run(subctx, chain);
+        if (!OperationHelper.isSeamContextAvailable()) {
+            SeamOperationFilter.handleBeforeRun(ctx, conversationId);
+            try {
+                return runChain(subctx, vars);
+            } finally {
+                SeamOperationFilter.handleAfterRun(ctx, conversationId);
             }
-        } finally {
-            SeamOperationFilter.handleAfterRun(ctx, conversationId);
+        } else {
+            return runChain(subctx, vars);
+        }
+    }
+
+    protected Object runChain(OperationContext subctx, Map<String, Object> vars)
+            throws Exception {
+        if (chainId.startsWith("Chain.")) {
+            return service.run(subctx, chainId.substring(6));
+        } else {
+            OperationChain chain = new OperationChain("operation");
+            OperationParameters oparams = new OperationParameters(chainId, vars);
+            chain.add(oparams);
+            return service.run(subctx, chain);
         }
     }
 }
