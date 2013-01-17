@@ -1,0 +1,21 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <c:if test="false">
+    TODO To be removed and replaced by the default thumbnail widget using
+    the ThumbnailAdapter.
+  </c:if>
+
+  <nxh:graphicImage url="#{nxd:fileUrl('downloadPicture', field, 'Thumbnail:content', field.dublincore.modified)}?conversationId=#{conversation.id}"
+    rendered="#{field.hasSchema('picture')}"
+    styleClass="thumbViewPicture"/>
+  <nxh:graphicImage value="/dam/icons/audio_big.png"
+    rendered="#{field.hasSchema('audio')}"
+    styleClass="thumbViewPicture"/>
+  <nxh:graphicImage value="/dam/icons/office_big.png"
+    rendered="#{!field.hasSchema('picture') and !field.hasSchema('audio')}"
+    styleClass="thumbViewPicture"/>
+
+</c:if>

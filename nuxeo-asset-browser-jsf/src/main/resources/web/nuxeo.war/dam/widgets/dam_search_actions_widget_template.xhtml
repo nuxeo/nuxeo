@@ -4,25 +4,23 @@
   xmlns:a4j="http://richfaces.org/a4j"
   class="facetedSearchActionBar">
 
-  <div style="background-color: #cd5c5c;">
-    <nxu:set var="contentViewName"
-      value="#{damSearchActions.currentContentViewName}">
+  <nxu:set var="contentViewName"
+    value="#{damSearchActions.currentContentViewName}">
 
-      <a4j:commandLink action="#{damSearchActions.clearSearch()}" immediate="true"
-        reRender="nxw_damPanelLeft_1_panel,nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel"
-        eventsQueue="damSearchQueue">
-        <h:outputText value="#{messages['command.faceted.search.clear']}" />
-      </a4j:commandLink>
-      <a4j:commandButton
-        value="#{messages['command.faceted.search.go']}"
-        actionListener="#{damSearchActions.refreshAndRewind()}"
-        reRender="nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel"
-        eventsQueue="damSearchQueue"
-        styleClass="button" />
+    <a4j:commandLink action="#{damSearchActions.clearSearch()}" immediate="true"
+      reRender="nxw_damPanelLeft_1_panel,nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel"
+      eventsQueue="damSearchQueue">
+      <h:outputText value="#{messages['command.faceted.search.clear']}" />
+    </a4j:commandLink>
+    <a4j:commandButton
+      value="#{messages['command.faceted.search.go']}"
+      actionListener="#{damSearchActions.refreshAndRewind()}"
+      reRender="nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel"
+      eventsQueue="damSearchQueue"
+      styleClass="button" />
 
-    </nxu:set>
+  </nxu:set>
 
-    <div style="clear: both;"></div>
-  </div>
+  <div style="clear: both;"></div>
 
 </div>

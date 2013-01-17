@@ -18,20 +18,17 @@
     - formId: the surrounding form id
   </c:if>
 
-  <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
-  <c:set var="onRowClick" value="selectDocument('#{value.data.id}')" />
-  <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
+  <c:set var="onBoxClick" value="nuxeo.dam.selectDocument(event, '#{value.data.id}')" />
+  <div class="bubbleBox" onclick="#{onBoxClick}">
     <nxl:layoutColumn>
-      <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto"
-        onclick="#{nxu:test(layoutColumn.properties.isListingSelectionBox, '', onRowClick)}">
-        <nxl:layoutColumnWidget>
-          <nxl:widget widget="#{widget}" value="#{value}" />
-          <c:if test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1 and widgetIndex > 0}">
-            <br />
-          </c:if>
-        </nxl:layoutColumnWidget>
-      </td>
+      <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
+        <div class="#{layoutColumn.properties.columnStyleClass} #{divStyleClass}" dir="auto">
+          <nxl:layoutColumnWidget>
+            <nxl:widget widget="#{widget}" value="#{value}" />
+          </nxl:layoutColumnWidget>
+        </div>
+      </nxu:set>
     </nxl:layoutColumn>
-  </tr>
+  </div>
 
 </f:subview>

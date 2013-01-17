@@ -62,10 +62,10 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="dam_listing_ajax" title="dam_listing"
+        <layout name="dam_listing_ajax" title="label.dam.listing.title"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
-        <layout name="dam_thumbnail_listing_ajax" title="dam_thumbnail_listing"
+        <layout name="dam_box_listing_ajax" title="label.dam.box.listing.title"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
           showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
       </resultLayouts>
@@ -84,19 +84,49 @@
     point="widgettypes">
     <widgetType name="dam_listing_title">
       <configuration>
+      <sinceVersion>5.7</sinceVersion>
+      <title>Title</title>
+      <description>
+        <p>
+          This widget type displays the title of a document.
+        </p>
+        <p>
+          It requires the following fields configuration:
+          <ul>
+            <li>
+              first field maps the document model, it will be used to
+              display the title
+            </li>
+            <li>
+              second field maps the label used as the tooltip of the
+              document title
+            </li>
+          </ul>
+        </p>
+      </description>
+    </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/listing/listing_title_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="dam_listing_thumbnail">
+      <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Title</title>
+        <title>Thumbnail</title>
         <description>
           <p>
-            This widget type displays a link to navigate to a document, as well
-            as a download link for the document binary content.
+            This widget type displays the thumbnail of the given document.
           </p>
           <p>
             It requires the following fields configuration:
             <ul>
               <li>
                 first field maps the document model, it will be used to
-                display the document link and its title
+                display its thumbnail
               </li>
             </ul>
           </p>
@@ -106,10 +136,75 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /dam/widgets/listing/listing_title_widget_template.xhtml
+        /dam/widgets/listing/listing_thumbnail_widget_template.xhtml
       </property>
-
     </widgetType>
+
+    <widgetType name="dam_listing_ajax_selection_box_with_title">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Ajax selection checkbox with title</title>
+        <description>
+          <p>
+            This widget type displays a selection checkbox, that will perform
+            ajax selection of given item, and the document title
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the title
+              </li>
+              <li>
+                second field maps the label used as the tooltip of the
+                document title
+              </li>
+              <li>
+                third field maps a boolean representing the selection state
+              </li>
+              <li>
+                fourth field maps the string identifier used to perform
+                selection
+              </li>
+            </ul>
+          </p>
+          <p>
+            It also requires the following variables to be present in the EL
+            context:
+            <ul>
+              <li>
+                provider: result provider used to get the list of items, its
+                name will be used.
+              </li>
+              <li>
+                listName: the name of the list that will hold selected items
+              </li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+            <field>data.dc.description</field>
+            <field>selected</field>
+            <field>data.ref</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>hidden_listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/listing/listing_ajax_selection_box_with_title_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -123,6 +218,28 @@
       <fields>
         <field>data</field>
         <field>data.dc.description</field>
+      </fields>
+    </widget>
+
+    <widget name="dam_listing_thumbnail" type="dam_listing_thumbnail">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="dam_listing_ajax_selection_box_with_title" type="dam_listing_ajax_selection_box_with_title">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
+        <field>data.dc.description</field>
+        <field>selected</field>
+        <field>data.ref</field>
       </fields>
     </widget>
 
@@ -196,44 +313,21 @@
       </columns>
     </layout>
 
-    <layout name="dam_thumbnail_listing_ajax">
+    <layout name="dam_box_listing_ajax">
       <templates>
         <template mode="any">
-          /layouts/dam_layout_thumbnail_listing_ajax_template.xhtml
+          /dam/layouts/dam_layout_box_listing_ajax_template.xhtml
         </template>
       </templates>
-      <properties mode="any">
-        <property name="showListingHeader">true</property>
-        <property name="showRowEvenOddClass">true</property>
-      </properties>
       <columns>
         <column>
           <properties mode="any">
-            <property name="isListingSelectionBox">true</property>
-            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
-            <property name="columnStyleClass">iconColumn</property>
+            <property name="isBoxTitle">true</property>
           </properties>
-          <properties mode="csv">
-            <property name="isHidden">true</property>
-          </properties>
-          <properties mode="pdf">
-            <property name="isHidden">true</property>
-          </properties>
-          <widget>listing_ajax_selection_box</widget>
+          <widget>dam_listing_ajax_selection_box_with_title</widget>
         </column>
         <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
-            <property name="columnStyleClass">iconColumn</property>
-          </properties>
-          <widget>listing_icon_type</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">dc:title</property>
-          </properties>
-          <widget>listing_title_link</widget>
+          <widget>dam_listing_thumbnail</widget>
         </column>
       </columns>
     </layout>

@@ -25,7 +25,6 @@
 
   </extension>
 
-  <!--
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
 
     <resource name="nuxeo-dam.js">
@@ -33,7 +32,6 @@
     </resource>
 
   </extension>
-  -->
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
 

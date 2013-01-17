@@ -4,22 +4,20 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <div style="background-color: #ff1493; width: 100%; height: 600px">
-    <nxu:set var="contentViewName"
-      value="#{damSearchActions.currentContentViewName}">
-    <nxu:set var="useAjaxPagination" value="true">
+  <nxu:set var="contentViewName"
+    value="#{damSearchActions.currentContentViewName}">
+  <nxu:set var="useAjaxPagination" value="true">
 
-      <ui:decorate template="/incl/content_view.xhtml">
-        <ui:define name="pageNavigationControls">
-          <ui:include src="/dam/pagination/a4jPageNavigationControls.xhtml">
-            <ui:param name="contentIdToBeReRendered"
-              value="#{contentViewRenderId}_resultsPanel,nxw_damPanelRight_1_panel" />
-          </ui:include>
-        </ui:define>
-      </ui:decorate>
+    <ui:decorate template="/incl/content_view.xhtml">
+      <ui:define name="pageNavigationControls">
+        <ui:include src="/dam/pagination/a4jPageNavigationControls.xhtml">
+          <ui:param name="contentIdToBeReRendered"
+            value="#{contentViewRenderId}_resultsPanel,nxw_damPanelRight_1_panel" />
+        </ui:include>
+      </ui:define>
+    </ui:decorate>
 
-    </nxu:set>
-    </nxu:set>
-  </div>
+  </nxu:set>
+  </nxu:set>
 
 </c:if>
