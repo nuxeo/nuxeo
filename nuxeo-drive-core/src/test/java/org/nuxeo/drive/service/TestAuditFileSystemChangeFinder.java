@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.security.Principal;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.drive.service.impl.FileSystemItemChange;
+import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -80,7 +80,7 @@ public class TestAuditFileSystemChangeFinder {
 
     protected long lastSuccessfulSync;
 
-    protected Map<String, List<String>> lastSyncActiveRootRefs;
+    protected String lastSyncActiveRootDefinitions;
 
     protected DocumentModel folder1;
 
@@ -89,7 +89,7 @@ public class TestAuditFileSystemChangeFinder {
     @Before
     public void init() throws Exception {
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
-        lastSyncActiveRootRefs = Collections.emptyMap();
+        lastSyncActiveRootDefinitions = "";
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "10");
 
@@ -451,11 +451,12 @@ public class TestAuditFileSystemChangeFinder {
             throws ClientException, InterruptedException {
         // Wait 1 second as the audit change finder relies on steps of 1 second
         Thread.sleep(1000);
+        Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(
                 principal, lastSyncActiveRootRefs, lastSuccessfulSync);
         assertNotNull(changeSummary);
         lastSuccessfulSync = changeSummary.getSyncDate();
-        lastSyncActiveRootRefs = changeSummary.getActiveSynchronizationRootRefs();
+        lastSyncActiveRootDefinitions = changeSummary.getActiveSynchronizationRootDefinitions();
         return changeSummary;
     }
 

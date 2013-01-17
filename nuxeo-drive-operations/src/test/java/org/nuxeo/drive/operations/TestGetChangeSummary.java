@@ -21,9 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
@@ -80,14 +78,14 @@ public class TestGetChangeSummary {
 
     protected ObjectMapper mapper;
 
-    protected Map<String, List<String>> lastSyncActiveRoots;
+    protected String lastSyncActiveRoots;
 
     @Before
     public void init() throws Exception {
 
         nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
-        lastSyncActiveRoots = Collections.emptyMap();
+        lastSyncActiveRoots = "";
 
         folder1 = session.createDocument(session.createDocumentModel("/",
                 "folder1", "Folder"));
@@ -171,7 +169,7 @@ public class TestGetChangeSummary {
         Thread.sleep(1000);
         Blob changeSummaryJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
-                lastSuccessfulSync).set("lastSyncActiveRoots",
+                lastSuccessfulSync).set("lastSyncActiveRootDefinitions",
                 lastSyncActiveRoots).execute();
         assertNotNull(changeSummaryJSON);
 
@@ -180,7 +178,7 @@ public class TestGetChangeSummary {
         assertNotNull(changeSummary);
 
         lastSuccessfulSync = changeSummary.getSyncDate();
-        lastSyncActiveRoots = changeSummary.getActiveSynchronizationRootRefs();
+        lastSyncActiveRoots = changeSummary.getActiveSynchronizationRootDefinitions();
         return changeSummary;
     }
 

@@ -18,7 +18,6 @@ package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ public class FileSystemChangeSummary implements Serializable {
 
     protected Boolean hasTooManyChanges = Boolean.FALSE;
 
-    protected Map<String, List<String>> activeRootRefs = new HashMap<String, List<String>>();
+    protected String activeRootDefinitions;
 
     public FileSystemChangeSummary() {
         // Needed for JSON deserialization
@@ -59,15 +58,13 @@ public class FileSystemChangeSummary implements Serializable {
         this.fileSystemChanges = fileSystemChanges;
         this.syncDate = syncDate;
         this.hasTooManyChanges = tooManyChanges;
-        for (Map.Entry<String, Set<IdRef>> activeRootEntry : activeRootRefs.entrySet()) {
-            // convert to datastructure with a direct json mapping
-            List<String> rootIds = new ArrayList<String>(
-                    activeRootEntry.getValue().size());
-            for (IdRef ref : activeRootEntry.getValue()) {
-                rootIds.add(ref.toString());
+        List<String> rootDefinitions = new ArrayList<String>();
+        for (Map.Entry<String, Set<IdRef>> entry : activeRootRefs.entrySet()) {
+            for (IdRef ref: entry.getValue()) {
+                rootDefinitions.add(String.format("%s:%s", entry.getKey(), ref.toString()));
             }
-            this.activeRootRefs.put(activeRootEntry.getKey(), rootIds);
         }
+        this.activeRootDefinitions = StringUtils.join(rootDefinitions, ",");
     }
 
     public List<FileSystemItemChange> getFileSystemChanges() {
@@ -91,8 +88,8 @@ public class FileSystemChangeSummary implements Serializable {
         return syncDate;
     }
 
-    public Map<String, List<String>> getActiveSynchronizationRootRefs() {
-        return activeRootRefs;
+    public String getActiveSynchronizationRootDefinitions() {
+        return activeRootDefinitions;
     }
 
     public void setSyncDate(Long syncDate) {
