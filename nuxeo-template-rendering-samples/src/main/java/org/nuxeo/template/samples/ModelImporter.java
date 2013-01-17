@@ -42,8 +42,6 @@ import org.dom4j.Text;
 import org.dom4j.Visitor;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.common.utils.PathFilter;
-import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -86,8 +84,6 @@ public class ModelImporter {
     public static final String TEMPLATE_ROOT = "template";
 
     protected static final String DOMAIN_QUERY = "select * from Domain where ecm:isCheckedInVersion=0  AND  ecm:currentLifeCycleState != 'deleted' order by dc:created ASC";
-
-    protected static final String SAMPLES_ROOT_PATH = "templateSamples";
 
     protected final CoreSession session;
 
@@ -138,11 +134,11 @@ public class ModelImporter {
             if (roots.size() > 0) {
                 DocumentModel WSRoot = roots.get(0);
                 PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/"
-                        + SAMPLES_ROOT_PATH);
+                        + Activator.SAMPLES_ROOT_PATH);
                 if (!session.exists(targetPath)) {
                     container = session.createDocumentModel(
-                            WSRoot.getPathAsString(), SAMPLES_ROOT_PATH,
-                            "Workspace");
+                            WSRoot.getPathAsString(),
+                            Activator.SAMPLES_ROOT_PATH, "Workspace");
                     container.setPropertyValue("dc:title",
                             "Template usage samples");
                     container.setPropertyValue("dc:description",
@@ -192,44 +188,6 @@ public class ModelImporter {
 
     }
 
-    protected static Path getDataDirPath() {
-        String dataDir = null;
-
-        if (Framework.isTestModeSet()) {
-            dataDir = "/tmp";
-        } else {
-            dataDir = Framework.getProperty("nuxeo.data.dir");
-        }
-        Path path = new Path(dataDir);
-        path = path.append("resources");
-        return path;
-    }
-
-    public static void expandResources() throws Exception {
-        String jarPath = ModelImporter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-        File jar = new File(jarPath);
-        Path path = getDataDirPath();
-        File dataDir = new File(path.toString());
-        if (!dataDir.exists()) {
-            dataDir.mkdirs();
-        }
-
-        ZipUtils.unzip(jar, dataDir, new PathFilter() {
-            @Override
-            public boolean isExclusive() {
-                return true;
-            }
-
-            @Override
-            public boolean accept(Path path) {
-                if (path.toString().contains("templatesamples")) {
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
-
     public int importModels() throws Exception {
 
         if (isImportAlreadyDone()) {
@@ -242,7 +200,7 @@ public class ModelImporter {
         if (root == null) {
             // in container mode, we rely on expandResources
             // Filesystem extraction
-            Path path = getDataDirPath();
+            Path path = Activator.getDataDirPath();
             path = path.append(RESOURCES_ROOT);
             root = new File(path.toString());
         }

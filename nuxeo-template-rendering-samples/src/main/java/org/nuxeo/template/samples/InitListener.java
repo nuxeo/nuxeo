@@ -41,7 +41,7 @@ public class InitListener implements PostContentCreationHandler {
         ModelImporter importer = new ModelImporter(session);
         try {
             if (!Framework.isTestModeSet()) {
-                ModelImporter.expandResources();
+                Activator.expandResources();
             }
             int nbImportedDocs = importer.importModels();
             log.info("Template sample import done : " + nbImportedDocs
