@@ -14,4 +14,6 @@ nuxeo.dam = (function(m) {
     selectDocument(docRef)
   }
 
+  return m
+
 }(nuxeo.dam || {}))
