@@ -19,8 +19,12 @@
 package org.nuxeo.template.samples;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.runtime.api.Framework;
@@ -36,7 +40,7 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator implements BundleActivator {
 
-    protected static final String SAMPLES_ROOT_PATH = "templateSamples";
+    protected static final String SAMPLES_ROOT_PATH = "templatesamples";
 
     private static volatile Activator instance;
 
@@ -48,6 +52,14 @@ public class Activator implements BundleActivator {
             return a.context.getBundle().getResource(path);
         }
         return Thread.currentThread().getContextClassLoader().getResource(path);
+    }
+
+    public static Enumeration findEntries(String path) {
+        Activator a = instance;
+        if (a != null) {
+            return a.context.getBundle().findEntries(path, null, true);
+        }
+        return null;
     }
 
     public static Activator getInstance() {
@@ -84,14 +96,26 @@ public class Activator implements BundleActivator {
     }
 
     public static void expandResources() throws Exception {
-        URL resourceURL = getResource(SAMPLES_ROOT_PATH);
-        File resourceRoot = new File(resourceURL.getFile());
         Path path = getDataDirPath();
+        path = path.append(SAMPLES_ROOT_PATH);
         File dataDir = new File(path.toString());
         if (!dataDir.exists()) {
             dataDir.mkdirs();
         }
-        FileUtils.copyTree(resourceRoot, dataDir);
+        int baseUrlSize = getResource(SAMPLES_ROOT_PATH).getFile().length();
+        Enumeration urls = findEntries(SAMPLES_ROOT_PATH);
+        while (urls.hasMoreElements()) {
+            URL resourceURL = (URL) urls.nextElement();
+            InputStream is = resourceURL.openStream();
+            String filePath = resourceURL.getFile().substring(baseUrlSize);
+            File f = new File(dataDir, filePath);
+            File parent = f.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+            FileUtils.copyToFile(is, f);
+            is.close();
+        }
     }
 
 }

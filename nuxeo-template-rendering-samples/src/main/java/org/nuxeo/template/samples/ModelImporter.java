@@ -195,16 +195,9 @@ public class ModelImporter {
         }
 
         int nbImportedDocs = 0;
-        // in test mode we can directly access the resources as files
-        File root = FileUtils.getResourceFileFromContext(RESOURCES_ROOT);
-        if (root == null) {
-            // in container mode, we rely on expandResources
-            // Filesystem extraction
-            Path path = Activator.getDataDirPath();
-            path = path.append(RESOURCES_ROOT);
-            root = new File(path.toString());
-        }
-
+        Path path = Activator.getDataDirPath();
+        path = path.append(RESOURCES_ROOT);
+        File root = new File(path.toString());
         File[] modelRoots = root.listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {

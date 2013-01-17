@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.nuxeo.template.manager.samples;singleton:=true
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/extensions.xml,
  OSGI-INF/content-template-contrib.xml
+Bundle-Activator: org.nuxeo.template.samples.Activator
