@@ -112,6 +112,17 @@ public class DialectSQLServer extends Dialect {
                 : repositoryDescriptor.pathOptimizationsEnabled;
     }
 
+    @Override
+    public boolean supportsPaging() {
+        // available since SQL Server 2012
+        return (majorVersion > 9);
+    }
+
+    @Override
+    public String addPagingClause(String sql, long limit, long offset) {
+        return sql + String.format(" OFFSET %d ROWS FETCH NEXT %d ROWS ONLY", offset, limit);
+    }
+
     protected int getEngineEdition(Connection connection)
             throws SQLException {
         Statement st = connection.createStatement();
