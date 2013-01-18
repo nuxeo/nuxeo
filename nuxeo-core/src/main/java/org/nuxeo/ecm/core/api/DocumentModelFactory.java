@@ -328,11 +328,14 @@ public class DocumentModelFactory {
             LifeCycleException, Exception {
         DocumentModelRefresh refresh = new DocumentModelRefresh();
 
+        refresh.instanceFacets = new HashSet<String>(
+                Arrays.asList(doc.getFacets()));
+        Set<String> docSchemas = DocumentModelImpl.computeSchemas(
+                doc.getType(), refresh.instanceFacets);
+
         if ((flags & DocumentModel.REFRESH_PREFETCH) != 0) {
             PrefetchInfo prefetchInfo = doc.getType().getPrefetchInfo();
             if (prefetchInfo != null) {
-                Set<String> docSchemas = DocumentModelImpl.computeSchemas(
-                        doc.getType(), Arrays.asList(doc.getFacets()));
                 refresh.prefetch = getPrefetch(doc, prefetchInfo, docSchemas);
             }
         }
@@ -351,8 +354,7 @@ public class DocumentModelFactory {
 
         if ((flags & DocumentModel.REFRESH_CONTENT) != 0) {
             if (schemas == null) {
-                // TODO include facets
-                schemas = doc.getType().getSchemaNames();
+                schemas = docSchemas.toArray(new String[0]);
             }
             DocumentType type = doc.getType();
             DocumentPart[] parts = new DocumentPart[schemas.length];
