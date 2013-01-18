@@ -116,6 +116,13 @@ public interface ContentView extends Serializable {
     void setCurrentResultLayout(ContentViewLayout layout);
 
     /**
+     * Sets the current result layout given its name.
+     * 
+     * @since 5.7
+     */
+    void setCurrentResultLayout(String resultLayoutName);
+
+    /**
      * Returns the current page size, as set using
      * {@link #setCurrentPageSize(Long)}, or the page size set on current page
      * provider if not null.

@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
@@ -365,6 +366,27 @@ public class TestContentViewService extends NXRuntimeTestCase {
         cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
         pp = cv.getPageProvider(null, null, -1L, -1L, null);
         assertTrue(pp instanceof CoreQueryAndFetchPageProvider);
+    }
+
+    @Test
+    public void testSetResultLayoutByName() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
+                "test-contentview-override-contrib.xml");
+
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(contentView);
+
+        List<ContentViewLayout> resultLayouts = contentView.getResultLayouts();
+        assertEquals(2, resultLayouts.size());
+
+        ContentViewLayout currentResultLayout = contentView.getCurrentResultLayout();
+        assertEquals(currentResultLayout.getName(),
+                resultLayouts.get(0).getName());
+
+        contentView.setCurrentResultLayout(resultLayouts.get(1).getName());
+        currentResultLayout = contentView.getCurrentResultLayout();
+        assertEquals(currentResultLayout.getName(),
+                resultLayouts.get(1).getName());
     }
 
 }

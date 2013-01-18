@@ -211,6 +211,14 @@ public class ContentViewImpl implements ContentView {
         currentResultLayout = layout;
     }
 
+    public void setCurrentResultLayout(String resultLayoutName) {
+        for (ContentViewLayout layout : resultLayouts) {
+            if (layout.getName().equals(resultLayoutName)) {
+                setCurrentResultLayout(layout);
+            }
+        }
+    }
+
     protected boolean getParametersChanged(Object[] oldParams,
             Object[] newParams) {
         if (oldParams == null && newParams == null) {
