@@ -1043,6 +1043,11 @@
         <artifactId>nuxeo-template-rendering-samples</artifactId>
         <version>${nuxeo.templates.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-deckjs</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
 
 
       <!-- CSV -->
