@@ -1,0 +1,53 @@
+/*
+Specific styles for the Digital Asset Management View
+=Grid -> custom styles for the main grid
+=Faceted Search -> styles for the search in the left colum
+=Assets list -> styles for the center colum asset listing
+=Assets View -> styles for the selected asset details in the right colum
+author: lkemen@nuxeo.com
+*/
+
+/* =Grid */
+.gridStyle2 { width: 18% }
+.gridStyle2 .gridStyle2 { width: 16% }
+
+.gridStyle6 { width: 49% }
+.gridStyle6 .gridStyle6 { width: 50% }
+
+/* =Faceted Search */
+.gridStyle2 { font-size: 0.82em }
+
+.gridStyle2 .widgetPanel { padding: 0 }
+
+/* =Assets list */
+.gridStyle6 { background-color: "neutral.lighter (__FLAVOR__ background)" }
+.gridStyle6 .widgetPanel { padding: 0 2% }
+
+.bubbleBox { background-color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: .9em;
+  min-height: 170px;
+  vertical-align: top;
+  width: 128px }
+
+.bubbleBox:hover { background-color: "color.major.light (__FLAVOR__ background)";
+ box-shadow: 0 1px 2px 2px #fff }
+.bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
+
+.bubbleBox.selected,
+.bubbleBox.selected:hover { background-color: "color.major.stronger (__FLAVOR__ background)";
+  color: #d0e8ff }
+.bubbleBox.selected .fieldColumn,
+.bubbleBox.selected:hover .fieldColumn { color: #d0e8ff }
+
+  /* Reduce padding between widget in the box*/
+  .bubbleBox .fieldColumn { color: "gray.medium (__FLAVOR__ color)";
+    font-size: .9em;
+    padding: 0 }
+
+.bubbleBox .thumbViewPicture { display: block;
+    margin: 0 auto }
+
+/* =Assets View */
+.gridStyle4 .widgetPanel { padding: 0 2% }

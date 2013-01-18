@@ -70,18 +70,17 @@
         <style>richfaces_components</style>
         <style>tabs_content</style>
         <style>helpers</style>
-        <!--<style>nuxeo_dam_specific</style>-->
+        <style>nuxeo_dam_specific</style>
       </styles>
     </themePage>
 
   </extension>
 
-  <!--
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dam_specific">
       <src>themes/css/nuxeo_dam_specific.css</src>
     </style>
   </extension>
-  -->
+
 
 </component>
