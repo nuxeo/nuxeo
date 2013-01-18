@@ -2230,6 +2230,13 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         } catch (PropertyNotFoundException e) {
             // ok
         }
+
+        // check immutable facet
+        DocumentRef verRef = doc.checkIn(VersioningOption.MINOR, null);
+        DocumentModel version = session.getDocument(verRef);
+        assertTrue(version.hasFacet(FacetNames.IMMUTABLE));
+        version.refresh();
+        assertTrue(version.hasFacet(FacetNames.IMMUTABLE));
     }
 
     @Test

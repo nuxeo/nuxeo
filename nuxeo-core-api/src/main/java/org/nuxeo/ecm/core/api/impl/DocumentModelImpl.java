@@ -1564,8 +1564,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         dataModels.clear();
         instanceFacets = refresh.instanceFacets;
         instanceFacetsOrig = new HashSet<String>(instanceFacets);
+        boolean immutable = facets.contains(FacetNames.IMMUTABLE);
         facets = new HashSet<String>(instanceFacets);
         facets.addAll(getDocumentType().getFacets());
+        if (immutable) {
+            facets.add(FacetNames.IMMUTABLE);
+        }
         this.schemas = computeSchemas(getDocumentType(), instanceFacets);
         schemasOrig = new HashSet<String>(this.schemas);
 
