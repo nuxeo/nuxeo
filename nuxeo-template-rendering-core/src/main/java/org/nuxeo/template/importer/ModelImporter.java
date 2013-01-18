@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.template.samples;
+package org.nuxeo.template.importer;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -40,7 +40,6 @@ import org.dom4j.Namespace;
 import org.dom4j.ProcessingInstruction;
 import org.dom4j.Text;
 import org.dom4j.Visitor;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -60,7 +59,6 @@ import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.template.samples.io.XMLModelReader;
 
 /**
  * Imports models and samples from resources or filesystem via CoreIO.
@@ -134,11 +132,11 @@ public class ModelImporter {
             if (roots.size() > 0) {
                 DocumentModel WSRoot = roots.get(0);
                 PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/"
-                        + Activator.SAMPLES_ROOT_PATH);
+                        + TemplateBundleActivator.SAMPLES_ROOT_PATH);
                 if (!session.exists(targetPath)) {
                     container = session.createDocumentModel(
                             WSRoot.getPathAsString(),
-                            Activator.SAMPLES_ROOT_PATH, "Workspace");
+                            TemplateBundleActivator.SAMPLES_ROOT_PATH, "Workspace");
                     container.setPropertyValue("dc:title",
                             "Template usage samples");
                     container.setPropertyValue("dc:description",
@@ -195,7 +193,7 @@ public class ModelImporter {
         }
 
         int nbImportedDocs = 0;
-        Path path = Activator.getDataDirPath();
+        Path path = TemplateBundleActivator.getDataDirPath();
         path = path.append(RESOURCES_ROOT);
         File root = new File(path.toString());
         File[] modelRoots = root.listFiles(new FileFilter() {

@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.template.samples;
+package org.nuxeo.template.importer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +39,6 @@ public class InitListener implements PostContentCreationHandler {
 
         ModelImporter importer = new ModelImporter(session);
         try {
-            Activator.expandResources();
             int nbImportedDocs = importer.importModels();
             log.info("Template sample import done : " + nbImportedDocs
                     + " documents imported");

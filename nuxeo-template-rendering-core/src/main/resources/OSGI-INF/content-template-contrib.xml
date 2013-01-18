@@ -9,7 +9,7 @@
     point="postContentCreationHandlers">
 
     <postContentCreationHandler name="templateSamplesImporter"
-      class="org.nuxeo.template.samples.InitListener" />
+      class="org.nuxeo.template.importer.InitListener" />
 
   </extension>
 

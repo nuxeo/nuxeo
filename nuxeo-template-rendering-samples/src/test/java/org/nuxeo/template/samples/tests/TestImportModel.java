@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
-import org.nuxeo.template.samples.ModelImporter;
+import org.nuxeo.template.importer.ModelImporter;
 
 public class TestImportModel extends SQLRepositoryTestCase {
 
