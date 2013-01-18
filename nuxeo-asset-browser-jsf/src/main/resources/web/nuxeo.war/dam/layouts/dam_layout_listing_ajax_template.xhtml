@@ -140,8 +140,9 @@
   </script>
 
   <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
+  <c:set var="trStyleClass2" value="#{nxu:test(value.data.id == currentDocument.id, 'selected', '')}" />
   <c:set var="onRowClick" value="nuxeo.dam.selectDocument(event, '#{value.data.id}')" />
-  <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}"
+  <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')} #{trStyleClass2}"
     onclick="#{onRowClick}">
     <nxl:layoutColumn>
       <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto">

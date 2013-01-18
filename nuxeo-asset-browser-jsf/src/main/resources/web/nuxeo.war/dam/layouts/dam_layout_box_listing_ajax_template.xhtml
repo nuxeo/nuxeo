@@ -19,7 +19,8 @@
   </c:if>
 
   <c:set var="onBoxClick" value="nuxeo.dam.selectDocument(event, '#{value.data.id}')" />
-  <div class="bubbleBox" onclick="#{onBoxClick}">
+  <c:set var="boxStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selected', '')}" />
+  <div class="bubbleBox #{boxStyleClass}" onclick="#{onBoxClick}">
     <nxl:layoutColumn>
       <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
         <div class="#{layoutColumn.properties.columnStyleClass} #{divStyleClass}" dir="auto">

@@ -6,7 +6,8 @@
 
   <c:set var="mainBlob" value="#{blobHolderGenerator.getBlobHolder(field).blob}" />
   <c:if test="#{!empty mainBlob}">
-    <h:outputText value="#{nxu:printFormatedFileSize(mainBlob.length, 'JEDEC', true)}" />
+    <h:outputText value="#{nxu:printFormatedFileSize(mainBlob.length, 'JEDEC', true)}"
+      styleClass="fieldColumn" />
   </c:if>
 
 </c:if>
