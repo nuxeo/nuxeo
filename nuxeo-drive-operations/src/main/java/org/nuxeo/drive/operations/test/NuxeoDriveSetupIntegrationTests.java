@@ -22,11 +22,9 @@ import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.T
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PATH;
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_TITLE;
 
-import java.io.StringWriter;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -36,6 +34,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -73,28 +72,26 @@ public class NuxeoDriveSetupIntegrationTests {
 
     @OperationMethod
     public Blob run() throws Exception {
-
+        if (!session.hasPermission(new PathRef("/"),
+                SecurityConstants.EVERYTHING)) {
+            throw new DocumentSecurityException(
+                    "Requires administrative permissions.");
+        }
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
 
         String[] userNamesArray = StringUtils.split(userNames, ",");
         String[] prefixedUserNames = new String[userNamesArray.length];
         for (int i = 0; i < userNamesArray.length; i++) {
-            prefixedUserNames[i] = TEST_USER_NAME_PREFIX + userNamesArray[i];
+            prefixedUserNames[i] = TEST_USER_NAME_PREFIX + userNamesArray[i].trim();
         }
-        String testUserPasswords = createTestUsers(prefixedUserNames);
+        String testUserCredentials = createTestUsers(prefixedUserNames);
         createTestWorkspace(prefixedUserNames);
-
-        // Write response
-        ObjectMapper mapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, testUserPasswords);
-        return StreamingBlob.createFromString(writer.toString(),
-                "application/json");
+        return StreamingBlob.createFromString(testUserCredentials, "text/plain");
     }
 
     protected String createTestUsers(String[] testUserNames) throws Exception {
 
-        StringBuilder testUserPasswordsSb = new StringBuilder();
+        StringBuilder testUserCredentials = new StringBuilder();
 
         UserManager userManager = Framework.getLocalService(UserManager.class);
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
@@ -103,7 +100,6 @@ public class NuxeoDriveSetupIntegrationTests {
         String passwordField = directoryService.getDirectoryPasswordField(userManager.getUserDirectoryName());
 
         for (int i = 0; i < testUserNames.length; i++) {
-
             String testUserName = testUserNames[i];
 
             // Generate random password
@@ -120,12 +116,14 @@ public class NuxeoDriveSetupIntegrationTests {
             userManager.createUser(testUserModel);
 
             // Append test user's password
-            testUserPasswordsSb.append(testUserPassword);
+            testUserCredentials.append(testUserName);
+            testUserCredentials.append(":");
+            testUserCredentials.append(testUserPassword);
             if (i < testUserNames.length - 1) {
-                testUserPasswordsSb.append(",");
+                testUserCredentials.append(",");
             }
         }
-        return testUserPasswordsSb.toString();
+        return testUserCredentials.toString();
     }
 
     protected void createTestWorkspace(String[] testUserNames) throws Exception {

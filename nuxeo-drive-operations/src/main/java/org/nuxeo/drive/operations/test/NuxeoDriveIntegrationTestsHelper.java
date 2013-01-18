@@ -37,7 +37,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
 
     static final String TEST_WORKSPACE_PARENT_PATH = "/default-domain/workspaces";
 
-    static final String TEST_WORKSPACE_NAME = "nuxeoDriveTestWorkspace";
+    static final String TEST_WORKSPACE_NAME = "nuxeo-drive-test-workspace";
 
     static final String TEST_WORKSPACE_TITLE = "Nuxeo Drive Test Workspace";
 
