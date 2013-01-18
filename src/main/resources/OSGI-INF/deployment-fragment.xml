@@ -9,6 +9,7 @@
     <locale-config>
       <supported-locale>ar</supported-locale>
       <supported-locale>ca</supported-locale>
+      <supported-locale>cs</supported-locale> 
       <supported-locale>cn</supported-locale>
       <supported-locale>de</supported-locale>
       <supported-locale>el_GR</supported-locale>
