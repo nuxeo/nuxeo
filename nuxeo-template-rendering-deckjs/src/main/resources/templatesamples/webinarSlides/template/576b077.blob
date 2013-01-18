@@ -1,0 +1,7 @@
+/*  
+Make your comments visible to provide more information to your trainees 
+*/
+
+.deck-container .further-info {
+	display: block;
+}

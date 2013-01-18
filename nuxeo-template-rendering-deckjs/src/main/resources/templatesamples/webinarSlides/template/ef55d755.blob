@@ -1,0 +1,161 @@
+/* -- 
+Nuxeo World Slide theme - 2012
+Based on the Default
+=nuxeo world specific => specific rules for nuxeo world's need
+-- */
+
+/* =nuxeo world specific */
+
+/* Background color */
+
+.deck-container {
+  background: none #f1f8f9;
+}
+
+
+/* nuxeo logo + nuxeo world logo on each slide */
+.deck-container .nuxeo-logo {
+  bottom: 10px;
+  color: #000;
+  font-size: .5em;
+  font-weight: bold;
+  margin: 0;
+  left: 22px;
+  z-index: 3;
+  position: fixed;
+  border-bottom:5px solid #fcf731;
+  padding-bottom: 4px;
+}
+
+.deck-container .nuxeo-world-logo {
+  bottom: 0;
+  color: #000;
+  font-size: .5em;
+  font-weight: bold;
+  margin: 0;
+  right: 5px;
+  z-index: 3;
+  position: fixed;
+  background: url(../images/nxworld.png) top left no-repeat;
+  width:125px;
+  height:74px;
+}
+
+.deck-container .deck-status {
+    bottom: 51px;
+    right: 85px;
+    font-size: .4em;
+}
+
+/* Contents */
+
+.deck-container .slide h2 {
+  border: none;
+  color: black;
+  font-size: 2.1em;
+  background-color: #fcf731;
+  padding:15px;
+  box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+
+}
+
+.deck-container .slide h3 {
+    background-color: #3670b9;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+    padding:15px;
+    margin-left:-15px;
+    margin-right:-15px;
+    line-height:105%;
+    color:#fff;
+    text-shadow:-1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.cssreflections .deck-container .slide h3 {
+-webkit-box-reflect: below 3px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(0.7, transparent), color-stop(1, rgba(255, 255, 255, 0.1)), to(transparent));
+}
+
+/* Cover */
+
+#nuxeo-slides h1 {
+  background-color:#fcf731;
+  padding:15px;
+  font-size: 1.3em;
+  padding-left: 450px;
+  text-align: left;
+  box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+}
+
+ #nuxeo-slides h2 {
+  top:50%;
+  margin-top:70px;
+  color:#496667;
+  font-size: 1em;
+  padding-left: 450px;
+  text-align: left;
+  background-color: none !important;
+  box-shadow: none;
+}
+
+.deck-container #nuxeo-slides h2 {
+  background-color: transparent;
+}
+
+.deck-container .slide h6 {
+  background-color: transparent;
+  color:#a0c8c8;
+  font-size: 0.6em;
+  font-weight: bold;
+  text-align: center;
+  padding-left: 450px;
+  text-align: left;
+  position:absolute;
+  top:50%;
+  margin-top:105px;
+  left:0;
+}
+
+#arty1 {
+  background-color: #A0C8C8;
+  height: 360px;
+  margin-left: -20%;
+  margin-top: -28%;
+  width: 200%;    
+    -webkit-transform: rotate(-12.4deg);  /* Safari 3.1+, Chrome */
+     -moz-transform: rotate(-12.4deg);  /* Firefox 3.5-15 */
+      -ms-transform: rotate(-12.4deg);  /* IE9+ */
+       -o-transform: rotate(-12.4deg);  /* Opera 10.5-12.00 */
+          transform: rotate(-12.4deg);  /* Firefox 16+, Opera 12.50+ */
+}
+
+#arty2 {
+  background-color: #496667;
+  height: 200%;
+  margin-right: -8%;
+  margin-top: -10%;
+  position: absolute;
+  right: -8%;
+  top: 0;
+  width: 28%;
+  -webkit-transform: rotate(-12.4deg);  /* Safari 3.1+, Chrome */
+     -moz-transform: rotate(-12.4deg);  /* Firefox 3.5-15 */
+      -ms-transform: rotate(-12.4deg);  /* IE9+ */
+       -o-transform: rotate(-12.4deg);  /* Opera 10.5-12.00 */
+          transform: rotate(-12.4deg);  /* Firefox 16+, Opera 12.50+ */
+}
+
+.cover-logo {
+  position: absolute;
+  left:0;
+  z-index: 1;
+  -webkit-transform: scale(0.8);  /* Safari 3.1+, Chrome */
+     -moz-transform: scale(0.8);  /* Firefox 3.5+ */
+      -ms-transform: scale(0.8);  /* IE9+ */
+       -o-transform: scale(0.8);  /* Opera 10.50+ */
+          transform: scale(0.8);
+}
+
+/* End slide */
+
+#thank-you {
+  background:transparent url(../images/frog.png) bottom left no-repeat;
+}

@@ -21,6 +21,7 @@
     <module>nuxeo-template-rendering-web</module>
     <module>nuxeo-template-rendering-jaxrs</module>
     <module>nuxeo-template-rendering-samples</module>
+    <module>nuxeo-template-rendering-deckjs</module>
     <module>nuxeo-template-rendering-package</module>
   </modules>
 
