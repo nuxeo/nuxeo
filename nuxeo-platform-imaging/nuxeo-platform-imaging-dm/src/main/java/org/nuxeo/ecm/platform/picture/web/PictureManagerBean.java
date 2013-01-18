@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -78,8 +77,6 @@ public class PictureManagerBean implements PictureManager, Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(PictureManagerBean.class);
-
-    public static final String RAW_PICTURE_FACET = "RawPicture";
 
     protected static Boolean imageMagickAvailable;
 
@@ -400,25 +397,4 @@ public class PictureManagerBean implements PictureManager, Serializable {
         }
         return imageMagickAvailable;
     }
-
-    @Override
-    public List<DocumentModel> getRawPictures(DocumentModel picture) throws ClientException {
-        return getRawPictures(picture, null);
-    }
-
-    @Override
-    public List<DocumentModel> getRawPictures(DocumentModel picture,
-            String docType) throws ClientException {
-        StringBuilder query = new StringBuilder(
-                "SELECT * FROM Document WHERE ecm:parentId = '%s' ");
-        query.append("AND ecm:mixinType = '%s' ");
-        if (docType != null) {
-            query.append("AND ecm:primaryType = '%s' ");
-        }
-        query.append("AND ecm:currentLifeCycleState != 'deleted' ");
-        query.append("ORDER BY dc:title");
-        return documentManager.query(String.format(query.toString(),
-                new String[] { picture.getId(), RAW_PICTURE_FACET, docType }));
-    }
-
 }

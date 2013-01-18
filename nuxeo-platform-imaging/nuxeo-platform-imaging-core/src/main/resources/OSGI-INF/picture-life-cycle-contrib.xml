@@ -5,7 +5,6 @@
              point="types">
     <types>
       <type name="Picture">default</type>
-      <type name="RawPicture">default</type>
     </types>
   </extension>
 
