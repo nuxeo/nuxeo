@@ -1001,6 +1001,40 @@ public class TestSQLBackend extends SQLBackendTestCase {
         prop2.getValue();
     }
 
+    /*
+     * Make sure the fulltext job id is correctly invalidated (it belongs to the
+     * fulltext table that used to be completely skipped by invalidations).
+     *
+     * Also check opaque column behavior.
+     */
+    @Test
+    public void testFulltextJobIdInvalidation() throws Exception {
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        SimpleProperty jobid1 = node1.getSimpleProperty("ecm:fulltextJobId");
+        SimpleProperty ft1 = node1.getSimpleProperty("ecm:simpleText");
+        session1.save();
+        jobid1.setValue("123");
+        ft1.setValue("foo");
+        session1.save();
+
+        Session session2 = repository.getConnection();
+        Node node2 = session2.getNodeById(node1.getId());
+        SimpleProperty jobid2 = node2.getSimpleProperty("ecm:fulltextJobId");
+        SimpleProperty ft2 = node2.getSimpleProperty("ecm:simpleText");
+        assertEquals("123", jobid2.getString());
+
+        // update fulltext job id in session 1
+        jobid1.setValue("456");
+        session1.save();
+
+        // check in session 2 that it's been invalidated
+        session2.save(); // process invalidations (non-transactional)
+        assertEquals("456", jobid2.getString());
+        assertEquals("OPAQUE_VALUE", ft2.getValue().toString());
+    }
+
     @Test
     public void testClustering() throws Exception {
         if (this instanceof TestSQLBackendNet

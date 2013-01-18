@@ -431,39 +431,30 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
     @Override
     public void write(RowBatch batch) throws StorageException {
-        // we avoid gathering invalidations for a write-only table: fulltext
         for (Row row : batch.creates) {
             cachePut(row);
-            if (!Model.FULLTEXT_TABLE_NAME.equals(row.tableName)) {
-                // we need to send modified invalidations for created
-                // fragments because other session's ABSENT fragments have
-                // to be invalidated
-                localInvalidations.addModified(new RowId(row));
-            }
+            // we need to send modified invalidations for created
+            // fragments because other session's ABSENT fragments have
+            // to be invalidated
+            localInvalidations.addModified(new RowId(row));
         }
         for (RowUpdate rowu : batch.updates) {
             cachePut(rowu.row);
-            if (!Model.FULLTEXT_TABLE_NAME.equals(rowu.row.tableName)) {
-                localInvalidations.addModified(new RowId(rowu.row));
-            }
+            localInvalidations.addModified(new RowId(rowu.row));
         }
         for (RowId rowId : batch.deletes) {
             if (rowId instanceof Row) {
                 throw new AssertionError();
             }
             cachePutAbsent(rowId);
-            if (!Model.FULLTEXT_TABLE_NAME.equals(rowId.tableName)) {
-                localInvalidations.addDeleted(rowId);
-            }
+            localInvalidations.addDeleted(rowId);
         }
         for (RowId rowId : batch.deletesDependent) {
             if (rowId instanceof Row) {
                 throw new AssertionError();
             }
             cachePutAbsent(rowId);
-            if (!Model.FULLTEXT_TABLE_NAME.equals(rowId.tableName)) {
-                localInvalidations.addDeleted(rowId);
-            }
+            localInvalidations.addDeleted(rowId);
         }
 
         // propagate to underlying mapper

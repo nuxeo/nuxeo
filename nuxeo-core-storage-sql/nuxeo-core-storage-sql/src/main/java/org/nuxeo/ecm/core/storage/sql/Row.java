@@ -32,6 +32,16 @@ public final class Row extends RowId implements Serializable, Cloneable {
 
     private static final int DEFAULT = 5;
 
+    private enum OpaqueValue {
+        OPAQUE_VALUE
+    }
+
+    /**
+     * A database value we don't care about reading. When present in a fragment,
+     * it won't be written, but any other value will be.
+     */
+    public static final Serializable OPAQUE = OpaqueValue.OPAQUE_VALUE;
+
     /**
      * The row keys, for single row.
      */

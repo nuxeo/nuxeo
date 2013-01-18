@@ -337,11 +337,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     && select.whereColumns.get(0).getKey() == model.MAIN_KEY
                     && joinMap == null) {
                 Row row = new Row(tableName, criteriaMap);
-                // if (select.opaqueColumns != null) {
-                // for (Column column : select.opaqueColumns) {
-                // map.put(column.getKey(), Row.OPAQUE);
-                // }
-                // }
+                if (select.opaqueColumns != null) {
+                    for (Column column : select.opaqueColumns) {
+                        row.putNew(column.getKey(), Row.OPAQUE);
+                    }
+                }
                 list.add(row);
                 return list;
             }
@@ -411,11 +411,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 for (Column column : select.whatColumns) {
                     row.put(column.getKey(), column.getFromResultSet(rs, i++));
                 }
-                // if (select.opaqueColumns != null) {
-                // for (Column column : select.opaqueColumns) {
-                // row.putNew(column.getKey(), Row.OPAQUE);
-                // }
-                // }
+                if (select.opaqueColumns != null) {
+                    for (Column column : select.opaqueColumns) {
+                        row.putNew(column.getKey(), Row.OPAQUE);
+                    }
+                }
                 if (logger.isLogEnabled()) {
                     logger.logResultSet(rs, select.whatColumns);
                 }
