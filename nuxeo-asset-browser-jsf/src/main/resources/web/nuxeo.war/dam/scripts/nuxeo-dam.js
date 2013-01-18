@@ -10,7 +10,6 @@ nuxeo.dam = (function(m) {
       }
     }
     // trigger the a4j:jsFunction actually selecting the document
-    //noinspection JSUnresolvedFunction
     selectDocument(docRef)
   }
 

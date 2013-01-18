@@ -205,6 +205,34 @@
       </property>
     </widgetType>
 
+    <widgetType name="dam_listing_size">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Size</title>
+        <description>
+          <p>
+            This widget type displays the size of the main blob of the
+            given document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the size
+              </li>
+            </ul>
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/listing/listing_size_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -242,6 +270,31 @@
         <field>data.ref</field>
       </fields>
     </widget>
+
+    <widget name="dam_listing_dam_common" type="layout">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="name">dam_common</property>
+        <property name="widgetsDisplay">no_label</property>
+      </properties>
+    </widget>
+
+    <widget name="dam_listing_size" type="dam_listing_size">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
 
   </extension>
 
@@ -328,6 +381,12 @@
         </column>
         <column>
           <widget>dam_listing_thumbnail</widget>
+        </column>
+        <column>
+          <widget>dam_listing_dam_common</widget>
+        </column>
+        <column>
+          <widget>dam_listing_size</widget>
         </column>
       </columns>
     </layout>
