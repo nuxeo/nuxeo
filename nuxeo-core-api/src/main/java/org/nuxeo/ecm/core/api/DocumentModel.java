@@ -957,6 +957,8 @@ public interface DocumentModel extends Serializable {
 
         public Prefetch prefetch;
 
+        public Set<String> instanceFacets;
+
         public DocumentPart[] documentParts;
     }
 

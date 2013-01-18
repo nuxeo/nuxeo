@@ -2182,6 +2182,59 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testFacetRefresh() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc = session.createDocument(doc);
+        assertFalse(doc.hasFacet("Aged"));
+
+        // fetch another DocumentModel instance of the same doc
+        DocumentModel doc2 = session.getDocument(doc.getRef());
+        // facet not yet present
+        assertFalse(doc2.hasFacet("Aged"));
+        // cannot write property
+        try {
+            doc2.setPropertyValue("age:age", "123");
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
+        }
+
+        // add facet in first doc
+        assertTrue(doc.addFacet("Aged"));
+        assertTrue(doc.hasFacet("Aged"));
+        doc.setPropertyValue("age:age", "123");
+        doc = session.saveDocument(doc);
+
+        // after refresh should be also visible in second doc
+        doc2.refresh();
+        assertTrue(doc2.hasFacet("Aged"));
+        assertEquals("123", doc2.getPropertyValue("age:age"));
+
+        // change value in first doc
+        doc.setPropertyValue("age:age", "456");
+        doc = session.saveDocument(doc);
+
+        // after refresh should be also visible in second doc
+        doc2.refresh();
+        assertTrue(doc2.hasFacet("Aged"));
+        assertEquals("456", doc2.getPropertyValue("age:age"));
+
+        // remove facet in first doc
+        assertTrue(doc.removeFacet("Aged"));
+        doc = session.saveDocument(doc);
+
+        // after refresh should be removed in second doc
+        doc2.refresh();
+        assertFalse(doc2.hasFacet("Aged"));
+        try {
+            doc2.setPropertyValue("age:age", "123");
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
+        }
+    }
+
+    @Test
     public void testLifeCycleAPI() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
