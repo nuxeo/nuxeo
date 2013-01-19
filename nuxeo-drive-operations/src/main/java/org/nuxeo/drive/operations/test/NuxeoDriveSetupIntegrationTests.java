@@ -82,7 +82,8 @@ public class NuxeoDriveSetupIntegrationTests {
         String[] userNamesArray = StringUtils.split(userNames, ",");
         String[] prefixedUserNames = new String[userNamesArray.length];
         for (int i = 0; i < userNamesArray.length; i++) {
-            prefixedUserNames[i] = TEST_USER_NAME_PREFIX + userNamesArray[i].trim();
+            prefixedUserNames[i] = TEST_USER_NAME_PREFIX
+                    + userNamesArray[i].trim();
         }
         String testUserCredentials = createTestUsers(prefixedUserNames);
         createTestWorkspace(prefixedUserNames);
@@ -105,7 +106,7 @@ public class NuxeoDriveSetupIntegrationTests {
             // Generate random password
             String testUserPassword = UUID.randomUUID().toString();
 
-            // Create test useruserName
+            // Create test user
             DocumentModel testUserModel = userManager.getBareUserModel();
             testUserModel.setProperty(userSchemaName, userNameField,
                     testUserName);
@@ -115,7 +116,7 @@ public class NuxeoDriveSetupIntegrationTests {
                     new String[] { "members" });
             userManager.createUser(testUserModel);
 
-            // Append test user's password
+            // Append test user's credentials
             testUserCredentials.append(testUserName);
             testUserCredentials.append(":");
             testUserCredentials.append(testUserPassword);

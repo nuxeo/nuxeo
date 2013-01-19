@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.operations.test;
 
+import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -61,10 +62,12 @@ public final class NuxeoDriveIntegrationTestsHelper {
             if (userManager.getPrincipal(testUserName) != null) {
                 userManager.deleteUser(testUserName);
             }
-            DocumentRef userWorkspaceRef = new PathRef(
-                    USER_WORKSPACE_PARENT_PATH + "/" + testUserName);
-            if (session.exists(userWorkspaceRef)) {
-                session.removeDocument(userWorkspaceRef);
+            String testUserWorkspaceName = IdUtils.generateId(testUserName,
+                    "-", false, 30);
+            DocumentRef testUserWorkspaceRef = new PathRef(
+                    USER_WORKSPACE_PARENT_PATH + "/" + testUserWorkspaceName);
+            if (session.exists(testUserWorkspaceRef)) {
+                session.removeDocument(testUserWorkspaceRef);
             }
         }
 
