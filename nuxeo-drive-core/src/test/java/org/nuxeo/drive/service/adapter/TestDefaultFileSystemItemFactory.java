@@ -36,6 +36,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.Blob;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -86,6 +88,9 @@ public class TestDefaultFileSystemItemFactory {
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
+    @Inject
+    protected NuxeoDriveManager nuxeoDriveManager;
+
     protected Principal principal;
 
     protected String rootDocFileSystemItemId;
@@ -110,6 +115,8 @@ public class TestDefaultFileSystemItemFactory {
         principal = session.getPrincipal();
         rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + session.getRootDocument().getId();
+        // Set versioning delay to 1 second
+        nuxeoDriveManager.setVersioningDelay(1);
 
         // File
         file = session.createDocumentModel("/", "aFile", "File");
@@ -403,26 +410,67 @@ public class TestDefaultFileSystemItemFactory {
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         assertTrue(fileItem.getCanUpdate());
 
-        CoreInstance.getInstance().close(joeSession);
-        resetPermissions(rootDoc, "joe");
-
         // ------------------------------------------------------
-        // FileItem#setBlob
+        // FileItem#getBlob and FileItem#setBlob
         // ------------------------------------------------------
+        // #getBlob
+        // Re-fetch file with Administrator session
         file = session.getDocument(file.getRef());
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         Blob fileItemBlob = fileItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
+        // Check versioning
+        assertVersion("0.0", file);
 
+        // #setBlob
         Blob newBlob = new StringBlob("This is a new file.");
         newBlob.setFilename("New blob.txt");
         fileItem.setBlob(newBlob);
-
         file = session.getDocument(file.getRef());
         Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
         assertEquals("New blob.txt", updatedBlob.getFilename());
         assertEquals("This is a new file.", updatedBlob.getString());
+        // Check versioning => should not be versioned since same contributor
+        // and last modification was done before the versioning delay
+        assertVersion("0.0", file);
+
+        // Wait for versioning delay: 1s
+        Thread.sleep(1000);
+        newBlob.setFilename("File name modified.txt");
+        fileItem.setBlob(newBlob);
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue("file:content");
+        assertEquals("File name modified.txt", updatedBlob.getFilename());
+        // Check versioning => should be versioned since last modification was
+        // done after the versioning delay
+        assertVersion("0.1", file);
+        List<DocumentModel> fileVersions = session.getVersions(file.getRef());
+        assertEquals(1, fileVersions.size());
+        DocumentModel lastFileVersion = fileVersions.get(0);
+        Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+        assertEquals("New blob.txt", versionedBlob.getFilename());
+
+        // Update file with another contributor
+        file = joeSession.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        newBlob.setFilename("File name modified by Joe.txt");
+        fileItem.setBlob(newBlob);
+        // Re-fetch file with Administrator session
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue("file:content");
+        assertEquals("File name modified by Joe.txt", updatedBlob.getFilename());
+        // Check versioning => should be versioned since updated by a different
+        // contributor
+        assertVersion("0.2", file);
+        fileVersions = session.getVersions(file.getRef());
+        assertEquals(2, fileVersions.size());
+        lastFileVersion = fileVersions.get(1);
+        versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+        assertEquals("File name modified.txt", versionedBlob.getFilename());
+
+        CoreInstance.getInstance().close(joeSession);
+        resetPermissions(rootDoc, "joe");
     }
 
     @Test
@@ -584,6 +632,29 @@ public class TestDefaultFileSystemItemFactory {
         }
         session.setACP(doc.getRef(), acp, true);
         session.save();
+    }
+
+    protected void assertVersion(String expected, DocumentModel doc)
+            throws Exception {
+        assertEquals(expected, getMajor(doc) + "." + getMinor(doc));
+    }
+
+    protected long getMajor(DocumentModel doc) throws ClientException {
+        return getVersion(doc, VersioningService.MAJOR_VERSION_PROP);
+    }
+
+    protected long getMinor(DocumentModel doc) throws ClientException {
+        return getVersion(doc, VersioningService.MINOR_VERSION_PROP);
+    }
+
+    protected long getVersion(DocumentModel doc, String prop)
+            throws ClientException {
+        Object propVal = doc.getPropertyValue(prop);
+        if (propVal == null || !(propVal instanceof Long)) {
+            return -1;
+        } else {
+            return ((Long) propVal).longValue();
+        }
     }
 
 }

@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -82,6 +83,14 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     // TODO: make this overridable with an extension point
     protected FileSystemChangeFinder changeFinder = new AuditChangeFinder();
+
+    // Versioning delay in seconds
+    // TODO: make this configurable with an extension point
+    protected long versioningDelay = 3600;
+
+    // Versioning option
+    // TODO: make this configurable with an extension point
+    protected VersioningOption versioningOption = VersioningOption.MINOR;
 
     @Override
     public void registerSynchronizationRoot(String userName,
@@ -185,24 +194,23 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     }
 
     /**
-     * Uses the {@link AuditChangeFinder} to get the summary of document
-     * changes for the given user and last successful synchronization date.
+     * Uses the {@link AuditChangeFinder} to get the summary of document changes
+     * for the given user and last successful synchronization date.
      * <p>
      * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
      * a limit of document changes to fetch from the audit logs. Default value
      * is 1000.
      */
     @Override
-    public FileSystemChangeSummary getChangeSummary(
-            Principal principal, long lastSuccessfulSync)
-            throws ClientException {
+    public FileSystemChangeSummary getChangeSummary(Principal principal,
+            long lastSuccessfulSync) throws ClientException {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
         return getChangeSummary(principal, roots, lastSuccessfulSync);
     }
 
-    protected FileSystemChangeSummary getChangeSummary(
-            Principal principal, Map<String, SynchronizationRoots> roots,
-            long lastSuccessfulSync) throws ClientException {
+    protected FileSystemChangeSummary getChangeSummary(Principal principal,
+            Map<String, SynchronizationRoots> roots, long lastSuccessfulSync)
+            throws ClientException {
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
         List<FileSystemItemChange> allChanges = new ArrayList<FileSystemItemChange>();
         // Update sync date, rounded to the lower second to ensure consistency
@@ -339,6 +347,26 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     // remove setter
     public void setChangeFinder(FileSystemChangeFinder changeFinder) {
         this.changeFinder = changeFinder;
+    }
+
+    public long getVersioningDelay() {
+        return versioningDelay;
+    }
+
+    // TODO: make versioningDelay configurable with an extension point and
+    // remove setter
+    public void setVersioningDelay(long versioningDelay) {
+        this.versioningDelay = versioningDelay;
+    }
+
+    public VersioningOption getVersioningOption() {
+        return versioningOption;
+    }
+
+    // TODO: make versioningOption configurable with an extension point and
+    // remove setter
+    public void setVersioningOption(VersioningOption versioningOption) {
+        this.versioningOption = versioningOption;
     }
 
 }

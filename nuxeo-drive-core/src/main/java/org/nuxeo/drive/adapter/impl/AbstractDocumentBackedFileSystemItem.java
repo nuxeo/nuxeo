@@ -184,6 +184,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         return session.getDocument(new IdRef(docId));
     }
 
+    protected void updateLastModificationDate(DocumentModel doc)
+            throws ClientException {
+        lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
+    }
+
     protected TrashService getTrashService() {
         return Framework.getLocalService(TrashService.class);
     }

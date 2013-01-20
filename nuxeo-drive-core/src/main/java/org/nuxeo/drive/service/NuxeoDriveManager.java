@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.security.SecurityException;
 
 /**
@@ -68,7 +69,8 @@ public interface NuxeoDriveManager {
      *         for that user
      * @see #getSynchronizationRootPaths(String, CoreSession)
      */
-    public Set<IdRef> getSynchronizationRootReferences(CoreSession session) throws ClientException;
+    public Set<IdRef> getSynchronizationRootReferences(CoreSession session)
+            throws ClientException;
 
     /**
      * Fetch all the synchronization root references and paths for a given user.
@@ -120,9 +122,8 @@ public interface NuxeoDriveManager {
      *            initialization.
      * @return the summary of document changes
      */
-    public FileSystemChangeSummary getChangeSummary(
-            Principal principal, long lastSuccessfulSync)
-            throws ClientException;
+    public FileSystemChangeSummary getChangeSummary(Principal principal,
+            long lastSuccessfulSync) throws ClientException;
 
     /**
      * Sets the {@link FileSystemChangeFinder} member.
@@ -130,5 +131,29 @@ public interface NuxeoDriveManager {
      * TODO: make it overridable with an extension point and remove setter.
      */
     public void setChangeFinder(FileSystemChangeFinder changeFinder);
+
+    /**
+     * Gets the versioning delay for a file item update.
+     */
+    public long getVersioningDelay();
+
+    /**
+     * Sets the versioning delay for a file item update.
+     * <p>
+     * TODO: make it configurable with an extension point and remove setter.
+     */
+    public void setVersioningDelay(long versioningDelay);
+
+    /**
+     * Gets the versioning option for a file item update.
+     */
+    public VersioningOption getVersioningOption();
+
+    /**
+     * Sets the versioning option for a file item update.
+     * <p>
+     * TODO: make it configurable with an extension point and remove setter.
+     */
+    public void setVersioningOption(VersioningOption versioningOption);
 
 }

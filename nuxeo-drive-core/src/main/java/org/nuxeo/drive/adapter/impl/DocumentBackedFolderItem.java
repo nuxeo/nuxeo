@@ -70,13 +70,16 @@ public class DocumentBackedFolderItem extends
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
+        // Update doc properties
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
         doc.setPropertyValue("dc:title", name);
-        session.saveDocument(doc);
+        doc = session.saveDocument(doc);
         session.save();
+        // Update FileSystemItem attributes
         this.docTitle = name;
         this.name = name;
+        updateLastModificationDate(doc);
     }
 
     /*--------------------- FolderItem -----------------*/

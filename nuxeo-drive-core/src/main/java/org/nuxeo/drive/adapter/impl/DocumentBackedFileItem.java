@@ -17,13 +17,19 @@
 package org.nuxeo.drive.adapter.impl;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.adapter.FileItem;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FileItem}.
@@ -34,6 +40,8 @@ public class DocumentBackedFileItem extends
         AbstractDocumentBackedFileSystemItem implements FileItem {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(DocumentBackedFileItem.class);
 
     private static final String MD5_DIGEST_ALGORITHM = "MD5";
 
@@ -62,6 +70,7 @@ public class DocumentBackedFileItem extends
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
+        // Update doc properties
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
         BlobHolder bh = getBlobHolder(doc);
@@ -69,9 +78,11 @@ public class DocumentBackedFileItem extends
         blob.setFilename(name);
         bh.setBlob(blob);
         updateDocTitleIfNeeded(doc, name);
-        session.saveDocument(doc);
+        doc = session.saveDocument(doc);
         session.save();
+        // Update FileSystemItem attributes
         this.name = name;
+        updateLastModificationDate(doc);
     }
 
     /*--------------------- FileItem -----------------*/
@@ -113,21 +124,27 @@ public class DocumentBackedFileItem extends
 
     @Override
     public void setBlob(Blob blob) throws ClientException {
+        /* Update doc properties */
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
-        BlobHolder bh = getBlobHolder(doc);
-        String blobFileName = blob.getFilename();
+        // Handle versioning
+        versionIfNeeded(doc, session);
         // If blob's filename is empty, set it to the current name
+        String blobFileName = blob.getFilename();
         if (StringUtils.isEmpty(blobFileName)) {
             blob.setFilename(name);
         } else {
             updateDocTitleIfNeeded(doc, blobFileName);
             name = blobFileName;
         }
+        BlobHolder bh = getBlobHolder(doc);
         bh.setBlob(blob);
-        session.saveDocument(doc);
-        updateDigest();
+        doc = session.saveDocument(doc);
         session.save();
+        /* Update FileSystemItem attributes */
+        updateLastModificationDate(doc);
+        updateDigest();
+
     }
 
     /*--------------------- Protected -----------------*/
@@ -182,6 +199,52 @@ public class DocumentBackedFileItem extends
 
     protected void updateDigest() throws ClientException {
         digest = getBlob().getDigest();
+    }
+
+    protected void versionIfNeeded(DocumentModel doc, CoreSession session)
+            throws ClientException {
+        if (needsVersioning(doc)) {
+            doc.putContextData(VersioningService.VERSIONING_OPTION,
+                    getNuxeoDriveManager().getVersioningOption());
+            session.saveDocument(doc);
+        }
+    }
+
+    protected boolean needsVersioning(DocumentModel doc)
+            throws PropertyException, ClientException {
+        // Need to version the doc if the current contributor is different from
+        // the last contributor or if the last modification was done more than
+        // VERSIONING_DELAY seconds ago.
+        String lastContributor = (String) doc.getPropertyValue("dc:lastContributor");
+        boolean contributorChanged = !principal.getName().equals(
+                lastContributor);
+        if (contributorChanged) {
+            log.debug(String.format(
+                    "Contributor %s is different from the last contributor %s => will create a version of the document.",
+                    principal.getName(), lastContributor));
+            return true;
+        }
+        if (getLastModificationDate() == null) {
+            log.debug("Last modification date is null => will not create a version of the document.");
+            return true;
+        }
+        long lastModified = System.currentTimeMillis()
+                - getLastModificationDate().getTimeInMillis();
+        long versioningDelay = getNuxeoDriveManager().getVersioningDelay() * 1000;
+        if (lastModified > versioningDelay) {
+            log.debug(String.format(
+                    "Last modification was done %d milliseconds ago, this is more than the versioning delay %d milliseconds => will create a version of the document.",
+                    lastModified, versioningDelay));
+            return true;
+        }
+        log.debug(String.format(
+                "Contributor %s is the last contributor and last modification was done %d milliseconds ago, this is less than the versioning delay %d milliseconds => will not create a version of the document.",
+                principal.getName(), lastModified, versioningDelay));
+        return false;
+    }
+
+    protected NuxeoDriveManager getNuxeoDriveManager() {
+        return Framework.getLocalService(NuxeoDriveManager.class);
     }
 
     /*---------- Needed for JSON deserialization ----------*/
