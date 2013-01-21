@@ -181,6 +181,10 @@ public class RepositoryDescriptor {
     @XNode("aclOptimizations@enabled")
     public boolean aclOptimizationsEnabled = true;
 
+    /* @since 5.7 */
+    @XNode("aclOptimizations@concurrentUpdate")
+    public boolean aclOptimizationsConcurrentUpdate = true;
+
     /* @since 5.4.2 */
     @XNode("aclOptimizations@readAclMaxSize")
     public int readAclMaxSize = 4096;
@@ -220,6 +224,7 @@ public class RepositoryDescriptor {
         fulltextIndexes = other.fulltextIndexes;
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
+        aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
         readAclMaxSize = other.readAclMaxSize;
         binaryStorePath = other.binaryStorePath;
         binaryManagerClass = other.binaryManagerClass;

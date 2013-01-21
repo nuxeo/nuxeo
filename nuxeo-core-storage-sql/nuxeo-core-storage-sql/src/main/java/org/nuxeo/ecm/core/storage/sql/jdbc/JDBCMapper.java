@@ -1018,13 +1018,23 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (!sqlInfo.dialect.supportsReadAcl()) {
             return;
         }
-        log.debug("updateReadAcls: updating ...");
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("updateReadAcls: updating (concurrent=%b) ...",
+                    sqlInfo.dialect.supportsConcurrentUpdateReadAcls()));
+        }
         Statement st = null;
         try {
             st = connection.createStatement();
             String sql = sqlInfo.dialect.getUpdateReadAclsSql();
-            logger.log(sql);
-            st.execute(sql);
+            if (sqlInfo.dialect.supportsConcurrentUpdateReadAcls()) {
+                st.execute(sql);
+            } else {
+                // This is not enough to prevent concurrent execution in
+                // cluster mode.
+                synchronized (model) {
+                    st.execute(sql);
+                }
+            }
             countExecute();
         } catch (Exception e) {
             checkConnectionReset(e);
@@ -1038,7 +1048,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
             }
         }
-        log.debug("updateReadAcls: done.");
+        if (log.isDebugEnabled()) {
+            log.debug("updateReadAcls: done.");
+        }
     }
 
     @Override
