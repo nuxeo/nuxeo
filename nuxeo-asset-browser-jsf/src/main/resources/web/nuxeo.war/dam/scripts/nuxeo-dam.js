@@ -2,6 +2,17 @@ var nuxeo = nuxeo || {}
 
 nuxeo.dam = (function(m) {
 
+  function removeAllSelectedItemClass() {
+    jQuery('.jsDamItem.selectedItem').removeClass('selectedItem')
+  }
+
+  m.selectDocument = function(event, docRef) {
+    if (nuxeo.dam.canSelectDocument(event)) {
+      // trigger the a4j:jsFunction
+      damSelectDocument(docRef)
+    }
+  }
+
   m.canSelectDocument = function(event) {
     if (event && event.srcElement) {
       var ele = jQuery(event.srcElement)
@@ -12,14 +23,9 @@ nuxeo.dam = (function(m) {
     return true
   }
 
-  m.removeAllSelectedItemClass = function() {
-    jQuery('.jsDamItem.selectedItem').removeClass('selectedItem')
-  }
-
-  m.selectDocument = function(event, docRef) {
-    if (nuxeo.dam.canSelectDocument(event)) {
-      selectDocument(docRef)
-    }
+  m.afterDocumentSelected = function(event) {
+    removeAllSelectedItemClass()
+    jQuery(event.currentTarget).addClass('selectedItem');
   }
 
   return m

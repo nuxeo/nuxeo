@@ -140,10 +140,9 @@
   </script>
 
   <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
-  <c:set var="trStyleClass2" value="#{nxu:test(value.data.id == currentDocument.id, 'jsDamItem selectedItem', '')}" />
-  <c:set var="onRowClick" value="nuxeo.dam.selectDocument(event, '#{value.data.id}')" />
-  <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')} #{trStyleClass2}"
-    onclick="#{onRowClick}">
+  <c:set var="trSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
+  <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')} jsDamItem #{trSelectedStyleClass}"
+    onclick="nuxeo.dam.selectDocument(event, '#{value.data.id}')">
     <nxl:layoutColumn>
       <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto">
         <nxl:layoutColumnWidget>
