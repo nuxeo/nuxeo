@@ -62,16 +62,16 @@ public class DeckJSPDFOperation {
                 templateBasedDocument, null, templateName);
         BlobHolder sourceBh = templateSourceDocument.getAdapter(BlobHolder.class);
         for (Blob b : sourceBh.getBlobs()) {
-            writeToTempDirectory(jaxRsExtensions, workingDir, b);
+            writeToTempDirectory(workingDir, b);
         }
         BlobHolder templatebasedBh = templateBasedDocument.getAdapter(BlobHolder.class);
         for (Blob b : templatebasedBh.getBlobs()) {
-            writeToTempDirectory(jaxRsExtensions, workingDir, b);
+            writeToTempDirectory(workingDir, b);
         }
 
         String content = blob.getString();
         String resourcePath = jaxRsExtensions.getResourceUrl("");
-        content = content.replaceAll(resourcePath, resourcePath.substring(1, resourcePath.length()));
+        content = content.replaceAll(resourcePath, "./");
         File index = new File(workingDir, blob.getFilename());
         FileWriter fw = new FileWriter(index);
         IOUtils.write(content, fw);
@@ -86,10 +86,8 @@ public class DeckJSPDFOperation {
         return bh.getBlob();
     }
 
-    private void writeToTempDirectory(JAXRSExtensions jaxRsExtensions,
-            File workingDir, Blob b) throws IOException {
-        String path = jaxRsExtensions.getResourceUrl(b.getFilename());
-        File f = new File(workingDir, path);
+    private void writeToTempDirectory(File workingDir, Blob b) throws IOException {
+        File f = new File(workingDir, b.getFilename());
         File parentFile = f.getParentFile();
         parentFile.mkdirs();
         b.transferTo(f);
