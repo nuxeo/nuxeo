@@ -3039,7 +3039,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                             null, null, true, true);
                     Document version = getVersioningService().doCheckIn(doc,
                             null, checkinComment);
-                    docModel.refresh(DocumentModel.REFRESH_STATE, null);
+                    docModel.refresh(DocumentModel.REFRESH_STATE
+                            | DocumentModel.REFRESH_CONTENT_LAZY, null);
                     notifyCheckedInVersion(docModel,
                             new IdRef(version.getUUID()), null, checkinComment);
                 }

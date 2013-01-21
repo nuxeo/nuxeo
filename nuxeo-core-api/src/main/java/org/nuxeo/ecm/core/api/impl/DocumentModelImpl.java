@@ -1577,18 +1577,19 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             isACPLoaded = true;
         }
 
-        dataModels.clear();
-        instanceFacets = refresh.instanceFacets;
-        instanceFacetsOrig = new HashSet<String>(instanceFacets);
-        boolean immutable = facets.contains(FacetNames.IMMUTABLE);
-        facets = new HashSet<String>(instanceFacets);
-        facets.addAll(getDocumentType().getFacets());
-        if (immutable) {
-            facets.add(FacetNames.IMMUTABLE);
+        if ((refreshFlags & (REFRESH_CONTENT | REFRESH_CONTENT_LAZY)) != 0) {
+            dataModels.clear();
+            instanceFacets = refresh.instanceFacets;
+            instanceFacetsOrig = new HashSet<String>(instanceFacets);
+            boolean immutable = facets.contains(FacetNames.IMMUTABLE);
+            facets = new HashSet<String>(instanceFacets);
+            facets.addAll(getDocumentType().getFacets());
+            if (immutable) {
+                facets.add(FacetNames.IMMUTABLE);
+            }
+            this.schemas = computeSchemas(getDocumentType(), instanceFacets);
+            schemasOrig = new HashSet<String>(this.schemas);
         }
-        this.schemas = computeSchemas(getDocumentType(), instanceFacets);
-        schemasOrig = new HashSet<String>(this.schemas);
-
         if ((refreshFlags & REFRESH_CONTENT) != 0) {
             DocumentPart[] parts = refresh.documentParts;
             if (parts != null) {
