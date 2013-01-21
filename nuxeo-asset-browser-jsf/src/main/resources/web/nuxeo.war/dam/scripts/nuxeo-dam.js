@@ -2,15 +2,24 @@ var nuxeo = nuxeo || {}
 
 nuxeo.dam = (function(m) {
 
-  m.selectDocument = function(event, docRef) {
+  m.canSelectDocument = function(event) {
     if (event && event.srcElement) {
       var ele = jQuery(event.srcElement)
-      if (ele.is("input") && ele.attr("type").match(/checkbox/i)) {
-        return
+      if (ele.is('input') && ele.attr('type').match(/checkbox/i)) {
+        return false
       }
     }
-    // trigger the a4j:jsFunction actually selecting the document
-    selectDocument(docRef)
+    return true
+  }
+
+  m.removeAllSelectedClass = function() {
+    jQuery('.bubbleBox.selected').removeClass('selected')
+  }
+
+  m.selectDocument = function(event, docRef) {
+    if (nuxeo.dam.canSelectDocument(event)) {
+      selectDocument(docRef)
+    }
   }
 
   return m

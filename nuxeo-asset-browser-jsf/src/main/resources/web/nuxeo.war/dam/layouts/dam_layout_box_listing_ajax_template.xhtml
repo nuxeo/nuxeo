@@ -18,18 +18,24 @@
     - formId: the surrounding form id
   </c:if>
 
-  <c:set var="onBoxClick" value="nuxeo.dam.selectDocument(event, '#{value.data.id}')" />
-  <c:set var="boxStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selected', '')}" />
-  <div class="bubbleBox #{boxStyleClass}" onclick="#{onBoxClick}">
-    <nxl:layoutColumn>
-      <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
-        <div class="#{layoutColumn.properties.columnStyleClass} #{divStyleClass}" dir="auto">
-          <nxl:layoutColumnWidget>
-            <nxl:widget widget="#{widget}" value="#{value}" />
-          </nxl:layoutColumnWidget>
-        </div>
-      </nxu:set>
-    </nxl:layoutColumn>
-  </div>
+
+  <a4j:outputPanel id="#{layout.id}_panel">
+    <a4j:support event="onclick" reRender="#{layout.id}_panel,nxw_damPanelRight_1_panel"
+      action="#{damActions.selectDocument(value.data)}"
+      onsubmit="if(!nuxeo.dam.canSelectDocument(event)) return false;"
+      onbeforedomupdate="nuxeo.dam.removeAllSelectedClass();" />
+    <c:set var="boxStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selected', '')}" />
+    <div class="bubbleBox #{boxStyleClass}">
+      <nxl:layoutColumn>
+        <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
+          <div class="#{layoutColumn.properties.columnStyleClass} #{divStyleClass}" dir="auto">
+            <nxl:layoutColumnWidget>
+              <nxl:widget widget="#{widget}" value="#{value}" />
+            </nxl:layoutColumnWidget>
+          </div>
+        </nxu:set>
+      </nxl:layoutColumn>
+    </div>
+  </a4j:outputPanel>
 
 </f:subview>

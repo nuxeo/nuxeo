@@ -70,6 +70,10 @@ public class DamActions implements Serializable {
         navigationContext.setCurrentDocument(selectedDocument);
     }
 
+    public void selectDocument(DocumentModel doc) throws ClientException {
+        navigationContext.setCurrentDocument(doc);
+    }
+
     public String getDamMainTab() {
         return MAIN_TABS_DAM;
     }
