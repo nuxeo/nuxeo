@@ -286,11 +286,16 @@ public class DamSearchActions implements Serializable {
     public String getPermanentLinkUrl() throws ClientException,
             UnsupportedEncodingException {
         String currentContentViewName = getCurrentContentViewName();
-        DocumentView docView = new DocumentViewImpl(
-                new DocumentLocationImpl(
-                        documentManager.getRepositoryName(),
-                        new PathRef(
-                                navigationContext.getCurrentDocument().getPathAsString())));
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        DocumentView docView;
+        if (currentDocument != null) {
+            docView = new DocumentViewImpl(new DocumentLocationImpl(
+                    documentManager.getRepositoryName(), new PathRef(
+                            currentDocument.getPathAsString())));
+        } else {
+            docView = new DocumentViewImpl(new DocumentLocationImpl(
+                    documentManager.getRepositoryName(), null));
+        }
         docView.setViewId("assets");
         docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
