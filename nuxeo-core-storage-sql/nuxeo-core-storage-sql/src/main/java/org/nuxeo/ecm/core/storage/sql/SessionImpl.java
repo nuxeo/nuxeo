@@ -330,7 +330,9 @@ public class SessionImpl implements Session, XAResource {
                 mapper.write(batch);
             }
             if (readAclsChanged) {
-                updateReadAcls();
+                synchronized (SessionImpl.class) {
+                    updateReadAcls();
+                }
             }
             log.debug("End of save");
         }
