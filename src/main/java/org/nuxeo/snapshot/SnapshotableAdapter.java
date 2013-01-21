@@ -129,12 +129,19 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             }
         }
 
+        boolean facetAdded = false;
         if (!doc.hasFacet(Snapshot.FACET)) {
             doc.addFacet(Snapshot.FACET);
+            facetAdded = true;
         }
 
         if (!doc.hasFacet(FacetNames.VERSIONABLE)) {
             doc.addFacet(FacetNames.VERSIONABLE);
+            facetAdded = true;
+        }
+
+        if (facetAdded) {
+            doc = doc.getCoreSession().saveDocument(doc);
         }
 
         if (!doc.hasSchema(SCHEMA)) {
