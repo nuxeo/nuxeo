@@ -62,11 +62,11 @@
       <cacheSize>1</cacheSize>
 
       <resultLayouts>
-        <layout name="dam_listing_ajax" title="label.dam.listing.title"
-          translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
         <layout name="dam_box_listing_ajax" title="label.dam.box.listing.title"
           translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
+        <layout name="dam_listing_ajax" title="label.dam.listing.title"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
       </resultLayouts>
 
