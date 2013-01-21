@@ -92,7 +92,7 @@
           <p>
             This widget displays the user tasks of the current route on
             the
-            current document.
+            current document. Duplicate of "summary_current_document_single_tasks" widget. 
           </p>
         </description>
         <categories>
@@ -107,7 +107,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/route/current_route_user_tasks_widget_template.xhtml
+        /widgets/summary/single_tasks_widget_template.xhtml
       </property>
     </widgetType>
 
