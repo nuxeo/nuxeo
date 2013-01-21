@@ -12,8 +12,8 @@ nuxeo.dam = (function(m) {
     return true
   }
 
-  m.removeAllSelectedClass = function() {
-    jQuery('.bubbleBox.selected').removeClass('selected')
+  m.removeAllSelectedItemClass = function() {
+    jQuery('.jsDamItem.selectedItem').removeClass('selectedItem')
   }
 
   m.selectDocument = function(event, docRef) {
