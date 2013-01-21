@@ -2237,6 +2237,16 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(version.hasFacet(FacetNames.IMMUTABLE));
         version.refresh();
         assertTrue(version.hasFacet(FacetNames.IMMUTABLE));
+
+        // check that REFRESH_STATE does not overwrite facets
+        // this is called by doc.isCheckedOut() for instance
+        doc = session.getDocument(doc.getRef());
+        doc.addFacet("Aged");
+        assertTrue(doc.hasFacet("Aged"));
+        assertTrue(doc.hasSchema("age"));
+        doc.refresh(DocumentModel.REFRESH_STATE, null);
+        assertTrue(doc.hasFacet("Aged"));
+        assertTrue(doc.hasSchema("age"));
     }
 
     @Test
