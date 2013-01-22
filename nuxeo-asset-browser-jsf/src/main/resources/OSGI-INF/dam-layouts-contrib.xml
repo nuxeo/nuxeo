@@ -86,12 +86,6 @@
       </properties>
     </widget>
 
-    <widget name="damAssetDetails" type="currentDocumentActionsWithForms">
-      <properties widgetMode="view">
-        <property name="category">DAM_ASSET_DETAILS</property>
-      </properties>
-    </widget>
-
     <widget name="damAssetTitle" type="dam_title">
       <labels>
         <label mode="any"></label>
@@ -101,6 +95,33 @@
         <field></field>
         <field>dc:description</field>
       </fields>
+    </widget>
+
+    <widget name="damAssetDamCommon" type="toggleableLayoutWithForms">
+      <labels>
+        <label mode="any">label.dam.common</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+      <properties widgetMode="any">
+        <property name="foldable">true</property>
+        <property name="initialLayoutName">dam_common</property>
+        <property name="useAjaxForm">true</property>
+      </properties>
+    </widget>
+
+    <widget name="damAssetDublincore" type="toggleableLayoutWithForms">
+      <labels>
+        <label mode="any">label.schema.dublincore</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+      <properties widgetMode="any">
+        <property name="foldable">true</property>
+        <property name="foldedByDefault">true</property>
+        <property name="initialLayoutName">dublincore</property>
+        <property name="useAjaxForm">true</property>
+      </properties>
     </widget>
 
     <widget name="damc_author" type="text">
@@ -166,38 +187,46 @@
       </properties>
     </action>
 
-    <action id="damAssetDetails" type="widget" order="100">
-      <category>DAM_PANEL_RIGHT</category>
-      <properties>
-        <property name="widgetName">damAssetDetails</property>
-      </properties>
-      <filter-id>hasFacetAsset</filter-id>
-    </action>
-
     <action id="damAssetTitle" type="widget" order="100">
-      <category>DAM_ASSET_DETAILS</category>
+      <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetTitle</property>
       </properties>
-      <filter-id>hasFacetAsset</filter-id>
+      <filter-id>hasAssetFacet</filter-id>
     </action>
 
     <action id="damPictureView" type="widget" order="200">
-      <category>DAM_ASSET_DETAILS</category>
+      <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">summary_picture_view</property>
       </properties>
       <filter-id>hasPictureFacet</filter-id>
-      <filter-id>hasFacetAsset</filter-id>
+      <filter-id>hasAssetFacet</filter-id>
     </action>
 
     <action id="damVideoView" type="widget" order="200">
-      <category>DAM_ASSET_DETAILS</category>
+      <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">summary_video_player</property>
       </properties>
       <filter-id>hasVideoFacet</filter-id>
-      <filter-id>hasFacetAsset</filter-id>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetDamCommon" type="widget" order="300">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetDamCommon</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetDublincore" type="widget" order="400">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetDublincore</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
     </action>
 
   </extension>
