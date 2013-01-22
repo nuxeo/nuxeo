@@ -74,9 +74,10 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
                 DataSourceHelper.getDataSourceJNDIName("foo"));
     }
 
-    protected static void checkDataSourceOk() throws Exception {
-        DataSource ds = DataSourceHelper.getDataSource("foo");
+    protected static void checkDataSourceOk(String name, boolean autocommit) throws Exception {
+        DataSource ds = DataSourceHelper.getDataSource(name);
         Connection conn = ds.getConnection();
+        assertEquals(autocommit, conn.getAutoCommit());
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("SELECT 123");
         assertNotNull(rs);
@@ -90,14 +91,16 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     public void testNonXANoTM() throws Exception {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/datasource-contrib.xml");
-        checkDataSourceOk();
+        checkDataSourceOk("foo", true);
+        checkDataSourceOk("alias", true);
     }
 
     @Test
     public void testNonXA() throws Exception {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/datasource-contrib.xml");
-        checkDataSourceOk();
+        checkDataSourceOk("foo", false);
+        checkDataSourceOk("alias", false);
     }
 
     @Test
@@ -122,7 +125,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
                 "OSGI-INF/xadatasource-contrib.xml");
         TransactionHelper.startTransaction();
         try {
-            checkDataSourceOk();
+            checkDataSourceOk("foo", false);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }

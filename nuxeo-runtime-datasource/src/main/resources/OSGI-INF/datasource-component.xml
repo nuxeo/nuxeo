@@ -77,6 +77,7 @@
 
   <extension-point name="datasources">
     <object class="org.nuxeo.runtime.datasource.DataSourceDescriptor" />
+    <object class="org.nuxeo.runtime.datasource.DataSourceLinkDescriptor" />
   </extension-point>
 
 </component>

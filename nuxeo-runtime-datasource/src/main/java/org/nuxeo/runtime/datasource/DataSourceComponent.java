@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.LinkRef;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
@@ -46,22 +47,24 @@ public class DataSourceComponent extends DefaultComponent {
 
     public static final String DATASOURCES_XP = "datasources";
 
-    public static final String ENV_CTX_NAME = "java:comp/env";
+    public static final String ENV_CTX_NAME = "java:comp/env/";
 
     protected final Map<String, DataSourceDescriptor> datasources = new HashMap<String, DataSourceDescriptor>();
 
+    protected final Map<String, DataSourceLinkDescriptor> links = new HashMap<String, DataSourceLinkDescriptor>();
     protected boolean started = false;
 
     @Override
     public void registerContribution(Object contrib, String extensionPoint,
             ComponentInstance component) throws Exception {
         if (DATASOURCES_XP.equals(extensionPoint)) {
-            if (contrib instanceof DataSourceDescriptor) {
-                addDataSource((DataSourceDescriptor) contrib);
-            } else {
-                log.error("Invalid datasource contribution: "
-                        + contrib.getClass().getName());
-            }
+        	if (contrib instanceof DataSourceDescriptor) {
+        		addDataSource((DataSourceDescriptor) contrib);
+        	} else if (contrib instanceof DataSourceLinkDescriptor) {
+        		addDataSourceLink((DataSourceLinkDescriptor) contrib);
+        	} else {
+        		log.error("Wrong datasource extension type " + contrib.getClass().getName());
+        	}
         } else {
             log.error("Ignoring unknown extension point: " + extensionPoint);
         }
@@ -71,20 +74,17 @@ public class DataSourceComponent extends DefaultComponent {
     public void unregisterContribution(Object contrib, String extensionPoint,
             ComponentInstance component) throws Exception {
         if (DATASOURCES_XP.equals(extensionPoint)) {
-            if (contrib instanceof DataSourceDescriptor) {
-                removeDataSource((DataSourceDescriptor) contrib);
-            } else {
-                log.error("Invalid datasource contribution: "
-                        + contrib.getClass().getName());
-            }
-        } else {
-            log.error("Ignoring unknown extension point: " + extensionPoint);
+        	if (contrib instanceof DataSourceDescriptor) {
+        		removeDataSource((DataSourceDescriptor) contrib);
+        	} else if (contrib instanceof DataSourceLinkDescriptor) {
+        		removeDataSourceLink((DataSourceLinkDescriptor) contrib);
+        	}
         }
     }
 
     @Override
     public int getApplicationStartedOrder() {
-        return 0;
+        return -1000;
     }
 
     @Override
@@ -93,11 +93,19 @@ public class DataSourceComponent extends DefaultComponent {
         for (DataSourceDescriptor datasourceDesc : datasources.values()) {
             bindDataSource(datasourceDesc);
         }
+        for (DataSourceLinkDescriptor linkDesc:links.values()) {
+        	bindDataSourceLink(linkDesc);
+        }
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         super.deactivate(context);
+        for (DataSourceLinkDescriptor desc : links.values()) {
+            log.warn(desc.name + " datasource link still referenced");
+            unbindDataSourceLink(desc);
+        }
+        links.clear();
         for (DataSourceDescriptor desc : datasources.values()) {
             log.warn(desc.name + " datasource still referenced");
             unbindDataSource(desc);
@@ -122,7 +130,7 @@ public class DataSourceComponent extends DefaultComponent {
         }
         log.info("Registering datasource: " + descr.name);
         try {
-            Name name = new CompositeName(ENV_CTX_NAME + "/" + descr.name);
+            Name name = new CompositeName(ENV_CTX_NAME + descr.name);
             Context ctx = new InitialContext();
             // bind intermediate names as subcontexts (jdbc/foo)
             for (int i = 0; i < name.size() - 1; i++) {
@@ -145,13 +153,63 @@ public class DataSourceComponent extends DefaultComponent {
         log.info("Unregistering datasource: " + descr.name);
         try {
             Context ctx = new InitialContext();
-            ctx.unbind(ENV_CTX_NAME + "/" + descr.name);
+            ctx.unbind(ENV_CTX_NAME + descr.name);
         } catch (NotContextException e) {
             log.warn(e);
         } catch (NoInitialContextException e) {
             ;
         } catch (NamingException e) {
             log.error("Cannot unbind datasource '" + descr.name + "' in JNDI",
+                    e);
+        }
+    }
+
+    protected void addDataSourceLink(DataSourceLinkDescriptor contrib) {
+        links.put(contrib.name, contrib);
+        bindDataSourceLink(contrib);
+    }
+
+    protected void removeDataSourceLink(DataSourceLinkDescriptor contrib) {
+        unbindDataSourceLink(contrib);
+        links.remove(contrib.name);
+    }
+
+    protected void bindDataSourceLink(DataSourceLinkDescriptor descr) {
+        if (!started) {
+            return;
+        }
+        log.info("Registering DataSourceLink: " + descr.name);
+        try {
+            Name name = new CompositeName(ENV_CTX_NAME + descr.name);
+            Context ctx = new InitialContext();
+            // bind intermediate names as subcontexts (jdbc/foo)
+            for (int i = 0; i < name.size() - 1; i++) {
+                try {
+                    ctx = (Context) ctx.lookup(name.get(i));
+                } catch (NamingException e) {
+                    ctx = ctx.createSubcontext(name.get(i));
+                }
+            }
+            ctx.bind(name.get(name.size() - 1), new LinkRef(ENV_CTX_NAME + descr.global));
+        } catch (NamingException e) {
+            log.error("Cannot bind DataSourceLink '" + descr.name + "' in JNDI", e);
+        }
+    }
+
+    protected void unbindDataSourceLink(DataSourceLinkDescriptor descr) {
+        if (!started) {
+            return;
+        }
+        log.info("Unregistering DataSourceLink: " + descr.name);
+        try {
+            Context ctx = new InitialContext();
+            ctx.unbind(ENV_CTX_NAME + descr.name);
+        } catch (NotContextException e) {
+            log.warn(e);
+        } catch (NoInitialContextException e) {
+            ;
+        } catch (NamingException e) {
+            log.error("Cannot unbind DataSourceLink '" + descr.name + "' in JNDI",
                     e);
         }
     }
