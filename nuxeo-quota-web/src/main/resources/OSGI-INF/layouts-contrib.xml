@@ -38,10 +38,12 @@
       <rows>
         <row>
           <widget>header_title_and_permlink</widget>
-          <widget>quotaInfo</widget>
         </row>
         <row>
           <widget>header_description</widget>
+        </row>
+        <row>
+          <widget>quotaInfo</widget>
         </row>
       </rows>
     </layout>

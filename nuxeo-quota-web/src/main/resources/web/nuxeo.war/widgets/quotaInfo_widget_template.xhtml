@@ -6,28 +6,25 @@
   id="#{widget.id}">
 
   <c:if test="#{currentQuotaDoc!=null}">
-
-  <nxu:set var="formatedSize" value="#{currentQuotaDoc.quotaInfo.totalSize}">
+  
+ <nxu:set var="maxFormatedSize" value="#{currentQuotaDoc.quotaInfo.maxQuota}">
+   <nxu:set var="formatedSize" value="#{currentQuotaDoc.quotaInfo.totalSize}">
+     <h:outputText value=" #{messages['label.quota.info.used']} "/>
      <h:outputText value="#{formatedSize.valueInUnit}">
        <f:convertNumber maxFractionDigits="2" />
      </h:outputText>
-     <h:outputText value=" #{messages[formatedSize.unit]} #{formatedSize.percent}"/>
-  </nxu:set>
-  
-  <nxu:set var="formatedTrashSize" value="#{currentQuotaDoc.quotaInfo.trashSize}">
-     <h:outputText value=" #{messages['label.quota.trashSize']}:#{formatedTrashSize.valueInUnit}">
+     <h:outputText value=" #{messages[formatedSize.unit]} "/>
+     
+     <c:if test="#{maxFormatedSize.value > 0}">
+      <h:outputText value="/#{maxFormatedSize.valueInUnit}">
        <f:convertNumber maxFractionDigits="2" />
-     </h:outputText>
-     <h:outputText value=" #{messages[formatedTrashSize.unit]} #{formatedTrashSize.percent}"/>
+      </h:outputText>
+      <h:outputText value=" #{messages[maxFormatedSize.unit]}"/>
+      <h:outputText value=" #{messages['label.quota.info.available']} "/>
+      <h:outputText value=" (#{formatedSize.percent})"/>
+     </c:if>
+   </nxu:set>
   </nxu:set>
-  
-  <nxu:set var="formatedVersionsSize" value="#{currentQuotaDoc.quotaInfo.sizeVersions}">
-     <h:outputText value=" #{messages['label.quota.versionsSize']}:#{formatedVersionsSize.valueInUnit}">
-       <f:convertNumber maxFractionDigits="2" />
-     </h:outputText>
-     <h:outputText value=" #{messages[formatedVersionsSize.unit]} #{formatedVersionsSize.percent}"/>
-  </nxu:set>
-
-  </c:if>
+ </c:if>
 
 </span>
