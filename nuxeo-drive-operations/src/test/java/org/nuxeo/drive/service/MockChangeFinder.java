@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.impl.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -126,12 +127,13 @@ public class MockChangeFinder implements FileSystemChangeFinder {
             for (DocumentModel doc : queryResult) {
                 String repositoryId = session.getRepositoryName();
                 String eventId = "documentChanged";
-                String docLifeCycleState = doc.getCurrentLifeCycleState();
                 long eventDate = ((Calendar) doc.getPropertyValue("dc:modified")).getTimeInMillis();
-                String docPath = doc.getPathAsString();
                 String docUuid = doc.getId();
-                docChanges.add(new FileSystemItemChange(repositoryId, eventId,
-                        docLifeCycleState, eventDate, docPath, docUuid));
+                FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
+                if (fsItem != null) {
+                    docChanges.add(new FileSystemItemChange(eventId, eventDate,
+                            repositoryId, docUuid, fsItem));
+                }
             }
             return docChanges;
         } catch (TooManyChangesException e) {

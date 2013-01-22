@@ -34,29 +34,61 @@ public class FileSystemItemChange implements Serializable {
 
     protected String eventId;
 
-    protected String docLifeCycleState;
-
     protected Long eventDate;
-
-    protected String docPath;
 
     protected String docUuid;
 
     protected FileSystemItem fileSystemItem;
 
+    protected String fileSystemItemId;
+
+    protected String fileSystemItemName;
+
     public FileSystemItemChange() {
         // Needed for JSON deserialization
     }
 
-    public FileSystemItemChange(String repositoryId, String eventId,
-            String docLifeCycleState, long eventDate, String docPath,
-            String docUuid) {
-        this.repositoryId = repositoryId;
+    public FileSystemItemChange(String eventId, long eventDate,
+            String repositoryId, String docUuid, String fileSystemItemId,
+            String fileSystemItemName) {
         this.eventId = eventId;
-        this.docLifeCycleState = docLifeCycleState;
         this.eventDate = eventDate;
-        this.docPath = docPath;
+
+        // To be deprecated once the client uses the new filesystem API
+        this.repositoryId = repositoryId;
         this.docUuid = docUuid;
+
+        // We store the fileSystemItemId for events that no longer have access
+        // to the full filesystem item description as is the case when a
+        // document is deleted
+        this.fileSystemItemId = fileSystemItemId;
+
+        // Just there to make debugging easier and tests more readable: the
+        // client should only need the fileSystemItemId.
+        this.fileSystemItemName = fileSystemItemName;
+    }
+
+    public FileSystemItemChange(String eventId, long eventDate,
+            String repositoryId, String docUuid, FileSystemItem fsItem) {
+        this(eventId, eventDate, repositoryId, docUuid, fsItem.getId(),
+                fsItem.getName());
+        setFileSystemItem(fsItem);
+    }
+
+    public String getFileSystemItemId() {
+        return fileSystemItemId;
+    }
+
+    public void setFileSystemItemId(String fileSystemItemId) {
+        this.fileSystemItemId = fileSystemItemId;
+    }
+
+    public String getFileSystemItemName() {
+        return fileSystemItemName;
+    }
+
+    public void setFileSystemItemName(String fileSystemItemName) {
+        this.fileSystemItemName = fileSystemItemName;
     }
 
     public String getRepositoryId() {
@@ -75,28 +107,12 @@ public class FileSystemItemChange implements Serializable {
         this.eventId = eventId;
     }
 
-    public String getDocLifeCycleState() {
-        return docLifeCycleState;
-    }
-
-    public void setDocLifeCycleState(String docLifeCycleState) {
-        this.docLifeCycleState = docLifeCycleState;
-    }
-
     public Long getEventDate() {
         return eventDate;
     }
 
     public void setEventDate(Long eventDate) {
         this.eventDate = eventDate;
-    }
-
-    public String getDocPath() {
-        return docPath;
-    }
-
-    public void setDocPath(String docPath) {
-        this.docPath = docPath;
     }
 
     public String getDocUuid() {
@@ -119,14 +135,12 @@ public class FileSystemItemChange implements Serializable {
     @Override
     public String toString() {
         if (fileSystemItem != null) {
-            return String.format(
-                    "%s(eventId=\"%s\", eventDate=%d, docPath=\"%s\", item=%s)",
-                    getClass().getSimpleName(), eventId, eventDate, docPath,
+            return String.format("%s(eventId=\"%s\", eventDate=%d, item=%s)",
+                    getClass().getSimpleName(), eventId, eventDate,
                     fileSystemItem);
         } else {
-            return String.format(
-                    "%s(eventId=\"%s\", eventDate=%d, docPath=\"%s\")",
-                    getClass().getSimpleName(), eventId, eventDate, docPath);
+            return String.format("%s(eventId=\"%s\", eventDate=%d)",
+                    getClass().getSimpleName(), eventId, eventDate);
         }
     }
 }

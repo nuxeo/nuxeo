@@ -147,14 +147,10 @@ public class TestAuditFileSystemChangeFinder {
         FileSystemItemChange change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
         assertEquals("documentCreated", change.getEventId());
-        assertEquals("project", change.getDocLifeCycleState());
-        assertEquals("/folder2/doc2", change.getDocPath());
         assertEquals(doc2.getId(), change.getDocUuid());
         change = changes.get(1);
         assertEquals("test", change.getRepositoryId());
         assertEquals("documentCreated", change.getEventId());
-        assertEquals("project", change.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", change.getDocPath());
         assertEquals(doc1.getId(), change.getDocUuid());
 
         // No changes since last successful sync
@@ -177,8 +173,6 @@ public class TestAuditFileSystemChangeFinder {
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
         assertEquals("documentModified", change.getEventId());
-        assertEquals("project", change.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", change.getDocPath());
         assertEquals(doc1.getId(), change.getDocUuid());
 
         // Delete a document with a lifecycle transition (trash)
@@ -191,10 +185,9 @@ public class TestAuditFileSystemChangeFinder {
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
         assertEquals("deleted", change.getEventId());
-        assertEquals("/folder1/doc1", change.getDocPath());
         assertEquals(doc1.getId(), change.getDocUuid());
         assertEquals("defaultFileSystemItemFactory/test/" + doc1.getId(),
-                change.getFileSystemItem().getId());
+                change.getFileSystemItemId());
 
         // Restore a deleted document and move a document in a newly
         // synchronized root
@@ -210,14 +203,10 @@ public class TestAuditFileSystemChangeFinder {
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
         assertEquals("documentMoved", change.getEventId());
-        assertEquals("project", change.getDocLifeCycleState());
-        assertEquals("/folder2/doc3", change.getDocPath());
         assertEquals(doc3.getId(), change.getDocUuid());
         change = changes.get(1);
         assertEquals("test", change.getRepositoryId());
         assertEquals("lifecycle_transition_event", change.getEventId());
-        assertEquals("project", change.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", change.getDocPath());
         assertEquals(doc1.getId(), change.getDocUuid());
 
         // Physical deletion without triggering the delete transition first
@@ -230,10 +219,9 @@ public class TestAuditFileSystemChangeFinder {
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
         assertEquals("deleted", change.getEventId());
-        assertEquals("/folder2/doc3", change.getDocPath());
         assertEquals(doc3.getId(), change.getDocUuid());
         assertEquals("defaultFileSystemItemFactory/test/" + doc3.getId(),
-                change.getFileSystemItem().getId());
+                change.getFileSystemItemId());
 
         // Too many changes
         session.followTransition(doc1.getRef(), "delete");
@@ -305,14 +293,12 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals("documentCreated", docChange.getEventId());
         // TODO: understand why the life cycle is not good
         // assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder2/doc2", docChange.getDocPath());
         assertEquals(doc2.getId(), docChange.getDocUuid());
         docChange = changes.get(1);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentCreated", docChange.getEventId());
         // TODO: understand why the life cycle is not good
         // assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", docChange.getDocPath());
         assertEquals(doc1.getId(), docChange.getDocUuid());
 
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());

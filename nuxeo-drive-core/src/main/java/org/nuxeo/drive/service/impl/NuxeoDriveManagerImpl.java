@@ -30,7 +30,6 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
@@ -40,7 +39,6 @@ import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -230,15 +228,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     List<FileSystemItemChange> changes = changeFinder.getFileSystemChanges(
                             session, rootsEntry.getValue().paths,
                             lastSuccessfulSync, syncDate, limit);
-                    if (!changes.isEmpty()) {
-                        // remove changes referring to documents
-                        // not adaptable as a FileSystemItem or not visible to
-                        // the active user due to permission restrictions
-                        allChanges.addAll(filterAndAdaptDocuments(session,
-                                changes, rootsEntry.getValue()));
-                    }
+                    allChanges.addAll(changes);
                 } catch (TooManyChangesException e) {
                     hasTooManyChanges = Boolean.TRUE;
+                    allChanges.clear();
                     break;
                 }
             }
@@ -297,50 +290,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 session.getRepositoryName(), paths, references);
         syncRoots.put(session.getRepositoryName(), repoSyncRoots);
         return syncRoots;
-    }
-
-    protected List<FileSystemItemChange> filterAndAdaptDocuments(
-            CoreSession session, List<FileSystemItemChange> docChanges,
-            SynchronizationRoots synchronizationRoots) throws ClientException {
-        List<FileSystemItemChange> filteredChanges = new ArrayList<FileSystemItemChange>();
-        for (FileSystemItemChange docChange : docChanges) {
-            if (docChange.getFileSystemItem() != null) {
-                // already adapted upstream (e.g. from the log entry data for
-                // deleted documents)
-                filteredChanges.add(docChange);
-            } else if (adaptDocument(docChange, session, synchronizationRoots)) {
-                filteredChanges.add(docChange);
-            }
-        }
-        return filteredChanges;
-    }
-
-    /**
-     * Map the backing document to a FileSystemItem using the adapters when
-     * possible and store the mapping in the FileSystemItemChange instance. If
-     * not possible (because of missing permissions for instance), skip the
-     * change.
-     */
-    protected boolean adaptDocument(FileSystemItemChange docChange,
-            CoreSession session, SynchronizationRoots synchronizationRoots)
-            throws ClientException {
-        IdRef ref = new IdRef(docChange.getDocUuid());
-        try {
-            DocumentModel doc = session.getDocument(ref);
-            // TODO: check the facet, last root change and list of roots to have
-            // a special handling for the roots.
-            FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
-            if (fsItem == null) {
-                return false;
-            }
-            docChange.setFileSystemItem(fsItem);
-            return true;
-        } catch (DocumentSecurityException e) {
-            // This event matches a document that is not visible by the
-            // current user, skip it.
-            // TODO: how to detect ACL removal to map those as
-            return false;
-        }
     }
 
     // TODO: make changeFinder overridable with an extension point and

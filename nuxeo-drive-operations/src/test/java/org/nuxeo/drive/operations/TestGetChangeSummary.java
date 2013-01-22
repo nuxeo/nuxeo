@@ -128,14 +128,10 @@ public class TestGetChangeSummary {
         FileSystemItemChange docChange = docChanges.get(0);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder2/doc2", docChange.getDocPath());
         assertEquals(doc2.getId(), docChange.getDocUuid());
         docChange = docChanges.get(1);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", docChange.getDocPath());
         assertEquals(doc1.getId(), docChange.getDocUuid());
         assertEquals(Boolean.FALSE, docChangeSummary.getHasTooManyChanges());
 
