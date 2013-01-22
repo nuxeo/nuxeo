@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -72,11 +71,7 @@ public class NuxeoDriveSetupIntegrationTests {
 
     @OperationMethod
     public Blob run() throws Exception {
-        if (!session.hasPermission(new PathRef("/"),
-                SecurityConstants.EVERYTHING)) {
-            throw new DocumentSecurityException(
-                    "Requires administrative permissions.");
-        }
+
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
 
         String[] userNamesArray = StringUtils.split(userNames, ",");
