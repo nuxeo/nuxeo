@@ -19,7 +19,6 @@ package org.nuxeo.drive.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -108,14 +107,14 @@ public class TestAuditFileSystemChangeFinder {
     public void testFindChanges() throws Exception {
         TransactionHelper.startTransaction();
         // No sync roots
-        List<FileSystemItemChange> changes = getDocumentChanges();
+        List<FileSystemItemChange> changes = getChanges();
         assertNotNull(changes);
         assertTrue(changes.isEmpty());
 
         // Sync roots but no changes
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal().getName(), folder1, session);
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal().getName(), folder2, session);
-        changes = getDocumentChanges();
+        changes = getChanges();
         assertTrue(changes.isEmpty());
 
         // Create 3 documents, only 2 in sync roots
@@ -138,7 +137,7 @@ public class TestAuditFileSystemChangeFinder {
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
-        changes = getDocumentChanges();
+        changes = getChanges();
         assertEquals(2, changes.size());
         FileSystemItemChange change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
@@ -150,7 +149,7 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals(doc1.getId(), change.getDocUuid());
 
         // No changes since last successful sync
-        changes = getDocumentChanges();
+        changes = getChanges();
         assertTrue(changes.isEmpty());
 
         // Update both synchronized documents and unsynchronize a root
@@ -163,8 +162,8 @@ public class TestAuditFileSystemChangeFinder {
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
-        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal().getName(), folder2, session);
-        changes = getDocumentChanges();
+        nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal().getName(), folder2, session);
+        changes = getChanges();
         assertEquals(1, changes.size());
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
@@ -176,7 +175,7 @@ public class TestAuditFileSystemChangeFinder {
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
-        changes = getDocumentChanges();
+        changes = getChanges();
         assertEquals(1, changes.size());
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
@@ -194,7 +193,7 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
 
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal().getName(), folder2, session);
-        changes = getDocumentChanges();
+        changes = getChanges();
         assertEquals(2, changes.size());
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
@@ -210,7 +209,7 @@ public class TestAuditFileSystemChangeFinder {
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
-        changes = getDocumentChanges();
+        changes = getChanges();
         assertEquals(1, changes.size());
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
@@ -227,12 +226,8 @@ public class TestAuditFileSystemChangeFinder {
 
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "1");
-        try {
-            getDocumentChanges();
-            fail("An exception of type TooManyDocumentChangesException should have been thrown since the document change limit is exceeded.");
-        } catch (TooManyChangesException e) {
-            // Expected
-        }
+        FileSystemChangeSummary changeSummary = getChangeSummary(session.getPrincipal());
+        assertEquals(true, changeSummary.getHasTooManyChanges());
         TransactionHelper.commitOrRollbackTransaction();
     }
 
@@ -422,12 +417,12 @@ public class TestAuditFileSystemChangeFinder {
         // deletion event
         changeSummary = getChangeSummary(admin);
         changes = changeSummary.getFileSystemChanges();
-        //assertEquals(1, changes.size());
-        //fsItemChange = changes.get(0);
-        //assertEquals("deleted", fsItemChange.getEventId());
-        //assertEquals(
-        //        "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
-        //        fsItemChange.getFileSystemItem().getId());
+//        assertEquals(1, changes.size());
+//        fsItemChange = changes.get(0);
+//        assertEquals("deleted", fsItemChange.getEventId());
+//        assertEquals(
+//                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
+//                fsItemChange.getFileSystemItem().getId());
 
         // TODO: check root unregistration here
     }
@@ -437,7 +432,7 @@ public class TestAuditFileSystemChangeFinder {
      * updates the {@link #lastSuccessfulSync} date.
      * @throws ClientException
      */
-    protected List<FileSystemItemChange> getDocumentChanges()
+    protected List<FileSystemItemChange> getChanges()
             throws InterruptedException, ClientException {
         return getChangeSummary(session.getPrincipal()).getFileSystemChanges();
     }
