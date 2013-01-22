@@ -79,6 +79,8 @@ public class DamCodec extends DocumentPathCodec {
             items.add(getPrefix());
             items.add(docLoc.getServerName());
             PathRef docRef = docLoc.getPathRef();
+
+            // TODO make it generic in DocumentPathCodec (or other codec) to create URLs even without a document
             if (docRef != null) {
                 // this is a path, get rid of leading slash
                 String path = docRef.toString();
