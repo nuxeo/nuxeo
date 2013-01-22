@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
@@ -56,15 +55,13 @@ public class DamActions implements Serializable {
     @In(create = true)
     protected transient WebActions webActions;
 
-    protected String selectedDocumentId;
-
     public String getSelectedDocumentId() {
-        return selectedDocumentId;
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return currentDocument != null ? currentDocument.getId() : null;
     }
 
     public void setSelectedDocumentId(String selectedDocumentId)
             throws ClientException {
-        this.selectedDocumentId = selectedDocumentId;
         DocumentModel selectedDocument = documentManager.getDocument(new IdRef(
                 selectedDocumentId));
         navigationContext.setCurrentDocument(selectedDocument);

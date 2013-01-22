@@ -216,18 +216,15 @@ public class DamSearchActions implements Serializable {
     @SuppressWarnings("unchecked")
     public void setFilterValues(String filterValues) throws ClientException,
             JSONException, UnsupportedEncodingException {
-        if (StringUtils.isBlank(filterValues)) {
-            updateCurrentDocument();
-            return;
-        }
-
         ContentView contentView = contentViewActions.getContentViewWithProvider(
                 getCurrentContentViewName(), null, null, null, null);
+        if (!StringUtils.isBlank(filterValues)) {
         DocumentModel searchDocumentModel = contentView.getSearchDocumentModel();
-        String decodedValues = decodeValues(filterValues);
-        searchDocumentModel = JSONMetadataHelper.setPropertiesFromJson(
-                searchDocumentModel, decodedValues);
-        contentView.setSearchDocumentModel(searchDocumentModel);
+            String decodedValues = decodeValues(filterValues);
+            searchDocumentModel = JSONMetadataHelper.setPropertiesFromJson(
+                    searchDocumentModel, decodedValues);
+            contentView.setSearchDocumentModel(searchDocumentModel);
+        }
 
         if (!StringUtils.isBlank(resultLayoutName)) {
             contentView.setCurrentResultLayout(resultLayoutName);
