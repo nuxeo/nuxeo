@@ -90,8 +90,8 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         String transition;
         String targetState;
         if (DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
-            if (!event.getContext().getProperties().get(
-                    CoreEventConstants.RESET_LIFECYCLE).equals(Boolean.TRUE)) {
+            if (!Boolean.TRUE.equals(event.getContext().getProperties().get(
+                    CoreEventConstants.RESET_LIFECYCLE))) {
                 return;
             }
             try {
