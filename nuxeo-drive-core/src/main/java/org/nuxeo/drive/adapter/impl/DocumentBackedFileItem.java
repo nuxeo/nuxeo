@@ -185,7 +185,8 @@ public class DocumentBackedFileItem extends
     }
 
     protected String getFileName(DocumentModel doc) throws ClientException {
-        return getBlob(doc).getFilename();
+        String filename = getBlob(doc).getFilename();
+        return filename != null ? filename : doc.getTitle();
     }
 
     protected void updateDocTitleIfNeeded(DocumentModel doc, String name)

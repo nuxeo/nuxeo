@@ -183,22 +183,16 @@ public class TestGetChangeSummaryMultiRepo {
         FileSystemItemChange docChange = docChanges.get(0);
         assertEquals("other", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder3/doc3", docChange.getDocPath());
         assertEquals(doc3.getId(), docChange.getDocUuid());
 
         docChange = docChanges.get(1);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder2/doc2", docChange.getDocPath());
         assertEquals(doc2.getId(), docChange.getDocUuid());
 
         docChange = docChanges.get(2);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
-        assertEquals("project", docChange.getDocLifeCycleState());
-        assertEquals("/folder1/doc1", docChange.getDocPath());
         assertEquals(doc1.getId(), docChange.getDocUuid());
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 

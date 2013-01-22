@@ -114,7 +114,9 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             extendedInfos.put("impactedUserName",
                     logger.newExtendedInfo(impactedUserName));
         }
-        extendedInfos.put("fileSystemItem", logger.newExtendedInfo(fsItem));
+        // We do not serialize the whole object as it's too big to fit in a StringInfo column and
+        extendedInfos.put("fileSystemItemId", logger.newExtendedInfo(fsItem.getId()));
+        extendedInfos.put("fileSystemItemName", logger.newExtendedInfo(fsItem.getName()));
         entry.setExtendedInfos(extendedInfos);
         logger.addLogEntries(Collections.singletonList(entry));
     }

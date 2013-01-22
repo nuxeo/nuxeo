@@ -28,9 +28,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
+import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -78,25 +83,59 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     getJPADateClause(lastSuccessfulSyncDate, syncDate));
             log.debug("Querying audit logs for document changes: " + auditQuery);
 
-            List<LogEntry> entries = auditService.nativeQueryLogs(auditQuery, 1, limit);
+            List<LogEntry> entries = auditService.nativeQueryLogs(auditQuery,
+                    1, limit);
             if (entries.size() >= limit) {
                 throw new TooManyChangesException(
                         "Too many changes found in the audit logs.");
             }
-            for (LogEntry entry: entries) {
-                ExtendedInfo impactedUserInfo = entry.getExtendedInfos().get("impactedUserName");
-                if (impactedUserInfo != null && !principalName.equals(impactedUserInfo.getValue(String.class))) {
+            for (LogEntry entry : entries) {
+                ExtendedInfo impactedUserInfo = entry.getExtendedInfos().get(
+                        "impactedUserName");
+                if (impactedUserInfo != null
+                        && !principalName.equals(impactedUserInfo.getValue(String.class))) {
                     // This change does not impact the current user, skip.
                     continue;
                 }
-                FileSystemItemChange change = new FileSystemItemChange(entry.getRepositoryId(), entry.getEventId(),
-                        entry.getDocLifeCycle(), entry.getEventDate().getTime(), entry.getDocPath(), entry.getDocUUID());
-                ExtendedInfo fsItemInfo = entry.getExtendedInfos().get(
-                        "fileSystemItem");
-                if (fsItemInfo != null) {
-                    change.setFileSystemItem(fsItemInfo.getValue(FileSystemItem.class));
+                ExtendedInfo fsIdInfo = entry.getExtendedInfos().get(
+                        "fileSystemItemId");
+                if (fsIdInfo != null) {
+                    // This document has been deleted and we just know the
+                    // fileSystem Id and Name
+                    String fsId = fsIdInfo.getValue(String.class);
+                    String fsName = entry.getExtendedInfos().get(
+                            "fileSystemItemName").getValue(String.class);
+                    FileSystemItemChange change = new FileSystemItemChange(
+                            entry.getEventId(), entry.getEventDate().getTime(),
+                            entry.getRepositoryId(), entry.getDocUUID(), fsId,
+                            fsName);
+                    changes.add(change);
+                } else {
+                    DocumentRef docRef = new IdRef(entry.getDocUUID());
+                    if (!session.exists(docRef)) {
+                        // deleted documents are mapped to deleted file
+                        // system items in a separate event: no need to try
+                        // to propagate this event.
+                        // TODO: find a consistent way to map ACL removals as
+                        // filesystem deletion change
+                        continue;
+                    }
+                    DocumentModel doc = session.getDocument(docRef);
+                    // TODO: check the facet, last root change and list of roots
+                    // to have
+                    // a special handling for the roots.
+                    FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
+                    if (fsItem != null) {
+                        FileSystemItemChange change = new FileSystemItemChange(
+                                entry.getEventId(),
+                                entry.getEventDate().getTime(),
+                                entry.getRepositoryId(), entry.getDocUUID(),
+                                fsItem);
+                        changes.add(change);
+                    }
+                    // non-adaptable documents are ignored
                 }
-                changes.add(change);
+
             }
         }
         return changes;
@@ -121,6 +160,34 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return String.format("log.eventDate >= '%s' and log.eventDate < '%s'",
                 sdf.format(new Date(lastSuccessfulSyncDate)),
                 sdf.format(new Date(syncDate)));
+    }
+
+    /**
+     * Map the backing document to a FileSystemItem using the adapters when
+     * possible and store the mapping in the FileSystemItemChange instance. If
+     * not possible (because of missing permissions for instance), skip the
+     * change.
+     */
+    protected boolean adaptDocument(FileSystemItemChange change,
+            CoreSession session, SynchronizationRoots synchronizationRoots)
+            throws ClientException {
+        IdRef ref = new IdRef(change.getDocUuid());
+        try {
+            DocumentModel doc = session.getDocument(ref);
+            // TODO: check the facet, last root change and list of roots to have
+            // a special handling for the roots.
+            FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
+            if (fsItem == null) {
+                return false;
+            }
+            change.setFileSystemItem(fsItem);
+            return true;
+        } catch (DocumentSecurityException e) {
+            // This event matches a document that is not visible by the
+            // current user, skip it.
+            // TODO: how to detect ACL removal to map those as
+            return false;
+        }
     }
 
 }
