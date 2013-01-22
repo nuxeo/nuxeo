@@ -223,7 +223,7 @@
     <action id="damAssetViewDamCommon" type="widget" order="300">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
-        <property name="widgetName">damAssetDamCommon</property>
+        <property name="widgetName">damAssetViewDamCommon</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
@@ -231,7 +231,7 @@
     <action id="damAssetViewDublincore" type="widget" order="400">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
-        <property name="widgetName">damAssetDublincore</property>
+        <property name="widgetName">damAssetViewDublincore</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
