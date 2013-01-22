@@ -10,8 +10,6 @@
 
     <operation
       class="org.nuxeo.template.automation.RenderWithTemplateOperation" />
-    <operation
-      class="org.nuxeo.template.automation.ConvertBlob" />
   </extension>
   
 </component>

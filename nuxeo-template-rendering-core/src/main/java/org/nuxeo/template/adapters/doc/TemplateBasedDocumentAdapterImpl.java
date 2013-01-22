@@ -24,6 +24,7 @@ import java.util.List;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.operations.blob.ConvertBlob;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,8 +40,6 @@ import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
-import org.nuxeo.template.automation.ConvertBlob;
-import org.nuxeo.template.processors.convert.ConvertHelper;
 
 /**
  * Default implementation of {@link TemplateBasedDocument} adapter. This adapter
@@ -56,8 +55,6 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
     private static final long serialVersionUID = 1L;
 
     public static final String TEMPLATEBASED_FACET = "TemplateBased";
-
-    protected ConvertHelper convertHelper = new ConvertHelper();
 
     protected final TemplateBindings bindings;
 
