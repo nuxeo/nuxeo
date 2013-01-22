@@ -10,9 +10,15 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="dam_common" prefix="damc" src="schemas/dam_common.xsd" />
     <schema name="ip_rights" prefix="ipr" src="schemas/ip_rights.xsd"/>
+    <schema name="dam_search" prefix="dams" src="schemas/dam_search.xsd" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <doctype name="DamSearch" extends="FacetedSearch">
+      <schema name="dam_search" />
+      <facet name="HiddenInFacetedSearch" />
+    </doctype>
 
     <facet name="Asset">
       <schema name="dam_common"/>

@@ -25,7 +25,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -42,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.faceted.search.api.util.JSONMetadataExporter;
@@ -98,6 +101,8 @@ public class DamSearchActions implements Serializable {
 
     protected List<String> contentViewNames;
 
+    protected Set<ContentViewHeader> contentViewHeaders;
+
     protected String currentContentViewName;
 
     protected String offset;
@@ -127,6 +132,21 @@ public class DamSearchActions implements Serializable {
                     contentViewService.getContentViewNames(DAM_FLAG));
         }
         return contentViewNames;
+    }
+
+    public Set<ContentViewHeader> getContentViewHeaders()
+            throws ClientException {
+        if (contentViewHeaders == null) {
+            contentViewHeaders = new HashSet<ContentViewHeader>();
+            ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
+            for (String name : getContentViewNames()) {
+                ContentViewHeader header = contentViewService.getContentViewHeader(name);
+                if (header != null) {
+                    contentViewHeaders.add(header);
+                }
+            }
+        }
+        return contentViewHeaders;
     }
 
     public void clearSearch() throws ClientException {

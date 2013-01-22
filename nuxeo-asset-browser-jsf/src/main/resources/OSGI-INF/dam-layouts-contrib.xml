@@ -159,21 +159,28 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="damSearchSelectors" type="widget" order="100">
+    <action id="damSearchesSelector" type="widget" order="100">
       <category>DAM_PANEL_LEFT</category>
       <properties>
-        <property name="widgetName">damSearchSelectors</property>
+        <property name="widgetName">damSearchesSelector</property>
       </properties>
     </action>
 
-    <action id="damSearchFilters" type="widget" order="200">
+    <action id="damSearchActionsTop" type="widget" order="200">
+      <category>DAM_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">damSearchActions</property>
+      </properties>
+    </action>
+
+    <action id="damSearchFilters" type="widget" order="300">
       <category>DAM_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">damSearchFilters</property>
       </properties>
     </action>
 
-    <action id="damSearchActions" type="widget" order="300">
+    <action id="damSearchActionsBottom" type="widget" order="400">
       <category>DAM_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">damSearchActions</property>

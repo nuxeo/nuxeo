@@ -2,27 +2,28 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <nxu:set var="displaySelector"
-    value="#{facetedSearchActions.contentViewNames.size > 1}">
+    value="#{damSearchActions.contentViewNames.size > 1}">
     <c:if test="${displaySelector}">
 
-      <p><h:outputText value="#{messages['label.faceted.searches']}" /></p>
       <h:selectOneMenu
-        value="#{facetedSearchActions.currentContentViewName}"
-        id="facetedSearchSelector" styleClass="langSelect"
-        onchange="Element.next(this).firstChild.click();">
+        value="#{damSearchActions.currentContentViewName}"
+        id="damSearchSelector" styleClass="langSelect">
+        <a4j:support event="onchange"
+          actionListener="#{damSearchActions.refreshAndRewind()}"
+          reRender="nxw_damPanelLeft_1_panel,nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel"
+          eventsQueue="damSearchQueue" />
         <c:forEach var="contentViewHeader"
-          items="#{facetedSearchActions.contentViewHeaders}"
+          items="#{damSearchActions.contentViewHeaders}"
           varStatus="contentViewListStatus">
           <f:selectItem itemValue="#{contentViewHeader.name}"
             itemLabel="#{nxu:test(contentViewHeader.translateTitle,
             messages[contentViewHeader.title], contentViewHeader.title)}" />
         </c:forEach>
       </h:selectOneMenu>
-
-      <div style="display: none;"><h:commandButton value="submit" /></div>
 
     </c:if>
   </nxu:set>
