@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * <li>Delete</li>
  * <li>Rename</li>
  * <li>Move</li>
- * <li>Copy</li>
  * </ul>
  *
  * @author Antoine Taillefer

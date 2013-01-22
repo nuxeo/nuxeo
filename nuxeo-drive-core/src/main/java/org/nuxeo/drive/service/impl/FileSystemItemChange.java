@@ -22,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.FileSystemItem;
 
 /**
- * Representation of a document change.
+ * Representation of a file system item change.
  *
  * @author Antoine Taillefer
  */
