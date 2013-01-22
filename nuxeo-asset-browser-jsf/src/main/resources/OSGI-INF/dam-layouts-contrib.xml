@@ -2,6 +2,40 @@
 <component name="org.nuxeo.dam.layouts">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+    <widgetType name="dam_title">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Title</title>
+        <description>
+          <p>
+            This widget type displays the title of a document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the title
+              </li>
+              <li>
+                second field maps the label used as the tooltip of the
+                document title
+              </li>
+            </ul>
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/title_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
     <widget name="damPanelLeft" type="currentDocumentActionsWithForms">
@@ -56,6 +90,17 @@
       <properties widgetMode="view">
         <property name="category">DAM_ASSET_DETAILS</property>
       </properties>
+    </widget>
+
+    <widget name="damAssetTitle" type="dam_title">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field></field>
+        <field>dc:description</field>
+      </fields>
     </widget>
 
     <widget name="damc_author" type="text">
@@ -126,28 +171,45 @@
       <properties>
         <property name="widgetName">damAssetDetails</property>
       </properties>
+      <filter-id>hasFacetAsset</filter-id>
     </action>
 
-    <action id="damPictureView" type="widget" order="100">
+    <action id="damAssetTitle" type="widget" order="100">
+      <category>DAM_ASSET_DETAILS</category>
+      <properties>
+        <property name="widgetName">damAssetTitle</property>
+      </properties>
+      <filter-id>hasFacetAsset</filter-id>
+    </action>
+
+    <action id="damPictureView" type="widget" order="200">
       <category>DAM_ASSET_DETAILS</category>
       <properties>
         <property name="widgetName">summary_picture_view</property>
       </properties>
       <filter-id>hasPictureFacet</filter-id>
+      <filter-id>hasFacetAsset</filter-id>
     </action>
 
-    <action id="damVideoView" type="widget" order="100">
+    <action id="damVideoView" type="widget" order="200">
       <category>DAM_ASSET_DETAILS</category>
       <properties>
         <property name="widgetName">summary_video_player</property>
       </properties>
       <filter-id>hasVideoFacet</filter-id>
+      <filter-id>hasFacetAsset</filter-id>
     </action>
 
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
+
+    <filter id="hasAssetFacet">
+      <rule grant="true">
+        <facet>Asset</facet>
+      </rule>
+    </filter>
 
     <filter id="hasVideoFacet">
       <rule grant="true">
