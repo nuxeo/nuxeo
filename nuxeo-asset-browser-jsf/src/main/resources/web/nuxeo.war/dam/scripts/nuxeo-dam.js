@@ -14,8 +14,8 @@ nuxeo.dam = (function(m) {
   }
 
   m.canSelectDocument = function(event) {
-    if (event && event.srcElement) {
-      var ele = jQuery(event.srcElement)
+    if (event && event.target) {
+      var ele = jQuery(event.target)
       if (ele.is('input') && ele.attr('type').match(/checkbox/i)) {
         return false
       }
@@ -23,9 +23,9 @@ nuxeo.dam = (function(m) {
     return true
   }
 
-  m.afterDocumentSelected = function(event) {
+  m.afterDocumentSelected = function(data) {
     removeAllSelectedItemClass()
-    jQuery(event.currentTarget).addClass('selectedItem');
+    jQuery("[data-docref='" + data + "']").addClass('selectedItem')
   }
 
   return m

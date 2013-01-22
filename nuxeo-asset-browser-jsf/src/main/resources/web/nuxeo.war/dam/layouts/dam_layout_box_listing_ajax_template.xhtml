@@ -20,7 +20,7 @@
 
 
   <c:set var="boxSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
-  <div class="bubbleBox jsDamItem #{boxSelectedStyleClass}"
+  <div data-docref="#{value.data.id}" class="bubbleBox jsDamItem #{boxSelectedStyleClass}"
     onclick="nuxeo.dam.selectDocument(event, '#{value.data.id}')">
     <nxl:layoutColumn>
       <nxu:set var="divStyleClass" value="#{nxu:test(layoutColumn.properties.isBoxTitle, 'bubbleHeader', '')}">
