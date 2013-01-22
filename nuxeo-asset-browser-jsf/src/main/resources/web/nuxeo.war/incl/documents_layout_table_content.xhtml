@@ -44,6 +44,18 @@
 
   <c:choose>
 
+    <!-- TODO find a way to not display a table in the default template or in content_view.xhtml -->
+    <c:when test="#{fn:contains(layoutName, 'box')}">
+      <c:forEach var="row" items="#{documents.rows}"
+        varStatus="layoutListingStatus">
+        <c:set var="showListingHeader"
+          value="#{layoutListingStatus.index == 0}" />
+        <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
+          selectedColumns="#{selectedResultLayoutColumns}"
+          template="#{layoutTemplate}" />
+      </c:forEach>
+    </c:when>
+
     <c:when test="#{!fn:endsWith(layoutName, '_2_columns')}">
       <table class="dataOutput">
         <c:forEach var="row" items="#{documents.rows}"
