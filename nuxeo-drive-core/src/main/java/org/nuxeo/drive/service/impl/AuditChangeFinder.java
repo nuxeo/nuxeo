@@ -61,29 +61,51 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
-        // Find changes from the log under active roots
-        if (!activeRoots.paths.isEmpty()) {
+        // Find changes from the log under active roots or events that are
+        // linked to the unregistration or deletion of formerly synchronized
+        // roots
+        if (!activeRoots.paths.isEmpty() || !lastActiveRootRefs.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
             StringBuilder auditQuerySb = new StringBuilder();
-            auditQuerySb.append("log.repositoryId = '%s' and ");
+            auditQuerySb.append("log.repositoryId = '");
+            auditQuerySb.append(session.getRepositoryName());
+            auditQuerySb.append("' and ");
             auditQuerySb.append("(");
-            auditQuerySb.append("log.category = 'eventDocumentCategory' and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved') ");
-            auditQuerySb.append("or ");
-            auditQuerySb.append("log.category = 'eventLifeCycleCategory' and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");
-            auditQuerySb.append("or ");
-            auditQuerySb.append("log.category = '%s'");
-            auditQuerySb.append(") ");
-            auditQuerySb.append("and (%s) ");
-            auditQuerySb.append("and (%s) ");
-            auditQuerySb.append("order by log.repositoryId asc, log.eventDate desc");
+            if (!activeRoots.paths.isEmpty()) {
+                // detect changes under the currently active roots for the
+                // current user
+                auditQuerySb.append("(");
+                auditQuerySb.append("log.category = 'eventDocumentCategory'");
+                auditQuerySb.append(" and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved')");
+                auditQuerySb.append(" or ");
+                auditQuerySb.append("log.category = 'eventLifeCycleCategory'");
+                auditQuerySb.append(" and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");
+                auditQuerySb.append(" or ");
+                auditQuerySb.append("log.category = '");
+                auditQuerySb.append(NuxeoDriveEvents.EVENT_CATEGORY);
+                auditQuerySb.append("'");
+                auditQuerySb.append(") and (");
+                auditQuerySb.append(getCurrentRootFilteringClause(activeRoots.paths));
+                auditQuerySb.append(")");
+            }
+            if (!activeRoots.paths.isEmpty() && !lastActiveRootRefs.isEmpty()) {
+                auditQuerySb.append("or ");
+            }
+            if (!lastActiveRootRefs.isEmpty()) {
+                // detect root unregistrition changes for the roots previously
+                // seen by the current user
+                auditQuerySb.append("log.category = '");
+                auditQuerySb.append(NuxeoDriveEvents.EVENT_CATEGORY);
+                auditQuerySb.append("' and ");
+                auditQuerySb.append(getLastRootFilteringClause(lastActiveRootRefs));
+            }
+            auditQuerySb.append(") and (");
+            auditQuerySb.append(getJPADateClause(lastSuccessfulSyncDate,
+                    syncDate));
+            auditQuerySb.append(") order by log.repositoryId asc, log.eventDate desc");
 
-            String repositoryName = session.getRepositoryName();
-            String auditQuery = String.format(auditQuerySb.toString(),
-                    repositoryName, NuxeoDriveEvents.EVENT_CATEGORY,
-                    getRootPathClause(activeRoots.paths),
-                    getJPADateClause(lastSuccessfulSyncDate, syncDate));
+            String auditQuery = auditQuerySb.toString();
             log.debug("Querying audit logs for document changes: " + auditQuery);
-
             List<LogEntry> entries = auditService.nativeQueryLogs(auditQuery,
                     1, limit);
             if (entries.size() >= limit) {
@@ -123,8 +145,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     }
                     DocumentModel doc = session.getDocument(docRef);
                     // TODO: check the facet, last root change and list of roots
-                    // to have
-                    // a special handling for the roots.
+                    // to have a special handling for the roots.
                     FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
                     if (fsItem != null) {
                         FileSystemItemChange change = new FileSystemItemChange(
@@ -136,13 +157,12 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     }
                     // non-adaptable documents are ignored
                 }
-
             }
         }
         return changes;
     }
 
-    protected String getRootPathClause(Set<String> rootPaths) {
+    protected String getCurrentRootFilteringClause(Set<String> rootPaths) {
         StringBuilder rootPathClause = new StringBuilder();
         for (String rootPath : rootPaths) {
             if (rootPathClause.length() > 0) {
@@ -150,6 +170,20 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             }
             rootPathClause.append(String.format("log.docPath like '%s%%'",
                     rootPath));
+        }
+        return rootPathClause.toString();
+    }
+
+    protected String getLastRootFilteringClause(Set<IdRef> lastActiveRootRefs) {
+        StringBuilder rootPathClause = new StringBuilder();
+        if (!lastActiveRootRefs.isEmpty()) {
+            rootPathClause.append("log.docUUID in (");
+            for (IdRef ref : lastActiveRootRefs) {
+                rootPathClause.append("'");
+                rootPathClause.append(ref.toString());
+                rootPathClause.append("'");
+            }
+            rootPathClause.append(")");
         }
         return rootPathClause.toString();
     }

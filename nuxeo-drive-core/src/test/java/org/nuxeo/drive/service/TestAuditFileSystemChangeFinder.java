@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -377,7 +378,7 @@ public class TestAuditFileSystemChangeFinder {
         changeSummary = getChangeSummary(admin);
         assertNotNull(changeSummary);
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+        assertFalse(changeSummary.getHasTooManyChanges());
 
         // Register a new sync root
         nuxeoDriveManager.registerSynchronizationRoot(admin.getName(), folder1,
@@ -390,6 +391,7 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals(1, activeRootRefs.size());
         assertEquals(folder1.getRef(), activeRootRefs.iterator().next());
 
+        // The new sync root is detected in the change summary
         changeSummary = getChangeSummary(admin);
         assertNotNull(changeSummary);
 
@@ -403,10 +405,51 @@ public class TestAuditFileSystemChangeFinder {
                 "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
                 fsItemChange.getFileSystemItem().getId());
 
+        // Check that root unregistration is detected as a deletion
+        nuxeoDriveManager.unregisterSynchronizationRoot(admin.getName(), folder1,
+                session);
+        commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+
+        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+        assertNotNull(activeRootRefs);
+        assertTrue(activeRootRefs.isEmpty());
+        changeSummary = getChangeSummary(admin);
+        changes = changeSummary.getFileSystemChanges();
+        assertEquals(1, changes.size());
+        fsItemChange = changes.get(0);
+        assertEquals("deleted", fsItemChange.getEventId());
+        assertEquals(
+                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
+                fsItemChange.getFileSystemItemId());
+
+        // Register back the root, it's activity is again detected by the client
+        nuxeoDriveManager.registerSynchronizationRoot(admin.getName(), folder1,
+                session);
+        commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+        assertNotNull(activeRootRefs);
+        assertEquals(activeRootRefs.size(), 1);
+
+        changeSummary = getChangeSummary(admin);
+        changes = changeSummary.getFileSystemChanges();
+        assertEquals(1, changes.size());
+        fsItemChange = changes.get(0);
+        // TODO: this should be detected has an filesystem item
+        // creation rather than modification
+        assertEquals("documentModified", fsItemChange.getEventId());
+        assertEquals(
+                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
+                fsItemChange.getFileSystemItem().getId());
+
         // Test deletion of a root
         session.followTransition(folder1.getRef(), "delete");
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+        assertNotNull(activeRootRefs);
+        assertTrue(activeRootRefs.isEmpty());
 
         // The root is no longer active
         activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
@@ -417,14 +460,41 @@ public class TestAuditFileSystemChangeFinder {
         // deletion event
         changeSummary = getChangeSummary(admin);
         changes = changeSummary.getFileSystemChanges();
-//        assertEquals(1, changes.size());
-//        fsItemChange = changes.get(0);
-//        assertEquals("deleted", fsItemChange.getEventId());
-//        assertEquals(
-//                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
-//                fsItemChange.getFileSystemItem().getId());
+        assertEquals(1, changes.size());
+        fsItemChange = changes.get(0);
+        assertEquals("deleted", fsItemChange.getEventId());
+        assertEquals(
+                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
+                fsItemChange.getFileSystemItemId());
+    }
 
-        // TODO: check root unregistration here
+    @Test
+    public void testGetChangeSummaryOnRootDocumentsNullChange() throws Exception {
+        // check that consecutive root registration + unregistration do not lead to a visible change for the client.
+        TransactionHelper.startTransaction();
+        Principal someUser = new NuxeoPrincipalImpl("some-user");
+        nuxeoDriveManager.registerSynchronizationRoot(someUser.getName(), folder1,
+                session);
+        nuxeoDriveManager.unregisterSynchronizationRoot(someUser.getName(), folder1,
+                session);
+        commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        FileSystemChangeSummary changeSummary = getChangeSummary(someUser);
+        assertNotNull(changeSummary);
+        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+        assertFalse(changeSummary.getHasTooManyChanges());
+
+        // Do it a second time to check that the client did not receive bad active root markers
+        nuxeoDriveManager.registerSynchronizationRoot(someUser.getName(), folder1,
+                session);
+        nuxeoDriveManager.unregisterSynchronizationRoot(someUser.getName(), folder1,
+                session);
+        commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        changeSummary = getChangeSummary(someUser);
+        assertNotNull(changeSummary);
+        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+        assertFalse(changeSummary.getHasTooManyChanges());
     }
 
     /**

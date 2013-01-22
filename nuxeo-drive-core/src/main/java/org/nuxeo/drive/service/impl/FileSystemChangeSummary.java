@@ -45,7 +45,7 @@ public class FileSystemChangeSummary implements Serializable {
 
     protected Boolean hasTooManyChanges = Boolean.FALSE;
 
-    protected String activeRootDefinitions;
+    protected String activeSynchronizationRootDefinitions;
 
     public FileSystemChangeSummary() {
         // Needed for JSON deserialization
@@ -64,7 +64,7 @@ public class FileSystemChangeSummary implements Serializable {
                 rootDefinitions.add(String.format("%s:%s", entry.getKey(), ref.toString()));
             }
         }
-        this.activeRootDefinitions = StringUtils.join(rootDefinitions, ",");
+        this.activeSynchronizationRootDefinitions = StringUtils.join(rootDefinitions, ",");
     }
 
     public List<FileSystemItemChange> getFileSystemChanges() {
@@ -89,7 +89,12 @@ public class FileSystemChangeSummary implements Serializable {
     }
 
     public String getActiveSynchronizationRootDefinitions() {
-        return activeRootDefinitions;
+        return activeSynchronizationRootDefinitions;
+    }
+
+    public void setActiveSynchronizationRootDefinitions(
+            String activeSynchronizationRootDefinitions) {
+        this.activeSynchronizationRootDefinitions = activeSynchronizationRootDefinitions;
     }
 
     public void setSyncDate(Long syncDate) {
