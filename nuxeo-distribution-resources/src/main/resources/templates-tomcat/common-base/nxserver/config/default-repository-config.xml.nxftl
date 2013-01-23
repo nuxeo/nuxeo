@@ -61,6 +61,7 @@
           -->
         </indexing>
 <#elseif "${nuxeo.db.type}" == "mssql">
+        <aclOptimizations enabled="true" concurrentUpdate="false"/>
         <indexing>
           <fulltext analyzer="english">
             <index name="default">
