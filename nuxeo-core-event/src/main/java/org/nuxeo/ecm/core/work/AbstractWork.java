@@ -235,6 +235,10 @@ public abstract class AbstractWork implements Work {
             log.error("Cannot log in", e);
         }
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        if (repositoryManager == null) {
+            // would happen if only low-level repo is initialized
+            throw new RuntimeException("RepositoryManager service not available");
+        }
         Repository repository;
         if (repositoryName != null) {
             repository = repositoryManager.getRepository(repositoryName);

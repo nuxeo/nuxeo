@@ -759,6 +759,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             throw new IllegalStateException(String.valueOf(work.getState()));
         }
         String queueId = getCategoryQueueId(work.getCategory());
+        log.debug("Scheduling work: " + work + " using queue: " + queueId);
         WorkThreadPoolExecutor executor = getExecutor(queueId);
         switch (scheduling) {
         case ENQUEUE:
