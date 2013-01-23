@@ -15,7 +15,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.dam;
+package org.nuxeo.dam.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
