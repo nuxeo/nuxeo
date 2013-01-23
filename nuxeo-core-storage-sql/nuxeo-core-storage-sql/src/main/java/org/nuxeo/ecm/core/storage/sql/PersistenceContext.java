@@ -295,15 +295,29 @@ public class PersistenceContext {
     protected void findDirtyDocuments(Set<Serializable> dirtyStrings,
             Set<Serializable> dirtyBinaries) throws StorageException {
         for (Fragment fragment : modified.values()) {
-            Serializable docId = null;
+            Serializable docId = getContainingDocument(fragment.getId());
+            String tableName = fragment.row.tableName;
             switch (fragment.getState()) {
             case CREATED:
-                docId = getContainingDocument(fragment.getId());
-                dirtyStrings.add(docId);
-                dirtyBinaries.add(docId);
+            case DELETED:
+            case DELETED_DEPENDENT:
+                if (fragment.getState() != State.CREATED && isDeleted(docId)) {
+                    break;
+                }
+                // for delete, this is a deleted fragment of a complex property
+                // from a document that has not been completely deleted
+                PropertyType t = model.getFulltextInfoForFragment(tableName);
+                if (t == null) {
+                    break;
+                }
+                if (t == PropertyType.STRING || t == PropertyType.BOOLEAN) {
+                    dirtyStrings.add(docId);
+                }
+                if (t == PropertyType.BINARY || t == PropertyType.BOOLEAN) {
+                    dirtyBinaries.add(docId);
+                }
                 break;
             case MODIFIED:
-                String tableName = fragment.row.tableName;
                 Collection<String> keys;
                 if (model.isCollectionFragment(tableName)) {
                     keys = Collections.singleton(null);
@@ -313,27 +327,11 @@ public class PersistenceContext {
                 for (String key : keys) {
                     PropertyType type = model.getFulltextFieldType(tableName,
                             key);
-                    if (type == null) {
-                        continue;
-                    }
-                    if (docId == null) {
-                        docId = getContainingDocument(fragment.getId());
-                    }
                     if (type == PropertyType.STRING) {
                         dirtyStrings.add(docId);
                     } else if (type == PropertyType.BINARY) {
                         dirtyBinaries.add(docId);
                     }
-                }
-                break;
-            case DELETED:
-            case DELETED_DEPENDENT:
-                docId = getContainingDocument(fragment.getId());
-                if (!isDeleted(docId)) {
-                    // this is a deleted fragment of a complex property from a
-                    // document that has not been completely deleted
-                    dirtyStrings.add(docId);
-                    dirtyBinaries.add(docId);
                 }
                 break;
             default:
