@@ -34,6 +34,7 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
 
     PlacefulService placefulService;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -41,6 +42,7 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.placeful.core");
         deployTestContrib("org.nuxeo.ecm.platform.placeful.core", "nxplacefulservice-configs-tests.xml");
         placefulService = (PlacefulService) runtime.getComponent(PlacefulService.ID);
+        fireFrameworkStarted();
     }
 
     @Test

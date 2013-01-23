@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
+import org.osgi.framework.FrameworkEvent;
 
 /**
  * Test the event conf service.
@@ -46,6 +47,7 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
 
     private PlacefulServiceImpl placefulServiceImpl;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -58,12 +60,16 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         deployContrib("org.nuxeo.ecm.platform.placeful.core",
         "nxplaceful-tests.xml");
 
+        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
+                runtimeBundle, null));
+
         placefulServiceImpl = (PlacefulServiceImpl) runtime.getComponent(PlacefulService.ID);
         assertNotNull(placefulServiceImpl);
 
         openRepository();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
