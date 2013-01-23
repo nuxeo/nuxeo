@@ -17,10 +17,13 @@
 package org.nuxeo.drive.operations;
 
 import java.io.StringWriter;
+import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
+import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -28,6 +31,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
@@ -45,15 +49,20 @@ public class NuxeoDriveGetChangeSummary {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "lastSuccessfulSync")
-    protected Long lastSuccessfulSync;
+    @Param(name = "lastSyncDate")
+    protected Long lastSyncDate;
+
+    // Expect a String structure with form:
+    // repo-1:root-ref-1,repo-1:root-ref-2,repo-2:root-ref-3
+    @Param(name = "lastSyncActiveRootDefinitions", required = false)
+    protected String lastSyncActiveRootDefinitions;
 
     @OperationMethod
     public Blob run() throws Exception {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        Map<String, Set<IdRef>> lastActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
         FileSystemChangeSummary docChangeSummary = driveManager.getChangeSummary(
-                ctx.getPrincipal(), lastSuccessfulSync);
-
+                ctx.getPrincipal(), lastActiveRootRefs, lastSyncDate);
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, docChangeSummary);

@@ -34,7 +34,6 @@ import org.nuxeo.drive.service.MockChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.drive.service.impl.FileSystemItemChange;
-import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -91,6 +90,8 @@ public class TestGetChangeSummaryMultiRepo {
 
     protected long lastSuccessfulSync;
 
+    protected String lastSyncActiveRoots;
+
     protected DocumentModel folder1;
 
     protected DocumentModel folder2;
@@ -115,6 +116,7 @@ public class TestGetChangeSummaryMultiRepo {
 
         nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
+        lastSyncActiveRoots = "";
 
         folder1 = session.createDocument(session.createDocumentModel("/",
                 "folder1", "Folder"));
@@ -177,7 +179,7 @@ public class TestGetChangeSummaryMultiRepo {
         otherSession.save();
 
         // Look in all repositories => should find 3 changes
-        FileSystemChangeSummary changeSummary = getDocumentChangeSummary();
+        FileSystemChangeSummary changeSummary = getChangeSummary();
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
         assertEquals(3, docChanges.size());
         FileSystemItemChange docChange = docChanges.get(0);
@@ -206,25 +208,26 @@ public class TestGetChangeSummaryMultiRepo {
         session.save();
         otherSession.save();
 
-        changeSummary = getDocumentChangeSummary();
+        changeSummary = getChangeSummary();
         docChanges = changeSummary.getFileSystemChanges();
         assertEquals(3, docChanges.size());
     }
 
-    protected FileSystemChangeSummary getDocumentChangeSummary() throws Exception {
+    protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
-        OperationRequest opRequest = clientSession.newRequest(
-                NuxeoDriveGetChangeSummary.ID).set(
-                "lastSuccessfulSync", lastSuccessfulSync);
-        Blob docChangeSummaryJSON = (Blob) opRequest.execute();
+        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
+                lastSuccessfulSync).set("lastSyncActiveRootDefinitions",
+                lastSyncActiveRoots).execute();
         assertNotNull(docChangeSummaryJSON);
 
-        FileSystemChangeSummary docChangeSummary = mapper.readValue(
+        FileSystemChangeSummary changeSummary = mapper.readValue(
                 docChangeSummaryJSON.getStream(), FileSystemChangeSummary.class);
-        assertNotNull(docChangeSummary);
+        assertNotNull(changeSummary);
 
-        lastSuccessfulSync = docChangeSummary.getSyncDate();
-        return docChangeSummary;
+        lastSuccessfulSync = changeSummary.getSyncDate();
+        lastSyncActiveRoots = changeSummary.getActiveSynchronizationRootDefinitions();
+        return changeSummary;
     }
 }

@@ -17,9 +17,13 @@
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.IdRef;
 
 /**
  * Summary of file system changes, including:
@@ -41,16 +45,26 @@ public class FileSystemChangeSummary implements Serializable {
 
     protected Boolean hasTooManyChanges = Boolean.FALSE;
 
+    protected String activeSynchronizationRootDefinitions;
+
     public FileSystemChangeSummary() {
         // Needed for JSON deserialization
     }
 
     public FileSystemChangeSummary(
-            List<FileSystemItemChange> fileSystemChanges, Long syncDate,
+            List<FileSystemItemChange> fileSystemChanges,
+            Map<String, Set<IdRef>> activeRootRefs, Long syncDate,
             Boolean tooManyChanges) {
         this.fileSystemChanges = fileSystemChanges;
         this.syncDate = syncDate;
         this.hasTooManyChanges = tooManyChanges;
+        List<String> rootDefinitions = new ArrayList<String>();
+        for (Map.Entry<String, Set<IdRef>> entry : activeRootRefs.entrySet()) {
+            for (IdRef ref: entry.getValue()) {
+                rootDefinitions.add(String.format("%s:%s", entry.getKey(), ref.toString()));
+            }
+        }
+        this.activeSynchronizationRootDefinitions = StringUtils.join(rootDefinitions, ",");
     }
 
     public List<FileSystemItemChange> getFileSystemChanges() {
@@ -72,6 +86,15 @@ public class FileSystemChangeSummary implements Serializable {
      */
     public Long getSyncDate() {
         return syncDate;
+    }
+
+    public String getActiveSynchronizationRootDefinitions() {
+        return activeSynchronizationRootDefinitions;
+    }
+
+    public void setActiveSynchronizationRootDefinitions(
+            String activeSynchronizationRootDefinitions) {
+        this.activeSynchronizationRootDefinitions = activeSynchronizationRootDefinitions;
     }
 
     public void setSyncDate(Long syncDate) {

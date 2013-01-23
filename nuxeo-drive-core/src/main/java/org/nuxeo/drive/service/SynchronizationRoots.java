@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.service;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.IdRef;
@@ -39,4 +40,9 @@ public class SynchronizationRoots {
         this.refs = refs;
     }
 
+    public static final SynchronizationRoots getEmptyRoots(String repositoryName) {
+        Set<String> emptyPaths = Collections.emptySet();
+        Set<IdRef> emptyRefs = Collections.emptySet();
+        return new SynchronizationRoots(repositoryName, emptyPaths, emptyRefs);
+    }
 }

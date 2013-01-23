@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -58,15 +59,16 @@ public class MockChangeFinder implements FileSystemChangeFinder {
 
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
-            Set<String> rootPaths, long lastSuccessfulSyncDate, long syncDate,
-            int limit) throws TooManyChangesException {
+            Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots,
+            long lastSuccessfulSyncDate, long syncDate, int limit)
+            throws TooManyChangesException {
 
         List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
-        if (!rootPaths.isEmpty()) {
+        if (!activeRoots.paths.isEmpty()) {
             StringBuilder querySb = new StringBuilder();
             querySb.append("SELECT * FROM Document WHERE (%s) AND (%s) ORDER BY dc:modified DESC");
             String query = String.format(querySb.toString(),
-                    getRootPathClause(rootPaths),
+                    getRootPathClause(activeRoots.paths),
                     getDateClause(lastSuccessfulSyncDate, syncDate));
             log.debug("Querying repository for document changes: " + query);
 
