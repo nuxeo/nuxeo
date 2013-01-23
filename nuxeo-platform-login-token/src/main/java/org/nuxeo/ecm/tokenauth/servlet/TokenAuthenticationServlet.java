@@ -18,6 +18,7 @@ package org.nuxeo.ecm.tokenauth.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.Principal;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -101,7 +102,12 @@ public class TokenAuthenticationServlet extends HttpServlet {
         }
 
         // Get user name from request Principal
-        String userName = req.getUserPrincipal().getName();
+        Principal principal = req.getUserPrincipal();
+        if (principal == null) {
+            resp.sendError(HttpStatus.SC_UNAUTHORIZED);
+            return;
+        }
+        String userName = principal.getName();
 
         // Write response
         String response = null;
