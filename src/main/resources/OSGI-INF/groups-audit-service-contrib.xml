@@ -1,0 +1,11 @@
+<component name="org.nuxeo.ecm.platform.groups.audit.service.contrib">
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.groups.audit.service.ExcelExportService" />
+  </service>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.groups.audit.service.ExcelExportServiceImpl" />
+
+</component>

@@ -7,3 +7,4 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: nuxeo-groups-rights-audit
+Nuxeo-Component: OSGI-INF/groups-audit-service-contrib.xml
