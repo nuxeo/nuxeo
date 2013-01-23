@@ -338,7 +338,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                         File file = new File(dir, name);
                         log.debug("Configuration: deploy config component: "
                                 + name);
-                        context.deploy(file.toURI().toURL());
+                        try {
+                            context.deploy(file.toURI().toURL());
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException(
+                                    "Cannot load config from " + file, e);
+                        }
                     }
                 } else if (name.endsWith(".config") || name.endsWith(".ini")
                         || name.endsWith(".properties")) {
