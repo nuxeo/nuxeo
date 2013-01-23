@@ -47,6 +47,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     /** Property used in the datasource URL. */
     private static final String PROP_NAME = "ds.test.home";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -60,6 +61,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         fireFrameworkStarted();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         if (NuxeoContainer.isInstalled()) {
@@ -99,8 +101,8 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     public void testNonXA() throws Exception {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/datasource-contrib.xml");
-        checkDataSourceOk("foo", false);
-        checkDataSourceOk("alias", false);
+        checkDataSourceOk("foo", true);
+        checkDataSourceOk("alias", true);
     }
 
     @Test
