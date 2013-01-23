@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     protected final TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry = new TopLevelFolderItemFactoryRegistry();
 
-    protected List<FileSystemItemFactoryWrapper> fileSystemItemFactories;
+    protected List<FileSystemItemFactoryWrapper> fileSystemItemFactories = new ArrayList<FileSystemItemFactoryWrapper>();
 
     /*------------------------ DefaultComponent -----------------------------*/
     @Override
