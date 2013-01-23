@@ -12,3 +12,4 @@ nuxeo.db.password=password
 nuxeo.db.min-pool-size=5
 nuxeo.db.jdbc.url=jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true
 nuxeo.db.driver=com.mysql.jdbc.Driver
+nuxeo.db.xadatasource=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource

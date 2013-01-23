@@ -37,6 +37,7 @@
     For example java:comp/env/jdbc/nxsqldirectory This means you need to update corresponding
     JNDI bindings in nuxeo data source definitions in the config directory -->
 
+<#if "${nuxeo.server.declare_datasources}" == "true">
   <ResourceLink name="jdbc/NuxeoDS" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
   <ResourceLink name="jdbc/nxsqldirectory" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
   <ResourceLink name="jdbc/nxrelations-default-jena" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
@@ -46,6 +47,7 @@
   <ResourceLink name="jdbc/placeful_service_ds" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
   <ResourceLink name="jdbc/nxwebwidgets" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
   <ResourceLink name="jdbc/nxuidsequencer" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+</#if>
 
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"

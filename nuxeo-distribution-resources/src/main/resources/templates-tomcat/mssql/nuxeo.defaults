@@ -10,3 +10,5 @@ nuxeo.db.user=nuxeo
 nuxeo.db.password=password
 nuxeo.db.jdbc.url=jdbc:jtds:sqlserver://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name};useCursors=true
 nuxeo.db.driver=net.sourceforge.jtds.jdbc.Driver
+nuxeo.db.xadatasource=net.sourceforge.jtds.jdbcx.JtdsDataSource
+

@@ -43,11 +43,13 @@
               pathname="conf/tomcat-users.xml" />
 
     <!-- Common datasource for all basic nuxeo datasources -->
+<#if "${nuxeo.server.declare_datasources}" == "true">
     <Resource name="${nuxeo.db.commonds}" auth="Container" type="javax.sql.DataSource"
         maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
         url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
         username="${nuxeo.db.user}" password="${nuxeo.db.password}"
         accessToUnderlyingConnectionAllowed="true" />
+</#if>
 
   </GlobalNamingResources>
 

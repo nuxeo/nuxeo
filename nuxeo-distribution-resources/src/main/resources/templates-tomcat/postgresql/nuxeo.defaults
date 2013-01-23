@@ -10,3 +10,5 @@ nuxeo.db.user=nuxeo
 nuxeo.db.password=password
 nuxeo.db.jdbc.url=jdbc:postgresql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}
 nuxeo.db.driver=org.postgresql.Driver
+nuxeo.db.xadatasource=org.postgresql.xa.PGXADataSource
+

@@ -13,3 +13,6 @@ nuxeo.db.password=password
 nuxeo.db.min-pool-size=5
 nuxeo.db.jdbc.url=jdbc:oracle:thin:${nuxeo.db.user}/${nuxeo.db.password}@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}
 nuxeo.db.driver=oracle.jdbc.OracleDriver
+nuxeo.db.xadatasource=oracle.jdbc.xa.client.OracleXADataSource
+
+

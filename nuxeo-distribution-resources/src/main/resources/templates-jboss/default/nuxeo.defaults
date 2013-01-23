@@ -9,3 +9,5 @@ nuxeo.db.user=sa
 nuxeo.db.password=
 nuxeo.db.jdbc.url=jdbc:h2:${nuxeo.db.name}
 nuxeo.db.driver=org.h2.Driver
+nuxeo.db.xadatasource=org.h2.jdbcx.JdbcDataSource
+
