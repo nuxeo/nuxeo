@@ -4,15 +4,15 @@
   <documentation>
     Service providing a dynamic adapter mechanism to save a webcontents.
     @author
-	<a href="mailto:stephane.fourrier@ext.leroymerlin.fr">Stéphane Fourrier</a>
+	<a href="mailto:stephane.fourrier@ext.leroymerlin.fr">Stephane Fourrier</a>
   </documentation>
 
   <implementation class="org.nuxeo.opensocial.container.server.service.WebContentSaverServiceImpl"/>
- 
+
   <service>
     <provide interface="org.nuxeo.opensocial.container.server.service.WebContentSaverService"/>
   </service>
-  
+
   <extension-point name="savers">
     <object class="org.nuxeo.opensocial.container.server.service.WebContentSaverDescriptor"/>
   </extension-point>

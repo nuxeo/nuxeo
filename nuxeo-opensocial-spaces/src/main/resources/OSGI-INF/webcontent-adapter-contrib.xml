@@ -3,9 +3,9 @@
 
   <documentation>
     Defines WebContent document adapter
-    
+
     @author
-	<a href="mailto:stephane.fourrier@ext.leroymerlin.fr">Stéphane Fourrier</a>
+	<a href="mailto:stephane.fourrier@ext.leroymerlin.fr">Stephane Fourrier</a>
   </documentation>
 
   <!-- Webcontent Document Adapter -->
