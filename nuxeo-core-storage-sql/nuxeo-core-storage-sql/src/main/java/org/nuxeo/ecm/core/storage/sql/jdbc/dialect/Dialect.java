@@ -111,6 +111,8 @@ public abstract class Dialect {
 
     protected final boolean aclOptimizationsEnabled;
 
+    protected final boolean aclOptimizationsConcurrentUpdate;
+
     /**
      * @since 5.7
      */
@@ -197,11 +199,13 @@ public abstract class Dialect {
         if (repositoryDescriptor == null) {
             fulltextDisabled = true;
             aclOptimizationsEnabled = false;
+            aclOptimizationsConcurrentUpdate = false;
             readAclMaxSize = 0;
             clusteringEnabled = false;
         } else {
             fulltextDisabled = repositoryDescriptor.fulltextDisabled;
             aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
+            aclOptimizationsConcurrentUpdate = repositoryDescriptor.aclOptimizationsConcurrentUpdate;
             readAclMaxSize = repositoryDescriptor.readAclMaxSize;
             clusteringEnabled = repositoryDescriptor.clusteringEnabled;
         }
@@ -1182,6 +1186,15 @@ public abstract class Dialect {
     public boolean supportsReadAcl() {
         return false;
     }
+
+    /**
+     * Does the dialect support concurrent update of optimized security checks
+     *
+     */
+    public boolean supportsConcurrentUpdateReadAcls() {
+        return aclOptimizationsConcurrentUpdate;
+    }
+
 
     /**
      * Does the dialect support SQL-99 WITH common table expressions.
