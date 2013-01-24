@@ -1,9 +1,3 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.runtime.datasource.server.contrib">
-<#if "${nuxeo.server.declare_datasources}" == "false">
-  <extension target="org.nuxeo.runtime.datasource" point="datasources">
-    <datasource name="${nuxeo.db.commonds}" xaDataSource="${nuxeo.db.xadatasource}"
-      maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="5" maxWait="10000">
 <#if "${nuxeo.db.type}" == "postgresql">
         <property name="ServerName">${nuxeo.db.host}</property>
         <property name="PortNumber">${nuxeo.db.port}</property>
@@ -26,21 +20,7 @@
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
 <#else>
-        <xa-datasource>${nuxeo.db.xadatasource}</xa-datasource>
         <property name="URL">jdbc:h2:${nuxeo.db.name}</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
 </#if>
-    </datasource>
-    <link name="jdbc/NuxeoDS" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-    <link name="jdbc/nxsqldirectory" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-    <link name="jdbc/nxrelations-default-jena" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-    <link name="jdbc/comment-relations" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-    <link name="jdbc/nxaudit-logs" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-    <link name="jdbc/nxjbpm" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-    <link name="jdbc/placeful_service_ds" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-    <link name="jdbc/nxwebwidgets" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-    <link name="jdbc/nxuidsequencer" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  </extension>
-</#if>
-</component>
