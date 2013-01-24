@@ -200,6 +200,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
      * a limit of document changes to fetch from the audit logs. Default value
      * is 1000.
+     *
+     * If lastSuccessfulSync is missing (i.e. set to a negative value), the
+     * filesystem change summary is empty but the returned sync date is set to
+     * the actual server timestamp so that the client can reuse it as a starting
+     * timestamp for a future incremental diff request.
      */
     @Override
     public FileSystemChangeSummary getChangeSummary(Principal principal,
@@ -231,7 +236,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         allRepositories.addAll(roots.keySet());
         allRepositories.addAll(lastActiveRootRefs.keySet());
 
-        if (!allRepositories.isEmpty()) {
+        if (!allRepositories.isEmpty() && lastSuccessfulSync > 0) {
             for (String repositoryName : allRepositories) {
                 try {
                     // Get document changes

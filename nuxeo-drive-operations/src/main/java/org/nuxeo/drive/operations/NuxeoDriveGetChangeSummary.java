@@ -49,8 +49,8 @@ public class NuxeoDriveGetChangeSummary {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "lastSyncDate")
-    protected Long lastSyncDate;
+    @Param(name = "lastSyncDate", required = false)
+    protected Long lastSyncDate = -1L;
 
     // Expect a String structure with form:
     // repo-1:root-ref-1,repo-1:root-ref-2,repo-2:root-ref-3
