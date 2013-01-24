@@ -45,6 +45,8 @@ public class DamCodec extends DocumentPathCodec {
 
     public static final String PREFIX = "nxdam";
 
+    public static final String ASSETS_VIEW = "assets";
+
     @Override
     public String getPrefix() {
         if (prefix != null) {
@@ -57,66 +59,8 @@ public class DamCodec extends DocumentPathCodec {
     public DocumentView getDocumentViewFromUrl(String url) {
         DocumentView docView = super.getDocumentViewFromUrl(url);
         if (docView != null) {
-            docView.setViewId("assets");
+            docView.setViewId(ASSETS_VIEW);
             return docView;
-        }
-        return null;
-    }
-
-    @Override
-    public String getUrlFromDocumentView(DocumentView docView) {
-        // Use DocumentIdCodec if the document is a version
-        if ("true".equals(docView.getParameter("version"))) {
-            if (docView.getDocumentLocation().getIdRef() != null) {
-                DocumentIdCodec idCodec = new DocumentIdCodec();
-                return idCodec.getUrlFromDocumentView(docView);
-            }
-        }
-
-        DocumentLocation docLoc = docView.getDocumentLocation();
-        if (docLoc != null) {
-            List<String> items = new ArrayList<String>();
-            items.add(getPrefix());
-            items.add(docLoc.getServerName());
-            PathRef docRef = docLoc.getPathRef();
-
-            // TODO make it generic in DocumentPathCodec (or other codec) to create URLs even without a document
-            if (docRef != null) {
-                // this is a path, get rid of leading slash
-                String path = docRef.toString();
-                if (path.startsWith("/")) {
-                    path = path.substring(1);
-                }
-                if (path.length() > 0) {
-                    items.add(URIUtils.quoteURIPathComponent(path, false));
-                }
-            }
-            String uri = StringUtils.join(items, "/");
-            String viewId = docView.getViewId();
-            if (viewId != null) {
-                uri += "@" + viewId;
-            }
-
-            String uriWithParam = URIUtils.addParametersToURIQuery(uri,
-                    docView.getParameters());
-
-            // If the URL with the Path codec is to long, it use the URL with
-            // the Id Codec.
-            if (uriWithParam.length() > URL_MAX_LENGTH) {
-
-                // If the DocumentLocation did not contains the document Id, it
-                // use the Path Codec even if the Url is too long for IE.
-                if (null == docView.getDocumentLocation().getIdRef()) {
-                    log.error("The DocumentLocation did not contains the RefId.");
-                    return uriWithParam;
-                }
-
-                DocumentIdCodec idCodec = new DocumentIdCodec();
-                return idCodec.getUrlFromDocumentView(docView);
-
-            } else {
-                return uriWithParam;
-            }
         }
         return null;
     }
