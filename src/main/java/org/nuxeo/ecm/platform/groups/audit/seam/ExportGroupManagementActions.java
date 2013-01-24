@@ -63,6 +63,7 @@ public class ExportGroupManagementActions implements Serializable {
         ExternalContext econtext = context.getExternalContext();
         HttpServletResponse response = (HttpServletResponse) econtext.getResponse();
         File excelReport = excelExportGroupsDefinition();
+
         response.setContentType(new MimetypesFileTypeMap().getContentType(excelReport));
         response.setHeader("Content-disposition", "attachment; filename=\""
                 + excelReport.getName() + "\"");
@@ -71,10 +72,7 @@ public class ExportGroupManagementActions implements Serializable {
         try {
             ServletOutputStream os = response.getOutputStream();
             InputStream in = new FileInputStream(excelReport);
-            byte[] buffer = new byte[1024];
-            int bytesRead = 0;
-            bytesRead = in.read(buffer, 0, buffer.length);
-            os.write(buffer, 0, bytesRead);
+            org.nuxeo.common.utils.FileUtils.copy(in, os);
             os.flush();
             in.close();
             os.close();
