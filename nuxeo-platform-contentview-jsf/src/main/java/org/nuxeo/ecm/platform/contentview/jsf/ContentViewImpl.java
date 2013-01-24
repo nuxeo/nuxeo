@@ -697,11 +697,13 @@ public class ContentViewImpl implements ContentView,
      */
 
     protected void raiseEvent(String eventName, Object... params) {
-        Events.instance().raiseEvent(eventName, params);
+        if (Events.exists()) {
+            Events.instance().raiseEvent(eventName, params);
+        }
     }
 
     protected void raiseEvent(String eventName) {
-        Events.instance().raiseEvent(eventName, name);
+        raiseEvent(eventName, name);
     }
 
     @Override
