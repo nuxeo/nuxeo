@@ -90,17 +90,18 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
             items.add(getPrefix());
             items.add(docLoc.getServerName());
             PathRef docRef = docLoc.getPathRef();
-            if (docRef == null) {
-                return null;
+
+            if (docRef != null) {
+                // this is a path, get rid of leading slash
+                String path = docRef.toString();
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+                if (path.length() > 0) {
+                    items.add(URIUtils.quoteURIPathComponent(path, false));
+                }
             }
-            // this is a path, get rid of leading slash
-            String path = docRef.toString();
-            if (path.startsWith("/")) {
-                path = path.substring(1);
-            }
-            if (path.length() > 0) {
-                items.add(URIUtils.quoteURIPathComponent(path, false));
-            }
+
             String uri = StringUtils.join(items, "/");
             String viewId = docView.getViewId();
             if (viewId != null) {

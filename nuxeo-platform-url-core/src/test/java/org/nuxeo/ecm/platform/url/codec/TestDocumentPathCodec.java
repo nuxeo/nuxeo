@@ -205,4 +205,33 @@ public class TestDocumentPathCodec {
         assertNull(docView.getSubURI());
     }
 
+    @Test
+    public void testGetUrlWithoutPathRef() {
+        DocumentPathCodec codec = new DocumentPathCodec();
+        DocumentLocation docLoc = new DocumentLocationImpl("demo", null);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("tabId", "TAB_CONTENT");
+        DocumentView docView = new DocumentViewImpl(docLoc, "view_documents",
+                params);
+
+        String url = "nxpath/demo@view_documents?tabId=TAB_CONTENT";
+        assertEquals(url, codec.getUrlFromDocumentView(docView));
+    }
+
+    @Test
+    public void testGetDocumentViewFromUrlWithoutPathRef() {
+        DocumentPathCodec codec = new DocumentPathCodec();
+        String url = "nxpath/demo@view_documents?tabId=TAB_CONTENT";
+        DocumentView docView = codec.getDocumentViewFromUrl(url);
+
+        DocumentLocation docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerName());
+        assertEquals(new PathRef("/"), docLoc.getDocRef());
+        assertEquals("view_documents", docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        Map<String, String> params = docView.getParameters();
+        assertEquals("TAB_CONTENT", params.get("tabId"));
+    }
+
 }
