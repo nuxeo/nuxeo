@@ -83,6 +83,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected PageProviderDefinition definition;
 
+    protected PageProviderChangedListener pageProviderChangedListener;
+
     public abstract List<T> getCurrentPage();
 
     /**
@@ -715,4 +717,16 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
         return res;
     }
+
+    @Override
+    public void setPageProviderChangedListener(PageProviderChangedListener listener) {
+        pageProviderChangedListener = listener;
+    }
+
+    protected void notifyPageChanged() {
+        if (pageProviderChangedListener != null) {
+            pageProviderChangedListener.pageChanged();
+        }
+    }
+
 }

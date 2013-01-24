@@ -294,6 +294,7 @@ public class CoreQueryDocumentPageProvider extends
     protected void pageChanged() {
         super.pageChanged();
         currentPageDocuments = null;
+        notifyPageChanged();
     }
 
     @Override

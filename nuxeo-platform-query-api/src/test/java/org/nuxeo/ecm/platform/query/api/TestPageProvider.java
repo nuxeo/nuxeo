@@ -379,4 +379,30 @@ public class TestPageProvider {
         return pp.getMinMaxPageSize();
     }
 
+    @Test
+    public void testPageProviderChangedListener() {
+        MockPageProvider mockPageProvider = new MockPageProvider(5, 13, true);
+        DummyPageProviderChangedListener listener = new DummyPageProviderChangedListener();
+        assertFalse(listener.hasPageChanged);
+
+        mockPageProvider.lastPage();
+        assertFalse(listener.hasPageChanged);
+        mockPageProvider.firstPage();
+        assertFalse(listener.hasPageChanged);
+
+        mockPageProvider.setPageProviderChangedListener(listener);
+        mockPageProvider.lastPage();
+        assertTrue(listener.hasPageChanged);
+    }
+
+    public static class DummyPageProviderChangedListener implements PageProviderChangedListener {
+
+        public boolean hasPageChanged = false;
+
+        @Override
+        public void pageChanged() {
+            hasPageChanged = true;
+        }
+    }
+
 }
