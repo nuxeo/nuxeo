@@ -160,7 +160,10 @@
           </ui:insert>
 
           <ui:insert name="content_view_selector">
-            <ui:include src="/incl/content_view_result_layout_selector.xhtml" />
+            <ui:include src="/incl/content_view_result_layout_selector.xhtml">
+              <ui:param name="contentIdToBeReRendered"
+                value="#{contentViewRenderId}_resultsPanel" />
+            </ui:include>
             <div style="clear:both;" />
           </ui:insert>
 

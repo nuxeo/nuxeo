@@ -34,7 +34,7 @@ empty:
         <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
           <li class="#{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
             <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
-              reRender="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_contentViewActionsPanel"
+              reRender="#{contentIdToBeReRendered}, #{contentViewRenderId}_contentViewActionsPanel"
               ajaxSingle="true"
               eventsQueue="contentViewQueue">
               <c:set var="iconPath"
@@ -56,7 +56,7 @@ empty:
         <li>
           <a4j:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
             id="refreshContentViewLink"
-            reRender="#{contentViewRenderId}_resultsPanel"
+            reRender="#{contentIdToBeReRendered}"
             ajaxSingle="true"
             eventsQueue="contentViewQueue">
             <h:graphicImage value="/icons/refresh.png"
@@ -158,7 +158,7 @@ empty:
       </h:selectOneMenu>
       <div style="display: none;">
         <a4j:commandButton value="submit"
-          reRender="#{contentViewRenderId}_resultsPanel"
+          reRender="#{contentIdToBeReRendered}"
           eventsQueue="contentViewQueue" />
       </div>
 
