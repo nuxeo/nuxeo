@@ -96,9 +96,6 @@ public class TestExcelExportGroups {
         for (String groupId : groupsId) {
             NuxeoGroup group = userManager.getGroup(groupId);
             groups.add(group);
-            for (String userId : group.getMemberUsers()) {
-                NuxeoPrincipal user = userManager.getPrincipal(userId);
-            }
         }
         Map beans = new HashMap();
         beans.put("groups", groups);
