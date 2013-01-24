@@ -25,12 +25,14 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderChangedListener;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,7 +49,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author Anahide Tchertchian
  * @since 5.4
  */
-public class ContentViewImpl implements ContentView {
+public class ContentViewImpl implements ContentView,
+        PageProviderChangedListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -336,6 +339,10 @@ public class ContentViewImpl implements ContentView {
                 pageProvider.setCurrentPage(currentPage.longValue());
             }
         }
+
+        // Register listener to be notified when the page has changed on the
+        // page provider
+        pageProvider.setPageProviderChangedListener(this);
         return pageProvider;
     }
 
@@ -426,6 +433,7 @@ public class ContentViewImpl implements ContentView {
     @Override
     public void setCurrentPageSize(Long pageSize) {
         this.currentPageSize = pageSize;
+        raiseEvent(CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT);
     }
 
     public DocumentModel getSearchDocumentModel() {
@@ -682,5 +690,22 @@ public class ContentViewImpl implements ContentView {
                 currentResultLayout, flags, cacheKey, cacheSize,
                 currentPageSize, refreshEventNames, resetEventNames,
                 Boolean.valueOf(useGlobalPageSize), searchDocumentModel);
+    }
+
+    /*
+     * ----- PageProviderChangedListener -----
+     */
+
+    protected void raiseEvent(String eventName, Object... params) {
+        Events.instance().raiseEvent(eventName, params);
+    }
+
+    protected void raiseEvent(String eventName) {
+        Events.instance().raiseEvent(eventName, name);
+    }
+
+    @Override
+    public void pageChanged() {
+        raiseEvent(CONTENT_VIEW_PAGE_CHANGED_EVENT);
     }
 }

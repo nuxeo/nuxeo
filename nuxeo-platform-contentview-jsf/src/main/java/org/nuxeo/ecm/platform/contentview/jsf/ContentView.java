@@ -47,6 +47,21 @@ public interface ContentView extends Serializable {
     public static final String SEARCH_DOCUMENT_EL_VARIABLE = "searchDocument";
 
     /**
+     * Seam event to be fired when the current page of the content view's page
+     * provider has changed
+     *
+     * @since 5.7
+     */
+    public static final String CONTENT_VIEW_PAGE_CHANGED_EVENT = "contentViewPageChanged";
+
+    /**
+     * Seam event to be fired when the page size of the content view has changed
+     *
+     * @since 5.7
+     */
+    public static final String CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT = "contentViewPageSizeChanged";
+
+    /**
      * Returns the name of this content view
      */
     String getName();
@@ -117,7 +132,7 @@ public interface ContentView extends Serializable {
 
     /**
      * Sets the current result layout given its name.
-     * 
+     *
      * @since 5.7
      */
     void setCurrentResultLayout(String resultLayoutName);
