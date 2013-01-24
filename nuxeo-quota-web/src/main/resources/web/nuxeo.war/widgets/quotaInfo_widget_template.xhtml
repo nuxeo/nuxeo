@@ -16,7 +16,7 @@
      <h:outputText value=" #{messages[formatedSize.unit]} "/>
      
      <c:if test="#{maxFormatedSize.value > 0}">
-      <h:outputText value="/#{maxFormatedSize.valueInUnit}">
+      /<h:outputText value="#{maxFormatedSize.valueInUnit}">
        <f:convertNumber maxFractionDigits="2" />
       </h:outputText>
       <h:outputText value=" #{messages[maxFormatedSize.unit]}"/>
