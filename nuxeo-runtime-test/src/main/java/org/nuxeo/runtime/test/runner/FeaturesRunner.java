@@ -60,6 +60,14 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return scanner;
     }
 
+    // not the most efficient to recompute this all the time
+    // but it doesn't matter here
+    public static <T> List<T> reversed(List<T> list) {
+        List<T> reversed = new ArrayList<T>(list);
+        Collections.reverse(reversed);
+        return reversed;
+    }
+
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
         super(classToRun);
         try {
@@ -193,13 +201,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void afterMethodRun(FrameworkMethod method, Object test)
             throws Exception {
-        for (RunnerFeature feature : features) {
+        for (RunnerFeature feature : reversed(features)) {
             feature.afterMethodRun(this, method, test);
         }
     }
 
     protected void afterRun() throws Exception {
-        for (RunnerFeature feature : features) {
+        for (RunnerFeature feature : reversed(features)) {
             feature.afterRun(this);
         }
     }
@@ -217,7 +225,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void stop() throws Exception {
-        for (RunnerFeature feature : features) {
+        for (RunnerFeature feature : reversed(features)) {
             feature.stop(this);
         }
     }
@@ -262,7 +270,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
         @Override
         public void testFinished(Description description) throws Exception {
-            for (RunnerFeature feature : features) {
+            for (RunnerFeature feature : reversed(features)) {
                 feature.afterTeardown(FeaturesRunner.this);
             }
         }
