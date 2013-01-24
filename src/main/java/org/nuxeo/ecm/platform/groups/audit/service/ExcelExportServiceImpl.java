@@ -46,10 +46,16 @@ public class ExcelExportServiceImpl implements ExcelExportService {
     public File getExcelGroupsAuditReport() throws ClientException {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         File template = getFileFromPath("templates/audit-groups-template.xls");
+        List<String> groupsId = new ArrayList<String>();
         List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
-        groups = userManager.getAvailableGroups();
+        groupsId = userManager.getGroupIds();
+        for (String groupId : groupsId) {
+            NuxeoGroup group = userManager.getGroup(groupId);
+            groups.add(group);
+        }
         Map beans = new HashMap();
         beans.put("groups", groups);
+        beans.put("userManager", userManager);
         XLSTransformer transformer = new XLSTransformer();
         File resultReport = null;
         try {
