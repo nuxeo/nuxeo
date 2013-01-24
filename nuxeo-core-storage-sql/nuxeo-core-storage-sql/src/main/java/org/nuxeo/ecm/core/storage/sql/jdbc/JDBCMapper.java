@@ -1026,6 +1026,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         try {
             st = connection.createStatement();
             String sql = sqlInfo.dialect.getUpdateReadAclsSql();
+            if (logger.isLogEnabled()) {
+                logger.log(sql);
+            }
             if (sqlInfo.dialect.supportsConcurrentUpdateReadAcls()) {
                 st.execute(sql);
             } else {
