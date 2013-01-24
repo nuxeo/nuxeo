@@ -19,6 +19,8 @@ package org.nuxeo.dam.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_PAGE_CHANGED_EVENT;
+import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -27,6 +29,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +39,7 @@ import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.json.JSONException;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -348,6 +352,16 @@ public class DamSearchActions implements Serializable {
             throws ClientException {
         restHelper.initContextFromRestRequest(docView);
         return "assets";
+    }
+
+    @Observer(value = { CONTENT_VIEW_PAGE_CHANGED_EVENT,
+            CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT }, create = true)
+    public void onContentViewPageProviderChanged(String contentViewName)
+            throws ClientException {
+        String currentContentViewName = getCurrentContentViewName();
+        if (currentContentViewName.equals(contentViewName)) {
+            updateCurrentDocument();
+        }
     }
 
 }
