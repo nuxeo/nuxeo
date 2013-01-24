@@ -1,0 +1,15 @@
+<span xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  id="#{widget.id}">
+  
+   <nxu:set var="formatedSize" value="#{quotaStatsActions.formatQuota(field_0, field_0)}">
+     <h:outputText value="#{formatedSize.valueInUnit}">
+       <f:convertNumber maxFractionDigits="2" />
+     </h:outputText>
+    <h:outputText value=" #{messages[formatedSize.unit]} "/>
+  </nxu:set>
+
+</span>

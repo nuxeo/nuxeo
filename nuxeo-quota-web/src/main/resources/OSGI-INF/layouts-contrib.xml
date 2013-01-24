@@ -3,6 +3,19 @@
 <component name="org.nuxeo.ecm.quota.layouts">
 
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
+  
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="quota_display_size_listing">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/quotaSize_listing_widget_template.xhtml
+      </property>
+    </widgetType>
+    </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
@@ -330,7 +343,7 @@
           <field>data['dc']['lastContributor']</field>
         </fields>
       </widget>
-      <widget name="totalSize" type="int">
+      <widget name="totalSize" type="quota_display_size_listing">
         <labels>
           <label mode="any">TotalSize</label>
         </labels>
