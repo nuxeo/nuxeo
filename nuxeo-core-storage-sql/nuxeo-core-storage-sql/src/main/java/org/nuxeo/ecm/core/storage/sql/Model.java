@@ -350,6 +350,13 @@ public class Model {
 
     public final ModelFulltext fulltextInfo;
 
+    /**
+     * Map of fragment -> info about whether there's a fulltext text field
+     * (PropertyType.STRING), binary field (PropertyType.BINARY), or both
+     * (PropertyType.BOOLEAN).
+     */
+    protected final Map<String, PropertyType> fulltextInfoByFragment;
+
     private final boolean materializeFulltextSyntheticColumn;
 
     public Model(ModelSetup modelSetup) throws StorageException {
@@ -369,6 +376,7 @@ public class Model {
         schemaSimpleTextPaths = new HashMap<String, Set<String>>();
         allPathPropertyInfos = new HashMap<String, ModelProperty>();
         fulltextInfo = new ModelFulltext();
+        fulltextInfoByFragment = new HashMap<String, PropertyType>();
         fragmentsKeys = new HashMap<String, Map<String, ColumnType>>();
         binaryPropertyInfos = new HashMap<String, List<String>>();
 
@@ -776,6 +784,43 @@ public class Model {
         }
     }
 
+    private void inferFulltextInfoByFragment() {
+        // simple fragments
+        for (Entry<String, Map<String, ModelProperty>> es : schemaPropertyKeyInfos.entrySet()) {
+            String fragmentName = es.getKey();
+            Map<String, ModelProperty> infos = es.getValue();
+            if (infos == null) {
+                continue;
+            }
+            PropertyType type = null;
+            for (ModelProperty info : infos.values()) {
+                if (info != null && info.fulltext) {
+                    PropertyType t = info.propertyType;
+                    if (t == PropertyType.STRING || t == PropertyType.BINARY) {
+                        if (type == null) {
+                            type = t;
+                            continue;
+                        }
+                        if (type != t) {
+                            type = PropertyType.BOOLEAN; // both
+                            break;
+                        }
+                    }
+                }
+            }
+            fulltextInfoByFragment.put(fragmentName, type);
+        }
+        // collection fragments
+        for (Entry<String, PropertyType> es : collectionTables.entrySet()) {
+            String fragmentName = es.getKey();
+            PropertyType type = es.getValue();
+            if (type == PropertyType.ARRAY_STRING
+                    || type == PropertyType.ARRAY_BINARY) {
+                fulltextInfoByFragment.put(fragmentName, type.getArrayBaseType());
+            }
+        }
+    }
+
     public ModelProperty getPropertyInfo(String typeName, String propertyName) {
         Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(typeName);
         if (propertyInfos == null) {
@@ -886,6 +931,17 @@ public class Model {
             }
             return null;
         }
+    }
+
+    /**
+     * Checks if a fragment has any field indexable as fulltext.
+     *
+     * @param fragmentName
+     * @return PropertyType.STRING, PropertyType.BINARY, or PropertyType.BOOLEAN
+     *         for both.
+     */
+    public PropertyType getFulltextInfoForFragment(String fragmentName) {
+        return fulltextInfoByFragment.get(fragmentName);
     }
 
     private void addCollectionFragmentInfos(String fragmentName,
@@ -1234,6 +1290,11 @@ public class Model {
             inferMixinPropertyInfos(mixin, type.getSchemaNames());
             log.debug("Fragments for facet " + mixin + ": "
                     + getMixinFragments(mixin));
+        }
+
+        if (!repositoryDescriptor.fulltextDisabled) {
+            // this needs mixin schemas to be computed as well
+            inferFulltextInfoByFragment();
         }
     }
 

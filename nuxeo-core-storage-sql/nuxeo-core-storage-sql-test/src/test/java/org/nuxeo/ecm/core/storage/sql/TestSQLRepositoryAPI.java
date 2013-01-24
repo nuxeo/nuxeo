@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
@@ -70,6 +71,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
@@ -3569,23 +3571,36 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(DummyTestListener.EVENTS_RECEIVED.isEmpty());
     }
 
-    public static final List<String> IGNORED_EVENTS = Arrays.asList(BinaryTextListener.EVENT_NAME);
+    public static final List<String> IGNORED_EVENTS = Arrays.asList(
+            BinaryTextListener.EVENT_NAME,
+            DocumentEventTypes.SESSION_SAVED,
+            EventConstants.EVENT_VCS_INVALIDATIONS);
 
     public static void assertEvents(List<Event> events,
+            String... expectedEventNames) {
+        assertEvents(events, true, expectedEventNames);
+    }
+
+    public static void assertEvents(List<Event> events, boolean ignore,
             String... expectedEventNames) {
         List<String> actual = new ArrayList<String>();
         for (Event event : events) {
             String eventName = event.getName();
-            if (IGNORED_EVENTS.contains(eventName)) {
+            if (ignore && IGNORED_EVENTS.contains(eventName)) {
                 continue;
             }
-            DocumentModel doc = ((DocumentEventContext) event.getContext()).getSourceDocument();
-            if (doc.isProxy()) {
-                eventName += "/p";
-            } else if (doc.isVersion()) {
-                eventName += "/v";
-            } else if (doc.isFolder()) {
-                eventName += "/f";
+            EventContext context = event.getContext();
+            if (context instanceof DocumentEventContext) {
+                DocumentModel doc = ((DocumentEventContext) context).getSourceDocument();
+                if (doc != null) {
+                    if (doc.isProxy()) {
+                        eventName += "/p";
+                    } else if (doc.isVersion()) {
+                        eventName += "/v";
+                    } else if (doc.isFolder()) {
+                        eventName += "/f";
+                    }
+                }
             }
             actual.add(eventName);
         }
@@ -3721,6 +3736,64 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         set = (Set<String>) event.getContext().getProperty(
                 EventConstants.INVAL_MODIFIED_PARENT_IDS);
         assertEquals(0, set.size());
+    }
+
+    @Test
+    public void testFulltextReindexOnCreateDelete() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-listeners-all-contrib.xml");
+        EventService eventService = Framework.getLocalService(EventService.class);
+        eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+
+        // create
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        doc = session.createDocument(doc);
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.save();
+        eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, false,
+                "vcsInvalidations", //
+                "sessionSaved");
+
+        // modify regular
+        doc.setPropertyValue("dc:title", "The title");
+        doc = session.saveDocument(doc);
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.save();
+        eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, false,
+                "vcsInvalidations", //
+                "sessionSaved");
+
+        // modify binary
+        StringBlob blob = new StringBlob("hello world");
+        doc.setPropertyValue("file:content", blob);
+        doc = session.saveDocument(doc);
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.save();
+        eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, false,
+                "event_storage_binaries_doc", //
+                "vcsInvalidations", //
+                "sessionSaved");
+
+        // delete
+        session.removeDocument(doc.getRef());
+
+        DummyTestListener.EVENTS_RECEIVED.clear();
+        session.save();
+        eventService.waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
+        assertEvents(DummyTestListener.EVENTS_RECEIVED, false,
+                "vcsInvalidations", //
+                "sessionSaved");
     }
 
     @Test

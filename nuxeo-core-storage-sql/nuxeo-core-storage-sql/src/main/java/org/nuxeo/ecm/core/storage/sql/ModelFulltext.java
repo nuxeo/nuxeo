@@ -71,6 +71,9 @@ public class ModelFulltext {
     public final Set<String> includedTypes = new HashSet<String>();
 
     public boolean isFulltextIndexable(String typeName) {
+        if (Model.ROOT_TYPE.equals(typeName)) {
+            return false;
+        }
         if (includedTypes.contains(typeName)
                 || (includedTypes.isEmpty() && !excludedTypes.contains(typeName))) {
             return true;
