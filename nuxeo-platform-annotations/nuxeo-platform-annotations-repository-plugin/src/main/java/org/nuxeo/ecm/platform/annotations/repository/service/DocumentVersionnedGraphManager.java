@@ -155,7 +155,7 @@ public class DocumentVersionnedGraphManager implements
                     principal);
             copyGraphFor(repositoryName, versionId, docId, principal);
         } catch (Exception e) {
-            log.error(e);
+            log.error("Cannot restore graph " + docId + " in repository " + repositoryName, e);
         }
     }
 

@@ -42,12 +42,10 @@ import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Relation service.
@@ -513,40 +511,31 @@ public class RelationService extends DefaultComponent implements
         return new ArrayList<String>(graphDescriptions.keySet());
     }
 
+
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
-        if (!Boolean.parseBoolean(Framework.getProperty(
-                "org.nuxeo.ecm.platform.relations.initOnStartup", "true"))) {
-            return;
-        }
+        Thread t = new Thread("relation-service-init") {
+            @Override
+            public void run() {
+                Thread.currentThread().setContextClassLoader(RelationService.class.getClassLoader());
+                log.info("Relation Service initialization");
 
-        boolean isNewTransactionStarted = false;
-
-        ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
-        ClassLoader nuxeoCL = RelationService.class.getClassLoader();
-        try {
-            if (!TransactionHelper.isTransactionActive()) {
-                isNewTransactionStarted = TransactionHelper.startTransaction();
-            }
-            Thread.currentThread().setContextClassLoader(nuxeoCL);
-            log.info("Relation Service initialization");
-
-            for (String graphName : graphDescriptions.keySet()) {
-                log.info("create RDF Graph " + graphName);
-                try {
-                    Graph graph = this.getGraphByName(graphName);
-                    graph.size();
-                } catch (Exception e) {
-                    log.error("Error while initializing graph " + graphName, e);
+                for (String graphName : graphDescriptions.keySet()) {
+                    log.info("create RDF Graph " + graphName);
+                    try {
+                        Graph graph = getGraphByName(graphName);
+                        graph.size();
+                    } catch (Exception e) {
+                        log.error("Error while initializing graph " + graphName, e);
+                    }
                 }
             }
-        } finally {
-            Thread.currentThread().setContextClassLoader(jbossCL);
-            log.debug("JBoss ClassLoader restored");
-
-            if (isNewTransactionStarted) {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
+        };
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            log.error("Cannot join init thread", e);
         }
     }
 
