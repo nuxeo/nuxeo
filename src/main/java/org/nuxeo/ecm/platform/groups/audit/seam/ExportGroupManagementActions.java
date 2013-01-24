@@ -34,6 +34,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.groups.audit.service.ExcelExportService;
@@ -72,7 +73,7 @@ public class ExportGroupManagementActions implements Serializable {
         try {
             ServletOutputStream os = response.getOutputStream();
             InputStream in = new FileInputStream(excelReport);
-            org.nuxeo.common.utils.FileUtils.copy(in, os);
+            FileUtils.copy(in, os);
             os.flush();
             in.close();
             os.close();
