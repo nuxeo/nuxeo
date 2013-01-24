@@ -1,23 +1,10 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
-
-    <!--[if lte IE 8]><script src="#{baseURL}scripts/jquery/flot/excanvas.min.js"></script><![endif]-->
-    <script src="#{baseURL}scripts/jquery/flot/jquery.flot.min.js"></script>
-    <script src="#{baseURL}scripts/jquery/flot/jquery.flot.pie.min.js"></script>
-    <style>
-    .graph-area {
-	  width: 400px;
-	  height: 150px;	
-     }
-    </style>
-   <script type="text/javascript">
-    <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>
-    <h:outputText  value="var currentDocId='#{currentDocument.id}';" /> 
-  jQuery(document).ready(function() {
-	displayQuotaStats(currentDocId, currentLang);
-});
-   </script>  
-<div id="quota_stats" class="graph-area"/>
+<div class="summary"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <a4j:region id="documentViewRegion">
+    <a4j:outputPanel id="documentViewPanel">
+      <nxl:layout value="#{currentDocument}" mode="view" name="tab_quota_statistics_layout" />
+    </a4j:outputPanel>
+  </a4j:region>
 </div>

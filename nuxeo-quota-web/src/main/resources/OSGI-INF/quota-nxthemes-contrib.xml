@@ -33,7 +33,7 @@
     </resource>
     <resource name="displayQuotaStats.js">
       <path>scripts/displayQuotaStats.js</path>
-      <require>query.flot.pie.min.js</require>
+      <require>jquery.flot.pie.min.js</require>
       <require>automation.js</require>
     </resource>
 

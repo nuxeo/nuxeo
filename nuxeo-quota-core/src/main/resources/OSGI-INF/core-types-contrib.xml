@@ -8,6 +8,9 @@
 
     <schema name="documents_size_statistics" prefix="dss"
       src="schemas/documents_size_statistics.xsd"/>
+    
+    <schema name="quota_heaviest_containers_cv" prefix="quota_heaviest_containers_cv" 
+      src="schemas/quota_heaviest_containers_cv.xsd"/>
 
   </extension>
 
@@ -20,6 +23,10 @@
     <facet name="DocumentsSizeStatistics">
       <schema name="documents_size_statistics" />
     </facet>
+    
+    <doctype name="quota_heaviest_containers_cv" extends="Document">
+     <schema name="quota_heaviest_containers_cv"/>
+    </doctype>
 
   </extension>
 

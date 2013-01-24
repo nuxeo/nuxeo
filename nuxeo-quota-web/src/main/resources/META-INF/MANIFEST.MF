@@ -6,4 +6,5 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Nuxeo-component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/layouts-contrib.xml,
- OSGI-INF/quota-nxthemes-contrib.xml
+ OSGI-INF/quota-nxthemes-contrib.xml,
+ OSGI-INF/quota-contentviews-contrib.xml
