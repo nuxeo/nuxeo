@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.document.quota.themes">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+ <!-- views -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <resource>automation.js</resource>
+      <resource>jquery.flot.pie.min.js</resource>
+      <resource>displayQuotaStats.js</resource>
+    </view>
+
+  </extension>
+
+  <!-- resources -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="automation.js">
+      <path>scripts/automation.js</path>
+      <require>jquery.js</require>
+    </resource>
+    <resource name="jquery.flot.pie.min.js">
+      <path>scripts/jquery/flot/jquery.flot.min.js</path>
+      <path>scripts/jquery/flot/jquery.flot.pie.min.js</path>
+      <require>jquery.js</require>
+    </resource>
+    <resource name="displayQuotaStats.js">
+      <path>scripts/displayQuotaStats.js</path>
+      <require>query.flot.pie.min.js</require>
+      <require>automation.js</require>
+    </resource>
+
+  </extension>
+
+</component>

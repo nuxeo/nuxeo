@@ -1,104 +1,24 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
-  xmlns:rich="http://richfaces.org/rich"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:nxh="http://nuxeo.org/nxweb/html">
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-<h:form enctype="multipart/form-data" id="quota_edit">
+  <div class="tabsBar subtabsBar">
+    <h:form id="document_quota">
+      <nxu:dataList layout="unorderedList" var="subTab"
+        value="#{subTabsActionsList}"
+        itemStyleClass="#{nxu:test(webActions.currentSubTabId == subTab.id, 'selected', '')}">
+        <nxd:restDocumentLink document="#{currentDocument}"
+          tab="#{webActions.currentTabId}" subTab="#{subTab.id}">
+          <h:outputText value="#{messages[subTab.label]}" />
+        </nxd:restDocumentLink>
+      </nxu:dataList>
+    </h:form>
+  </div>
+  <div style="clear: both"></div>
 
-  <script>
-
-  var GB_label = "#{messages['label.unit.GB']}";
-  var MB_label = "#{messages['label.unit.MB']}";
-  var KB_label = "#{messages['label.unit.KB']}";
-  var B_label = "#{messages['label.unit.B']}";
-
-  jQuery(document).ready(function() {
-    setInitialValue(#{currentQuotaDoc.quotaInfo.maxQuota.value});
-    jQuery("#quota_edit\\:nxl_edit_quota\\:sliderInput").css("display","none");
-  });
-
-  function setInitialValue(value) {
-    value = Number(value);
-    if (value == -1) {
-      setUnlimited(true);
-    } else {
-      value = Math.log(value);
-      console.log(value);
-      var sVal = jQuery("#quota_edit\\:nxl_edit_quota\\:slider").find("input");
-      sVal.val(value);
-      sVal.trigger('focus');
-      sVal.trigger('blur');
-    }
-  }
-
-  function changeUnlimited(chk) {
-     setUnlimited(jQuery(chk).attr("checked"));
-  }
-
-  function setUnlimited(isUnlimited) {
-    if (isUnlimited) {
-      jQuery("#unlimitedChk").attr("checked", true);
-      jQuery('#quota_edit\\:nxl_edit_quota\\:maxValue').val("-1");
-      jQuery('#sliderDisplay').html("");
-      jQuery("#sliderTable").css("display","none")
-
-    } else {
-      jQuery("#unlimitedChk").removeAttr("checked");
-      jQuery("#sliderTable").css("display","block")
-      var sVal = jQuery("#quota_edit\\:nxl_edit_quota\\:slider").find("input");
-      sVal.trigger('focus');
-      sVal.trigger('blur');
-      displayQuotaSize(sVal.val());
-    }
-  }
-
-  function displayQuotaSize(value) {
-    var gb = 1024*1024*1024;
-    var mb = 1024*1024;
-    var kb = 1024;
-    var label = "";
-    value = Number(value);
-    value = Math.exp(value);
-    value = Math.round(value / 1000)*1000;
-    jQuery('#quota_edit\\:nxl_edit_quota\\:maxValue').val(value);
-    if (value > gb) {
-      label = Math.round(value/gb) + " " + GB_label;
-    } else if (value > mb) {
-      label = Math.round(value/mb) + " " + MB_label;
-    } else if (value > kb) {
-      label = Math.round(value/kb) + " " + KB_label;
-    } else {
-     label = value + " " + B_label;
-    }
-    jQuery('#sliderDisplay').html(label);
-  }
-  </script>
-
-  <nxu:set var="canEditQuota" cache="true" value="#{webActions.checkFilter('editQuota')}">
-    <nxl:layout mode="#{nxu:test(canEditQuota, 'edit', 'view')}" name="edit_quota" value="#{currentDocument}" />
-  </nxu:set>
-
-  <p class="buttonsGadget">
-    <nxu:set var="actions"
-      value="#{webActions.getActionsList('EDIT_DOCUMENT_FORM')}"
-      cache="true">
-      <c:forEach var="action" items="#{actions}">
-        <nxh:commandButton action="#{action.getLink()}"
-          immediate="#{action.immediate}"
-          onclick="#{action.confirm}"
-          id="edit_doc_#{action.id}"
-          value="#{messages[action.label]}"
-          styleClass="button" />
-      </c:forEach>
-    </nxu:set>
-  </p>
-
-</h:form>
-
+  <div class="tabsContent">
+    <ui:include src="#{webActions.currentSubTabAction.link}"/>
+  </div>
 
 </div>

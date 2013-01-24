@@ -17,6 +17,16 @@
       <filter-id>QUOTA_MANAGABLE_DOCTYPES</filter-id>
     </action>
 
+    <action id="TAB_SET_QUOTA" link="/incl/tabs/document_set_quota.xhtml"
+      order="300" label="action.view.quota" icon="/icons/file.gif">
+      <category>TAB_QUOTA_sub_tab</category>
+    </action>
+    
+    <action id="TAB_QUOTA_STATS" link="/incl/tabs/document_quota_statistics.xhtml"
+      order="200" label="action.view.quota.statistics" icon="/icons/file.gif">
+      <category>TAB_QUOTA_sub_tab</category>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
