@@ -99,6 +99,12 @@ public class Join implements Serializable, Comparable<Join> {
     }
 
     public String getClause() {
+        String f = on1.toLowerCase();
+        if ((f.contains("target") && !f.contains("proxies")) || f.contains("source")) {
+            // temporary fix cast uuid to varchar because relation table
+            // has varchar source and target field
+            return String.format("%s = %s::varchar", on1, on2);
+        }
         return String.format("%s = %s", on1, on2);
     }
 
