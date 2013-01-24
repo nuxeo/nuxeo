@@ -39,9 +39,12 @@
                             value="#{messages['command.createGroup']}" />
                         </a4j:commandLink></li>
                       <li><h:commandButton styleClass="button"
-                          action="#{exportGroupManagementActions.downloadExcelExport}"
+                          action="#{exportGroupManagementActions.downloadExcelAllGroupsExport}"
                           value="#{messages['action.groups.audit.export']}">
                         </h:commandButton></li>
+                      <li><h:commandButton styleClass="button"
+                          action="#{exportGroupManagementActions.downloadExcelListedGroupsExport}"
+                          value="#{messages['action.groups.audit.export.list']}"></h:commandButton></li>
                     </ul>
                   </div>
                 </h:form>

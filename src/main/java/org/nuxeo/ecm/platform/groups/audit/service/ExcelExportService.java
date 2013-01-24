@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.groups.audit.service;
 import java.io.File;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 
 /**
  * Excel Export service
@@ -25,6 +26,9 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface ExcelExportService {
 
-    File getExcelGroupsAuditReport() throws ClientException;
+    File getExcelAllGroupsAuditReport() throws ClientException;
+
+    File getExcelListedGroupsAuditReport(ContentView contentView)
+            throws ClientException;
 
 }

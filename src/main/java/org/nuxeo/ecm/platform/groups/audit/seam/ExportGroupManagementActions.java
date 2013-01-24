@@ -37,6 +37,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.groups.audit.service.ExcelExportService;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
@@ -59,11 +60,14 @@ public class ExportGroupManagementActions implements Serializable {
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    public String downloadExcelExport() throws ClientException {
+    @In(create = true)
+    protected transient ContentViewActions contentViewActions;
+
+    public String downloadExcelAllGroupsExport() throws ClientException {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext econtext = context.getExternalContext();
         HttpServletResponse response = (HttpServletResponse) econtext.getResponse();
-        File excelReport = excelExportGroupsDefinition();
+        File excelReport = excelExportAllGroupsDefinition();
 
         response.setContentType(new MimetypesFileTypeMap().getContentType(excelReport));
         response.setHeader("Content-disposition", "attachment; filename=\""
@@ -84,9 +88,38 @@ public class ExportGroupManagementActions implements Serializable {
         return null;
     }
 
-    protected File excelExportGroupsDefinition() throws ClientException {
-        ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
-        return exportService.getExcelGroupsAuditReport();
+    public String downloadExcelListedGroupsExport() throws ClientException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext econtext = context.getExternalContext();
+        HttpServletResponse response = (HttpServletResponse) econtext.getResponse();
+        File excelReport = excelExportListedGroupsDefinition();
+
+        response.setContentType(new MimetypesFileTypeMap().getContentType(excelReport));
+        response.setHeader("Content-disposition", "attachment; filename=\""
+                + excelReport.getName() + "\"");
+        response.setHeader("Content-Length",
+                String.valueOf(excelReport.length()));
+        try {
+            ServletOutputStream os = response.getOutputStream();
+            InputStream in = new FileInputStream(excelReport);
+            FileUtils.copy(in, os);
+            os.flush();
+            in.close();
+            os.close();
+            context.responseComplete();
+        } catch (Exception e) {
+            log.error("Failure : " + e.getMessage());
+        }
+        return null;
     }
 
+    protected File excelExportAllGroupsDefinition() throws ClientException {
+        ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
+        return exportService.getExcelAllGroupsAuditReport();
+    }
+
+    protected File excelExportListedGroupsDefinition() throws ClientException {
+        ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
+        return exportService.getExcelListedGroupsAuditReport(contentViewActions.getCurrentContentView());
+    }
 }

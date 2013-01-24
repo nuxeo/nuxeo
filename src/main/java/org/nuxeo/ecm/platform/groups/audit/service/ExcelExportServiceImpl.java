@@ -30,7 +30,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -43,7 +46,7 @@ public class ExcelExportServiceImpl implements ExcelExportService {
     public static final Log log = LogFactory.getLog(ExcelExportServiceImpl.class);
 
     @Override
-    public File getExcelGroupsAuditReport() throws ClientException {
+    public File getExcelAllGroupsAuditReport() throws ClientException {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         File template = getFileFromPath("templates/audit-groups-template.xls");
         List<String> groupsId = new ArrayList<String>();
@@ -51,6 +54,42 @@ public class ExcelExportServiceImpl implements ExcelExportService {
         groupsId = userManager.getGroupIds();
         for (String groupId : groupsId) {
             NuxeoGroup group = userManager.getGroup(groupId);
+            groups.add(group);
+        }
+        Map beans = new HashMap();
+        beans.put("groups", groups);
+        beans.put("userManager", userManager);
+        XLSTransformer transformer = new XLSTransformer();
+        File resultReport = null;
+        try {
+            resultReport = new File(getWorkingDir(), "audit-groups.xls");
+            resultReport.createNewFile();
+            transformer.transformXLS(template.getAbsolutePath(), beans,
+                    resultReport.getAbsolutePath());
+        } catch (IOException e) {
+            log.debug("Unable to create excel report result file:"
+                    + e.getCause().getMessage());
+        } catch (ParsePropertyException e) {
+            log.debug("Unable to apply excel template to generate report:"
+                    + e.getCause().getMessage());
+        } catch (InvalidFormatException e) {
+            log.debug("Unable to apply excel template to generate report:"
+                    + e.getCause().getMessage());
+        }
+        return resultReport;
+    }
+
+    @Override
+    public File getExcelListedGroupsAuditReport(ContentView contentView)
+            throws ClientException {
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        File template = getFileFromPath("templates/audit-groups-template.xls");
+        List<String> groupsId = new ArrayList<String>();
+        List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
+        PageProvider currentPP = contentView.getCurrentPageProvider();
+        List<DocumentModel> groupModels = (ArrayList<DocumentModel>) currentPP.getCurrentPage();
+        for (DocumentModel groupModel : groupModels) {
+            NuxeoGroup group = userManager.getGroup(groupModel.getId());
             groups.add(group);
         }
         Map beans = new HashMap();
@@ -90,4 +129,5 @@ public class ExcelExportServiceImpl implements ExcelExportService {
         workingDir.mkdir();
         return workingDir;
     }
+
 }
