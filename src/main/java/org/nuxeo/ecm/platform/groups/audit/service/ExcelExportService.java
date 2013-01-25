@@ -19,7 +19,10 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * Excel Export service
+ * Excel Export service provides contributions registration to build excel
+ * export with template and injected data (See examples in
+ * audit-groups-template.xls)
+ * 
  * @since 5.7
  */
 public interface ExcelExportService {
