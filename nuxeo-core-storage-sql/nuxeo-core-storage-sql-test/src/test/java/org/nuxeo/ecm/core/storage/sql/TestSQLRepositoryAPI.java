@@ -25,8 +25,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.After;
@@ -81,7 +83,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.EventConstants;
-import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -95,14 +96,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
-    public TestSQLRepositoryAPI() {
-        super();
-    }
-
-    public TestSQLRepositoryAPI(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -111,10 +105,12 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         session.cancel();
         closeSession();
+        DummyTestListener.clear();
         super.tearDown();
     }
 
@@ -3562,7 +3558,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         // Reset the listener
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         DocumentModel versionDoc = session.getLastDocumentVersion(doc.getRef());
         versionDoc.setProperty("dublincore", "issued", new GregorianCalendar());
         session.saveDocument(versionDoc);
@@ -3571,22 +3567,47 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(DummyTestListener.EVENTS_RECEIVED.isEmpty());
     }
 
-    public static final List<String> IGNORED_EVENTS = Arrays.asList(
-            BinaryTextListener.EVENT_NAME,
+    private static final List<String> IGNORED_EVENTS = Arrays.asList(
             DocumentEventTypes.SESSION_SAVED,
             EventConstants.EVENT_VCS_INVALIDATIONS);
 
-    public static void assertEvents(List<Event> events,
-            String... expectedEventNames) {
-        assertEvents(events, true, expectedEventNames);
+    private static final List<String> IGNORE_VCS = Arrays.asList(
+            EventConstants.EVENT_VCS_INVALIDATIONS);
+
+    public static void assertEvents(String... expectedEventNames) {
+        assertEvents(IGNORED_EVENTS, expectedEventNames);
     }
 
-    public static void assertEvents(List<Event> events, boolean ignore,
+    public static void assertEvents(List<String> ignored,
             String... expectedEventNames) {
+        assertEquals(Arrays.asList(expectedEventNames),
+                getDummyListenerEvents(ignored));
+    }
+
+    public static void assertEventSet(List<String> ignored,
+            String... expectedEventNames) {
+        List<String> list = getDummyListenerEvents(ignored);
+        Map<String, AtomicInteger> map = new HashMap<String, AtomicInteger>();
+        for (String name : list) {
+            AtomicInteger i = map.get(name);
+            if (i == null) {
+                map.put(name, i = new AtomicInteger(0));
+            }
+            i.incrementAndGet();
+        }
+        Set<String> set = new HashSet<String>();
+        for (Entry<String, AtomicInteger> es : map.entrySet()) {
+            set.add(es.getKey() + '=' + es.getValue());
+        }
+        assertEquals(new HashSet<String>(Arrays.asList(expectedEventNames)),
+                set);
+    }
+
+    protected static List<String> getDummyListenerEvents(List<String> ignored) {
         List<String> actual = new ArrayList<String>();
-        for (Event event : events) {
+        for (Event event : DummyTestListener.EVENTS_RECEIVED) {
             String eventName = event.getName();
-            if (ignore && IGNORED_EVENTS.contains(eventName)) {
+            if (ignored != null  && ignored.contains(eventName)) {
                 continue;
             }
             EventContext context = event.getContext();
@@ -3604,7 +3625,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
             }
             actual.add(eventName);
         }
-        assertEquals(Arrays.asList(expectedEventNames), actual);
+        return actual;
     }
 
     @Test
@@ -3617,29 +3638,29 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DocumentModel folder = new DocumentModelImpl("/", "fold", "Folder");
         folder = session.createDocument(folder);
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+        assertEvents( //
                 "aboutToCheckIn", //
                 "documentCheckedIn", //
                 "documentCreated/v");
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         session.checkOut(doc.getRef());
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+        assertEvents( //
                 "aboutToCheckout", //
                 "documentCheckedOut");
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         session.createProxy(doc.getRef(), folder.getRef()); // live proxy
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+        assertEvents( //
                 "documentCreated/p", //
                 "documentProxyPublished/p", //
                 "sectionContentPublished/f");
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         session.publishDocument(doc, folder, false);
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+        assertEvents( //
                 "aboutToCheckIn", //
                 "documentCheckedIn", //
                 "documentCreated/v", //
@@ -3648,22 +3669,22 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "sectionContentPublished/f");
 
         // auto-checkout
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         doc.setPropertyValue("dc:title", "title2");
         doc = session.saveDocument(doc);
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+        assertEvents( //
                 "beforeDocumentModification", //
                 "aboutToCheckout", //
                 "documentCheckedOut", //
                 "documentModified");
 
         // save with versioning
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         doc.setPropertyValue("dc:title", "title2");
         doc.putContextData(VersioningService.VERSIONING_OPTION,
                 VersioningOption.MINOR);
         doc = session.saveDocument(doc);
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+        assertEvents( //
                 "beforeDocumentModification", //
                 "aboutToCheckIn", //
                 "documentCheckedIn", //
@@ -3673,9 +3694,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.checkOut();
 
         // restore to version
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         session.restoreToVersion(doc.getRef(), verRef, false, false);
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, //
+        assertEvents( //
                 "aboutToCheckIn", //
                 "documentCheckedIn", //
                 "documentCreated/v", //
@@ -3689,18 +3710,21 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     @Test
     public void testInvalidationEvents() throws Exception {
         Event event;
-        Boolean local;
         Set<String> set;
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-listeners-invalidations-contrib.xml");
+        EventServiceImpl eventService = (EventServiceImpl) Framework.getLocalService(EventService.class);
 
         DocumentModel root = session.getRootDocument();
+        session.save();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "doc", "File");
         doc = session.createDocument(doc);
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        eventService.waitForAsyncCompletion();
+        DummyTestListener.clearForThisThread();
         session.save(); // should send invalidations
+        eventService.waitForAsyncCompletion(); // for fulltext
         assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
         event = DummyTestListener.EVENTS_RECEIVED.get(0);
         // NXP-5808 cannot distinguish cluster invalidations
@@ -3721,8 +3745,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // change just one property
         doc.setProperty("dublincore", "title", "t1");
         doc = session.saveDocument(doc);
-        DummyTestListener.EVENTS_RECEIVED.clear();
+
+        eventService.waitForAsyncCompletion();
+        DummyTestListener.clearForThisThread();
         session.save(); // should send invalidations
+        eventService.waitForAsyncCompletion(); // for fulltext
         assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
         event = DummyTestListener.EVENTS_RECEIVED.get(0);
         // NXP-5808 cannot distinguish cluster invalidations
@@ -3750,50 +3777,41 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         doc = session.createDocument(doc);
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         session.save();
         eventService.waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, false,
-                "vcsInvalidations", //
-                "sessionSaved");
+        assertEventSet(IGNORE_VCS, "sessionSaved=1");
 
         // modify regular
         doc.setPropertyValue("dc:title", "The title");
         doc = session.saveDocument(doc);
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         session.save();
         eventService.waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, false,
-                "vcsInvalidations", //
-                "sessionSaved");
+        assertEventSet(IGNORE_VCS, "sessionSaved=2");
 
         // modify binary
         StringBlob blob = new StringBlob("hello world");
         doc.setPropertyValue("file:content", blob);
         doc = session.saveDocument(doc);
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         session.save();
         eventService.waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, false,
-                "event_storage_binaries_doc", //
-                "vcsInvalidations", //
-                "sessionSaved");
+        assertEventSet(IGNORE_VCS, "sessionSaved=3");
 
         // delete
         session.removeDocument(doc.getRef());
 
-        DummyTestListener.EVENTS_RECEIVED.clear();
+        DummyTestListener.clear();
         session.save();
         eventService.waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
-        assertEvents(DummyTestListener.EVENTS_RECEIVED, false,
-                "vcsInvalidations", //
-                "sessionSaved");
+        assertEventSet(IGNORE_VCS, "sessionSaved=1");
     }
 
     @Test

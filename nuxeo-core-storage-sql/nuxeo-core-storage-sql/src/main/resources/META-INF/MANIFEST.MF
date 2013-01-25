@@ -15,8 +15,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.2.qualifier
 Eclipse-BuddyPolicy: registered, dependent
 Eclipse-RegisterBuddy: org.nuxeo.common
-Nuxeo-Component: OSGI-INF/listener-contrib.xml,
-  OSGI-INF/querymaker-service.xml,
+Nuxeo-Component: OSGI-INF/querymaker-service.xml,
   OSGI-INF/querymaker-contrib.xml,
   OSGI-INF/reload-contrib.xml
 Bundle-ManifestVersion: 2

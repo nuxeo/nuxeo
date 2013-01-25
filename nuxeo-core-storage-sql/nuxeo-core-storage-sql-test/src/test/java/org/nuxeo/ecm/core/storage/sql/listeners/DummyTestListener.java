@@ -23,13 +23,24 @@ public class DummyTestListener implements EventListener {
 
     public static final List<Event> EVENTS_RECEIVED = Collections.synchronizedList(new LinkedList<Event>());
 
+    public static String threadName;
+
     @Override
     public void handleEvent(Event event) {
+        if (threadName != null && !Thread.currentThread().getName().equals(threadName)) {
+            return;
+        }
         EVENTS_RECEIVED.add(event);
     }
 
     public static void clear() {
         EVENTS_RECEIVED.clear();
+        threadName = null;
+    }
+
+    public static void clearForThisThread() {
+        clear();
+        threadName = Thread.currentThread().getName();
     }
 
 }

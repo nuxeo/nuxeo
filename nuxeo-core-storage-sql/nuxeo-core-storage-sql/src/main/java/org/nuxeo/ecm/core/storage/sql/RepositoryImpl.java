@@ -344,6 +344,14 @@ public class RepositoryImpl implements Repository {
         return lockManager;
     }
 
+    public Model getModel() {
+        return model;
+    }
+
+    public Class<? extends FulltextParser> getFulltextParserClass() {
+        return fulltextParserClass;
+    }
+
     /*
      * ----- javax.resource.cci.ConnectionFactory -----
      */

@@ -50,8 +50,12 @@ public abstract class SQLBaseProperty implements Property {
             ));
 
     public static boolean isSpecialSystemProperty(String name) {
-        return name != null && ( VERSION_WRITABLE_PROPS.contains(name)
-                || name.startsWith(Model.FULLTEXT_BINARYTEXT_PROP));
+        if (name == null) {
+            return false;
+        }
+        return VERSION_WRITABLE_PROPS.contains(name) //
+                || name.startsWith(Model.FULLTEXT_BINARYTEXT_PROP) //
+                || name.startsWith(Model.FULLTEXT_SIMPLETEXT_PROP);
     }
 
     public SQLBaseProperty(Type type, String name, boolean readonly) {

@@ -42,11 +42,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -55,10 +55,12 @@ import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.FulltextUpdaterInfo;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
-import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
@@ -91,8 +93,6 @@ public class SessionImpl implements Session, XAResource {
 
     private final Model model;
 
-    private final EventProducer eventProducer;
-
     protected final FulltextParser fulltextParser;
 
     // public because used by unit tests
@@ -122,12 +122,6 @@ public class SessionImpl implements Session, XAResource {
         context = new PersistenceContext(model, mapper, this);
         live = true;
         readAclsChanged = false;
-
-        try {
-            eventProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            throw new StorageException("Unable to find EventProducer", e);
-        }
 
         try {
             fulltextParser = repository.fulltextParserClass.newInstance();
@@ -314,11 +308,28 @@ public class SessionImpl implements Session, XAResource {
 
     protected void flush() throws StorageException {
         checkThread();
+        List<Work> works;
         if (!repository.getRepositoryDescriptor().fulltextDisabled) {
-            updateFulltext();
+            works = getFulltextWork();
+        } else {
+            works = Collections.emptyList();
         }
         doFlush();
+        scheduleWork(works);
         checkInvalidationsConflict();
+    }
+
+    protected void scheduleWork(List<Work> works) {
+        // do async fulltext indexing only if high-level sessions are available
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        if (repositoryManager != null && !works.isEmpty()) {
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            for (Work work : works) {
+                // schedule work post-commit
+                // in non-tx mode, this may execute it nearly immediately
+                workManager.schedule(work, true);
+            }
+        }
     }
 
     protected void doFlush() throws StorageException {
@@ -342,15 +353,33 @@ public class SessionImpl implements Session, XAResource {
     }
 
     /**
-     * Update fulltext. Called at save() time.
+     * Gets the fulltext updates to do. Called at save() time.
+     *
+     * @return a list of {@link Work} instances to schedule post-commit.
      */
-    protected void updateFulltext() throws StorageException {
+    protected List<Work> getFulltextWork() throws StorageException {
         Set<Serializable> dirtyStrings = new HashSet<Serializable>();
         Set<Serializable> dirtyBinaries = new HashSet<Serializable>();
         context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
         if (dirtyStrings.isEmpty() && dirtyBinaries.isEmpty()) {
-            return;
+            return Collections.emptyList();
         }
+
+        List<Work> works = new LinkedList<Work>();
+        Work work = getFulltextSimpleWork(dirtyStrings);
+        if (work != null) {
+            works.add(work);
+        }
+        work = getFulltextBinariesWork(dirtyBinaries);
+        if (work != null) {
+            works.add(work);
+        }
+        return works;
+    }
+
+    protected Work getFulltextSimpleWork(Set<Serializable> dirtyStrings)
+            throws StorageException {
+        List<FulltextUpdaterInfo> infos = new ArrayList<FulltextUpdaterInfo>();
 
         // update simpletext on documents with dirty strings
         for (Serializable docId : dirtyStrings) {
@@ -364,11 +393,15 @@ public class SessionImpl implements Session, XAResource {
                 // cannot happen
                 continue;
             }
+            if (document.isProxy()) {
+                // proxies don't have any fulltext attached, it's
+                // the target document that carries it
+                continue;
+            }
             String documentType = document.getPrimaryType();
             String[] mixinTypes = document.getMixinTypes();
 
-            if (Boolean.FALSE.equals(model.getFulltextInfo().isFulltextIndexable(
-                    documentType))) {
+            if (!model.getFulltextInfo().isFulltextIndexable(documentType)) {
                 continue;
             }
 
@@ -384,47 +417,46 @@ public class SessionImpl implements Session, XAResource {
                     // index configured fields
                     paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
                 }
-                String strings = fulltextParser.findFulltext(indexName, paths);
-
-                // Set the computed full text
-                // On INSERT/UPDATE a trigger will change the actual fulltext
-                String propName = model.FULLTEXT_SIMPLETEXT_PROP
-                        + model.getFulltextIndexSuffix(indexName);
-                document.setSimpleProperty(propName, strings);
+                String text = fulltextParser.findFulltext(indexName, paths);
+                FulltextUpdaterInfo info = new FulltextUpdaterInfo();
+                info.docId = (String) docId;
+                info.indexName = indexName;
+                info.text = text;
+                infos.add(info);
             }
         }
-
-        updateFulltextBinaries(dirtyBinaries);
+        if (infos.isEmpty()) {
+            return null;
+        }
+        // true = simple text
+        Work work = new FulltextUpdaterWork(true, repository.getName(), infos);
+        return work;
     }
 
-    protected void updateFulltextBinaries(final Set<Serializable> dirtyBinaries)
+    protected Work getFulltextBinariesWork(final Set<Serializable> dirtyBinaries)
             throws StorageException {
         if (dirtyBinaries.isEmpty()) {
-            return;
+            return null;
         }
 
-        // mark indexation in progress
+        // mark indexing in progress, so that future copies (including versions)
+        // will be indexed as well
         for (Node node : getNodesByIds(new ArrayList<Serializable>(
                 dirtyBinaries))) {
-            if (Boolean.FALSE.equals(model.getFulltextInfo().isFulltextIndexable(
-                    node.getPrimaryType()))) {
+            if (!model.getFulltextInfo().isFulltextIndexable(
+                    node.getPrimaryType())) {
                 continue;
             }
             node.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
                     node.getId());
         }
 
-        log.debug("Queued documents for asynchronous fulltext extraction: "
-                + dirtyBinaries.size());
-        EventContext eventContext = new EventContextImpl(dirtyBinaries,
-                model.getFulltextInfo(), repository.fulltextParserClass);
-        eventContext.setRepositoryName(getRepositoryName());
-        Event event = eventContext.newEvent(BinaryTextListener.EVENT_NAME);
-        try {
-            eventProducer.fireEvent(event);
-        } catch (ClientException e) {
-            throw new StorageException(e);
-        }
+        // FulltextExtractorWork does fulltext extraction using converters
+        // and then schedules a FulltextUpdaterWork to write the results
+        // single-threaded
+        Work work = new FulltextExtractorWork(repository.getName(),
+                dirtyBinaries);
+        return work;
     }
 
     /**
