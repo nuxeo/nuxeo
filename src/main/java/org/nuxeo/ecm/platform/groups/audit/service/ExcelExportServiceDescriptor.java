@@ -14,8 +14,12 @@
 
 package org.nuxeo.ecm.platform.groups.audit.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -35,15 +39,26 @@ public class ExcelExportServiceDescriptor implements Serializable {
     @XNode("@factoryClass")
     private Class<? extends ExcelExportFactory> factoryClass;
 
-    @XNode("@template")
-    private String template;
+    private File template;
 
     public String getName() {
         return name;
     }
 
-    public String getTemplate() {
+    public File getTemplate() {
         return template;
+    }
+
+    @XNode("@template")
+    public void setTemplate(String templatePath) {
+        URL templateUrl = ExcelExportServiceDescriptor.class.getResource("/"
+                + templatePath);
+        try {
+            template = File.createTempFile("ExcelTemplate", ".xls");
+            template.createNewFile();
+            FileUtils.copyURLToFile(templateUrl, template);
+        } catch (IOException e) {
+        }
     }
 
     public ExcelExportFactory getFactory() throws InstantiationException,

@@ -16,16 +16,13 @@
 package org.nuxeo.ecm.platform.groups.audit.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jxls.exception.ParsePropertyException;
 import net.sf.jxls.transformer.XLSTransformer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -42,9 +39,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
 
     public static final String EXCEL_EXPORT_EP = "excelExportFactory";
 
-    protected static final Map<String, ExcelExportFactory> exportExcelFactories = new HashMap<String, ExcelExportFactory>();
-
-    protected static final Map<String, File> exportExcelTemplates = new HashMap<String, File>();
+    protected static final Map<String, ExcelExportServiceDescriptor> exportExcelRegistry = new HashMap<String, ExcelExportServiceDescriptor>();
 
     @Override
     public void registerContribution(Object contribution,
@@ -52,11 +47,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
             throws Exception {
         if (EXCEL_EXPORT_EP.equals(extensionPoint)) {
             ExcelExportServiceDescriptor desc = (ExcelExportServiceDescriptor) contribution;
-            String templatePath = desc.getTemplate();
-            ExcelExportFactory excelExportFactory = desc.getFactory();
-            exportExcelFactories.put(desc.getName(), excelExportFactory);
-            exportExcelTemplates.put(desc.getName(),
-                    getFileFromPath(templatePath));
+            exportExcelRegistry.put(desc.getName(), desc);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -78,19 +69,13 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
         try {
             resultReport = new File(getWorkingDir(), "audit-groups.xls");
             resultReport.createNewFile();
+            ExcelExportServiceDescriptor descriptor = exportExcelRegistry.get(exportName);
             transformer.transformXLS(
-                    ((File) (exportExcelTemplates.get(exportName))).getAbsolutePath(),
-                    exportExcelFactories.get(exportName).getDataToInject(),
+                    descriptor.getTemplate().getAbsolutePath(),
+                    descriptor.getFactory().getDataToInject(),
                     resultReport.getAbsolutePath());
-        } catch (IOException e) {
-            log.debug("Unable to create excel report result file:"
-                    + e.getCause().getMessage());
-        } catch (ParsePropertyException e) {
-            log.debug("Unable to apply excel template to generate report:"
-                    + e.getCause().getMessage());
-        } catch (InvalidFormatException e) {
-            log.debug("Unable to apply excel template to generate report:"
-                    + e.getCause().getMessage());
+        } catch (Exception e) {
+            log.error("Unable to create excel report result file:", e);
         }
         return resultReport;
     }
@@ -105,24 +90,14 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
         try {
             resultReport = new File(getWorkingDir(), "audit-groups.xls");
             resultReport.createNewFile();
+            ExcelExportServiceDescriptor descriptor = exportExcelRegistry.get(exportName);
             transformer.transformXLS(
-                    ((File) (exportExcelTemplates.get(exportName))).getAbsolutePath(),
-                    data, resultReport.getAbsolutePath());
-        } catch (IOException e) {
-            log.debug("Unable to create excel report result file:"
-                    + e.getCause().getMessage());
-        } catch (ParsePropertyException e) {
-            log.debug("Unable to apply excel template to generate report:"
-                    + e.getCause().getMessage());
-        } catch (InvalidFormatException e) {
-            log.debug("Unable to apply excel template to generate report:"
-                    + e.getCause().getMessage());
+                    descriptor.getTemplate().getAbsolutePath(), data,
+                    resultReport.getAbsolutePath());
+        } catch (Exception e) {
+            log.error("Unable to create excel report result file:", e);
         }
         return resultReport;
-    }
-
-    private static File getFileFromPath(String path) {
-        return FileUtils.getResourceFileFromContext(path);
     }
 
     protected File getWorkingDir() {
