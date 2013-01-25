@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.groups.audit.ExportService.contrib">
+
+  <extension point="excelExportFactory"
+    target="org.nuxeo.ecm.platform.groups.audit.ExportService">
+    <ExcelExport name="exportAllGroupsAudit" template="templates/audit-groups-template.xls"
+      factoryClass="org.nuxeo.ecm.platform.groups.audit.factory.ExcelExportAllGroups" />
+    <ExcelExport name="exportListedGroupsAudit" template="templates/audit-groups-template.xls" />
+  </extension>
+
+</component>

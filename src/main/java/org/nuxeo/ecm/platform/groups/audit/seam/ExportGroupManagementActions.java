@@ -20,6 +20,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.faces.context.ExternalContext;
@@ -37,8 +41,12 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.groups.audit.service.ExcelExportService;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
@@ -115,11 +123,27 @@ public class ExportGroupManagementActions implements Serializable {
 
     protected File excelExportAllGroupsDefinition() throws ClientException {
         ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
-        return exportService.getExcelAllGroupsAuditReport();
+        return exportService.getExcelReport("exportAllGroupsAudit");
     }
 
     protected File excelExportListedGroupsDefinition() throws ClientException {
         ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
-        return exportService.getExcelListedGroupsAuditReport(contentViewActions.getCurrentContentView());
+        return exportService.getExcelReport("exportListedGroupsAudit",
+                getDataInject());
+    }
+
+    private Map<String, Object> getDataInject() throws ClientException {
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
+        PageProvider currentPP = contentViewActions.getCurrentContentView().getCurrentPageProvider();
+        List<DocumentModel> groupModels = (ArrayList<DocumentModel>) currentPP.getCurrentPage();
+        for (DocumentModel groupModel : groupModels) {
+            NuxeoGroup group = userManager.getGroup(groupModel.getId());
+            groups.add(group);
+        }
+        Map<String, Object> beans = new HashMap<String, Object>();
+        beans.put("groups", groups);
+        beans.put("userManager", userManager);
+        return beans;
     }
 }

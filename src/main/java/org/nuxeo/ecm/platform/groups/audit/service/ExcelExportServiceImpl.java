@@ -17,9 +17,7 @@ package org.nuxeo.ecm.platform.groups.audit.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.jxls.exception.ParsePropertyException;
@@ -29,42 +27,60 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Excel Export service generating Excel report file
  * 
+ * @since 5.7
  */
-public class ExcelExportServiceImpl implements ExcelExportService {
+public class ExcelExportServiceImpl extends DefaultComponent implements
+        ExcelExportService {
 
     public static final Log log = LogFactory.getLog(ExcelExportServiceImpl.class);
 
+    public static final String EXCEL_EXPORT_EP = "excelExportFactory";
+
+    protected static final Map<String, ExcelExportFactory> exportExcelFactories = new HashMap<String, ExcelExportFactory>();
+
+    protected static final Map<String, File> exportExcelTemplates = new HashMap<String, File>();
+
     @Override
-    public File getExcelAllGroupsAuditReport() throws ClientException {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        File template = getFileFromPath("templates/audit-groups-template.xls");
-        List<String> groupsId = new ArrayList<String>();
-        List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
-        groupsId = userManager.getGroupIds();
-        for (String groupId : groupsId) {
-            NuxeoGroup group = userManager.getGroup(groupId);
-            groups.add(group);
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (EXCEL_EXPORT_EP.equals(extensionPoint)) {
+            ExcelExportServiceDescriptor desc = (ExcelExportServiceDescriptor) contribution;
+            String templatePath = desc.getTemplate();
+            ExcelExportFactory excelExportFactory = desc.getFactory();
+            exportExcelFactories.put(desc.getName(), excelExportFactory);
+            exportExcelTemplates.put(desc.getName(),
+                    getFileFromPath(templatePath));
+        } else {
+            log.error("Unknown extension point " + extensionPoint);
         }
-        Map beans = new HashMap();
-        beans.put("groups", groups);
-        beans.put("userManager", userManager);
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+    }
+
+    /**
+     * Get excel export for a given name (contributed)
+     */
+    @Override
+    public File getExcelReport(String exportName) {
         XLSTransformer transformer = new XLSTransformer();
         File resultReport = null;
         try {
             resultReport = new File(getWorkingDir(), "audit-groups.xls");
             resultReport.createNewFile();
-            transformer.transformXLS(template.getAbsolutePath(), beans,
+            transformer.transformXLS(
+                    ((File) (exportExcelTemplates.get(exportName))).getAbsolutePath(),
+                    exportExcelFactories.get(exportName).getDataToInject(),
                     resultReport.getAbsolutePath());
         } catch (IOException e) {
             log.debug("Unable to create excel report result file:"
@@ -79,29 +95,19 @@ public class ExcelExportServiceImpl implements ExcelExportService {
         return resultReport;
     }
 
+    /**
+     * Get excel export for a given name and given data
+     */
     @Override
-    public File getExcelListedGroupsAuditReport(ContentView contentView)
-            throws ClientException {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        File template = getFileFromPath("templates/audit-groups-template.xls");
-        List<String> groupsId = new ArrayList<String>();
-        List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
-        PageProvider currentPP = contentView.getCurrentPageProvider();
-        List<DocumentModel> groupModels = (ArrayList<DocumentModel>) currentPP.getCurrentPage();
-        for (DocumentModel groupModel : groupModels) {
-            NuxeoGroup group = userManager.getGroup(groupModel.getId());
-            groups.add(group);
-        }
-        Map beans = new HashMap();
-        beans.put("groups", groups);
-        beans.put("userManager", userManager);
+    public File getExcelReport(String exportName, Map<String, Object> data) {
         XLSTransformer transformer = new XLSTransformer();
         File resultReport = null;
         try {
             resultReport = new File(getWorkingDir(), "audit-groups.xls");
             resultReport.createNewFile();
-            transformer.transformXLS(template.getAbsolutePath(), beans,
-                    resultReport.getAbsolutePath());
+            transformer.transformXLS(
+                    ((File) (exportExcelTemplates.get(exportName))).getAbsolutePath(),
+                    data, resultReport.getAbsolutePath());
         } catch (IOException e) {
             log.debug("Unable to create excel report result file:"
                     + e.getCause().getMessage());
