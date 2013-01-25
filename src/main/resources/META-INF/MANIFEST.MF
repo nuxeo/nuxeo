@@ -4,8 +4,10 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Version: 1.0.qualifier
 Bundle-Name: nuxeo-groups-rights
-Nuxeo-Component: OSGI-INF/excel-export-service.xml,
- OSGI-INF/contrib-excel-export.xml
 Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/excel-export-service.xml,OSGI-INF/contrib-ex
+ cel-export.xml,OSGI-INF/extensions/org.nuxeo.ecm.platform.groups.audi
+ t.operation.ExportGroups.xml
 Bundle-SymbolicName: nuxeo-groups-rights-audit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+

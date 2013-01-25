@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.groups.audit.chains.tests">
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+    <chain id="testExportExcel">
+      <operation id="UserManager.ExportGroups" />
+    </chain>
+  </extension>
+</component>

@@ -24,6 +24,9 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -50,9 +53,11 @@ import com.google.inject.Inject;
         "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory.api",
         "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
         "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.usermanager.api", "nuxeo-groups-rights-audit" })
+        "org.nuxeo.ecm.platform.usermanager.api", "nuxeo-groups-rights-audit",
+        "org.nuxeo.ecm.automation.core" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
+        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
+        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml" })
 public class TestExcelExportGroups {
 
     @Inject
@@ -60,6 +65,9 @@ public class TestExcelExportGroups {
 
     @Inject
     UserManager userManager;
+
+    @Inject
+    AutomationService automationService;
 
     @Test
     public void testExcelExportService() throws Exception {
@@ -80,7 +88,13 @@ public class TestExcelExportGroups {
         userManager.createGroup(g2);
         ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
         Assert.assertTrue(exportService.getExcelReport("exportAllGroupsAudit").length() > 0);
+    }
 
+    @Test
+    public void testExcelExportOperation() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Blob export = (Blob) automationService.run(ctx, "testExportExcel");
+        Assert.assertTrue(export.getLength() > 0);
     }
 
     private DocumentModel getGroup(String groupId) throws Exception {
