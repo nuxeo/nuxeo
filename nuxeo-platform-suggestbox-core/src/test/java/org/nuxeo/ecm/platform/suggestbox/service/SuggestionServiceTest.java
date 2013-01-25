@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.directory.Session;
@@ -158,6 +159,9 @@ public class SuggestionServiceTest extends SQLRepositoryTestCase {
         session.createDocument(fileBob);
 
         session.save();
+        // wait for fulltext indexing
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
     @After
