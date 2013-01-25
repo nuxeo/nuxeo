@@ -59,6 +59,7 @@
               <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/main/resources/log4j.xml
                 -Dnuxeo.log.dir=${build.directory}
                 -DconnectPassword=${connect.password}
+                ${it.failsafe.argLine}
               </argLine>
             </configuration>
           </execution>
