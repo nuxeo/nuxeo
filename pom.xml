@@ -1063,6 +1063,14 @@
           <artifactId>nuxeo-tree-snapshot</artifactId>
           <version>${nuxeo.addons.version}</version>
       </dependency>
+
+      <!-- Groups Rights Audit -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-groups-rights-audit</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
