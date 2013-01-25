@@ -34,6 +34,8 @@ import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
@@ -128,6 +130,9 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
             session.createDocument(doc);
         }
         session.save();
+        // wait for fulltext indexing
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
     @SuppressWarnings("unchecked")
