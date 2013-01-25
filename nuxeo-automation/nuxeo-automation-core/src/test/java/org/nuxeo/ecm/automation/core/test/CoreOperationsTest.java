@@ -27,10 +27,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
@@ -70,10 +68,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -187,7 +183,7 @@ public class CoreOperationsTest {
     /**
      * Create | Copy | Set Property. This is also testing
      * {@link StringToProperties} adapter
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -216,7 +212,7 @@ public class CoreOperationsTest {
     /**
      * Same as before but tests relative paths Create | Copy | Set Property This
      * is also testing {@link StringToProperties} adapter
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -237,7 +233,7 @@ public class CoreOperationsTest {
     /**
      * Same as before Create | Copy | Set Property But also test properties
      * specified using a mvel Expression
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -268,7 +264,7 @@ public class CoreOperationsTest {
 
     /**
      * Same as before but use DocumentWrapper to access properties
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -473,7 +469,7 @@ public class CoreOperationsTest {
     /**
      * Alternate version - use xml properties instead of java properties when
      * defining a properties value
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -636,8 +632,6 @@ public class CoreOperationsTest {
         assertEquals("MyDoc3", doc.getTitle());
         DocumentRef ver = (DocumentRef) ctx.get("ver");
         assertNotNull(ver);
-
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
     @Test
