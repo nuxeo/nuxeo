@@ -64,7 +64,11 @@ author: lkemen@nuxeo.com
   padding: 0 .8em .5em }
 .bubbleBoxSmall { max-width: 300px }  
 .bubbleBox .bubbleHeader { border-width: 1px; border-style: none none solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)"; margin: 0 0 1em }
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  margin: 0 0 1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap }
 .bubbleBox .bubbleHeader h3 { border: none; display: inline-block; margin: 0; padding: .5em 0 }
 .bubbleBox .bubbleHeader input.button { float: right; margin-right: 0 }
 .bubbleBox h3 img { margin-bottom: -0.1em; padding: 0 .5em 0 0 }
