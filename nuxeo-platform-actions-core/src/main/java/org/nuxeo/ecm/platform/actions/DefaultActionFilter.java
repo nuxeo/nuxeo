@@ -346,39 +346,39 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             return false;
         }
         final DefaultActionFilter o = (DefaultActionFilter) obj;
-        String id = o.getId();
-        if (id == null && !(this.id == null)) {
+        String objId = o.getId();
+        if (objId == null && !(this.id == null)) {
             return false;
         }
-        if (this.id == null && !(id == null)) {
+        if (this.id == null && !(objId == null)) {
             return false;
         }
-        if (id != null && !id.equals(this.id)) {
+        if (objId != null && !objId.equals(this.id)) {
             return false;
         }
         boolean append = o.getAppend();
         if (!append == this.append) {
             return false;
         }
-        FilterRule[] rules = o.getRules();
-        if (rules == null && !(this.rules == null)) {
+        FilterRule[] objRules = o.getRules();
+        if (objRules == null && !(this.rules == null)) {
             return false;
         }
-        if (this.rules == null && !(rules == null)) {
+        if (this.rules == null && !(objRules == null)) {
             return false;
         }
-        if (rules != null) {
-            if (rules.length != this.rules.length) {
+        if (objRules != null) {
+            if (objRules.length != this.rules.length) {
                 return false;
             }
-            for (int i = 0; i < rules.length; i++) {
-                if (rules[i] == null && (!(this.rules[i] == null))) {
+            for (int i = 0; i < objRules.length; i++) {
+                if (objRules[i] == null && (!(this.rules[i] == null))) {
                     return false;
                 }
-                if (this.rules[i] == null && (!(rules[i] == null))) {
+                if (this.rules[i] == null && (!(objRules[i] == null))) {
                     return false;
                 }
-                if (!rules[i].equals(this.rules[i])) {
+                if (!objRules[i].equals(this.rules[i])) {
                     return false;
                 }
             }
