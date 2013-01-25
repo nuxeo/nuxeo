@@ -140,84 +140,90 @@ public class TestDocumentsSizeUpdater {
 
     protected void addContent(boolean checkInFirstFile) throws Exception {
         TransactionHelper.startTransaction();
+        try {
+            DocumentModel ws = session.createDocumentModel("/", "ws",
+                    "Workspace");
+            ws = session.createDocument(ws);
+            wsRef = ws.getRef();
 
-        DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
-        ws = session.createDocument(ws);
-        wsRef = ws.getRef();
+            DocumentModel firstFolder = session.createDocumentModel(
+                    ws.getPathAsString(), "folder1", "Folder");
+            firstFolder = session.createDocument(firstFolder);
+            firstFolderRef = firstFolder.getRef();
 
-        DocumentModel firstFolder = session.createDocumentModel(
-                ws.getPathAsString(), "folder1", "Folder");
-        firstFolder = session.createDocument(firstFolder);
-        firstFolderRef = firstFolder.getRef();
+            DocumentModel firstSubFolder = session.createDocumentModel(
+                    firstFolder.getPathAsString(), "subfolder1", "Folder");
+            firstSubFolder = session.createDocument(firstSubFolder);
 
-        DocumentModel firstSubFolder = session.createDocumentModel(
-                firstFolder.getPathAsString(), "subfolder1", "Folder");
-        firstSubFolder = session.createDocument(firstSubFolder);
+            firstSubFolderRef = firstSubFolder.getRef();
 
-        firstSubFolderRef = firstSubFolder.getRef();
+            DocumentModel firstFile = session.createDocumentModel(
+                    firstSubFolder.getPathAsString(), "file1", "File");
+            firstFile.setPropertyValue("file:content",
+                    (Serializable) getFakeBlob(100));
+            firstFile = session.createDocument(firstFile);
+            if (checkInFirstFile) {
+                firstFile.checkIn(VersioningOption.MINOR, null);
+            }
 
-        DocumentModel firstFile = session.createDocumentModel(
-                firstSubFolder.getPathAsString(), "file1", "File");
-        firstFile.setPropertyValue("file:content",
-                (Serializable) getFakeBlob(100));
-        firstFile = session.createDocument(firstFile);
-        if (checkInFirstFile) {
-            firstFile.checkIn(VersioningOption.MINOR, null);
+            firstFileRef = firstFile.getRef();
+
+            DocumentModel secondFile = session.createDocumentModel(
+                    firstSubFolder.getPathAsString(), "file2", "File");
+            secondFile.setPropertyValue("file:content",
+                    (Serializable) getFakeBlob(200));
+
+            secondFile = session.createDocument(secondFile);
+            secondFileRef = secondFile.getRef();
+
+            DocumentModel secondSubFolder = session.createDocumentModel(
+                    firstFolder.getPathAsString(), "subfolder2", "Folder");
+            secondSubFolder = session.createDocument(secondSubFolder);
+            secondSubFolderRef = secondSubFolder.getRef();
+
+            DocumentModel secondFolder = session.createDocumentModel(
+                    ws.getPathAsString(), "folder2", "Folder");
+            secondFolder = session.createDocument(secondFolder);
+            secondFolderRef = secondFolder.getRef();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
         }
-
-        firstFileRef = firstFile.getRef();
-
-        DocumentModel secondFile = session.createDocumentModel(
-                firstSubFolder.getPathAsString(), "file2", "File");
-        secondFile.setPropertyValue("file:content",
-                (Serializable) getFakeBlob(200));
-
-        secondFile = session.createDocument(secondFile);
-        secondFileRef = secondFile.getRef();
-
-        DocumentModel secondSubFolder = session.createDocumentModel(
-                firstFolder.getPathAsString(), "subfolder2", "Folder");
-        secondSubFolder = session.createDocument(secondSubFolder);
-        secondSubFolderRef = secondSubFolder.getRef();
-
-        DocumentModel secondFolder = session.createDocumentModel(
-                ws.getPathAsString(), "folder2", "Folder");
-        secondFolder = session.createDocument(secondFolder);
-        secondFolderRef = secondFolder.getRef();
-
-        TransactionHelper.commitOrRollbackTransaction();
-
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doMoveContent() throws Exception {
-
         TransactionHelper.startTransaction();
+        try {
+            session.move(firstFileRef, secondSubFolderRef, null);
 
-        session.move(firstFileRef, secondSubFolderRef, null);
-
-        TransactionHelper.commitOrRollbackTransaction();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doMoveFolderishContent() throws Exception {
-
         TransactionHelper.startTransaction();
-
-        session.move(firstSubFolderRef, secondFolderRef, null);
-
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            session.move(firstSubFolderRef, secondFolderRef, null);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doMoveFileContent() throws Exception {
-
         TransactionHelper.startTransaction();
-
-        session.move(firstFileRef, secondFolderRef, null);
-
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            session.move(firstFileRef, secondFolderRef, null);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doUpdateContent() throws Exception {
@@ -225,28 +231,30 @@ public class TestDocumentsSizeUpdater {
             System.out.println("Update content");
         }
         TransactionHelper.startTransaction();
+        try {
+            DocumentModel ws = session.getDocument(wsRef);
+            DocumentModel firstFile = session.getDocument(firstFileRef);
 
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
+            ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
+            ws = session.saveDocument(ws);
 
-        ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
-        ws = session.saveDocument(ws);
+            List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
 
-        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+            for (int i = 1; i < 5; i++) {
+                Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+                files_entry.put("filename", "fakefile" + i);
+                files_entry.put("file", (Serializable) getFakeBlob(70));
+                files.add(files_entry);
+            }
 
-        for (int i = 1; i < 5; i++) {
-            Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
-            files_entry.put("filename", "fakefile" + i);
-            files_entry.put("file", (Serializable) getFakeBlob(70));
-            files.add(files_entry);
+            firstFile.setPropertyValue("files:files", (Serializable) files);
+            firstFile = session.saveDocument(firstFile);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
         }
-
-        firstFile.setPropertyValue("files:files", (Serializable) files);
-        firstFile = session.saveDocument(firstFile);
-
-        TransactionHelper.commitOrRollbackTransaction();
         Thread.sleep(1000);
         eventService.waitForAsyncCompletion();
+        dispose(session);
 
     }
 
@@ -255,12 +263,14 @@ public class TestDocumentsSizeUpdater {
             System.out.println("CheckIn first file");
         }
         TransactionHelper.startTransaction();
-
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        firstFile.checkIn(VersioningOption.MINOR, null);
-
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            DocumentModel firstFile = session.getDocument(firstFileRef);
+            firstFile.checkIn(VersioningOption.MINOR, null);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doCheckOut() throws Exception {
@@ -268,12 +278,14 @@ public class TestDocumentsSizeUpdater {
             System.out.println("CheckOut first file");
         }
         TransactionHelper.startTransaction();
-
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        firstFile.checkOut();
-
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            DocumentModel firstFile = session.getDocument(firstFileRef);
+            firstFile.checkOut();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doUpdateAndVersionContent() throws Exception {
@@ -281,32 +293,33 @@ public class TestDocumentsSizeUpdater {
             System.out.println("Update content and create version ");
         }
         TransactionHelper.startTransaction();
+        try {
+            DocumentModel ws = session.getDocument(wsRef);
+            DocumentModel firstFile = session.getDocument(firstFileRef);
 
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
+            ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
+            ws = session.saveDocument(ws);
 
-        ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
-        ws = session.saveDocument(ws);
+            List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
 
-        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+            for (int i = 1; i < 5; i++) {
+                Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+                files_entry.put("filename", "fakefile" + i);
+                files_entry.put("file", (Serializable) getFakeBlob(70));
+                files.add(files_entry);
+            }
 
-        for (int i = 1; i < 5; i++) {
-            Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
-            files_entry.put("filename", "fakefile" + i);
-            files_entry.put("file", (Serializable) getFakeBlob(70));
-            files.add(files_entry);
+            firstFile.setPropertyValue("files:files", (Serializable) files);
+            // create minor version
+            firstFile.putContextData(VersioningService.VERSIONING_OPTION,
+                    VersioningOption.MINOR);
+            firstFile = session.saveDocument(firstFile);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
         }
-
-        firstFile.setPropertyValue("files:files", (Serializable) files);
-        // create minor version
-        firstFile.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
-        firstFile = session.saveDocument(firstFile);
-
-        TransactionHelper.commitOrRollbackTransaction();
         Thread.sleep(1000);
         eventService.waitForAsyncCompletion();
-
+        dispose(session);
     }
 
     protected void doSimpleVersion() throws Exception {
@@ -314,17 +327,19 @@ public class TestDocumentsSizeUpdater {
             System.out.println("simply create a version ");
         }
         TransactionHelper.startTransaction();
+        try {
+            DocumentModel firstFile = session.getDocument(firstFileRef);
 
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-
-        firstFile.setPropertyValue("dc:title", "a version");
-        firstFile.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
-        firstFile = session.saveDocument(firstFile);
-
-        TransactionHelper.commitOrRollbackTransaction();
+            firstFile.setPropertyValue("dc:title", "a version");
+            firstFile.putContextData(VersioningService.VERSIONING_OPTION,
+                    VersioningOption.MINOR);
+            firstFile = session.saveDocument(firstFile);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         Thread.sleep(1000);
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doRemoveFirstVersion() throws Exception {
@@ -332,24 +347,30 @@ public class TestDocumentsSizeUpdater {
             System.out.println("remove first created version ");
         }
         TransactionHelper.startTransaction();
+        try {
+            List<DocumentModel> versions = session.getVersions(firstFileRef);
 
-        List<DocumentModel> versions = session.getVersions(firstFileRef);
+            if (verboseMode) {
 
-        if (verboseMode) {
-
+            }
+            session.removeDocument(versions.get(0).getRef());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
         }
-        session.removeDocument(versions.get(0).getRef());
-
-        TransactionHelper.commitOrRollbackTransaction();
         Thread.sleep(1000);
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doRemoveContent() throws Exception {
         TransactionHelper.startTransaction();
-        session.removeDocument(firstFileRef);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            session.removeDocument(firstFileRef);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doRemoveFolderishContent() throws Exception {
@@ -361,34 +382,51 @@ public class TestDocumentsSizeUpdater {
 
     protected void doDeleteFileContent() throws Exception {
         TransactionHelper.startTransaction();
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        docs.add(session.getDocument(firstFileRef));
-        Framework.getLocalService(TrashService.class).trashDocuments(docs);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            List<DocumentModel> docs = new ArrayList<DocumentModel>();
+            docs.add(session.getDocument(firstFileRef));
+            Framework.getLocalService(TrashService.class).trashDocuments(docs);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doUndeleteFileContent() throws Exception {
         TransactionHelper.startTransaction();
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
-        docs.add(session.getDocument(firstFileRef));
-        Framework.getLocalService(TrashService.class).undeleteDocuments(docs);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            List<DocumentModel> docs = new ArrayList<DocumentModel>();
+            docs.add(session.getDocument(firstFileRef));
+            Framework.getLocalService(TrashService.class).undeleteDocuments(
+                    docs);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doCopyContent() throws Exception {
         TransactionHelper.startTransaction();
-        session.copy(firstFileRef, secondSubFolderRef, null);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            session.copy(firstFileRef, secondSubFolderRef, null);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void doCopyFolderishContent() throws Exception {
         TransactionHelper.startTransaction();
-        session.copy(firstSubFolderRef, secondFolderRef, null);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            session.copy(firstSubFolderRef, secondFolderRef, null);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     @SuppressWarnings("unused")
@@ -1227,7 +1265,6 @@ public class TestDocumentsSizeUpdater {
         eventService.waitForAsyncCompletion();
     }
 
-
     @Test
     public void testQuotaOnMoveContentWithVersions() throws Exception {
 
@@ -1242,7 +1279,6 @@ public class TestDocumentsSizeUpdater {
         DocumentModel firstFolder = session.getDocument(firstFolderRef);
         DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
         DocumentModel secondFolder = session.getDocument(secondFolderRef);
-
 
         assertQuota(firstFile, 380, 380, 0, 380);
         assertQuota(secondFile, 200, 200, 0, 0);

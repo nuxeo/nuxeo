@@ -22,8 +22,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +37,10 @@ import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.automation.GetQuotaInfoOperation;
@@ -63,6 +63,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @TransactionalConfig(autoStart = false)
+@RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation",
         "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
 public class TestQuotaViaAutomation {
@@ -138,53 +139,56 @@ public class TestQuotaViaAutomation {
     protected void addContent() throws Exception {
         TransactionHelper.startTransaction();
 
-        DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
-        ws = session.createDocument(ws);
-        wsRef = ws.getRef();
+        try {
+            DocumentModel ws = session.createDocumentModel("/", "ws",
+                    "Workspace");
+            ws = session.createDocument(ws);
+            wsRef = ws.getRef();
 
-        QuotaAware wsqa = QuotaAwareDocumentFactory.make(ws, true);
-        wsqa.setMaxQuota(400L, true);
+            QuotaAware wsqa = QuotaAwareDocumentFactory.make(ws, true);
+            wsqa.setMaxQuota(400L, true);
 
-        DocumentModel firstFolder = session.createDocumentModel(
-                ws.getPathAsString(), "folder1", "Folder");
-        firstFolder = session.createDocument(firstFolder);
-        firstFolderRef = firstFolder.getRef();
+            DocumentModel firstFolder = session.createDocumentModel(
+                    ws.getPathAsString(), "folder1", "Folder");
+            firstFolder = session.createDocument(firstFolder);
+            firstFolderRef = firstFolder.getRef();
 
-        DocumentModel firstSubFolder = session.createDocumentModel(
-                firstFolder.getPathAsString(), "subfolder1", "Folder");
-        firstSubFolder = session.createDocument(firstSubFolder);
+            DocumentModel firstSubFolder = session.createDocumentModel(
+                    firstFolder.getPathAsString(), "subfolder1", "Folder");
+            firstSubFolder = session.createDocument(firstSubFolder);
 
-        firstSubFolderRef = firstSubFolder.getRef();
+            firstSubFolderRef = firstSubFolder.getRef();
 
-        DocumentModel firstFile = session.createDocumentModel(
-                firstSubFolder.getPathAsString(), "file1", "File");
-        firstFile.setPropertyValue("file:content",
-                (Serializable) getFakeBlob(100));
-        firstFile = session.createDocument(firstFile);
+            DocumentModel firstFile = session.createDocumentModel(
+                    firstSubFolder.getPathAsString(), "file1", "File");
+            firstFile.setPropertyValue("file:content",
+                    (Serializable) getFakeBlob(100));
+            firstFile = session.createDocument(firstFile);
 
-        firstFileRef = firstFile.getRef();
+            firstFileRef = firstFile.getRef();
 
-        DocumentModel secondFile = session.createDocumentModel(
-                firstSubFolder.getPathAsString(), "file2", "File");
-        secondFile.setPropertyValue("file:content",
-                (Serializable) getFakeBlob(200));
+            DocumentModel secondFile = session.createDocumentModel(
+                    firstSubFolder.getPathAsString(), "file2", "File");
+            secondFile.setPropertyValue("file:content",
+                    (Serializable) getFakeBlob(200));
 
-        secondFile = session.createDocument(secondFile);
-        secondFileRef = secondFile.getRef();
+            secondFile = session.createDocument(secondFile);
+            secondFileRef = secondFile.getRef();
 
-        DocumentModel secondSubFolder = session.createDocumentModel(
-                firstFolder.getPathAsString(), "subfolder2", "Folder");
-        secondSubFolder = session.createDocument(secondSubFolder);
-        secondSubFolderRef = secondSubFolder.getRef();
+            DocumentModel secondSubFolder = session.createDocumentModel(
+                    firstFolder.getPathAsString(), "subfolder2", "Folder");
+            secondSubFolder = session.createDocument(secondSubFolder);
+            secondSubFolderRef = secondSubFolder.getRef();
 
-        DocumentModel secondFolder = session.createDocumentModel(
-                ws.getPathAsString(), "folder2", "Folder");
-        secondFolder = session.createDocument(secondFolder);
-        secondFolderRef = secondFolder.getRef();
-
-        TransactionHelper.commitOrRollbackTransaction();
-
+            DocumentModel secondFolder = session.createDocumentModel(
+                    ws.getPathAsString(), "folder2", "Folder");
+            secondFolder = session.createDocument(secondFolder);
+            secondFolderRef = secondFolder.getRef();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
+        dispose(session);
     }
 
     protected void assertQuota(SimpleQuotaInfo sqi, long innerSize,
@@ -228,25 +232,29 @@ public class TestQuotaViaAutomation {
     public void testGetQuotasViaAutomation() throws Exception {
 
         addContent();
+        TransactionHelper.startTransaction();
+        try {
+            SimpleQuotaInfo sqi_firstFile = getQuotaInfo(firstFileRef);
+            SimpleQuotaInfo sqi_secondFile = getQuotaInfo(secondFileRef);
+            SimpleQuotaInfo sqi_firstSubFolder = getQuotaInfo(firstSubFolderRef);
+            SimpleQuotaInfo sqi_firstFolder = getQuotaInfo(firstFolderRef);
+            SimpleQuotaInfo sqi_ws = getQuotaInfo(wsRef);
 
-        SimpleQuotaInfo sqi_firstFile = getQuotaInfo(firstFileRef);
-        SimpleQuotaInfo sqi_secondFile = getQuotaInfo(secondFileRef);
-        SimpleQuotaInfo sqi_firstSubFolder = getQuotaInfo(firstSubFolderRef);
-        SimpleQuotaInfo sqi_firstFolder = getQuotaInfo(firstFolderRef);
-        SimpleQuotaInfo sqi_ws = getQuotaInfo(wsRef);
+            assertQuota(sqi_firstFile, 100L, 100L);
+            assertQuota(sqi_secondFile, 200L, 200L);
+            assertQuota(sqi_firstSubFolder, 0L, 300L);
+            assertQuota(sqi_firstFolder, 0L, 300L);
+            assertQuota(sqi_ws, 0L, 300L);
 
-        assertQuota(sqi_firstFile, 100L, 100L);
-        assertQuota(sqi_secondFile, 200L, 200L);
-        assertQuota(sqi_firstSubFolder, 0L, 300L);
-        assertQuota(sqi_firstFolder, 0L, 300L);
-        assertQuota(sqi_ws, 0L, 300L);
+            assertEquals(400L, sqi_ws.getMaxQuota());
 
-        assertEquals(400L, sqi_ws.getMaxQuota());
-
-        sqi_firstFile = getQuotaInfoViaParameter(firstFileRef);
-        assertQuota(sqi_firstFile, 100L, 100L);
-
-        TransactionHelper.commitOrRollbackTransaction();
+            sqi_firstFile = getQuotaInfoViaParameter(firstFileRef);
+            DocumentModel docFile = session.getDocument(firstFileRef);
+            assertEquals(100L, docFile.getPropertyValue("dss:innerSize"));
+            assertQuota(sqi_firstFile, 100L, 100L);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         eventService.waitForAsyncCompletion();
     }
 
