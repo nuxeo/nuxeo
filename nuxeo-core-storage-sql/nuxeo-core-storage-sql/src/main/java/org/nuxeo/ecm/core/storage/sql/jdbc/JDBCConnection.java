@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.ConnectionHelper;
 
 /**
@@ -43,6 +44,9 @@ public class JDBCConnection {
 
     /** The SQL information. */
     protected final SQLInfo sqlInfo;
+
+    /** The dialect. */
+    protected final Dialect dialect;
 
     /** The xa datasource. */
     protected final XADataSource xadatasource;
@@ -97,6 +101,7 @@ public class JDBCConnection {
         this.xadatasource = xadatasource;
         this.connectionPropagator = connectionPropagator;
         this.noSharing = noSharing;
+        dialect = sqlInfo.dialect;
         connectionPropagator.addConnection(this);
         open();
     }
@@ -119,7 +124,7 @@ public class JDBCConnection {
         try {
             openBaseConnection();
             supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
-            sqlInfo.dialect.performPostOpenStatements(connection);
+            dialect.performPostOpenStatements(connection);
         } catch (SQLException e) {
             throw new StorageException(e);
         }
@@ -225,9 +230,9 @@ public class JDBCConnection {
             Statement st = null;
             try {
                 st = connection.createStatement();
-                st.execute(sqlInfo.dialect.getValidationQuery());
+                st.execute(dialect.getValidationQuery());
             } catch (Exception e) {
-                if (sqlInfo.dialect.isConnectionClosedException(e)) {
+                if (dialect.isConnectionClosedException(e)) {
                     resetConnection();
                 } else {
                     throw new StorageException(e);
@@ -276,7 +281,7 @@ public class JDBCConnection {
     protected void checkConnectionReset(Throwable t, boolean throwIfReset)
             throws StorageException, ConnectionResetException {
         if (connection == null
-                || sqlInfo.dialect.isConnectionClosedException(t)) {
+                || dialect.isConnectionClosedException(t)) {
             resetConnection();
             if (throwIfReset) {
                 throw new ConnectionResetException(t);
@@ -290,7 +295,7 @@ public class JDBCConnection {
      */
     protected void checkConnectionReset(XAException e) {
         if (connection == null
-                || sqlInfo.dialect.isConnectionClosedException(e)) {
+                || dialect.isConnectionClosedException(e)) {
             try {
                 resetConnection();
             } catch (StorageException ee) {

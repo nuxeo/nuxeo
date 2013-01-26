@@ -78,7 +78,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
                 Timestamp ts = new Timestamp(cal.getTimeInMillis());
                 ps.setTimestamp(i++, ts, cal); // cal passed for timezone
             } else if (object instanceof String[]) {
-                Array array = mapper.sqlInfo.dialect.createArrayOf(
+                Array array = mapper.dialect.createArrayOf(
                         Types.VARCHAR, (Object[]) object, mapper.connection);
                 ps.setArray(i++, array);
             } else {
@@ -116,7 +116,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
             ps = null;
         }
     }
-    
+
     @Override
     public boolean isLife() {
         return rs != null;
