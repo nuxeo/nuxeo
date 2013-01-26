@@ -155,7 +155,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     protected String getTableName(String origName) {
 
-        if (sqlInfo.dialect instanceof DialectOracle) {
+        if (dialect instanceof DialectOracle) {
             if (origName.length() > 30) {
 
                 StringBuilder sb = new StringBuilder(origName.length());
@@ -187,7 +187,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             sqlInfo.executeSQLStatements("testUpgrade", this);
         }
 
-        String schemaName = sqlInfo.dialect.getConnectionSchema(connection);
+        String schemaName = dialect.getConnectionSchema(connection);
         DatabaseMetaData metadata = connection.getMetaData();
         Set<String> tableNames = findTableNames(metadata, schemaName);
         Database database = sqlInfo.getDatabase();
@@ -199,7 +199,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             for (Table table : database.getTables()) {
                 String tableName = getTableName(table.getPhysicalName());
                 if (tableNames.contains(tableName.toUpperCase())) {
-                    sqlInfo.dialect.existingTableDetected(connection, table,
+                    dialect.existingTableDetected(connection, table,
                             model, sqlInfo.database);
                 } else {
 
@@ -207,7 +207,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                      * Create missing table.
                      */
 
-                    boolean create = sqlInfo.dialect.preCreateTable(connection,
+                    boolean create = dialect.preCreateTable(connection,
                             table, model, sqlInfo.database);
                     if (!create) {
                         log.warn("Creation skipped for table: " + tableName);
@@ -234,7 +234,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                                             + e.getMessage(), e);
                         }
                     }
-                    for (String s : sqlInfo.dialect.getPostCreateTableSqls(
+                    for (String s : dialect.getPostCreateTableSqls(
                             table, model, sqlInfo.database)) {
                         logger.log(s);
                         try {
@@ -357,7 +357,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             upgradeTable(tableKey, addedColumns);
         }
         sqlInfo.executeSQLStatements("afterTableCreation", this);
-        sqlInfo.dialect.performAdditionalStatements(connection);
+        dialect.performAdditionalStatements(connection);
     }
 
     protected void upgradeTable(String tableKey, List<Column> addedColumns)
@@ -383,7 +383,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         Statement st = null;
         try {
             // get the cluster node id from the database, if necessary
-            String sql = sqlInfo.dialect.getClusterNodeIdSql();
+            String sql = dialect.getClusterNodeIdSql();
             String nodeId;
             if (sql == null) {
                 nodeId = null;
@@ -431,7 +431,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public void insertClusterInvalidations(Invalidations invalidations,
             String nodeId) throws StorageException {
-        String sql = sqlInfo.dialect.getClusterInsertInvalidations();
+        String sql = dialect.getClusterInsertInvalidations();
         if (nodeId != null) {
             sql = String.format(sql, nodeId);
         }
@@ -462,7 +462,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                                 fragments, Long.valueOf(kind)));
                     }
                     Serializable frags;
-                    if (sqlInfo.dialect.supportsArrays()
+                    if (dialect.supportsArrays()
                             && columns.get(1).getJdbcType() == Types.ARRAY) {
                         frags = fragments.split(" ");
                     } else {
@@ -520,8 +520,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public Invalidations getClusterInvalidations(String nodeId)
             throws StorageException {
         Invalidations invalidations = new Invalidations();
-        String sql = sqlInfo.dialect.getClusterGetInvalidations();
-        String sqldel = sqlInfo.dialect.getClusterDeleteInvalidations();
+        String sql = dialect.getClusterGetInvalidations();
+        String sqldel = dialect.getClusterDeleteInvalidations();
         if (nodeId != null) {
             sql = String.format(sql, nodeId);
             sqldel = String.format(sqldel, nodeId);
@@ -542,7 +542,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 Serializable frags = columns.get(1).getFromResultSet(rs, 2);
                 int kind = ((Long) columns.get(2).getFromResultSet(rs, 3)).intValue();
                 String[] fragments;
-                if (sqlInfo.dialect.supportsArrays()
+                if (dialect.supportsArrays()
                         && frags instanceof String[]) {
                     fragments = (String[]) frags;
                 } else {
@@ -554,7 +554,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 // logCount(n);
                 logger.log("  -> " + invalidations);
             }
-            if (sqlInfo.dialect.isClusteringDeleteNeeded()) {
+            if (dialect.isClusteringDeleteNeeded()) {
                 if (logger.isLogEnabled()) {
                     logger.log(sqldel);
                 }
@@ -680,7 +680,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     protected void prepareUserReadAcls(QueryFilter queryFilter)
             throws StorageException {
-        String sql = sqlInfo.dialect.getPrepareUserReadAclsSql();
+        String sql = dialect.getPrepareUserReadAclsSql();
         String principals = StringUtils.join(queryFilter.getPrincipals(),
                 Dialect.ARRAY_SEP);
         if (sql == null || principals == null) {
@@ -720,7 +720,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, long countUpTo) throws StorageException {
-        if (sqlInfo.dialect.needsPrepareUserReadAcls()) {
+        if (dialect.needsPrepareUserReadAcls()) {
             prepareUserReadAcls(queryFilter);
         }
         QueryMaker queryMaker = findQueryMaker(queryType);
@@ -752,14 +752,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
         String sql = q.selectInfo.sql;
 
-        if (countUpTo == 0 && limit > 0 && sqlInfo.dialect.supportsPaging()) {
+        if (countUpTo == 0 && limit > 0 && dialect.supportsPaging()) {
             // full result set not needed for counting
-            sql = sqlInfo.dialect.addPagingClause(sql, limit, offset);
+            sql = dialect.addPagingClause(sql, limit, offset);
             limit = 0;
             offset = 0;
-        } else if (countUpTo > 0 && sqlInfo.dialect.supportsPaging()) {
+        } else if (countUpTo > 0 && dialect.supportsPaging()) {
             // ask one more row
-            sql = sqlInfo.dialect.addPagingClause(sql,
+            sql = dialect.addPagingClause(sql,
                     Math.max(countUpTo + 1, limit + offset), 0);
         }
 
@@ -777,7 +777,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 } else if (object instanceof java.sql.Date) {
                     ps.setDate(i++, (java.sql.Date) object);
                 } else if (object instanceof String[]) {
-                    Array array = sqlInfo.dialect.createArrayOf(Types.VARCHAR,
+                    Array array = dialect.createArrayOf(Types.VARCHAR,
                             (Object[]) object, connection);
                     ps.setArray(i++, array);
                 } else {
@@ -853,7 +853,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
-        if (sqlInfo.dialect.needsPrepareUserReadAcls()) {
+        if (dialect.needsPrepareUserReadAcls()) {
             prepareUserReadAcls(queryFilter);
         }
         QueryMaker queryMaker = findQueryMaker(queryType);
@@ -883,7 +883,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         for (Serializable id : ids) {
             idsa.add((String) id);
         }
-        if (sqlInfo.dialect.supportsArrays()) {
+        if (dialect.supportsArrays()) {
             whereIds = idsa.toArray(new String[0]);
         } else {
             // join with '|'
@@ -898,7 +898,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             Column what = select.whatColumns.get(0);
             ps = connection.prepareStatement(select.sql);
             if (whereIds instanceof String[]) {
-                Array array = sqlInfo.dialect.createArrayOf(Types.VARCHAR,
+                Array array = dialect.createArrayOf(Types.VARCHAR,
                         (Object[]) whereIds, connection);
                 ps.setArray(1, array);
             } else {
@@ -911,7 +911,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 debugIds = new LinkedList<Serializable>();
             }
             while (rs.next()) {
-                if (sqlInfo.dialect.supportsArraysReturnInsteadOfRows()) {
+                if (dialect.supportsArraysReturnInsteadOfRows()) {
                     String[] resultIds = (String[]) rs.getArray(1).getArray();
                     for (String id : resultIds) {
                         if (id != null) {
@@ -1015,21 +1015,21 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void updateReadAcls() throws StorageException {
-        if (!sqlInfo.dialect.supportsReadAcl()) {
+        if (!dialect.supportsReadAcl()) {
             return;
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("updateReadAcls: updating (concurrent=%b) ...",
-                    sqlInfo.dialect.supportsConcurrentUpdateReadAcls()));
+                    dialect.supportsConcurrentUpdateReadAcls()));
         }
         Statement st = null;
         try {
             st = connection.createStatement();
-            String sql = sqlInfo.dialect.getUpdateReadAclsSql();
+            String sql = dialect.getUpdateReadAclsSql();
             if (logger.isLogEnabled()) {
                 logger.log(sql);
             }
-            if (sqlInfo.dialect.supportsConcurrentUpdateReadAcls()) {
+            if (dialect.supportsConcurrentUpdateReadAcls()) {
                 st.execute(sql);
             } else {
                 // This is not enough to prevent concurrent execution in
@@ -1058,14 +1058,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void rebuildReadAcls() throws StorageException {
-        if (!sqlInfo.dialect.supportsReadAcl()) {
+        if (!dialect.supportsReadAcl()) {
             return;
         }
         log.debug("rebuildReadAcls: rebuilding ...");
         Statement st = null;
         try {
             st = connection.createStatement();
-            String sql = sqlInfo.dialect.getRebuildReadAclsSql();
+            String sql = dialect.getRebuildReadAclsSql();
             logger.log(sql);
             st.execute(sql);
             countExecute();
