@@ -52,24 +52,27 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.XidImpl;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCRowMapper;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -2165,128 +2168,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
-    @Test
-    public void testFulltext() throws Exception {
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.setSimpleProperty("tst:title", "hello world");
-        node = session.addChildNode(root, "bar", null, "TestDoc", false);
-        node.setSimpleProperty("tst:title", "barbar");
-        session.save();
+    protected void waitForIndexing() throws ClientException {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
-
-        // Note that MySQL is buggy and doesn't return answers on "hello", doh!
-        PartialList<Serializable> res;
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE NOT (ecm:fulltext = 'world')",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-        // Test multiple fulltext
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' OR  ecm:fulltext = 'barbar'",
-                QueryFilter.EMPTY, false);
-        assertEquals(2, res.list.size());
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' AND  ecm:fulltext = 'barbar'",
-                QueryFilter.EMPTY, false);
-        assertEquals(0, res.list.size());
-
-        // other query generation cases
-
-        // no union and implicit score sort
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' AND ecm:isProxy = 0",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-
-        // order by so no implicit score sort
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'"
-                        + " ORDER BY dc:title", QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-
-        // order by and no union so no implicit score sort
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world' AND ecm:isProxy = 0"
-                        + " ORDER BY dc:title", QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-
-        // no union but distinct so no implicit score sort
-        res = session.query(
-                "SELECT DISTINCT * FROM TestDoc WHERE ecm:fulltext = 'world' AND ecm:isProxy = 0",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
     }
 
-    /*
-     * This used to crash SQL Server 2008 R2 (NXP-6143). It works on SQL Server
-     * 2005.
-     */
-    @Test
-    public void testFulltextCrashingSQLServer2008() throws Exception {
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        Node node = session.addChildNode(root, "testdoc", null, "TestDoc",
-                false);
-        node.setSimpleProperty("tst:title", "mytitle");
-        session.save();
-        DatabaseHelper.DATABASE.sleepForFulltext();
-
-        PartialList<Serializable> res;
-        res = session.query(
-                "SELECT * FROM Document WHERE ecm:fulltext = 'mytitle' AND tst:title = 'mytitle'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-    }
-
-    @Test
-    public void testFulltextCustomParser() throws Exception {
-        // custom fulltext config
-        repository.close();
-        RepositoryDescriptor descriptor = newDescriptor(-1, false);
-        descriptor.fulltextParser = DummyFulltextParser.class.getName();
-        repository = new RepositoryImpl(descriptor);
-
-        Session session = repository.getConnection();
-        DummyFulltextParser.collected = new HashSet<String>();
-        List<Serializable> oneDoc = makeComplexDoc(session);
-        DatabaseHelper.DATABASE.sleepForFulltext();
-
-        assertEquals(new HashSet<String>(Arrays.asList( //
-                "tst:title=hello world", //
-                "tst:subjects=foo", //
-                "tst:subjects=bar", //
-                "tst:subjects=moo", //
-                "tst:owner/firstname=Bruce", //
-                "tst:owner/lastname=Willis", //
-                "tst:couple/first/firstname=Steve", //
-                "tst:couple/first/lastname=Jobs", //
-                "tst:couple/second/firstname=Steve", //
-                "tst:couple/second/lastname=McQueen", //
-                "tst:friends/*/firstname=John", //
-                "tst:friends/*/lastname=Smith", //
-                "tst:friends/*/lastname=Lennon")),
-                DummyFulltextParser.collected);
-        DummyFulltextParser.collected = null;
-
-        PartialList<Serializable> res;
-
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'lennon'",
-                QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
-
-        // with custom parsing
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'lennonyeah'",
-                QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
-    }
 
     @Test
     public void testFulltextDisabled() throws Exception {
@@ -2316,182 +2202,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
-    @Test
-    public void testFulltextUpgrade() throws Exception {
-        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
-            System.out.println("Skipping multi-fulltext test for unsupported database: "
-                    + DatabaseHelper.DATABASE.getClass().getName());
-            return;
-        }
-
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.setSimpleProperty("tst:title", "hello world");
-        session.save();
-        repository.close();
-
-        // reopen repository on same database,
-        // with custom indexing config
-        RepositoryDescriptor descriptor = newDescriptor(-1, false);
-        List<FulltextIndexDescriptor> ftis = new LinkedList<FulltextIndexDescriptor>();
-        descriptor.fulltextIndexes = ftis;
-        FulltextIndexDescriptor fti = new FulltextIndexDescriptor(); // default
-        ftis.add(fti);
-        fti = new FulltextIndexDescriptor();
-        fti.name = "title";
-        fti.fields = Collections.singleton("tst:title");
-        ftis.add(fti);
-        repository = new RepositoryImpl(descriptor);
-
-        // check new values can be written
-        session = repository.getConnection();
-        root = session.getRootNode();
-        node = session.getChildNode(root, "foo", false);
-        assertNotNull(node);
-        node.setSimpleProperty("tst:title", "one two three testing");
-        session.save();
-        DatabaseHelper.DATABASE.sleepForFulltext();
-
-        // check fulltext search works
-        PartialList<Serializable> res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'testing'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-
-        if (!DatabaseHelper.DATABASE.supportsMultipleFulltextIndexes()) {
-            System.out.println("Skipping multi-fulltext test for unsupported database: "
-                    + DatabaseHelper.DATABASE.getClass().getName());
-            return;
-        }
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext.tst:title = 'testing'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-    }
-
-    @Test
-    public void testFulltextPrefix() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.setSimpleProperty("tst:title", "hello world citizens");
-        session.save();
-        DatabaseHelper.DATABASE.sleepForFulltext();
-
-        PartialList<Serializable> res;
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'wor*'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-        res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'wor%'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-
-        // BBB for direct PostgreSQL syntax
-        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL) {
-            res = session.query(
-                    "SELECT * FROM TestDoc WHERE ecm:fulltext = 'wor:*'",
-                    QueryFilter.EMPTY, false);
-            assertEquals(1, res.list.size());
-        }
-
-        // prefix in phrase search
-        // not in H2 (with Lucene default parser)
-        // not in MySQL
-        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL
-                || DatabaseHelper.DATABASE instanceof DatabaseOracle
-                || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
-            res = session.query(
-                    "SELECT * FROM TestDoc WHERE ecm:fulltext = '\"hello wor*\"'",
-                    QueryFilter.EMPTY, false);
-            assertEquals(1, res.list.size());
-        }
-        // prefix wildcard in the middle of a phrase
-        // really only in Oracle, and approximation in PostgreSQL
-        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL
-                || DatabaseHelper.DATABASE instanceof DatabaseOracle) {
-            res = session.query(
-                    "SELECT * FROM TestDoc WHERE ecm:fulltext = '\"hel* world\"'",
-                    QueryFilter.EMPTY, false);
-            assertEquals(1, res.list.size());
-            res = session.query(
-                    "SELECT * FROM TestDoc WHERE ecm:fulltext = '\"hel* wor*\"'",
-                    QueryFilter.EMPTY, false);
-            assertEquals(1, res.list.size());
-            // PostgreSQL mid-phrase wildcards are too greedy
-            if (DatabaseHelper.DATABASE instanceof DatabaseOracle) {
-                // no match wanted here
-                res = session.query(
-                        "SELECT * FROM TestDoc WHERE ecm:fulltext = '\"hel* citizens\"'",
-                        QueryFilter.EMPTY, false);
-                assertEquals(0, res.list.size());
-            }
-        }
-    }
-
-    @Test
-    public void testFulltextCompatibilityPostgreSQL() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-        if (!(DatabaseHelper.DATABASE instanceof DatabasePostgreSQL)) {
-            return;
-        }
-        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
-        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_FULLTEXT, Boolean.TRUE);
-        try {
-            // first init to create old fulltext table
-            repository.getConnection();
-            repository.close();
-        } finally {
-            JDBCMapper.testProps.clear();
-        }
-
-        // reinit to have a proper sqlInfo and model
-        repository = newRepository(-1, false);
-
-        // test with pre-existing fulltext table in compatibility mode
-
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.setSimpleProperty("tst:title", "hello world");
-        session.save();
-        DatabaseHelper.DATABASE.sleepForFulltext(); // postgresql, not needed
-
-        PartialList<Serializable> res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-    }
-
-    @Test
-    public void testFulltextSpuriousCharacters() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.setSimpleProperty("tst:title", "hello world");
-        session.save();
-        DatabaseHelper.DATABASE.sleepForFulltext();
-
-        PartialList<Serializable> res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'world :'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
-    }
 
     @Test
     public void testRelation() throws Exception {
@@ -2930,22 +2640,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("123", p.getValue());
         CollectionProperty p2 = copy.getCollectionProperty("age:nicknames");
         assertEquals(Arrays.asList("bar", "gee"), Arrays.asList(p2.getValue()));
-    }
-
-    @Test
-    public void testMixinFulltext() throws Exception {
-        Session session = repository.getConnection();
-        Node root = session.getRootNode();
-        Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
-        node.addMixinType("Aged");
-        node.setSimpleProperty("age:age", "barbar");
-        session.save();
-        DatabaseHelper.DATABASE.sleepForFulltext();
-
-        PartialList<Serializable> res = session.query(
-                "SELECT * FROM TestDoc WHERE ecm:fulltext = 'barbar'",
-                QueryFilter.EMPTY, false);
-        assertEquals(1, res.list.size());
     }
 
     @Test

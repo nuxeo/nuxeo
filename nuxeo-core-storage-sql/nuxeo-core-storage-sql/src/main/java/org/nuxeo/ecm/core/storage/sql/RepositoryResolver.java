@@ -80,30 +80,45 @@ public class RepositoryResolver {
     }
 
     public static BinaryManager getBinaryManager(String repositoryName) {
-        Repository repo = getRepository(repositoryName);
-        if (repo instanceof RepositoryImpl) {
-            return ((RepositoryImpl)repo).getBinaryManager();
-        }
-        Class<? extends Repository> repoClass = repo.getClass();
-        if ("org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl".equals(repoClass.getCanonicalName())) {
-            try {
-                return getBinaryManagerFromConnectionFactory(repo);
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Cannot get access to binary manager through the connection factory",
-                        e);
-            }
-        }
-        throw new RuntimeException("Unknown repository class: " + repoClass);
+        return getRepositoryImpl(getRepository(repositoryName)).getBinaryManager();
     }
 
-    protected static BinaryManager getBinaryManagerFromConnectionFactory(Repository repo) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        Field field = repo.getClass().getDeclaredField("managedConnectionFactory");
-        field.setAccessible(true);
-        Object factory = field.get(repo);
-        field = factory.getClass().getDeclaredField("repository");
-        field.setAccessible(true);
-        return ((RepositoryImpl)field.get(factory)).getBinaryManager();
+    public static Class<? extends FulltextParser> getFulltextParserClass(
+            String repositoryName) {
+        return getRepositoryImpl(getRepository(repositoryName)).getFulltextParserClass();
+    }
+
+    public static ModelFulltext getModelFulltext(String repositoryName) {
+        return getRepositoryImpl(getRepository(repositoryName)).getModel().getFulltextInfo();
+    }
+
+    private static final String CONNECTIONFACTORYIMPL_CLASS = "org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl";
+
+    public static RepositoryImpl getRepositoryImpl(Repository repository) {
+        if (repository instanceof RepositoryImpl) {
+            return (RepositoryImpl) repository;
+        }
+        if (CONNECTIONFACTORYIMPL_CLASS.equals(repository.getClass().getName())) {
+            try {
+                Field f1 = repository.getClass().getDeclaredField(
+                        "managedConnectionFactory");
+                f1.setAccessible(true);
+                Object factory = f1.get(repository);
+                Field f2 = factory.getClass().getDeclaredField("repository");
+                f2.setAccessible(true);
+                return (RepositoryImpl) f2.get(factory);
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        throw new RuntimeException("Unknown repository class: "
+                + repository.getClass());
     }
 
 }

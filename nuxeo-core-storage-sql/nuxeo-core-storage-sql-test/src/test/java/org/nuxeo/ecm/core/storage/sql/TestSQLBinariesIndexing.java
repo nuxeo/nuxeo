@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,29 +8,28 @@
  *
  * Contributors:
  *     Stephane Lacoin
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
-import org.nuxeo.ecm.core.storage.sql.coremodel.BinaryTextListener;
+import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -38,24 +37,17 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
 
     protected static final Log log = LogFactory.getLog(TestSQLBinariesIndexing.class);
 
-    protected static CountDownLatch startIndexation;
+    protected String docId;
 
-    protected static DocumentModel doc;
+    protected DocumentRef docRef;
+
+    protected BlockingWork blockingWork;
 
     @Override
     @Before
     public void setUp() throws Exception {
-        startIndexation = new CountDownLatch(1);
         super.setUp();
-        populate(session);
-        docsAreNotIndexed();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        startIndexation.countDown();
-        super.tearDown();
+        waitForIndexing();
     }
 
     @Override
@@ -63,132 +55,147 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         super.deployRepositoryContrib();
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
-                "OSGI-INF/test-asynch-binaries-indexing-contrib.xml");
     }
 
-    public void populate(CoreSession repo) throws ClientException {
-        doc = repo.createDocumentModel("/", "source", "File");
+    /** Creates doc, doesn't do a session save. */
+    protected void createDocument() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "source", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         holder.setBlob(new StringBlob("test"));
-        doc = repo.createDocument(doc);
-        doc.detach(true);
+        doc = session.createDocument(doc);
+        docId = doc.getId();
+        docRef = new IdRef(docId);
     }
 
-    public static class SynchHandler implements PostCommitEventListener {
+    /**
+     * Work that waits in the fulltext updater queue, blocking other indexing
+     * work, until the main thread tells it to go ahead.
+     */
+    public static class BlockingWork extends AbstractWork {
+
+        protected CountDownLatch readyLatch = new CountDownLatch(1);
+
+        protected CountDownLatch startLatch = new CountDownLatch(1);
 
         @Override
-        public void handleEvent(EventBundle events) throws ClientException {
-            for (Event event : events) {
-                if (BinaryTextListener.EVENT_NAME.equals(event.getName())) {
-                    try {
-                        TestSQLBinariesIndexing.startIndexation.await();
-                    } catch (InterruptedException e) {
-                        throw new ClientException("Cannot wait for test", e);
-                    }
-                }
-            }
+        public String getCategory() {
+            return "fulltextUpdater";
+        }
+
+        @Override
+        public String getTitle() {
+            return "Blocking Work";
+        }
+
+        @Override
+        public void work() throws Exception {
+            setStatus("Blocking");
+            readyLatch.countDown();
+            startLatch.await();
+            setStatus("Released");
         }
     }
 
-    protected void flushAndCommit() throws ClientException {
+    protected void blockFulltextUpdating() throws InterruptedException {
+        blockingWork = new BlockingWork();
+        Framework.getLocalService(WorkManager.class).schedule(blockingWork);
+        blockingWork.readyLatch.await();
+    }
+
+    protected void allowFulltextUpdating() throws ClientException {
+        blockingWork.startLatch.countDown();
+        blockingWork = null;
+        waitForIndexing();
+    }
+
+    protected void flush() throws ClientException {
         session.save();
         closeSession();
-        session = null;
         TransactionHelper.commitOrRollbackTransaction();
-    }
-
-    protected void recycleSession() throws Exception {
-        if (session != null) {
-            flushAndCommit();
-        }
         TransactionHelper.startTransaction();
         openSession();
     }
 
-    protected List<DocumentModel> indexedDocs() throws ClientException {
-        return session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
+    protected int indexedDocs() throws ClientException {
+        DocumentModelList res = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
+        return res.size();
     }
 
-    protected List<DocumentModel> requestedDocs() throws ClientException {
+    protected int jobDocs() throws ClientException {
         String request = String.format(
-                "SELECT * from Document where ecm:fulltextJobId = '%s'",
-                doc.getId());
-        return session.query(request);
+                "SELECT * from Document where ecm:fulltextJobId = '%s'", docId);
+        return session.query(request).size();
     }
 
-    protected void waitForIndexing() throws Exception {
-
-        flushAndCommit(); // flush and commit transaction
-
-        startIndexation.countDown();
-
+    protected void waitForIndexing() throws ClientException {
+        flush(); // also starts a new tx, which will allow progress
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-
-        startIndexation = new CountDownLatch(1);
-
-        recycleSession();
-
         DatabaseHelper.DATABASE.sleepForFulltext();
-    }
-
-    protected void docsAreNotIndexed() throws Exception {
-        recycleSession();
-        assertEquals(0, indexedDocs().size());
     }
 
     @Test
     public void testBinariesAreIndexed() throws Exception {
-        assertEquals(1, requestedDocs().size());
-        assertEquals(0, indexedDocs().size());
+        createDocument();
+        blockFulltextUpdating();
 
-        waitForIndexing();
+        flush();
+        assertEquals(1, jobDocs());
+        assertEquals(0, indexedDocs());
 
-        assertEquals(0, requestedDocs().size());
-        assertEquals(1, indexedDocs().size());
+        allowFulltextUpdating();
+
+        flush();
+        assertEquals(0, jobDocs());
+        assertEquals(1, indexedDocs());
     }
 
     @Test
     public void testCopiesAreIndexed() throws Exception {
-        assertEquals(1, requestedDocs().size());
-        assertEquals(0, indexedDocs().size());
+        createDocument();
+        blockFulltextUpdating();
 
-        session.copy(doc.getRef(), session.getRootDocument().getRef(), "copy").getRef();
+        flush();
+        assertEquals(1, jobDocs());
+        assertEquals(0, indexedDocs());
 
-        recycleSession();
+        session.copy(docRef, session.getRootDocument().getRef(), "copy").getRef();
 
         // check copy is part of requested
-        assertEquals(2, requestedDocs().size());
+        flush();
+        assertEquals(2, jobDocs());
+
+        allowFulltextUpdating();
+
+        // check copy is indexed also
+        flush();
+        assertEquals(0, jobDocs());
+        assertEquals(2, indexedDocs());
+
+        // check copy doesn't stay linked to doc
+        DocumentModel doc = session.getDocument(docRef);
+        doc.getAdapter(BlobHolder.class).setBlob(new StringBlob("other"));
+        session.saveDocument(doc);
 
         waitForIndexing();
 
-        // check other doc is indexed also
-        assertEquals(0, requestedDocs().size());
-        assertEquals(2, indexedDocs().size());
-
-        // check other doc is not indexed twice
-        DocumentModel rehydratedDoc = session.getDocument(doc.getRef());
-        rehydratedDoc.getAdapter(BlobHolder.class).setBlob(
-                new StringBlob("other"));
-        session.saveDocument(rehydratedDoc);
-
-        recycleSession();
-
-        waitForIndexing();
-
-        assertEquals(1, indexedDocs().size());
+        assertEquals(1, indexedDocs());
     }
 
     @Test
     public void testVersionsAreIndexed() throws Exception {
-        assertEquals(1, requestedDocs().size());
-        assertEquals(0, indexedDocs().size());
+        createDocument();
+        blockFulltextUpdating();
 
-        session.checkIn(doc.getRef(), null, null);
+        flush();
+        assertEquals(1, jobDocs());
+        assertEquals(0, indexedDocs());
 
-        waitForIndexing();
+        session.checkIn(docRef, null, null);
+        flush();
 
-        assertEquals(2, indexedDocs().size());
+        allowFulltextUpdating();
+
+        assertEquals(2, indexedDocs());
     }
 
 }

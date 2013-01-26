@@ -28,6 +28,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Binder;
 
@@ -92,10 +93,10 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
+        waitForAsyncCompletion(); // fulltext and various workers
         if (repository.getGranularity() != Granularity.METHOD) {
             cleanupSession(runner);
         }
-        waitForAsyncCompletion();
         repository.shutdown();
 
         final CoreInstance core = CoreInstance.getInstance();
@@ -128,26 +129,36 @@ public class CoreFeature extends SimpleFeature {
     }
 
     protected void waitForAsyncCompletion() {
+        boolean tx = TransactionHelper.isTransactionActive();
+        boolean rb = TransactionHelper.isTransactionMarkedRollback();
+        if (tx || rb) {
+            // there may be afterCommit work pending, so we
+            // have to commit the transaction
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        if (tx || rb) {
+            // restore previous tx status
+            TransactionHelper.startTransaction();
+            if (rb) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+        }
     }
 
     protected void cleanupSession(FeaturesRunner runner) {
         CoreSession session  = repository.getSession();
-        // wait for any async thread to finish (e.g. fulltext indexing) as
-        // apparently concurrent fulltext indexing of document that has just
-        // been deleted can trigger the core (SessionImpl) to try to re-create
-        // the row either in the hierarchy or in the fulltext tables and violate
-        // integrity constraints of the database
-        waitForAsyncCompletion();
         if (session == null) {
             // session was never properly created, error during setup
             return;
         }
         try {
+            // flush anything not saved
+            session.save();
+            waitForAsyncCompletion();
+            // remove everything except root
             session.removeChildren(new PathRef("/"));
             session.save();
-            // wait for async events potentially triggered by the repo clean up
-            // it-self before moving on to executing the next test if any
             waitForAsyncCompletion();
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -294,18 +295,30 @@ public class PersistenceContext {
      */
     protected void findDirtyDocuments(Set<Serializable> dirtyStrings,
             Set<Serializable> dirtyBinaries) throws StorageException {
+        // deleted documents, for which we don't need to reindex anything
+        Set<Serializable> deleted = null;
         for (Fragment fragment : modified.values()) {
             Serializable docId = getContainingDocument(fragment.getId());
             String tableName = fragment.row.tableName;
-            switch (fragment.getState()) {
-            case CREATED:
+            State state = fragment.getState();
+            switch (state) {
             case DELETED:
             case DELETED_DEPENDENT:
-                if (fragment.getState() != State.CREATED && isDeleted(docId)) {
+                if (Model.HIER_TABLE_NAME.equals(tableName)
+                        && fragment.getId().equals(docId)) {
+                    // deleting the document, record this
+                    if (deleted == null) {
+                        deleted = new HashSet<Serializable>();
+                    }
+                    deleted.add(docId);
+                }
+                if (isDeleted(docId)) {
                     break;
                 }
-                // for delete, this is a deleted fragment of a complex property
+                // this is a deleted fragment of a complex property
                 // from a document that has not been completely deleted
+                //$FALL-THROUGH$
+            case CREATED:
                 PropertyType t = model.getFulltextInfoForFragment(tableName);
                 if (t == null) {
                     break;
@@ -335,6 +348,10 @@ public class PersistenceContext {
                 }
                 break;
             default:
+            }
+            if (deleted != null) {
+                dirtyStrings.removeAll(deleted);
+                dirtyBinaries.removeAll(deleted);
             }
         }
     }

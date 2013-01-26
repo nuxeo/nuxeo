@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,14 +11,12 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -35,9 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
-import javax.naming.NamingException;
-import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,11 +57,9 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.management.events.EventStatsHolder;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author Dragos Mihalache
@@ -75,11 +68,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
-    private static final Log log = LogFactory.getLog(SQLRepositoryTestCase.class);
+    private static final Log log = LogFactory.getLog(TestSQLRepositoryQuery.class);
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.convert.plugins");
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/testquery-core-types-contrib.xml");
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
@@ -87,6 +83,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -115,10 +112,10 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
      *  |- testfolder1 (UUID_2)
      *  |  |- testfile1 (UUID_3) (content UUID_4)
      *  |  |- testfile2 (UUID_5) (content UUID_6)
-     *  |  \- testfile3 (Note) (UUID_7) (trans UUID_8 stylesheet UUID_9)
-     *  \- tesfolder2 (UUID_10)
-     *     \- testfolder3 (UUID_11)
-     *        \- testfile4 (UUID_12) (content UUID_13)
+     *  |  \- testfile3 (UUID_7) (Note)
+     *  \- tesfolder2 (UUID_8)
+     *     \- testfolder3 (UUID_9)
+     *        \- testfile4 (UUID_10) (content UUID_11)
      * </pre>
      */
     protected void createDocs() throws Exception {
@@ -187,9 +184,9 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     /**
      * Publishes testfile4 to testfolder1:
      * <p>
-     * version (UUID_14, content UUID_15)
+     * version (UUID_12, content UUID_13)
      * <p>
-     * proxy (UUID_16)
+     * proxy (UUID_14)
      */
     protected DocumentModel publishDoc() throws Exception {
         DocumentModel doc = session.getDocument(new PathRef(
@@ -881,7 +878,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(0, session.query(sql).size());
 
         // System properties are also supported to have a coherent behavior
-        // even if it's useless: (primaryType='Folder' OR primaryType LIKE 'Folder/%')
+        // even if it's useless: (primaryType='Folder' OR primaryType LIKE
+        // 'Folder/%')
         sql = "SELECT * FROM Document WHERE ecm:primaryType STARTSWITH 'Folder'";
         assertTrue(session.query(sql).size() > 0);
     }
@@ -1652,6 +1650,130 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testFulltext2() throws Exception {
+        createDocs();
+        sleepForFulltext();
+        String query;
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
+        assertEquals(1, session.query(query).size());
+
+        query = "SELECT * FROM File WHERE NOT (ecm:fulltext = 'restaurant')";
+        assertEquals(2, session.query(query).size());
+
+        // Test multiple fulltext
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' OR ecm:fulltext = 'pete'";
+        assertEquals(2, session.query(query).size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:fulltext = 'pete'";
+        assertEquals(0, session.query(query).size());
+
+        // other query generation cases
+
+        // no union and implicit score sort
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:isProxy = 0";
+        assertEquals(1, session.query(query).size());
+
+        // order by so no implicit score sort
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' ORDER BY dc:title";
+        assertEquals(1, session.query(query).size());
+
+        // order by and no union so no implicit score sort
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:isProxy = 0 ORDER BY dc:title";
+        assertEquals(1, session.query(query).size());
+
+        // no union but distinct so no implicit score sort
+        query = "SELECT DISTINCT * FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:isProxy = 0";
+        assertEquals(1, session.query(query).size());
+    }
+
+    /*
+     * This used to crash SQL Server 2008 R2 (NXP-6143). It works on SQL Server
+     * 2005.
+     */
+    @Test
+    public void testFulltextCrashingSQLServer2008() throws Exception {
+        createDocs();
+        sleepForFulltext();
+
+        String query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' AND dc:title = 'testfile1_Title'";
+        assertEquals(1, session.query(query).size());
+    }
+
+    @Test
+    public void testFulltextPrefix() throws Exception {
+        createDocs();
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        file1.setPropertyValue("dc:title", "hello world citizens");
+        session.saveDocument(file1);
+        session.save();
+        sleepForFulltext();
+        String query;
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'wor*'";
+        assertEquals(1, session.query(query).size());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'wor%'";
+        assertEquals(1, session.query(query).size());
+
+        // BBB for direct PostgreSQL syntax
+        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL) {
+            query = "SELECT * FROM File WHERE ecm:fulltext = 'wor:*'";
+            assertEquals(1, session.query(query).size());
+        }
+
+        // prefix in phrase search
+        // not in H2 (with Lucene default parser)
+        // not in MySQL
+        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL
+                || DatabaseHelper.DATABASE instanceof DatabaseOracle
+                || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
+            query = "SELECT * FROM File WHERE ecm:fulltext = '\"hello wor*\"'";
+            assertEquals(1, session.query(query).size());
+        }
+        // prefix wildcard in the middle of a phrase
+        // really only in Oracle, and approximation in PostgreSQL
+        if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL
+                || DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+            query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* world\"'";
+            assertEquals(1, session.query(query).size());
+            query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* wor*\"'";
+            assertEquals(1, session.query(query).size());
+            // PostgreSQL mid-phrase wildcards are too greedy
+            if (DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+                // no match wanted here
+                query = "SELECT * FROM File WHERE ecm:fulltext = '\"hel* citizens\"'";
+                assertEquals(0, session.query(query).size());
+            }
+        }
+    }
+
+    @Test
+    public void testFulltextSpuriousCharacters() throws Exception {
+        createDocs();
+        sleepForFulltext();
+
+        String query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant :'";
+        assertEquals(1, session.query(query).size());
+    }
+
+    @Test
+    public void testFulltextMixin() throws Exception {
+        createDocs();
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        file1.addFacet("Aged");
+        file1.setPropertyValue("age:age", "barbar");
+        session.saveDocument(file1);
+        session.save();
+        sleepForFulltext();
+
+        String query = "SELECT * FROM File WHERE ecm:fulltext = 'barbar'";
+        assertEquals(1, session.query(query).size());
+    }
+
+    @Test
     public void testFulltextProxy() throws Exception {
         createDocs();
         sleepForFulltext();
@@ -1912,17 +2034,10 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployBundle("org.nuxeo.ecm.core.management");
-
-        assertNoTxMgr();
-
-        EventStatsHolder.setCollectAsyncHandlersExecTime(true);
-        assertTrue(EventStatsHolder.getAsyncHandlersExecTime().isEmpty());
 
         createDocs();
         sleepForFulltext();
-        assertTrue(EventStatsHolder.getAsyncHandlersCallStats().containsKey(
-                "sql-storage-binary-text"));
+
         String query;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(
@@ -1944,21 +2059,10 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         session.saveDocument(file1);
         session.save();
         sleepForFulltext();
-
-    }
-
-    private void assertNoTxMgr() {
-        TransactionManager mgr = null;
-        try {
-            mgr = TransactionHelper.lookupTransactionManager();
-        } catch (NamingException e) {
-            ;
-        }
-        assertNull(mgr);
     }
 
     @Test
-    public void testFullTextCopy() throws Exception {
+    public void testFulltextCopy() throws Exception {
         createDocs();
         String query;
         DocumentModelList dml;

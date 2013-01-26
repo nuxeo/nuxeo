@@ -68,8 +68,10 @@ public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
     @Override
     public void tearDown() throws Exception {
         try {
-            session.cancel();
-            closeSession();
+            if (session != null) {
+                session.cancel();
+                closeSession();
+            }
             if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                 TransactionHelper.setTransactionRollbackOnly();
                 TransactionHelper.commitOrRollbackTransaction();

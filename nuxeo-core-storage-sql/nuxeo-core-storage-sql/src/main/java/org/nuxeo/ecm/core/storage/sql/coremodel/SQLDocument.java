@@ -23,7 +23,10 @@ import org.nuxeo.ecm.core.storage.sql.Node;
  */
 public interface SQLDocument extends Document, PropertyContainer, Property {
 
+    String SIMPLE_TEXT_SYS_PROP = "simpleText";
+
     String BINARY_TEXT_SYS_PROP = "binaryText";
+
     String FULLTEXT_JOBID_SYS_PROP = "fulltextJobId";
 
     /**
