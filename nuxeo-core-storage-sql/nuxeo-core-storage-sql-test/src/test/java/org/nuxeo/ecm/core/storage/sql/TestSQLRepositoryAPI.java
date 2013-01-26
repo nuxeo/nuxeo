@@ -2161,6 +2161,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setPropertyValue("age:age", "barbar");
         doc = session.createDocument(doc);
         session.save();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
 
         DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'barbar'");
