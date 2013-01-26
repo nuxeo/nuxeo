@@ -859,6 +859,7 @@ public class DialectPostgreSQL extends Dialect {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         // properties.put("idType", "varchar(36)");
         properties.put("idType", "uuid");
+        properties.put("idNotPresent", "00000000-FFFF-FFFF-FFFF-FFFF00000000");
         properties.put("aclOptimizationsEnabled",
                 Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled",

@@ -720,7 +720,7 @@ DECLARE
   update_count integer;
 BEGIN
   RAISE INFO 'nx_vacuum_read_acls vacuuming ...';
-  DELETE FROM aclr r WHERE NOT EXISTS (SELECT 1 FROM hierarchy_read_acl h 
+  DELETE FROM aclr r WHERE NOT EXISTS (SELECT 1 FROM hierarchy_read_acl h
     WHERE h.acl_id = r.acl_id LIMIT 1);
   GET DIAGNOSTICS update_count = ROW_COUNT;
   RAISE INFO 'nx_vacuum_read_acls done, % read acls removed.', update_count;
@@ -929,7 +929,7 @@ RETURNS void
 AS $$
 -- Upgrade versions: label, islatest, islatestmajor
 DECLARE
-  series ${idType} := '-';
+  series ${idType} := '${idNotPresent}';
   latest boolean := false;
   latestmajor boolean := false;
   major boolean;
@@ -975,7 +975,7 @@ DROP FUNCTION nx_upgrade_versions();
 
 #TEST:
 SELECT attname FROM pg_attribute
-  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity') 
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity')
     AND attname = 'pid';
 
 #IF: ! emptyResult
@@ -984,7 +984,7 @@ DELETE FROM cluster_nodes N WHERE
 
 #TEST:
 SELECT attname FROM pg_attribute
-  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity') 
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity')
     AND attname = 'procpid';
 
 #IF: ! emptyResult

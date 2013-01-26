@@ -23,23 +23,6 @@ CREATE TABLE testschema2 (
   title text
 );
 
-# create the old structure for tags tables
-
-CREATE TABLE tag (
-  id ${idType} NOT NULL, -- actually foreign key to hierarchy
-  private BIGINT,
-  label VARCHAR
-);
-
-CREATE TABLE nxp_tagging (
-  id VARCHAR(255) NOT NULL,
-  tag_id VARCHAR(255),
-  author VARCHAR(255),
-  document_id VARCHAR(255),
-  creation_date DATE,
-  is_private INTEGER
-);
-
 # create old table locks with constraints
 
 CREATE TABLE locks (
@@ -99,7 +82,7 @@ INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
   VALUES ('11111111-2222-3333-4444-555555555555', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'mytag', false, 'Tag')
 
 # tag
-INSERT INTO tag (id, private, label) VALUES ('11111111-2222-3333-4444-555555555555', 0, 'mytag');
+INSERT INTO tag (id, label) VALUES ('11111111-2222-3333-4444-555555555555', 'mytag');
 
 # tag dublincore
 INSERT INTO dublincore (id, creator, title) VALUES ('11111111-2222-3333-4444-555555555555', 'Administrator', 'mytag');
@@ -109,14 +92,10 @@ INSERT INTO hierarchy (id, parentid, name, isproperty, primarytype)
   VALUES ('ffffffff-ffff-ffff-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'othertag', false, 'Tag')
 
 # tag 2
-INSERT INTO tag (id, private, label) VALUES ('ffffffff-ffff-ffff-1111-111111111111', 0, 'othertag');
+INSERT INTO tag (id, label) VALUES ('ffffffff-ffff-ffff-1111-111111111111', 'othertag');
 
 # tag 2 dublincore
 INSERT INTO dublincore (id, creator, title) VALUES ('ffffffff-ffff-ffff-1111-111111111111', 'Administrator', 'othertag');
-
-# tagging
-INSERT INTO nxp_tagging (id, tag_id, author, document_id, creation_date, is_private)
-  VALUES (123123123, '11111111-2222-3333-4444-555555555555', 'Administrator', 'dddddddd-dddd-dddd-dddd-dddddddddddd', DATE '2010-06-01', 0);
 
 
 # ver 1
