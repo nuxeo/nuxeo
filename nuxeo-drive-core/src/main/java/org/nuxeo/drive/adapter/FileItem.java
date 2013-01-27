@@ -36,7 +36,7 @@ public interface FileItem extends FileSystemItem {
     @JsonIgnore
     Blob getBlob() throws ClientException;
 
-    String getDownloadURL(String baseURL) throws ClientException;
+    String getDownloadURL() throws ClientException;
 
     String getDigestAlgorithm();
 

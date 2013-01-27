@@ -253,6 +253,9 @@ public class TestFileSystemItemManagerService {
         assertTrue(fsItem.getCanDelete());
         FileItem fileFsItem = (FileItem) fsItem;
         assertTrue(fileFsItem.getCanUpdate());
+        assertEquals(
+                "nxbigfile/test/" + file.getId() + "/blobholder:0/Joe.odt",
+                fileFsItem.getDownloadURL());
         assertEquals("MD5", fileFsItem.getDigestAlgorithm());
         assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(),
                 fileFsItem.getDigest());
@@ -455,6 +458,8 @@ public class TestFileSystemItemManagerService {
         Blob newFileBlob = (Blob) newFile.getPropertyValue("file:content");
         assertEquals("New file.odt", newFileBlob.getFilename());
         assertEquals("Content of a new file.", newFileBlob.getString());
+        assertEquals("nxbigfile/test/" + newFile.getId()
+                + "/blobholder:0/New%20file.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(newFileBlob.getDigest(), fileItem.getDigest());
 
@@ -489,6 +494,8 @@ public class TestFileSystemItemManagerService {
         assertEquals("New file.odt", updatedFileBlob.getFilename());
         assertEquals("Modified content of an existing file.",
                 updatedFileBlob.getString());
+        assertEquals("nxbigfile/test/" + updatedFile.getId()
+                + "/blobholder:0/New%20file.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(updatedFileBlob.getDigest(), fileItem.getDigest());
 
@@ -534,8 +541,12 @@ public class TestFileSystemItemManagerService {
         assertEquals("aFile", file.getTitle());
         Blob fileBlob = (Blob) file.getPropertyValue("file:content");
         assertEquals("File new name.odt", fileBlob.getFilename());
-        assertEquals("MD5", ((FileItem) fsItem).getDigestAlgorithm());
-        assertEquals(fileBlob.getDigest(), ((FileItem) fsItem).getDigest());
+        fileItem = (FileItem) fsItem;
+        assertEquals("nxbigfile/test/" + file.getId()
+                + "/blobholder:0/File%20new%20name.odt",
+                fileItem.getDownloadURL());
+        assertEquals("MD5", fileItem.getDigestAlgorithm());
+        assertEquals(fileBlob.getDigest(), fileItem.getDigest());
 
         // File rename with title == filename
         // => should rename filename and title
@@ -550,17 +561,20 @@ public class TestFileSystemItemManagerService {
         assertEquals("Title-filename equality.odt", newFile.getTitle());
         assertEquals("Title-filename equality.odt",
                 ((Blob) newFile.getPropertyValue("file:content")).getFilename());
-        fsItem = fileSystemItemManagerService.rename(
+        fileItem = (FileItem) fileSystemItemManagerService.rename(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + newFile.getId(),
                 "Renamed title-filename equality.odt", principal);
-        assertEquals("Renamed title-filename equality.odt", fsItem.getName());
+        assertEquals("Renamed title-filename equality.odt", fileItem.getName());
         newFile = session.getDocument(newFile.getRef());
         assertEquals("Renamed title-filename equality.odt", newFile.getTitle());
         newFileBlob = (Blob) newFile.getPropertyValue("file:content");
         assertEquals("Renamed title-filename equality.odt",
                 newFileBlob.getFilename());
-        assertEquals("MD5", ((FileItem) fsItem).getDigestAlgorithm());
-        assertEquals(newFileBlob.getDigest(), ((FileItem) fsItem).getDigest());
+        assertEquals("nxbigfile/test/" + newFile.getId()
+                + "/blobholder:0/Renamed%20title-filename%20equality.odt",
+                fileItem.getDownloadURL());
+        assertEquals("MD5", fileItem.getDigestAlgorithm());
+        assertEquals(newFileBlob.getDigest(), fileItem.getDigest());
 
         // ------------------------------------------------------
         // Check #move

@@ -45,9 +45,4 @@ public class DummyFileItem extends DocumentBackedFileItem {
         return "Dummy file with id " + docId;
     }
 
-    @Override
-    protected String getFileName(DocumentModel doc) throws ClientException {
-        return null;
-    }
-
 }

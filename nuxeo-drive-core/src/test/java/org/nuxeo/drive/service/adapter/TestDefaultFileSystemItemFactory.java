@@ -369,10 +369,10 @@ public class TestDefaultFileSystemItemFactory {
         // FileItem#getDownloadURL
         // ------------------------------------------------------
         FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-        String baseURL = "http://myServer/nuxeo/";
-        String downloadURL = fileItem.getDownloadURL(baseURL);
-        assertEquals("http://myServer/nuxeo/nxbigfile/test/" + file.getId()
-                + "/blobholder:0/Joe.odt", downloadURL);
+        String downloadURL = fileItem.getDownloadURL();
+        assertEquals(
+                "nxbigfile/test/" + file.getId() + "/blobholder:0/Joe.odt",
+                downloadURL);
 
         // ------------------------------------------------------------
         // FileItem#getDigestAlgorithm
