@@ -21,8 +21,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.runtime.api.Framework;
 
 public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
 
@@ -102,8 +100,7 @@ public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
         file4 = session.createDocument(file4);
 
         session.save();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
     }
 
     @Test

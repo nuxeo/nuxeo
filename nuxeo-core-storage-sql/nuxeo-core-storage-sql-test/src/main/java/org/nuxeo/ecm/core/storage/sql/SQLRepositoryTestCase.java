@@ -86,7 +86,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     @After
     public void tearDown() throws Exception {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
         super.tearDown();
         database.tearDown();
         final CoreInstance core = CoreInstance.getInstance();
@@ -112,6 +112,15 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
                     Integer.valueOf(leakedSingleConnections)));
         }
         ConnectionHelper.clearConnectionReferences();
+    }
+
+    public void waitForAsyncCompletion() throws ClientException {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+    }
+
+    public void waitForFulltextIndexing() throws ClientException {
+        waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
     public void openSession() throws ClientException {

@@ -74,9 +74,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -108,7 +106,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     @Override
     @After
     public void tearDown() throws Exception {
-        session.cancel();
+        session.save();
+        waitForAsyncCompletion();
         closeSession();
         DummyTestListener.clear();
         super.tearDown();
@@ -204,7 +203,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     public void testComplexType() throws Exception {
         // boiler plate to handle the asynchronous full-text indexing of blob
         // content in a deterministic way
-        EventServiceImpl eventService = (EventServiceImpl) Framework.getLocalService(EventService.class);
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
 
@@ -213,7 +211,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
-        eventService.waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         // test setting and reading a map with an empty list
         closeSession();
@@ -228,8 +226,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         closeSession();
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
         openSession();
 
         doc = session.getDocument(docRef);
@@ -260,8 +257,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         closeSession();
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
         openSession();
 
         doc = session.getDocument(docRef);
@@ -302,8 +298,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         closeSession();
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
         openSession();
 
         assertEquals(
@@ -329,8 +324,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
 
         closeSession();
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
         openSession();
 
         results = session.query("SELECT * FROM Document"
@@ -2161,8 +2155,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setPropertyValue("age:age", "barbar");
         doc = session.createDocument(doc);
         session.save();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
 
         DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'barbar'");
         assertEquals(1, list.size());
@@ -3714,7 +3707,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         Set<String> set;
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-listeners-invalidations-contrib.xml");
-        EventServiceImpl eventService = (EventServiceImpl) Framework.getLocalService(EventService.class);
 
         DocumentModel root = session.getRootDocument();
         session.save();
@@ -3722,10 +3714,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "doc", "File");
         doc = session.createDocument(doc);
 
-        eventService.waitForAsyncCompletion();
+        waitForAsyncCompletion();
         DummyTestListener.clearForThisThread();
         session.save(); // should send invalidations
-        eventService.waitForAsyncCompletion(); // for fulltext
+        waitForAsyncCompletion(); // for fulltext
         assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
         event = DummyTestListener.EVENTS_RECEIVED.get(0);
         // NXP-5808 cannot distinguish cluster invalidations
@@ -3747,10 +3739,10 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.setProperty("dublincore", "title", "t1");
         doc = session.saveDocument(doc);
 
-        eventService.waitForAsyncCompletion();
+        waitForAsyncCompletion();
         DummyTestListener.clearForThisThread();
         session.save(); // should send invalidations
-        eventService.waitForAsyncCompletion(); // for fulltext
+        waitForAsyncCompletion(); // for fulltext
         assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
         event = DummyTestListener.EVENTS_RECEIVED.get(0);
         // NXP-5808 cannot distinguish cluster invalidations
@@ -3770,9 +3762,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     public void testFulltextReindexOnCreateDelete() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-listeners-all-contrib.xml");
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
 
         // create
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
@@ -3780,8 +3770,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         DummyTestListener.clear();
         session.save();
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
         assertEventSet(IGNORE_VCS, "sessionSaved=1");
 
         // modify regular
@@ -3790,8 +3779,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         DummyTestListener.clear();
         session.save();
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
         assertEventSet(IGNORE_VCS, "sessionSaved=2");
 
         // modify binary
@@ -3801,8 +3789,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         DummyTestListener.clear();
         session.save();
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
         assertEventSet(IGNORE_VCS, "sessionSaved=3");
 
         // delete
@@ -3810,8 +3797,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         DummyTestListener.clear();
         session.save();
-        eventService.waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        waitForFulltextIndexing();
         assertEventSet(IGNORE_VCS, "sessionSaved=1");
     }
 
@@ -3868,6 +3854,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNull(doc.getParentRef());
         assertEquals("My Rel", doc.getProperty("dublincore", "title"));
 
+        waitForAsyncCompletion(); // before remove
         // remove
         session.removeDocument(rel.getRef());
         session.save();
