@@ -92,9 +92,17 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
             throws ClientException {
         try {
             DocumentModel doc = getDocumentByFileSystemId(id, principal);
-            return doc.isFolder() || hasBlob(doc);
+            boolean exists = doc.isFolder() || hasBlob(doc);
+            if (!exists) {
+                log.debug(String.format(
+                        "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem => returning false.",
+                        doc.getId()));
+            }
+            return exists;
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
+                log.debug(String.format(
+                        "No doc related to id %s, returning false.", id));
                 return false;
             } else {
                 throw e;
