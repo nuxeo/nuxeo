@@ -47,7 +47,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        waitForIndexing();
+        waitForFulltextIndexing();
     }
 
     @Override
@@ -105,7 +105,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     protected void allowFulltextUpdating() throws ClientException {
         blockingWork.startLatch.countDown();
         blockingWork = null;
-        waitForIndexing();
+        waitForFulltextIndexing();
     }
 
     protected void flush() throws ClientException {
@@ -127,10 +127,10 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         return session.query(request).size();
     }
 
-    protected void waitForIndexing() throws ClientException {
+    @Override
+    public void waitForFulltextIndexing() throws ClientException {
         flush(); // also starts a new tx, which will allow progress
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        super.waitForFulltextIndexing();
     }
 
     @Test
@@ -176,7 +176,7 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         doc.getAdapter(BlobHolder.class).setBlob(new StringBlob("other"));
         session.saveDocument(doc);
 
-        waitForIndexing();
+        waitForFulltextIndexing();
 
         assertEquals(1, indexedDocs());
     }

@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
@@ -86,6 +85,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     @Override
     @After
     public void tearDown() throws Exception {
+        session.save();
+        waitForAsyncCompletion();
         closeSession();
         super.tearDown();
     }
@@ -1550,21 +1551,10 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(8, dml.size());
     }
 
-    /**
-     * Wait a bit to give time to the asynchronous fulltext extractor.
-     * <p>
-     * Subclassed for MS SQL Server which is itself asynchronous when indexing
-     * fulltext.
-     */
-    protected void sleepForFulltext() {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        database.sleepForFulltext();
-    }
-
     @Test
     public void testFulltext() throws Exception {
         createDocs();
-        sleepForFulltext();
+        waitForFulltextIndexing();
         String query, nquery;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(
@@ -1589,7 +1579,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         // query
         dml = session.query(query);
@@ -1602,7 +1592,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file2.setProperty("dublincore", "description", "the world is my oyster");
         session.saveDocument(file2);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         // query
         dml = session.query(query);
@@ -1615,7 +1605,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file3.setProperty("dublincore", "title", "brave new world");
         session.saveDocument(file3);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         // query
         dml = session.query(query);
@@ -1631,19 +1621,19 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'world' "
                 + "AND dc:contributors = 'pete'";
-        sleepForFulltext();
+        waitForFulltextIndexing();
         dml = session.query(query);
         assertIdSet(dml, file2.getId());
 
         // multi-valued field
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
-        sleepForFulltext();
+        waitForFulltextIndexing();
         dml = session.query(query);
         assertEquals(0, dml.size());
         file1.setProperty("dublincore", "subjects", new String[] { "bzzt" });
         session.saveDocument(file1);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'bzzt'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
@@ -1652,7 +1642,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     @Test
     public void testFulltext2() throws Exception {
         createDocs();
-        sleepForFulltext();
+        waitForFulltextIndexing();
         String query;
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
@@ -1694,7 +1684,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     @Test
     public void testFulltextCrashingSQLServer2008() throws Exception {
         createDocs();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         String query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' AND dc:title = 'testfile1_Title'";
         assertEquals(1, session.query(query).size());
@@ -1708,7 +1698,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file1.setPropertyValue("dc:title", "hello world citizens");
         session.saveDocument(file1);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
         String query;
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'wor*'";
@@ -1752,7 +1742,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     @Test
     public void testFulltextSpuriousCharacters() throws Exception {
         createDocs();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         String query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant :'";
         assertEquals(1, session.query(query).size());
@@ -1767,7 +1757,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file1.setPropertyValue("age:age", "barbar");
         session.saveDocument(file1);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         String query = "SELECT * FROM File WHERE ecm:fulltext = 'barbar'";
         assertEquals(1, session.query(query).size());
@@ -1776,7 +1766,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     @Test
     public void testFulltextProxy() throws Exception {
         createDocs();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         String query;
         DocumentModelList dml;
@@ -1793,7 +1783,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         DocumentModel proxy = publishDoc();
         String proxyId = proxy.getId();
         String versionId = proxy.getSourceId();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         // query must return also proxies and versions
         dml = session.query(query);
@@ -1812,7 +1802,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         session.save();
 
         // wait for async version removal
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         // version gone as well
         dml = session.query(query);
@@ -1822,7 +1812,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     @Test
     public void testFulltextExpressionSyntax() throws Exception {
         createDocs();
-        sleepForFulltext();
+        waitForFulltextIndexing();
         String query;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef(
@@ -1831,7 +1821,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file1.setProperty("dublincore", "title", "the world is my oyster");
         session.saveDocument(file1);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete'";
         dml = session.query(query);
@@ -1951,7 +1941,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
             f = session.createDocument(f);
         }
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         query = "SELECT * FROM File WHERE ecm:fulltext = '\"international commerce\"'";
         assertEquals(1, session.query(query).size());
@@ -2003,7 +1993,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file3.setProperty("dublincore", "title", "brave new world");
         session.saveDocument(file3);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         // check main fulltext index
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'world'";
@@ -2036,7 +2026,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
 
         createDocs();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         String query;
         DocumentModelList dml;
@@ -2058,7 +2048,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file1.setPropertyValue("content", blob1);
         session.saveDocument(file1);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
     }
 
     @Test
@@ -2072,7 +2062,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
 
@@ -2084,7 +2074,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
                 "file1Copy");
         // the save is needed to update the read acls
         session.save();
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), copy.getId());
@@ -2104,7 +2094,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         session.saveDocument(file1);
         session.save();
 
-        sleepForFulltext();
+        waitForFulltextIndexing();
 
         query = "SELECT * FROM File Where dc:title = 'hello world 1' ORDER BY ecm:currentLifeCycleState";
 
