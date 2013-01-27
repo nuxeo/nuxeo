@@ -16,9 +16,6 @@
  */
 package org.nuxeo.drive.operations;
 
-import java.io.StringWriter;
-
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -52,12 +49,8 @@ public class NuxeoDriveFileSystemItemExists {
     public Blob run() throws Exception {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        String exists = String.valueOf(fileSystemItemManager.exists(id,
-                ctx.getPrincipal()));
-        ObjectMapper mapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, exists);
-        return StreamingBlob.createFromString(writer.toString(),
+        boolean exists = fileSystemItemManager.exists(id, ctx.getPrincipal());
+        return StreamingBlob.createFromString(String.valueOf(exists),
                 "application/json");
     }
 
