@@ -21,15 +21,19 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class StringBlob extends DefaultBlob implements Serializable {
 
     private static final long serialVersionUID = -1369527636846459436L;
+
+    private static final Log log = LogFactory.getLog(StringBlob.class);
 
     protected final String content;
 
@@ -47,13 +51,19 @@ public class StringBlob extends DefaultBlob implements Serializable {
         this.encoding = encoding;
     }
 
-
     @Override
     public long getLength() {
         if (content == null) {
             return 0;
         }
-        return content.length();
+        try {
+            return getByteArray().length;
+        } catch (IOException e) {
+            log.error(String.format(
+                    "Error while getting byte array from blob %s, returning -1",
+                    getFilename()));
+            return -1;
+        }
     }
 
     @Override
