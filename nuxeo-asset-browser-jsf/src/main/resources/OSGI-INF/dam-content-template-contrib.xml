@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.contentTemplate">
+
+  <require>
+    org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib
+  </require>
+
+  <extension target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="postContentCreationHandlers">
+
+    <postContentCreationHandler name="assetLibraryHandler"
+      class="org.nuxeo.dam.AssetLibraryHandler" />
+
+  </extension>
+
+</component>

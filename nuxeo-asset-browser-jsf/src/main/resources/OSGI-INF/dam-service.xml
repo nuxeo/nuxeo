@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.DamService">
+
+  <documentation>
+    Generic service used by DAM for configuration.
+
+    @author Thomas Roger (troger@nuxeo.com)
+    @since 5.7
+  </documentation>
+
+  <implementation class="org.nuxeo.dam.DamServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.dam.DamService"/>
+  </service>
+
+  <extension-point name="assetLibrary">
+    <documentation>
+      Used to configure the asset library document, where the assets
+      will be stored by default.
+
+      <code>
+        <assetLibrary title="Asset Library" path="/asset-library" docType="AssetLibrary" />
+      </code>
+
+      @author Thomas Roger (troger@nuxeo.com)
+      @since 5.7
+    </documentation>
+    <object
+      class="org.nuxeo.dam.AssetLibrary"/>
+  </extension-point>
+
+</component>

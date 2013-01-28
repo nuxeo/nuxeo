@@ -33,6 +33,24 @@
         /dam/widgets/title_widget_template.xhtml
       </property>
     </widgetType>
+
+    <widgetType name="damAssetViewNoDocument">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>No Document selected</title>
+        <description>
+          <p>
+            This widget type displays a placeholder when no document is selected.
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/dam_asset_view_no_document.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -84,6 +102,13 @@
       <properties widgetMode="any">
         <property name="template">/dam/widgets/dam_search_results_widget_template.xhtml</property>
       </properties>
+    </widget>
+
+    <widget name="damAssetViewNoDocument" type="damAssetViewNoDocument">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
     </widget>
 
     <widget name="damAssetViewTitle" type="dam_title">
@@ -194,6 +219,14 @@
       </properties>
     </action>
 
+    <action id="damAssetViewNoDocument" type="widget" order="100">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewNoDocument</property>
+      </properties>
+      <filter-id>noCurrentDocument</filter-id>
+    </action>
+
     <action id="damAssetViewTitle" type="widget" order="100">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
@@ -250,6 +283,12 @@
     <filter id="hasVideoFacet">
       <rule grant="true">
         <facet>Video</facet>
+      </rule>
+    </filter>
+
+    <filter id="noCurrentDocument">
+      <rule grant="true">
+        <condition>currentDocument == null</condition>
       </rule>
     </filter>
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.dam.DamService.contrib.test">
+
+  <require>org.nuxeo.dam.DamService.contrib</require>
+
+  <extension target="org.nuxeo.dam.DamService"
+    point="assetLibrary">
+
+    <assetLibrary docType="AssetLibrary"
+      title="Media Library" description="desc" path="/media-library" />
+
+  </extension>
+
+</component>
