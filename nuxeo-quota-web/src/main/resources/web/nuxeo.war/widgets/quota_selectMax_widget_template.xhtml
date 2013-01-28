@@ -9,15 +9,11 @@
   id="#{widget.id}">
 
 <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
-
   <table>
   <tr>
-    <td>
-      <input type="checkbox" id="unlimitedChk" onchange="changeUnlimited(this)" /> #{messages['label.quota.unlimited']}
-    </td>
   </tr><tr>
   <td>
-    <table id="sliderTable">
+    <table>
     <tr>
     <td></td><td style="text-align:center;font-weight:bold"><span id="sliderDisplay"></span>
     </td><td></td></tr>
@@ -44,18 +40,20 @@
             onslide="displayQuotaSize(this.value);"
             showToolTip="false"
             showInput="true"
-            maxValue="27.701"
+            maxValue="#{quotaStatsActions.getMaxQuotaSliderValue().getMaxSize()}"
             minValue="#{quotaStatsActions.getMinQuotaSliderValue(field_1)}" step="0.001"></rich:inputNumberSlider>
     </td>
     <td>
-    999 #{messages['label.unit.GB']}
+    <h:outputText value="#{quotaStatsActions.getMaxQuotaSliderValue().getValueInUnit()}">
+      <f:convertNumber maxFractionDigits="2" />
+    </h:outputText> 
+      #{messages[quotaStatsActions.getMaxQuotaSliderValue().getUnit()]}
     <h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
     </td>
     </tr>
     </table>
 </td></tr>
 </table>
-
 </c:if>
 
 <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
@@ -69,4 +67,5 @@
 
 
 </c:if>
+
 </div>

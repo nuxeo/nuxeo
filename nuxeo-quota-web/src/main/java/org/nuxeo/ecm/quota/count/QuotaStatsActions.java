@@ -21,6 +21,8 @@ import static org.jboss.seam.ScopeType.STATELESS;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -35,6 +37,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -131,6 +134,58 @@ public class QuotaStatsActions implements Serializable {
             return Math.log(totalSize + minSize);
         } else {
             return Math.log(minSize);
+        }
+    }
+
+    public MaxQuotaInfo getMaxQuotaSliderValue() throws Exception {
+        double maxSize = 27.701;
+        List<DocumentModel> parents = new ArrayList<DocumentModel>();
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        parents.addAll(documentManager.getParentDocuments(doc.getRef()));
+        Collections.reverse(parents);
+        parents.remove(0);
+        for (DocumentModel documentModel : parents) {
+            QuotaAware qa = documentModel.getAdapter(QuotaAware.class);
+            if (qa == null) {
+                continue;
+            }
+            if (qa.getMaxQuota() > 0) {
+                return new MaxQuotaInfo(new QuotaDisplayValue(qa.getMaxQuota()));
+            }
+        }
+        return new MaxQuotaInfo(maxSize, 999, "GB");
+    }
+
+    class MaxQuotaInfo {
+
+        double maxSize;
+
+        float valueInUnit;
+
+        String unit;
+
+        MaxQuotaInfo(QuotaDisplayValue maxSizeDisplayValue) {
+            this.maxSize = Math.log(maxSizeDisplayValue.getValue());
+            valueInUnit = maxSizeDisplayValue.getValueInUnit();
+            unit = maxSizeDisplayValue.getUnit();
+        }
+
+        MaxQuotaInfo(double maxSize, float valueInUnit, String unit) {
+            this.maxSize = maxSize;
+            this.valueInUnit = valueInUnit;
+            this.unit = unit;
+        }
+
+        public double getMaxSize() {
+            return maxSize;
+        }
+
+        public float getValueInUnit() {
+            return valueInUnit;
+        }
+
+        public String getUnit() {
+            return unit;
         }
     }
 }
