@@ -63,8 +63,7 @@ public class ConditionalRunner extends SerialRunner {
                 } else if (child instanceof DocumentRouteStepsContainer) {
                     // run only the child that was selected to be run by the
                     // previous step
-                    if (posOfchildToRun != null
-                            && String.valueOf(children.indexOf(child)).equals(
+                    if (String.valueOf(children.indexOf(child)).equals(
                                     posOfchildToRun)) {
                         child.run(session);
                         if (!child.isDone()) {
