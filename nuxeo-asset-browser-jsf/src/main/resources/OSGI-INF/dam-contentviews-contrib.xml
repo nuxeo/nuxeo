@@ -98,7 +98,7 @@
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
             <field schema="dam_search" name="ecm_fulltext" />
           </predicate>
-          <predicate parameter="damc:author" operator="FULLTEXT">
+          <predicate parameter="damc:author" operator="LIKE">
             <field schema="dam_search" name="damc_author" />
           </predicate>
           <predicate parameter="damc:authoringDate" operator="BETWEEN">
