@@ -1,9 +1,9 @@
-<c:if test="true"
-  xmlns:h="http://java.sun.com/jsf/html"
+<div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  class="facetedSearchBlock">
 
   <nxu:set var="displaySelector"
     value="#{damSearchActions.contentViewNames.size > 1}">
@@ -28,4 +28,4 @@
     </c:if>
   </nxu:set>
 
-</c:if>
+</div>

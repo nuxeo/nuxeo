@@ -1,7 +1,7 @@
-<c:if test="true"
-  xmlns:c="http://java.sun.com/jstl/core"
+<div xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  class="documentTitle">
 
   <nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
   <nxu:set var="label" value="#{empty typeLabel ? field_2 : messages[typeLabel]}">
@@ -13,4 +13,4 @@
   </nxu:set>
   </nxu:set>
 
-</c:if>
+</div>
