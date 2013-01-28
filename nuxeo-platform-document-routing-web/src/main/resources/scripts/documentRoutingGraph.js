@@ -50,12 +50,12 @@ function jsPlumbInitializeDefault() {
 };
 // --> end jsPlumbOptions
 // display graph
-function displayGraph(data) {
+function displayGraph(data, divContainerTargetId) {
 	jQuery.each(data['nodes'], function() {
 		var node = '<div class="node" id="' + this.id + '">' + this.title
 				+ '</div>';
 		var x = (this.x - 100)<=10?this.x:(this.x - 100);
-		jQuery(node).appendTo('#target').css('left', x).css('top',
+		jQuery(node).appendTo('#' + divContainerTargetId).css('left', x).css('top',
 				this.y).addClass('node_' + this.state);
 		jsPlumb.makeSource(this.id, sourceEndpointOptions());
 	});
@@ -68,7 +68,7 @@ function displayGraph(data) {
 	});
 };
 
-function invokeGetGraphOp(routeId, currentLang) {
+function invokeGetGraphOp(routeId, currentLang, divContainerTargetId) {
 	var ctx = {
 	};
 
@@ -77,13 +77,13 @@ function invokeGetGraphOp(routeId, currentLang) {
 	getGraphNodesExec.addParameter("routeDocId", routeId);
 	getGraphNodesExec.addParameter("language", currentLang);
 	getGraphNodesExec.executeGetBlob(function(data, status, xhr) {
-		displayGraph(data);
+		displayGraph(data, divContainerTargetId);
 	}, function(xhr, status, errorMessage) {
-		jQuery('<div>Can not load graph </div>').appendTo('#target');
+		jQuery('<div>Can not load graph </div>').appendTo('#' + divContainerTargetId);
 	}, true);
 };
 
-function loadGraph(routeDocId, currentLang) {
+function loadGraph(routeDocId, currentLang, divContainerTargetId) {
 	jsPlumbInitializeDefault();
-	invokeGetGraphOp(routeDocId, currentLang);
+	invokeGetGraphOp(routeDocId, currentLang, divContainerTargetId);
 };

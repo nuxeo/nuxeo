@@ -8,9 +8,10 @@
 
   <script type="text/javascript">
     <h:outputText  value="var routeDocId='#{value.document.id}';" />
-    <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>  
+    <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>
+    <h:outputText value="var divContainerTargetId='#{widget.id}_target';"/>   
     function showGraph() {
-      loadGraph(routeDocId, currentLang);
+      loadGraph(routeDocId, currentLang, divContainerTargetId);
       jQuery('&lt;a href="##{widget.id}_graphView_box"&gt;&lt;/a&gt;').fancybox({
         'autoScale': true,
         'autoDimensions': false,
@@ -33,7 +34,7 @@
   <div style="display:none">
     <div id="#{widget.id}_graphView_box">
       <!-- div container for the graph -->
-      <div id="target" class="targetDiv"></div>
+      <div id="#{widget.id}_target" class="targetDiv"></div>
     </div>
   </div>
 
