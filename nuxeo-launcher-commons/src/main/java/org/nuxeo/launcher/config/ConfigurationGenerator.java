@@ -1598,6 +1598,8 @@ public class ConfigurationGenerator {
         tt.setVariable(PARAM_DB_HOST, dbHost);
         tt.setVariable(PARAM_DB_PORT, dbPort);
         tt.setVariable(PARAM_DB_NAME, dbName);
+        tt.setVariable(PARAM_DB_USER, dbUser);
+        tt.setVariable(PARAM_DB_PWD, dbPassword);
         Properties props = new Properties();
         props.put("user", dbUser);
         props.put("password", dbPassword);
