@@ -1047,6 +1047,18 @@ public abstract class Dialect {
     }
 
     /**
+     * Casts an id column to a VARCHAR type.
+     * <p>
+     * Used for uuid/varchar joins.
+     *
+     * @return the casted expression
+     * @since 5.7
+     */
+    public String castIdToVarchar(String expr) {
+        return expr;
+    }
+
+    /**
      * Gets the expression to use to check security.
      *
      * @param idColumnName the quoted name of the id column to use

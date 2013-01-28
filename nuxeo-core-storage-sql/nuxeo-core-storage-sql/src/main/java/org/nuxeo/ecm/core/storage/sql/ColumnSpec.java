@@ -43,4 +43,22 @@ public enum ColumnSpec {
     CLUSTERNODE, // cluster node id
     CLUSTERFRAGS; // list of fragments impacted, for clustering
 
+    /**
+     * Checks if this spec holds a Nuxeo unique id (usually UUID).
+     */
+    public boolean isId() {
+        switch (this) {
+        case NODEID:
+        case NODEIDFK:
+        case NODEIDFKNP:
+        case NODEIDFKMUL:
+        case NODEIDFKNULL:
+        case NODEIDPK:
+        case NODEVAL:
+            return true;
+        default:
+            return false;
+        }
+    }
+
 }

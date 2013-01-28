@@ -48,10 +48,16 @@ public class Join implements Serializable, Comparable<Join> {
     public final String tableParam;
 
     /** Left part of equijoin. */
-    public final String on1;
+    public Column column1;
 
     /** Right part of equijoin. */
-    public final String on2;
+    public Column column2;
+
+    /** Left part of equijoin. */
+    public String on1;
+
+    /** Right part of equijoin. */
+    public String on2;
 
     /** Additional WHERE clauses. */
     public final List<String> whereClauses = new LinkedList<String>();
@@ -59,12 +65,23 @@ public class Join implements Serializable, Comparable<Join> {
     /** Additional WHERE clauses parameters. */
     public final List<Serializable> whereParams = new LinkedList<Serializable>();
 
-    public Join(int kind, String table, String tableAlias, String tableParam,
-            String on1, String on2) {
+    private Join(int kind, String table, String tableAlias, String tableParam) {
         this.kind = kind;
         this.table = table;
         this.tableAlias = tableAlias;
         this.tableParam = tableParam;
+    }
+
+    public Join(int kind, String table, String tableAlias, String tableParam,
+            Column column1, Column column2) {
+        this(kind, table, tableAlias, tableParam);
+        this.column1 = column1;
+        this.column2 = column2;
+    }
+
+    public Join(int kind, String table, String tableAlias, String tableParam,
+            String on1, String on2) {
+        this(kind, table, tableAlias, tableParam);
         this.on1 = on1;
         this.on2 = on2;
     }
@@ -98,14 +115,23 @@ public class Join implements Serializable, Comparable<Join> {
         }
     }
 
-    public String getClause() {
-        String f = on1.toLowerCase();
-        if ((f.contains("target") && !f.contains("proxies")) || f.contains("source")) {
-            // temporary fix cast uuid to varchar because relation table
-            // has varchar source and target field
-            return String.format("%s = %s::varchar", on1, on2);
+    public String getClause(Dialect dialect) {
+        if (on1 == null && on2 == null) {
+            on1 = column1.getFullQuotedName();
+            on2 = column2.getFullQuotedName();
+            boolean isid1 = column1.getType().isId();
+            boolean isid2 = column2.getType().isId();
+            if (dialect != null && isid1 != isid2) {
+                // temporary fix cast uuid to varchar because relation table
+                // has varchar source and target field
+                if (isid1) {
+                    on1 = dialect.castIdToVarchar(on1);
+                } else {
+                    on2 = dialect.castIdToVarchar(on2);
+                }
+            }
         }
-        return String.format("%s = %s", on1, on2);
+        return on1 + " = " + on2;
     }
 
     /**
@@ -117,13 +143,13 @@ public class Join implements Serializable, Comparable<Join> {
         switch (kind) {
         case INNER:
             return String.format(" JOIN %s ON %s", getTable(dialect),
-                    getClause());
+                    getClause(dialect));
         case LEFT:
             return String.format(" LEFT JOIN %s ON %s", getTable(dialect),
-                    getClause());
+                    getClause(dialect));
         case RIGHT:
             return String.format(" RIGHT JOIN %s ON %s", getTable(dialect),
-                    getClause());
+                    getClause(dialect));
         case IMPLICIT:
             return String.format(", %s", getTable(dialect));
         default:
@@ -160,7 +186,7 @@ public class Join implements Serializable, Comparable<Join> {
             buf.append(tableAlias);
         }
         buf.append(" ON ");
-        buf.append(getClause());
+        buf.append(getClause(null));
         if (!whereClauses.isEmpty()) {
             buf.append(" WHERE ");
             buf.append(whereClauses);

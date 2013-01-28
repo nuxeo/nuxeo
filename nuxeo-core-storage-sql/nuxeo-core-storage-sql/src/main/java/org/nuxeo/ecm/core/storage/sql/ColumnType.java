@@ -116,6 +116,13 @@ public class ColumnType implements Serializable {
         return length == CLOB_LENGTH;
     }
 
+    /**
+     * Checks if this column holds a Nuxeo unique id (usually UUID).
+     */
+    public boolean isId() {
+        return spec.isId();
+    }
+
     @Override
     public String toString() {
         if (isUnconstrained()) {

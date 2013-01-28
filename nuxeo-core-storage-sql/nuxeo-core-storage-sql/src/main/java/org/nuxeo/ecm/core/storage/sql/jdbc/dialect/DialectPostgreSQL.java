@@ -312,12 +312,10 @@ public class DialectPostgreSQL extends Dialect {
             return;
         case Types.OTHER:
             ColumnType type = column.getType();
-            if (type == ColumnType.NODEID || type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFKMUL ||
-            type == ColumnType.NODEIDFKNP || type == ColumnType.NODEIDFKNULL || type == ColumnType.NODEIDPK || type == ColumnType.NODEVAL) {
+            if (type.isId()) {
                 setId(ps, index, value);
                 return;
-            }
-            if (type == ColumnType.FTSTORED) {
+            } else if (type == ColumnType.FTSTORED) {
                 ps.setString(index, (String) value);
                 return;
             }
@@ -1145,6 +1143,18 @@ public class DialectPostgreSQL extends Dialect {
     public String getDateCast() {
         // this is more amenable to being indexed than a CAST
         return "DATE(%s)";
+    }
+
+    @Override
+    public String castIdToVarchar(String expr) {
+        switch (idType) {
+        case VARCHAR:
+            return expr;
+        case UUID:
+            return expr + "::varchar";
+        default:
+            throw new AssertionError("Unknown id type: " + idType);
+        }
     }
 
 }
