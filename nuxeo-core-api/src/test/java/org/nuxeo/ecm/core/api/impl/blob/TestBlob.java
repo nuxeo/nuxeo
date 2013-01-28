@@ -14,6 +14,11 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,11 +31,9 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -249,7 +252,7 @@ public class TestBlob extends NXRuntimeTestCase {
 
         assertEquals(blob.getMimeType(), "text/plain");
         assertEquals("UTF-8", blob.getEncoding());
-        assertEquals(1000000, blob.getLength());
+        assertEquals(1000000, blob.getString().length());
 
         assertTrue(blob.isPersistent());
         String s1 = blob.getString();
@@ -263,6 +266,13 @@ public class TestBlob extends NXRuntimeTestCase {
         byte[] blobContent2 = blob.getByteArray();
         byte[] blobContent3 = blob.getByteArray();
         assertTrue(Arrays.equals(blobContent3, blobContent2));
+    }
+
+    @Test
+    public void testStringBlobLength() throws Exception {
+        Blob blob = new StringBlob("\u00e9");
+        assertEquals("UTF-8", blob.getEncoding());
+        assertEquals(2, blob.getLength());
     }
 
     @Test
