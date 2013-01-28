@@ -87,6 +87,15 @@ public class DialectPostgreSQL extends Dialect {
 
     protected String usersSeparator;
 
+    protected enum IdType {
+        /** VARCHAR storing a UUID as a string. */
+        VARCHAR,
+        /** Native UUID. */
+        UUID,
+    }
+
+    protected final IdType idType;
+
     protected boolean compatibilityFulltextTable;
 
     protected final String unloggedKeyword;
@@ -116,6 +125,14 @@ public class DialectPostgreSQL extends Dialect {
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
+        String idt = repositoryDescriptor.idType;
+        if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
+            idType = IdType.VARCHAR;
+        } else if ("uuid".equalsIgnoreCase(idt)) {
+            idType = IdType.UUID;
+        } else {
+            throw new StorageException("Unknown id type: '" + idt + "'");
+        }
         try {
             compatibilityFulltextTable = getCompatibilityFulltextTable(metadata);
         } catch (SQLException e) {
@@ -182,11 +199,19 @@ public class DialectPostgreSQL extends Dialect {
         case NODEIDFKNULL:
         case NODEIDPK:
         case NODEVAL:
-            return jdbcInfo("uuid", Types.OTHER);
-            // return jdbcInfo("varchar(36)", Types.VARCHAR);
+            switch (idType) {
+            case VARCHAR:
+                return jdbcInfo("varchar(36)", Types.VARCHAR);
+            case UUID:
+                return jdbcInfo("uuid", Types.OTHER);
+            }
         case NODEARRAY:
-            return jdbcInfo("uuid[]", Types.ARRAY);
-            // return jdbcInfo("varchar(36)[]", Types.ARRAY);
+            switch (idType) {
+            case VARCHAR:
+                return jdbcInfo("varchar(36)[]", Types.ARRAY);
+            case UUID:
+                return jdbcInfo("uuid[]", Types.ARRAY);
+            }
         case SYSNAME:
             return jdbcInfo("varchar(250)", Types.VARCHAR);
         case SYSNAMEARRAY:
@@ -244,6 +269,19 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public void setId(PreparedStatement ps, int index, Serializable value)
+            throws SQLException {
+        switch (idType) {
+        case VARCHAR:
+            ps.setObject(index, value);
+            break;
+        case UUID:
+            ps.setObject(index, value, Types.OTHER);
+            break;
+        }
+    }
+
+    @Override
     public void setToPreparedStatement(PreparedStatement ps, int index,
             Serializable value, Column column) throws SQLException {
         switch (column.getJdbcType()) {
@@ -276,9 +314,7 @@ public class DialectPostgreSQL extends Dialect {
             ColumnType type = column.getType();
             if (type == ColumnType.NODEID || type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFKMUL ||
             type == ColumnType.NODEIDFKNP || type == ColumnType.NODEIDFKNULL || type == ColumnType.NODEIDPK || type == ColumnType.NODEVAL) {
-                Serializable val = value;
-                ps.setObject(index, value, Types.OTHER);
-                // log.error("setParam other value:" + value, new Throwable());
+                setId(ps, index, value);
                 return;
             }
             if (type == ColumnType.FTSTORED) {
@@ -678,9 +714,10 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getInTreeSql(String idColumnName) {
         if (pathOptimizationsEnabled) {
+            String cast = idType == IdType.UUID ? "::uuid[]" : "";
             return String.format(
-                    "EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]::uuid[] <@ ancestors)",
-                    idColumnName);
+                    "EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]%s <@ ancestors)",
+                    idColumnName, cast);
         } else {
             return String.format("NX_IN_TREE(%s, ?)", idColumnName);
         }
@@ -715,12 +752,20 @@ public class DialectPostgreSQL extends Dialect {
         case Types.VARCHAR:
             typeName = "varchar";
             break;
-        case Types.OTHER:
-            typeName = "uuid";
+        case Types.OTHER: // id
+            switch (idType) {
+            case VARCHAR:
+                typeName = "varchar";
+                break;
+            case UUID:
+                typeName = "uuid";
+                break;
+            default:
+                throw new AssertionError("Unknown id type: " + idType);
+            }
             break;
         default:
-            // TODO others not used yet
-            throw new RuntimeException("" + type);
+            throw new AssertionError("Unknown type: " + type);
         }
         return new PostgreSQLArray(type, typeName, elements);
     }
@@ -857,9 +902,18 @@ public class DialectPostgreSQL extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        // properties.put("idType", "varchar(36)");
-        properties.put("idType", "uuid");
-        properties.put("idNotPresent", "00000000-FFFF-FFFF-FFFF-FFFF00000000");
+        switch (idType) {
+        case VARCHAR:
+            properties.put("idType", "varchar(36)");
+            properties.put("idTypeParam", "varchar");
+            properties.put("idNotPresent", "'-'");
+            break;
+        case UUID:
+            properties.put("idType", "uuid");
+            properties.put("idTypeParam", "uuid");
+            properties.put("idNotPresent", "'00000000-FFFF-FFFF-FFFF-FFFF00000000'");
+            break;
+        }
         properties.put("aclOptimizationsEnabled",
                 Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled",

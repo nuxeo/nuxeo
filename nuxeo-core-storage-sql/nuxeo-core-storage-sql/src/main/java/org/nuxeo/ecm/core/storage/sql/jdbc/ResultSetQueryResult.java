@@ -72,7 +72,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         ps = mapper.connection.prepareStatement(q.selectInfo.sql,
                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         int i = 1;
-        for (Object object : q.selectParams) {
+        for (Serializable object : q.selectParams) {
             if (object instanceof Calendar) {
                 Calendar cal = (Calendar) object;
                 Timestamp ts = new Timestamp(cal.getTimeInMillis());
@@ -82,7 +82,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
                         Types.VARCHAR, (Object[]) object, mapper.connection);
                 ps.setArray(i++, array);
             } else {
-                ps.setObject(i++, object, Types.OTHER);
+                mapper.dialect.setId(ps, i++, object);
             }
         }
         rs = ps.executeQuery();

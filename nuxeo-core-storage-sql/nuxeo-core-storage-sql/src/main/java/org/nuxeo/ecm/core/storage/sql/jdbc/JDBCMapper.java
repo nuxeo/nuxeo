@@ -589,7 +589,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                ps.setObject(1, repositoryId, Types.OTHER);
+                dialect.setId(ps, 1, repositoryId);
                 ResultSet rs = ps.executeQuery();
                 countExecute();
                 if (!rs.next()) {
@@ -769,7 +769,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_READ_ONLY);
             int i = 1;
-            for (Object object : q.selectParams) {
+            for (Serializable object : q.selectParams) {
                 if (object instanceof Calendar) {
                     Calendar cal = (Calendar) object;
                     Timestamp ts = new Timestamp(cal.getTimeInMillis());
@@ -781,7 +781,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                             (Object[]) object, connection);
                     ps.setArray(i++, array);
                 } else {
-                    ps.setObject(i++, object, Types.OTHER);
+                    dialect.setId(ps, i++, object);
                 }
             }
             ResultSet rs = ps.executeQuery();
