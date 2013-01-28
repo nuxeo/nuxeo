@@ -150,6 +150,9 @@ public class DocumentBackedFileItem extends
         // configuration, but it is not exposed as a public API for now
         this.digestAlgorithm = MD5_DIGEST_ALGORITHM;
         updateDigest();
+        if (this.digest == null) {
+            this.digestAlgorithm = null;
+        }
         this.canUpdate = this.canRename;
     }
 

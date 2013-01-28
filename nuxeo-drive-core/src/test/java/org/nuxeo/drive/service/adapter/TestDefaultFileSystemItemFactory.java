@@ -378,15 +378,18 @@ public class TestDefaultFileSystemItemFactory {
         // FileItem#getDigestAlgorithm
         // ------------------------------------------------------------
         assertEquals("MD5", fileItem.getDigestAlgorithm());
+        FileItem noteItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(note);
+        // Digest algorithm is null for a document holding a blob with a null
+        // digest, typically a StringBlob
+        assertNull(noteItem.getDigestAlgorithm());
 
         // ------------------------------------------------------------
         // FileItem#getDigest
         // ------------------------------------------------------------
         assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(),
                 fileItem.getDigest());
-        assertEquals(
-                note.getAdapter(BlobHolder.class).getBlob().getDigest(),
-                ((FileItem) defaultFileSystemItemFactory.getFileSystemItem(note)).getDigest());
+        // StringBlob has a null digest
+        assertNull(noteItem.getDigest());
         assertEquals(
                 custom.getAdapter(BlobHolder.class).getBlob().getDigest(),
                 ((FileItem) defaultFileSystemItemFactory.getFileSystemItem(custom)).getDigest());
