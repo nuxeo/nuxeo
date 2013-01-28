@@ -51,7 +51,7 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
 
-    
+
 
     <dependency>
       <groupId>org.javasimon</groupId>
@@ -104,27 +104,6 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-server-standalone</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>milyn-magger</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>milyn-commons</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>flute</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.w3c</groupId>
-      <artifactId>sac</artifactId>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>
