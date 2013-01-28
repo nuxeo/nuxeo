@@ -20,7 +20,7 @@
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
 <#else>
-        <property name="URL">jdbc:h2:${nuxeo.db.name}</property>
+        <property name="URL">${nuxeo.db.jdbc.url}</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
 </#if>

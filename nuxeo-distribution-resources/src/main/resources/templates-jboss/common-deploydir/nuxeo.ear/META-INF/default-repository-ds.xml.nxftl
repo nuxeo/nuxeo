@@ -10,7 +10,7 @@
     <config-property name="name">default</config-property>
     <min-pool-size>${nuxeo.vcs["min-pool-size"]}</min-pool-size>
     <max-pool-size>${nuxeo.vcs["max-pool-size"]}</max-pool-size>
-    
+
 <#if "${nuxeo.db.type}" == "postgresql">
     <config-property name="xaDataSource" type="java.lang.String">org.postgresql.xa.PGXADataSource</config-property>
     <config-property name="property" type="java.lang.String">ServerName=${nuxeo.db.host}</config-property>
@@ -20,7 +20,7 @@
     <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
 <#elseif "${nuxeo.db.type}" == "oracle">
     <config-property name="xaDataSource" type="java.lang.String">oracle.jdbc.xa.client.OracleXADataSource</config-property>
-    <config-property name="property" type="java.lang.String">URL=jdbc:oracle:thin:@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}</config-property>
+    <config-property name="property" type="java.lang.String">URL=${nuxeo.db.jdbc.url}</config-property>
     <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
     <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
     <isSameRM-override-value>false</isSameRM-override-value>
@@ -36,12 +36,12 @@
     <config-property name="property" type="java.lang.String">UseCursors=true</config-property>
 <#elseif "${nuxeo.db.type}" == "mysql">
     <config-property name="xaDataSource" type="java.lang.String">com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</config-property>
-    <config-property name="property" type="java.lang.String">URL=jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true</config-property>
+    <config-property name="property" type="java.lang.String">URL=${nuxeo.db.jdbc.url}</config-property>
     <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
     <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
 <#else>
     <config-property name="xaDataSource" type="java.lang.String">org.h2.jdbcx.JdbcDataSource</config-property>
-    <config-property name="property" type="java.lang.String">URL=jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name};AUTO_SERVER=true</config-property>
+    <config-property name="property" type="java.lang.String">URL=${nuxeo.db.jdbc.url}</config-property>
     <config-property name="property" type="java.lang.String">User=${nuxeo.db.user}</config-property>
     <config-property name="property" type="java.lang.String">Password=${nuxeo.db.password}</config-property>
 </#if>
