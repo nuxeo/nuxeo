@@ -56,26 +56,9 @@
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
     </dependency>
-
     <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>milyn-magger</artifactId>
-    </dependency>
-    <dependency>
-      <groupId> org.apache.xmlgraphics</groupId>
-      <artifactId>batik-css</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>milyn-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>flute</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.w3c</groupId>
-      <artifactId>sac</artifactId>
+      <groupId>com.phloc</groupId>
+      <artifactId>phloc-css</artifactId>
     </dependency>
 
     <!-- test scope -->

@@ -15,35 +15,35 @@
 
 
 /* CSS styles named 'testStyling/default Page Styles' */
-.${default_suid} {color:"default (* color)";font-family:"default (* font)";font-size:100%;line-height:1.125em;margin:0;padding:0;}
-.${default_suid} textarea {font-family:"default (* font)";font-size:0.95em;padding:5px;}
-.${default_suid} form {margin:0;padding:0;}
-.${default_suid} div {margin:0;padding:0;}
-.${default_suid} p {margin:0;padding:0;}
-.${default_suid} ul {list-style:none;margin:0;padding:0;}
-.${default_suid} a {color:"link (* color)";margin:0;padding:0;text-decoration:none;outline:medium none;}
-.${default_suid} h1 {color:"title.major (* color)";font-size:1.4em;font-weight:bold;margin:0;padding:0.4em 0 0.5em;}
-.${default_suid} h2 {color:"title.major (* color)";font-size:1.2em;font-weight:bold;margin:0;padding:0.5em 1em 0.5em 0;}
-.${default_suid} h3 {color:"title.major (* color)";font-size:1.2em;font-weight:bold;margin:0;padding:0.8em 0 0.3em;}
-.${default_suid} h4 {color:"title.minor (* color)";font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
-.${default_suid} h5 {color:"title.minor (* color)";font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
-.${default_suid} h6 {color:"title.minor (* color)";font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
-.${default_suid} input {margin:0;padding:0;}
-.${default_suid} table {margin:0;padding:0;}
-.${default_suid} dd {margin:0;padding:0;}
-.${default_suid} dt {margin:0;padding:0;}
-.${default_suid} dl {margin:0;padding:0;}
-.${default_suid} img {border:0 none;margin:0;padding:0;outline:medium none;}
-.${default_suid} hr {margin:0;padding:0;}
-.${default_suid} fieldset {margin:0;padding:0;}
-.${default_suid} iframe {margin:0;padding:0;}
-.${default_suid} a:link {color:"link (* color)";text-decoration:none;}
-.${default_suid} a:visited {color:"link (* color)";text-decoration:none;}
-.${default_suid} a:hover {color:"link.hover (* color)";text-decoration:underline;}
-.${default_suid} .selectDocumentType {margin-top:10px;}
-.${default_suid} .checkBox {margin-right:3px;}
-.${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
-.${default_suid} .myAddonClassWithFlavor {color:"black (* color)";font-family:"default (* font)";}
-.${default_suid} .myAddonClass {margin:0;padding:0;}
+.teststylingDefaultCss13453556 {color:"default (* color)";font-family:"default (* font)";margin:0;line-height:1.125em;font-size:100%;padding:0;}
+.teststylingDefaultCss13453556 textarea {font-family:"default (* font)";font-size:.95em;padding:5px;}
+.teststylingDefaultCss13453556 form {margin:0;padding:0;}
+.teststylingDefaultCss13453556 div {margin:0;padding:0;}
+.teststylingDefaultCss13453556 p {margin:0;padding:0;}
+.teststylingDefaultCss13453556 ul {margin:0;padding:0;list-style:none;}
+.teststylingDefaultCss13453556 a {color:"link (* color)";outline:medium none;text-decoration:none;margin:0;padding:0;}
+.teststylingDefaultCss13453556 h1 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.4em 0 .5em;font-size:1.4em;}
+.teststylingDefaultCss13453556 h2 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.5em 1em .5em 0;font-size:1.2em;}
+.teststylingDefaultCss13453556 h3 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.8em 0 .3em;font-size:1.2em;}
+.teststylingDefaultCss13453556 h4 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss13453556 h5 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss13453556 h6 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss13453556 input {margin:0;padding:0;}
+.teststylingDefaultCss13453556 table {margin:0;padding:0;}
+.teststylingDefaultCss13453556 dd {margin:0;padding:0;}
+.teststylingDefaultCss13453556 dt {margin:0;padding:0;}
+.teststylingDefaultCss13453556 dl {margin:0;padding:0;}
+.teststylingDefaultCss13453556 img {border:0 none;outline:medium none;margin:0;padding:0;}
+.teststylingDefaultCss13453556 hr {margin:0;padding:0;}
+.teststylingDefaultCss13453556 fieldset {margin:0;padding:0;}
+.teststylingDefaultCss13453556 iframe {margin:0;padding:0;}
+.teststylingDefaultCss13453556 a:link {color:"link (* color)";text-decoration:none;}
+.teststylingDefaultCss13453556 a:visited {color:"link (* color)";text-decoration:none;}
+.teststylingDefaultCss13453556 a:hover {color:"link.hover (* color)";text-decoration:underline;}
+.teststylingDefaultCss13453556 .selectDocumentType {margin-top:10px;}
+.teststylingDefaultCss13453556 .checkBox {margin-right:3px;}
+.teststylingDefaultCss13453556 .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
+.teststylingDefaultCss13453556 .myAddonClassWithFlavor {color:"black (* color)";font-family:"default (* font)";}
+.teststylingDefaultCss13453556 .myAddonClass {margin:0;padding:0;}
 
 </style>

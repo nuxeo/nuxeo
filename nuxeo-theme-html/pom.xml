@@ -41,27 +41,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>milyn-magger</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>milyn-commons</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.milyn</groupId>
-      <artifactId>flute</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.w3c</groupId>
-      <artifactId>sac</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
       <scope>provided</scope>
