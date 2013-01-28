@@ -172,6 +172,13 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
                     session, docCtx, bsi, DOCUMENT_CREATED);
             sendUpdateEvents(asyncEventCtx);
+        } else {
+            //make the doc quota aware even if the impact size is 0, see NXP-10718
+            QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
+            if (quotaDoc == null) {
+                log.debug("  add Quota Facet on " + targetDoc.getPathAsString());
+                quotaDoc = QuotaAwareDocumentFactory.make(targetDoc, true);
+            }
         }
     }
 
