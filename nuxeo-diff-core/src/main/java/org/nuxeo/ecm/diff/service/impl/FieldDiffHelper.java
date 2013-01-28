@@ -388,7 +388,7 @@ public final class FieldDiffHelper {
 
         // Compute field diff depending on difference type.
         switch (differenceId) {
-        default:// In most cases: TEXT_VALUE_ID
+        case DifferenceConstants.TEXT_VALUE_ID:
             computeTextValueDiff(endPropertyDiff, controlNodeDetail,
                     testNodeDetail);
             break;
@@ -400,6 +400,9 @@ public final class FieldDiffHelper {
             computeHasChildNodesDiff(endPropertyDiff, controlNodeDetail,
                     testNodeDetail);
             break;
+        default:
+            computeTextValueDiff(endPropertyDiff, controlNodeDetail,
+                    testNodeDetail);
         }
 
         schemaDiff.putFieldDiff(field, fieldDiff);
