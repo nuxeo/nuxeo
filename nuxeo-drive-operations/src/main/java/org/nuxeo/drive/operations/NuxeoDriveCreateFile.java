@@ -53,6 +53,7 @@ public class NuxeoDriveCreateFile {
     public Blob run(Blob blob) throws Exception {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         FileItem fileItem = fileSystemItemManager.createFile(id, blob,
                 ctx.getPrincipal());
         ObjectMapper mapper = new ObjectMapper();
