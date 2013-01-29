@@ -11,17 +11,9 @@
 
   <c:if test="#{value.hasFacet('Video')}">
 
-    <ui:repeat var="item" value="#{storyboardActions.getItems(value)}">
-      <span class="videoStoryboardItem" timecode="#{item.timecode}">
-        <nxh:graphicImage url="#{item.url}" />
-      </span>
-    </ui:repeat>
+    <h3 class="summaryTitle">#{messages[widget.label]}</h3>
 
-    <script type="text/javascript">
-      jQuery(document).ready(function() {
-        NXVideo.initializeStoryBoard();
-      });
-    </script>
+    <ui:include src="/widgets/video_storyboard_widget_template.xhtml" />
 
   </c:if>
 
