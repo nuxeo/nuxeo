@@ -19,7 +19,7 @@
         <indexing>
           <!-- for H2 (Lucene Analyzer): -->
           <fulltext analyzer="org.apache.lucene.analysis.standard.StandardAnalyzer">
-            <index name="default"> 
+            <index name="default">
               <!-- all props implied -->
             </index>
             <index name="title">
@@ -28,7 +28,7 @@
             <index name="description">
               <field>dc:description</field>
             </index>
-          </fulltext> 
+          </fulltext>
           <!-- for PostgreSQL (Text Search Configuration):
           <fulltext analyzer="english">
             <index name="default">
@@ -43,8 +43,8 @@
           -->
         </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-        <!-- Shouldn't be jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name} ? -->
-        <property name="URL">jdbc:h2:data/h2/vcsh2repo</property>
+        <!-- Shouldn't be ${nuxeo.db.jdbc.url} ? -->
+        <property name="URL">jdbc:h2:data/h2/vcsh2repo;AUTO_SERVER=true</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
       </repository>

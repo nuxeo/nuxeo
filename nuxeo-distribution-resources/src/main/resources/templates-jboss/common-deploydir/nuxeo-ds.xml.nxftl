@@ -21,7 +21,7 @@
   <local-tx-datasource>
     <jndi-name>NuxeoDS</jndi-name>
     <driver-class>oracle.jdbc.OracleDriver</driver-class>
-    <connection-url>jdbc:oracle:thin:@${nuxeo.db.host}:${nuxeo.db.port}:${nuxeo.db.name}</connection-url>
+    <connection-url>${nuxeo.db.jdbc.url}</connection-url>
     <user-name>${nuxeo.db.user}</user-name>
     <password>${nuxeo.db.password}</password>
     <max-pool-size>${nuxeo.db["max-pool-size"]}</max-pool-size>
@@ -48,7 +48,7 @@
 <#elseif "${nuxeo.db.type}" == "mysql">
   <local-tx-datasource>
     <jndi-name>NuxeoDS</jndi-name>
-    <connection-url>jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}?relaxAutoCommit=true</connection-url>
+    <connection-url>${nuxeo.db.jdbc.url}</connection-url>
     <driver-class>com.mysql.jdbc.Driver</driver-class>
     <user-name>${nuxeo.db.user}</user-name>
     <password>${nuxeo.db.password}</password>
@@ -62,9 +62,7 @@
 <#else>
   <local-tx-datasource>
     <jndi-name>NuxeoDS</jndi-name>
-    <connection-url>
-      jdbc:h2:${nuxeo.db.name}
-    </connection-url>
+    <connection-url>${nuxeo.db.jdbc.url}</connection-url>
     <driver-class>org.h2.Driver</driver-class>
     <max-pool-size>${nuxeo.db["max-pool-size"]}</max-pool-size>
     <min-pool-size>${nuxeo.db["min-pool-size"]}</min-pool-size>
