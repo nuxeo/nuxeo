@@ -20,9 +20,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -32,7 +34,9 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
  * Sample test showing how to use a direct access to the binaries storage.
@@ -41,14 +45,7 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
  */
 public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
 
-    public TestSQLRepositoryDirectBlob() {
-        super();
-    }
-
-    public TestSQLRepositoryDirectBlob(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -57,6 +54,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         session.cancel();
@@ -184,6 +182,45 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
                 observedContent));
         assertEquals(expected, new String(observedContent));
     }
+
+    protected static class TmpStreamingBlob extends StreamingBlob {
+        private static final long serialVersionUID = 1L;
+
+        public TmpStreamingBlob(FileSource src) {
+            super(src);
+        }
+
+        @Override
+        public boolean isTemporary() {
+            return true;
+        }
+    }
+
+    @Test
+    public void testBinaryManagerTmpFileMoveNotCopy() throws Exception {
+        LocalBinaryManager binaryManager = (LocalBinaryManager) RepositoryResolver.getBinaryManager(session.getRepositoryName());
+
+        // tmp file in binary manager filesystem (not in tmp but still works)
+        File file = File.createTempFile("test-", ".data",
+                binaryManager.getStorageDir());
+        FileOutputStream out = new FileOutputStream(file);
+        IOUtils.copy(new ByteArrayInputStream("abcd\n".getBytes("UTF-8")), out);
+        out.close();
+
+        // create blob
+        FileSource fileSource = new FileSource(file);
+        Blob blob = new TmpStreamingBlob(fileSource);
+
+        // set in doc
+        DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+        session.save();
+
+        assertFalse(file.exists());
+        assertTrue(fileSource.getFile().exists());
+    }
+
 }
 
 /**
