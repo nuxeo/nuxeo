@@ -76,12 +76,30 @@
     <td> ${pkg.targetPlatform} &nbsp;</td>
     <td> ${pkg.type} </td>
     <#if showCommunityInfo && This.canDownload(pkg)>
-      <td>  downloads : ${pkg.downloadsCount}
+      <td>${Context.getMessage('label.simpleListing.downloadcount')} : ${pkg.downloadsCount}
       </td>
     <#else>
       <td>  </td>
     </#if>
-    <td> ${This.getStateLabel(pkg)} </td>
+    
+    <#if This.getStateLabel(pkg) = "downloaded">
+      <td>${Context.getMessage('label.pkgDetails.pkgState.downloaded')}</td>
+    <#elseif This.getStateLabel(pkg) = "downloading">
+      <td>${Context.getMessage('label.pkgDetails.pkgState.downloading')}</td>
+    <#elseif This.getStateLabel(pkg) = "installed">
+      <td>${Context.getMessage('label.pkgDetails.pkgState.installed')}</td>
+    <#elseif This.getStateLabel(pkg) = "installing">
+      <td>${Context.getMessage('label.pkgDetails.pkgState.installing')}</td>
+    <#elseif This.getStateLabel(pkg) = "remote">
+      <td>${Context.getMessage('label.pkgDetails.pkgState.remote')}</td>
+    <#elseif This.getStateLabel(pkg) = "started">
+      <td>${Context.getMessage('label.pkgDetails.pkgState.started')}</td>
+    <#elseif This.getStateLabel(pkg) = "unknown">
+      <td>${Context.getMessage('label.pkgDetails.pkgState.unknown')}</td>
+    <#else>
+      <td>${This.getStateLabel(pkg)}</td>
+    </#if>
+    
     <td class="alignCenter">
          <#if This.canDownload(pkg)>
            <a class="button download" href="${Root.path}/download/start/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.download')}</a>

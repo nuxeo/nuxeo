@@ -23,7 +23,7 @@
             <td class="packageLabel">${Context.getMessage('label.pkgDetails.titles.home')}</td>
             <td class="packageField">
             <#if pkg.homePage?? || pkg.homePage=="" >
-               <A href="${This.getConnectBaseUrl()}marketplace/package/${pkg.id}" target="pkgHomePage">${Context.getMessage('label.pkgDetails.titles.home.connect')}</A>
+               <A href="${This.getConnectBaseUrl()}marketplace/package/${pkg.id}" target="pkgHomePage">${Context.getMessage('label.pkgDetails.links.home.connect')}</A>
             <#else>
                <A href="${pkg.homePage}" target="pkgHomePage">${Context.getMessage('label.pkgDetails.links.home')}</A>
             </#if>
@@ -81,7 +81,7 @@
         <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.certification')}</span></td>
         <td class="packageField"> ${Context.getMessage('label.validationState.'+pkg.validationState)}</td>
       <tr>
-        <td><span class="boldLabel">Nuxeo support</span></td>
+        <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.support')}</span></td>
         <td class="packageField"><#if pkg.isSupported()>
              ${Context.getMessage('label.pkgDetails.titles.package.issupported.yes')}
           <#else>
