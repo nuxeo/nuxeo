@@ -116,4 +116,9 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
         }
         return newParams;
     }
+
+    @Override
+    public boolean hasChangedParameters(Object[] parameters) {
+        return getParametersChanged(this.parameters, parameters);
+    }
 }
