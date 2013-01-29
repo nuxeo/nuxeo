@@ -128,8 +128,12 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     }
 
     @Override
-    public void waitForFulltextIndexing() throws ClientException {
-        flush(); // also starts a new tx, which will allow progress
+    public void waitForFulltextIndexing() {
+        try {
+            flush(); // also starts a new tx, which will allow progress
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
         super.waitForFulltextIndexing();
     }
 

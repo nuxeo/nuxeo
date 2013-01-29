@@ -114,11 +114,11 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         ConnectionHelper.clearConnectionReferences();
     }
 
-    public void waitForAsyncCompletion() throws ClientException {
+    public void waitForAsyncCompletion() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
-    public void waitForFulltextIndexing() throws ClientException {
+    public void waitForFulltextIndexing() {
         waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
     }
