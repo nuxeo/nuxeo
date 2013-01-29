@@ -43,8 +43,6 @@ public class DocumentBackedFileItem extends
 
     private static final Log log = LogFactory.getLog(DocumentBackedFileItem.class);
 
-    private static final String MD5_DIGEST_ALGORITHM = "MD5";
-
     protected String downloadURL;
 
     protected String digestAlgorithm;
@@ -137,8 +135,7 @@ public class DocumentBackedFileItem extends
         session.save();
         /* Update FileSystemItem attributes */
         updateLastModificationDate(doc);
-        updateDigest();
-
+        updateDigest(doc);
     }
 
     /*--------------------- Protected -----------------*/
@@ -148,8 +145,8 @@ public class DocumentBackedFileItem extends
         updateDownloadURL();
         // TODO: should get the digest algorithm from the binary store
         // configuration, but it is not exposed as a public API for now
-        this.digestAlgorithm = MD5_DIGEST_ALGORITHM;
-        updateDigest();
+        this.digestAlgorithm = FileSystemItemHelper.MD5_DIGEST_ALGORITHM;
+        updateDigest(doc);
         if (this.digest == null) {
             this.digestAlgorithm = null;
         }
@@ -209,8 +206,11 @@ public class DocumentBackedFileItem extends
         downloadURL = downloadURLSb.toString();
     }
 
-    protected void updateDigest() throws ClientException {
-        digest = getBlob().getDigest();
+    protected void updateDigest(DocumentModel doc) throws ClientException {
+        Blob blob = getBlob(doc);
+        // Force digest computation for a StringBlob,
+        // typically the note:note property of a Note document
+        digest = FileSystemItemHelper.getDigest(blob, digestAlgorithm);
     }
 
     protected void versionIfNeeded(DocumentModel doc, CoreSession session)

@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -377,19 +378,18 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------------
         // FileItem#getDigestAlgorithm
         // ------------------------------------------------------------
-        assertEquals("MD5", fileItem.getDigestAlgorithm());
+        assertEquals("md5", fileItem.getDigestAlgorithm());
         FileItem noteItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(note);
-        // Digest algorithm is null for a document holding a blob with a null
-        // digest, typically a StringBlob
-        assertNull(noteItem.getDigestAlgorithm());
+        assertEquals("md5", noteItem.getDigestAlgorithm());
 
         // ------------------------------------------------------------
         // FileItem#getDigest
         // ------------------------------------------------------------
         assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(),
                 fileItem.getDigest());
-        // StringBlob has a null digest
-        assertNull(noteItem.getDigest());
+        String noteDigest = FileSystemItemHelper.getDigest(
+                note.getAdapter(BlobHolder.class).getBlob(), "md5");
+        assertEquals(noteDigest, noteItem.getDigest());
         assertEquals(
                 custom.getAdapter(BlobHolder.class).getBlob().getDigest(),
                 ((FileItem) defaultFileSystemItemFactory.getFileSystemItem(custom)).getDigest());
