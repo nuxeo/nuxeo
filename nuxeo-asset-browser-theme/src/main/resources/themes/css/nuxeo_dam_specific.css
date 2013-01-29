@@ -8,11 +8,35 @@ author: lkemen@nuxeo.com
 */
 
 /* =Grid */
-.gridStyle2 { width: 18% }
-.gridStyle2 .gridStyle2 { width: 16% }
+.nxMainContainer { background-color: "neutral.lighter (__FLAVOR__ background)" }
 
-.gridStyle6 { width: 49% }
-.gridStyle6 .gridStyle6 { width: 50% }
+.gridStyle2 {
+  background-color: #fff;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: .3em;
+  width: 19% }
+.gridStyle2 .gridStyle2 {
+  padding: 0;
+  width: 16% }
+
+.gridStyle6 {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  text-align: center;
+  width: 48% }
+.gridStyle6 .gridStyle6 {
+  text-align: left;
+  width: 50% }
+
+.gridStyle4 {
+  background-color: #fff;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 0.3em;
+  width: 33% }
+.gridStyle4 .gridStyle4 { width: 33% }
 
 /* =Faceted Search */
 .gridStyle2 { font-size: 0.82em }
@@ -23,20 +47,29 @@ author: lkemen@nuxeo.com
 .gridStyle6 { background-color: "neutral.lighter (__FLAVOR__ background)" }
 .gridStyle6 .widgetPanel { padding: 0 2% }
 
-.bubbleBox { background-color: #fff;
+.gridStyle6 .listingLayoutSelector {
+  font-size: .9em }
+
+.bubbleBox {
   cursor: pointer;
   display: inline-block;
   font-size: .9em;
+  margin: 0 .3em 1em;
   min-height: 170px;
   vertical-align: top;
   width: 128px }
 
-.bubbleBox:hover { background-color: "color.major.light (__FLAVOR__ background)";
- box-shadow: 0 1px 2px 2px #fff }
+.bubbleBox:hover {
+  background-color: "color.major.light (__FLAVOR__ background)";
+  box-shadow: 0 1px 2px 2px #fff }
 .bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
 
+.bubbleBox .bubbleHeader input {
+  margin-right: .1em }
+
   /* Reduce padding between widgets in the box*/
-  .bubbleBox .fieldColumn { color: "gray.medium (__FLAVOR__ color)";
+  .bubbleBox .fieldColumn {
+    color: "gray.medium (__FLAVOR__ color)";
     font-size: .9em;
     padding: 0 }
 
@@ -45,10 +78,80 @@ author: lkemen@nuxeo.com
 
 /* Styles when an asset is selected */
 .selectedItem,
-.selectedItem:hover { background-color: "color.major.stronger (__FLAVOR__ background)";
-    color: #d0e8ff }
+.selectedItem:hover {
+  background-color: "color.major.stronger (__FLAVOR__ background)";
+  color: #fff }
 .selectedItem .fieldColumn,
-.selectedItem:hover .fieldColumn { color: #d0e8ff }
+.selectedItem:hover .fieldColumn { color: #fff }
 
 /* =Assets View */
-.gridStyle4 .widgetPanel { padding: 0 2% }
+.gridStyle4 .widgetPanel { margin: 0 .1em .3em; padding: 0 }
+
+/* Smaller tables display in foldableBox, apply .dataTableLine styles */
+.gridStyle4 .foldableBox .dataInput {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: .9em;
+  margin: 0 0 .5em }
+.gridStyle4 .foldableBox .dataInput td {
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-spacing: 0;
+  border-style: solid none;
+  border-width: 1px;
+  padding: .1em .3em .2em;
+  text-align: left;
+  vertical-align: top }
+.gridStyle4 .foldableBox .dataInput tr:hover {
+  background-color: "color.major.light (__FLAVOR__ background)" }
+
+/* smaller buttons in Foldable boxes*/
+.foldableBox .buttonsGadget {
+  margin: .1em 0 0.2em;
+  text-align: right }
+.foldableBox .buttonsGadget .button {
+  font-size: .8em;
+  margin: .2em 0 0 .3em;
+  padding: .1em .4em }
+
+
+/* Picture View -> TODO: move it to imaging styles ? */
+.pictureContainer {
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 2px 0 #ccc;
+  margin: .2em 0 .5em;
+  min-height: 200px;
+  padding: 3px;
+  text-align: center }
+
+.documentTitle {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0 0 -0.3em;
+  overflow: hidden;
+  padding: .3em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100% }
+
+/* Test to center img */
+.pictureContainer:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle }
+.pictureContainer { text-align: center }
+.pictureContainer img {
+  display: inline-block;
+  vertical-align: middle }
+
+/* TODO: move to box styles */
+.bubbleBox .bubbleHeader .documentTitle {
+  display: inline;
+  padding: 0;
+  text-align: left }
+
+.listingLayoutSelector { font-size: .9em }
