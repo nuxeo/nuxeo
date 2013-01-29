@@ -95,11 +95,11 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
         // FileBlob
         assertEquals("src=jpg dst=jpg tmp=",
                 checkFileBlob(filename, true, null));
-        assertEquals("src=JPEG dst=JPEG tmp=JPEG",
+        assertEquals("src=jpg dst=jpg tmp=",
                 checkFileBlob(filename, false, null));
         assertEquals("src=jpg dst=png tmp=",
                 checkFileBlob(filename, true, "png"));
-        assertEquals("src=JPEG dst=png tmp=JPEG",
+        assertEquals("src=jpg dst=png tmp=",
                 checkFileBlob(filename, false, "png"));
         // StringBlob
         assertEquals("src=jpg dst=jpg tmp=jpg",
