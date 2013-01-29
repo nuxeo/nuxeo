@@ -314,7 +314,7 @@ public class ContentViewImpl implements ContentView,
         // the page provider and this method will be called after so they could
         // be lost.
         if (pageProvider == null
-                || getParametersChanged(pageProvider.getParameters(), params)) {
+                || pageProvider.hasChangedParameters(params)) {
             try {
                 // make the service build the provider
                 ContentViewService service = Framework.getService(ContentViewService.class);
