@@ -372,4 +372,9 @@ public interface PageProvider<T> extends Serializable {
      */
     void setPageProviderChangedListener(PageProviderChangedListener listener);
 
+    /**
+     * Test if provider parameters have changed
+     */
+    boolean hasChangedParameters(Object[] parameters);
+
 }

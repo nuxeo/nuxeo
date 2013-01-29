@@ -729,4 +729,32 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
+    public boolean hasChangedParameters(Object[] parameters) {
+        return getParametersChanged(getParameters(), parameters);
+    }
+
+    protected boolean getParametersChanged(Object[] oldParams,
+            Object[] newParams) {
+        if (oldParams == null && newParams == null) {
+            return true;
+        } else if (oldParams != null && newParams != null) {
+            if (oldParams.length != newParams.length) {
+                return true;
+            }
+            for (int i = 0; i < oldParams.length; i++) {
+                if (oldParams[i] == null && newParams[i] == null) {
+                    continue;
+                } else if (oldParams[i] != null
+                        && !oldParams[i].equals(newParams[i])) {
+                    return true;
+                } else if (newParams[i] != null
+                        && !newParams[i].equals(oldParams[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
+
 }
