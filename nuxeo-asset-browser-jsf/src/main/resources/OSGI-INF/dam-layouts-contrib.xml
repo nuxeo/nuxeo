@@ -56,6 +56,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
+    <!-- Grid layout widgets -->
     <widget name="damPanelLeft" type="currentDocumentActionsWithForms">
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_LEFT</property>
@@ -80,6 +81,7 @@
       </controls>
     </widget>
 
+    <!-- Search -->
     <widget name="damSearchesSelector" type="template">
       <properties widgetMode="any">
         <property name="template">/dam/widgets/dam_searches_selector_widget_template.xhtml</property>
@@ -98,12 +100,14 @@
       </properties>
     </widget>
 
+    <!-- Search results -->
     <widget name="damSearchResults" type="template">
       <properties widgetMode="any">
         <property name="template">/dam/widgets/dam_search_results_widget_template.xhtml</property>
       </properties>
     </widget>
 
+    <!-- Asset view -->
     <widget name="damAssetViewNoDocument" type="damAssetViewNoDocument">
       <labels>
         <label mode="any"></label>
@@ -119,6 +123,66 @@
       <fields>
         <field></field>
         <field>dc:description</field>
+      </fields>
+    </widget>
+
+    <widget name="damAssetViewPicture" type="picture_view">
+      <properties widgetMode="any">
+        <property name="pictureView">Medium</property>
+      </properties>
+    </widget>
+
+    <widget name="damAssetViewVideo" type="video_player">
+      <properties widgetMode="any">
+        <property name="width">425</property>
+        <property name="height">235</property>
+      </properties>
+    </widget>
+
+    <widget name="damAssetViewVideoStoryboard" type="container">
+      <labels>
+        <label mode="any">heading.storyboard</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+      <subWidgets>
+        <widget name="videoStoryboard" type="video_storyboard">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>false</translated>
+        </widget>
+      </subWidgets>
+      <properties widgetMode="any">
+        <property name="foldable">true</property>
+      </properties>
+    </widget>
+
+    <widget name="damAssetViewVideoInfo" type="container">
+      <labels>
+        <label mode="any">label.dam.video.information</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+      <subWidgets>
+        <widget name="videoInfo" type="layout">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>false</translated>
+          <properties widgetMode="any">
+            <property name="name">video_info</property>
+          </properties>
+        </widget>
+      </subWidgets>
+      <properties widgetMode="any">
+        <property name="foldable">true</property>
+      </properties>
+    </widget>
+
+    <widget name="damAssetViewAudio" type="audio_player">
+      <fields>
+        <field>file:content</field>
       </fields>
     </widget>
 
@@ -238,7 +302,7 @@
     <action id="damAssetViewPicture" type="widget" order="200">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
-        <property name="widgetName">summary_picture_view</property>
+        <property name="widgetName">damAssetViewPicture</property>
       </properties>
       <filter-id>hasPictureFacet</filter-id>
       <filter-id>hasAssetFacet</filter-id>
@@ -247,13 +311,31 @@
     <action id="damAssetViewVideo" type="widget" order="200">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
-        <property name="widgetName">summary_video_player</property>
+        <property name="widgetName">damAssetViewVideo</property>
       </properties>
       <filter-id>hasVideoFacet</filter-id>
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDamCommon" type="widget" order="300">
+    <action id="damAssetViewAudio" type="widget" order="200">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewAudio</property>
+      </properties>
+      <filter-id>hasAudioFacet</filter-id>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewVideoStoryboard" type="widget" order="300">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewVideoStoryboard</property>
+      </properties>
+      <filter-id>hasVideoFacet</filter-id>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewDamCommon" type="widget" order="400">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDamCommon</property>
@@ -261,7 +343,16 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDublincore" type="widget" order="400">
+    <action id="damAssetViewVideoInfo" type="widget" order="500">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewVideoInfo</property>
+      </properties>
+      <filter-id>hasVideoFacet</filter-id>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewDublincore" type="widget" order="600">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDublincore</property>
@@ -274,21 +365,28 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 
+    <filter id="noCurrentDocument">
+      <rule grant="true">
+        <condition>currentDocument == null</condition>
+      </rule>
+    </filter>
+
     <filter id="hasAssetFacet">
       <rule grant="true">
         <facet>Asset</facet>
       </rule>
     </filter>
 
+    <!-- TODO move those filters to audio and video modules -->
     <filter id="hasVideoFacet">
       <rule grant="true">
         <facet>Video</facet>
       </rule>
     </filter>
 
-    <filter id="noCurrentDocument">
+    <filter id="hasAudioFacet">
       <rule grant="true">
-        <condition>currentDocument == null</condition>
+        <facet>Audio</facet>
       </rule>
     </filter>
 
