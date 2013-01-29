@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -136,9 +135,7 @@ public final class CSSUtils {
                     sb.append('\n');
                 }
 
-                final Enumeration<?> propertyNames = cssProperties.propertyNames();
-                while (propertyNames.hasMoreElements()) {
-                    final String propertyName = (String) propertyNames.nextElement();
+                for (String propertyName : styleProperties.stringPropertyNames()) {
                     String value = styleProperties.getProperty(propertyName);
                     if (value == null) {
                         continue;

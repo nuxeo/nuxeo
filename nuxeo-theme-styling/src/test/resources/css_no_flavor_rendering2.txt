@@ -15,38 +15,38 @@
 
 
 /* CSS styles named 'testStyling/default Page Styles' */
-.${default_suid} {color:"default (* color)";font-family:"default (* font)";font-size:100%;line-height:1.125em;margin:0;padding:0;}
-.${default_suid} textarea {font-family:"default (* font)";font-size:0.95em;padding:5px;}
-.${default_suid} form {margin:0;padding:0;}
-.${default_suid} div {margin:0;padding:0;}
-.${default_suid} p {margin:0;padding:0;}
-.${default_suid} ul {list-style:none;margin:0;padding:0;}
-.${default_suid} a {color:"red";margin:0;padding:0;text-decoration:none;outline:medium none;}
-.${default_suid} h1 {color:"title.major (* color)";font-size:1.4em;font-weight:bold;margin:0;padding:0.4em 0 0.5em;}
-.${default_suid} h2 {color:"title.major (* color)";font-size:1.2em;font-weight:bold;margin:0;padding:0.5em 1em 0.5em 0;}
-.${default_suid} h3 {color:"title.major (* color)";font-size:1.2em;font-weight:bold;margin:0;padding:0.8em 0 0.3em;}
-.${default_suid} h4 {color:"title.minor (* color)";font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
-.${default_suid} h5 {color:"title.minor (* color)";font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
-.${default_suid} h6 {color:"title.minor (* color)";font-size:0.8em;margin:0.2em 0 0.2em 0;padding:0;}
-.${default_suid} input {margin:0;padding:0;}
-.${default_suid} table {margin:0;padding:0;}
-.${default_suid} dd {margin:0;padding:0;}
-.${default_suid} dt {margin:0;padding:0;}
-.${default_suid} dl {margin:0;padding:0;}
-.${default_suid} img {border:0 none;margin:0;padding:0;outline:medium none;}
-.${default_suid} hr {margin:0;padding:0;}
-.${default_suid} fieldset {margin:0;padding:0;}
-.${default_suid} iframe {margin:0;padding:0;}
-.${default_suid} a:link {color:"red";text-decoration:none;}
-.${default_suid} a:visited {color:"red";text-decoration:none;}
-.${default_suid} a:hover {color:"link.hover (* color)";text-decoration:underline;}
-.${default_suid} .selectDocumentType {margin-top:10px;}
-.${default_suid} .checkBox {margin-right:3px;}
-.${default_suid} .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
-.${default_suid} .boldLabel {font-weight:bold;}
-.${default_suid} .button {background:linear-gradient(centertop,#f5f2f55%,#dfdfdf100%);box-shadow:inset 0px 1px 0px 0px #ffffff;}
-.${default_suid} input.button {background:linear-gradient(centertop,#f5f2f55%,#dfdfdf100%);box-shadow:inset 0px 1px 0px 0px #ffffff;}
-.${default_suid} .myAddonClassWithFlavor {color:"black (* color)";font-family:"default (* font)";}
-.${default_suid} .myAddonClass {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 {color:"default (* color)";font-family:"default (* font)";margin:0;line-height:1.125em;font-size:100%;padding:0;}
+.teststylingDefaultCss2077347671 textarea {font-family:"default (* font)";font-size:.95em;padding:5px;}
+.teststylingDefaultCss2077347671 form {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 div {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 p {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 ul {margin:0;padding:0;list-style:none;}
+.teststylingDefaultCss2077347671 a {color:"red";outline:medium none;text-decoration:none;margin:0;padding:0;}
+.teststylingDefaultCss2077347671 h1 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.4em 0 .5em;font-size:1.4em;}
+.teststylingDefaultCss2077347671 h2 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.5em 1em .5em 0;font-size:1.2em;}
+.teststylingDefaultCss2077347671 h3 {color:"title.major (* color)";font-weight:bold;margin:0;padding:.8em 0 .3em;font-size:1.2em;}
+.teststylingDefaultCss2077347671 h4 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss2077347671 h5 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss2077347671 h6 {color:"title.minor (* color)";margin:.2em 0 .2em 0;padding:0;font-size:.8em;}
+.teststylingDefaultCss2077347671 input {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 table {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 dd {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 dt {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 dl {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 img {border:0 none;outline:medium none;margin:0;padding:0;}
+.teststylingDefaultCss2077347671 hr {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 fieldset {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 iframe {margin:0;padding:0;}
+.teststylingDefaultCss2077347671 a:link {color:"red";text-decoration:none;}
+.teststylingDefaultCss2077347671 a:visited {color:"red";text-decoration:none;}
+.teststylingDefaultCss2077347671 a:hover {color:"link.hover (* color)";text-decoration:underline;}
+.teststylingDefaultCss2077347671 .selectDocumentType {margin-top:10px;}
+.teststylingDefaultCss2077347671 .checkBox {margin-right:3px;}
+.teststylingDefaultCss2077347671 .required {background:transparent url(/nuxeo/myBasePath/icons/required.gif) top right no-repeat;padding:0 10px 0 0;}
+.teststylingDefaultCss2077347671 .boldLabel {font-weight:bold;}
+.teststylingDefaultCss2077347671 .button {background:linear-gradient(center top,#f5f2f5 5%,#dfdfdf 100%);box-shadow:inset 0 1px 0 0 #fff;border-radius:3px;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5',endColorstr='#dfdfdf');text-decoration:none;background-color:"button (* background)";border:1px solid;margin:5px 10px 10px 0;color:"link.action (* color)";font-size:.9em;text-shadow:1px 1px 0 #fff;font-weight:bold;border-color:"button (* border)";padding:4px 10px;cursor:pointer;}
+.teststylingDefaultCss2077347671 input.button {background:linear-gradient(center top,#f5f2f5 5%,#dfdfdf 100%);box-shadow:inset 0 1px 0 0 #fff;border-radius:3px;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f2f5',endColorstr='#dfdfdf');text-decoration:none;background-color:"button (* background)";border:1px solid;margin:5px 10px 10px 0;color:"link.action (* color)";font-size:.9em;text-shadow:1px 1px 0 #fff;font-weight:bold;border-color:"button (* border)";padding:4px 10px;cursor:pointer;}
+.teststylingDefaultCss2077347671 .myAddonClassWithFlavor {color:"black (* color)";font-family:"default (* font)";}
+.teststylingDefaultCss2077347671 .myAddonClass {margin:0;padding:0;}
 
 </style>

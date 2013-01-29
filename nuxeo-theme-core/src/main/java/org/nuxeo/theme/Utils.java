@@ -21,12 +21,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -34,18 +32,21 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.magger.CSSParser;
-import org.milyn.magger.CSSProperty;
-import org.milyn.magger.CSSRule;
-import org.milyn.magger.CSSStylesheet;
-import org.milyn.resource.URIResourceLocator;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.theme.formats.styles.Style;
-import org.w3c.css.sac.LexicalUnit;
-import org.w3c.css.sac.Selector;
 
-import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import au.com.bytecode.opencsv.CSVReader;
+
+import com.phloc.css.CCSS;
+import com.phloc.css.ECSSVersion;
+import com.phloc.css.ICSSWriterSettings;
+import com.phloc.css.decl.CSSDeclaration;
+import com.phloc.css.decl.CSSSelector;
+import com.phloc.css.decl.CSSStyleRule;
+import com.phloc.css.decl.CascadingStyleSheet;
+import com.phloc.css.reader.CSSReader;
+import com.phloc.css.writer.CSSWriterSettings;
 
 public final class Utils {
 
@@ -216,8 +217,8 @@ public final class Utils {
     }
 
     /**
-     * Parses and loads css resources into given style element. If boolean
-     * merge is set to true, keep existing properties already defined in style.
+     * Parses and loads css resources into given style element. If boolean merge
+     * is set to true, keep existing properties already defined in style.
      *
      * @since 5.5
      */
@@ -242,12 +243,10 @@ public final class Utils {
         cssSource = cssSource.replaceAll("TEMPORARY_BASE_PATH_MARKER",
                 "\\$\\{basePath\\}");
 
-        CSSStylesheet styleSheet = null;
-        CSSParser parser = new CSSParser(new URIResourceLocator());
-        try {
-            styleSheet = parser.parse(cssSource, URI.create(""), null);
-        } catch (Exception e) {
-            log.error("Could not parse CSS:\n" + cssSource, e);
+        CascadingStyleSheet styleSheet = CSSReader.readFromString(cssSource,
+                "utf-8", ECSSVersion.CSS30);
+        if (styleSheet == null) {
+            log.error("Could not parse CSS:\n" + cssSource);
             return;
         }
 
@@ -256,36 +255,28 @@ public final class Utils {
             style.clearPropertiesFor(viewName);
         }
 
-        CssStringWriter cssWriter = new CssStringWriter();
-
-        Iterator<CSSRule> rules = styleSheet.getRules().iterator();
-        while (rules.hasNext()) {
-            CSSRule rule = rules.next();
-
-            final Properties styleProperties = new Properties();
-
-            /* CSS selector */
-            Selector selector = rule.getSelector();
-            cssWriter.write(selector);
-            String selectorStr = cssWriter.toText();
-
-            if (selectorStr.equals(EMPTY_CSS_SELECTOR)
-                    || selectorStr.toLowerCase().equals("html")
-                    || selectorStr.toLowerCase().equals("body")) {
-                selectorStr = "";
+        ICSSWriterSettings writerSettings = new CSSWriterSettings(
+                ECSSVersion.CSS30, true);
+        for (CSSStyleRule rule : styleSheet.getAllStyleRules()) {
+            Properties properties = new Properties();
+            for (CSSDeclaration declaration : rule.getAllDeclarations()) {
+                String expression = declaration.getExpression().getAsCSSString(
+                        writerSettings, 0);
+                if (declaration.isImportant()) {
+                    expression = expression + CCSS.IMPORTANT_SUFFIX;
+                }
+                properties.put(declaration.getProperty(), expression);
             }
 
-            /* CSS properties */
-            CSSProperty property = rule.getProperty();
-            if (property == null) {
-                styleProperties.setProperty("", "");
-            } else {
-                LexicalUnit value = property.getValue();
-                cssWriter.write(value, " ");
-                String strValue = cssWriter.toText();
-                styleProperties.setProperty(property.getName(), strValue);
+            for (CSSSelector cssSelector : rule.getAllSelectors()) {
+                String selector = cssSelector.getAsCSSString(writerSettings, 0);
+                if (selector.equals(EMPTY_CSS_SELECTOR)
+                        || selector.toLowerCase().equals("body")
+                        || selector.toLowerCase().equals("html")) {
+                    selector = "";
+                }
+                style.setPropertiesFor(viewName, selector, properties);
             }
-            style.setPropertiesFor(viewName, selectorStr, styleProperties);
         }
     }
 

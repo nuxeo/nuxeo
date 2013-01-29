@@ -14,13 +14,13 @@
 
 package org.nuxeo.theme.test.html;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.formats.styles.Style;
@@ -52,28 +52,28 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         style.setPropertiesFor("horizontal menu", "div", properties2);
 
         assertEquals(
-                ".nxStyle1HorizontalMenu div {border:1px solid #ccc;}\n.nxStyle1VerticalMenu a {color:red;font:12px Arial;}\n",
+                ".nxStyle1HorizontalMenu div {border:1px solid #ccc;}\n.nxStyle1VerticalMenu a {font:12px Arial;color:red;}\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals(
-                ".nxStyle1 div {border:1px solid #ccc;}\n.nxStyle1 a {color:red;font:12px Arial;}\n",
+                ".nxStyle1 div {border:1px solid #ccc;}\n.nxStyle1 a {font:12px Arial;color:red;}\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals(
-                "div {border:1px solid #ccc;}\na {color:red;font:12px Arial;}\n",
+                "div {border:1px solid #ccc;}\na {font:12px Arial;color:red;}\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         true, // ignoreClassName
                         false // indent
                 ));
 
         assertEquals(
-                "div {\n  border: 1px solid #ccc;\n}\n\na {\n  color: red;\n  font: 12px Arial;\n}\n\n",
+                "div {\n  border: 1px solid #ccc;\n}\n\na {\n  font: 12px Arial;\n  color: red;\n}\n\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), true, // ignoreViewName
                         true, // ignoreClassName
                         true // indent
@@ -92,7 +92,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         style.setPropertiesFor("vertical menu", "a", properties);
 
         assertEquals(
-                ".someCollection1VerticalMenu a {color:red;font:12px Arial;}\n",
+                ".someCollection1VerticalMenu a {font:12px Arial;color:red;}\n",
                 CSSUtils.styleToCss(style, style.getSelectorViewNames(), false, // ignoreViewName
                         false, // ignoreClassName
                         false // indent
@@ -147,30 +147,30 @@ public class TestCSSUtils extends NXRuntimeTestCase {
 
     @Test
     public void testExtractCssImages() {
-        assertEquals("url(image.png)", CSSUtils.extractCssImages(
-                "url(image.png)").get(0));
-        assertEquals("url(/image.png)", CSSUtils.extractCssImages(
-                "url( /image.png )").get(0));
-        assertEquals("url(/image.png)", CSSUtils.extractCssImages(
-                "url  ( /image.png )").get(0));
-        assertEquals("url(/image.png)", CSSUtils.extractCssImages(
-                "url  ( \" /image.png \" )").get(0));
-        assertEquals("url(/image.png)", CSSUtils.extractCssImages(
-                "url  ( \' /image.png \' )").get(0));
-        assertEquals("url(image1.png)", CSSUtils.extractCssImages(
-                "  url(image1.png)  ").get(0));
+        assertEquals("url(image.png)",
+                CSSUtils.extractCssImages("url(image.png)").get(0));
+        assertEquals("url(/image.png)",
+                CSSUtils.extractCssImages("url( /image.png )").get(0));
+        assertEquals("url(/image.png)",
+                CSSUtils.extractCssImages("url  ( /image.png )").get(0));
+        assertEquals("url(/image.png)",
+                CSSUtils.extractCssImages("url  ( \" /image.png \" )").get(0));
+        assertEquals("url(/image.png)",
+                CSSUtils.extractCssImages("url  ( \' /image.png \' )").get(0));
+        assertEquals("url(image1.png)",
+                CSSUtils.extractCssImages("  url(image1.png)  ").get(0));
     }
 
     @Test
     public void testReplaceColor() {
-        assertEquals("\"orange\"", CSSUtils.replaceColor("#fc0", "#fc0",
-                "\"orange\""));
-        assertEquals("\"yellow\"", CSSUtils.replaceColor("#FF0", "#ff0",
-                "\"yellow\""));
-        assertEquals("\"yellow\"", CSSUtils.replaceColor("#ffff00", "#ff0",
-                "\"yellow\""));
-        assertEquals("\"yellow\"", CSSUtils.replaceColor("rgb(255, 255,0)",
-                "#ff0", "\"yellow\""));
+        assertEquals("\"orange\"",
+                CSSUtils.replaceColor("#fc0", "#fc0", "\"orange\""));
+        assertEquals("\"yellow\"",
+                CSSUtils.replaceColor("#FF0", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"",
+                CSSUtils.replaceColor("#ffff00", "#ff0", "\"yellow\""));
+        assertEquals("\"yellow\"",
+                CSSUtils.replaceColor("rgb(255, 255,0)", "#ff0", "\"yellow\""));
     }
 
     @Test
@@ -183,7 +183,7 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         style1.setName("common");
         style1.setPropertiesFor("*", "a", properties1);
 
-        assertEquals(".nxStyle1 a {color:red;font:12px Arial;}\n",
+        assertEquals(".nxStyle1 a {font:12px Arial;color:red;}\n",
                 CSSUtils.styleToCss(style1, style1.getSelectorViewNames(),
                         false, false, false));
     }
@@ -221,8 +221,8 @@ public class TestCSSUtils extends NXRuntimeTestCase {
         String CSS_CONTEXT_PATH = "/nuxeo/css/";
         String source = Utils.readResourceAsString("resource.css");
         String expandedSource = Utils.readResourceAsString("resource-expanded.css");
-        assertEquals(expandedSource, CSSUtils.expandPartialUrls(source,
-                CSS_CONTEXT_PATH));
+        assertEquals(expandedSource,
+                CSSUtils.expandPartialUrls(source, CSS_CONTEXT_PATH));
     }
 
 }

@@ -14,11 +14,14 @@
 
 package org.nuxeo.theme.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Properties;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.formats.styles.StyleFormat;
 
@@ -57,14 +60,14 @@ public class TestUtils {
         assertEquals("none", props2.getProperty("text-decoration"));
 
         Properties props3 = style.getPropertiesFor(viewName, "ul a");
-        assertEquals("#00ff00", props3.getProperty("color"));
+        assertEquals("#0F0", props3.getProperty("color"));
         assertEquals("url(image.png)", props3.getProperty("background-image"));
 
         Properties props4 = style.getPropertiesFor(viewName, "a>b");
         assertEquals("\"green (nuxeo DM color)\"", props4.getProperty("color"));
 
         Properties props5 = style.getPropertiesFor(viewName, "ul");
-        assertNull(props5);
+        assertTrue(props5.isEmpty());
 
         // make sure that old properties are removed
         cssSource = "a {color: blue;}";
