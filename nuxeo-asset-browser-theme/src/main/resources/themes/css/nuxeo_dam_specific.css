@@ -51,11 +51,13 @@ author: lkemen@nuxeo.com
   font-size: .9em }
 
 .bubbleBox {
+  background-color: #fff;
   cursor: pointer;
   display: inline-block;
   font-size: .9em;
   margin: 0 .3em 1em;
   min-height: 170px;
+  text-align: left;
   vertical-align: top;
   width: 128px }
 
