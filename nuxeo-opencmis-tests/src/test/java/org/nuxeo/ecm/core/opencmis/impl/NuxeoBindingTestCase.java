@@ -118,7 +118,7 @@ public class NuxeoBindingTestCase {
     }
 
     public void sleepForFulltext() {
-        nuxeotc.database.sleepForFulltext();
+        nuxeotc.waitForFulltextIndexing();
     }
 
     public void tearDown() throws Exception {
