@@ -56,7 +56,8 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         this.mimeType = mimeType;
         this.encoding = encoding;
         this.digest = digest;
-        this.filename = filename;
+        this.filename = filename != null ? filename
+                : file != null ? file.getName() : null;
     }
 
     public FileBlob(InputStream in) throws IOException {
