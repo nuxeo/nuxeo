@@ -108,7 +108,8 @@
     <!-- Define an AJP 1.3 Connector on port ${nuxeo.server.ajp.port} -->
     <Connector port="${nuxeo.server.ajp.port}" protocol="AJP/1.3"
                address="${nuxeo.bind.address}"
-               redirectPort="${nuxeo.server.https.port}" />
+               redirectPort="${nuxeo.server.https.port}"
+               emptySessionPath="${nuxeo.server.emptySessionPath}" />
 
 
     <!-- An Engine represents the entry point (within Catalina) that processes
