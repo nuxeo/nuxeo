@@ -73,6 +73,10 @@
     JDBC driver for more.
   </documentation>
 
+  <service>
+    <provide interface="org.nuxeo.runtime.datasource.DataSourceRegistry"/>
+  </service>
+  
   <implementation class="org.nuxeo.runtime.datasource.DataSourceComponent" />
 
   <extension-point name="datasources">

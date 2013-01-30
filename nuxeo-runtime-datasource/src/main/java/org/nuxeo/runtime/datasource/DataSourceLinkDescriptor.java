@@ -11,15 +11,36 @@
  *******************************************************************************/
 package org.nuxeo.runtime.datasource;
 
+import javax.naming.InitialContext;
+import javax.naming.LinkRef;
+import javax.naming.NamingException;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.DataSourceHelper;
 
 @XObject("link")
 public class DataSourceLinkDescriptor {
 
-	@XNode("@name") String name;
-	
-	@XNode("@global") String global;
-	
-	@XNode("@type") String type;
+	protected String name;
+
+	@XNode("@name")
+	public void setName(String value) {
+	    name = DataSourceHelper.getDataSourceJNDIName(value);
+	}
+
+	protected String global;
+
+
+    @XNode("@global")
+    public void setGlobal(String value) {
+        global = DataSourceHelper.getDataSourceJNDIName(value);
+    }
+
+	@XNode("@type")
+	protected String type;
+
+    public void bindSelf(InitialContext namingContext) throws NamingException {
+        namingContext.bind(name, new LinkRef(global));
+    }
 }

@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.DataSourceHelper;
@@ -102,10 +103,12 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/datasource-contrib.xml");
         checkDataSourceOk("foo", true);
+        checkDataSourceOk("foo", true);
         checkDataSourceOk("alias", true);
     }
 
     @Test
+    @Ignore
     public void testXANoTM() throws Exception {
         deployContrib("org.nuxeo.runtime.datasource.tests",
                 "OSGI-INF/xadatasource-contrib.xml");
