@@ -17,7 +17,12 @@
 
 package org.nuxeo.dam;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.nuxeo.ecm.platform.types.Type;
+import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -36,12 +41,11 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
     }
 
     @Override
-    public String getAssetLibraryPath() {
+    public List<Type> getAllowedAssetTypes() {
         AssetLibrary assetLibrary = getAssetLibrary();
-        if (assetLibrary == null) {
-            throw new ClientRuntimeException("No Asset Library configured.");
-        }
-        return assetLibrary.getPath();
+        TypeManager typeManager = Framework.getLocalService(TypeManager.class);
+        return new ArrayList<Type>(
+                typeManager.getAllowedSubTypes(assetLibrary.getDocType()));
     }
 
     @Override

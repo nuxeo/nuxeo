@@ -17,6 +17,10 @@
 
 package org.nuxeo.dam;
 
+import java.util.List;
+
+import org.nuxeo.ecm.platform.types.Type;
+
 /**
  * @since 5.7
  */
@@ -24,5 +28,5 @@ public interface DamService {
 
     AssetLibrary getAssetLibrary();
 
-    String getAssetLibraryPath();
+    List<Type> getAllowedAssetTypes();
 }

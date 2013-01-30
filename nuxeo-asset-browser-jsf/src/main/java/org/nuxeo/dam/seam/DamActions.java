@@ -21,18 +21,29 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.dam.AssetLibrary;
+import org.nuxeo.dam.DamService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7
@@ -54,6 +65,14 @@ public class DamActions implements Serializable {
 
     @In(create = true)
     protected transient WebActions webActions;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected Map<String, String> messages;
+
+    protected String selectedNewAssetType;
 
     public String getSelectedDocumentId() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -78,6 +97,69 @@ public class DamActions implements Serializable {
     public void setDamMainTab(String tabs) {
         webActions.setCurrentTabIds(!StringUtils.isBlank(tabs) ? tabs
                 : MAIN_TABS_DAM);
+    }
+
+    /*
+     * ----- Asset creation -----
+     */
+
+    public AssetLibrary getAssetLibrary() {
+        return Framework.getLocalService(DamService.class).getAssetLibrary();
+    }
+
+    public List<Type> getAllowedAssetTypes() {
+        return Framework.getLocalService(DamService.class).getAllowedAssetTypes();
+    }
+
+    public String getSelectedNewAssetType() throws ClientException {
+        return selectedNewAssetType;
+    }
+
+    public void setSelectedNewAssetType(String selectedNewAssetType) {
+        this.selectedNewAssetType = selectedNewAssetType;
+    }
+
+    public void selectNewAssetType() throws ClientException {
+        Map<String, Object> context = new HashMap<String, Object>();
+        context.put(CoreEventConstants.PARENT_PATH,
+                navigationContext.getCurrentDocument().getPathAsString());
+        DocumentModel changeableDocument = documentManager.createDocumentModel(
+                selectedNewAssetType, context);
+        navigationContext.setChangeableDocument(changeableDocument);
+    }
+
+    public void initializeNewAssetType() throws ClientException {
+        if (selectedNewAssetType == null) {
+            List<Type> allowedAssetTypes = getAllowedAssetTypes();
+            if (!allowedAssetTypes.isEmpty()) {
+                selectedNewAssetType = allowedAssetTypes.get(0).getId();
+            }
+        }
+        if (selectedNewAssetType != null) {
+            selectNewAssetType();
+        }
+    }
+
+    public void saveNewAsset() throws ClientException {
+        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
+        if (changeableDocument.getId() != null) {
+            return;
+        }
+        PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+
+        changeableDocument.setPathInfo(getAssetLibrary().getPath(),
+                pss.generatePathSegment(changeableDocument));
+
+        changeableDocument = documentManager.createDocument(changeableDocument);
+        documentManager.save();
+
+        facesMessages.add(StatusMessage.Severity.INFO,
+                messages.get("document_saved"),
+                messages.get(changeableDocument.getType()));
+    }
+
+    public void cancelNewAsset() {
+        navigationContext.setChangeableDocument(null);
     }
 
 }

@@ -28,6 +28,21 @@ nuxeo.dam = (function(m) {
     jQuery("[data-docref='" + data + "']").addClass('selectedItem')
   }
 
+  m.showNewAssetFancyBox = function() {
+    jQuery('<a href="#newAssetBox"></a>').fancybox({
+      'autoScale': true,
+      'autoDimensions': false,
+      'type': "inline",
+      'modal': true,
+      'width': '50%',
+      'height': '90%',
+      'transitionIn': 'none',
+      'transitionOut': 'none',
+      'centerOnScroll': true,
+      'scrolling': 'auto'
+    }).click();
+  }
+
   return m
 
 }(nuxeo.dam || {}))

@@ -101,6 +101,12 @@
     </widget>
 
     <!-- Search results -->
+    <widget name="damNewAsset" type="template">
+      <properties widgetMode="any">
+        <property name="template">/dam/widgets/dam_new_asset_widget_template.xhtml</property>
+      </properties>
+    </widget>
+
     <widget name="damSearchResults" type="template">
       <properties widgetMode="any">
         <property name="template">/dam/widgets/dam_search_results_widget_template.xhtml</property>
@@ -276,7 +282,14 @@
       </properties>
     </action>
 
-    <action id="damSearchResults" type="widget" order="100">
+    <action id="damNewAsset" type="widget" order="100">
+      <category>DAM_PANEL_CENTER</category>
+      <properties>
+        <property name="widgetName">damNewAsset</property>
+      </properties>
+    </action>
+
+    <action id="damSearchResults" type="widget" order="200">
       <category>DAM_PANEL_CENTER</category>
       <properties>
         <property name="widgetName">damSearchResults</property>
