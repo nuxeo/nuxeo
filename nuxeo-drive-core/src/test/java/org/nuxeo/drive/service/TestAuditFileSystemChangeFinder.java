@@ -165,8 +165,15 @@ public class TestAuditFileSystemChangeFinder {
 
         nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal().getName(), folder2, session);
         changes = getChanges();
-        assertEquals(1, changes.size());
+        assertEquals(2, changes.size());
+        // the root unregistration is mapped to a fake deletion from the client's
+        // point of view
         change = changes.get(0);
+        assertEquals("test", change.getRepositoryId());
+        assertEquals("deleted", change.getEventId());
+        assertEquals(folder2.getId(), change.getDocUuid());
+
+        change = changes.get(1);
         assertEquals("test", change.getRepositoryId());
         assertEquals("documentModified", change.getEventId());
         assertEquals(doc1.getId(), change.getDocUuid());
