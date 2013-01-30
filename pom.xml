@@ -2921,9 +2921,9 @@
       </activation>
       <repositories>
         <repository>
-          <id>private-releases</id>
+          <id>internal-releases</id>
           <url>
-            http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-releases
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
           </url>
           <releases>
             <enabled>true</enabled>
@@ -2933,9 +2933,34 @@
           </snapshots>
         </repository>
         <repository>
-          <id>private-snapshots</id>
+          <id>internal-snapshots</id>
           <url>
-            http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-snapshots
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>releases</id>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases
+          </url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>snapshots</id>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots
           </url>
           <releases>
             <enabled>false</enabled>
@@ -2948,9 +2973,9 @@
       </repositories>
       <pluginRepositories>
         <pluginRepository>
-          <id>private-releases</id>
+          <id>internal-releases</id>
           <url>
-            http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-releases
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
           </url>
           <name>Nuxeo virtual release repository</name>
           <releases>
@@ -2961,9 +2986,9 @@
           </snapshots>
         </pluginRepository>
         <pluginRepository>
-          <id>private-snapshots</id>
+          <id>internal-snapshots</id>
           <url>
-            http://mavenpriv.in.nuxeo.com/nexus/content/groups/private-snapshots
+            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
           </url>
           <name>Nuxeo virtual snapshot repository</name>
           <releases>
