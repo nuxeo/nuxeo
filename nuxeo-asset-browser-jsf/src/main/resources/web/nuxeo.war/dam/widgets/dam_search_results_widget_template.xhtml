@@ -12,14 +12,14 @@
       <ui:define name="content_view_selector">
         <ui:include src="/incl/content_view_result_layout_selector.xhtml">
           <ui:param name="contentIdToBeReRendered"
-            value="#{contentViewRenderId}_resultsPanel,nxw_damPanelRight_1_panel" />
+            value="nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel" />
         </ui:include>
         <div style="clear:both;" />
       </ui:define>
       <ui:define name="pageNavigationControls">
         <ui:include src="/pagination/a4jPageNavigationControls.xhtml">
           <ui:param name="contentIdToBeReRendered"
-            value="#{contentViewRenderId}_resultsPanel,nxw_damPanelRight_1_panel" />
+            value="nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel" />
         </ui:include>
       </ui:define>
     </ui:decorate>
