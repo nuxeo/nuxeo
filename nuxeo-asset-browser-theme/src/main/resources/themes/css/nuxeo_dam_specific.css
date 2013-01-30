@@ -118,8 +118,8 @@ author: lkemen@nuxeo.com
 
 /* Picture View -> TODO: move it to imaging styles ? */
 .pictureContainer {
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 2px 0 #ccc;
+  border: 1px solid #eee;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   margin: .2em 0 .5em;
   min-height: 200px;
   padding: 3px;
@@ -145,7 +145,6 @@ author: lkemen@nuxeo.com
   display: inline-block;
   height: 100%;
   vertical-align: middle }
-.pictureContainer { text-align: center }
 .pictureContainer img {
   display: inline-block;
   vertical-align: middle }
