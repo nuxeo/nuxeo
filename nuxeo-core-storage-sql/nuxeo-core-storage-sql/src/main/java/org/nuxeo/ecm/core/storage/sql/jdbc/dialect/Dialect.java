@@ -236,6 +236,18 @@ public abstract class Dialect {
         return false;
     }
 
+    /**
+     * Sets a prepared statement value that is a Nuxeo main id (usually UUID).
+     *
+     * @param ps the prepared statement
+     * @param index the parameter index in the prepared statement
+     * @param value the value to set
+     */
+    public void setId(PreparedStatement ps, int index, Serializable value)
+            throws SQLException {
+        ps.setObject(index, value);
+    }
+
     public abstract void setToPreparedStatement(PreparedStatement ps,
             int index, Serializable value, Column column) throws SQLException;
 
@@ -264,7 +276,7 @@ public abstract class Dialect {
         } else {
             v = (String) value;
         }
-        ps.setString(index, v);
+        setId(ps, index, v);
     }
 
     protected void setToPreparedStatementTimestamp(PreparedStatement ps,
@@ -1032,6 +1044,18 @@ public abstract class Dialect {
      */
     public String getDateCast() {
         return "CAST(%s AS DATE)";
+    }
+
+    /**
+     * Casts an id column to a VARCHAR type.
+     * <p>
+     * Used for uuid/varchar joins.
+     *
+     * @return the casted expression
+     * @since 5.7
+     */
+    public String castIdToVarchar(String expr) {
+        return expr;
     }
 
     /**

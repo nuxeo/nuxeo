@@ -10,7 +10,9 @@
 #     Benoit Delbosc
 
 # Variables used:
-# ${idType} varchar(36)
+# ${idType} varchar(36) / uuid
+# ${idTypeParam} varchar / uuid, to use as parameter in functions / variable declarations
+# ${idNotPresent} '-' / '00000000-FFFF-FFFF-FFFF-FFFF00000000', a non-existing uuid to use as marker
 # ${fulltextAnalyzer} english, or depending on config
 # ${fulltextTable} fulltext
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
@@ -138,12 +140,12 @@ LANGUAGE sql
 VOLATILE;
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION nx_get_ancestors(id character varying) RETURNS character varying[]
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id ${idTypeParam}) RETURNS ${idTypeParam}[]
     AS $$
 DECLARE
-  curid varchar(36) := id;
-  newid varchar(36);
-  ret varchar(36)[];
+  curid ${idType} := id;
+  newid ${idType};
+  ret ${idTypeParam}[];
 BEGIN
   WHILE curid IS NOT NULL LOOP
     IF curid IS DISTINCT FROM id THEN
@@ -422,7 +424,7 @@ SELECT 1 FROM pg_tables WHERE tablename='aclr_modified';
 
 #IF: emptyResult
 CREATE ${unlogged} TABLE aclr_modified (
-  hierarchy_id character varying(36),
+  hierarchy_id ${idType},
   is_new boolean
 );
 
@@ -453,7 +455,7 @@ INSERT INTO aclr_permission VALUES ${readPermissions};
 
 
 
-CREATE OR REPLACE FUNCTION nx_get_local_read_acl(id varchar)
+CREATE OR REPLACE FUNCTION nx_get_local_read_acl(id ${idType})
 RETURNS varchar
 AS $$
 -- Compute the read acl for a hierarchy id using a local acl
@@ -487,7 +489,7 @@ LANGUAGE plpgsql
 STABLE;
 
 
-CREATE OR REPLACE FUNCTION nx_get_read_acl(id varchar)
+CREATE OR REPLACE FUNCTION nx_get_read_acl(id ${idTypeParam})
 RETURNS varchar
 AS $$
 -- Compute the read acl for a hierarchy id using inherited acl
@@ -720,7 +722,7 @@ DECLARE
   update_count integer;
 BEGIN
   RAISE INFO 'nx_vacuum_read_acls vacuuming ...';
-  DELETE FROM aclr r WHERE NOT EXISTS (SELECT 1 FROM hierarchy_read_acl h 
+  DELETE FROM aclr r WHERE NOT EXISTS (SELECT 1 FROM hierarchy_read_acl h
     WHERE h.acl_id = r.acl_id LIMIT 1);
   GET DIAGNOSTICS update_count = ROW_COUNT;
   RAISE INFO 'nx_vacuum_read_acls done, % read acls removed.', update_count;
@@ -929,7 +931,7 @@ RETURNS void
 AS $$
 -- Upgrade versions: label, islatest, islatestmajor
 DECLARE
-  series ${idType} := '-';
+  series ${idType} := ${idNotPresent};
   latest boolean := false;
   latestmajor boolean := false;
   major boolean;
@@ -975,7 +977,7 @@ DROP FUNCTION nx_upgrade_versions();
 
 #TEST:
 SELECT attname FROM pg_attribute
-  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity') 
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity')
     AND attname = 'pid';
 
 #IF: ! emptyResult
@@ -984,7 +986,7 @@ DELETE FROM cluster_nodes N WHERE
 
 #TEST:
 SELECT attname FROM pg_attribute
-  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity') 
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity')
     AND attname = 'procpid';
 
 #IF: ! emptyResult

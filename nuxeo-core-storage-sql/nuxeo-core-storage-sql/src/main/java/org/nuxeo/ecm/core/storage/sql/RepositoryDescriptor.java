@@ -136,6 +136,9 @@ public class RepositoryDescriptor {
     @XNode("noDDL")
     public boolean noDDL = false;
 
+    @XNode("idType")
+    public String idType; // "uuid";
+
     @XNode("clustering@enabled")
     public boolean clusteringEnabled;
 

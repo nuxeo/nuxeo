@@ -69,6 +69,9 @@ public class Model {
     // change to have deterministic pseudo-UUID generation for debugging
     private static final boolean DEBUG_UUIDS = false;
 
+    // if true then debug UUIDs (above) are actual UUIDs, not short strings
+    private static final boolean DEBUG_REAL_UUIDS = true;
+
     public static final String ROOT_TYPE = "Root";
 
     public static final String REPOINFO_TABLE_NAME = "repositories";
@@ -427,7 +430,28 @@ public class Model {
      */
     public Serializable generateNewId() {
         if (DEBUG_UUIDS) {
-            return "UUID_" + temporaryIdCounter.incrementAndGet();
+            if (DEBUG_REAL_UUIDS) {
+                return String.format("00000000-0000-0000-0000-%012x",
+                        Long.valueOf(temporaryIdCounter.incrementAndGet()));
+            } else {
+                return "UUID_" + temporaryIdCounter.incrementAndGet();
+            }
+        } else {
+            return UUID.randomUUID().toString();
+        }
+    }
+
+    /**
+     * For test purposes, generates an id that doesn't exist in the database.
+     */
+    public static Serializable generateMissingId(int i) {
+        if (DEBUG_UUIDS) {
+            if (DEBUG_REAL_UUIDS) {
+                return String.format("00000000-ffff-ffff-0000-%012x",
+                        Integer.valueOf(i));
+            } else {
+                return "NO_SUCH_UUID_" + i;
+            }
         } else {
             return UUID.randomUUID().toString();
         }

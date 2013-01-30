@@ -550,7 +550,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     if (join.tableParam != null) {
                         selectParams.add(join.tableParam);
                     }
-                    String joinClause = join.getClause();
+                    String joinClause = join.getClause(dialect);
                     if (join.kind == Join.LEFT) {
                         joinClause += "(+)"; // Oracle implicit LEFT JOIN syntax
                     }
@@ -655,10 +655,10 @@ public class NXQLQueryMaker implements QueryMaker {
     // overridden by specialized query makers that need to tweak some joins
     protected void addJoin(int kind, String alias, Table table, String column,
             Table contextTable, String contextColumn, String name, int index) {
-        String on1 = contextTable.getColumn(contextColumn).getFullQuotedName();
-        String on2 = table.getColumn(column).getFullQuotedName();
+        Column column1 = contextTable.getColumn(contextColumn);
+        Column column2 = table.getColumn(column);
         Join join = new Join(kind, table.getRealTable().getQuotedName(), alias,
-                null, on1, on2);
+                null, column1, column2);
         if (name != null) {
             String nameCol = table.getColumn(model.HIER_CHILD_NAME_KEY).getFullQuotedName();
             join.addWhereClause(nameCol + " = ?", name);
