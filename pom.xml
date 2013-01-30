@@ -934,6 +934,11 @@
         <artifactId>nuxeo-platform-signature-web</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-config</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
 
       <!-- Rating -->
       <dependency>
