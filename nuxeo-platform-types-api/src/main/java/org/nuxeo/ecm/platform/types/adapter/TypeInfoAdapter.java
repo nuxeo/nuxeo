@@ -143,6 +143,14 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    public String getDescription() {
+        if (type != null) {
+            return type.getDescription();
+        }
+
+        return null;
+    }
+
     public String[] getLayouts(String mode) {
         if (type != null) {
             return type.getLayouts(mode);

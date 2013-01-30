@@ -44,6 +44,13 @@ public interface TypeInfo {
 
     String getLabel();
 
+    /**
+     * Returns the type's description.
+     *
+     * @since 5.7
+     */
+    String getDescription();
+
     String getId();
 
     /**
