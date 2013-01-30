@@ -106,10 +106,10 @@
             <field schema="dam_search" name="damc_authoringDate_max" />
           </predicate>
           <predicate parameter="dc:coverage" operator="STARTSWITH">
-            <field schema="faceted_search_default" name="dc_coverage" />
+            <field schema="dam_search" name="dc_coverage" />
           </predicate>
           <predicate parameter="ecm:path" operator="STARTSWITH">
-            <field schema="faceted_search_default" name="ecm_path" />
+            <field schema="dam_search" name="ecm_path" />
           </predicate>
         </whereClause>
         <sort column="dc:title" ascending="true" />
