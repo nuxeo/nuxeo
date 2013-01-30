@@ -125,7 +125,7 @@ public class DialectPostgreSQL extends Dialect {
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
-        String idt = repositoryDescriptor.idType;
+        String idt = repositoryDescriptor == null ? null : repositoryDescriptor.idType;
         if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
             idType = IdType.VARCHAR;
         } else if ("uuid".equalsIgnoreCase(idt)) {
