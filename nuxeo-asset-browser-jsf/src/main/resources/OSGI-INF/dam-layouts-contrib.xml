@@ -183,6 +183,7 @@
       </subWidgets>
       <properties widgetMode="any">
         <property name="foldable">true</property>
+        <property name="hideSubLabels">true</property>
       </properties>
     </widget>
 
