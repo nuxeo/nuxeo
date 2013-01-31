@@ -67,7 +67,7 @@ author: lkemen@nuxeo.com
 .bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
 
 .bubbleBox .bubbleHeader input {
-  margin-right: .1em }
+  margin-right: .3em }
 
   /* Reduce padding between widgets in the box*/
   .bubbleBox .fieldColumn {
@@ -85,6 +85,9 @@ author: lkemen@nuxeo.com
   color: #fff }
 .selectedItem .fieldColumn,
 .selectedItem:hover .fieldColumn { color: #fff }
+
+/* Pictures and video thumbnails in bubbleBoxes */
+.thumbnailContainer { text-align: center }
 
 /* =Assets View */
 .gridStyle4 .widgetPanel { margin: 0 .1em .3em; padding: 0 }
