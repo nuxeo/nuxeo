@@ -1476,7 +1476,7 @@
       <dependency>
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
-        <version>1.8</version>
+        <version>1.8.1</version>
       </dependency>
       <!-- used in jboss patch -->
       <dependency>
@@ -2031,7 +2031,7 @@
       <dependency>
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-impl</artifactId>
-        <version>3.3.1.GA-NX6</version>
+        <version>3.3.1.GA-NX7</version>
       </dependency>
       <dependency>
         <groupId>org.richfaces.ui</groupId>
