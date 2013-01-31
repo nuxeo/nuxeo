@@ -179,9 +179,10 @@ public class PersistenceContext {
     /**
      * Generates a new id, or used a pre-generated one (import).
      */
-    protected Serializable generateNewId(Serializable id) {
+    protected Serializable generateNewId(Serializable id)
+            throws StorageException {
         if (id == null) {
-            id = model.generateNewId();
+            id = mapper.generateNewId();
         }
         createdIds.add(id);
         return id;

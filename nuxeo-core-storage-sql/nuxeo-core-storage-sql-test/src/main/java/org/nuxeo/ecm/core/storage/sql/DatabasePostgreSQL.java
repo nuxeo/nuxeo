@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +53,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
                 System.getProperty(PORT_PROPERTY),
                 System.getProperty(DATABASE_PROPERTY));
         setProperty(URL_PROPERTY, url);
+        setProperty(ID_TYPE_PROPERTY, DEF_ID_TYPE);
     }
 
     @Override
@@ -64,6 +66,9 @@ public class DatabasePostgreSQL extends DatabaseHelper {
                 System.getProperty(PASSWORD_PROPERTY));
         try {
             doOnAllTables(connection, null, "public", "DROP TABLE \"%s\" CASCADE");
+            Statement st = connection.createStatement();
+            executeSql(st, "DROP SEQUENCE IF EXISTS hierarchy_seq");
+            st.close();
         } finally {
             connection.close();
         }
@@ -88,6 +93,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         descriptor.fulltextAnalyzer = "french";
         descriptor.pathOptimizationsEnabled = true;
         descriptor.aclOptimizationsEnabled = true;
+        descriptor.idType = System.getProperty(ID_TYPE_PROPERTY);
         return descriptor;
     }
 

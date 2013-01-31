@@ -35,6 +35,13 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
  */
 public interface RowMapper {
 
+    /**
+     * Computes a new unique id.
+     *
+     * @return a new unique id
+     */
+    Serializable generateNewId() throws StorageException;
+
     /*
      * ----- Batch -----
      */

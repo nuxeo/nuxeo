@@ -87,18 +87,13 @@ public class DialectPostgreSQL extends Dialect {
 
     protected String usersSeparator;
 
-    protected enum IdType {
-        /** VARCHAR storing a UUID as a string. */
-        VARCHAR,
-        /** Native UUID. */
-        UUID,
-    }
-
-    protected final IdType idType;
+    protected final DialectIdType idType;
 
     protected boolean compatibilityFulltextTable;
 
     protected final String unloggedKeyword;
+
+    protected String idSequenceName;
 
     public DialectPostgreSQL(DatabaseMetaData metadata,
             BinaryManager binaryManager,
@@ -125,11 +120,19 @@ public class DialectPostgreSQL extends Dialect {
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
-        String idt = repositoryDescriptor.idType;
+        String idt = repositoryDescriptor == null ? null : repositoryDescriptor.idType;
         if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
-            idType = IdType.VARCHAR;
+            idType = DialectIdType.VARCHAR;
         } else if ("uuid".equalsIgnoreCase(idt)) {
-            idType = IdType.UUID;
+            idType = DialectIdType.UUID;
+        } else if (idt.toLowerCase().startsWith("sequence")) {
+            idType = DialectIdType.SEQUENCE;
+            if (idt.toLowerCase().startsWith("sequence:")) {
+                String[] split = idt.split(":");
+                idSequenceName = split[1];
+            } else {
+                idSequenceName = "hierarchy_seq";
+            }
         } else {
             throw new StorageException("Unknown id type: '" + idt + "'");
         }
@@ -204,6 +207,8 @@ public class DialectPostgreSQL extends Dialect {
                 return jdbcInfo("varchar(36)", Types.VARCHAR);
             case UUID:
                 return jdbcInfo("uuid", Types.OTHER);
+            case SEQUENCE:
+                return jdbcInfo("int8", Types.BIGINT);
             }
         case NODEARRAY:
             switch (idType) {
@@ -211,6 +216,8 @@ public class DialectPostgreSQL extends Dialect {
                 return jdbcInfo("varchar(36)[]", Types.ARRAY);
             case UUID:
                 return jdbcInfo("uuid[]", Types.ARRAY);
+            case SEQUENCE:
+                return jdbcInfo("int8[]", Types.ARRAY);
             }
         case SYSNAME:
             return jdbcInfo("varchar(250)", Types.VARCHAR);
@@ -269,6 +276,23 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public Serializable getGeneratedId(Connection connection)
+            throws SQLException {
+        if (idType != DialectIdType.SEQUENCE) {
+            return super.getGeneratedId(connection);
+        }
+        String sql = String.format("SELECT NEXTVAL('%s')", idSequenceName);
+        Statement s = connection.createStatement();
+        try {
+            ResultSet rs = s.executeQuery(sql);
+            rs.next();
+            return Long.valueOf(rs.getLong(1));
+        } finally {
+            s.close();
+        }
+    }
+
+    @Override
     public void setId(PreparedStatement ps, int index, Serializable value)
             throws SQLException {
         switch (idType) {
@@ -277,6 +301,10 @@ public class DialectPostgreSQL extends Dialect {
             break;
         case UUID:
             ps.setObject(index, value, Types.OTHER);
+            break;
+        case SEQUENCE:
+            ps.setObject(index, value);
+            // ps.setLong(index, ((Long) value).longValue());
             break;
         }
     }
@@ -712,7 +740,8 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getInTreeSql(String idColumnName) {
         if (pathOptimizationsEnabled) {
-            String cast = idType == IdType.UUID ? "::uuid[]" : "";
+            // TODO SEQUENCE
+            String cast = idType == DialectIdType.UUID ? "::uuid[]" : "";
             return String.format(
                     "EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]%s <@ ancestors)",
                     idColumnName, cast);
@@ -757,6 +786,9 @@ public class DialectPostgreSQL extends Dialect {
                 break;
             case UUID:
                 typeName = "uuid";
+                break;
+            case SEQUENCE:
+                typeName = "int8";
                 break;
             default:
                 throw new AssertionError("Unknown id type: " + idType);
@@ -804,18 +836,23 @@ public class DialectPostgreSQL extends Dialect {
                 } else if (e.getClass().isArray()) {
                     appendArray(b, (Object[]) e);
                 } else {
-                    // we always transform to a string, the postgres
-                    // array parsing methods will then reparse this as needed
-                    String s = e.toString();
-                    b.append('"');
-                    for (int j = 0; j < s.length(); j++) {
-                        char c = s.charAt(j);
-                        if (c == '"' || c == '\\') {
-                            b.append('\\');
+                    if (e instanceof Number) {
+                        b.append(e);
+                    } else {
+                        // we always transform to a string, the postgres
+                        // array parsing methods will then reparse this as
+                        // needed
+                        String s = e.toString();
+                        b.append('"');
+                        for (int j = 0; j < s.length(); j++) {
+                            char c = s.charAt(j);
+                            if (c == '"' || c == '\\') {
+                                b.append('\\');
+                            }
+                            b.append(c);
                         }
-                        b.append(c);
+                        b.append('"');
                     }
-                    b.append('"');
                 }
             }
             b.append('}');
@@ -905,12 +942,20 @@ public class DialectPostgreSQL extends Dialect {
             properties.put("idType", "varchar(36)");
             properties.put("idTypeParam", "varchar");
             properties.put("idNotPresent", "'-'");
+            properties.put("sequenceEnabled", Boolean.FALSE);
             break;
         case UUID:
             properties.put("idType", "uuid");
             properties.put("idTypeParam", "uuid");
             properties.put("idNotPresent", "'00000000-FFFF-FFFF-FFFF-FFFF00000000'");
+            properties.put("sequenceEnabled", Boolean.FALSE);
             break;
+        case SEQUENCE:
+            properties.put("idType", "int8");
+            properties.put("idTypeParam", "int8");
+            properties.put("idNotPresent", "-1");
+            properties.put("sequenceEnabled", Boolean.TRUE);
+            properties.put("idSequenceName", idSequenceName);
         }
         properties.put("aclOptimizationsEnabled",
                 Boolean.valueOf(aclOptimizationsEnabled));
@@ -1152,9 +1197,16 @@ public class DialectPostgreSQL extends Dialect {
             return expr;
         case UUID:
             return expr + "::varchar";
+        case SEQUENCE:
+            return expr + "::varchar";
         default:
             throw new AssertionError("Unknown id type: " + idType);
         }
+    }
+
+    @Override
+    public DialectIdType getIdType() {
+        return idType;
     }
 
 }

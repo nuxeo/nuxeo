@@ -162,7 +162,7 @@ public class JDBCLogger {
      * Returns a loggable value using pseudo-SQL syntax.
      */
     @SuppressWarnings("boxing")
-    public static String loggedValue(Serializable value) {
+    public static String loggedValue(Object value) {
         if (value == null) {
             return "NULL";
         }
@@ -201,8 +201,8 @@ public class JDBCLogger {
         if (value instanceof Binary) {
             return "'" + ((Binary) value).getDigest() + "'";
         }
-        if (value.getClass().isArray()) {
-            Serializable[] v = (Serializable[]) value;
+        if (value instanceof Object[]) {
+            Object[] v = (Object[]) value;
             StringBuilder b = new StringBuilder();
             b.append('[');
             for (int i = 0; i < v.length; i++) {

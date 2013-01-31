@@ -162,6 +162,11 @@ public class SoftRefCachingRowMapper implements RowMapper {
         logCacheStat();
     }
 
+    @Override
+    public Serializable generateNewId() throws StorageException {
+        return rowMapper.generateNewId();
+    }
+
     /*
      * ----- Cache -----
      */

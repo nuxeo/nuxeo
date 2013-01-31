@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.Model.IdType;
 import org.nuxeo.ecm.core.storage.sql.ModelSetup;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -153,6 +154,17 @@ public class JDBCBackend implements RepositoryBackend {
             throw new StorageException(e);
         }
         modelSetup.materializeFulltextSyntheticColumn = dialect.getMaterializeFulltextSyntheticColumn();
+        switch (dialect.getIdType()) {
+        case VARCHAR:
+        case UUID:
+            modelSetup.idType = IdType.STRING;
+            break;
+        case SEQUENCE:
+            modelSetup.idType = IdType.LONG;
+            break;
+        default:
+            throw new AssertionError(dialect.getIdType().toString());
+        }
     }
 
     /**

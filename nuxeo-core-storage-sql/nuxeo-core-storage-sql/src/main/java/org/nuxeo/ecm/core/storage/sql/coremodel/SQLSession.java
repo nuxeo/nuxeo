@@ -205,25 +205,36 @@ public class SQLSession implements Session {
         return repository.getNuxeoSecurityManager();
     }
 
+    protected String idToString(Serializable id) {
+        try {
+            return session.getModel().idToString(id);
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected Serializable idFromString(String id) {
+        try {
+            return session.getModel().idFromString(id);
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Document getDocumentByUUID(String uuid) throws DocumentException {
-        try {
-            /**
-             * Document ids coming from higher level have been turned into
-             * strings (by {@link SQLDocument#getUUID}) but the backend may
-             * actually expect them to be Longs (for database-generated integer
-             * ids).
-             */
-            Serializable id = session.getModel().unHackStringId(uuid);
-            Node node = session.getNodeById(id);
-            if (node == null) {
-                // required by callers such as AbstractSession.exists
-                throw new NoSuchDocumentException(uuid);
-            }
-            return newDocument(node);
-        } catch (StorageException e) {
-            throw new DocumentException("Failed to get document by UUID", e);
+        /*
+         * Document ids coming from higher level have been turned into
+         * strings (by {@link SQLDocument#getUUID}) but the backend may
+         * actually expect them to be Longs (for database-generated integer
+         * ids).
+         */
+        Document doc = getDocumentById(idFromString(uuid));
+        if (doc == null) {
+            // required by callers such as AbstractSession.exists
+            throw new NoSuchDocumentException(uuid);
         }
+        return doc;
     }
 
     @Override
@@ -309,7 +320,7 @@ public class SQLSession implements Session {
     public Document getVersion(String versionableId, VersionModel versionModel)
             throws DocumentException {
         try {
-            Serializable vid = session.getModel().unHackStringId(versionableId);
+            Serializable vid = idFromString(versionableId);
             Node versionNode = session.getVersionByLabel(vid,
                     versionModel.getLabel());
             if (versionNode == null) {
@@ -376,7 +387,7 @@ public class SQLSession implements Session {
     public void setProxyTarget(Document proxy, Document target)
             throws DocumentException {
         Node proxyNode = ((SQLDocument) proxy).getNode();
-        String targetId = target.getUUID();
+        Serializable targetId = idFromString(target.getUUID());
         try {
             session.setProxyTarget(proxyNode, targetId);
         } catch (StorageException e) {
@@ -444,8 +455,9 @@ public class SQLSession implements Session {
         if (parent == null) {
             // version
             parentNode = null;
-            props.put(Model.VERSION_VERSIONABLE_PROP,
-                    properties.get(CoreSession.IMPORT_VERSION_VERSIONABLE_ID));
+            props.put(
+                    Model.VERSION_VERSIONABLE_PROP,
+                    idFromString((String) properties.get(CoreSession.IMPORT_VERSION_VERSIONABLE_ID)));
             props.put(Model.VERSION_CREATED_PROP,
                     properties.get(CoreSession.IMPORT_VERSION_CREATED));
             props.put(Model.VERSION_LABEL_PROP,
@@ -460,14 +472,17 @@ public class SQLSession implements Session {
             parentNode = ((SQLDocument) parent).getNode();
             if (isProxy) {
                 // proxy
-                props.put(Model.PROXY_TARGET_PROP,
-                        properties.get(CoreSession.IMPORT_PROXY_TARGET_ID));
-                props.put(Model.PROXY_VERSIONABLE_PROP,
-                        properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID));
+                props.put(
+                        Model.PROXY_TARGET_PROP,
+                        idFromString((String) properties.get(CoreSession.IMPORT_PROXY_TARGET_ID)));
+                props.put(
+                        Model.PROXY_VERSIONABLE_PROP,
+                        idFromString((String) properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID)));
             } else {
                 // live document
-                props.put(Model.MAIN_BASE_VERSION_PROP,
-                        properties.get(CoreSession.IMPORT_BASE_VERSION_ID));
+                props.put(
+                        Model.MAIN_BASE_VERSION_PROP,
+                        idFromString((String) properties.get(CoreSession.IMPORT_BASE_VERSION_ID)));
                 props.put(Model.MAIN_CHECKED_IN_PROP,
                         properties.get(CoreSession.IMPORT_CHECKED_IN));
             }
@@ -789,7 +804,7 @@ public class SQLSession implements Session {
             Long pos, String typeName, Map<String, Serializable> props)
             throws DocumentException {
         try {
-            Serializable id = session.getModel().unHackStringId(uuid);
+            Serializable id = idFromString(uuid);
             Node node = session.addChildNode(id, parent, name, pos, typeName,
                     false);
             for (Entry<String, Serializable> entry : props.entrySet()) {
@@ -854,21 +869,23 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Document getVersionByLabel(Serializable versionSeriesId,
+    protected Document getVersionByLabel(String versionSeriesId,
             String label) throws DocumentException {
         try {
-            Node versionNode = session.getVersionByLabel(versionSeriesId, label);
+            Serializable vid = idFromString(versionSeriesId);
+            Node versionNode = session.getVersionByLabel(vid, label);
             return versionNode == null ? null : newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
     }
 
-    protected List<Document> getVersions(Serializable versionSeriesId)
+    protected List<Document> getVersions(String versionSeriesId)
             throws DocumentException {
         List<Node> versionNodes;
         try {
-            versionNodes = session.getVersions(versionSeriesId);
+            Serializable vid = idFromString(versionSeriesId);
+            versionNodes = session.getVersions(vid);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -879,10 +896,11 @@ public class SQLSession implements Session {
         return versions;
     }
 
-    public Document getLastVersion(Serializable versionSeriesId)
+    public Document getLastVersion(String versionSeriesId)
             throws DocumentException {
         try {
-            Node versionNode = session.getLastVersion(versionSeriesId);
+            Serializable vid = idFromString(versionSeriesId);
+            Node versionNode = session.getLastVersion(vid);
             if (versionNode == null) {
                 return null;
             }

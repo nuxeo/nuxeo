@@ -26,7 +26,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.Set;
 
 import javax.sql.XADataSource;
@@ -139,6 +141,20 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     protected CollectionIO getCollectionIO(String tableName) {
         return tableName.equals(model.ACL_TABLE_NAME) ? ACLCollectionIO.INSTANCE
                 : ScalarCollectionIO.INSTANCE;
+    }
+
+    @Override
+    public Serializable generateNewId() throws StorageException {
+        try {
+            return generateNewIdInternal();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    // same but throwing SQLException
+    protected Serializable generateNewIdInternal() throws SQLException {
+        return dialect.getGeneratedId(connection);
     }
 
     /*
@@ -981,13 +997,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             String name, boolean resetVersion,
             Map<Serializable, Serializable> idMap) throws SQLException {
         boolean explicitName = name != null;
-        Serializable newId = null;
 
         SQLInfoSelect copy = sqlInfo.getCopyHier(explicitName, resetVersion);
         PreparedStatement ps = connection.prepareStatement(copy.sql);
         try {
-            // TODO DB_IDENTITY
-            newId = model.generateNewId();
+            Serializable newId = generateNewIdInternal();
 
             List<Serializable> debugValues = null;
             if (logger.isLogEnabled()) {
@@ -1035,10 +1049,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             // post insert fetch idrow
 
             idMap.put(id, newId);
+            return newId;
         } finally {
             closeStatement(ps);
         }
-        return newId;
     }
 
     /**

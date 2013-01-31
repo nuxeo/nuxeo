@@ -13,6 +13,7 @@
 # ${idType} varchar(36) / uuid
 # ${idTypeParam} varchar / uuid, to use as parameter in functions / variable declarations
 # ${idNotPresent} '-' / '00000000-FFFF-FFFF-FFFF-FFFF00000000', a non-existing uuid to use as marker
+# ${idSequenceName}
 # ${fulltextAnalyzer} english, or depending on config
 # ${fulltextTable} fulltext
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
@@ -22,6 +23,7 @@
 # ${unlogged} empty or "UNLOGGED" if postgresql >= 9.1
 
 # Conditions used:
+# sequenceEnabled
 # fulltextEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
@@ -30,6 +32,16 @@
 
 
 #CATEGORY: beforeTableCreation
+
+
+#IF: sequenceEnabled
+#TEST:
+SELECT 1 FROM pg_class WHERE relname = '${idSequenceName}';
+
+
+#IF: sequenceEnabled
+#IF: emptyResult
+CREATE SEQUENCE ${idSequenceName};
 
 
 CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${idType}, baseid ${idType})

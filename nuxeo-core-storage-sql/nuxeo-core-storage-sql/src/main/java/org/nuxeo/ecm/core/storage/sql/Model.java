@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,12 +63,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 public class Model {
 
     private static final Log log = LogFactory.getLog(Model.class);
-
-    // change to have deterministic pseudo-UUID generation for debugging
-    private static final boolean DEBUG_UUIDS = false;
-
-    // if true then debug UUIDs (above) are actual UUIDs, not short strings
-    private static final boolean DEBUG_REAL_UUIDS = true;
 
     public static final String ROOT_TYPE = "Root";
 
@@ -266,9 +258,22 @@ public class Model {
     public static final String[] ALWAYS_PREFETCHED_FRAGMENTS = {
             ACL_TABLE_NAME, VERSION_TABLE_NAME, MISC_TABLE_NAME };
 
-    protected final RepositoryDescriptor repositoryDescriptor;
+    /** Type of ids as seen by the VCS Java layer. */
+    public enum IdType {
+        STRING, //
+        LONG, //
+    }
 
-    private final AtomicLong temporaryIdCounter = new AtomicLong(0);
+    // type of id seen by the VCS Java layer
+    protected final IdType idType;
+
+    // type for VCS row storage
+    protected final PropertyType idPropertyType;
+
+    // type for core properties
+    protected final Type idCoreType;
+
+    protected final RepositoryDescriptor repositoryDescriptor;
 
     /** Per-doctype list of schemas. */
     private final Map<String, Set<String>> documentTypesSchemas;
@@ -365,6 +370,19 @@ public class Model {
     public Model(ModelSetup modelSetup) throws StorageException {
         repositoryDescriptor = modelSetup.repositoryDescriptor;
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
+        idType = modelSetup.idType;
+        switch (idType) {
+        case STRING:
+            idPropertyType = PropertyType.STRING;
+            idCoreType = StringType.INSTANCE;
+            break;
+        case LONG:
+            idPropertyType = PropertyType.LONG;
+            idCoreType = LongType.INSTANCE;
+            break;
+        default:
+            throw new AssertionError(idType.toString());
+        }
 
         documentTypesSchemas = new HashMap<String, Set<String>>();
         mixinsDocumentTypes = new HashMap<String, Set<String>>();
@@ -421,56 +439,31 @@ public class Model {
     }
 
     /**
-     * Computes a new unique id.
-     * <p>
-     * If actual ids are computed by the database, this will be a temporary id,
-     * otherwise the final one.
-     *
-     * @return a new id, which may be temporary
-     */
-    public Serializable generateNewId() {
-        if (DEBUG_UUIDS) {
-            if (DEBUG_REAL_UUIDS) {
-                return String.format("00000000-0000-0000-0000-%012x",
-                        Long.valueOf(temporaryIdCounter.incrementAndGet()));
-            } else {
-                return "UUID_" + temporaryIdCounter.incrementAndGet();
-            }
-        } else {
-            return UUID.randomUUID().toString();
-        }
-    }
-
-    /**
-     * For test purposes, generates an id that doesn't exist in the database.
-     */
-    public static Serializable generateMissingId(int i) {
-        if (DEBUG_UUIDS) {
-            if (DEBUG_REAL_UUIDS) {
-                return String.format("00000000-ffff-ffff-0000-%012x",
-                        Integer.valueOf(i));
-            } else {
-                return "NO_SUCH_UUID_" + i;
-            }
-        } else {
-            return UUID.randomUUID().toString();
-        }
-    }
-
-    /**
      * Fixup an id that has been turned into a string for high-level Nuxeo APIs.
      *
      * @param id the id to fixup
      * @return the fixed up id
      */
-    public Serializable unHackStringId(String id) {
-        return id;
-        // if (id.startsWith("T")) {
-        // return id;
-        // }
-        // Document ids coming from higher level have been turned into strings
-        // (by SQLDocument.getUUID) but are really longs for the backend.
-        // return Long.valueOf(id);
+    public Serializable idFromString(String id) {
+        switch (idType) {
+        case STRING:
+            return id;
+        case LONG:
+            return Long.valueOf(id);
+        default:
+            throw new AssertionError(idType.toString());
+        }
+    }
+
+    /**
+     * Turns an id that may be a String or a Long into a String for high-level
+     * Nuxeo APIs.
+     *
+     * @param the serializable id
+     * @return the string
+     */
+    public String idToString(Serializable id) {
+        return id.toString();
     }
 
     /**
@@ -1150,11 +1143,6 @@ public class Model {
         return fragmentNames;
     }
 
-    private PropertyType mainIdType() {
-        return PropertyType.STRING;
-        // return PropertyType.LONG;
-    }
-
     /**
      * Creates all the models.
      */
@@ -1350,9 +1338,9 @@ public class Model {
         addPropertyInfo(null, MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
                 HIER_TABLE_NAME, MAIN_CHECKED_IN_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
-        addPropertyInfo(null, MAIN_BASE_VERSION_PROP, mainIdType(),
-                HIER_TABLE_NAME, MAIN_BASE_VERSION_KEY, false,
-                StringType.INSTANCE, ColumnType.NODEVAL);
+        addPropertyInfo(null, MAIN_BASE_VERSION_PROP, idPropertyType,
+                HIER_TABLE_NAME, MAIN_BASE_VERSION_KEY, false, idCoreType,
+                ColumnType.NODEVAL);
         addPropertyInfo(null, MAIN_MAJOR_VERSION_PROP, PropertyType.LONG,
                 HIER_TABLE_NAME, MAIN_MAJOR_VERSION_KEY, false,
                 LongType.INSTANCE, ColumnType.INTEGER);
@@ -1380,9 +1368,9 @@ public class Model {
      * Special model for the versions table.
      */
     private void initVersionsModel() {
-        addPropertyInfo(null, VERSION_VERSIONABLE_PROP, mainIdType(),
-                VERSION_TABLE_NAME, VERSION_VERSIONABLE_KEY, false,
-                StringType.INSTANCE, ColumnType.NODEVAL);
+        addPropertyInfo(null, VERSION_VERSIONABLE_PROP, idPropertyType,
+                VERSION_TABLE_NAME, VERSION_VERSIONABLE_KEY, false, idCoreType,
+                ColumnType.NODEVAL);
         addPropertyInfo(null, VERSION_CREATED_PROP, PropertyType.DATETIME,
                 VERSION_TABLE_NAME, VERSION_CREATED_KEY, false,
                 DateType.INSTANCE, ColumnType.TIMESTAMP);
@@ -1405,12 +1393,12 @@ public class Model {
      * Special model for the proxies table.
      */
     private void initProxiesModel() {
-        addPropertyInfo(PROXY_TYPE, PROXY_TARGET_PROP, mainIdType(),
-                PROXY_TABLE_NAME, PROXY_TARGET_KEY, false, StringType.INSTANCE,
+        addPropertyInfo(PROXY_TYPE, PROXY_TARGET_PROP, idPropertyType,
+                PROXY_TABLE_NAME, PROXY_TARGET_KEY, false, idCoreType,
                 ColumnType.NODEIDFKNP);
-        addPropertyInfo(PROXY_TYPE, PROXY_VERSIONABLE_PROP, mainIdType(),
-                PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false,
-                StringType.INSTANCE, ColumnType.NODEVAL);
+        addPropertyInfo(PROXY_TYPE, PROXY_VERSIONABLE_PROP, idPropertyType,
+                PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false, idCoreType,
+                ColumnType.NODEVAL);
         addTypeFragment(PROXY_TYPE, PROXY_TABLE_NAME);
     }
 

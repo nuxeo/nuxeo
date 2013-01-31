@@ -35,6 +35,8 @@ public abstract class DatabaseHelper {
 
     public static final String DB_DEFAULT = "H2";
 
+    public static final String DEF_ID_TYPE = "varchar"; // "varchar", "uuid", "sequence"
+
     private static final boolean SINGLEDS_DEFAULT = false;
 
     public static DatabaseHelper DATABASE;
@@ -74,6 +76,8 @@ public abstract class DatabaseHelper {
     public static final String USER_PROPERTY = "nuxeo.test.vcs.user";
 
     public static final String PASSWORD_PROPERTY = "nuxeo.test.vcs.password";
+
+    public static final String ID_TYPE_PROPERTY = "nuxeo.test.vcs.idtype";
 
     // set this to true to activate single datasource for all tests
     public static final String SINGLEDS_PROPERTY = "nuxeo.test.vcs.singleds";
@@ -167,10 +171,15 @@ public abstract class DatabaseHelper {
         Statement st = connection.createStatement();
         for (String tableName : tableNames) {
             String sql = String.format(statement, tableName);
-            log.trace("SQL: " + sql);
-            st.execute(sql);
+            executeSql(st, sql);
         }
         st.close();
+    }
+
+    protected static void executeSql(Statement st, String sql)
+            throws SQLException {
+        log.trace("SQL: " + sql);
+        st.execute(sql);
     }
 
     public void setUp(Class<? extends RepositoryFactory> factoryClass)
