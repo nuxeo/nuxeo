@@ -17,6 +17,7 @@ package org.nuxeo.theme.test.themes;
 import java.io.IOException;
 import java.util.Date;
 
+import org.junit.Test;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.Utils;
@@ -38,6 +39,7 @@ public class ThemeIORoundTrip extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core.tests", "theme-bank-config.xml");
     }
 
+    @Test
     public void testRoundTrip() throws ThemeIOException, IOException {
         ThemeDescriptor themeDef = new ThemeDescriptor();
         themeDef.setName("default");
