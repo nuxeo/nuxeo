@@ -19,8 +19,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,13 +43,59 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(TestJCAPoolBehavior.class);
 
-    public static final int MIN_POOL_SIZE = 2;
+    public static final int MIN_POOL_SIZE = 0;
 
     public static final int MAX_POOL_SIZE = 5;
 
     public static final int BLOCKING_TIMEOUT = 200;
 
     public volatile Exception threadException;
+
+
+
+    /** Creates a session and holds it open for a while. */
+    protected class SessionHolder extends Thread {
+
+        protected final CountDownLatch fillSignal;
+
+        protected final CountDownLatch closeSignal;
+
+        public SessionHolder(String name, CountDownLatch fillSignal, CountDownLatch closeSignal) {
+            super("session-holder-" + name);
+            this.fillSignal = fillSignal;
+            this.closeSignal = closeSignal;
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        public void run() {
+            log.info("start of thread " + Thread.currentThread().getName());
+            TransactionHelper.startTransaction();
+            CoreSession s = null;
+            try {
+                try {
+                    s = openSessionAs(SecurityConstants.ADMINISTRATOR);
+                } catch (Exception e) {
+                    threadException = e;
+                }
+            } finally {
+                try {
+                    fillSignal.countDown();
+                    try {
+                        closeSignal.await();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    if (s != null) {
+                        closeSession(s);
+                    }
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }
+            log.info("end of thread " + Thread.currentThread().getName());
+        }
+    }
 
     @Override
     protected void setUpContainer() throws Exception {
@@ -66,20 +116,25 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
 
         threadException = null;
 
+        CountDownLatch fillSignal = new CountDownLatch(MAX_POOL_SIZE - 1);
+        CountDownLatch closeSignal = new CountDownLatch(1);
+
         // main thread already uses 1 session
         Thread[] threads = new Thread[MAX_POOL_SIZE - 1];
         for (int i = 0; i < threads.length; i++) {
-            threads[i] = new Thread(new SessionHolder(2000));
+            threads[i] = new SessionHolder(Integer.toString(i), fillSignal, closeSignal);
             threads[i].start();
         }
-        Thread.sleep(500);
-        assertNull(threadException);
-
-        // finish all threads
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].join();
+        fillSignal.await(); // wait for pool being filled
+        try {
+            assertNull(threadException);
+        } finally {
+            // finish all threads
+            closeSignal.countDown();
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
         }
-        assertNull(threadException);
     }
 
     @Test
@@ -94,67 +149,46 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
 
         threadException = null;
 
+        CountDownLatch fillSignal = new CountDownLatch(MAX_POOL_SIZE - 1);
+        CountDownLatch closeSignal = new CountDownLatch(1);
+
         // main thread already uses 1 session
-        Thread[] threads = new Thread[MAX_POOL_SIZE - 1];
-        for (int i = 0; i < threads.length; i++) {
-            threads[i] = new Thread(new SessionHolder(2000));
-            threads[i].start();
+        List<Thread> threads = new ArrayList<Thread>();
+        for (int i = 0; i < MAX_POOL_SIZE-1; i++) {
+            Thread t  = new SessionHolder(Integer.toString(i), fillSignal, closeSignal);
+            t.start();
+            threads.add(t);
         }
-        Thread.sleep(500);
-        assertNull(threadException);
-
-        // all connections are used, but try yet another one
-        Thread t = new Thread(new SessionHolder(2000));
-        t.start();
-        Thread.sleep(BLOCKING_TIMEOUT + 500);
-        assertNotNull(threadException);
-        threadException = null;
-
-        // finish all threads
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].join();
+        fillSignal.await();
+        try {
+            assertNull(threadException);
+        } finally {
+            fillSignal = new CountDownLatch(1);
+            // all connections are used, but try yet another one
+            {
+                Thread t = new SessionHolder("limit-reached", fillSignal, closeSignal);
+                t.start();
+                threads.add(t);
+            }
+            fillSignal.await();
+            try {
+                assertNotNull(threadException);
+                threadException = null;
+            } finally {
+                // finish all threads
+                closeSignal.countDown();
+                Iterator<Thread> it =  threads.iterator();
+                while (it.hasNext()) {
+                    Thread t = it.next();
+                    t.join();
+                    it.remove();
+                }
+            }
         }
-        assertNull(threadException);
-
         // re-test full threads use
         testOpenAllConnections();
     }
 
-    /** Creates a session and holds it open for a while. */
-    public class SessionHolder implements Runnable {
-
-        public final int sleepMillis;
-
-        public SessionHolder(int sleepMillis) {
-            this.sleepMillis = sleepMillis;
-        }
-
-        @Override
-        public void run() {
-            log.info("start of thread " + Thread.currentThread().getName());
-            try {
-                TransactionHelper.startTransaction();
-                CoreSession s = null;
-                try {
-                    s = openSessionAs(SecurityConstants.ADMINISTRATOR);
-                    Thread.sleep(sleepMillis);
-                } finally {
-                    try {
-                        if (s != null) {
-                            closeSession(s);
-                        }
-                    } finally {
-                        TransactionHelper.commitOrRollbackTransaction();
-                    }
-                }
-            } catch (Exception e) {
-                if (threadException == null) {
-                    threadException = e;
-                }
-            }
-            log.info("end of thread " + Thread.currentThread().getName());
-        }
-    }
 
     /**
      * Check that for two different repositories we get the connections from two
@@ -162,6 +196,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
      * session from the first repository when asked for a new session for the
      * second repository.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testMultipleRepositoriesPerTransaction() throws Exception {
         // config for second repo available only for H2

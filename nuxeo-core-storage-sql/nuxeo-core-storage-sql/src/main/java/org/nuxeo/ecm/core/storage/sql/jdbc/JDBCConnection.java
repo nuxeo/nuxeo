@@ -181,16 +181,6 @@ public class JDBCConnection {
     }
 
     private void closeConnections() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (Exception e) {
-                // ignore, including UndeclaredThrowableException
-                checkConnectionValid = true;
-            } finally {
-                connection = null;
-            }
-        }
         if (xaconnection != null) {
             try {
                 xaconnection.close();
@@ -198,6 +188,16 @@ public class JDBCConnection {
                 checkConnectionValid = true;
             } finally {
                 xaconnection = null;
+                connection = null;
+            }
+        } else if (connection != null) {
+            try {
+                connection.close();
+            } catch (Exception e) {
+                // ignore, including UndeclaredThrowableException
+                checkConnectionValid = true;
+            } finally {
+                connection = null;
             }
         }
     }
