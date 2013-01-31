@@ -160,7 +160,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     protected EntityManagerFactory createEntityManagerFactory(
             final Map<String, String> properties) {
         final EntityManagerFactory[] emf = new EntityManagerFactory[1];
-        Thread t = new Thread() {
+        Thread t = new Thread("persistence-init-"+name) {
             @SuppressWarnings("deprecation")
             @Override
             public void run() {
