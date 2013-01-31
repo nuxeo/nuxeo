@@ -22,6 +22,8 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.international.TimeZoneSelector;
 import org.richfaces.component.html.HtmlCalendar;
 
 import com.sun.facelets.FaceletContext;
@@ -87,6 +89,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
             super();
         }
 
+        @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
             if (!(instance instanceof HtmlCalendar)) {
                 log.error("Cannot apply date time component metadata, "
@@ -98,6 +101,8 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
             c.setEnableManualInput(true);
             c.setShowApplyButton(false);
             c.setZindex(1500);
+            c.setTimeZone(TimeZoneSelector.instance().getTimeZone());
+            c.setLocale(LocaleSelector.instance().getLocale());
         }
     }
 

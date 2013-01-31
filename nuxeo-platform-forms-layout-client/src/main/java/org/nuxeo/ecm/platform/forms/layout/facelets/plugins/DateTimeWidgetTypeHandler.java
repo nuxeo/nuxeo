@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import javax.faces.component.html.HtmlOutputText;
 
-import org.jboss.seam.ui.converter.DateTimeConverter;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -86,11 +85,9 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FaceletHandler[] handlers = { input, message };
             return new CompositeFaceletHandler(handlers);
         } else {
-            // default on text for other modes
-            TagAttributes convertAttributes = attributes;
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
-                    tagConfig, widget.getTagConfigId(), convertAttributes,
-                    leaf, DateTimeConverter.CONVERTER_ID);
+                    tagConfig, widget.getTagConfigId(), attributes,
+                    leaf, javax.faces.convert.DateTimeConverter.CONVERTER_ID);
             ConvertHandler convert = new ConvertDateTimeHandler(convertConfig);
             ComponentHandler output = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, convert,
