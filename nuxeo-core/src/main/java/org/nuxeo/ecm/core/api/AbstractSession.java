@@ -226,11 +226,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         // this session is valid until the disconnect method is called
         sessionId = createSessionId();
         sessionContext.put("SESSION_ID", sessionId);
+
+        getSession();
+
         // register this session locally -> this way document models can
         // retrieve their session on the server side
         CoreInstance.getInstance().registerSession(sessionId, this);
 
-        getSession();
 
         return sessionId;
     }
@@ -3145,7 +3147,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             throw new ClientException("Failed to get document "
                     + docModel.getRef().toString(), e);
         }
-        return getSecurityService().getSecuritySummary(doc, includeParents);
+        getSecurityService();
+        return SecurityService.getSecuritySummary(doc, includeParents);
     }
 
     @Override
