@@ -106,8 +106,7 @@
 <#if "${nuxeo.db.type}" != "mysql">
         <usersSeparator key="${nuxeo.db.user_separator_key}" />
 </#if>
-        <xa-datasource>${nuxeo.db.xadatasource}</xa-datasource>
-<#include "xadatasource-params.ftl" parse=true />
+        <xa-datasource>${nuxeo.db.commonds}</xa-datasource>
       </repository>
     </repository>
   </extension>
