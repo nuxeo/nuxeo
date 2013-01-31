@@ -3282,6 +3282,12 @@
         <scope>provided</scope>
       </dependency>
 
+      <dependency>
+	<groupId>org.apache.tomcat</groupId>
+	<artifactId>tomcat-jdbc</artifactId>
+	<version>7.0.35</version>
+      </dependency>
+
       <!-- Test Scope -->
       <dependency>
         <groupId>org.apache.shindig</groupId>
