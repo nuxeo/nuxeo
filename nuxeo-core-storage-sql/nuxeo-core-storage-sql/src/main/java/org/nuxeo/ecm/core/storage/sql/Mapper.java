@@ -92,10 +92,10 @@ public interface Mapper extends RowMapper, XAResource {
     /**
      * Gets the root id for a given repository, if registered.
      *
-     * @param repositoryId the repository id, usually 0
+     * @param repositoryId the repository id
      * @return the root id, or null if not found
      */
-    Serializable getRootId(Serializable repositoryId) throws StorageException;
+    Serializable getRootId(String repositoryId) throws StorageException;
 
     /**
      * Records the newly generated root id for a given repository.

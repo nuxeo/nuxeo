@@ -111,9 +111,9 @@ public class Node {
         }
     }
 
-    public String getParentId() {
+    public Serializable getParentId() {
         try {
-            return getHierFragment().getString(model.HIER_PARENT_KEY);
+            return getHierFragment().get(model.HIER_PARENT_KEY);
         } catch (StorageException e) {
             // do not propagate this unlikely exception as a checked one
             throw new RuntimeException(e);

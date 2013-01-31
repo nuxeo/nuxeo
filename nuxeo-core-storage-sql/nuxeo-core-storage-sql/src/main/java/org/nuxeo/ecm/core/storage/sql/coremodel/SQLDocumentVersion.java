@@ -117,7 +117,8 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     @Override
     public String getVersionSeriesId() throws DocumentException {
-        return getString(Model.VERSION_VERSIONABLE_PROP);
+        Serializable versionSeriesId = (Serializable) getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
+        return session.idToString(versionSeriesId);
     }
 
     @Override

@@ -75,7 +75,7 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public Serializable getRootId(Serializable repositoryId)
+    public Serializable getRootId(String repositoryId)
             throws StorageException {
         return mapper.getRootId(repositoryId);
     }

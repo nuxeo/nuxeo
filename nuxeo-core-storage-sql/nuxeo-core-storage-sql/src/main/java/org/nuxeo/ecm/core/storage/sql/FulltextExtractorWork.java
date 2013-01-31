@@ -12,7 +12,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -56,7 +55,7 @@ public class FulltextExtractorWork extends AbstractWork {
 
     protected String repositoryName;
 
-    protected final Set<Serializable> ids;
+    protected final Set<String> ids;
 
     protected ModelFulltext fulltextInfo;
 
@@ -64,7 +63,7 @@ public class FulltextExtractorWork extends AbstractWork {
 
     protected FulltextParser fulltextParser;
 
-    public FulltextExtractorWork(String repositoryName, Set<Serializable> ids) {
+    public FulltextExtractorWork(String repositoryName, Set<String> ids) {
         this.repositoryName = repositoryName;
         this.ids = ids;
     }
@@ -83,8 +82,8 @@ public class FulltextExtractorWork extends AbstractWork {
     public Collection<DocumentLocation> getDocuments() {
         List<DocumentLocation> docs = new ArrayList<DocumentLocation>(
                 ids.size());
-        for (Serializable id : ids) {
-            DocumentRef ref = new IdRef((String) id);
+        for (String id : ids) {
+            DocumentRef ref = new IdRef(id);
             DocumentLocation doc = new DocumentLocationImpl(repositoryName, ref);
             docs.add(doc);
         }
@@ -112,9 +111,9 @@ public class FulltextExtractorWork extends AbstractWork {
         Collection<FulltextUpdaterInfo> infos = new ArrayList<FulltextUpdaterInfo>();
         int n = 0;
         setStatus("Extracting");
-        for (Serializable id : ids) {
+        for (String id : ids) {
             setProgress(new Progress(++n, ids.size()));
-            IdRef docRef = new IdRef((String) id);
+            IdRef docRef = new IdRef(id);
             if (!session.exists(docRef)) {
                 // doc is gone
                 continue;
@@ -142,7 +141,7 @@ public class FulltextExtractorWork extends AbstractWork {
                         fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
                         fulltextInfo.indexesAllBinary.contains(indexName));
                 List<Blob> blobs = extractor.getBlobs(doc);
-                String text = blobsToText(blobs, (String) id);
+                String text = blobsToText(blobs, id);
                 fulltextParser.setStrings(new ArrayList<String>());
                 fulltextParser.parse(text, null);
                 text = StringUtils.join(fulltextParser.getStrings(), " ");

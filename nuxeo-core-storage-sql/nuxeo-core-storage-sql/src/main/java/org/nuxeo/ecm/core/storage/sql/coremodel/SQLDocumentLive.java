@@ -100,7 +100,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     @Override
     public String getUUID() {
-        return getNode().getId().toString();
+        return session.idToString(getNode().getId());
     }
 
     @Override
@@ -365,12 +365,12 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         if (isCheckedOut()) {
             return null;
         }
-        String id = getString(Model.MAIN_BASE_VERSION_PROP);
+        Serializable id = (Serializable) getPropertyValue(Model.MAIN_BASE_VERSION_PROP);
         if (id == null) {
             // shouldn't happen
             return null;
         }
-        return session.getDocumentByUUID(id);
+        return session.getDocumentById(id);
     }
 
     @Override

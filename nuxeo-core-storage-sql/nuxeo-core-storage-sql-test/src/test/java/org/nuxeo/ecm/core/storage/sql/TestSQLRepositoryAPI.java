@@ -3367,8 +3367,18 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         String folderId = folder.getId();
 
         // create a version by import
-        String id = "aaaaaaaa-1234-1234-1234-fedcba987654"; // versionable
-        String vid = "12345678-1234-1234-1234-fedcba987654"; // ver id
+        String id; // versionable
+        String vid; // ver id
+        String pid; // proxy id
+        if (folderId.length() == 36) {
+            id = "aaaaaaaa-1234-1234-1234-fedcba987654";
+            vid = "12345678-1234-1234-1234-fedcba987654";
+            pid = "00000000-1234-1234-1234-fedcba987654";
+        } else {
+            id = "888001";
+            vid = "777002";
+            pid = "666003";
+        }
         String typeName = "File";
         DocumentRef parentRef = null;
         String name = "foobar";
@@ -3416,7 +3426,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(vcr, versionModel.getCreated());
 
         // create a proxy by import
-        String pid = "00000000-1234-1234-1234-fedcba987654"; // proxy id
         typeName = CoreSession.IMPORT_PROXY_TYPE;
         parentRef = new IdRef(folderId);
         name = "myproxy";

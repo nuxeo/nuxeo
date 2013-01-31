@@ -580,16 +580,16 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Serializable getRootId(Serializable repositoryId)
-            throws StorageException {
+    public Serializable getRootId(String repositoryId) throws StorageException {
         String sql = sqlInfo.getSelectRootIdSql();
         try {
             if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Collections.singletonList(repositoryId));
+                logger.logSQL(sql,
+                        Collections.<Serializable> singletonList(repositoryId));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                dialect.setId(ps, 1, repositoryId);
+                ps.setString(1, repositoryId);
                 ResultSet rs = ps.executeQuery();
                 countExecute();
                 if (!rs.next()) {
@@ -770,19 +770,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     ResultSet.CONCUR_READ_ONLY);
             int i = 1;
             for (Serializable object : q.selectParams) {
-                if (object instanceof Calendar) {
-                    Calendar cal = (Calendar) object;
-                    Timestamp ts = new Timestamp(cal.getTimeInMillis());
-                    ps.setTimestamp(i++, ts, cal); // cal passed for timezone
-                } else if (object instanceof java.sql.Date) {
-                    ps.setDate(i++, (java.sql.Date) object);
-                } else if (object instanceof String[]) {
-                    Array array = dialect.createArrayOf(Types.VARCHAR,
-                            (Object[]) object, connection);
-                    ps.setArray(i++, array);
-                } else {
-                    dialect.setId(ps, i++, object);
-                }
+                 setToPreparedStatement(ps, i++, object);
             }
             ResultSet rs = ps.executeQuery();
             countExecute();
@@ -849,6 +837,27 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
+    protected int setToPreparedStatement(PreparedStatement ps, int i,
+            Serializable object) throws SQLException {
+        if (object instanceof Calendar) {
+            Calendar cal = (Calendar) object;
+            Timestamp ts = new Timestamp(cal.getTimeInMillis());
+            ps.setTimestamp(i, ts, cal); // cal passed for timezone
+        } else if (object instanceof java.sql.Date) {
+            ps.setDate(i, (java.sql.Date) object);
+        } else if (object instanceof String[]) {
+            Array array = dialect.createArrayOf(Types.VARCHAR,
+                    (Object[]) object, connection);
+            ps.setArray(i, array);
+        } else if (object instanceof Long) {
+            ps.setLong(i, ((Long) object).longValue());
+        } else {
+            // XXX TODO may be just a regular string, we need column info...
+            dialect.setId(ps, i, object);
+        }
+        return i;
+    }
+
     // queryFilter used for principals and permissions
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
@@ -879,15 +888,17 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return getAncestorsIdsIterative(ids);
         }
         Serializable whereIds;
-        List<String> idsa = new ArrayList<String>(ids.size());
-        for (Serializable id : ids) {
-            idsa.add((String) id);
-        }
         if (dialect.supportsArrays()) {
-            whereIds = idsa.toArray(new String[0]);
+            whereIds = ids.toArray(); // Object[]
         } else {
             // join with '|'
-            whereIds = join(idsa, '|');
+            StringBuilder b = new StringBuilder();
+            for (Serializable id : ids) {
+                b.append(id);
+                b.append('|');
+            }
+            b.setLength(b.length() - 1);
+            whereIds = b.toString();
         }
         Set<Serializable> res = new HashSet<Serializable>();
         PreparedStatement ps = null;
@@ -897,7 +908,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             Column what = select.whatColumns.get(0);
             ps = connection.prepareStatement(select.sql);
-            if (whereIds instanceof String[]) {
+            if (whereIds instanceof Object[]) {
                 Array array = dialect.createArrayOf(Types.OTHER,
                         (Object[]) whereIds, connection);
                 ps.setArray(1, array);

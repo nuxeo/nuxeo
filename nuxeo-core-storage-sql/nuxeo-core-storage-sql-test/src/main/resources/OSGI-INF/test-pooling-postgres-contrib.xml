@@ -9,6 +9,7 @@
     <repository name="${nuxeo.test.vcs.repository}"
       factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
       <repository>
+        <idType>${nuxeo.test.vcs.idtype}</idType>
         <schema>
           <field type="largetext">note</field>
           <field type="largetext">relatedtext</field>

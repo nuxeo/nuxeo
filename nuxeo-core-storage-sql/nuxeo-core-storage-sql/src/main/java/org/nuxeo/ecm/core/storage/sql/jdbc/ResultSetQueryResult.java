@@ -12,13 +12,9 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -73,17 +69,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         int i = 1;
         for (Serializable object : q.selectParams) {
-            if (object instanceof Calendar) {
-                Calendar cal = (Calendar) object;
-                Timestamp ts = new Timestamp(cal.getTimeInMillis());
-                ps.setTimestamp(i++, ts, cal); // cal passed for timezone
-            } else if (object instanceof String[]) {
-                Array array = mapper.dialect.createArrayOf(
-                        Types.VARCHAR, (Object[]) object, mapper.connection);
-                ps.setArray(i++, array);
-            } else {
-                mapper.dialect.setId(ps, i++, object);
-            }
+            mapper.setToPreparedStatement(ps, i++, object);
         }
         rs = ps.executeQuery();
         mapper.countExecute();

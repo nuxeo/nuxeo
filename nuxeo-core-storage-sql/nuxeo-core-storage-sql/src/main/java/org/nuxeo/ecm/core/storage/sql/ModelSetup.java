@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.sql.Model.IdType;
 
 /**
  * Info driving the model creation.
@@ -24,5 +25,7 @@ public class ModelSetup {
     public SchemaManager schemaManager;
 
     public boolean materializeFulltextSyntheticColumn;
+
+    public IdType idType;
 
 }
