@@ -214,6 +214,9 @@ public abstract class AbstractTest {
         }
 
         public File dumpPageSource(String filename) {
+            if (driver == null) {
+                return null;
+            }
             FileWriter writer = null;
             try {
                 String location = System.getProperty("basedir")
@@ -305,23 +308,25 @@ public abstract class AbstractTest {
                 System.setProperty(SYSPROP_CHROME_DRIVER_PATH,
                         chromeDriverDefaultPath);
             } else {
-                // Can't find chromedriver in default location, check system path
+                // Can't find chromedriver in default location, check system
+                // path
                 File chromeDriverExecutable = findExecutableOnPath(chromeDriverExecutableName);
-                if ((chromeDriverExecutable != null) &&
-                    (chromeDriverExecutable.exists())) {
+                if ((chromeDriverExecutable != null)
+                        && (chromeDriverExecutable.exists())) {
                     log.warn(String.format(
-                        "Missing property %s but found %s. Using it...",
-                        SYSPROP_CHROME_DRIVER_PATH, chromeDriverExecutable.getCanonicalPath()));
+                            "Missing property %s but found %s. Using it...",
+                            SYSPROP_CHROME_DRIVER_PATH,
+                            chromeDriverExecutable.getCanonicalPath()));
                     System.setProperty(SYSPROP_CHROME_DRIVER_PATH,
-                        chromeDriverExecutable.getCanonicalPath());
+                            chromeDriverExecutable.getCanonicalPath());
                 } else {
                     log.error(String.format(
-                        "Could not find the Chrome driver looking at %s or system path."
-                                + "Download it from %s and set its path with "
-                                + "the System property %s.",
-                        chromeDriverDefaultPath,
-                        "http://code.google.com/p/chromedriver/downloads/list",
-                        SYSPROP_CHROME_DRIVER_PATH));
+                            "Could not find the Chrome driver looking at %s or system path."
+                                    + " Download it from %s and set its path with "
+                                    + "the System property %s.",
+                            chromeDriverDefaultPath,
+                            "http://code.google.com/p/chromedriver/downloads/list",
+                            SYSPROP_CHROME_DRIVER_PATH));
                 }
             }
         }
