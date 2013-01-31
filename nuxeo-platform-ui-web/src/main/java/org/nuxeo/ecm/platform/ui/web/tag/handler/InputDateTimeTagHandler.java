@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.international.LocaleSelector;
@@ -25,6 +29,8 @@ import org.richfaces.component.html.HtmlCalendar;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.Metadata;
+import com.sun.facelets.tag.TagAttribute;
+import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 
 /**
@@ -34,8 +40,20 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
 
     private static final Log log = LogFactory.getLog(InputDateTimeTagHandler.class);
 
+    protected final String defaultTime;
+
     public InputDateTimeTagHandler(ComponentConfig config) {
         super(config);
+        TagAttributes attributes = config.getTag().getAttributes();
+        defaultTime = getValue(attributes, "defaultTime", "12:00");
+    }
+
+    protected String getValue(TagAttributes attrs, String name, String defaultValue) {
+        TagAttribute attr = attrs.get(name);
+        if (attr == null) {
+            return defaultValue;
+        }
+        return attr.getValue();
     }
 
     @Override
@@ -88,4 +106,23 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         }
     }
 
+    @Override
+    protected void setAttributes(FaceletContext ctx, Object instance) {
+        super.setAttributes(ctx, instance);
+        // set default time in timezone
+        setDefaultTime((HtmlCalendar)instance);
+    }
+
+    protected void setDefaultTime(HtmlCalendar instance)  {
+        HtmlCalendar c = instance;
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        format.setTimeZone(TimeZoneSelector.instance().getTimeZone());
+        Date date;
+        try {
+            date = format.parse(defaultTime);
+        } catch (ParseException e) {
+           return;
+        }
+        c.setDefaultTime(date);
+    }
 }
