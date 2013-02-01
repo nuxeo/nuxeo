@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+/*
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,7 +42,7 @@ public class FilterSetDescriptor {
     @XNode("@target")
     protected String targetServlet;
 
-    @XNodeList(value="filter", type=ArrayList.class, componentType=FilterDescriptor.class, nullByDefault=false)
+    @XNodeList(value = "filter", type = ArrayList.class, componentType = FilterDescriptor.class, nullByDefault = false)
     protected ArrayList<FilterDescriptor> filters;
 
     @XNode("@pathInfo")
@@ -95,8 +95,8 @@ public class FilterSetDescriptor {
         if (id != null) {
             buf.append(id).append("@").append(targetServlet).append(": ");
         }
-        String  p = path == null ? "/**" : path.toString();
-        buf.append(p). append(" ").append(filters);
+        String p = path == null ? "/**" : path.toString();
+        buf.append(p).append(" ").append(filters);
         return buf.toString();
     }
 
@@ -106,12 +106,12 @@ public class FilterSetDescriptor {
             return true;
         }
         if (obj instanceof FilterSetDescriptor) {
-            String id = ((FilterSetDescriptor)obj).id;
-            if (id == null && this.id == null) {
+            String objId = ((FilterSetDescriptor) obj).id;
+            if (objId == null && this.id == null) {
                 return super.equals(obj);
             }
-            if (id != null) {
-                return id.equals(this.id);
+            if (objId != null) {
+                return objId.equals(this.id);
             }
         }
         return false;
