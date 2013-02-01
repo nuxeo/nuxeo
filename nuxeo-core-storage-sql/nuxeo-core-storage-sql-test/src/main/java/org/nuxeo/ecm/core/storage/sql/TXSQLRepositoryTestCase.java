@@ -45,6 +45,7 @@ public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
     @Override
     protected void deployRepositoryContrib() throws Exception {
         setUpContainer();
+        deployBundle("org.nuxeo.runtime.datasource");
         if (database instanceof DatabaseH2) {
             String contrib = "OSGI-INF/test-pooling-h2-contrib.xml";
             deployContrib("org.nuxeo.ecm.core.storage.sql.test", contrib);
