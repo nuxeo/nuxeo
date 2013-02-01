@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry" version="1.0">
+
+  <documentation>
+    OpenID Connect Provider Registry Service
+
+    @author Nelson Silva (nelson.silva@inevo.pt)
+  </documentation>
+  
+  <require>org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry</require>
+  
+  <implementation class="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistryImpl" />
+
+  <service>
+      <provide interface="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry" />
+  </service>
+
+  <extension-point name="providers">
+    <object class="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderDescriptor" />
+  </extension-point>
+  
+</component>
