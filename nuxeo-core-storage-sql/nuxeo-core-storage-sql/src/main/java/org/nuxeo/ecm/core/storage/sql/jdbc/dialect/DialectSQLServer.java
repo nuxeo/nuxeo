@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.DialectIdType;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -68,6 +69,10 @@ public class DialectSQLServer extends Dialect {
     private static final String DEFAULT_USERS_SEPARATOR = "|";
 
     protected final String usersSeparator;
+
+    protected final DialectIdType idType;
+
+    protected String idSequenceName;
 
     protected boolean pathOptimizationsEnabled;
 
@@ -110,6 +115,21 @@ public class DialectSQLServer extends Dialect {
                         : repositoryDescriptor.usersSeparatorKey;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.pathOptimizationsEnabled;
+        String idt = repositoryDescriptor == null ? null : repositoryDescriptor.idType;
+        if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
+            idType = DialectIdType.VARCHAR;
+        } else if (idt.toLowerCase().startsWith("sequence")) {
+            idType = DialectIdType.SEQUENCE;
+            if (idt.toLowerCase().startsWith("sequence:")) {
+                String[] split = idt.split(":");
+                idSequenceName = split[1];
+            } else {
+                idSequenceName = "hierarchy_seq";
+            }
+        } else {
+            throw new StorageException("Unknown id type: '" + idt + "'");
+        }
+
     }
 
     @Override
@@ -222,7 +242,12 @@ public class DialectSQLServer extends Dialect {
         case NODEIDFKNULL:
         case NODEIDPK:
         case NODEVAL:
-            return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
+            switch (idType) {
+            case VARCHAR:
+                return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
+            case SEQUENCE:
+                return jdbcInfo("BIGINT", Types.BIGINT);
+            }
         case SYSNAME:
         case SYSNAMEARRAY:
             return jdbcInfo("VARCHAR(256)", Types.VARCHAR);
@@ -274,6 +299,19 @@ public class DialectSQLServer extends Dialect {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void setId(PreparedStatement ps, int index, Serializable value)
+            throws SQLException {
+        switch (idType) {
+        case VARCHAR:
+            ps.setObject(index, value, Types.VARCHAR);
+            break;
+        case SEQUENCE:
+            ps.setObject(index, value);
+            break;
+        }
     }
 
     @Override
@@ -508,7 +546,20 @@ public class DialectSQLServer extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("idType", "VARCHAR(36)");
+        switch (idType) {
+        case VARCHAR:
+            properties.put("idType", "VARCHAR(36)");
+            properties.put("idTypeParam", "VARCHAR");
+            properties.put("idNotPresent", "'-'");
+            properties.put("sequenceEnabled", Boolean.FALSE);
+            break;
+        case SEQUENCE:
+            properties.put("idType", "BIGINT");
+            properties.put("idTypeParam", "BIGINT");
+            properties.put("idNotPresent", "-1");
+            properties.put("sequenceEnabled", Boolean.TRUE);
+            properties.put("idSequenceName", idSequenceName);
+        }
         properties.put("clusteredIndex", azure ? CLUSTERED : "");
         properties.put("md5HashString", getMd5HashString());
         properties.put("reseedAclrModified", azure ? ""
@@ -620,6 +671,23 @@ public class DialectSQLServer extends Dialect {
         return usersSeparator;
     }
 
+    @Override
+    public Serializable getGeneratedId(Connection connection)
+            throws SQLException {
+        if (idType != DialectIdType.SEQUENCE) {
+            return super.getGeneratedId(connection);
+        }
+        String sql = String.format("SELECT NEXT VALUE FOR [%s]", idSequenceName);
+        Statement s = connection.createStatement();
+        try {
+            ResultSet rs = s.executeQuery(sql);
+            rs.next();
+            return Long.valueOf(rs.getLong(1));
+        } finally {
+            s.close();
+        }
+    }
+
     /**
      * Set transaction isolation level to snapshot
      *
@@ -650,4 +718,20 @@ public class DialectSQLServer extends Dialect {
         return super.getDateCast();
     }
 
+    @Override
+    public String castIdToVarchar(String expr) {
+        switch (idType) {
+        case VARCHAR:
+            return expr;
+        case SEQUENCE:
+            return "CONVERT(VARCHAR, " + expr + ")";
+        default:
+            throw new AssertionError("Unknown id type: " + idType);
+        }
+    }
+
+    @Override
+    public DialectIdType getIdType() {
+        return idType;
+    }
 }

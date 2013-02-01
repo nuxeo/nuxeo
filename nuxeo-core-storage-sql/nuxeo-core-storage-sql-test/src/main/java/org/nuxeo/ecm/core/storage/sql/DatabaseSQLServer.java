@@ -83,6 +83,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
                     System.getProperty(PASSWORD_PROPERTY));
         }
         setProperty(URL_PROPERTY, url);
+        setProperty(ID_TYPE_PROPERTY, DEF_ID_TYPE);
     }
 
     @Override
@@ -90,9 +91,15 @@ public class DatabaseSQLServer extends DatabaseHelper {
         Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(System.getProperty(URL_PROPERTY));
-        doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
-        checkSupports(connection);
-        connection.close();
+        try  {
+            doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
+            checkSupports(connection);
+            Statement st = connection.createStatement();
+            executeSql(st, "IF EXISTS (SELECT 1 FROM sys.sequences WHERE name = 'hierarchy_seq') DROP SEQUENCE hierarchy_seq");
+            st.close();
+        } finally {
+            connection.close();
+        }
     }
 
     @Override
@@ -114,6 +121,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "French";
         descriptor.fulltextCatalog = "nuxeo";
+        descriptor.idType = System.getProperty(ID_TYPE_PROPERTY);
         return descriptor;
     }
 

@@ -20,9 +20,11 @@
 # ${reseedAclrModified}
 #   when not Azure: DBCC CHECKIDENT('aclr_modified', RESEED, 0);
 # ${fulltextCatalog} configured catalog
+# ${idSequenceName}
 # ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
 # ${usersSeparator} Used to store aclr default is "|", but it depends on the configuration. Note that array parameters always use "|" separator.
 # Conditions used:
+# sequenceEnabled
 # fulltextEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
@@ -31,6 +33,16 @@
 
 
 #CATEGORY: beforeTableCreation
+
+
+#IF: sequenceEnabled
+#TEST:
+SELECT 1 FROM sys.sequences WHERE name = '${idSequenceName}';
+
+
+#IF: sequenceEnabled
+#IF: emptyResult
+CREATE SEQUENCE ${idSequenceName} START WITH 0;
 
 
 #IF: fulltextEnabled
