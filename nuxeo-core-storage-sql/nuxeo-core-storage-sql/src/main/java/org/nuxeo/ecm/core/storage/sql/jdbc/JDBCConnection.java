@@ -181,16 +181,7 @@ public class JDBCConnection {
     }
 
     private void closeConnections() {
-        if (xaconnection != null) {
-            try {
-                xaconnection.close();
-            } catch (SQLException e) {
-                checkConnectionValid = true;
-            } finally {
-                xaconnection = null;
-                connection = null;
-            }
-        } else if (connection != null) {
+        if (connection != null) {
             try {
                 connection.close();
             } catch (Exception e) {
@@ -198,6 +189,15 @@ public class JDBCConnection {
                 checkConnectionValid = true;
             } finally {
                 connection = null;
+            }
+        }
+        if (xaconnection != null) {
+            try {
+                xaconnection.close();
+            } catch (SQLException e) {
+                checkConnectionValid = true;
+            } finally {
+                xaconnection = null;
             }
         }
     }

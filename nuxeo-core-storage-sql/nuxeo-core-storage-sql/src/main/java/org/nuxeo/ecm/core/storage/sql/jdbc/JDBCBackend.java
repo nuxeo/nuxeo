@@ -14,10 +14,12 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.naming.NamingException;
+import java.util.Map.Entry;
+
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -31,7 +33,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.ConnectionHelper;
-import org.nuxeo.runtime.api.DataSourceHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * JDBC Backend for a repository.
@@ -77,11 +79,44 @@ public class JDBCBackend implements RepositoryBackend {
         }
 
         // standard XA mode
+        // instantiate the XA datasource
+        String className = repositoryDescriptor.xaDataSourceName;
+        Class<?> klass;
         try {
-            xadatasource = DataSourceHelper.getXADataSource(repositoryDescriptor.xaDataSourceName);
-        } catch (NamingException e) {
-            throw new StorageException("Cannot lookup datasource "
-                    + repositoryDescriptor.xaDataSourceName);
+            klass = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new StorageException("Unknown class: " + className, e);
+        }
+        Object instance;
+        try {
+            instance = klass.newInstance();
+        } catch (Exception e) {
+            throw new StorageException(
+                    "Cannot instantiate class: " + className, e);
+        }
+        if (!(instance instanceof XADataSource)) {
+            throw new StorageException("Not a XADataSource: " + className);
+        }
+        xadatasource = (XADataSource) instance;
+
+        // set JavaBean properties on the datasource
+        for (Entry<String, String> entry : repositoryDescriptor.properties.entrySet()) {
+            String name = entry.getKey();
+            Object value = Framework.expandVars(entry.getValue());
+            if (name.contains("/")) {
+                // old syntax where non-String types were explicited
+                name = name.substring(0, name.indexOf('/'));
+            }
+            // transform to proper JavaBean convention
+            if (Character.isLowerCase(name.charAt(1))) {
+                name = Character.toLowerCase(name.charAt(0))
+                        + name.substring(1);
+            }
+            try {
+                BeanUtils.setProperty(xadatasource, name, value);
+            } catch (Exception e) {
+                log.error(String.format("Cannot set %s = %s", name, value));
+            }
         }
     }
 
@@ -108,10 +143,11 @@ public class JDBCBackend implements RepositoryBackend {
                         repository.getBinaryManager(),
                         repository.getRepositoryDescriptor());
             } finally {
+                if (connection != null) {
+                    connection.close();
+                }
                 if (xaconnection != null) {
                     xaconnection.close();
-                } else if (connection != null) {
-                    connection.close();
                 }
             }
         } catch (SQLException e) {
