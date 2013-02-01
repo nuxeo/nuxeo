@@ -24,7 +24,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @see SQLRepositoryTestCase
  */
-public class RepositoryOSGITestCase extends SQLRepositoryTestCase {
+public abstract class RepositoryOSGITestCase extends SQLRepositoryTestCase {
 
     protected CoreSession coreSession;
 

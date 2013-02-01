@@ -11,11 +11,13 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.runner.JUnitCore;
 
 /**
@@ -53,6 +55,7 @@ public class NuxeoServerRunner {
         }
     }
 
+    @Ignore
     public static class ToRun extends TXSQLRepositoryTestCase {
 
         @Override
@@ -70,7 +73,12 @@ public class NuxeoServerRunner {
 
         // wait until connection on PORT
         public void test() throws Exception {
-            new ServerSocket(shutdownPort).accept();
+            ServerSocket serverSocket = new ServerSocket(shutdownPort);
+            try {
+                serverSocket.accept();
+            } finally {
+                serverSocket.close();
+            }
         }
     }
 
@@ -78,7 +86,17 @@ public class NuxeoServerRunner {
 
         public static void main(String[] args) throws Exception {
             getPortFromArgs(args);
-            new Socket("127.0.0.1", shutdownPort);
+            Socket socket = new Socket("127.0.0.1", shutdownPort);
+            try {
+                OutputStream os = socket.getOutputStream();
+                try {
+                    os.write('a');
+                } finally {
+                    os.close();
+                }
+            } finally {
+                socket.close();
+            }
         }
 
     }
