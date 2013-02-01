@@ -161,6 +161,7 @@ public class RuntimeFeature extends SimpleFeature {
     public void stop(FeaturesRunner runner) throws Exception {
         // Stops the harness if needed
         if (harness.isStarted()) {
+            // TODO NXP-10915 should undeploy test class bundles
             harness.stop();
             // harness = null;
         }
