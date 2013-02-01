@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.import.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Chain.Dam.ImportInSeam"
+      link=""
+      order="10" label="label.smart.import"
+      help="desc.smart.import.file">
+      <category>DAM_IMPORT</category>
+      <filter-id>canCreateInAssetLibrary</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="canCreateInAssetLibrary">
+      <rule grant="true">
+        <condition>#{damActions.canCreateInAssetLibrary}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="chains">
+
+    <chain id="Dam.ImportInSeam">
+      <operation id="Dam.Import">
+        <param type="boolean" name="overwrite">true</param>
+      </operation>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
+      </operation>
+    </chain>
+
+  </extension>
+
+</component>

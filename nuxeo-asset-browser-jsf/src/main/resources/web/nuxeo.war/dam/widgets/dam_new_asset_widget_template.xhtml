@@ -7,7 +7,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <c:if test="#{not empty damActions.allowedAssetTypes}">
+  <c:if test="#{not empty damActions.allowedAssetTypes and damActions.canCreateInAssetLibrary}">
     <div class="action_bar">
       <a id="newAssetLink" href="#"
         onclick="initializeNewAssetType(); return false;">

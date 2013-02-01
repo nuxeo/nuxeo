@@ -130,9 +130,9 @@
 
     <type id="ImportFolder">
       <label>ImportFolder</label>
-      <icon>/dam/icons/import_folder_closed.png</icon>
-      <bigIcon>/dam/icons/import_folder_closed_100.png</bigIcon>
-      <icon-expanded>/dam/icons/import_folder_open.png</icon-expanded>
+      <icon>/icons/import_folder_closed.png</icon>
+      <bigIcon>/icons/import_folder_closed_100.png</bigIcon>
+      <icon-expanded>/icons/import_folder_open.png</icon-expanded>
       <category>DAM</category>
       <description>ImportFolder.description</description>
       <default-view>view_documents</default-view>
@@ -155,8 +155,8 @@
 
     <type id="ImportSet">
       <label>ImportSet</label>
-      <icon>/dam/icons/import_set.png</icon>
-      <bigIcon>/dam/icons/import_set_100.png</bigIcon>
+      <icon>/icons/import_set.png</icon>
+      <bigIcon>/icons/import_set_100.png</bigIcon>
       <description>ImportSet.description</description>
       <category>DAM</category>
       <default-view>view_documents</default-view>

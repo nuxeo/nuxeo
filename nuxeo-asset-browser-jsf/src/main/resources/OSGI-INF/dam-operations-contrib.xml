@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.dam.operations"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation
+      class="org.nuxeo.dam.operations.DamImport" />
+
+  </extension>
+
+</component>

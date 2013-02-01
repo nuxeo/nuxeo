@@ -37,9 +37,12 @@ import org.nuxeo.dam.DamService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -102,6 +105,13 @@ public class DamActions implements Serializable {
     /*
      * ----- Asset creation -----
      */
+
+    public boolean getCanCreateInAssetLibrary() throws ClientException {
+        AssetLibrary assetLibrary = getAssetLibrary();
+        DocumentRef assetLibraryRef = new PathRef(assetLibrary.getPath());
+        return documentManager.hasPermission(assetLibraryRef,
+                SecurityConstants.ADD_CHILDREN);
+    }
 
     public AssetLibrary getAssetLibrary() {
         return Framework.getLocalService(DamService.class).getAssetLibrary();

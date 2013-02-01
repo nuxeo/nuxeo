@@ -6,6 +6,7 @@ Bundle-ManifestVersion: 1
 Bundle-SymbolicName: org.nuxeo.dam.jsf;singleton=true
 Nuxeo-Component: OSGI-INF/dam-core-types-contrib.xml,
  OSGI-INF/dam-actions-contrib.xml,
+ OSGI-INF/dam-import-actions-contrib.xml,
  OSGI-INF/dam-layouts-contrib.xml,
  OSGI-INF/dam-contentviews-contrib.xml,
  OSGI-INF/dam-url-service-contrib.xml,
@@ -13,4 +14,5 @@ Nuxeo-Component: OSGI-INF/dam-core-types-contrib.xml,
  OSGI-INF/dam-ecm-types-contrib.xml,
  OSGI-INF/dam-service.xml,
  OSGI-INF/dam-service-contrib.xml,
- OSGI-INF/dam-content-template-contrib.xml
+ OSGI-INF/dam-content-template-contrib.xml,
+ OSGI-INF/dam-operations-contrib.xml
