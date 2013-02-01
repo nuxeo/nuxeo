@@ -21,6 +21,7 @@ import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -119,6 +120,15 @@ public class DataSourceHelper {
      */
     public static DataSource getDataSource(String partialName)
             throws NamingException {
+        return getDataSource(partialName, DataSource.class);
+    }
+
+    public static XADataSource getXADataSource(String partialName)
+            throws NamingException {
+        return getDataSource(partialName, XADataSource.class);
+    }
+
+    public static <T> T getDataSource(String partialName, Class<T> clazz) throws NamingException {
         String jndiName = getDataSourceJNDIName(partialName);
         InitialContext context = new InitialContext();
         Object resolved = context.lookup(jndiName);
@@ -130,7 +140,7 @@ public class DataSourceHelper {
                         e);
             }
         }
-        return (DataSource)resolved;
+        return clazz.cast(resolved);
     }
 
 }
