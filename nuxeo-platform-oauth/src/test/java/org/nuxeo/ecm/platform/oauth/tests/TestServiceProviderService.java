@@ -32,6 +32,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth.providers.NuxeoOAuthServiceProvider;
 import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth.providers.OAuthServiceProviderRegistryImpl;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -47,7 +48,8 @@ public class TestServiceProviderService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.oauth");
-        deployContrib("org.nuxeo.ecm.platform.oauth.test", "OSGI-INF/directory-test-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.oauth.test",
+                "OSGI-INF/directory-test-config.xml");
     }
 
     @After
@@ -63,17 +65,25 @@ public class TestServiceProviderService extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testServiceLookup2() throws Exception {
+        OAuth2ServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
+        assertNotNull(providerRegistry);
+    }
+
+    @Test
     public void testServiceRW() throws Exception {
 
         OAuthServiceProviderRegistry providerRegistry = Framework.getLocalService(OAuthServiceProviderRegistry.class);
         assertNotNull(providerRegistry);
 
-        NuxeoOAuthServiceProvider p = providerRegistry.addReadOnlyProvider("a",null, "b", null, null);
+        NuxeoOAuthServiceProvider p = providerRegistry.addReadOnlyProvider("a",
+                null, "b", null, null);
         assertNotNull(p);
         assertNotNull(p.getGadgetUrl());
         assertNotNull(p.getId());
 
-        NuxeoOAuthServiceProvider p2 = providerRegistry.getProvider(p.getGadgetUrl(),p.getServiceName());
+        NuxeoOAuthServiceProvider p2 = providerRegistry.getProvider(
+                p.getGadgetUrl(), p.getServiceName());
         assertEquals(p.getId(), p2.getId());
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
@@ -117,46 +127,46 @@ public class TestServiceProviderService extends NXRuntimeTestCase {
 
         assertEquals(5, providerRegistry.listProviders().size());
 
-        NuxeoOAuthServiceProvider p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget1",null);
+        NuxeoOAuthServiceProvider p3 = providerRegistry.getProvider(
+                "http://127.0.0.1:8080/nuxeo/gadget1", null);
         assertNotNull(p3);
         assertEquals("key1", p3.getConsumerKey());
 
-        p3 = providerRegistry.getProvider("http://localhost:8080/nuxeo/gadget1",null);
+        p3 = providerRegistry.getProvider(
+                "http://localhost:8080/nuxeo/gadget1", null);
         assertNotNull(p3);
         assertEquals("key1", p3.getConsumerKey());
 
-        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget1","undeclaredservice");
+        p3 = providerRegistry.getProvider(
+                "http://127.0.0.1:8080/nuxeo/gadget1", "undeclaredservice");
         assertNotNull(p3);
         assertEquals("key1", p3.getConsumerKey());
 
-
-
-        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget2",null);
+        p3 = providerRegistry.getProvider(
+                "http://127.0.0.1:8080/nuxeo/gadget2", null);
         assertNotNull(p3);
         assertEquals("key2", p3.getConsumerKey());
 
-
-
-        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget3",null);
+        p3 = providerRegistry.getProvider(
+                "http://127.0.0.1:8080/nuxeo/gadget3", null);
         assertNull(p3);
 
-        p3 = providerRegistry.getProvider("http://127.0.0.1:8080/nuxeo/gadget3","sn1");
+        p3 = providerRegistry.getProvider(
+                "http://127.0.0.1:8080/nuxeo/gadget3", "sn1");
         assertNotNull(p3);
         assertEquals("key3", p3.getConsumerKey());
 
-        p3 = providerRegistry.getProvider(null,"sn1");
+        p3 = providerRegistry.getProvider(null, "sn1");
         assertNull(p3);
 
-
-        p3 = providerRegistry.getProvider(null,"sn2");
+        p3 = providerRegistry.getProvider(null, "sn2");
         assertNotNull(p3);
         assertEquals("key4", p3.getConsumerKey());
 
-        p3 = providerRegistry.getProvider("undeclared gadget","sn2");
+        p3 = providerRegistry.getProvider("undeclared gadget", "sn2");
         assertNotNull(p3);
         assertEquals("key4", p3.getConsumerKey());
 
     }
-
 
 }
