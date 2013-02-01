@@ -44,7 +44,7 @@
         </indexing>
         <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
         <!-- Shouldn't be ${nuxeo.db.jdbc.url} ? -->
-        <property name="URL">jdbc:h2:data/h2/vcsh2repo;AUTO_SERVER=true</property>
+        <property name="URL">jdbc:h2:data/h2/vcsh2repo;MVCC=true</property>
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
       </repository>
