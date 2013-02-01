@@ -11,41 +11,52 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-        <action id="NuxeoServerKey" link="/incl/oauth/serverkey.xhtml"
-          label="tab.oauth.serverkey" order="10">
-          <category>OAuthOpensocial_sub_tab</category>
-          <filter-id>only_for_manager</filter-id>
-        </action>
+    <action id="NuxeoServerKey" link="/incl/oauth/serverkey.xhtml"
+      label="tab.oauth.serverkey" order="10">
+      <category>OAuthOpensocial_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
 
-        <action id="ServiceProvides" link="/incl/oauth/providers.xhtml"
-          label="tab.oauth.providers" order="20">
-          <category>OAuthOpensocial_sub_tab</category>
-          <filter-id>only_for_manager</filter-id>
-        </action>
+    <action id="ServiceProvides" link="/incl/oauth/providers.xhtml"
+      label="tab.oauth.providers" order="20">
+      <category>OAuthOpensocial_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
 
-        <action id="GrantedTokensToMe" link="/incl/oauth/providersTokens.xhtml"
-          label="tab.oauth.grantedTokenSP" order="25">
-          <category>OAuthOpensocial_sub_tab</category>
-          <filter-id>only_for_manager</filter-id>
-        </action>
+    <action id="GrantedTokensToMe" link="/incl/oauth/providersTokens.xhtml"
+      label="tab.oauth.grantedTokenSP" order="25">
+      <category>OAuthOpensocial_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
 
-        <action id="Consumers" link="/incl/oauth/consumers.xhtml"
-          label="tab.oauth.consumers" order="30">
-          <category>OAuthOpensocial_sub_tab</category>
-          <filter-id>only_for_manager</filter-id>
-        </action>
+    <action id="Consumers" link="/incl/oauth/consumers.xhtml"
+      label="tab.oauth.consumers" order="30">
+      <category>OAuthOpensocial_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
 
-        <action id="GrantedTokensByMe" link="/incl/oauth/consumersTokens.xhtml"
-          label="tab.oauth.grantedTokenConsumers" order="35">
-          <category>OAuthOpensocial_sub_tab</category>
-          <filter-id>only_for_manager</filter-id>
-        </action>
+    <action id="GrantedTokensByMe" link="/incl/oauth/consumersTokens.xhtml"
+      label="tab.oauth.grantedTokenConsumers" order="35">
+      <category>OAuthOpensocial_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
 
-        <action id="ExternalGadgets" link="/incl/oauth/externalGadgets.xhtml"
-          label="tab.oauth.externalGadgets" order="40">
-          <category>OAuthOpensocial_sub_tab</category>
-          <filter-id>only_for_manager</filter-id>
-        </action>
+    <action id="ExternalGadgets" link="/incl/oauth/externalGadgets.xhtml"
+      label="tab.oauth.externalGadgets" order="40">
+      <category>OAuthOpensocial_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="OAuthSubscriber" link="user_center_fragment.xhtml"
+      label="oauth.subscriber.tab.view" icon="/icons/minimessages.png"
+      order="35">
+      <category>USER_CENTER</category>
+    </action>
+
+    <action id="UserOAuthSubscriber" link="/incl/oauth_subscriber.xhtml"
+      label="oauth.subscriber.tab.view" order="10">
+      <category>OAuthSubscriber_sub_tab</category>
+    </action>
 
   </extension>
 

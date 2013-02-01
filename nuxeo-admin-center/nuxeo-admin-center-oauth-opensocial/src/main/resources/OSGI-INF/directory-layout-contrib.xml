@@ -341,6 +341,129 @@
 
     </layout>
 
+<layout name="oauth2ServiceProviderLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>serviceName</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+        <row>
+          <widget>clientId</widget>
+        </row>
+        <row>
+          <widget>clientSecret</widget>
+        </row>
+        <row>
+          <widget>authorizationServerURL</widget>
+        </row>
+        <row>
+          <widget>tokenServerURL</widget>
+        </row>
+        <row>
+          <widget>userAuthorizationURL</widget>
+        </row>
+        <row>
+          <widget>scopes</widget>
+        </row>
+        <row>
+          <widget>enabled</widget>
+        </row>
+      </rows>
+
+      <widget name="serviceName" type="text">
+        <labels>
+          <label mode="any">Service Name</label>
+        </labels>
+        <fields>
+          <field>oauth2ServiceProvider.serviceName</field>
+        </fields>
+      </widget>
+      <widget name="authorizationServerURL" type="text">
+        <labels>
+          <label mode="any">Authorization Server URL</label>
+        </labels>
+        <fields>
+          <field>oauth2ServiceProvider.authorizationServerURL</field>
+        </fields>
+      </widget>
+      <widget name="tokenServerURL" type="text">
+        <labels>
+          <label mode="any">Token Server URL</label>
+        </labels>
+        <fields>
+          <field>oauth2ServiceProvider.tokenServerURL</field>
+        </fields>
+      </widget>
+      <widget name="clientId" type="text">
+        <labels>
+          <label mode="any">ClientID</label>
+        </labels>
+        <fields>
+          <field>oauth2ServiceProvider.clientId</field>
+        </fields>
+      </widget>
+      <widget name="userAuthorizationURL" type="text">
+        <labels>
+          <label mode="any">User Authorization URL</label>
+        </labels>
+        <fields>
+          <field>oauth2ServiceProvider.userAuthorizationURL</field>
+        </fields>
+      </widget>
+      <widget name="clientSecret" type="text">
+        <labels>
+          <label mode="any">Client Secret</label>
+        </labels>
+        <fields>
+          <field>oauth2ServiceProvider.clientSecret</field>
+        </fields>
+      </widget>
+      <widget name="scopes" type="text">
+        <labels>
+          <label mode="any">Scopes</label>
+        </labels>
+        <fields>
+          <field>oauth2ServiceProvider.scopes</field>
+        </fields>
+      </widget>
+      <widget name="enabled" type="checkbox">
+        <labels>
+          <label mode="any">Enabled</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2ServiceProvider.enabled</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.enabled
+          </property>
+        </properties>
+      </widget>
+      <widget name="description" type="text">
+        <labels>
+          <label mode="any">Description</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2ServiceProvider.description</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.description
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
     <layout name="externalGadgetLayoutAdmin">
       <templates>
         <template mode="any">
