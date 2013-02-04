@@ -15,3 +15,5 @@ log/
 
 *.pyc
 *~
+*.xls
+*.xlsx

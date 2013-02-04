@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean" link="#{excelExportRightsAction.doGet()}"
+      order="200" label="label.org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean"
+      icon="/icons/org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean-action.png">
+      <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
+      <filter-id>org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean</filter-id>
+    </action>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean">
+      <rule grant="true">
+             <!-- <condition>#{excelExportRightsAction.accept()}</condition> -->
+      </rule>
+    </filter>
+  </extension>
+
+</component>
