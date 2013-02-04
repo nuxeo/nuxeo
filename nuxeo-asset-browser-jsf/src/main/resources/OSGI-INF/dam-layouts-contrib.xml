@@ -208,6 +208,26 @@
       </properties>
     </widget>
 
+    <widget name="damAssetViewTasks" type="container">
+      <labels>
+        <label mode="any">label.document.routing.your.tasks</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+      <subWidgets>
+        <widget name="assetTasks" type="current_route_user_tasks">
+          <controls mode="any">
+            <control name="requireSurroundingForm">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+      <properties widgetMode="any">
+        <property name="foldable">true</property>
+        <property name="foldedByDefault">true</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+    </widget>
+
     <widget name="damAssetViewDublincore" type="toggleableLayoutWithForms">
       <labels>
         <label mode="any">label.schema.dublincore</label>
@@ -376,7 +396,16 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDublincore" type="widget" order="700">
+    <action id="damAssetViewTasks" type="widget" order="700">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewTasks</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+      <filter-id>hasTasks</filter-id>
+    </action>
+
+    <action id="damAssetViewDublincore" type="widget" order="800">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDublincore</property>
@@ -398,6 +427,12 @@
     <filter id="hasAssetFacet">
       <rule grant="true">
         <facet>Asset</facet>
+      </rule>
+    </filter>
+
+    <filter id="hasTasks">
+      <rule grant="true">
+        <condition>#{currentDashBoardItemsExceptPublishingTasks.size() > 0}</condition>
       </rule>
     </filter>
 
