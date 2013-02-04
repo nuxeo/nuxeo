@@ -18,6 +18,23 @@
     - formId: the surrounding form id
   </c:if>
 
+  <c:if test="#{layoutListingStatus.index == 0}">
+    <div class="detail">
+      <a4j:outputPanel id="#{layout.id}_selectAll_panel">
+        <nxu:set var="selectAllLabel" value="#{nxu:test(documents.selected, 'label.dam.deselect.all', 'label.dam.select.all')}">
+          <span>#{messages[selectAllLabel]}</span>
+          <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
+            title="#{messages[selectAllLabel]}"
+            value="#{documents.selected}">
+            <a4j:support event="onclick"
+              action="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
+              onclick="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+              reRender="#{layout.id}_selectAll_panel, #{layout.id}_selectAll_panel, #{formId}:ajax_selection_buttons, ajax_after_selection_buttons_form" />
+          </h:selectBooleanCheckbox>
+        </nxu:set>
+      </a4j:outputPanel>
+    </div>
+  </c:if>
 
   <c:set var="boxSelectedStyleClass" value="#{nxu:test(value.data.id == currentDocument.id, 'selectedItem', '')}" />
   <div data-docref="#{value.data.id}" class="bubbleBox jsDamItem #{boxSelectedStyleClass}"
