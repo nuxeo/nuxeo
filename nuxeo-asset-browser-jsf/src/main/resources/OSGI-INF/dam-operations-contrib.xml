@@ -5,8 +5,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
 
-    <operation
-      class="org.nuxeo.dam.operations.DamImport" />
+    <operation class="org.nuxeo.dam.operations.DamImport" />
 
   </extension>
 

@@ -32,9 +32,13 @@
       <operation id="Dam.Import">
         <param type="boolean" name="overwrite">true</param>
       </operation>
-      <operation id="Seam.RunOperation">
-        <param type="string" name="id">Seam.Refresh</param>
+      <operation id="Seam.InitContext" />
+      <operation id="Seam.AddMessage">
+        <param type="string" name="severity">INFO</param>
+        <param type="string" name="message">label.dam.assets.imported</param>
       </operation>
+      <operation id="Seam.Refresh" />
+      <operation id="Seam.DestroyContext" />
     </chain>
 
   </extension>

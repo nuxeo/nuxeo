@@ -19,11 +19,13 @@ package org.nuxeo.dam.operations;
 
 import org.nuxeo.dam.AssetLibrary;
 import org.nuxeo.dam.DamService;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.jsf.operations.AddMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,6 +44,9 @@ public class DamImport {
     public static final String ID = "Dam.Import";
 
     @Context
+    protected OperationContext ctx;
+
+    @Context
     protected CoreSession session;
 
     @Context
@@ -56,6 +61,7 @@ public class DamImport {
     @OperationMethod
     public DocumentModel run(Blob blob) throws Exception {
         AssetLibrary assetLibrary = damService.getAssetLibrary();
+        ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[]{ 1 });
         return fileManager.createDocumentFromBlob(session, blob,
                 assetLibrary.getPath(), overwrite, blob.getFilename());
     }
@@ -66,6 +72,7 @@ public class DamImport {
         for (Blob blob : blobs) {
             result.add(run(blob));
         }
+        ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[]{ result.size() });
         return result;
     }
 

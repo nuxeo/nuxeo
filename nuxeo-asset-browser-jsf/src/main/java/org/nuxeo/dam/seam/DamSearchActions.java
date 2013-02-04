@@ -29,7 +29,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -243,7 +242,7 @@ public class DamSearchActions implements Serializable {
         ContentView contentView = contentViewActions.getContentViewWithProvider(
                 getCurrentContentViewName(), null, null, null, null);
         if (!StringUtils.isBlank(filterValues)) {
-        DocumentModel searchDocumentModel = contentView.getSearchDocumentModel();
+            DocumentModel searchDocumentModel = contentView.getSearchDocumentModel();
             String decodedValues = decodeValues(filterValues);
             searchDocumentModel = JSONMetadataHelper.setPropertiesFromJson(
                     searchDocumentModel, decodedValues);
@@ -321,7 +320,8 @@ public class DamSearchActions implements Serializable {
         docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
-        docView.addParameter(RESULT_LAYOUT_NAME_PARAMETER, contentView.getCurrentResultLayout().getName());
+        docView.addParameter(RESULT_LAYOUT_NAME_PARAMETER,
+                contentView.getCurrentResultLayout().getName());
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) contentView.getCurrentPageProvider();
         if (pageProvider != null) {
             docView.addParameter(OFFSET_PARAMETER,
@@ -333,8 +333,9 @@ public class DamSearchActions implements Serializable {
         String values = getEncodedValuesFrom(doc);
         docView.addParameter(FILTER_VALUES_PARAMETER, values);
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
-        return documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
+        String url = documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
                 docView, true, BaseURL.getBaseURL());
+        return RestHelper.addCurrentConversationParameters(url);
     }
 
     /**
@@ -359,7 +360,8 @@ public class DamSearchActions implements Serializable {
     public void onContentViewPageProviderChanged(String contentViewName)
             throws ClientException {
         String currentContentViewName = getCurrentContentViewName();
-        if (currentContentViewName.equals(contentViewName)) {
+        if (currentContentViewName != null
+                && currentContentViewName.equals(contentViewName)) {
             updateCurrentDocument();
         }
     }
