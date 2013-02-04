@@ -217,6 +217,10 @@ public class TestFileSystemItemManagerService {
         assertFalse(fileSystemItemManagerService.exists(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal));
+        // Deleted
+        custom.followTransition("delete");
+        assertFalse(fileSystemItemManagerService.exists(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
 
         // ------------------------------------------------------
         // Check #getFileSystemItemById
@@ -236,7 +240,7 @@ public class TestFileSystemItemManagerService {
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
         List<FileSystemItem> children = ((FolderItem) fsItem).getChildren();
         assertNotNull(children);
-        assertEquals(5, children.size());
+        assertEquals(4, children.size());
 
         // File
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
@@ -287,6 +291,10 @@ public class TestFileSystemItemManagerService {
                 principal);
         assertNull(fsItem);
 
+        // Deleted
+        assertNull(fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
+
         // Sub folder
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
@@ -310,7 +318,7 @@ public class TestFileSystemItemManagerService {
         children = fileSystemItemManagerService.getChildren(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(children);
-        assertEquals(5, children.size());
+        assertEquals(4, children.size());
         FileSystemItem child = children.get(0);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
                 child.getId());
@@ -326,13 +334,6 @@ public class TestFileSystemItemManagerService {
         assertEquals("aNote.txt", child.getName());
         assertFalse(child.isFolder());
         child = children.get(2);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
-                child.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
-                child.getParentId());
-        assertEquals("Bonnie's file.odt", child.getName());
-        assertFalse(child.isFolder());
-        child = children.get(3);
         assertEquals(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderishFile.getId(),
                 child.getId());
@@ -340,7 +341,7 @@ public class TestFileSystemItemManagerService {
                 child.getParentId());
         assertEquals("Sarah's folderish file", child.getName());
         assertTrue(child.isFolder());
-        child = children.get(4);
+        child = children.get(3);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
                 child.getId());
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),

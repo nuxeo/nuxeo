@@ -251,6 +251,21 @@ public class TestFileSystemItemOperations {
                 fileSystemItemExistsJSON.getStream(), String.class);
         assertEquals("true", fileSystemItemExists);
 
+        // Deleted file system item
+        file1.followTransition("delete");
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
+        session.save();
+        fileSystemItemExistsJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveFileSystemItemExists.ID).set("id",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).execute();
+        assertNotNull(fileSystemItemExistsJSON);
+
+        fileSystemItemExists = mapper.readValue(
+                fileSystemItemExistsJSON.getStream(), String.class);
+        assertEquals("false", fileSystemItemExists);
     }
 
     @Test
@@ -320,6 +335,21 @@ public class TestFileSystemItemOperations {
         assertEquals(
                 ((org.nuxeo.ecm.core.api.Blob) file1.getPropertyValue("file:content")).getDigest(),
                 fileItem.getDigest());
+
+        // Get deleted file
+        file1.followTransition("delete");
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
+        session.save();
+        fileSystemItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetFileSystemItem.ID).set("id",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).execute();
+        assertNotNull(fileSystemItemJSON);
+
+        assertNull(mapper.readValue(fileSystemItemJSON.getStream(),
+                Object.class));
     }
 
     @Test
