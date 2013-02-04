@@ -2,7 +2,7 @@ package org.nuxeo.ecm.platform.groups.audit.service.rendering;
 
 import java.util.HashSet;
 
-import org.apache.commons.lang3.tuple.Pair;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -80,8 +80,8 @@ public class AclExtractor {
 			for (ACE ace : acl.getACEs()) {
 				String userOrGroup = ace.getUsername();
 				String permission = ace.getPermission();
-				summary.getLeft().add(userOrGroup);
-				summary.getRight().add(permission);
+				summary.a.add(userOrGroup);
+				summary.b.add(permission);
 			}
 		}
 		return summary;

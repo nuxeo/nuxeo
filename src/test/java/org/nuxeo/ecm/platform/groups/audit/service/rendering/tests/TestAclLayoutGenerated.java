@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -68,7 +69,7 @@ public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
 	@Inject
 	AutomationService automationService;
 
-	Logger log = Logger.getLogger(TestAclLayoutGenerated.class);
+	private final static Log log = LogFactory.getLog(TestAclLayoutGenerated.class);
 
 
 	@Test

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -222,8 +221,8 @@ public class AclExcelLayoutBuilder2 extends AclExcelLayoutBuilder {
 				boolean isFirst = false;// (i == 0);
 				boolean isLast = false;// (i == last);
 				Pair<String, Boolean> ace = acls.get(i);
-				String permission = ace.getLeft();
-				boolean accept = ace.getRight();
+				String permission = ace.a;
+				boolean accept = ace.b;
 				int aclColumn = getUserAclColumn(Pair.of(user, permission));
 				String aceText = "";// formatAce(ace)
 

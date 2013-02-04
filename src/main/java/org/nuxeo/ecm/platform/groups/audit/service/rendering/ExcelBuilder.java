@@ -8,8 +8,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFAnchor;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
@@ -52,7 +52,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
 public class ExcelBuilder {
-	static Logger log = Logger.getLogger(ExcelBuilder.class);
+	static Log log = LogFactory.getLog(ExcelBuilder.class);
 
 	static int MAX_COLUMN = 256;
 	static int MAX_ROW = 65536;

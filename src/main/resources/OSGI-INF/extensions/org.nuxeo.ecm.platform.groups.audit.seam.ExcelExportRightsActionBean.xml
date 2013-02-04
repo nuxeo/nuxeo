@@ -4,10 +4,13 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean" link="#{excelExportRightsAction.doGet()}"
-      order="200" label="label.org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean"
+    <action
+      id="org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean"
+      link="#{excelExportRightsAction.doGet()}"
+      order="200"
+      label="Pouet"
       icon="/icons/org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean-action.png">
-      <category>DOCUMENT_EXPORT_VIEW_ACTION</category>
+      <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
       <filter-id>org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean</filter-id>
     </action>
   </extension>

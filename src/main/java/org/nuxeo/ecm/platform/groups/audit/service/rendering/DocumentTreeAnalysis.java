@@ -3,7 +3,6 @@ package org.nuxeo.ecm.platform.groups.audit.service.rendering;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -68,8 +67,8 @@ public class DocumentTreeAnalysis {
 			throws ClientException {
 		// report all found groups or user names as well as permissions
 		Pair<HashSet<String>, HashSet<String>> s = acl.getAclSummary(doc);
-		userAndGroups.addAll(s.getLeft());
-		permissions.addAll(s.getRight());
+		userAndGroups.addAll(s.a);
+		permissions.addAll(s.b);
 
 		// report maximal doc tree depth
 		int docDepth = depth + 1;

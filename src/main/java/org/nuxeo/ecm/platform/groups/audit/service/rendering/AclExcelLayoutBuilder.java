@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -26,7 +26,7 @@ import com.google.common.collect.Multimap;
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
 public class AclExcelLayoutBuilder {
-	protected static Logger log = Logger.getLogger(AclExcelLayoutBuilder.class);
+	protected static Log log = LogFactory.getLog(AclExcelLayoutBuilder.class);
 
 	protected ExcelBuilder excel = new ExcelBuilder();
 	protected static int CELL_WIDTH_UNIT = 256;
@@ -263,14 +263,20 @@ public class AclExcelLayoutBuilder {
 	}
 
 	protected String formatAce(Pair<String, Boolean> ace) {
-		if (ace.getRight())
-			return formatPermission(ace.getLeft());
+		if (ace.b)
+			return formatPermission(ace.a);
 		else
-			return "!" + formatPermission(ace.getLeft());
+			return "!" + formatPermission(ace.a);
 	}
 
 	protected String formatPermission(String permission) {
 		return shortner.getShortName(permission);
+	}
+
+	/* LEGEND */
+
+	protected void renderLegend(){
+
 	}
 
 	/* ACL COLUMN LAYOUT */

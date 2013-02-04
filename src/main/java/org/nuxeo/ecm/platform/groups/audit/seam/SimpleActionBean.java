@@ -1,15 +1,11 @@
 /**
- *
+ * 
  */
 
 package org.nuxeo.ecm.platform.groups.audit.seam;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-
-import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,25 +15,30 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.platform.groups.audit.service.rendering.AclExcelLayoutBuilder;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
-
-@Name("excelExportRightsAction")
+/**
+ *
+ * Code skeleton for a Seam bean that will manage a simple action.
+ * This can be used to :
+ *  - do a navigation
+ *  - do some modification on the currentDocument (or other docs)
+ *  - create new documents
+ *   - send/retrive info from an external service
+ *   - ...
+ */
+@Name("simpleAction")
 @Scope(ScopeType.EVENT)
-public class ExcelExportRightsActionBean implements Serializable {
+public class SimpleActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(ExcelExportRightsActionBean.class);
+    private static final Log log = LogFactory.getLog(SimpleActionBean.class);
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -68,28 +69,16 @@ public class ExcelExportRightsActionBean implements Serializable {
         }
     }
 
-
-
-
-
-	// This the method that will be called when the action button/link is
+    // This the method that will be called when the action button/link is
     // clicked
     public String doGet() {
-    	try {
-    		buildAndDownload();
-			facesMessages.add(StatusMessage.Severity.INFO, "doGet");
-		} catch (ClientException e) {
-			log.error(e,e);
-			facesMessages.add(StatusMessage.Severity.INFO, "doGet error: " + e.getMessage());
-		}
-
-        /*String message = "Hello from ploum : ";
+        String message = "Hello from simpleAction : ";
         List<DocumentModel> selectedDocs = getCurrentlySelectedDocuments();
         if (selectedDocs != null) {
             message = message + " (" + selectedDocs.size()
                     + " documents selected)";
         }
-        facesMessages.add(StatusMessage.Severity.INFO, message);*/
+        facesMessages.add(StatusMessage.Severity.INFO, message);
 
         // if you need to change the current document and let Nuxeo
         // select the correct view
@@ -120,49 +109,5 @@ public class ExcelExportRightsActionBean implements Serializable {
     public boolean accept() {
         return true;
     }
-
-    public String buildAndDownload() throws ClientException{
-    	log.info("start XLS export");
-
-
-
-    	File tmpFile = null;
-		try {
-			tmpFile = File.createTempFile("rights-", ".xls");
-		} catch (IOException e) {
-			facesMessages.add(StatusMessage.Severity.ERROR,
-					e.getMessage(),
-                    null);
-			log.error(e,e);
-			return "";
-		}
-        tmpFile.deleteOnExit();
-
-        buildAndDownload(tmpFile);
-
-    	return "";
-    }
-
-	protected void buildAndDownload(final File tmpFile)
-			throws ClientException {
-		final FacesContext context = FacesContext.getCurrentInstance();
-		final DocumentModel doc = navigationContext.getCurrentDocument();
-
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
-			@Override
-			public void run() throws ClientException {
-		        AclExcelLayoutBuilder v = new AclExcelLayoutBuilder();
-		        v.renderAudit(session, doc);
-		        try {
-					v.getExcel().save(tmpFile);
-				} catch (IOException e) {
-					log.error(e,e);
-				}
-		    	ComponentUtils.downloadFile(context, "rights.xls",
-		                tmpFile);
-			}
-		};
-		runner.runUnrestricted();
-	}
 
 }
