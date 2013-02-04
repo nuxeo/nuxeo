@@ -145,6 +145,8 @@
       </properties>
     </widget>
 
+    <widget name="damAssetViewDescription" type="summary_current_document_description" />
+
     <widget name="damAssetViewVideoStoryboard" type="container">
       <labels>
         <label mode="any">heading.storyboard</label>
@@ -340,7 +342,15 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideoStoryboard" type="widget" order="300">
+    <action id="damAssetViewDescription" type="widget" order="300">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewDescription</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewVideoStoryboard" type="widget" order="400">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideoStoryboard</property>
@@ -349,7 +359,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDamCommon" type="widget" order="400">
+    <action id="damAssetViewDamCommon" type="widget" order="500">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDamCommon</property>
@@ -357,7 +367,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideoInfo" type="widget" order="500">
+    <action id="damAssetViewVideoInfo" type="widget" order="600">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideoInfo</property>
@@ -366,7 +376,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDublincore" type="widget" order="600">
+    <action id="damAssetViewDublincore" type="widget" order="700">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDublincore</property>
