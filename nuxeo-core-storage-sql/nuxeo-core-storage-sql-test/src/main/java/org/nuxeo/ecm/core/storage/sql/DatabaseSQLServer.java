@@ -31,6 +31,10 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     private boolean supportsXA;
 
+    private int majorVersion;
+
+    private int engineEdition;
+
     private static final String DEF_SERVER = "localhost";
 
     private static final String DEF_PORT = "1433";
@@ -94,9 +98,14 @@ public class DatabaseSQLServer extends DatabaseHelper {
         try  {
             doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
             checkSupports(connection);
-            Statement st = connection.createStatement();
-            executeSql(st, "IF EXISTS (SELECT 1 FROM sys.sequences WHERE name = 'hierarchy_seq') DROP SEQUENCE hierarchy_seq");
-            st.close();
+            // SEQUENCE in SQL Server 2012, but not Azure
+            if (majorVersion >= 12 && engineEdition != 5) {
+                Statement st = connection.createStatement();
+                executeSql(st,
+                        "IF EXISTS (SELECT 1 FROM sys.sequences WHERE name = 'hierarchy_seq')"
+                                + " DROP SEQUENCE hierarchy_seq");
+                st.close();
+            }
         } finally {
             connection.close();
         }
@@ -135,17 +144,15 @@ public class DatabaseSQLServer extends DatabaseHelper {
     }
 
     protected void checkSupports(Connection connection) throws SQLException {
-        int engineEdition = getEngineEdition(connection);
-        boolean azure = engineEdition == 5; // 5 = SQL Azure
-        supportsXA = !azure;
-    }
-
-    protected int getEngineEdition(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         try {
-            ResultSet rs = st.executeQuery("SELECT CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
+            ResultSet rs = st.executeQuery("SELECT SERVERPROPERTY('ProductVersion'), CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
             rs.next();
-            return rs.getInt(1);
+            String aa = rs.getString(1);
+            majorVersion = Integer.parseInt(aa.split("\\.")[0]);
+            engineEdition = rs.getInt(2);
+            boolean azure = majorVersion == 12 && engineEdition == 5;
+            supportsXA = !azure;
         } finally {
             st.close();
         }
