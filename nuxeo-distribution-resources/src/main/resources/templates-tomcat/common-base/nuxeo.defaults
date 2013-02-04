@@ -36,4 +36,4 @@ mail.from=noreply@nuxeo.com
 nuxeo.server.emptySessionPath=false
 
 nuxeo.core.binarymanager=
-
+nuxeo.server.declare_datasources=true
