@@ -14,17 +14,6 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-    point="filters">
-
-    <filter id="canCreateInAssetLibrary">
-      <rule grant="true">
-        <condition>#{damActions.canCreateInAssetLibrary}</condition>
-      </rule>
-    </filter>
-
-  </extension>
-
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="chains">
 

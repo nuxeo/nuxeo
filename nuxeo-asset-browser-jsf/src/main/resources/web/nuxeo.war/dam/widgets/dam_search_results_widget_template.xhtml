@@ -8,7 +8,8 @@
     value="#{damSearchActions.currentContentViewName}">
   <nxu:set var="useAjaxPagination" value="true">
 
-    <div class="dropzone" id="#{widget.id}_dropzone" context="DAM_IMPORT">
+  <nxu:set var="dropZoneClass" value="#{nxu:test(webActions.checkFilter('canCreateInAssetLibrary'), 'dropzone', '')}">
+    <div class="#{dropZoneClass}" id="#{widget.id}_dropzone" context="DAM_IMPORT">
       <ui:decorate template="/incl/content_view.xhtml">
         <ui:define name="content_view_selector">
           <ui:include src="/incl/content_view_result_layout_selector.xhtml">
@@ -25,6 +26,7 @@
         </ui:define>
       </ui:decorate>
     </div>
+  </nxu:set>
 
   </nxu:set>
   </nxu:set>
