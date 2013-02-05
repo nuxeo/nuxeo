@@ -113,6 +113,7 @@
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-web-mobile</module>
+    <module>nuxeo-drive</module>
   </modules>
 
   <dependencyManagement>
@@ -1028,6 +1029,23 @@
         <groupId>org.nuxeo.template.rendering</groupId>
         <artifactId>nuxeo-template-rendering-samples</artifactId>
         <version>${nuxeo.templates.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Drive -->
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-operations</artifactId>
+        <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
