@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 
@@ -54,6 +55,7 @@ public class TestNetServer {
     }
 
     @Test
+    @Ignore
     public void test() throws Exception {
         assertNull(NetServer.instance);
 
