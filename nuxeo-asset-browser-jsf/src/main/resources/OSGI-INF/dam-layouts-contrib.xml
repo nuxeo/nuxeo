@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.dam.layouts">
 
+  <require>org.nuxeo.ecm.webapp.seam.debug.action</require>
+  <require>org.nuxeo.ecm.platform.preview.actions</require>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
     <widgetType name="dam_title">
@@ -119,6 +122,20 @@
         <label mode="any"></label>
       </labels>
       <translated>false</translated>
+    </widget>
+
+
+    <widget name="damAssetViewActions" type="currentDocumentActionsWithForms">
+      <properties widgetMode="view">
+        <property name="category">DAM_ASSET_VIEW_ACTIONS</property>
+        <property name="styleClass">globalActionBar</property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">7</property>
+      </properties>
     </widget>
 
     <widget name="damAssetViewTitle" type="dam_title">
@@ -319,7 +336,15 @@
       </properties>
     </action>
 
-    <action id="damAssetViewNoDocument" type="widget" order="100">
+    <action id="damAssetViewActions" type="widget" order="100">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewActions</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewNoDocument" type="widget" order="200">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewNoDocument</property>
@@ -327,7 +352,7 @@
       <filter-id>noCurrentDocument</filter-id>
     </action>
 
-    <action id="damAssetViewTitle" type="widget" order="100">
+    <action id="damAssetViewTitle" type="widget" order="200">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewTitle</property>
@@ -335,7 +360,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewPicture" type="widget" order="200">
+    <action id="damAssetViewPicture" type="widget" order="300">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewPicture</property>
@@ -344,7 +369,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideo" type="widget" order="200">
+    <action id="damAssetViewVideo" type="widget" order="300">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideo</property>
@@ -353,7 +378,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewAudio" type="widget" order="200">
+    <action id="damAssetViewAudio" type="widget" order="300">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewAudio</property>
@@ -362,7 +387,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDescription" type="widget" order="300">
+    <action id="damAssetViewDescription" type="widget" order="400">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDescription</property>
@@ -370,7 +395,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideoStoryboard" type="widget" order="400">
+    <action id="damAssetViewVideoStoryboard" type="widget" order="500">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideoStoryboard</property>
@@ -379,7 +404,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDamCommon" type="widget" order="500">
+    <action id="damAssetViewDamCommon" type="widget" order="600">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDamCommon</property>
@@ -387,7 +412,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideoInfo" type="widget" order="600">
+    <action id="damAssetViewVideoInfo" type="widget" order="700">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideoInfo</property>
@@ -396,7 +421,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewTasks" type="widget" order="700">
+    <action id="damAssetViewTasks" type="widget" order="800">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewTasks</property>
@@ -405,12 +430,45 @@
       <filter-id>hasTasks</filter-id>
     </action>
 
-    <action id="damAssetViewDublincore" type="widget" order="800">
+    <action id="damAssetViewDublincore" type="widget" order="900">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDublincore</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <!-- Asset view actions-->
+    <action id="showFancyBoxPreview">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="documentLock">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="documentUnlock">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="downloadAction">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="subscribesAllDocNotifications">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="unsubscribesAllDocNotifications">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="addCurrentDocumentToWorklist">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="print">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
   </extension>
