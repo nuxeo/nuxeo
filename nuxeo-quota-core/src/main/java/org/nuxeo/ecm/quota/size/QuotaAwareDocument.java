@@ -23,6 +23,8 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.quota.QuotaStatsService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Adapter to manage a DocumentModel that supports Quotas
@@ -157,10 +159,13 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     public void setMaxQuota(long maxSize, boolean save) throws ClientException {
-        long existingTotal = getTotalSize();
-        if (existingTotal > maxSize && maxSize > 0) {
-            throw new QuotaExceededException(doc,
-                    "canNotSetQuotaToALowerValueThanCurrentSize");
+        if (!(Framework.getLocalService(QuotaStatsService.class).canSetMaxQuota(
+                maxSize, doc, doc.getCoreSession()))) {
+            throw new QuotaExceededException(
+                    doc,
+                    "Can not set "
+                            + maxSize
+                            + ". Quota exceeded because the quota set on one of the children.");
         }
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, maxSize);
         if (save) {

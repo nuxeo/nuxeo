@@ -1023,7 +1023,6 @@ public class TestDocumentsSizeUpdater {
     public void testQuotaExceeded() throws Exception {
 
         addContent();
-
         dump();
 
         TransactionHelper.startTransaction();
@@ -1034,26 +1033,12 @@ public class TestDocumentsSizeUpdater {
         assertNotNull(qa);
 
         assertEquals(300L, qa.getTotalSize());
-
         assertEquals(-1L, qa.getMaxQuota());
-
-        boolean canNotSetTooSmallQuota = false;
-
-        // try to set the quota to a too small size
-        try {
-            qa.setMaxQuota(200L, false);
-        } catch (QuotaExceededException e) {
-            canNotSetTooSmallQuota = true;
-        }
-        assertTrue(canNotSetTooSmallQuota);
 
         // set the quota to 400
         qa.setMaxQuota(400L, true);
-
         TransactionHelper.commitOrRollbackTransaction();
-
         dump();
-
         TransactionHelper.startTransaction();
 
         boolean canNotExceedQuota = false;
@@ -1309,6 +1294,67 @@ public class TestDocumentsSizeUpdater {
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
 
+    }
+
+    @Test
+    public void testAllowSettingMaxQuota() throws Exception {
+        addContent();
+        TransactionHelper.startTransaction();
+
+        // now add quota limit
+        DocumentModel ws = session.getDocument(wsRef);
+        QuotaAware qa = ws.getAdapter(QuotaAware.class);
+        assertNotNull(qa);
+        // set the quota to 400
+        qa.setMaxQuota(400L, true);
+
+        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
+        QuotaAware qaFSF = firstSubFolder.getAdapter(QuotaAware.class);
+        qaFSF.setMaxQuota(200L, true);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        dispose(session);
+        TransactionHelper.startTransaction();
+        DocumentModel secondFolder = session.getDocument(secondFolderRef);
+        QuotaAware qaSecFolder = secondFolder.getAdapter(QuotaAware.class);
+        boolean canSetQuota = true;
+        try {
+            qaSecFolder.setMaxQuota(300L, true);
+        } catch (QuotaExceededException e) {
+            canSetQuota = false;
+        }
+        assertFalse(canSetQuota);
+        qaSecFolder.setMaxQuota(200L, true);
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        dispose(session);
+        TransactionHelper.startTransaction();
+
+        secondFolder = session.getDocument(secondFolderRef);
+        qaSecFolder = secondFolder.getAdapter(QuotaAware.class);
+        assertEquals(200L, qaSecFolder.getMaxQuota());
+
+        DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        QuotaAware qaFirstFolder = firstFolder.getAdapter(QuotaAware.class);
+        canSetQuota = true;
+        try {
+            qaFirstFolder.setMaxQuota(50L, true);
+        } catch (QuotaExceededException e) {
+            canSetQuota = false;
+        }
+        assertFalse(canSetQuota);
+
+        DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
+        QuotaAware qaSecSubFolder = secondSubFolder.getAdapter(QuotaAware.class);
+        canSetQuota = true;
+        try {
+            qaSecSubFolder.setMaxQuota(50L, true);
+        } catch (QuotaExceededException e) {
+            canSetQuota = false;
+        }
+        assertFalse(canSetQuota);
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
 }

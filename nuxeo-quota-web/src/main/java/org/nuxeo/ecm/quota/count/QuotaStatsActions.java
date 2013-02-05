@@ -21,15 +21,16 @@ import static org.jboss.seam.ScopeType.STATELESS;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -37,11 +38,9 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.QuotaStatsUpdater;
 import org.nuxeo.ecm.quota.size.QuotaAware;
@@ -59,6 +58,8 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence = FRAMEWORK)
 public class QuotaStatsActions implements Serializable {
 
+    protected Log log = LogFactory.getLog(QuotaStatsActions.class);
+
     private static final long serialVersionUID = -1L;
 
     @In(create = true)
@@ -66,6 +67,11 @@ public class QuotaStatsActions implements Serializable {
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
+
+    @In(create = true)
+    protected Map<String, String> messages;
+
+    protected QuotaStatsService quotaStatsService;
 
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
@@ -106,20 +112,34 @@ public class QuotaStatsActions implements Serializable {
 
     public void validateQuotaSize(FacesContext context, UIComponent component,
             Object value) {
-
         String strValue = value.toString();
-
+        Long quotaValue = -1L;
+        boolean quotaAllowed = true;
         try {
-            Long quotaValue = Long.parseLong(strValue);
+            quotaValue = Long.parseLong(strValue);
         } catch (NumberFormatException e) {
             FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "wrong format"), null);
+                    FacesMessage.SEVERITY_ERROR, messages.get("wrong format"),
+                    null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
         }
 
+        try {
+            quotaAllowed = getQuotaStatsService().canSetMaxQuota(quotaValue,
+                    navigationContext.getCurrentDocument(), documentManager);
+        } catch (ClientException e) {
+            log.error(e);
+        }
+        if (quotaAllowed) {
+            return;
+        }
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                messages.get("label.quotaException.QuotaCanNotBeSet"), null);
+        // also add global message
+        context.addMessage(null, message);
+        throw new ValidatorException(message);
     }
 
     public QuotaDisplayValue formatQuota(long value, long max) {
@@ -137,47 +157,48 @@ public class QuotaStatsActions implements Serializable {
         }
     }
 
-    public MaxQuotaInfo getMaxQuotaSliderValue() throws Exception {
-        double maxSize = 27.701;
-        List<DocumentModel> parents = new ArrayList<DocumentModel>();
-        DocumentModel doc = navigationContext.getCurrentDocument();
-        parents.addAll(documentManager.getParentDocuments(doc.getRef()));
-        Collections.reverse(parents);
-        parents.remove(0);
-        for (DocumentModel documentModel : parents) {
-            QuotaAware qa = documentModel.getAdapter(QuotaAware.class);
-            if (qa == null) {
-                continue;
-            }
-            if (qa.getMaxQuota() > 0) {
-                return new MaxQuotaInfo(new QuotaDisplayValue(qa.getMaxQuota()));
-            }
-        }
-        return new MaxQuotaInfo(maxSize, 999, "GB");
+    public QuotaSlidervalueInfo getMinQuotaSliderValue() throws Exception {
+        return new QuotaSlidervalueInfo(Math.log(10 * 1024), 10, "KB");
     }
 
-    class MaxQuotaInfo {
+    public QuotaSlidervalueInfo getMaxQuotaSliderValue() throws Exception {
+        long maxQuotaSize = getQuotaStatsService().getQuotaFromParent(
+                navigationContext.getCurrentDocument(), documentManager);
+        if (maxQuotaSize > 0) {
+            return new QuotaSlidervalueInfo(new QuotaDisplayValue(maxQuotaSize));
+        }
+        return new QuotaSlidervalueInfo(27.70, 999, "GB");
+    }
 
-        double maxSize;
+    QuotaStatsService getQuotaStatsService() {
+        if (quotaStatsService == null) {
+            quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+        }
+        return quotaStatsService;
+    }
+
+    class QuotaSlidervalueInfo {
+
+        double size;
 
         float valueInUnit;
 
         String unit;
 
-        MaxQuotaInfo(QuotaDisplayValue maxSizeDisplayValue) {
-            this.maxSize = Math.log(maxSizeDisplayValue.getValue());
+        QuotaSlidervalueInfo(QuotaDisplayValue maxSizeDisplayValue) {
+            this.size = Math.log(maxSizeDisplayValue.getValue());
             valueInUnit = maxSizeDisplayValue.getValueInUnit();
             unit = maxSizeDisplayValue.getUnit();
         }
 
-        MaxQuotaInfo(double maxSize, float valueInUnit, String unit) {
-            this.maxSize = maxSize;
+        QuotaSlidervalueInfo(double maxSize, float valueInUnit, String unit) {
+            this.size = maxSize;
             this.valueInUnit = valueInUnit;
             this.unit = unit;
         }
 
-        public double getMaxSize() {
-            return maxSize;
+        public double getSize() {
+            return size;
         }
 
         public float getValueInUnit() {

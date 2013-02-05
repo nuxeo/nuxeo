@@ -146,7 +146,6 @@
         <translated>true</translated>
         <fields>
           <field schema="documents_size_statistics">maxSize</field>
-          <field schema="documents_size_statistics">totalSize</field>
         </fields>
         <properties mode="any">
           <property name="template">

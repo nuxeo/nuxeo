@@ -17,12 +17,17 @@
  */
 package org.nuxeo.ecm.quota;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -30,6 +35,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
+import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -37,7 +43,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Default implementation of {@link org.nuxeo.ecm.quota.QuotaStatsService}.
- * 
+ *
  * @since 5.5
  */
 public class QuotaStatsServiceImpl extends DefaultComponent implements
@@ -134,6 +140,147 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             throws Exception {
         if (QUOTA_STATS_UPDATERS_EP.equals(extensionPoint)) {
             quotaStatsUpdaterRegistry.removeContribution((QuotaStatsUpdaterDescriptor) contribution);
+        }
+    }
+
+    @Override
+    public long getQuotaFromParent(DocumentModel doc, CoreSession session)
+            throws ClientException {
+        List<DocumentModel> parents = new ArrayList<DocumentModel>();
+        parents.addAll(session.getParentDocuments(doc.getRef()));
+        Collections.reverse(parents);
+        parents.remove(0);
+        for (DocumentModel documentModel : parents) {
+            QuotaAware qa = documentModel.getAdapter(QuotaAware.class);
+            if (qa == null) {
+                continue;
+            }
+            if (qa.getMaxQuota() > 0) {
+                return qa.getMaxQuota();
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc,
+            CoreSession session) throws ClientException {
+        QuotaAware qa = null;
+        DocumentModel parent = null;
+        List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
+        for (DocumentModel p : parents) {
+            qa = p.getAdapter(QuotaAware.class);
+            if (qa == null) {
+                // if no quota set on the parent, any value is valid
+                continue;
+            }
+            if (qa.getMaxQuota() > 0) {
+                parent = p;
+                break;
+            }
+        }
+        if (qa == null) {
+            return true;
+        }
+
+        long maxAllowedOnChildrenToSetQuota = qa.getMaxQuota() - maxQuota;
+        if (maxAllowedOnChildrenToSetQuota < 0) {
+            return false;
+        }
+        Long quotaOnChildren = canSetMaxQuotaOnChildrenTree(
+                maxAllowedOnChildrenToSetQuota, -1L, parent, session);
+        if (quotaOnChildren > 0
+                && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+            return false;
+        }
+        return true;
+    }
+
+    protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc,
+            CoreSession session) throws ClientException {
+        List<DocumentModel> parents = new ArrayList<DocumentModel>();
+        parents.addAll(session.getParentDocuments(doc.getRef()));
+        Collections.reverse(parents);
+        parents.remove(0);
+        return parents;
+    }
+
+    protected Long canSetMaxQuotaOnChildrenTree(
+            Long maxAllowedOnChildrenToSetQuota, Long quotaOnChildren,
+            DocumentModel doc, CoreSession session) throws ClientException {
+        if (quotaOnChildren > 0
+                && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+            // quota can not be set, don't continue
+            return quotaOnChildren;
+        }
+        // TODO sort children by maxQuota to limit the search
+        List<DocumentModel> children = new LinkedList<DocumentModel>(
+                session.getChildren(doc.getRef(), null, null, new QuotaSorter(
+                        false)));
+
+        for (DocumentModel child : children) {
+            QuotaAware qac = child.getAdapter(QuotaAware.class);
+            if (qac == null) {
+                continue;
+            }
+            if (qac.getMaxQuota() > 0) {
+                quotaOnChildren = (quotaOnChildren == -1L ? 0L
+                        : quotaOnChildren) + qac.getMaxQuota();
+            }
+            if (quotaOnChildren > 0
+                    && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+                return quotaOnChildren;
+            }
+            quotaOnChildren = canSetMaxQuotaOnChildrenTree(
+                    maxAllowedOnChildrenToSetQuota, quotaOnChildren, child,
+                    session);
+            if (quotaOnChildren > 0
+                    && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+                return quotaOnChildren;
+            }
+
+        }
+        return quotaOnChildren;
+    }
+
+    class QuotaSorter implements Sorter {
+
+        private static final long serialVersionUID = 1L;
+
+        private boolean asc = true;
+
+        public QuotaSorter(boolean asc) {
+            this.asc = asc;
+        }
+
+        @Override
+        public int compare(DocumentModel doc1, DocumentModel doc2) {
+            if (doc1 == null && doc2 == null) {
+                return 0;
+            } else if (doc1 == null) {
+                return asc ? -1 : 1;
+            } else if (doc2 == null) {
+                return asc ? 1 : -1;
+            }
+
+            int cmp = 0;
+            try {
+
+                Long maxQuota1 = (Long) doc1.getPropertyValue("dss:maxSize");
+                Long maxQuota2 = (Long) doc2.getPropertyValue("dss:maxSize");
+
+                if (maxQuota1 == null && maxQuota2 == null) {
+                    return 0;
+                } else if (maxQuota1 == null) {
+                    return asc ? -1 : 1;
+                } else if (maxQuota2 == null) {
+                    return asc ? 1 : -1;
+                }
+                cmp = maxQuota1.compareTo(maxQuota2);
+            } catch (Exception e) {
+                // if property not found exception
+            }
+            return asc ? cmp : -cmp;
         }
     }
 
