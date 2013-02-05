@@ -10,7 +10,6 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
@@ -44,8 +43,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.DialectIdType;
 
 /**
  * Microsoft SQL Server-specific dialect.
@@ -60,7 +57,10 @@ public class DialectSQLServer extends Dialect {
 
     private static final String DEFAULT_FULLTEXT_CATALOG = "nuxeo";
 
-    private static final String CLUSTERED = "CLUSTERED";
+    /**
+     * Column containing an IDENTITY used to create a clustered index.
+     */
+    public static final String CLUSTER_INDEX_COL = "_oid";
 
     protected final String fulltextAnalyzer;
 
@@ -370,23 +370,6 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String getCreateIndexPrefixSql(IndexType indexType,
-            List<Column> columns) {
-        if (!azure) {
-            return "";
-        }
-        if (indexType == IndexType.MAIN_NON_PRIMARY) {
-            return CLUSTERED;
-        }
-        if (columns.size() == 1 && columns.get(0).getKey().equals("id")) {
-            // creates index on id for collection tables
-            // as there is no primary key, create a clustered index for this one
-            return CLUSTERED;
-        }
-        return "";
-    }
-
-    @Override
     public boolean getMaterializeFulltextSyntheticColumn() {
         return false;
     }
@@ -560,7 +543,6 @@ public class DialectSQLServer extends Dialect {
             properties.put("sequenceEnabled", Boolean.TRUE);
             properties.put("idSequenceName", idSequenceName);
         }
-        properties.put("clusteredIndex", azure ? CLUSTERED : "");
         properties.put("md5HashString", getMd5HashString());
         properties.put("reseedAclrModified", azure ? ""
                 : "DBCC CHECKIDENT('aclr_modified', RESEED, 0);");
@@ -734,4 +716,48 @@ public class DialectSQLServer extends Dialect {
     public DialectIdType getIdType() {
         return idType;
     }
+
+    @Override
+    public List<String> getIgnoredColumns(Table table) {
+        return Collections.singletonList(CLUSTER_INDEX_COL);
+    }
+
+    /**
+     * Tables created for directories don't need a clustered column
+     * automatically defined.
+     */
+    protected boolean needsClusteredColumn(Table table) {
+        if (idType == DialectIdType.SEQUENCE) {
+            // good enough for a clustered index
+            // no need to add another column
+            return false;
+        }
+        for (Column col : table.getColumns()) {
+            if (col.getType().isId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String getCustomColumnDefinition(Table table) {
+        if (!needsClusteredColumn(table)) {
+            return null;
+        }
+        return String.format("[%s] INT NOT NULL IDENTITY", CLUSTER_INDEX_COL);
+    }
+
+    @Override
+    public List<String> getCustomPostCreateSqls(Table table) {
+        if (!needsClusteredColumn(table)) {
+            return Collections.emptyList();
+        }
+        String quotedIndexName = getIndexName(table.getKey(),
+                Collections.singletonList(CLUSTER_INDEX_COL));
+        String sql = String.format("CREATE UNIQUE CLUSTERED INDEX [%s] ON %s ([%s])",
+                quotedIndexName, table.getQuotedName(), CLUSTER_INDEX_COL);
+        return Collections.singletonList(sql);
+    }
+
 }

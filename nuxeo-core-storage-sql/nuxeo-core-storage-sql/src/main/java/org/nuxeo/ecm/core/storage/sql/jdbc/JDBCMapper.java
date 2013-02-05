@@ -321,6 +321,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         }
                     }
                 }
+                for (String col : dialect.getIgnoredColumns(table)) {
+                    columnTypes.remove(col.toUpperCase());
+                }
                 if (!columnTypes.isEmpty()) {
                     log.warn("Database contains additional unused columns for table "
                             + table.getQuotedName()

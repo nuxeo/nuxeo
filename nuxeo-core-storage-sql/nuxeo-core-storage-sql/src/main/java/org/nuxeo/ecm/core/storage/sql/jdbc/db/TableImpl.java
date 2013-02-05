@@ -183,6 +183,11 @@ public class TableImpl implements Table {
         buf.append("CREATE TABLE ");
         buf.append(getQuotedName());
         buf.append(" (");
+        String custom = dialect.getCustomColumnDefinition(this);
+        if (custom != null) {
+            buf.append(custom);
+            buf.append(", ");
+        }
         for (Iterator<Column> it = columns.values().iterator(); it.hasNext();) {
             addOneColumn(buf, it.next());
             if (it.hasNext()) {
@@ -237,6 +242,8 @@ public class TableImpl implements Table {
     @Override
     public List<String> getPostCreateSqls(Model model) {
         List<String> sqls = new LinkedList<String>();
+        List<String> custom = dialect.getCustomPostCreateSqls(this);
+        sqls.addAll(custom);
         for (Column column : columns.values()) {
             postAddColumn(column, sqls, model);
         }

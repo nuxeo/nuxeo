@@ -497,17 +497,9 @@ public abstract class Dialect {
             return getCreateFulltextIndexSql(indexName, quotedIndexName, table,
                     columns, model);
         } else {
-            String prefix = getCreateIndexPrefixSql(indexType, columns);
-            return String.format("CREATE %s INDEX %s ON %s (%s)", prefix,
-                    quotedIndexName, table.getQuotedName(),
-                    StringUtils.join(qcols, ", "));
+            return String.format("CREATE INDEX %s ON %s (%s)", quotedIndexName,
+                    table.getQuotedName(), StringUtils.join(qcols, ", "));
         }
-    }
-
-    // overridden by SQL Server for Azure CLUSTERED indexes
-    public String getCreateIndexPrefixSql(Table.IndexType indexType,
-            List<Column> columns) {
-        return "";
     }
 
     /**
@@ -1468,6 +1460,27 @@ public abstract class Dialect {
      */
     public String getDescending() {
         return " DESC";
+    }
+
+    /**
+     * Columns ignored if we see them in existing tables.
+     */
+    public List<String> getIgnoredColumns(Table table) {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Additional column definitions for CREATE TABLE.
+     */
+    public String getCustomColumnDefinition(Table table) {
+        return null;
+    }
+
+    /**
+     * Additional things to execute after CREATE TABLE.
+     */
+    public List<String> getCustomPostCreateSqls(Table table) {
+        return Collections.emptyList();
     }
 
 }
