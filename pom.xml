@@ -120,6 +120,7 @@
     <module>nuxeo-tree-snapshot</module>
     <!-- temporarily moved to optional addons -->
     <!-- <module>nuxeo-groups-rights-audit</module> -->
+    <module>nuxeo-drive</module>
   </modules>
 
   <dependencyManagement>
@@ -1075,6 +1076,23 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-groups-rights-audit</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      
+      <!-- Nuxeo Drive -->
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-operations</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
