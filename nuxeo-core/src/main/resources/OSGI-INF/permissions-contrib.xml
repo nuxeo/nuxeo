@@ -51,6 +51,8 @@
 
     <permission name="Remove">
       <include>RemoveChildren</include>
+      <!-- NXP-10929: necessary to follow the "delete" transition when Trash is enabled -->
+      <include>WriteLifeCycle</include>
     </permission>
 
     <permission name="ReadRemove">
