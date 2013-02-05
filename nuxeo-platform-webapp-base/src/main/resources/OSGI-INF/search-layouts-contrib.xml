@@ -142,7 +142,7 @@
       </properties>
       <properties widgetMode="edit">
         <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
-        <property name="defaultTime">23:39</property>
+        <property name="defaultTime">23:59</property>
       </properties>
     </widget>
 
@@ -210,7 +210,7 @@
       </properties>
       <properties widgetMode="edit">
         <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
-        <property name="defaultTime">23:39</property>
+        <property name="defaultTime">23:59</property>
       </properties>
     </widget>
 
@@ -244,7 +244,7 @@
       </properties>
       <properties widgetMode="edit">
         <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
-        <property name="defaultTime">23:39</property>
+        <property name="defaultTime">23:59</property>
       </properties>
     </widget>
 
@@ -272,7 +272,7 @@
       </properties>
       <properties widgetMode="edit">
         <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
-        <property name="defaultTime">23:39</property>
+        <property name="defaultTime">23:59</property>
       </properties>
     </widget>
 
