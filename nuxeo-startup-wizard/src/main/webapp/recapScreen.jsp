@@ -39,7 +39,11 @@ boolean connectOK = ctx.isConnectRegistrationDone();
       <%} else {%>
       <td>
       <%}%>
-      <%=collector.getConfigurationParam(pName)%></td>
+      <%if (pName.equals("nuxeo.db.password") || pName.equals("nuxeo.http.proxy.password") || pName.equals("mail.transport.password")) {%>
+        ******
+      <%} else {%>
+        <%=collector.getConfigurationParam(pName)%></td>
+      <%}%>
     </tr>
   <%} %>
   </table>
