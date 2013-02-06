@@ -771,29 +771,6 @@ public class RestTest {
         } finally {
             session.setDefaultSchemas(null);
         }
-
-        Document root = (Document) session.newRequest(FetchDocument.ID).set(
-                "value", "/").execute();
-
-        assertNotNull(root);
-        assertEquals("/", root.getPath());
-
-        PropertyMap props = new PropertyMap();
-        props.set("dc:title", "My Test Folder");
-        props.set("dc:description", "test");
-        props.set("dc:subjects", "a,b,c\\,d");
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(root).set("type",
-                "Folder").set("name", "myfolder2").set("properties", props).execute();
-
-        assertEquals("My Test Folder", folder.getString("dc:title"));
-        assertEquals("test", folder.getString("dc:description"));
-        PropertyList ar = (PropertyList) folder.getProperties().get(
-                "dc:subjects");
-        assertEquals(3, ar.size());
-        assertEquals("a", ar.getString(0));
-        assertEquals("b", ar.getString(1));
-        assertEquals("c,d", ar.getString(2));
     }
 
     @Test
