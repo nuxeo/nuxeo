@@ -3,14 +3,12 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   class="documentTitle">
 
-  <nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
-  <nxu:set var="label" value="#{empty typeLabel ? field_2 : messages[typeLabel]}">
+  <nxu:set var="title" value="#{nxd:titleOrId(field_0)}">
 
-    <span title="#{label}">
-      #{nxd:titleOrId(field_0)}
+    <span title="#{title}">
+      #{title}
     </span>
 
-  </nxu:set>
   </nxu:set>
 
 </div>

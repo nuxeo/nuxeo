@@ -21,10 +21,6 @@
                 first field maps the document model, it will be used to
                 display the title
               </li>
-              <li>
-                second field maps the label used as the tooltip of the
-                document title
-              </li>
             </ul>
           </p>
         </description>
