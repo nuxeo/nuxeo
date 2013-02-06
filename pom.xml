@@ -3283,9 +3283,9 @@
       </dependency>
 
       <dependency>
-	<groupId>org.apache.tomcat</groupId>
-	<artifactId>tomcat-jdbc</artifactId>
-	<version>7.0.35</version>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jdbc</artifactId>
+        <version>7.0.35</version>
       </dependency>
 
       <!-- Test Scope -->
@@ -3911,13 +3911,14 @@
                 <goal>compile</goal>
               </goals>
               <configuration>
-                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m -Djava.io.tmpdir=target</extraJvmArgs>
+                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m
+                  -Djava.io.tmpdir=${project.build.directory}</extraJvmArgs>
                 <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
                 <treeLogger>true</treeLogger>
                 <logLevel>WARN</logLevel>
                 <draftCompile>true</draftCompile>
-		<workDir>target/gwork</workDir>
+                <workDir>${project.build.directory}/gwork</workDir>
                 <!-- useful for debug -->
                 <!-- <style>PRETTY</style> -->
               </configuration>
@@ -4242,6 +4243,23 @@
                   </pluginExecutionFilter>
                   <action>
                     <ignore></ignore>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[2.1,)</versionRange>
+                    <goals>
+                      <goal>unpack</goal>
+                      <goal>copy-dependencies</goal>
+                      <goal>copy</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute>
+                      <runOnIncremental>false</runOnIncremental>
+                    </execute>
                   </action>
                 </pluginExecution>
               </pluginExecutions>
