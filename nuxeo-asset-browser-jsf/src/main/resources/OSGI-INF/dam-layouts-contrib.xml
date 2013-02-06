@@ -164,6 +164,8 @@
 
     <widget name="damAssetViewDescription" type="summary_current_document_description" />
 
+    <widget name="damAssetViewLikeStatus" type="summary_document_like_status" />
+
     <widget name="damAssetViewVideoStoryboard" type="container">
       <labels>
         <label mode="any">heading.storyboard</label>
@@ -395,7 +397,15 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideoStoryboard" type="widget" order="500">
+    <action id="damAssetViewLikeStatus" type="widget" order="500">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewLikeStatus</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewVideoStoryboard" type="widget" order="600">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideoStoryboard</property>
@@ -404,7 +414,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDamCommon" type="widget" order="600">
+    <action id="damAssetViewDamCommon" type="widget" order="700">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDamCommon</property>
@@ -412,7 +422,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideoInfo" type="widget" order="700">
+    <action id="damAssetViewVideoInfo" type="widget" order="800">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideoInfo</property>
@@ -421,7 +431,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewTasks" type="widget" order="800">
+    <action id="damAssetViewTasks" type="widget" order="900">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewTasks</property>
@@ -430,7 +440,7 @@
       <filter-id>hasTasks</filter-id>
     </action>
 
-    <action id="damAssetViewDublincore" type="widget" order="900">
+    <action id="damAssetViewDublincore" type="widget" order="1000">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewDublincore</property>
@@ -468,6 +478,14 @@
     </action>
 
     <action id="print">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="documentLike">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="documentUnlike">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
