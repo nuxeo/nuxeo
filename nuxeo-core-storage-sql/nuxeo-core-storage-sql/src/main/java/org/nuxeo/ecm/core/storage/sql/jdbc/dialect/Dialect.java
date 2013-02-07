@@ -286,6 +286,28 @@ public abstract class Dialect {
         ps.setObject(index, value);
     }
 
+    /**
+     * Sets a long id (sequence) from a value that may be a String or already a
+     * Long.
+     */
+    public void setIdLong(PreparedStatement ps, int index, Serializable value)
+            throws SQLException {
+        long l;
+        if (value instanceof String) {
+            try {
+                l = Long.parseLong((String) value);
+            } catch (NumberFormatException e) {
+                throw new SQLException("Invalid long id: " + value);
+            }
+        } else if (value instanceof Long) {
+            l = ((Long) value).longValue();
+        } else {
+            throw new SQLException("Unsupported class for long id, class: "
+                    + value.getClass() + " value: " + value);
+        }
+        ps.setLong(index, l);
+    }
+
     public abstract void setToPreparedStatement(PreparedStatement ps,
             int index, Serializable value, Column column) throws SQLException;
 

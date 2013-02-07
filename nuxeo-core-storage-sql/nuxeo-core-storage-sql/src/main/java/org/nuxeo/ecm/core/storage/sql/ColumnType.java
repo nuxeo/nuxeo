@@ -123,6 +123,27 @@ public class ColumnType implements Serializable {
         return spec.isId();
     }
 
+    /**
+     * Wraps a string that needs to be mapped to an id column in prepared
+     * statements.
+     *
+     * @since 5.7
+     */
+    public static class WrappedId implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public final String string;
+
+        public WrappedId(String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
+    }
+
     @Override
     public String toString() {
         if (isUnconstrained()) {

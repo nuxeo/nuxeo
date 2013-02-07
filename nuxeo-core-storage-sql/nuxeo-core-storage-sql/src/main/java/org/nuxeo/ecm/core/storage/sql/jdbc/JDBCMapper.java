@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.LockManager;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
@@ -854,9 +855,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             ps.setArray(i, array);
         } else if (object instanceof Long) {
             ps.setLong(i, ((Long) object).longValue());
+        } else if (object instanceof WrappedId) {
+            dialect.setId(ps, i, object.toString());
         } else {
-            // XXX TODO may be just a regular string, we need column info...
-            dialect.setId(ps, i, object);
+            ps.setObject(i, object);
         }
         return i;
     }

@@ -309,7 +309,7 @@ public class DialectSQLServer extends Dialect {
             ps.setObject(index, value, Types.VARCHAR);
             break;
         case SEQUENCE:
-            ps.setObject(index, value);
+            setIdLong(ps, index, value);
             break;
         }
     }

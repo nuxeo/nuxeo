@@ -303,8 +303,7 @@ public class DialectPostgreSQL extends Dialect {
             ps.setObject(index, value, Types.OTHER);
             break;
         case SEQUENCE:
-            ps.setObject(index, value);
-            // ps.setLong(index, ((Long) value).longValue());
+            setIdLong(ps, index, value);
             break;
         }
     }
