@@ -20,7 +20,6 @@ package org.nuxeo.ecm.quota;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -149,10 +147,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     @Override
     public long getQuotaFromParent(DocumentModel doc, CoreSession session)
             throws ClientException {
-        List<DocumentModel> parents = new ArrayList<DocumentModel>();
-        parents.addAll(session.getParentDocuments(doc.getRef()));
-        Collections.reverse(parents);
-        parents.remove(0);
+        List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
         for (DocumentModel documentModel : parents) {
             QuotaAware qa = documentModel.getAdapter(QuotaAware.class);
             if (qa == null) {
@@ -190,122 +185,91 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         if (maxAllowedOnChildrenToSetQuota < 0) {
             return false;
         }
-        // Long quotaOnChildren = canSetMaxQuotaOnChildrenTree(
-        // maxAllowedOnChildrenToSetQuota, -1L, parent, session);
-        // if (quotaOnChildren > 0
-        // && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
-        // return false;
-        // }
         return canSetMaxQuotaOnChildrenTree(parent,
                 maxAllowedOnChildrenToSetQuota, session);
     }
 
     protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc,
             CoreSession session) throws ClientException {
-        List<DocumentModel> parents = new ArrayList<DocumentModel>();
-        parents.addAll(session.getParentDocuments(doc.getRef()));
-        Collections.reverse(parents);
-        parents.remove(0);
-        return parents;
-    }
+        UnrestrictedParentsFetcher parentsFetcher = new UnrestrictedParentsFetcher(
+                doc, session);
 
-    protected Long canSetMaxQuotaOnChildrenTree(
-            Long maxAllowedOnChildrenToSetQuota, Long quotaOnChildren,
-            DocumentModel doc, CoreSession session) throws ClientException {
-        if (quotaOnChildren > 0
-                && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
-            // quota can not be set, don't continue
-            return quotaOnChildren;
-        }
-        List<DocumentModel> children = new LinkedList<DocumentModel>(
-                session.getChildren(doc.getRef(), null, null, new QuotaSorter(
-                        false)));
-
-        for (DocumentModel child : children) {
-            QuotaAware qac = child.getAdapter(QuotaAware.class);
-            if (qac == null) {
-                continue;
-            }
-            if (qac.getMaxQuota() > 0) {
-                quotaOnChildren = (quotaOnChildren == -1L ? 0L
-                        : quotaOnChildren) + qac.getMaxQuota();
-            }
-            if (quotaOnChildren > 0
-                    && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
-                return quotaOnChildren;
-            }
-            quotaOnChildren = canSetMaxQuotaOnChildrenTree(
-                    maxAllowedOnChildrenToSetQuota, quotaOnChildren, child,
-                    session);
-            if (quotaOnChildren > 0
-                    && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
-                return quotaOnChildren;
-            }
-
-        }
-        return quotaOnChildren;
+        return parentsFetcher.getParents();
     }
 
     protected boolean canSetMaxQuotaOnChildrenTree(DocumentModel parent,
             Long maxAllowedOnChildrenToSetQuota, CoreSession session)
             throws ClientException {
-        long quotaOnChildren = 0;
-        IterableQueryResult results = session.queryAndFetch(
-                String.format(
-                        "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' "
-                                + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ORDER BY dss:maxSize DESC",
-                        parent.getPath()), "NXQL");
-
-        for (Map<String, Serializable> result : results) {
-            Long maxSize = (Long) result.get("dss:maxSize");
-            quotaOnChildren = quotaOnChildren
-                    + (maxSize == null || maxSize == -1 ? 0 : maxSize);
-            if (quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
-                return false;
-            }
-        }
-        return true;
+        return new UnrestrictedQuotaOnChildrenCalculator(parent,
+                maxAllowedOnChildrenToSetQuota, session).canSetQuota();
     }
 
-    class QuotaSorter implements Sorter {
+    class UnrestrictedQuotaOnChildrenCalculator extends
+            UnrestrictedSessionRunner {
 
-        private static final long serialVersionUID = 1L;
+        DocumentModel parent;
 
-        private boolean asc = true;
+        Long maxAllowedOnChildrenToSetQuota;
 
-        public QuotaSorter(boolean asc) {
-            this.asc = asc;
+        IterableQueryResult results;
+
+        protected UnrestrictedQuotaOnChildrenCalculator(DocumentModel parent,
+                Long maxAllowedOnChildrenToSetQuota, CoreSession session) {
+            super(session);
+            this.parent = parent;
+            this.maxAllowedOnChildrenToSetQuota = maxAllowedOnChildrenToSetQuota;
         }
 
         @Override
-        public int compare(DocumentModel doc1, DocumentModel doc2) {
-            if (doc1 == null && doc2 == null) {
-                return 0;
-            } else if (doc1 == null) {
-                return asc ? -1 : 1;
-            } else if (doc2 == null) {
-                return asc ? 1 : -1;
-            }
+        public void run() throws ClientException {
+            results = session.queryAndFetch(
+                    String.format(
+                            "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' "
+                                    + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ORDER BY dss:maxSize DESC",
+                            parent.getPath()), "NXQL");
+        }
 
-            int cmp = 0;
-            try {
-
-                Long maxQuota1 = (Long) doc1.getPropertyValue("dss:maxSize");
-                Long maxQuota2 = (Long) doc2.getPropertyValue("dss:maxSize");
-
-                if (maxQuota1 == null && maxQuota2 == null) {
-                    return 0;
-                } else if (maxQuota1 == null) {
-                    return asc ? -1 : 1;
-                } else if (maxQuota2 == null) {
-                    return asc ? 1 : -1;
+        public boolean canSetQuota() throws ClientException {
+            run();
+            long quotaOnChildren = 0;
+            for (Map<String, Serializable> result : results) {
+                Long maxSize = (Long) result.get("dss:maxSize");
+                quotaOnChildren = quotaOnChildren
+                        + (maxSize == null || maxSize == -1 ? 0 : maxSize);
+                if (quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+                    return false;
                 }
-                cmp = maxQuota1.compareTo(maxQuota2);
-            } catch (Exception e) {
-                // if property not found exception
             }
-            return asc ? cmp : -cmp;
+            return true;
         }
     }
 
+    class UnrestrictedParentsFetcher extends UnrestrictedSessionRunner {
+
+        DocumentModel doc;
+
+        List<DocumentModel> parents;
+
+        protected UnrestrictedParentsFetcher(DocumentModel doc,
+                CoreSession session) {
+            super(session);
+            this.doc = doc;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            parents = new ArrayList<DocumentModel>();
+            parents.addAll(session.getParentDocuments(doc.getRef()));
+            Collections.reverse(parents);
+            parents.remove(0);
+        }
+
+        public List<DocumentModel> getParents() throws ClientException {
+            run();
+            for (DocumentModel parent : parents) {
+                parent.detach(true);
+            }
+            return parents;
+        }
+    }
 }
