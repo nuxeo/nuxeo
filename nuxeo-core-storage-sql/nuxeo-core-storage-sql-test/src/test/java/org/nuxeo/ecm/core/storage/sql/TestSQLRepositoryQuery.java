@@ -69,6 +69,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLRepositoryQuery.class);
 
+    protected boolean proxies;
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -2405,6 +2407,215 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         query = "SELECT * \r\n        FROM File \r\n      WHERE dc:title IS NULL \r\n       ORDER BY ecm:path DESC";
         dml = session.query(query);
         assertEquals(0, dml.size());
+    }
+
+    protected static final String TAG_DOCUMENT_TYPE = "Tag";
+
+    protected static final String TAG_LABEL_FIELD = "tag:label";
+
+    protected static final String TAGGING_DOCUMENT_TYPE = "Tagging";
+
+    protected static final String TAGGING_SOURCE_FIELD = "relation:source";
+
+    protected static final String TAGGING_TARGET_FIELD = "relation:target";
+
+    // file1: tag1, tag2
+    // file2: tag1
+    protected void createTags() throws Exception {
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        DocumentModel file2 = session.getDocument(new PathRef(
+                "/testfolder1/testfile2"));
+
+        String label1 = "tag1";
+        DocumentModel tag1 = session.createDocumentModel(null, label1,
+                TAG_DOCUMENT_TYPE);
+        // tag.setPropertyValue("dc:created", date);
+        tag1.setPropertyValue(TAG_LABEL_FIELD, label1);
+        tag1 = session.createDocument(tag1);
+
+        String label2 = "tag2";
+        DocumentModel tag2 = session.createDocumentModel(null, label2,
+                TAG_DOCUMENT_TYPE);
+        // tag.setPropertyValue("dc:created", date);
+        tag2.setPropertyValue(TAG_LABEL_FIELD, label2);
+        tag2 = session.createDocument(tag2);
+
+        DocumentModel tagging1to1 = session.createDocumentModel(null, label1,
+                TAGGING_DOCUMENT_TYPE);
+        // tagging.setPropertyValue("dc:created", date);
+        // if (username != null) {
+        // tagging.setPropertyValue("dc:creator", username);
+        // }
+        tagging1to1.setPropertyValue(TAGGING_SOURCE_FIELD, file1.getId());
+        tagging1to1.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
+        tagging1to1 = session.createDocument(tagging1to1);
+
+        DocumentModel tagging1to2 = session.createDocumentModel(null, label2,
+                TAGGING_DOCUMENT_TYPE);
+        tagging1to2.setPropertyValue(TAGGING_SOURCE_FIELD, file1.getId());
+        tagging1to2.setPropertyValue(TAGGING_TARGET_FIELD, tag2.getId());
+        tagging1to2 = session.createDocument(tagging1to2);
+
+        DocumentModel tagging2to1 = session.createDocumentModel(null, label1,
+                TAGGING_DOCUMENT_TYPE);
+        tagging2to1.setPropertyValue(TAGGING_SOURCE_FIELD, file2.getId());
+        tagging2to1.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
+        tagging2to1 = session.createDocument(tagging2to1);
+
+        // create a relation that isn't a Tagging
+        DocumentModel rel = session.createDocumentModel(null, label1,
+                "Relation");
+        rel.setPropertyValue(TAGGING_SOURCE_FIELD, file1.getId());
+        rel.setPropertyValue(TAGGING_TARGET_FIELD, tag1.getId());
+        rel = session.createDocument(rel);
+
+        session.save();
+        waitForFulltextIndexing();
+    }
+
+    protected String nxql(String nxql) {
+        if (proxies) {
+            return nxql;
+        } else if (nxql.contains(" WHERE ")) {
+            return nxql.replace(" WHERE ", " WHERE ecm:isProxy = 0 AND ");
+        } else {
+            return nxql + " WHERE ecm:isProxy = 0";
+        }
+    }
+
+    @Test
+    public void testTagsWithProxies() throws Exception {
+        proxies = true;
+        testTags();
+    }
+
+    @Test
+    public void testTagsWithoutProxies() throws Exception {
+        proxies = false;
+        testTags();
+    }
+
+    protected void testTags() throws Exception {
+        String nxql;
+        DocumentModelList dml;
+        IterableQueryResult res;
+
+        createDocs();
+        createTags();
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag0'");
+        assertEquals(0, session.query(nxql).size());
+
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag1'");
+        assertEquals(2, session.query(nxql).size());
+
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag2'");
+        dml = session.query(nxql);
+        assertEquals(1, dml.size());
+        assertEquals(file1.getId(), dml.get(0).getId());
+
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag IN ('tag1', 'tag2')");
+        assertEquals(2, session.query(nxql).size());
+
+        // unqualified name refers to the same tag
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag1' AND ecm:tag = 'tag2'");
+        assertEquals(0, session.query(nxql).size());
+
+        // unqualified name refers to the same tag
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag1' OR ecm:tag = 'tag2'");
+        assertEquals(2, session.query(nxql).size());
+
+        // any tag instance
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/* = 'tag1'");
+        assertEquals(2, session.query(nxql).size());
+
+        // any tag instance
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/* = 'tag1' AND ecm:tag/* = 'tag2'");
+        dml = session.query(nxql);
+        assertEquals(1, dml.size());
+        assertEquals(file1.getId(), dml.get(0).getId());
+
+        // any tag instance
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/* = 'tag1' OR ecm:tag/* = 'tag2'");
+        dml = session.query(nxql);
+        assertEquals(2, dml.size());
+
+        // numbered tag instance
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/*1 = 'tag1'");
+        assertEquals(2, session.query(nxql).size());
+
+        // numbered tag instance are the same tag
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/*1 = 'tag1' AND ecm:tag/*1 = 'tag2'");
+        assertEquals(0, session.query(nxql).size());
+
+        // different numbered tags
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag/*1 = 'tag1' AND ecm:tag/*2 = 'tag2'");
+        assertEquals(1, session.query(nxql).size());
+
+        // needs DISTINCT
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag IN ('tag1', 'tag2')");
+        assertEquals(2, session.query(nxql).size());
+
+        // needs DISTINCT
+        nxql = nxql("SELECT * FROM File WHERE ecm:tag IN ('tag1', 'tag2') AND dc:title = 'testfile1_Title'");
+        dml = session.query(nxql);
+        assertEquals(1, dml.size());
+        assertEquals(file1.getId(), dml.get(0).getId());
+
+        // ----- queryAndFetch -----
+
+        nxql = nxql("SELECT ecm:tag FROM File");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        // file1: tag1, tag2; file2: tag1
+        assertIterableQueryResult(res, 3, "ecm:tag", "tag1", "tag2");
+        res.close();
+
+        nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag LIKE '%1'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag", "tag1");
+        res.close();
+
+        // explicit DISTINCT
+        nxql = nxql("SELECT DISTINCT ecm:tag FROM File");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag", "tag1", "tag2");
+        res.close();
+
+        nxql = nxql("SELECT ecm:tag FROM File WHERE dc:title = 'testfile1_Title'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag", "tag1", "tag2");
+        res.close();
+
+        // unqualified name refers to the same tag
+        nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag = 'tag1'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag", "tag1");
+        res.close();
+
+        // unqualified name refers to the same tag
+        nxql = nxql("SELECT ecm:tag FROM File WHERE ecm:tag = 'tag2'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 1, "ecm:tag", "tag2");
+        res.close();
+
+        // numbered tag
+        nxql = nxql("SELECT ecm:tag/*1 FROM File WHERE ecm:tag/*1 = 'tag1'");
+        res = session.queryAndFetch(nxql, NXQL.NXQL);
+        assertIterableQueryResult(res, 2, "ecm:tag/*1", "tag1");
+        res.close();
+    }
+
+    protected static void assertIterableQueryResult(IterableQueryResult actual,
+            int size, String prop, String... expected) {
+        assertEquals(size, actual.size());
+        Collection<String> set = new HashSet<String>();
+        for (Map<String, Serializable> map : actual) {
+            set.add((String) map.get(prop));
+        }
+        assertEquals(new HashSet<String>(Arrays.asList(expected)), set);
     }
 
 }

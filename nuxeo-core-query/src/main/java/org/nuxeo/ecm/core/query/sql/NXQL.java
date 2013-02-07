@@ -64,6 +64,9 @@ public class NXQL {
     /** @since 5.4.2 */
     public static final String ECM_LOCK_CREATED = "ecm:lockCreated";
 
+    /** @since 5.7 */
+    public static final String ECM_TAG = "ecm:tag";
+
     /**
      * Escapes a string into a single-quoted string for NXQL.
      * <p>

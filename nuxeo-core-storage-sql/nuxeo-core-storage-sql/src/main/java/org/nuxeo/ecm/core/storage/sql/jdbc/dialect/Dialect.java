@@ -67,7 +67,7 @@ public abstract class Dialect {
     public static final boolean DEBUG_UUIDS = false;
 
     // if true then debug UUIDs (above) are actual UUIDs, not short strings
-    public static final boolean DEBUG_REAL_UUIDS = true;
+    public static final boolean DEBUG_REAL_UUIDS = false;
 
     // for debug
     private final AtomicLong temporaryIdCounter = new AtomicLong(0);

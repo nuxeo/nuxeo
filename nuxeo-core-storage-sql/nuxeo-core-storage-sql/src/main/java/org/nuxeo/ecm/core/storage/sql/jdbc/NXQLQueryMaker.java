@@ -145,6 +145,12 @@ public class NXQLQueryMaker implements QueryMaker {
 
     public static final String TYPE_RELATION = "Relation";
 
+    public static final String TYPE_TAGGING = "Tagging";
+
+    public static final String RELATION_TABLE = "relation";
+
+    public static final String ECM_TAG_STAR = NXQL.ECM_TAG + "/*";
+
     protected static final String TABLE_HIER_ALIAS = "_H";
 
     protected static final String TABLE_FRAG_ALIAS = "_F";
@@ -366,9 +372,9 @@ public class NXQLQueryMaker implements QueryMaker {
                 Table proxies = database.getTable(model.PROXY_TABLE_NAME);
                 // join all that
                 addJoin(Join.INNER, null, proxies, model.MAIN_KEY, hierTable,
-                        model.MAIN_KEY, null, -1);
+                        model.MAIN_KEY, null, -1, null);
                 addJoin(Join.INNER, null, dataHierTable, model.MAIN_KEY,
-                        proxies, model.PROXY_TARGET_KEY, null, -1);
+                        proxies, model.PROXY_TARGET_KEY, null, -1, null);
                 break;
             default:
                 throw new AssertionError(docKind);
@@ -654,7 +660,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
     // overridden by specialized query makers that need to tweak some joins
     protected void addJoin(int kind, String alias, Table table, String column,
-            Table contextTable, String contextColumn, String name, int index) {
+            Table contextTable, String contextColumn, String name, int index,
+            String primaryType) {
         Column column1 = contextTable.getColumn(contextColumn);
         Column column2 = table.getColumn(column);
         Join join = new Join(kind, table.getRealTable().getQuotedName(), alias,
@@ -667,15 +674,33 @@ public class NXQLQueryMaker implements QueryMaker {
             String posCol = table.getColumn(model.HIER_CHILD_POS_KEY).getFullQuotedName();
             join.addWhereClause(posCol + " = ?", Long.valueOf(index));
         }
+        if (primaryType != null) {
+            String typeCol = table.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName();
+            join.addWhereClause(typeCol + " = ?", primaryType);
+        }
         joins.add(join);
     }
 
     /**
      * Gets the table for the given fragmentName in the given contextKey, and
      * maybe adds a join if one is not already done.
+     * <p>
+     * LEFT JOIN fragmentName _F123 ON contextHier.id = _F123.id
      */
     protected Table getFragmentTable(Table contextHier, String contextKey,
             String fragmentName, int index, boolean skipJoin) {
+        return getFragmentTable(Join.LEFT, contextHier, contextKey, fragmentName,
+                model.MAIN_KEY, index, skipJoin, null);
+    }
+
+    /**
+     * Adds a more general JOIN:
+     * <p>
+     * (LEFT) JOIN fragmentName _F123 ON contextTable.id = _F123.fragmentColumn
+     */
+    protected Table getFragmentTable(int joinKind, Table contextTable,
+            String contextKey, String fragmentName, String fragmentColumn,
+            int index, boolean skipJoin, String primaryType) {
         Table table = propertyFragmentTables.get(contextKey);
         if (table == null) {
             Table baseTable = database.getTable(fragmentName);
@@ -683,8 +708,8 @@ public class NXQLQueryMaker implements QueryMaker {
             table = new TableAlias(baseTable, alias);
             propertyFragmentTables.put(contextKey, table);
             if (!skipJoin) {
-                addJoin(Join.LEFT, alias, table, model.MAIN_KEY, contextHier,
-                        model.MAIN_KEY, null, index);
+                addJoin(joinKind, alias, table, fragmentColumn, contextTable,
+                        model.MAIN_KEY, null, index, primaryType);
             }
         }
         return table;
@@ -1070,6 +1095,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitReference(Reference node) {
+            boolean hasTag = false;
             if (node.cast != null) {
                 if (!DATE_CAST.equals(node.cast)) {
                     throw new QueryMakerException("Invalid cast: " + node);
@@ -1100,6 +1126,9 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_LOCK_CREATED.equals(name) || //
                     NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 // ok
+            } else if (NXQL.ECM_TAG.equals(name)
+                    || name.startsWith(ECM_TAG_STAR)) {
+                hasTag = true;
             } else if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 if (inSelect) {
                     throw new QueryMakerException("Cannot select on column: "
@@ -1132,7 +1161,7 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (inOrderBy) {
                 orderByColumnNames.add(name);
             }
-            if (hasWildcardIndex(name)) {
+            if (hasWildcardIndex(name) || hasTag) {
                 hasWildcardIndex = true;
                 if (inOrderBy) {
                     orderByHasWildcardIndex = true;
@@ -1210,8 +1239,8 @@ public class NXQLQueryMaker implements QueryMaker {
         public final StringBuilder buf = new StringBuilder();
 
         // used to assign unique numbers to join aliases for complex property
-        // wildcard indexes
-        protected int uniquePropIndex = 0;
+        // wildcard indexes or tags
+        protected int uniqueJoinIndex = 0;
 
         protected int hierJoinCount = 0;
 
@@ -1236,6 +1265,10 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public WhereBuilder(boolean isProxies) {
             this.isProxies = isProxies;
+        }
+
+        protected int getUniqueJoinIndex() {
+            return ++uniqueJoinIndex;
         }
 
         public Column findColumn(String name, boolean allowSubSelect,
@@ -1300,6 +1333,38 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT
                         + " must be used as left-hand operand");
+            } else if (NXQL.ECM_TAG.equals(name)
+                    || name.startsWith(ECM_TAG_STAR)) {
+                /*
+                 * JOIN relation _F1 ON hierarchy.id = _F1.source
+                 *
+                 * JOIN hierarchy _F2 ON _F1.id = _F2.id AND _F2.primarytype =
+                 * 'Tagging'
+                 *
+                 * and returns _F2.name
+                 */
+                String suffix;
+                if (name.startsWith(ECM_TAG_STAR)) {
+                    suffix = name.substring(ECM_TAG_STAR.length());
+                    if (suffix.isEmpty()) {
+                        // any
+                        suffix = "/*-" + getUniqueJoinIndex();
+                    } else {
+                        // named
+                        suffix = "/*" + suffix;
+                     }
+                } else {
+                    suffix = "";
+                }
+                String relContextKey = "_tag_relation" + suffix;
+                Table rel = getFragmentTable(Join.INNER, dataHierTable,
+                        relContextKey, RELATION_TABLE, "source", -1, false,
+                        null);
+                fragmentName = model.HIER_TABLE_NAME;
+                fragmentKey = model.HIER_CHILD_NAME_KEY;
+                String hierContextKey = "_tag_hierarchy" + suffix;
+                table = getFragmentTable(Join.INNER, rel, hierContextKey,
+                        fragmentName, model.MAIN_KEY, -1, false, TYPE_TAGGING);
             } else {
                 throw new QueryMakerException("No such property: " + name);
             }
@@ -1357,7 +1422,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         if (star) {
                             if (index == -1) {
                                 // any
-                                contextSuffix = "/*-" + ++uniquePropIndex;
+                                contextSuffix = "/*-" + getUniqueJoinIndex();
                             } else {
                                 // named
                                 contextSuffix = "/*" + index;
@@ -1388,7 +1453,8 @@ public class NXQLQueryMaker implements QueryMaker {
                         table = new TableAlias(hier, alias);
                         propertyHierTables.put(contextKey, table);
                         addJoin(Join.LEFT, alias, table, model.HIER_PARENT_KEY,
-                                contextHier, model.MAIN_KEY, segment, index);
+                                contextHier, model.MAIN_KEY, segment, index,
+                                null);
                     }
                     contextHier = table;
                 } else {
