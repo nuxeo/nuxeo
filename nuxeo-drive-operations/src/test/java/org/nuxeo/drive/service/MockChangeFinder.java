@@ -110,7 +110,7 @@ public class MockChangeFinder implements FileSystemChangeFinder {
 
     protected String getDateClause(long lastSuccessfulSyncDate, long syncDate) {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return String.format("dc:modified >= '%s' and dc:modified < '%s'",
+        return String.format("dc:modified >= TIMESTAMP '%s' and dc:modified < TIMESTAMP '%s'",
                 sdf.format(new Date(lastSuccessfulSyncDate)),
                 sdf.format(new Date(syncDate)));
     }
