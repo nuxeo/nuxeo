@@ -47,15 +47,27 @@ author: lkemen@nuxeo.com
 .gridStyle6 { background-color: "neutral.lighter (__FLAVOR__ background)" }
 .gridStyle6 .widgetPanel { padding: 0 2% }
 
+.gridStyle6 .action_bar a { padding: .1em .4em }
+
 .gridStyle6 .listingLayoutSelector {
   font-size: .9em }
+
+.gridStyle6 .pageNavigationControls {
+  border-style: solid none }
+
+.gridStyle6 .detail {
+  margin-top: -2.5em;
+  text-align: right }
+
+.gridStyle6 .detail span {
+  margin-right: .3em }
 
 .bubbleBox {
   background-color: #fff;
   cursor: pointer;
   display: inline-block;
   font-size: .9em;
-  margin: 0 .3em 1em;
+  margin: .1em .3em .6em;
   min-height: 170px;
   text-align: left;
   vertical-align: top;
@@ -88,9 +100,23 @@ author: lkemen@nuxeo.com
 
 /* Pictures and video thumbnails in bubbleBoxes */
 .thumbnailContainer { text-align: center }
+.thumbnailContainer img { border: 2px solid #fff }
 
 /* =Assets View */
 .gridStyle4 .widgetPanel { margin: 0 .1em .3em; padding: 0 }
+
+.globalActionBar .contextActions .actionsWidgetPanel {
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-style: none none solid;
+  border-width: 1px;
+  padding: .2em 0;
+  text-align: right }
+.globalActionBar a.actionLink.button {
+  padding: .2em .4em }
+
+.widgetPanel .description_block {
+  font-size: .9em;
+  margin: 1em .4em }
 
 /* Smaller tables display in foldableBox, apply .dataTableLine styles */
 .gridStyle4 .foldableBox .dataInput {
