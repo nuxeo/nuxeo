@@ -178,9 +178,10 @@ public class QuotaStatsActions implements Serializable {
     }
 
     /**
+     * @throws ClientException
      * @since 5.7
      */
-    public void saveQuotaActivatedOnUsersWorkspaces() {
+    public void saveQuotaActivatedOnUsersWorkspaces() throws ClientException {
         Map<String, String> customParameters = new HashMap<String, String>();
         customParameters.put(QUOTA_STATS_USERWORKSPACES,
                 Boolean.toString(isActivateQuotaOnUsersWorkspaces()));
@@ -191,6 +192,11 @@ public class QuotaStatsActions implements Serializable {
                     customParameters);
         } catch (ConfigurationException e) {
             log.error(e, e);
+        }
+        if (isActivateQuotaOnUsersWorkspaces()) {
+            getQuotaStatsService().launchSetMaxQuotaOnUserWorkspaces(
+                    getMaxQuotaOnUsersWorkspaces(),
+                    documentManager.getRootDocument(), documentManager);
         }
     }
 

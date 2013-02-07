@@ -78,4 +78,13 @@ public interface QuotaStatsService {
     public boolean canSetMaxQuota(long maxQuota, DocumentModel doc,
             CoreSession session) throws ClientException;
 
+    /**
+     * Sets this maxQuota on all user workspaces
+     *
+     * @throws ClientException
+     * @since 5.7
+     */
+    public void launchSetMaxQuotaOnUserWorkspaces(long maxQuota,
+            DocumentModel context, CoreSession session) throws ClientException;
+
 }

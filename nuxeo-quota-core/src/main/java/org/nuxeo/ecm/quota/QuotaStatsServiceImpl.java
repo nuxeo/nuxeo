@@ -28,7 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
+import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -55,6 +58,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     public static final String STATUS_INITIAL_COMPUTATION_QUEUED = "status.quota.initialComputationQueued";
 
     public static final String STATUS_INITIAL_COMPUTATION_PENDING = "status.quota.initialComputationInProgress";
+
+    // TODO configurable through an ep?
+    public static final int DEFAULT_BATCH_SIZE = 1000;
 
     public static final String QUOTA_STATS_UPDATERS_EP = "quotaStatsUpdaters";
 
@@ -177,7 +183,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
                 break;
             }
         }
-        if (qa == null) {
+        if (qa == null || qa.getMaxQuota() == -1) {
             return true;
         }
 
@@ -192,7 +198,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc,
             CoreSession session) throws ClientException {
         UnrestrictedParentsFetcher parentsFetcher = new UnrestrictedParentsFetcher(
-                doc, session);
+                doc, session.getRepositoryName());
 
         return parentsFetcher.getParents();
     }
@@ -201,7 +207,57 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             Long maxAllowedOnChildrenToSetQuota, CoreSession session)
             throws ClientException {
         return new UnrestrictedQuotaOnChildrenCalculator(parent,
-                maxAllowedOnChildrenToSetQuota, session).canSetQuota();
+                maxAllowedOnChildrenToSetQuota, session.getRepositoryName()).canSetQuota();
+    }
+
+    @Override
+    public void launchSetMaxQuotaOnUserWorkspaces(final long maxSize,
+            DocumentModel context, CoreSession session) throws ClientException {
+        final String userWorkspacesId = getUserWorkspaceRootId(context, session);
+        new UnrestrictedSessionRunner(session) {
+
+            @Override
+            public void run() throws ClientException {
+                IterableQueryResult results = session.queryAndFetch(
+                        String.format(
+                                "Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
+                                        + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ",
+                                userWorkspacesId), "NXQL");
+                int size = 0;
+                List<String> allIds = new ArrayList<String>();
+                for (Map<String, Serializable> map : results) {
+                    allIds.add((String) map.get("ecm:uuid"));
+                }
+                results.close();
+                List<String> ids = new ArrayList<String>();
+                WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                for (String id : allIds) {
+                    ids.add(id);
+                    size++;
+                    if (size % DEFAULT_BATCH_SIZE == 0) {
+                        QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(
+                                maxSize, ids, session.getRepositoryName());
+                        workManager.schedule(work);
+                        ids.clear();
+                    }
+                }
+                if (ids.size() > 0) {
+                    QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(
+                            maxSize, ids, session.getRepositoryName());
+                    workManager.schedule(work);
+                }
+            }
+        }.runUnrestricted();
+    }
+
+    public String getUserWorkspaceRootId(DocumentModel context,
+            CoreSession session) throws ClientException {
+        // get only the userworkspaces root under the first domain
+        // it should be only one
+        DocumentModel currentUserWorkspace = Framework.getLocalService(
+                UserWorkspaceService.class).getUserPersonalWorkspace(
+                (NuxeoPrincipal) session.getPrincipal(), context);
+        return ((IdRef) currentUserWorkspace.getParentRef()).value;
     }
 
     class UnrestrictedQuotaOnChildrenCalculator extends
@@ -211,36 +267,39 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
         Long maxAllowedOnChildrenToSetQuota;
 
-        IterableQueryResult results;
+        boolean canSetQuota = true;
 
         protected UnrestrictedQuotaOnChildrenCalculator(DocumentModel parent,
-                Long maxAllowedOnChildrenToSetQuota, CoreSession session) {
-            super(session);
+                Long maxAllowedOnChildrenToSetQuota, String repositoryName) {
+            super(repositoryName);
             this.parent = parent;
             this.maxAllowedOnChildrenToSetQuota = maxAllowedOnChildrenToSetQuota;
         }
 
         @Override
         public void run() throws ClientException {
-            results = session.queryAndFetch(
+            IterableQueryResult results = session.queryAndFetch(
                     String.format(
                             "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' "
                                     + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ORDER BY dss:maxSize DESC",
                             parent.getPath()), "NXQL");
-        }
-
-        public boolean canSetQuota() throws ClientException {
-            run();
             long quotaOnChildren = 0;
             for (Map<String, Serializable> result : results) {
                 Long maxSize = (Long) result.get("dss:maxSize");
                 quotaOnChildren = quotaOnChildren
                         + (maxSize == null || maxSize == -1 ? 0 : maxSize);
                 if (quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
-                    return false;
+                    results.close();
+                    canSetQuota = false;
+                    return;
                 }
             }
-            return true;
+            results.close();
+        }
+
+        public boolean canSetQuota() throws ClientException {
+            runUnrestricted();
+            return canSetQuota;
         }
     }
 
@@ -251,8 +310,8 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         List<DocumentModel> parents;
 
         protected UnrestrictedParentsFetcher(DocumentModel doc,
-                CoreSession session) {
-            super(session);
+                String repositoryName) {
+            super(repositoryName);
             this.doc = doc;
         }
 
@@ -262,13 +321,13 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             parents.addAll(session.getParentDocuments(doc.getRef()));
             Collections.reverse(parents);
             parents.remove(0);
-        }
-
-        public List<DocumentModel> getParents() throws ClientException {
-            run();
             for (DocumentModel parent : parents) {
                 parent.detach(true);
             }
+        }
+
+        public List<DocumentModel> getParents() throws ClientException {
+            runUnrestricted();
             return parents;
         }
     }
