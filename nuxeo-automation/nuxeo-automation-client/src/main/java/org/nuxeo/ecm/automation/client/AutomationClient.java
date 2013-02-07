@@ -65,6 +65,8 @@ public interface AutomationClient {
 
     /**
      * Creates a new session using the given token.
+     *
+     * @since 5.7
      */
     Session getSession(String token);
 
@@ -81,6 +83,8 @@ public interface AutomationClient {
      * {@link TokenCallback#saveToken(String)}</li>
      * <li>Get a session with the token using {@link #getSession(String)}</li>
      * </ul>
+     *
+     * @since 5.7
      */
     Session getSession(TokenCallback cb);
 
