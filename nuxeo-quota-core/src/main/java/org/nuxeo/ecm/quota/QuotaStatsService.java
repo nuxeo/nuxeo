@@ -73,7 +73,7 @@ public interface QuotaStatsService {
     /**
      * Test to see if quota allowed
      *
-     * @since maxQuota
+     * @since 5.7
      */
     public boolean canSetMaxQuota(long maxQuota, DocumentModel doc,
             CoreSession session) throws ClientException;

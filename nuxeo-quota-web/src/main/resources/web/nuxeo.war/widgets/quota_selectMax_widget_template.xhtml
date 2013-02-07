@@ -11,7 +11,8 @@
 <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
  <nxu:set var="minQuotaSliderValue" value="#{quotaStatsActions.getMinQuotaSliderValue()}" cache="true">
  <nxu:set var="maxQuotaSliderValue" value="#{quotaStatsActions.getMaxQuotaSliderValue()}" cache="true">
-  <table>
+ <nxu:set var="validateMaxSize" value="#{nxu:test(empty widgetProperty_validateMaxSize, 'false', widgetProperty_validateMaxSize)}" cache="true">
+  <table id="sliderTable">
    <tr>
     </tr><tr>
     <td>
@@ -46,12 +47,18 @@
         <f:convertNumber maxFractionDigits="2" />
        </h:outputText> 
        #{messages[maxQuotaSliderValue.getUnit()]}
-       <h:inputText id="maxValue" value="#{field}" style="visibility:hidden" validator="#{quotaStatsActions.validateQuotaSize}"/>
+       <c:if test="#{validateMaxSize}">
+        <h:inputText id="maxValue" value="#{field}" style="visibility:hidden" validator="#{quotaStatsActions.validateQuotaSize}"/>
+       </c:if>
+       <c:if test="#{!validateMaxSize}">
+        <h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
+       </c:if>  
      </td>
      </tr>
      </table>
     </td></tr>
    </table>
+  </nxu:set>
   </nxu:set>
   </nxu:set>
 </c:if>
@@ -67,5 +74,5 @@
 
 
  </c:if>
-
+<h:messages/>
 </div>

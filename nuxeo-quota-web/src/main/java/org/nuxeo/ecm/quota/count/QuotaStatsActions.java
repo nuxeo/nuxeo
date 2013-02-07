@@ -17,10 +17,10 @@
 
 package org.nuxeo.ecm.quota.count;
 
-import static org.jboss.seam.ScopeType.STATELESS;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +32,7 @@ import javax.faces.validator.ValidatorException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -44,9 +45,9 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.QuotaStatsUpdater;
 import org.nuxeo.ecm.quota.size.QuotaAware;
-import org.nuxeo.ecm.quota.size.QuotaAwareDocument;
-import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
 import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
+import org.nuxeo.launcher.config.ConfigurationException;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -54,13 +55,17 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.5
  */
 @Name("quotaStatsActions")
-@Scope(STATELESS)
+@Scope(ScopeType.CONVERSATION)
 @Install(precedence = FRAMEWORK)
 public class QuotaStatsActions implements Serializable {
 
     protected Log log = LogFactory.getLog(QuotaStatsActions.class);
 
     private static final long serialVersionUID = -1L;
+
+    public static final String QUOTA_STATS_USERWORKSPACES = "quota.active.userworkspaces";
+
+    public static final String QUOTA_MAX_SIZE_USERWORKSPACES = "quota.maxSize.userworkspaces";
 
     @In(create = true)
     protected transient CoreSession documentManager;
@@ -71,7 +76,18 @@ public class QuotaStatsActions implements Serializable {
     @In(create = true)
     protected Map<String, String> messages;
 
+    private transient ConfigurationGenerator setupConfigGenerator;
+
     protected QuotaStatsService quotaStatsService;
+
+    protected boolean activateQuotaOnUsersWorkspaces;
+
+    protected long maxQuotaOnUsersWorkspaces = -1;
+
+    @Create
+    public void initialize() {
+        initQuotaActivatedOnUserWorkspaces();
+    }
 
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
@@ -99,15 +115,6 @@ public class QuotaStatsActions implements Serializable {
     public QuotaAware getQuotaDoc() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         return doc.getAdapter(QuotaAware.class);
-    }
-
-    public void activateQuota() throws ClientException {
-        if (getQuotaDoc() == null) {
-            DocumentModel doc = navigationContext.getCurrentDocument();
-            QuotaAwareDocument qa = QuotaAwareDocumentFactory.make(doc, true);
-            navigationContext.resetCurrentContext();
-            navigationContext.navigateToDocument(qa.getDoc());
-        }
     }
 
     public void validateQuotaSize(FacesContext context, UIComponent component,
@@ -158,7 +165,7 @@ public class QuotaStatsActions implements Serializable {
     }
 
     public QuotaSlidervalueInfo getMinQuotaSliderValue() throws Exception {
-        return new QuotaSlidervalueInfo(Math.log(10 * 1024), 10, "KB");
+        return new QuotaSlidervalueInfo(Math.log(100 * 1024), 100, "KB");
     }
 
     public QuotaSlidervalueInfo getMaxQuotaSliderValue() throws Exception {
@@ -170,11 +177,68 @@ public class QuotaStatsActions implements Serializable {
         return new QuotaSlidervalueInfo(27.70, 999, "GB");
     }
 
+    /**
+     * @since 5.7
+     */
+    public void saveQuotaActivatedOnUsersWorkspaces() {
+        Map<String, String> customParameters = new HashMap<String, String>();
+        customParameters.put(QUOTA_STATS_USERWORKSPACES,
+                Boolean.toString(isActivateQuotaOnUsersWorkspaces()));
+        customParameters.put(QUOTA_MAX_SIZE_USERWORKSPACES,
+                Long.toString(getMaxQuotaOnUsersWorkspaces()));
+        try {
+            getConfigurationGenerator().saveFilteredConfiguration(
+                    customParameters);
+        } catch (ConfigurationException e) {
+            log.error(e, e);
+        }
+    }
+
+    /**
+     * @since 5.7
+     */
+    public void initQuotaActivatedOnUserWorkspaces() {
+        if (getConfigurationGenerator().init()) {
+            setActivateQuotaOnUsersWorkspaces((Boolean.parseBoolean((String) setupConfigGenerator.getUserConfig().get(
+                    QUOTA_STATS_USERWORKSPACES))));
+            String mx = (String) setupConfigGenerator.getUserConfig().get(
+                    QUOTA_MAX_SIZE_USERWORKSPACES);
+            if (mx == null || mx.equals("")) {
+                mx = "-1";
+            }
+            setMaxQuotaOnUsersWorkspaces(Long.parseLong(mx));
+        }
+    }
+
+    public boolean isActivateQuotaOnUsersWorkspaces() {
+        return activateQuotaOnUsersWorkspaces;
+    }
+
+    public void setActivateQuotaOnUsersWorkspaces(
+            boolean activateQuotaOnUsersWorkspaces) {
+        this.activateQuotaOnUsersWorkspaces = activateQuotaOnUsersWorkspaces;
+    }
+
+    public long getMaxQuotaOnUsersWorkspaces() {
+        return maxQuotaOnUsersWorkspaces;
+    }
+
+    public void setMaxQuotaOnUsersWorkspaces(long maxQuotaOnUsersWorkspaces) {
+        this.maxQuotaOnUsersWorkspaces = maxQuotaOnUsersWorkspaces;
+    }
+
     QuotaStatsService getQuotaStatsService() {
         if (quotaStatsService == null) {
             quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
         }
         return quotaStatsService;
+    }
+
+    ConfigurationGenerator getConfigurationGenerator() {
+        if (setupConfigGenerator == null) {
+            setupConfigGenerator = new ConfigurationGenerator();
+        }
+        return setupConfigGenerator;
     }
 
     class QuotaSlidervalueInfo {

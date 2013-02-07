@@ -1,0 +1,114 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:f="http://java.sun.com/jsf/core">
+
+<a4j:region renderRegionOnly="true">
+  <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel">
+   <h:form id="set_quota_userworkspace_form">
+  <script>
+
+  var GB_label = "#{messages['label.unit.GB']}";
+  var MB_label = "#{messages['label.unit.MB']}";
+  var KB_label = "#{messages['label.unit.KB']}";
+  var B_label = "#{messages['label.unit.B']}";
+
+  jQuery(document).ready(function() {
+    setInitialValue(#{quotaStatsActions.maxQuotaOnUsersWorkspaces});
+    jQuery("#set_quota_userworkspace_form\\:nxl_edit_userworkspaces_quota\\:sliderInput").css("display","none");
+    changeUnlimited();
+  });
+  
+
+  function setInitialValue(value) {
+    value = Number(value);
+    if (value == -1) {
+    } else {
+      value = Math.log(value);
+      console.log(value);
+      var sVal = jQuery("#set_quota_userworkspace_form\\:nxl_edit_userworkspaces_quota\\:slider").find("input");
+      sVal.val(value);
+      sVal.trigger('focus');
+      sVal.trigger('blur');
+    }
+  }
+	
+
+  function changeUnlimited() {
+     var checked = jQuery("#set_quota_userworkspace_form input[type='radio']:checked").val();
+     setUnlimited(checked);
+  }
+
+  function setUnlimited(isUnlimited) {
+    if (isUnlimited == 'false' || !isUnlimited) {
+      jQuery('#maxValue').val("-1");
+      jQuery('#sliderDisplay').html("");
+      jQuery("#sliderTable").css("display","none")
+
+    } else {
+      jQuery("#sliderTable").css("display","block");
+      var sVal = jQuery("#set_quota_userworkspace_form\\:nxl_edit_userworkspaces_quota\\:slider").find("input");
+      sVal.trigger('focus');
+      sVal.trigger('blur');
+      displayQuotaSize(sVal.val());
+    }
+  }
+
+  function displayQuotaSize(value) {
+    var gb = 1024*1024*1024;
+    var mb = 1024*1024;
+    var kb = 1024;
+    var label = "";
+    value = Number(value);
+    value = Math.exp(value);
+    value = Math.round(value / 1000)*1000;
+    jQuery('#set_quota_userworkspace_form\\:nxl_edit_userworkspaces_quota\\:maxValue').val(value);
+    if (value > gb) {
+      label = Math.round(value/gb) + " " + GB_label;
+    } else if (value > mb) {
+      label = Math.round(value/mb) + " " + MB_label;
+    } else if (value > kb) {
+      label = Math.round(value/kb) + " " + KB_label;
+    } else {
+     label = value + " " + B_label;
+    }
+    jQuery('#sliderDisplay').html(label);
+  }
+  </script>
+
+<h:outputText value="#{messages['adm.quota.set.personalworkspace']}"/>
+ 
+ <h:selectOneRadio id="unlimitedChk" value="#{quotaStatsActions.activateQuotaOnUsersWorkspaces}" 
+  onchange="changeUnlimited()">
+  <f:selectItem
+    itemLabel="#{messages['label.forum.thread.moderated.yes']}"
+    itemValue="#{true}"/>
+  <f:selectItem
+     itemLabel="#{messages['label.forum.thread.moderated.no']}"
+     itemValue="#{false}"/>
+ </h:selectOneRadio>
+ 
+  <nxu:set var="canEditQuota" cache="true" value="#{webActions.checkFilter('editQuota')}">
+   <nxl:layout mode="#{nxu:test(canEditQuota, 'edit', 'view')}" name="edit_userworkspaces_quota" value="#{quotaStatsActions}" />
+  </nxu:set>
+
+  <nxh:commandButton action="#{quotaStatsActions.saveQuotaActivatedOnUsersWorkspaces}"
+    id="activate_quota_on_userworkspaces"
+    value="#{messages['command.save']}" reRender="setQuotaOnUserWorkspacesPanel"
+    styleClass="button" />
+
+  <h:message styleClass="errorMessage"
+      for="unlimitedChk" id="unlimitedChk_message" />
+   
+  </h:form>
+ <h:messages/>
+ </a4j:outputPanel>
+</a4j:region>
+
+</div>

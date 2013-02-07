@@ -25,7 +25,6 @@
   function setInitialValue(value) {
     value = Number(value);
     if (value == -1) {
-      setUnlimited(true);
     } else {
       value = Math.log(value);
       console.log(value);
@@ -33,27 +32,6 @@
       sVal.val(value);
       sVal.trigger('focus');
       sVal.trigger('blur');
-    }
-  }
-
-  function changeUnlimited(chk) {
-     setUnlimited(jQuery(chk).attr("checked"));
-  }
-
-  function setUnlimited(isUnlimited) {
-    if (isUnlimited) {
-      jQuery("#unlimitedChk").attr("checked", true);
-      jQuery('#quota_edit\\:nxl_edit_quota\\:maxValue').val("-1");
-      jQuery('#sliderDisplay').html("");
-      jQuery("#sliderTable").css("display","none")
-
-    } else {
-      jQuery("#unlimitedChk").removeAttr("checked");
-      jQuery("#sliderTable").css("display","block")
-      var sVal = jQuery("#quota_edit\\:nxl_edit_quota\\:slider").find("input");
-      sVal.trigger('focus');
-      sVal.trigger('blur');
-      displayQuotaSize(sVal.val());
     }
   }
 

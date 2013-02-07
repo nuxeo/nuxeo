@@ -213,7 +213,6 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             // quota can not be set, don't continue
             return quotaOnChildren;
         }
-        // TODO sort children by maxQuota to limit the search
         List<DocumentModel> children = new LinkedList<DocumentModel>(
                 session.getChildren(doc.getRef(), null, null, new QuotaSorter(
                         false)));

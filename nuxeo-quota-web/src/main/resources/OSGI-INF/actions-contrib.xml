@@ -4,9 +4,21 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="QuotaStatistics" link="/incl/quota/adminQuotaStats.xhtml"
+    <action id="QuotaStatistics" link="view_admin-fragment.xhtml"
       label="adm.quota.statistics" order="45">
       <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+    
+    <action id="QuotaStatistics_computeInitialStas" link="/incl/quota/adminQuotaStats.xhtml"
+      label="adm.quota.statistics" order="45">
+      <category>QuotaStatistics_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+    
+   <action id="QuotaStatistics_activate" link="/incl/quota/adminActivateQuota.xhtml"
+      label="adm.quota.activate" order="50">
+      <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
