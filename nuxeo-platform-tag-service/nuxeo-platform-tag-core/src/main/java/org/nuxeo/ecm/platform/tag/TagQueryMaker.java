@@ -115,14 +115,15 @@ public class TagQueryMaker extends NXQLQueryMaker {
      */
     @Override
     protected void addJoin(int kind, String alias, Table table, String column,
-            Table contextTable, String contextColumn, String name, int index) {
+            Table contextTable, String contextColumn, String name, int index,
+            String primaryType) {
         if (table.getKey().equals(SCHEMA_TAG)) {
             kind = Join.INNER;
             contextTable = relationTable;
             contextColumn = PROPERTY_TARGET;
         }
         super.addJoin(kind, alias, table, column, contextTable, contextColumn,
-                name, index);
+                name, index, null);
     }
 
     @Override
