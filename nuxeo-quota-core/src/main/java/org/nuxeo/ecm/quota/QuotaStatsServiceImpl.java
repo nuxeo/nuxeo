@@ -17,16 +17,19 @@
  */
 package org.nuxeo.ecm.quota;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.Event;
@@ -187,13 +190,14 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         if (maxAllowedOnChildrenToSetQuota < 0) {
             return false;
         }
-        Long quotaOnChildren = canSetMaxQuotaOnChildrenTree(
-                maxAllowedOnChildrenToSetQuota, -1L, parent, session);
-        if (quotaOnChildren > 0
-                && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
-            return false;
-        }
-        return true;
+        // Long quotaOnChildren = canSetMaxQuotaOnChildrenTree(
+        // maxAllowedOnChildrenToSetQuota, -1L, parent, session);
+        // if (quotaOnChildren > 0
+        // && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+        // return false;
+        // }
+        return canSetMaxQuotaOnChildrenTree(parent,
+                maxAllowedOnChildrenToSetQuota, session);
     }
 
     protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc,
@@ -240,6 +244,27 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
         }
         return quotaOnChildren;
+    }
+
+    protected boolean canSetMaxQuotaOnChildrenTree(DocumentModel parent,
+            Long maxAllowedOnChildrenToSetQuota, CoreSession session)
+            throws ClientException {
+        long quotaOnChildren = 0;
+        IterableQueryResult results = session.queryAndFetch(
+                String.format(
+                        "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' "
+                                + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ORDER BY dss:maxSize DESC",
+                        parent.getPath()), "NXQL");
+
+        for (Map<String, Serializable> result : results) {
+            Long maxSize = (Long) result.get("dss:maxSize");
+            quotaOnChildren = quotaOnChildren
+                    + (maxSize == null || maxSize == -1 ? 0 : maxSize);
+            if (quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+                return false;
+            }
+        }
+        return true;
     }
 
     class QuotaSorter implements Sorter {
