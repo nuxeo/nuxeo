@@ -575,6 +575,7 @@
             lock status)
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -701,7 +702,11 @@
     </widget>
 
     <widget name="summary_current_document_states" type="summary_current_document_states">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
+        <control name="handlingLabels">true</control>
         <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
