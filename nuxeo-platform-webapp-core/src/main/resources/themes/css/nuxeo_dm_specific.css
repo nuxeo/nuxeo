@@ -55,10 +55,6 @@ author: lkemen@nuxeo.com
 
 .clipboardEmptyMessage { color: "gray.dark (__FLAVOR__ color)"; font-style: italic; padding: 0 .2em .2em; text-align: center }
 
-/* Fix icon size to allow icon upload in Nuxeo Studio */
-.bigIcon { width: 50px }
-.smallIcon { height: 16px; width: 16px }
-
 /* check if it's still used */
 .wizardFrame { border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)"; padding: 0 .4em; width: 800px }
 .wizardFrame .wizardFinish h4 img { float: left; margin-right: 1em }
