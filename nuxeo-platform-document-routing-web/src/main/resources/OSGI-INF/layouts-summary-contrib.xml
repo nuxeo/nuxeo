@@ -17,6 +17,7 @@
             the started route.
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -38,8 +39,12 @@
     point="widgets">
 
     <widget name="summary_document_route" type="summary_document_route">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handlingLabels">true</control>
       </controls>
     </widget>
 

@@ -2,6 +2,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -15,9 +16,23 @@
     <nxu:set var="showFirstForm" value="#{currentDashBoardItemsExceptPublishingTasks.size() == 1}" cache="true">
 
       <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
-        <h3 class="summaryTitle">
-          <h:outputText value="#{messages['label.document.routing.your.tasks']}" />
-        </h3>
+
+        <c:if test="#{widget.handlingLabels}">
+          <c:if test="#{!empty widget.label}">
+            <ui:include src="/widgets/incl/widget_label_template.xhtml">
+              <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+            </ui:include>
+          </c:if>
+          <c:if test="#{empty widget.label}">
+            <ui:include src="/widgets/incl/label_template.xhtml">
+              <ui:param name="label" value="label.document.routing.your.tasks" />
+              <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+              <ui:param name="translated" value="true" />
+              <ui:param name="required" value="#{widget.required}" />
+              <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+            </ui:include>
+          </c:if>
+        </c:if>
 
         <c:forEach var="dashboardItem" items="#{currentDashBoardItemsExceptPublishingTasks}"
           varStatus="status">
@@ -31,7 +46,7 @@
               id="#{idPrefix}_valueHolder"
               var="actionClicked"
               defaultValue="false">
-             <f:subview id="#{idPrefix}_subview_process_task" rendered="#{!showFirstForm}"> 
+             <f:subview id="#{idPrefix}_subview_process_task" rendered="#{!showFirstForm}">
                <a4j:commandButton id="#{idPrefix}_link_cancel"
                   value="#{messages['label.document.routing.cancel.task']}"
                   ajaxSingle="true"
@@ -45,7 +60,7 @@
                    target="#{selectionActions.selectedValueHolder}" />
                  <nxu:actionListenerMethod
                    value="#{selectionActions.onClick}" />
-   	           </a4j:commandButton>  
+               </a4j:commandButton>
                <a4j:commandButton id="#{idPrefix}_link"
                  value="#{messages['label.document.routing.process.task']}"
                  ajaxSingle="true"
@@ -61,7 +76,7 @@
                    value="#{selectionActions.onClick}" />
    	           </a4j:commandButton>
               </f:subview>
-              
+
 
               <f:subview id="#{idPrefix}_subview">
                 <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">

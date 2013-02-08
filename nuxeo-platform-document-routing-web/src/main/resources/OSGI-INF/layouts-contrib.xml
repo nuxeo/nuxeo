@@ -95,6 +95,7 @@
             current document. Duplicate of "summary_current_document_single_tasks" widget. 
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>routing</category>
         </categories>
@@ -122,6 +123,7 @@
             current document.
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>routing</category>
         </categories>
@@ -153,11 +155,22 @@
       </controls>
     </widget>
     <widget name="current_route_user_tasks" type="current_route_user_tasks">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handlingLabels">true</control>
       </controls>
     </widget>
-    <widget name="current_route_open_tasks" type="current_route_open_tasks" />
+    <widget name="current_route_open_tasks" type="current_route_open_tasks">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <controls mode="any">
+        <control name="handlingLabels">true</control>
+      </controls>
+    </widget>
 
     <widget name="current_route_previous_tasks" type="contentViewWithForms">
       <labels>

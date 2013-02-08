@@ -3,6 +3,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
@@ -11,9 +12,22 @@
     cache="true">
 
     <c:if test="#{!empty tasks}">
-      <h3 class="summaryTitle">
-        <h:outputText value="#{messages['label.document.routing.open.tasks']}" />
-      </h3>
+      <c:if test="#{widget.handlingLabels}">
+        <c:if test="#{!empty widget.label}">
+          <ui:include src="/widgets/incl/widget_label_template.xhtml">
+            <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+          </ui:include>
+        </c:if>
+        <c:if test="#{empty widget.label}">
+          <ui:include src="/widgets/incl/label_template.xhtml">
+            <ui:param name="label" value="label.document.routing.open.tasks" />
+            <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+            <ui:param name="translated" value="true" />
+            <ui:param name="required" value="#{widget.required}" />
+            <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+          </ui:include>
+        </c:if>
+      </c:if>
 
       <c:forEach var="task" items="#{tasks}" varStatus="status">
         <div>
