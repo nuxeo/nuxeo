@@ -548,6 +548,7 @@
             </ul>
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -690,7 +691,11 @@
     </widget>
 
     <widget name="summary_current_document_single_tasks" type="summary_current_document_single_tasks">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
+        <control name="handlingLabels">true</control>
         <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
