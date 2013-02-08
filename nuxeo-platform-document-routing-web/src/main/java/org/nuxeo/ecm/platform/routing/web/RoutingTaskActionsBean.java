@@ -36,9 +36,9 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.plexus.util.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -104,10 +104,10 @@ public class RoutingTaskActionsBean implements Serializable {
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
-    
+
     @In(create = true, required = false)
     protected transient ActionContextProvider actionContextProvider;
-    
+
     @In(create = true, required = false)
     protected ContentViewActions contentViewActions;
 
@@ -117,7 +117,7 @@ public class RoutingTaskActionsBean implements Serializable {
 
     @RequestParameter("button")
     protected String button;
-    
+
     protected ActionManager actionService;
 
     public void validateTaskDueDate(FacesContext context,
@@ -466,7 +466,7 @@ public class RoutingTaskActionsBean implements Serializable {
                 data.put("comment", formVariables.get("comment"));
             }
         }
-  
+
         // get task documents
         boolean hasErrors = false;
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
@@ -502,7 +502,7 @@ public class RoutingTaskActionsBean implements Serializable {
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         return null;
     }
-    
+
     private ActionManager getActionService() {
         if (actionService == null) {
             actionService = Framework.getLocalService(ActionManager.class);
