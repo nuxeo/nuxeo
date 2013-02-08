@@ -1,6 +1,7 @@
 <c:if test="true"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
 <c:if test="false">
@@ -14,26 +15,11 @@ Accepted parameters:
 - labelStyleClass: CSS style class for the label item, optional
 </c:if>
 
-  <nxu:set var="widgetLabel"
-    value="#{nxu:test(widget.translated, messages[widget.label], widget.label)}">
-  <nxu:set var="widgetHelpLabel"
-    value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}">
-
-    <c:if test="#{empty widget.helpLabel or hideHelp}">
-      <h:outputText value="#{widgetLabel}"
-        styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
-    </c:if>
-    <c:if test="#{not empty widget.helpLabel and not hideHelp}">
-      <div class="widgetHelpLabel">
-        <h:outputText value="#{widgetLabel}"
-          styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
-      </div>
-      <div class="tooltip">
-        #{widgetHelpLabel}
-      </div>
-    </c:if>
-
-  </nxu:set>
-  </nxu:set>
+  <ui:include src="/widgets//incl/label_template.xhtml">
+    <ui:param name="label" value="#{widget.label}" />
+    <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+    <ui:param name="translated" value="#{widget.translated}" />
+    <ui:param name="required" value="#{widget.required}" />
+  </ui:include>
 
 </c:if>
