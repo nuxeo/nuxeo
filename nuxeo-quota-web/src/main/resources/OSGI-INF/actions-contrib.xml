@@ -10,7 +10,7 @@
       <filter-id>only_for_manager</filter-id>
     </action>
     
-    <action id="QuotaStatistics_computeInitialStas" link="/incl/quota/adminQuotaStats.xhtml"
+    <action id="QuotaStatistics_computeInitialStas" link="/incl/quota/adminQuotaInitialComputation.xhtml"
       label="adm.quota.statistics" order="45">
       <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
@@ -18,6 +18,12 @@
     
    <action id="QuotaStatistics_activate" link="/incl/quota/adminActivateQuota.xhtml"
       label="adm.quota.activate" order="50">
+      <category>QuotaStatistics_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+    
+    <action id="QuotaStatistics_stats" link="/incl/quota/adminQuotaStats.xhtml"
+      label="action.view.quota" order="55">
       <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
