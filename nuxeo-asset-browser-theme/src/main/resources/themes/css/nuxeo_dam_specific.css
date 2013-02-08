@@ -56,6 +56,7 @@ author: lkemen@nuxeo.com
   border-style: solid none }
 
 .gridStyle6 .detail {
+  clear: both;
   margin-top: -2.5em;
   text-align: right }
 
@@ -99,8 +100,10 @@ author: lkemen@nuxeo.com
 .selectedItem:hover .fieldColumn { color: #fff }
 
 /* Pictures and video thumbnails in bubbleBoxes */
-.thumbnailContainer { text-align: center }
-.thumbnailContainer img { border: 2px solid #fff }
+.thumbnailContainer { text-align: center;
+  height: 75px }
+.thumbnailContainer img { border: 2px solid #fff;
+  max-height: 70px }
 
 /* =Assets View */
 .gridStyle4 .widgetPanel { margin: 0 .1em .3em; padding: 0 }
