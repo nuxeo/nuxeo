@@ -45,6 +45,10 @@ public class FulltextUpdaterWork extends PrioritizedWork {
 
     private static final Log log = LogFactory.getLog(FulltextUpdaterWork.class);
 
+    protected static final String CATEGORY = "fulltextUpdater";
+
+    protected static final String TITLE = "Fulltext Updater";
+
     /**
      * Info about what should be updated in a fulltext index.
      * <p>
@@ -77,7 +81,7 @@ public class FulltextUpdaterWork extends PrioritizedWork {
 
     protected String repositoryName;
 
-    protected final Collection<FulltextUpdaterInfo> infos;
+    protected Collection<FulltextUpdaterInfo> infos;
 
     public FulltextUpdaterWork(boolean simpletext, String repositoryName,
             Collection<FulltextUpdaterInfo> infos) {
@@ -90,12 +94,12 @@ public class FulltextUpdaterWork extends PrioritizedWork {
 
     @Override
     public String getCategory() {
-        return "fulltextUpdater";
+        return CATEGORY;
     }
 
     @Override
     public String getTitle() {
-        return "Fulltext Updater";
+        return TITLE;
     }
 
     @Override
@@ -172,6 +176,8 @@ public class FulltextUpdaterWork extends PrioritizedWork {
             session.save();
         }
         setStatus(null);
+        infos.clear();
+        infos = null;
     }
 
     protected String getFulltextPropertyName(String indexName) {

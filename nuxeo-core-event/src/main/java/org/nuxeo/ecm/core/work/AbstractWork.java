@@ -264,11 +264,13 @@ public abstract class AbstractWork implements Work {
         try {
             if (session != null) {
                 CoreInstance.getInstance().close(session);
+                session = null;
             }
         } finally {
             if (loginContext != null) {
                 try {
                     loginContext.logout();
+                    loginContext = null;
                 } catch (LoginException le) {
                     log.error("Error while logging out", le);
                 }
