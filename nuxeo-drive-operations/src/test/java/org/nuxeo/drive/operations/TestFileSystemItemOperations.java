@@ -55,6 +55,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -338,41 +340,11 @@ public class TestFileSystemItemOperations {
         assertNotNull(children);
         assertEquals(2, children.size());
 
-        DocumentBackedFileItem child = children.get(0);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file3.getId(),
-                child.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId(),
-                child.getParentId());
-        assertEquals("Third file.odt", child.getName());
-        assertFalse(child.isFolder());
-        assertEquals("Administrator", child.getCreator());
-        assertTrue(child.getCanRename());
-        assertTrue(child.getCanDelete());
-        assertTrue(child.getCanUpdate());
-        assertEquals("nxbigfile/test/" + file3.getId()
-                + "/blobholder:0/Third%20file.odt", child.getDownloadURL());
-        assertEquals("md5", child.getDigestAlgorithm());
-        assertEquals(
-                ((org.nuxeo.ecm.core.api.Blob) file3.getPropertyValue("file:content")).getDigest(),
-                child.getDigest());
-
-        child = children.get(1);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file4.getId(),
-                child.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId(),
-                child.getParentId());
-        assertEquals("Fourth file.odt", child.getName());
-        assertFalse(child.isFolder());
-        assertEquals("Administrator", child.getCreator());
-        assertTrue(child.getCanRename());
-        assertTrue(child.getCanDelete());
-        assertTrue(child.getCanUpdate());
-        assertEquals("nxbigfile/test/" + file4.getId()
-                + "/blobholder:0/Fourth%20file.odt", child.getDownloadURL());
-        assertEquals("md5", child.getDigestAlgorithm());
-        assertEquals(
-                ((org.nuxeo.ecm.core.api.Blob) file4.getPropertyValue("file:content")).getDigest(),
-                child.getDigest());
+        // Don't check children order against MySQL database because of the
+        // milliseconds limitation
+        boolean ordered = !(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
+        checkChildren(children, subFolder1.getId(), file3.getId(),
+                file4.getId(), ordered);
     }
 
     @Test
@@ -868,5 +840,65 @@ public class TestFileSystemItemOperations {
         }
         session.setACP(doc.getRef(), acp, true);
         session.save();
+    }
+
+    protected void checkChildren(List<DocumentBackedFileItem> folderChildren,
+            String folderId, String child1Id, String child2Id, boolean ordered)
+            throws Exception {
+
+        boolean isChild1Found = false;
+        boolean isChild2Found = false;
+        int childrenCount = 0;
+
+        for (DocumentBackedFileItem fsItem : folderChildren) {
+            // Check child 1
+            if (!isChild1Found
+                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + child1Id).equals(fsItem.getId())) {
+                if (!ordered || ordered && childrenCount == 0) {
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
+                            fsItem.getParentId());
+                    assertEquals("Third file.odt", fsItem.getName());
+                    assertFalse(fsItem.isFolder());
+                    assertEquals("Administrator", fsItem.getCreator());
+                    assertTrue(fsItem.getCanRename());
+                    assertTrue(fsItem.getCanDelete());
+                    assertTrue(fsItem.getCanUpdate());
+                    assertEquals("nxbigfile/test/" + file3.getId()
+                            + "/blobholder:0/Third%20file.odt",
+                            fsItem.getDownloadURL());
+                    assertEquals("md5", fsItem.getDigestAlgorithm());
+                    assertEquals(
+                            ((org.nuxeo.ecm.core.api.Blob) file3.getPropertyValue("file:content")).getDigest(),
+                            fsItem.getDigest());
+                    isChild1Found = true;
+                    childrenCount++;
+                }
+            }
+            // Check child 2
+            else if (!isChild2Found
+                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + child2Id).equals(fsItem.getId())) {
+                if (!ordered || ordered && childrenCount == 1) {
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
+                            fsItem.getParentId());
+                    assertEquals("Fourth file.odt", fsItem.getName());
+                    assertFalse(fsItem.isFolder());
+                    assertEquals("Administrator", fsItem.getCreator());
+                    assertTrue(fsItem.getCanRename());
+                    assertTrue(fsItem.getCanDelete());
+                    assertTrue(fsItem.getCanUpdate());
+                    assertEquals("nxbigfile/test/" + file4.getId()
+                            + "/blobholder:0/Fourth%20file.odt",
+                            fsItem.getDownloadURL());
+                    assertEquals("md5", fsItem.getDigestAlgorithm());
+                    assertEquals(
+                            ((org.nuxeo.ecm.core.api.Blob) file4.getPropertyValue("file:content")).getDigest(),
+                            fsItem.getDigest());
+                }
+            } else {
+                fail(String.format(
+                        "FileSystemItem %s doesn't match any expected.",
+                        fsItem.getId()));
+            }
+        }
     }
 }
