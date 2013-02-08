@@ -50,9 +50,9 @@ author: lkemen@nuxeo.com
    background: none "subtabs.selected (__FLAVOR__ background)"; border-color: "subtabs.selected (__FLAVOR__ border)" "subtabs.selected (__FLAVOR__ border)" "noborder (__FLAVOR__ border)"; border-style: solid; border-width: 1px; color: "subtabs.selected (__FLAVOR__ color)"; padding: .2em .4em .3em; text-shadow: none }
 
 /* =Navigation controls */
-.pageNavigationControls, #pageNavigationControls { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; margin: 0 0 .4em; padding: .2em 0 0; text-align: center }
-.pageNavigationControls span, #pageNavigationControls span { color: "gray.dark (__FLAVOR__ color)"; font-weight: bold; margin: 1em .5em; vertical-align: top }
-.pageNavigationControls input, #pageNavigationControls input { border: medium none; box-shadow: none; margin-left: .4em }
+.pageNavigationControls, #pageNavigationControls { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; margin: 0 0 .5em; padding: 0; text-align: center }
+.pageNavigationControls span, #pageNavigationControls span { color: "gray.dark (__FLAVOR__ color)"; font-weight: bold; font-size: .9em; margin: 0 .5em; vertical-align: middle }
+.pageNavigationControls input, #pageNavigationControls input { border: medium none; box-shadow: none; margin: 0 .3em; padding: 0; vertical-align: middle }
 .pageNavigationControls input[disabled=disabled], #pageNavigationControls input[disabled=disabled] { cursor: default; filter: alpha(opacity=50); opacity: .4 }
 
 /* =Back Arrow */
