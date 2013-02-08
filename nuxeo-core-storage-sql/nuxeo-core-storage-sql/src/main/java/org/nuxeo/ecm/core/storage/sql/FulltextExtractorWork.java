@@ -164,7 +164,11 @@ public class FulltextExtractorWork extends AbstractWork {
             Framework.getLocalService(WorkManager.class).schedule(work);
         }
         setStatus(null);
-        // reduce memory footprint of completed job
+    }
+
+    @Override
+    public void cleanUp(boolean ok, Exception e) {
+        super.cleanUp(ok, e);
         fulltextInfo = null;
         fulltextParser = null;
         fulltextParserClass = null;

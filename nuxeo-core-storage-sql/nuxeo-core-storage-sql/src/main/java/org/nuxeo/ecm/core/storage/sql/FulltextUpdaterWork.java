@@ -176,8 +176,6 @@ public class FulltextUpdaterWork extends PrioritizedWork {
             session.save();
         }
         setStatus(null);
-        infos.clear();
-        infos = null;
     }
 
     protected String getFulltextPropertyName(String indexName) {
@@ -189,4 +187,10 @@ public class FulltextUpdaterWork extends PrioritizedWork {
         return name;
     }
 
+    @Override
+    public void cleanUp(boolean ok, Exception e) {
+        super.cleanUp(ok, e);
+        infos.clear();
+        infos = null;
+    }
 }
