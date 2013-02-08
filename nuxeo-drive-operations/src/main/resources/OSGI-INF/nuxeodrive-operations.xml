@@ -25,6 +25,8 @@
       class="org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests" />
     <operation
       class="org.nuxeo.drive.operations.test.NuxeoDriveTearDownIntegrationTests" />
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveWaitForAsyncCompletion" />
   </extension>
 
 </component>

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
@@ -177,13 +178,13 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     protected String getLastRootFilteringClause(Set<IdRef> lastActiveRootRefs) {
         StringBuilder rootPathClause = new StringBuilder();
         if (!lastActiveRootRefs.isEmpty()) {
-            rootPathClause.append("log.docUUID in (");
-            for (IdRef ref : lastActiveRootRefs) {
-                rootPathClause.append("'");
-                rootPathClause.append(ref.toString());
-                rootPathClause.append("'");
+            List<String> ids = new ArrayList<String>();
+            for  (IdRef ref : lastActiveRootRefs) {
+                ids.add(ref.toString());
             }
-            rootPathClause.append(")");
+            rootPathClause.append("log.docUUID in ('");
+            rootPathClause.append(StringUtils.join(ids, "', '"));
+            rootPathClause.append("')");
         }
         return rootPathClause.toString();
     }

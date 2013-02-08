@@ -52,6 +52,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -521,39 +523,39 @@ public class TestDefaultFileSystemItemFactory {
         folder = session.getDocument(folder.getRef());
         folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
         // Note
-        Blob childBlob = new StringBlob("This is the first child file.");
-        childBlob.setFilename("First child file.txt");
+        Blob childBlob = new StringBlob("This is the Note child.");
+        childBlob.setFilename("Note child.txt");
         folderItem.createFile(childBlob);
         // File
-        childBlob = new StringBlob("This is the second child file.");
-        childBlob.setFilename("Second child file.odt");
+        childBlob = new StringBlob("This is the File child.");
+        childBlob.setFilename("File child.odt");
         childBlob.setMimeType("application/vnd.oasis.opendocument.text");
         folderItem.createFile(childBlob);
         // Folder
         folderItem.createFolder("Sub-folder");
 
         DocumentModelList children = session.query(String.format(
-                "select * from Document where ecm:parentId = '%s' order by dc:created asc",
+                "select * from Document where ecm:parentId = '%s' order by ecm:primaryType asc",
                 folder.getId()));
         assertEquals(3, children.size());
-        // Check Note
-        DocumentModel note = children.get(0);
-        assertEquals("Note", note.getType());
-        assertEquals("First child file.txt", note.getTitle());
-        childBlob = note.getAdapter(BlobHolder.class).getBlob();
-        assertEquals("First child file.txt", childBlob.getFilename());
-        assertEquals("This is the first child file.", childBlob.getString());
         // Check File
-        DocumentModel file = children.get(1);
+        DocumentModel file = children.get(0);
         assertEquals("File", file.getType());
-        assertEquals("Second child file.odt", file.getTitle());
+        assertEquals("File child.odt", file.getTitle());
         childBlob = (Blob) file.getPropertyValue("file:content");
-        assertEquals("Second child file.odt", childBlob.getFilename());
-        assertEquals("This is the second child file.", childBlob.getString());
+        assertEquals("File child.odt", childBlob.getFilename());
+        assertEquals("This is the File child.", childBlob.getString());
         // Check Folder
-        DocumentModel subFolder = children.get(2);
+        DocumentModel subFolder = children.get(1);
         assertEquals("Folder", subFolder.getType());
         assertEquals("Sub-folder", subFolder.getTitle());
+        // Check Note
+        DocumentModel note = children.get(2);
+        assertEquals("Note", note.getType());
+        assertEquals("Note child.txt", note.getTitle());
+        childBlob = note.getAdapter(BlobHolder.class).getBlob();
+        assertEquals("Note child.txt", childBlob.getFilename());
+        assertEquals("This is the Note child.", childBlob.getString());
 
         // ------------------------------------------------------
         // FolderItem#getChildren
@@ -575,55 +577,12 @@ public class TestDefaultFileSystemItemFactory {
 
         List<FileSystemItem> folderChildren = folderItem.getChildren();
         assertEquals(4, folderChildren.size());
-        // Check Note
-        FileSystemItem fsItem = folderChildren.get(0);
-        assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + note.getId(),
-                fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
-                fsItem.getParentId());
-        assertEquals("First child file.txt", fsItem.getName());
-        assertFalse(fsItem.isFolder());
-        Blob fileItemBlob = ((FileItem) fsItem).getBlob();
-        assertEquals("First child file.txt", fileItemBlob.getFilename());
-        assertEquals("This is the first child file.", fileItemBlob.getString());
-        // Check File
-        fsItem = folderChildren.get(1);
-        assertTrue(fsItem instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
-                fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
-                fsItem.getParentId());
-        assertEquals("Second child file.odt", fsItem.getName());
-        assertFalse(fsItem.isFolder());
-        fileItemBlob = ((FileItem) fsItem).getBlob();
-        assertEquals("Second child file.odt", fileItemBlob.getFilename());
-        assertEquals("This is the second child file.", fileItemBlob.getString());
-        // Check sub-Folder
-        fsItem = folderChildren.get(2);
-        assertTrue(fsItem instanceof FolderItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
-                fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
-                fsItem.getParentId());
-        assertEquals("Sub-folder", fsItem.getName());
-        assertTrue(fsItem.isFolder());
-        List<FileSystemItem> childFolderChildren = ((FolderItem) fsItem).getChildren();
-        assertNotNull(childFolderChildren);
-        assertEquals(0, childFolderChildren.size());
-        // Check other File
-        fsItem = folderChildren.get(3);
-        assertTrue(fsItem instanceof FileItem);
-        assertEquals(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + adaptableChild.getId(),
-                fsItem.getId());
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
-                fsItem.getParentId());
-        assertEquals("Another file.odt", fsItem.getName());
-        assertFalse(fsItem.isFolder());
-        fileItemBlob = ((FileItem) fsItem).getBlob();
-        assertEquals("Another file.odt", fileItemBlob.getFilename());
-        assertEquals("Content of another file.", fileItemBlob.getString());
+        // Don't check children order against MySQL database because of the
+        // milliseconds limitation
+        boolean ordered = !(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
+        checkChildren(folderChildren, folder.getId(), note.getId(),
+                file.getId(), subFolder.getId(), adaptableChild.getId(),
+                ordered);
     }
 
     protected void setPermission(DocumentModel doc, String userName,
@@ -673,4 +632,88 @@ public class TestDefaultFileSystemItemFactory {
         }
     }
 
+    protected void checkChildren(List<FileSystemItem> folderChildren,
+            String folderId, String noteId, String fileId, String subFolderId,
+            String otherFileId, boolean ordered) throws Exception {
+
+        boolean isNoteFound = false;
+        boolean isFileFound = false;
+        boolean isSubFolderFound = false;
+        boolean isOtherFileFound = false;
+        int childrenCount = 0;
+
+        for (FileSystemItem fsItem : folderChildren) {
+            // Check Note
+            if (!isNoteFound
+                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + noteId).equals(fsItem.getId())) {
+                if (!ordered || ordered && childrenCount == 0) {
+                    assertTrue(fsItem instanceof FileItem);
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
+                            fsItem.getParentId());
+                    assertEquals("Note child.txt", fsItem.getName());
+                    assertFalse(fsItem.isFolder());
+                    Blob fileItemBlob = ((FileItem) fsItem).getBlob();
+                    assertEquals("Note child.txt", fileItemBlob.getFilename());
+                    assertEquals("This is the Note child.",
+                            fileItemBlob.getString());
+                    isNoteFound = true;
+                    childrenCount++;
+                }
+            }
+            // Check File
+            else if (!isFileFound
+                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + fileId).equals(fsItem.getId())) {
+                if (!ordered || ordered && childrenCount == 1) {
+                    assertTrue(fsItem instanceof FileItem);
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
+                            fsItem.getParentId());
+                    assertEquals("File child.odt", fsItem.getName());
+                    assertFalse(fsItem.isFolder());
+                    Blob fileItemBlob = ((FileItem) fsItem).getBlob();
+                    assertEquals("File child.odt", fileItemBlob.getFilename());
+                    assertEquals("This is the File child.",
+                            fileItemBlob.getString());
+                    isFileFound = true;
+                    childrenCount++;
+                }
+            }
+            // Check sub-Folder
+            else if (!isSubFolderFound
+                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolderId).equals(fsItem.getId())) {
+                if (!ordered || ordered && childrenCount == 2) {
+                    assertTrue(fsItem instanceof FolderItem);
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
+                            fsItem.getParentId());
+                    assertEquals("Sub-folder", fsItem.getName());
+                    assertTrue(fsItem.isFolder());
+                    List<FileSystemItem> childFolderChildren = ((FolderItem) fsItem).getChildren();
+                    assertNotNull(childFolderChildren);
+                    assertEquals(0, childFolderChildren.size());
+                    isSubFolderFound = true;
+                    childrenCount++;
+                }
+            }
+            // Check other File
+            else if (!isOtherFileFound
+                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + otherFileId).equals(fsItem.getId())) {
+                if (!ordered || ordered && childrenCount == 3) {
+                    assertTrue(fsItem instanceof FileItem);
+                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
+                            fsItem.getParentId());
+                    assertEquals("Another file.odt", fsItem.getName());
+                    assertFalse(fsItem.isFolder());
+                    Blob fileItemBlob = ((FileItem) fsItem).getBlob();
+                    assertEquals("Another file.odt", fileItemBlob.getFilename());
+                    assertEquals("Content of another file.",
+                            fileItemBlob.getString());
+                    isOtherFileFound = true;
+                    childrenCount++;
+                }
+            } else {
+                fail(String.format(
+                        "FileSystemItem %s doesn't match any expected.",
+                        fsItem.getId()));
+            }
+        }
+    }
 }
