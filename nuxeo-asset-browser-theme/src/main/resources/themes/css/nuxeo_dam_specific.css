@@ -57,7 +57,7 @@ author: lkemen@nuxeo.com
 
 .gridStyle6 .detail {
   clear: both;
-  margin-top: -2.5em;
+  /*margin-top: -2.5em;*/
   text-align: right }
 
 .gridStyle6 .detail span {
