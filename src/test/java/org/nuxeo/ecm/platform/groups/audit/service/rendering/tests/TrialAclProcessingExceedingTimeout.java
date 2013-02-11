@@ -17,10 +17,13 @@
 
 package org.nuxeo.ecm.platform.groups.audit.service.rendering.tests;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,7 +34,8 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.AclExcelLayoutBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.IAclExcelLayoutBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.ReportLayoutSettings;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsAllContent;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessor.ProcessorStatus;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -39,6 +43,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -53,24 +58,24 @@ import com.google.inject.Inject;
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml" })
-public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
+public class TrialAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
     @Inject
     CoreSession session;
 
     @Inject
     UserManager userManager;
 
-    private final static Log log = LogFactory.getLog(TestAclLayoutGenerated.class);
+    private final static Log log = LogFactory.getLog(TrialAclProcessingExceedingTimeout.class);
 
     protected static File testFile = new File(folder
-            + TestAclLayoutGenerated.class.getSimpleName() + ".xls");
+            + TrialAclProcessingExceedingTimeout.class.getSimpleName() + ".xls");
 
-    @Test
-    public void testExcelExportReport() throws Exception {
+    //@Test
+    public void testTimeout() throws Exception {
         // doc tree
-        int depth = 3;
-        int width = 10;
-        int groups = 300;
+        int depth = 2;
+        int width = 101;
+        int groups = 1;
 
         log.info("Build a test repository: depth=" + depth + ", width:" + width
                 + ", groups:" + groups);
@@ -79,20 +84,36 @@ public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
         log.info("done building test data");
         System.gc();
 
+        // Edit transaction length to assert an exceeding
+        // transaction will trigger the appropriate message
+        // in output excel file
+        //TransactionHelper.commitOrRollbackTransaction();
+        //TransactionHelper.startTransaction(1);
+        // TransactionHelper.lookupUserTransaction().
+
+        // TransactionHelper.lookupTransactionManager().
+
         // --------------------
         // settings and filters
         ReportLayoutSettings s = AclExcelLayoutBuilder.defaultLayout();
         s.setPageSize(1000);
-        IContentFilter filter = new AcceptsAllContent();
+        IContentFilter filter = null;
 
         // generate XLS report
         log.info("Start audit");
         IAclExcelLayoutBuilder v = new AclExcelLayoutBuilder(s, filter);
         v.renderAudit(session);
-
-        // save and finish
         log.info("End audit");
+
+        // save
         v.getExcel().save(testFile);
         log.info("End save");
+
+        // reload and assert we have the expected error message
+        Workbook w = v.getExcel().load(testFile);
+        String txt = get(w, 1, AclExcelLayoutBuilder.STATUS_ROW,
+                AclExcelLayoutBuilder.STATUS_COL);
+        //assertTrue("",
+        //        txt.contains(ProcessorStatus.ERROR_TOO_LONG_PROCESS.toString()));
     }
 }

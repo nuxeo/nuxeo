@@ -1,5 +1,13 @@
 package org.nuxeo.ecm.platform.groups.audit.service.rendering.tests;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.RichTextString;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -10,68 +18,176 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
+import com.google.common.collect.Lists;
+
 public class AbstractAclLayoutTest {
+    protected static String folder = "target/";
 
-	public AbstractAclLayoutTest() {
-		super();
-	}
+    protected DocumentModel makeFolder(CoreSession session, String path,
+            String name, boolean save) throws ClientException,
+            PropertyException {
+        return makeItem(session, path, name, "Folder", save);
+    }
 
-	protected DocumentModel makeFolder(CoreSession session, String path,
-			String name) throws ClientException, PropertyException {
-		return makeItem(session, path, name, "Folder");
-	}
+    protected DocumentModel makeFolder(CoreSession session, String path,
+            String name) throws ClientException, PropertyException {
+        return makeItem(session, path, name, "Folder", true);
+    }
 
-	protected DocumentModel makeDoc(CoreSession session, String path,
-			String name) throws ClientException, PropertyException {
-		return makeItem(session, path, name, "Document");
-	}
+    protected DocumentModel makeDoc(CoreSession session, String path,
+            String name) throws ClientException, PropertyException {
+        return makeItem(session, path, name, "Document", true);
+    }
 
-	protected DocumentModel makeItem(CoreSession session, String path,
-			String name, String type) throws ClientException, PropertyException {
-		DocumentModel folder = session.createDocumentModel(path, name, type);
-		folder = session.createDocument(folder);
-		session.saveDocument(folder);
-		return folder;
-	}
+    protected DocumentModel makeItem(CoreSession session, String path,
+            String name, String type, boolean save) throws ClientException,
+            PropertyException {
+        DocumentModel folder = session.createDocumentModel(path, name, type);
+        folder = session.createDocument(folder);
+        if (save)
+            session.saveDocument(folder);
+        return folder;
+    }
 
-	protected DocumentModel makeGroup(UserManager userManager, String groupId)
-			throws Exception {
-		DocumentModel newGroup = userManager.getBareGroupModel();
-		newGroup.setProperty("group", "groupname", groupId);
-		return newGroup;
-	}
+    protected DocumentModel makeGroup(UserManager userManager, String groupId)
+            throws Exception {
+        DocumentModel newGroup = userManager.getBareGroupModel();
+        newGroup.setProperty("group", "groupname", groupId);
+        return newGroup;
+    }
 
-	protected DocumentModel makeUser(UserManager userManager, String userId)
-			throws Exception {
-		DocumentModel newUser = userManager.getBareUserModel();
-		newUser.setProperty("user", "username", userId);
-		return newUser;
-	}
+    protected DocumentModel makeUser(UserManager userManager, String userId)
+            throws Exception {
+        DocumentModel newUser = userManager.getBareUserModel();
+        newUser.setProperty("user", "username", userId);
+        return newUser;
+    }
 
-	protected void addAcl(CoreSession session, DocumentModel doc,
-			String userOrGroup, String right, boolean allow)
-			throws ClientException {
-		addAcl(session, doc, userOrGroup, right, allow, false);
-	}
+    protected void addAcl(CoreSession session, DocumentModel doc,
+            String userOrGroup, String right, boolean allow)
+            throws ClientException {
+        addAcl(session, doc, userOrGroup, right, allow, false);
+    }
 
-	protected void addAcl(CoreSession session, DocumentModel doc,
-			String userOrGroup, String right, boolean allow,
-			boolean blockInheritance) throws ClientException {
-		ACP acp = doc.getACP();
-		ACL acl = acp.getOrCreateACL();// local
-		acl.add(new ACE(userOrGroup, right, allow));
-		doc.setACP(acp, true);
-		session.saveDocument(doc);
-	}
+    protected void addAcl(CoreSession session, DocumentModel doc,
+            String userOrGroup, String right, boolean allow,
+            boolean blockInheritance) throws ClientException {
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL();// local
+        acl.add(new ACE(userOrGroup, right, allow));
+        doc.setACP(acp, true);
+        session.saveDocument(doc);
+    }
 
-	protected void addAclLockInheritance(CoreSession session,
-			DocumentModel doc, String userOrGroup)
-			throws ClientException {
-		ACP acp = doc.getACP();
-		ACL acl = acp.getOrCreateACL();// local
-		acl.add(new ACE(SecurityConstants.EVERYONE,
-				SecurityConstants.EVERYTHING, false));
-		doc.setACP(acp, true);
-		session.saveDocument(doc);
-	}
+    protected void addAclLockInheritance(CoreSession session,
+            DocumentModel doc, String userOrGroup, boolean save)
+            throws ClientException {
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL();// local
+        acl.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false));
+        doc.setACP(acp, true);
+        if (save)
+            session.saveDocument(doc);
+    }
+
+    /* BUILD DOC TREE */
+
+    /**
+     * Do not forget to call session.save()
+     *
+     * d=2 w=10 > 11
+     *
+     * d=3 w=10 > 111
+     *
+     * d=5 w=10 > 11111 ~15sec to generate
+     *
+     * d=6 w=10 > ~1 min to generate
+     */
+    protected DocumentModel makeDocumentTree(CoreSession session, int depth,
+            int width, int nGroups) throws Exception {
+        DocumentModel root = makeFolder(session, "/", "root", false);
+
+        List<String> groups = new ArrayList<String>(nGroups);
+        for (int i = 0; i < nGroups; i++) {
+            String group = "group" + i;
+            groups.add(group);
+        }
+
+        return makeDocumentTree(session, depth, width, nGroups, 1, root, groups);
+    }
+
+    protected DocumentModel makeDocumentTree(CoreSession session, int maxDepth,
+            int width, int nGroups, int currentDepth, DocumentModel folder,
+            List<String> groups) throws PropertyException, ClientException {
+
+        // populate current folder with ACL
+        boolean save = false;
+        for (String group : groups) {
+            addAcl(session, folder, group, SecurityConstants.READ_WRITE, true,
+                    save);
+            addAcl(session, folder, group, SecurityConstants.ADD_CHILDREN,
+                    true, save);
+            addAcl(session, folder, group, SecurityConstants.REMOVE_CHILDREN,
+                    true, save);
+            addAcl(session, folder, group, SecurityConstants.READ_LIFE_CYCLE,
+                    true, save);
+            addAcl(session, folder, group, SecurityConstants.WRITE_SECURITY,
+                    true, save);
+
+            // final rule with lock inherit
+            if (currentDepth != 0 && currentDepth % 2 == 0)
+                addAclLockInheritance(session, folder, group, save);
+        }
+
+        // generate children folders
+        if (currentDepth < maxDepth) {
+            // dispatch all groups into each tree branch
+            List<List<String>> subgroups;
+
+            int subgroupSize = groups.size() / width;
+            if (subgroupSize > 0) { // general case
+                subgroups = Lists.partition(groups, subgroupSize);
+            } else {
+                if (groups.size() >= 2) {
+                    subgroups = Lists.partition(groups, 1);
+                } else {
+                    subgroups = new ArrayList<List<String>>();
+                    subgroups.add(groups);
+                }
+            }
+
+            for (int i = 0; i < width; i++) {
+                // create a folder
+                String name = "[" + currentDepth + "]folder-" + i;
+                DocumentModel f = makeFolder(session, folder.getPathAsString(),
+                        name);
+
+                // generate children folders
+                if (i < subgroups.size()) {
+                    List<String> subgroup = subgroups.get(i);
+                    makeDocumentTree(session, maxDepth, width, nGroups,
+                            currentDepth + 1, f, subgroup);
+                } else {
+                    makeDocumentTree(session, maxDepth, width, nGroups,
+                            currentDepth + 1, f, new ArrayList<String>());
+                }
+            }
+            return folder;
+        }
+        // or end recursion
+        else
+            return folder;
+    }
+
+    /* */
+
+    protected String get(Workbook w, int s, int r, int c) {
+        Sheet sheet = w.getSheetAt(s);
+        Row row = sheet.getRow(r);
+        Cell cell = row.getCell(c);
+        RichTextString rts = cell.getRichStringCellValue();
+        return rts.getString();
+    }
+
 }

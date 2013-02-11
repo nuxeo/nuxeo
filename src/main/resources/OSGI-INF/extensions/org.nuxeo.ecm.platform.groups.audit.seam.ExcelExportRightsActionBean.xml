@@ -8,7 +8,7 @@
       id="org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean"
       link="#{excelExportRightsAction.doGet()}"
       order="200"
-      label="Pouet"
+      label="action.acl.audit.export"
       icon="/icons/org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean-action.png">
       <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
       <filter-id>org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean</filter-id>

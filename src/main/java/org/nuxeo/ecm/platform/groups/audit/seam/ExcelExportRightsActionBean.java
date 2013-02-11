@@ -24,12 +24,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.platform.groups.audit.service.rendering.AclExcelLayoutBuilder;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.AclExcelLayoutBuilder;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.IAclExcelLayoutBuilder;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.ReportLayoutSettings;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsGroupOnly;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-
 
 @Name("excelExportRightsAction")
 @Scope(ScopeType.EVENT)
@@ -45,6 +48,9 @@ public class ExcelExportRightsActionBean implements Serializable {
     @In(create = true)
     protected NavigationContext navigationContext;
 
+    @In(create = true)
+    protected DocumentsListsManager documentsListsManager;
+
     @In(create = true, required = false)
     protected transient FacesMessages facesMessages;
 
@@ -54,13 +60,23 @@ public class ExcelExportRightsActionBean implements Serializable {
     @In(create = true, required = false)
     protected NuxeoPrincipal currentNuxeoPrincipal;
 
-    @In(create = true)
-    protected DocumentsListsManager documentsListsManager;
+    public String doGet() {
+        try {
+            buildAndDownload();
+            facesMessages.add(StatusMessage.Severity.INFO, "doGet");
+        } catch (Exception e) {
+            log.error(e, e);
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    "doGet error: " + e.getMessage());
+        }
+        return null;
+    }
 
-    // Sample code to show how to retrieve the list of selected documents in the
-    // content listing view
+    public boolean accept() {
+        return true;
+    }
+
     protected List<DocumentModel> getCurrentlySelectedDocuments() {
-
         if (navigationContext.getCurrentDocument().isFolder()) {
             return documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         } else {
@@ -68,101 +84,41 @@ public class ExcelExportRightsActionBean implements Serializable {
         }
     }
 
+    /* XLS REPORT */
 
-
-
-
-	// This the method that will be called when the action button/link is
-    // clicked
-    public String doGet() {
-    	try {
-    		buildAndDownload();
-			facesMessages.add(StatusMessage.Severity.INFO, "doGet");
-		} catch (ClientException e) {
-			log.error(e,e);
-			facesMessages.add(StatusMessage.Severity.INFO, "doGet error: " + e.getMessage());
-		}
-
-        /*String message = "Hello from ploum : ";
-        List<DocumentModel> selectedDocs = getCurrentlySelectedDocuments();
-        if (selectedDocs != null) {
-            message = message + " (" + selectedDocs.size()
-                    + " documents selected)";
-        }
-        facesMessages.add(StatusMessage.Severity.INFO, message);*/
-
-        // if you need to change the current document and let Nuxeo
-        // select the correct view
-        // you can use navigationContext and return the view
-        //
-        // return navigationContext.navigateToDocument(doc);
-
-        // If you want to explicitly go to a given view
-        // just return the outcome string associated to the view
-        //
-        // return "someView";
-
-        // stay on the same view
-        return null;
-    }
-
-    // this method will be called by the action system to determine if the
-    // action should be available
-    //
-    // the return value can depend on the context,
-    // you can use the navigationContext to get the currentDocument,
-    // currentWorkspace ...
-    // you can cache the value in a member variable as long as the Bean stays
-    // Event scoped
-    //
-    // if you don't need this, you should remove the filter in the associated
-    // action contribution
-    public boolean accept() {
-        return true;
-    }
-
-    public String buildAndDownload() throws ClientException{
-    	log.info("start XLS export");
-
-
-
-    	File tmpFile = null;
-		try {
-			tmpFile = File.createTempFile("rights-", ".xls");
-		} catch (IOException e) {
-			facesMessages.add(StatusMessage.Severity.ERROR,
-					e.getMessage(),
-                    null);
-			log.error(e,e);
-			return "";
-		}
+    public void buildAndDownload() throws ClientException, IOException {
+        File tmpFile = File.createTempFile("rights-", ".xls");
         tmpFile.deleteOnExit();
-
         buildAndDownload(tmpFile);
-
-    	return "";
     }
 
-	protected void buildAndDownload(final File tmpFile)
-			throws ClientException {
-		final FacesContext context = FacesContext.getCurrentInstance();
-		final DocumentModel doc = navigationContext.getCurrentDocument();
+    protected void buildAndDownload(final File tmpFile) throws ClientException {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        final DocumentModel doc = navigationContext.getCurrentDocument();
 
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
-			@Override
-			public void run() throws ClientException {
-		        AclExcelLayoutBuilder v = new AclExcelLayoutBuilder();
-		        v.renderAudit(session, doc);
-		        try {
-					v.getExcel().save(tmpFile);
-				} catch (IOException e) {
-					log.error(e,e);
-				}
-		    	ComponentUtils.downloadFile(context, "rights.xls",
-		                tmpFile);
-			}
-		};
-		runner.runUnrestricted();
-	}
+        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
+                doc.getRepositoryName()) {
+            @Override
+            public void run() throws ClientException {
+                log.info("start audit, export in " + tmpFile);
 
+                // configure audit
+                ReportLayoutSettings s = AclExcelLayoutBuilder.defaultLayout();
+                s.setPageSize(1000);
+                IContentFilter f = new AcceptsGroupOnly();
+
+                // do work
+                IAclExcelLayoutBuilder v = new AclExcelLayoutBuilder(s, f);
+                v.renderAudit(session, doc);
+
+                try {
+                    v.getExcel().save(tmpFile);
+                } catch (IOException e) {
+                    log.error(e, e);
+                }
+                ComponentUtils.downloadFile(context, "rights.xls", tmpFile);
+            }
+        };
+        runner.runUnrestricted();
+    }
 }
