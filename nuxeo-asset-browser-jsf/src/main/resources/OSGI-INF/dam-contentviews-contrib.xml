@@ -481,6 +481,7 @@
       <properties mode="any">
         <property name="showListingHeader">true</property>
         <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
       </properties>
       <columns>
         <column>
@@ -543,6 +544,9 @@
           /dam/layouts/dam_layout_box_listing_ajax_template.xhtml
         </template>
       </templates>
+      <properties mode="any">
+        <property name="display">block</property>
+      </properties>
       <columns>
         <column>
           <properties mode="any">
