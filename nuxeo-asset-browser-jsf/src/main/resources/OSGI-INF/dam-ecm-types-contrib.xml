@@ -17,6 +17,7 @@
       <description>AssetLibrary.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
+        <type>Folder</type>
         <type>File</type>
         <type>Picture</type>
         <type>Video</type>
