@@ -6,10 +6,17 @@
   id="#{widget.id}">
   
    <nxu:set var="formatedSize" value="#{quotaStatsActions.formatQuota(field_0, field_0)}">
-     <h:outputText value="#{formatedSize.valueInUnit}">
-       <f:convertNumber maxFractionDigits="2" />
-     </h:outputText>
-    <h:outputText value=" #{messages[formatedSize.unit]} "/>
+    <nxu:set var="maxSize" value="#{nxu:test(empty widgetProperty_maxSize, 'false', widgetProperty_maxSize)}" cache="true">
+     <c:if test="#{formatedSize.valueInUnit != 0  or (formatedSize.valueInUnit == 0 and !maxSize)}">
+       <h:outputText value="#{formatedSize.valueInUnit}">
+        <f:convertNumber maxFractionDigits="2" />
+       </h:outputText>
+       <h:outputText value=" #{messages[formatedSize.unit]} "/>
+     </c:if>
+     <c:if test="#{formatedSize.valueInUnit == 0 and maxSize}">
+      <h:outputText value="#{messages['label.quota.notset']}"/>
+     </c:if>
+    </nxu:set> 
   </nxu:set>
 
 </span>

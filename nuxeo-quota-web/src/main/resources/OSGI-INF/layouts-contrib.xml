@@ -169,54 +169,57 @@
       
       <widget name="listing_quota_title" type="text">
         <labels>
-          <label mode="any">Title</label>
+          <label mode="any">label.content.header.title</label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>data['dc']['title']</field>
         </fields>
       </widget>
       <widget name="listing_quota_created" type="datetime">
         <labels>
-          <label mode="any">Created</label>
+          <label mode="any">label.content.header.created</label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>data['dc']['created']</field>
         </fields>
       </widget>
       <widget name="listing_quota_lastContributor" type="text">
         <labels>
-          <label mode="any">LastContributor</label>
+          <label mode="any">label.content.header.lastContributor</label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>data['dc']['lastContributor']</field>
         </fields>
       </widget>
       <widget name="listing_quota_totalSize" type="quota_display_size_listing">
         <labels>
-          <label mode="any">TotalSize</label>
+          <label mode="any">label.quota.totalSize</label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>data['dss']['totalSize']</field>
         </fields>
       </widget>
       <widget name="listing_quota_maxSize" type="quota_display_size_listing">
         <labels>
-          <label mode="any">Max Size</label>
+          <label mode="any">label.quota.maxSize</label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>data['dss']['maxSize']</field>
         </fields>
+        <properties widgetMode="any">
+          <property name="maxSize">true</property>
+        </properties>
       </widget>
       <widget name="listing_quota_pathAsString" type="text">
         <labels>
-          <label mode="any">Path</label>
+          <label mode="any">label.quota.path</label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>data.pathAsString</field>
         </fields>
@@ -286,18 +289,18 @@
       </rows>
       <widget name="dublincore_title" type="text">
         <labels>
-          <label mode="any">Title</label>
+          <label mode="any">label.content.header.title</label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>quota_heaviest_containers_cv:dublincore_title</field>
         </fields>
       </widget>
       <widget name="documents_size_statistics_totalSize" type="int">
         <labels>
-          <label mode="any">TotalSize</label>
+          <label mode="any">label.quota.totalSize</label>
         </labels>
-        <translated>false</translated>
+        <translated>true</translated>
         <fields>
           <field>quota_heaviest_containers_cv:documents_size_statistics_totalSize</field>
         </fields>
@@ -452,7 +455,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="columnStyleClass"></property>
-            <property name="label">Path</property>
+            <property name="label">label.quota.path</property>
             <property name="sortPropertyName"></property>
           </properties>
           <properties mode="edit_sort_infos">
@@ -467,7 +470,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="columnStyleClass"></property>
-            <property name="label">TotalSize</property>
+            <property name="label">label.quota.totalSize</property>
             <property name="sortPropertyName">dss:totalSize</property>
           </properties>
           <properties mode="edit_sort_infos">
@@ -482,7 +485,7 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="columnStyleClass"></property>
-            <property name="label">TotalSize</property>
+            <property name="label">label.quota.maxSize</property>
             <property name="sortPropertyName">dss:maxSize</property>
           </properties>
           <properties mode="edit_sort_infos">
