@@ -24,11 +24,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessor.ProcessorStatus;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutWork;
 
 public interface IDataProcessor {
     public void analyze(CoreSession session) throws ClientException;
 
-    public void analyze(CoreSession session, DocumentModel doc)
+    public void analyze(CoreSession session, DocumentModel doc, ITimeoutWork work)
             throws ClientException;
 
     public Set<String> getUserAndGroups();

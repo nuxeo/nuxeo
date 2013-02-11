@@ -17,28 +17,21 @@
 
 package org.nuxeo.ecm.platform.groups.audit.service.rendering.tests;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.AclExcelLayoutBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.IAclExcelLayoutBuilder;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessorRecursive;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.data.IDataProcessor;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsAllContent;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;

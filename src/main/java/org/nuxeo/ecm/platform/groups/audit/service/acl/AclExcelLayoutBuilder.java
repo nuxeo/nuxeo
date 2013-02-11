@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilderMultiSh
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsAllContent;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutWork;
 
 import com.google.common.collect.Multimap;
 
@@ -174,25 +175,31 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     @Override
     public void renderAudit(CoreSession session, final DocumentModel doc,
-            boolean unrestricted) throws ClientException {
+            boolean unrestricted) throws ClientException{
+        renderAudit(session, doc, unrestricted, null);
+    }
+
+    @Override
+    public void renderAudit(CoreSession session, final DocumentModel doc,
+            boolean unrestricted, final ITimeoutWork work) throws ClientException {
         if (!unrestricted) {
-            analyzeAndRender(session, doc);
+            analyzeAndRender(session, doc, work);
         } else {
             UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
                     session) {
                 @Override
                 public void run() throws ClientException {
-                    analyzeAndRender(session, doc);
+                    analyzeAndRender(session, doc, work);
                 }
             };
             runner.runUnrestricted();
         }
     }
 
-    protected void analyzeAndRender(CoreSession session, final DocumentModel doc)
+    protected void analyzeAndRender(CoreSession session, final DocumentModel doc, ITimeoutWork work)
             throws ClientException {
         log.debug("start processing data");
-        data.analyze(session, doc);
+        data.analyze(session, doc, work);
 
         render(data);
     }

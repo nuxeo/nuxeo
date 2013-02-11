@@ -21,6 +21,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutWork;
 
 public interface IAclExcelLayoutBuilder {
 
@@ -41,6 +42,9 @@ public interface IAclExcelLayoutBuilder {
     /** Analyze and render an ACL audit for the input document and its children. */
     public void renderAudit(CoreSession session, DocumentModel doc,
             boolean unrestricted) throws ClientException;
+
+    public void renderAudit(CoreSession session, final DocumentModel doc,
+            boolean unrestricted, ITimeoutWork work) throws ClientException;
 
     public IExcelBuilder getExcel();
 

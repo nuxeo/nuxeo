@@ -28,24 +28,27 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.Pair;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutWork;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.collect.Multimap;
 
 public class DataProcessorPaginated extends DataProcessor {
-    protected static int MAX_DOCUMENTS = ExcelBuilder.MAX_ROW - 2;
+    public static int MAX_DOCUMENTS = ExcelBuilder.MAX_ROW - 2;
 
-    protected static int DEFAULT_PAGE_SIZE = 1000;
+    public static int DEFAULT_PAGE_SIZE = 1000;
 
-    protected static int EXCEL_RENDERING_RESERVED_TIME = 30;
+    public static int EXCEL_RENDERING_RESERVED_TIME = 90; // seconds
 
     /**
      * OrderBy on an SQL request is awfully slow when paging a large amount of
-     * documents, so its better to not order them and sort results as they
+     * documents, so it's better to not order them and sort results as they
      * arrive.
      */
     protected static boolean ORDER_BY_DB = false;
+
+    protected static int UNBOUNDED_PROCESS_TIME = -1;
 
     protected int pageSize = DEFAULT_PAGE_SIZE;
 
@@ -59,8 +62,8 @@ public class DataProcessorPaginated extends DataProcessor {
     }
 
     @Override
-    protected void doAnalyze(CoreSession session, DocumentModel root)
-            throws ClientException {
+    protected void doAnalyze(CoreSession session, DocumentModel root,
+            ITimeoutWork work) throws ClientException {
         // get data
         DataFetch fetch = new DataFetch();
         CoreQueryDocumentPageProvider pages = fetch.getAllChildrenPaginated(
@@ -70,14 +73,20 @@ public class DataProcessorPaginated extends DataProcessor {
         // analyse root
         processDocument(root);
 
+        // handling processing time
         t.tic();
+        int maxProcessTime = UNBOUNDED_PROCESS_TIME;
+        if (work != null) {
+            maxProcessTime = work.getTimeout() - EXCEL_RENDERING_RESERVED_TIME;
+            if (maxProcessTime <= 0) {
+                throw new IllegalArgumentException(
+                        "can't start a time bounded process with a timeout < "
+                                + EXCEL_RENDERING_RESERVED_TIME
+                                + "(time period reserved for excel rendering)");
+            }
+        }
 
         // process children documents
-        int maxProcessTime = Integer.MAX_VALUE;/*
-                                                * getTransactionTimeoutDefault()
-                                                * -
-                                                * EXCEL_RENDERING_RESERVED_TIME;
-                                                */
         status = ProcessorStatus.SUCCESS;
         try {
             // iterate over pages
@@ -91,16 +100,20 @@ public class DataProcessorPaginated extends DataProcessor {
                 // iterate over current page content
                 for (DocumentModel m : page) {
                     processDocument(m);
+                    t.toc(); // update elapsed time
+
+                    // verify exit conditions
                     if (getNumberOfDocuments() == MAX_DOCUMENTS) {
+                        //log.debug("will interrupt doc)
                         status = ProcessorStatus.ERROR_TOO_MANY_DOCUMENTS;
                         break overPages;
                     }
-                    if (t.toc() >= maxProcessTime) {
+                    if (maxProcessTime != UNBOUNDED_PROCESS_TIME
+                            && t.toc() >= maxProcessTime) {
                         status = ProcessorStatus.ERROR_TOO_LONG_PROCESS;
                         break overPages;
                     }
                 }
-                // GC may forget previous page
                 pages.nextPage();
                 log.debug("done page " + (p++));
                 // TransactionResetHelper.resetTransaction(session);
@@ -145,17 +158,5 @@ public class DataProcessorPaginated extends DataProcessor {
         } else
             return new DocumentSummary(title, depth, lock, m,
                     doc.getPathAsString());
-    }
-
-    public static int getTransactionTimeoutDefault() {
-        // TransactionHelper.lookupUserTransaction().
-        String str = Framework.getProperty("nuxeo.db.transactiontimeout");
-        try {
-            return Integer.parseInt(str);
-        } catch (Exception e) {
-            log.error("can't parse integer '" + str
-                    + "' while reading nuxeo.db.transactiontimeout");
-            throw new RuntimeException(e);
-        }
     }
 }

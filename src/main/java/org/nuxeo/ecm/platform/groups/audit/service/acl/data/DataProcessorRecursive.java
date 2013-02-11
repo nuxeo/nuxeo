@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutWork;
 
 /**
  * Gather various data and statistics about a document tree
@@ -34,9 +35,9 @@ public class DataProcessorRecursive extends DataProcessor implements
         super(filter);
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}. timeout ignored */
     @Override
-    public void analyze(CoreSession session, DocumentModel doc)
+    public void analyze(CoreSession session, DocumentModel doc, ITimeoutWork work)
             throws ClientException {
         init();
         doAnalyze(session, doc, 0);

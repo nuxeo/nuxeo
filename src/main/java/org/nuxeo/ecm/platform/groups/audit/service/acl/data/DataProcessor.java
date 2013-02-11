@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.Pair;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutWork;
 
 import com.google.common.collect.Multimap;
 
@@ -80,14 +81,14 @@ public class DataProcessor implements IDataProcessor {
 
     @Override
     public void analyze(CoreSession session) throws ClientException {
-        analyze(session, session.getRootDocument());
+        analyze(session, session.getRootDocument(), null);
     }
 
     @Override
-    public void analyze(CoreSession session, DocumentModel doc)
+    public void analyze(CoreSession session, DocumentModel doc, ITimeoutWork work)
             throws ClientException {
         init();
-        doAnalyze(session, doc);
+        doAnalyze(session, doc, work);
         log();
     }
 
@@ -98,7 +99,8 @@ public class DataProcessor implements IDataProcessor {
         documentTreeDepth = 0;
     }
 
-    protected void doAnalyze(CoreSession session, DocumentModel root)
+    // timeout ignored
+    protected void doAnalyze(CoreSession session, DocumentModel root, ITimeoutWork work)
             throws ClientException {
         // get data
         final DataFetch fetch = new DataFetch();
