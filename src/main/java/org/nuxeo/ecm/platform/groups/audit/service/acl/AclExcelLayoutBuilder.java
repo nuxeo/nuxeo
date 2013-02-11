@@ -74,6 +74,10 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     protected CellStyle lockInheritanceStyle;
 
+    protected int mainSheetId;
+
+    protected int legendSheetId;
+
     public static ReportLayoutSettings defaultLayout() {
         ReportLayoutSettings layout = new ReportLayoutSettings();
         layout.userHeaderHeight = 1000;
@@ -183,6 +187,9 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         int maxDepth = data.getDocumentTreeMaxDepth();
         int colStart = maxDepth + 1;
 
+        mainSheetId = excel.getCurrentSheetId();
+        legendSheetId = excel.newSheet(excel.getCurrentSheetId() + 1, "Legend");
+
         renderInit();
         renderHeader(colStart, data.getUserAndGroups(), data.getPermissions());
         renderFileTreeAndAclMatrix(data.getAllDocuments(), minDepth);
@@ -280,8 +287,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     protected void renderLegend(ProcessorStatus status, String message) {
         ((ExcelBuilderMultiSheet) excel).setMultiSheetColumns(false);
 
-        int s = excel.newSheet(excel.getCurrentSheetId() + 1, "Legend");
-        excel.setCurrentSheetId(s);
+        excel.setCurrentSheetId(legendSheetId);
 
         int row = STATUS_ROW;
         int col = STATUS_COL;

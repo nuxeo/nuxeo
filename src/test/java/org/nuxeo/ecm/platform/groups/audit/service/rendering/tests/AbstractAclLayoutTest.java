@@ -184,10 +184,25 @@ public class AbstractAclLayoutTest {
 
     protected String get(Workbook w, int s, int r, int c) {
         Sheet sheet = w.getSheetAt(s);
-        Row row = sheet.getRow(r);
-        Cell cell = row.getCell(c);
-        RichTextString rts = cell.getRichStringCellValue();
-        return rts.getString();
+        if(sheet!=null){
+            Row row = sheet.getRow(r);
+            if(row!=null){
+                Cell cell = row.getCell(c);
+                if(cell!=null){
+                    RichTextString rts = cell.getRichStringCellValue();
+                    return rts.getString();
+                }
+                else{
+                    throw new RuntimeException("no cell at id " + c + " in row " + r + " at sheet " + s);
+                }
+            }
+            else{
+                throw new RuntimeException("no row at id " + r + " in sheet " + s);
+            }
+        }
+        else{
+            throw new RuntimeException("no sheet at id " + s);
+        }
     }
 
 }
