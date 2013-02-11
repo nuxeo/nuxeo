@@ -215,9 +215,11 @@ public class ContentViewImpl implements ContentView,
     }
 
     public void setCurrentResultLayout(String resultLayoutName) {
-        for (ContentViewLayout layout : resultLayouts) {
-            if (layout.getName().equals(resultLayoutName)) {
-                setCurrentResultLayout(layout);
+        if (resultLayoutName != null) {
+            for (ContentViewLayout layout : resultLayouts) {
+                if (resultLayoutName.equals(layout.getName())) {
+                    setCurrentResultLayout(layout);
+                }
             }
         }
     }
@@ -313,8 +315,7 @@ public class ContentViewImpl implements ContentView,
         // do not force setting of sort infos as they can be set directly on
         // the page provider and this method will be called after so they could
         // be lost.
-        if (pageProvider == null
-                || pageProvider.hasChangedParameters(params)) {
+        if (pageProvider == null || pageProvider.hasChangedParameters(params)) {
             try {
                 // make the service build the provider
                 ContentViewService service = Framework.getService(ContentViewService.class);
