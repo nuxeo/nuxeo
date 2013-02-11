@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Martin Pernollet
+ */
+
 package org.nuxeo.ecm.platform.groups.audit.service.acl.excel;
 
 import java.util.Set;
@@ -9,11 +26,11 @@ import com.google.common.collect.HashBiMap;
 
 /**
  * Holds a short name translation for each existing ACL.
- * 
+ *
  * The implementation based on {@link HashBiMap} ensures no two short name can
  * coexist. Any attempt to register a permission short name with an existing one
  * will lead to an {@link IllegalArgumentException}.
- * 
+ *
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
 public class AclNameShortner {
@@ -54,7 +71,7 @@ public class AclNameShortner {
 
     /**
      * Return the short name of a given permission.
-     * 
+     *
      * @throws an IllegalArgumentException if the permission is unknown.
      */
     public String getShortName(String permission) {

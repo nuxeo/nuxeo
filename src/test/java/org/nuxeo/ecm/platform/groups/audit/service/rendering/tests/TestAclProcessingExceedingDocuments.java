@@ -86,7 +86,6 @@ public class TestAclProcessingExceedingDocuments extends AbstractAclLayoutTest {
         makeDocumentTree(session, depth, width, groups);
         session.save();
         log.info("done building test data");
-        //System.gc();
 
         // --------------------
         // settings and filters

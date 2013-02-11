@@ -97,7 +97,8 @@ public class TestContentFilter extends AbstractAclLayoutTest {
         IContentFilter filter2 = new AcceptsGroupOnly();
         assertTrue("accepts a group", filter2.acceptsUserOrGroup("test_g1"));
         assertTrue("accepts a group", filter2.acceptsUserOrGroup("test_g2"));
-        assertFalse("do NOT accept a user", filter2.acceptsUserOrGroup("test_u1"));
+        assertFalse("do NOT accept a user",
+                filter2.acceptsUserOrGroup("test_u1"));
 
     }
 }

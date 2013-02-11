@@ -82,7 +82,6 @@ public class TrialAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         makeDocumentTree(session, depth, width, groups);
         session.save();
         log.info("done building test data");
-        //System.gc();
 
         // Edit transaction length to assert an exceeding
         // transaction will trigger the appropriate message
