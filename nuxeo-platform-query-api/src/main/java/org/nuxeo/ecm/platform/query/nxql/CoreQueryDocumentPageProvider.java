@@ -212,11 +212,11 @@ public class CoreQueryDocumentPageProvider extends
                         def.getWhereClause(), getParameters(), sortArray);
             }
 
-            if (newQuery != null && !newQuery.equals(query)) {
+            if (query != null && newQuery != null && !newQuery.equals(query)) {
                 // query has changed => refresh
                 refresh();
-                query = newQuery;
             }
+            query = newQuery;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
