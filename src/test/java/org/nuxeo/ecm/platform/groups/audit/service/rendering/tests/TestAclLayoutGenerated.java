@@ -70,14 +70,14 @@ public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
         // doc tree
         int depth = 3;
         int width = 10;
-        int groups = 300;
+        int groups = 30;
 
         log.info("Build a test repository: depth=" + depth + ", width:" + width
                 + ", groups:" + groups);
         makeDocumentTree(session, depth, width, groups);
         session.save();
         log.info("done building test data");
-        System.gc();
+        //System.gc();
 
         // --------------------
         // settings and filters
