@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.quota.size.QuotaAware;
+import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
 import org.nuxeo.ecm.quota.size.QuotaInfo;
 
 /**
@@ -79,13 +80,13 @@ public class GetQuotaStatisticsOperation {
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMaximumFractionDigits(2);
         List<QuotaStat> stats = new ArrayList<QuotaStat>();
+        long liveSize = quotaInfo.getTotalSize().getValue()
+                - (quotaInfo.getTrashSize().getValue() + quotaInfo.getSizeVersions().getValue());
+        QuotaDisplayValue live = new QuotaDisplayValue(liveSize);
         stats.add(new QuotaStat(quotaInfo.getLiveSize().getValue(),
-                getI18nLabel("label.quota.liveSize", locale)
-                        + ":"
-                        + nf.format(quotaInfo.getInnerSize().getValueInUnit())
-                        + " "
-                        + getI18nLabel(quotaInfo.getInnerSize().getUnit(),
-                                locale)));
+                getI18nLabel("label.quota.liveSize", locale) + ":"
+                        + nf.format(live.getValueInUnit()) + " "
+                        + getI18nLabel(live.getUnit(), locale)));
         stats.add(new QuotaStat(quotaInfo.getTrashSize().getValue(),
                 getI18nLabel("label.quota.trashSize", locale)
                         + ":"
