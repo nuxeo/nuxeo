@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.operations.test;
 
+import org.nuxeo.drive.operations.NuxeoDriveOperationHelper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -42,5 +43,9 @@ public class NuxeoDriveTearDownIntegrationTests {
     @OperationMethod
     public void run() throws Exception {
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
+
+        // Commit transaction explicitly to ensure client-side consistency
+        // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
+        NuxeoDriveOperationHelper.commitTransaction();
     }
 }

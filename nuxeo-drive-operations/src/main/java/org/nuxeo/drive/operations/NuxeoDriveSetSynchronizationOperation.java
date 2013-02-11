@@ -40,8 +40,11 @@ public class NuxeoDriveSetSynchronizationOperation {
         } else {
             driveManager.unregisterSynchronizationRoot(
                     session.getPrincipal().getName(), doc, session);
-
         }
+
+        // Commit transaction explicitly to ensure client-side consistency
+        // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
+        NuxeoDriveOperationHelper.commitTransaction();
     }
 
 }

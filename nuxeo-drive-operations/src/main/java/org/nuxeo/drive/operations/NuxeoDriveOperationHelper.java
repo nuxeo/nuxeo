@@ -21,6 +21,7 @@ import javax.mail.internet.ParseException;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Helper for Nuxeo Drive operations.
@@ -31,6 +32,12 @@ public final class NuxeoDriveOperationHelper {
 
     private NuxeoDriveOperationHelper() {
         // Helper class
+    }
+
+    public static void commitTransaction() {
+        if (TransactionHelper.isTransactionActive()) {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
     }
 
     public static void normalizeMimeTypeAndEncoding(Blob blob)
