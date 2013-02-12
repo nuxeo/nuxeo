@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.Work;
-import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -81,7 +80,7 @@ public class ExcelExportRightsActionBean implements Serializable {
     public String doGet() {
         try {
             buildAndDownload();
-            facesMessages.add(StatusMessage.Severity.INFO, "doGet");
+            //facesMessages.add(StatusMessage.Severity.INFO, "doGet");
         } catch (Exception e) {
             log.error(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR,
@@ -105,11 +104,12 @@ public class ExcelExportRightsActionBean implements Serializable {
     /* XLS REPORT */
 
     public void buildAndDownload() throws ClientException, IOException {
-        File tmpFile = File.createTempFile("rights-", ".xls");
+        File tmpFile = File.createTempFile("rights", ".xls");
         tmpFile.deleteOnExit();
-        buildAndDownload(tmpFile);
+        buildAndDownloadAsync(tmpFile);
     }
 
+    /** Execute ACL audit and download the result in a XLS file. */
     protected void buildAndDownload(final File tmpFile) throws ClientException {
         final FacesContext context = FacesContext.getCurrentInstance();
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
@@ -130,10 +130,12 @@ public class ExcelExportRightsActionBean implements Serializable {
         Work work = new Work("ACL Audit");
         new RunnableAclAudit(documentManager, auditRoot, work, tmpFile){
             public void onAuditDone() {
+                log.debug("about to save audit");
                 Blob b = new FileBlob(getOutputFile());
 
                 try {
                     createDocument(documentManager, auditRoot, "ACL Audit", b);
+                    log.debug("audit saved");
                 } catch (ClientException e) {
                     log.error(e,e);
                 }

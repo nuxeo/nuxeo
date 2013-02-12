@@ -54,7 +54,9 @@ public class Work extends AbstractWork implements ITimeoutWork{
 
     @Override
     public void work() throws Exception {
+        setProgress(Progress.PROGRESS_0_PC);
         runnable.run();
+        setProgress(Progress.PROGRESS_100_PC);
     }
 
     /** Override to fix transaction timeout. */
