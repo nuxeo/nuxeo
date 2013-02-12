@@ -220,7 +220,7 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
         assertNull(fsItem);
 
-        // Deleted file => not adaptable as a FileSystemIte
+        // Deleted file => not adaptable as a FileSystemItem
         custom.followTransition("delete");
         assertNull(defaultFileSystemItemFactory.getFileSystemItem(custom));
 

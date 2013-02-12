@@ -96,18 +96,6 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
-    /**
-     * Iterates on the ordered contributed file system item factories until it
-     * finds one that matches and retrieves a non null {@link FileSystemItem}
-     * for the given doc. A factory matches if:
-     * <ul>
-     * <li>It is not bound to any docType nor facet (this is the case for the
-     * default factory contribution {@code defaultFileSystemItemFactory} bound
-     * to {@link DefaultFileSystemItemFactory})</li>
-     * <li>It is bound to a docType that matches the given doc's type</li>
-     * <li>It is bound to a facet that matches one of the given doc's facets</li>
-     * </ul>
-     */
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
@@ -177,6 +165,18 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedFactories();
     }
 
+    /**
+     * Iterates on the ordered contributed file system item factories until it
+     * finds one that matches and retrieves a non null {@link FileSystemItem}
+     * for the given doc. A factory matches if:
+     * <ul>
+     * <li>It is not bound to any docType nor facet (this is the case for the
+     * default factory contribution {@code defaultFileSystemItemFactory} bound
+     * to {@link DefaultFileSystemItemFactory})</li>
+     * <li>It is bound to a docType that matches the given doc's type</li>
+     * <li>It is bound to a facet that matches one of the given doc's facets</li>
+     * </ul>
+     */
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean forceParentId, String parentId, boolean includeDeleted)
             throws ClientException {
