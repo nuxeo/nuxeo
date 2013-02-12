@@ -109,9 +109,6 @@ public class SearchActionsBean extends InputController implements
 
     private static final String ACTION_PAGE_SEARCH_SIMPLE = "search_results_simple";
 
-    @In(create = true)
-    private transient SearchBusinessDelegate searchDelegate;
-
     @In(required = false)
     private transient Principal currentUser;
 
@@ -330,8 +327,34 @@ public class SearchActionsBean extends InputController implements
 
     // User-friendly path.
     // GR TODO will actually uses the core connection (perfwise bad)
+    @Deprecated
+    @Override
     public String getDocumentLocation(DocumentModel doc) {
-        return searchDelegate.getDocLocation(doc);
+        DocumentRef parentRef = doc.getParentRef();
+        final Object[] titles;
+        try {
+            titles = documentManager.getDataModelsFieldUp(parentRef,
+                    "dublincore", "title");
+        } catch (ClientException e) {
+            // TODO: more robust exception handling?
+            log.error(e);
+            return null;
+        }
+
+        final StringBuilder location = new StringBuilder();
+        // the last item in the list is the title of the root which is null
+        // and we build the path from final to start
+        for (int i = titles.length - 2; i >= 0; i--) {
+            Object title = titles[i];
+            location.append('/');
+            location.append(title); // should be string
+        }
+
+        if (titles.length == 1) {
+            location.append('/'); // first level element
+        }
+
+        return location.toString();
     }
 
     // SelectModel to use in interface
