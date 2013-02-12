@@ -820,6 +820,27 @@
       </property>
     </widgetType>
 
+    <widgetType name="listing_thumbnail">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Thumbnail</title>
+        <description>
+          <p>This widget type displays the document thumbnail.</p>
+        </description>
+        <categories>
+          <category>listing</category>
+        </categories>
+        <defaultConfiguration>
+          <field>data</field>
+        </defaultConfiguration>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_thumbnail_widget_template.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -1136,6 +1157,15 @@
       <translated>true</translated>
       <fields>
         <field>data.dc.lastContributor</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_thumbnail" type="listing_thumbnail">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>data</field>
       </fields>
     </widget>
   </extension>
@@ -1723,7 +1753,7 @@
           <widget>listing_ajax_selection_box_with_current_document</widget>
         </column>
         <column alwaysSelected="true">
-          <widget>listing_big_icon_type_link</widget>
+          <widget>listing_thumbnail</widget>
         </column>
         <column alwaysSelected="true">
           <widget>listing_title_link</widget>
