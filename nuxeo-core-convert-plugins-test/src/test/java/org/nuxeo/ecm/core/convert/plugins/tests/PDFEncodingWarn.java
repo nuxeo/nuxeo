@@ -19,20 +19,16 @@ package org.nuxeo.ecm.core.convert.plugins.tests;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.junit.Test;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.PDF2TextConverter;
-import org.openqa.jetty.log.LogFactory;
 
 /**
  * @author matic
- * 
+ *
  */
 public class PDFEncodingWarn {
-
-    protected static final Log log = LogFactory.getLog(PDFEncodingWarn.class);
 
     @Test
     public void extract() throws IOException {
