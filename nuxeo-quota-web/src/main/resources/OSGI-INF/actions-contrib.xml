@@ -11,7 +11,7 @@
     </action>
     
     <action id="QuotaStatistics_computeInitialStas" link="/incl/quota/adminQuotaInitialComputation.xhtml"
-      label="adm.quota.statistics" order="45">
+      label="adm.quota.compute.initial.statistics" order="55">
       <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
@@ -23,7 +23,7 @@
     </action>
     
     <action id="QuotaStatistics_stats" link="/incl/quota/adminQuotaStats.xhtml"
-      label="action.view.quota" order="55">
+      label="action.view.quota" order="45">
       <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
@@ -36,7 +36,7 @@
     </action>
 
     <action id="TAB_SET_QUOTA" link="/incl/tabs/document_set_quota.xhtml"
-      order="300" label="action.view.quota" icon="/icons/file.gif">
+      order="300" label="action.activate.quota" icon="/icons/file.gif">
       <category>TAB_QUOTA_sub_tab</category>
     </action>
     
