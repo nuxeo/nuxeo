@@ -1,31 +1,23 @@
-Export-Package: org.nuxeo.ecm.platform.picture.api,
- org.nuxeo.ecm.platform.picture.api.adapters,
- org.nuxeo.ecm.platform.picture.config
+Manifest-Version: 1.0
+Export-Package: org.nuxeo.ecm.platform.picture.api,org.nuxeo.ecm.platf
+ orm.picture.api.adapters,org.nuxeo.ecm.platform.picture.config
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Manifest-Version: 1.0
 Bundle-Name: Nuxeo Platform Imaging API
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 0.0.0.SNAPSHOT
-Nuxeo-Component: OSGI-INF/picture-adapter-contrib.xml,
- OSGI-INF/picture-blobholder-contrib.xml
+Nuxeo-Component: OSGI-INF/picture-adapter-contrib.xml,OSGI-INF/picture
+ -blobholder-contrib.xml
 Bundle-ManifestVersion: 2
-Import-Package: javax.annotation;version="1.0",
- org.apache.commons.logging,
- org.nuxeo.common.xmap.annotation,
- org.nuxeo.ecm.core;api=split,
- org.nuxeo.ecm.core.api;api=split,
- org.nuxeo.ecm.core.api.adapter,
- org.nuxeo.ecm.core.api.blobholder,
- org.nuxeo.ecm.core.api.impl.blob,
- org.nuxeo.ecm.core.api.model,
- org.nuxeo.ecm.core.api.repository,
- org.nuxeo.ecm.core.convert.api,
- org.nuxeo.ecm.directory;api=split,
- org.nuxeo.runtime,
- org.nuxeo.runtime.api,
- org.nuxeo.runtime.model
 Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.api;singleton=true
+Import-Package: javax.annotation;version="1.0",org.apache.commons.logg
+ ing,org.nuxeo.common.xmap.annotation,org.nuxeo.ecm.core;api=split,org
+ .nuxeo.ecm.core.api;api=split,org.nuxeo.ecm.core.api.adapter,org.nuxe
+ o.ecm.core.api.blobholder,org.nuxeo.ecm.core.api.impl.blob,org.nuxeo.
+ ecm.core.api.model,org.nuxeo.ecm.core.api.repository,org.nuxeo.ecm.co
+ re.convert.api,org.nuxeo.ecm.directory;api=split,org.nuxeo.runtime,or
+ g.nuxeo.runtime.api,org.nuxeo.runtime.model
+

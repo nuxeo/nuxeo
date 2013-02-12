@@ -45,6 +45,7 @@
     <module>nuxeo-platform-localconfiguration</module>
     <module>nuxeo-platform-directory-web</module>
     <module>nuxeo-platform-userpreferences</module>
+    <module>nuxeo-thumbnail</module>
   </modules>
 
   <dependencies>
