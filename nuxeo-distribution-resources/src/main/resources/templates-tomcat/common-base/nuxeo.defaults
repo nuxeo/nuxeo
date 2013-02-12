@@ -7,7 +7,7 @@ nuxeo.server.ajp.port=8009
 nuxeo.server.https.port=0
 nuxeo.server.tomcat_admin.port=8005
 nuxeo.server.jvmRoute=nuxeo
-nuxeo.server.declare_datasources=false
+nuxeo.server.declare_datasources=true
 
 nuxeo.db.commonds=jdbc/nuxeo
 nuxeo.db.validationQuery=
@@ -36,4 +36,4 @@ mail.from=noreply@nuxeo.com
 nuxeo.server.emptySessionPath=false
 
 nuxeo.core.binarymanager=
-nuxeo.server.declare_datasources=true
+nuxeo.quartz.enable=false
