@@ -479,7 +479,7 @@
       <![CDATA[
 <nxl:layout name="dublincore" mode="#{myMode}" value="#{myObject}" /> or
 <nxl:layout definition="#{myLayoutDefinition}" mode="#{myMode}" value="#{myObject}" />
-<nxl:layout layout="#{myLayoutInstance}" />
+<nxl:layout layout="#{myLayoutInstance}" value="#{myObject}" />
       ]]>
     </example>
   </tag>

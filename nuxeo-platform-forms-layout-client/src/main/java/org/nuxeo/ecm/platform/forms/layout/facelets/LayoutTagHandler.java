@@ -135,17 +135,11 @@ public class LayoutTagHandler extends TagHandler {
                             + " is required");
         }
         mode = getAttribute("mode");
-        value = getAttribute("value");
+        value = getRequiredAttribute("value");
         if (layout == null && (name != null || definition != null)) {
             if (mode == null) {
                 throw new TagException(this.tag,
                         "Attribute 'mode' is required when using attribute"
-                                + " 'name' or 'definition' so that the "
-                                + "layout instance can be resolved");
-            }
-            if (value == null) {
-                throw new TagException(this.tag,
-                        "Attribute 'value' is required when using attribute"
                                 + " 'name' or 'definition' so that the "
                                 + "layout instance can be resolved");
             }
@@ -177,17 +171,6 @@ public class LayoutTagHandler extends TagHandler {
             throw new FacesException("Layout service not found");
         }
 
-        String modeValue = mode.getValue(ctx);
-        String valueName = value.getValue();
-        if (ComponentTagUtils.isStrictValueReference(valueName)) {
-            valueName = ComponentTagUtils.getBareValueName(valueName);
-        }
-
-        String templateValue = null;
-        if (template != null) {
-            templateValue = template.getValue(ctx);
-        }
-
         // add additional properties put on tag
         Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();
         List<String> reservedVars = Arrays.asList(reservedVarsArray);
@@ -205,19 +188,21 @@ public class LayoutTagHandler extends TagHandler {
         VariableMapper orig = ctx.getVariableMapper();
         VariableMapper vm = new VariableMapperWrapper(orig);
         ctx.setVariableMapper(vm);
-        Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx,
-                modeValue);
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         try {
-            for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
-                vm.setVariable(var.getKey(), var.getValue());
-            }
-
             Layout layoutInstance = null;
 
-            List<String> selectedRowsValue = null;
-            boolean selectAllByDefaultValue = false;
+            String valueName = value.getValue();
+            if (ComponentTagUtils.isStrictValueReference(valueName)) {
+                valueName = ComponentTagUtils.getBareValueName(valueName);
+            }
+
+            String templateValue = null;
+            if (template != null) {
+                templateValue = template.getValue(ctx);
+            }
+
             boolean resolveOnlyValue = false;
             if (resolveOnly != null) {
                 resolveOnlyValue = resolveOnly.getBoolean(ctx);
@@ -230,13 +215,29 @@ public class LayoutTagHandler extends TagHandler {
                     String errMsg = String.format("Layout not found");
                     applyErrorHandler(ctx, parent, helper, errMsg);
                 } else {
+                    Map<String, ValueExpression> vars = getVariablesForLayoutBuild(
+                            ctx, layoutInstance.getMode());
+                    for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
+                        vm.setVariable(var.getKey(), var.getValue());
+                    }
+                    layoutInstance.setValueName(valueName);
                     applyLayoutHandler(ctx, parent, helper, layoutService,
                             layoutInstance, templateValue, additionalProps,
                             vars, resolveOnlyValue);
                 }
-
             } else {
                 // build layout instance from other attributes
+                String modeValue = mode.getValue(ctx);
+
+                List<String> selectedRowsValue = null;
+                boolean selectAllByDefaultValue = false;
+
+                Map<String, ValueExpression> vars = getVariablesForLayoutBuild(
+                        ctx, modeValue);
+                for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
+                    vm.setVariable(var.getKey(), var.getValue());
+                }
+
                 if (selectedRows != null || selectedColumns != null) {
                     if (selectedRows != null) {
                         selectedRowsValue = (List<String>) selectedRows.getObject(

@@ -50,6 +50,7 @@
     <nxl:layout name="#{layoutName}" value="#{documents.rows[0]}" mode="view"
       selectedColumns="#{selectedResultLayoutColumns}"
       template="#{layoutTemplate}" resolveOnly="true">
+
       <c:set var="display" value="#{layoutProperty_display}" />
       <c:if test="#{empty display and fn:endsWith(layoutName, '_2_columns')}">
         <c:set var="display" value="table_2_columns" />
@@ -63,9 +64,7 @@
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />
-              <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
-                selectedColumns="#{selectedResultLayoutColumns}"
-                template="#{layoutTemplate}" />
+              <nxl:layout layout="#{layout}" value="#{row}" />
             </c:forEach>
           </div>
         </c:when>
@@ -80,9 +79,7 @@
                     end="#{(documents.size-1)/2}">
                     <c:set var="showListingHeader"
                       value="#{layoutListingStatus.index == 0}" />
-                    <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
-                      selectedColumns="#{selectedResultLayoutColumns}"
-                      template="#{layoutTemplate}" />
+                    <nxl:layout layout="#{layout}" value="#{row}" />
                   </c:forEach>
                 </table>
               </td>
@@ -93,9 +90,7 @@
                     begin="#{(documents.size-1)/2 + 1}">
                     <c:set var="showListingHeader"
                       value="#{layoutListingStatus.index == documents.size/2+1}" />
-                    <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
-                      selectedColumns="#{selectedResultLayoutColumns}"
-                      template="#{layoutTemplate}" />
+                    <nxl:layout layout="#{layout}" value="#{row}" />
                   </c:forEach>
                 </table>
               </td>
@@ -109,9 +104,7 @@
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />
-              <nxl:layout name="#{layoutName}" value="#{row}" mode="view"
-                selectedColumns="#{selectedResultLayoutColumns}"
-                template="#{layoutTemplate}" />
+              <nxl:layout layout="#{layout}" value="#{row}" />
             </c:forEach>
           </table>
         </c:otherwise>

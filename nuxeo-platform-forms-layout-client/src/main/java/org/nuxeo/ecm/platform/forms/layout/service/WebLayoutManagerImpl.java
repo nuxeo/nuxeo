@@ -464,6 +464,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 layoutDef.getTemplate(mode), rows, columns,
                 layoutDef.getProperties(mode),
                 LayoutFunctions.computeLayoutDefinitionId(layoutDef));
+        layout.setValueName(valueName);
         return layout;
     }
 
