@@ -68,13 +68,25 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
-        return getFileSystemItem(doc, false, null);
+        return getFileSystemItem(doc, false, null, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, false, null, includeDeleted);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
             throws ClientException {
-        return getFileSystemItem(doc, true, parentId);
+        return getFileSystemItem(doc, true, parentId, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+            boolean inlcudeDeleted) throws ClientException {
+        return getFileSystemItem(doc, true, parentId, inlcudeDeleted);
     }
 
     @Override
@@ -143,8 +155,10 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
 
     /*--------------------------- Protected ---------------------------------*/
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentId, String parentId) throws ClientException {
-        if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            boolean forceParentId, String parentId, boolean includeDeleted)
+            throws ClientException {
+        if (!includeDeleted
+                && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             log.debug(String.format(
                     "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem => returning null.",
                     doc.getId(), LifeCycleConstants.DELETED_STATE));

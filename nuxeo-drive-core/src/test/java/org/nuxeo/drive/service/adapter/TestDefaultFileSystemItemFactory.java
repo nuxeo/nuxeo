@@ -224,6 +224,14 @@ public class TestDefaultFileSystemItemFactory {
         custom.followTransition("delete");
         assertNull(defaultFileSystemItemFactory.getFileSystemItem(custom));
 
+        // Deleted file with explicit "includeDeleted" => adaptable as a
+        // FileSystemItem
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom, true);
+        assertNotNull(fsItem);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
+                fsItem.getId());
+        assertEquals("Bonnie's file.odt", fsItem.getName());
+
         // ------------------------------------------------------
         // Check folderish FileSystemItems
         // ------------------------------------------------------

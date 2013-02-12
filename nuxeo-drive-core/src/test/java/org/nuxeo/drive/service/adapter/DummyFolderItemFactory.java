@@ -39,9 +39,21 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc);
+    }
+
+    @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
             throws ClientException {
         return new DummyFolderItem(name, parentId, doc);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, parentId);
     }
 
     @Override

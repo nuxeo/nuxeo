@@ -111,13 +111,25 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
-        return getFileSystemItem(doc, false, null);
+        return getFileSystemItem(doc, false, null, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, false, null, includeDeleted);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
             throws ClientException {
-        return getFileSystemItem(doc, true, parentId);
+        return getFileSystemItem(doc, true, parentId, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, true, parentId, includeDeleted);
     }
 
     /**
@@ -166,7 +178,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentId, String parentId) throws ClientException {
+            boolean forceParentId, String parentId, boolean includeDeleted)
+            throws ClientException {
 
         FileSystemItem fileSystemItem = null;
         FileSystemItemFactoryWrapper matchingFactory = null;
@@ -179,9 +192,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                 matchingFactory = factory;
                 if (forceParentId) {
                     fileSystemItem = factory.getFactory().getFileSystemItem(
-                            doc, parentId);
+                            doc, parentId, includeDeleted);
                 } else {
-                    fileSystemItem = factory.getFactory().getFileSystemItem(doc);
+                    fileSystemItem = factory.getFactory().getFileSystemItem(
+                            doc, includeDeleted);
                 }
                 if (fileSystemItem != null) {
                     return fileSystemItem;

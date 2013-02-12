@@ -34,7 +34,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface FileSystemItemAdapterService {
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If
+     * the document is in the "deleted" life cycle state it is not considered as
+     * adaptable as a {@link FileSystemItem}, thus the method returns null.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
      *         is not adaptable as a {@link FileSystemItem}
@@ -43,8 +45,23 @@ public interface FileSystemItemAdapterService {
     FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
 
     /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If
+     * {@code includeDeleted} is true no filter is applied on the "deleted" life
+     * cycle state, else if the document is in this state it is not considered
+     * as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     *
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
+     *         is not adaptable as a {@link FileSystemItem}
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted)
+            throws ClientException;
+
+    /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
-     * forcing its parent id with the given id.
+     * forcing its parent id with the given id. If the document is in the
+     * "deleted" life cycle state it is not considered as adaptable as a
+     * {@link FileSystemItem}, thus the method returns null.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
      *         is not adaptable as a {@link FileSystemItem}
@@ -52,6 +69,20 @@ public interface FileSystemItemAdapterService {
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
             throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
+     * forcing its parent id with the given id. If {@code includeDeleted} is
+     * true no filter is applied on the "deleted" life cycle state, else if the
+     * document is in this state it is not considered as adaptable as a
+     * {@link FileSystemItem}, thus the method returns null.
+     *
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
+     *         is not adaptable as a {@link FileSystemItem}
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+            boolean includeDeleted) throws ClientException;
 
     /**
      * Gets the {@link FileSystemItemFactory} that can handle the the given
