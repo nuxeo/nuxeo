@@ -2,3 +2,4 @@
 nuxeo.template.includes=oracle
 oracle-quartz-cluster.target=.
 nuxeo.server.ContextSecurityGrabber.disable=true
+nuxeo.quartz.enable=true

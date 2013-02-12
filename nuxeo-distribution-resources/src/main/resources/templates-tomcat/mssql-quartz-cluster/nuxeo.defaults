@@ -2,3 +2,4 @@
 nuxeo.template.includes=mssql
 mssql-quartz-cluster.target=.
 nuxeo.server.ContextSecurityGrabber.disable=true
+nuxeo.quartz.enable=true

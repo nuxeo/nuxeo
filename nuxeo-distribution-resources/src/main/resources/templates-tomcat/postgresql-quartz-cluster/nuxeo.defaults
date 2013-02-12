@@ -2,3 +2,4 @@
 nuxeo.template.includes=postgresql
 postgresql-quartz-cluster.target=.
 nuxeo.server.ContextSecurityGrabber.disable=true
+nuxeo.quartz.enable=true

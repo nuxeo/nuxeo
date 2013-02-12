@@ -65,3 +65,6 @@ nuxeo.plaintext_parsing_extensions=xml,properties,nx,html,js
 nuxeo.freemarker_parsing_extensions=nxftl
 
 session.timeout=60
+
+nuxeo.quartz.enable=false
+

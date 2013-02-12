@@ -45,6 +45,10 @@
   <ResourceLink name="jdbc/placeful_service_ds" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
   <ResourceLink name="jdbc/nxwebwidgets" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
   <ResourceLink name="jdbc/nxuidsequencer" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+<#if "${nuxeo.quartz.enable}" == "true">
+  <ResourceLink name="jdbc/nxquartz" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+  <ResourceLink name="jdbc/nxquartz_no_tx" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
+</#if>
 
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
