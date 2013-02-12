@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.Work;
-import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -107,7 +106,7 @@ public class ExcelExportRightsActionBean implements Serializable {
     public void buildAndDownload() throws ClientException, IOException {
         File tmpFile = File.createTempFile("rights-", ".xls");
         tmpFile.deleteOnExit();
-        buildAndDownload(tmpFile);
+        buildAndDownloadAsync(tmpFile);
     }
 
     protected void buildAndDownload(final File tmpFile) throws ClientException {
