@@ -232,7 +232,7 @@
 
     <widget name="damAssetViewWorkflow" type="container">
       <labels>
-        <label mode="any">label.route.info</label>
+        <label mode="any">label.document.routing.workflow</label>
       </labels>
       <translated>true</translated>
       <handlingLabels>true</handlingLabels>
