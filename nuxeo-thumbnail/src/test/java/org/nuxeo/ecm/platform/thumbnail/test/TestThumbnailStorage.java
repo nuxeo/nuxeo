@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -61,6 +62,7 @@ public class TestThumbnailStorage {
     EventService eventService;
 
     @Test
+    @Ignore
     public void testThumbnailCRUD() throws ClientException, IOException {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
