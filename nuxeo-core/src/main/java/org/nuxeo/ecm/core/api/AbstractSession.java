@@ -1044,27 +1044,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    public DocumentModelIterator getChildrenIterator(DocumentRef parent)
-            throws ClientException {
-        DocsQueryProviderDef def = new DocsQueryProviderDef(
-                DocsQueryProviderDef.DefType.TYPE_CHILDREN);
-        def.setParent(parent);
-        return new DocumentModelIteratorImpl(this, 15, def, null, READ, null);
-    }
-
-    @Override
     public DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException {
         return getChildren(parent, type, READ, null, null);
-    }
-
-    @Override
-    public DocumentModelIterator getChildrenIterator(DocumentRef parent,
-            String type) throws ClientException {
-        DocsQueryProviderDef def = new DocsQueryProviderDef(
-                DocsQueryProviderDef.DefType.TYPE_CHILDREN);
-        def.setParent(parent);
-        return new DocumentModelIteratorImpl(this, 15, def, type, null, null);
     }
 
     @Override
@@ -1201,6 +1183,20 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
+    @Deprecated
+    public DocumentModelIterator getChildrenIterator(DocumentRef parent)
+            throws ClientException {
+        return getChildrenIterator(parent, null, null, null);
+    }
+
+    @Override
+    @Deprecated
+    public DocumentModelIterator getChildrenIterator(DocumentRef parent,
+            String type) throws ClientException {
+        return getChildrenIterator(parent, type, null, null);
+    }
+
+    @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent,
             String type, String perm, Filter filter) throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1261,6 +1257,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
+    @Deprecated
     public DocumentModelIterator getFilesIterator(DocumentRef parent)
             throws ClientException {
 
@@ -1318,6 +1315,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
+    @Deprecated
     public DocumentModelIterator getFoldersIterator(DocumentRef parent)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(
@@ -1663,6 +1661,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
+    @Deprecated
     public DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException {
         DocsQueryProviderDef def = new DocsQueryProviderDef(

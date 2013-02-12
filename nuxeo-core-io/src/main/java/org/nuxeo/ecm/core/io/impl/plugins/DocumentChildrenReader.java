@@ -25,9 +25,9 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.ExportedDocumentImpl;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @deprecated unused since 5.6
  */
+@Deprecated
 public class DocumentChildrenReader extends DocumentModelReader {
 
     private DocumentModelIterator iterator;
@@ -35,7 +35,7 @@ public class DocumentChildrenReader extends DocumentModelReader {
     public DocumentChildrenReader(CoreSession session, DocumentModel root)
             throws ClientException {
         super(session);
-        iterator = session.getChildrenIterator(root.getRef());
+        iterator = session.getChildrenIterator(root.getRef(), null, null, null);
     }
 
     public DocumentChildrenReader(CoreSession session, DocumentRef root)

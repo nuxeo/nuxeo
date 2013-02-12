@@ -68,7 +68,8 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
         this.root = root;
         this.session = session;
         if (excludeRoot) {
-            sequence = session.getChildrenIterator(root.getRef());
+            sequence = session.getChildrenIterator(root.getRef(), null, null,
+                    null);
         } else {
             sequence = new OneDocSequence(root);
         }
@@ -120,7 +121,8 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
             // TODO: load children after the document was traversed
             // update the sequence queue with children from this folder
             try {
-                queue.add(session.getChildrenIterator(doc.getRef()));
+                queue.add(session.getChildrenIterator(doc.getRef(), null, null,
+                        null));
             } catch (ClientException e) {
                 log.error(e);
             }

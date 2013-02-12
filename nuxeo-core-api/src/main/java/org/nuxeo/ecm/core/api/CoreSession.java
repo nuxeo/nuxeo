@@ -307,7 +307,10 @@ public interface CoreSession {
     /**
      * Gets an iterator to the children of the given parent filtered according
      * to the given document type.
+     *
+     * @deprecated since 5.6, use {@link #getChildren} instead
      */
+    @Deprecated
     DocumentModelIterator getChildrenIterator(DocumentRef parent, String type)
             throws ClientException;
 
@@ -422,7 +425,9 @@ public interface CoreSession {
      * @return a list of children if any, an empty one if none or null if the
      *         given parent is not a folder
      * @throws ClientException
+     * @deprecated unused since 5.6, use {@link #getFolders} instead
      */
+    @Deprecated
     DocumentModelIterator getFoldersIterator(DocumentRef parent)
             throws ClientException;
 
@@ -458,7 +463,9 @@ public interface CoreSession {
      * @param parent
      * @return
      * @throws ClientException
+     * @deprecated unused since 5.6, use {@link #getFiles} instead
      */
+    @Deprecated
     DocumentModelIterator getFilesIterator(DocumentRef parent)
             throws ClientException;
 
@@ -1353,7 +1360,9 @@ public interface CoreSession {
      * @param max number of document to retrieve
      * @return the query result iterator
      * @throws ClientException
+     * @deprecated unused since 5.6
      */
+    @Deprecated
     DocumentModelIterator queryIt(String query, Filter filter, int max)
             throws ClientException;
 
