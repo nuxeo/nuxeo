@@ -340,9 +340,8 @@ public class LayoutTagHandler extends TagHandler {
             Map<String, ValueExpression> vars, boolean resolveOnly)
             throws IOException, FacesException, ELException {
 
-        // set unique id on layout, only if not already set
-        String id = layoutInstance.getId();
-        if (StringUtils.isBlank(id)) {
+        // set unique id on layout, unless layout is only resolved
+        if (!resolveOnly) {
             layoutInstance.setId(helper.generateLayoutId(layoutInstance.getName()));
         }
 
