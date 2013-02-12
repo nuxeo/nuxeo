@@ -40,7 +40,9 @@ Nuxeo-Component: OSGI-INF/DocumentAdapterService.xml,
   OSGI-INF/blob-holder-adapters-contrib.xml,
   OSGI-INF/pathsegment-service.xml,
   OSGI-INF/local-configuration-service.xml,
-  OSGI-INF/propertiesmapping-service.xml
+  OSGI-INF/propertiesmapping-service.xml,
+  OSGI-INF/thumbnail-adapter-contrib.xml,
+  OSGI-INF/thumbnail-service.xml
 Import-Package: javax.security.auth,
  javax.security.auth.callback,
  javax.security.auth.login,

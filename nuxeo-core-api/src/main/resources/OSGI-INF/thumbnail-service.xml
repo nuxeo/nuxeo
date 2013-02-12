@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.api.thumbnail.ThumbnailService">
+
+  <implementation
+    class="org.nuxeo.ecm.core.api.thumbnail.ThumbnailServiceImpl" />
+  <documentation>
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.api.thumbnail.ThumbnailService" />
+  </service>
+
+  <extension-point name="thumbnailFactory">
+    <documentation>
+      @author Vladimir Pasquier (vpasquier@nuxeo.com)
+      This extension
+      provides thumbnail factories according to the type, facet and
+      default one.
+      <code>
+        <thumbnailFactory name="thumbnailFolderishFactory"
+          facet="Folderish"
+          factoryClass="org.nuxeo.ecm.platform.thumbnail.factories.ThumbnailFolderishFactory" />
+        <thumbnailFactory name="thumbnailDocumentFactory"
+          factoryClass="org.nuxeo.ecm.platform.thumbnail.factories.ThumbnailDocumentFactory" />
+      </code>
+
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactoryDescriptor" />
+
+  </extension-point>
+
+</component>
