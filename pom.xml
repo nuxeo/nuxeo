@@ -119,7 +119,7 @@
     <module>nuxeo-csv</module>
     <module>nuxeo-tree-snapshot</module>
     <!-- temporarily moved to optional addons -->
-    <!-- <module>nuxeo-groups-rights-audit</module> -->
+    <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-drive</module>
   </modules>
 
