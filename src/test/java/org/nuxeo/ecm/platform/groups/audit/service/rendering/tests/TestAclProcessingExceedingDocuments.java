@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -83,7 +84,7 @@ public class TestAclProcessingExceedingDocuments extends AbstractAclLayoutTest {
 
         log.info("Build a test repository: depth=" + depth + ", width:" + width
                 + ", groups:" + groups);
-        makeDocumentTree(session, depth, width, groups);
+        DocumentModel root = makeDocumentTree(session, depth, width, groups);
         session.save();
         log.info("done building test data");
 
@@ -96,7 +97,7 @@ public class TestAclProcessingExceedingDocuments extends AbstractAclLayoutTest {
         // generate XLS report
         log.info("Start audit");
         IAclExcelLayoutBuilder v = new AclExcelLayoutBuilder(s, filter);
-        v.renderAudit(session);
+        v.renderAudit(session, root);
         log.info("End audit");
 
         // save

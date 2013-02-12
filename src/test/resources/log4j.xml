@@ -253,7 +253,7 @@
   </category>
 
   <category name="org.nuxeo">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <category name="org.nuxeo.ecm.platform.groups.audit">
@@ -268,13 +268,13 @@
   </category>
   -->
   <category name="org.nuxeo.runtime.reload">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="org.nuxeo.ecm.platform.ui.web.auth">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <!-- Uncomment for components registration info -->
   <!--
@@ -283,29 +283,29 @@
   </category>
   -->
   <category name="org.nuxeo.osgi.application.loader.FrameworkLoader">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="org.nuxeo.osgi.application.StandaloneApplication">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="org.nuxeo.osgi.application.FrameworkBootstrap">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="org.nuxeo.runtime.jboss.deployment.NuxeoDeployer">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="org.nuxeo.runtime.tomcat.NuxeoDeployer">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <category name="javax.enterprise.resource.webcontainer.jsf.renderkit">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="javax.enterprise.resource.webcontainer.jsf.application">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
   <category name="javax.enterprise.resource.webcontainer.jsf.lifecycle">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <!-- Limit the jacorb category to WARN as its INFO is verbose -->
@@ -320,7 +320,7 @@
 
   <!-- Limit the org.quartz category to INFO as its DEBUG is verbose -->
   <category name="org.quartz" additivity="true">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <!-- make Jersey less noisy -->
@@ -422,13 +422,11 @@
 
   <category name="nuxeo-error-log">
     <priority value="TRACE" />
-    <appender-ref ref="ERROR-FILE" />
   </category>
 
   <!-- System.err redirected by Tomcat to a logger STDERR with level ERROR -->
   <category name="STDERR" additivity="false">
     <priority value="ERROR" />
-    <appender-ref ref="STDERR-FILE" />
   </category>
 
   <!-- ======================= -->
@@ -438,7 +436,6 @@
   <root>
     <level value="WARN" />
     <appender-ref ref="CONSOLE" />
-    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

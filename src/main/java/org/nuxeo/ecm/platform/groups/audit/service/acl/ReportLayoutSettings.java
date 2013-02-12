@@ -58,7 +58,7 @@ public class ReportLayoutSettings {
 
     protected int zoomRatioDenominator = 1;
 
-    protected int pageSize = -1; // -1 for no paging
+    protected int pageSize = 1000; // -1 for no paging
 
     public int getUserHeaderHeight() {
         return userHeaderHeight;
@@ -208,6 +208,7 @@ public class ReportLayoutSettings {
         return pageSize;
     }
 
+    /** Page size of the page provider, i.e. input data processing. Use -1 to disable paging */
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }

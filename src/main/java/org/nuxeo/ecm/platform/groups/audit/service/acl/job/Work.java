@@ -3,25 +3,49 @@ package org.nuxeo.ecm.platform.groups.audit.service.acl.job;
 import static org.nuxeo.ecm.core.work.api.Work.State.SUSPENDED;
 
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /** A work able to start transactions with a custom timeout, and able
  * to return this timeout.
- *
- * @author Martin Pernollet
+ * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
 public class Work extends AbstractWork implements ITimeoutWork{
-    public Work(String name, int timeout) {
-        super();
-        this.name = name;
-        this.timeout = timeout;
+    public static int DEFAULT_TIMEOUT = 1200; // 20 min
+    public static int UNDEFINED_TIMEOUT = -1;
+
+    protected Runnable runnable;
+    protected String name;
+    protected int timeout;
+
+    /** Uses timeout defined from properties. If undefined, {@link DEFAULT_TIMEOUT}
+     * will be used. */
+    public Work(String name) {
+        this(null, name, getAclAuditTimeoutFromProperties());
     }
 
+    public Work(String name, int timeout) {
+        this(null, name, timeout);
+    }
+
+    /** Uses timeout defined from properties. If undefined, {@link DEFAULT_TIMEOUT}
+     * will be used. */
+    public Work(Runnable runnable, String name) {
+        this(runnable, name, getAclAuditTimeoutFromProperties());
+    }
+
+    /** If timeout is {@link UNDEFINED_TIMEOUT}, uses {@link DEFAULT_TIMEOUT}.*/
     public Work(Runnable runnable, String name, int timeout) {
         this.runnable = runnable;
         this.name = name;
         this.timeout = timeout;
+
+        if(timeout==UNDEFINED_TIMEOUT){
+            timeout = DEFAULT_TIMEOUT;
+        }
     }
+
+
 
     @Override
     public String getTitle() {
@@ -97,9 +121,13 @@ public class Work extends AbstractWork implements ITimeoutWork{
         this.runnable = runnable;
     }
 
-
-
-    protected Runnable runnable;
-    protected String name;
-    protected int timeout;
+    public static int getAclAuditTimeoutFromProperties(){
+        String v = Framework.getProperty("nuxeo.audit.acl.timeout", UNDEFINED_TIMEOUT + "");
+        try{
+            return Integer.parseInt(v);
+        }
+        catch(Exception e){
+            return UNDEFINED_TIMEOUT;
+        }
+    }
 }

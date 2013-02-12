@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.test.repo.repository.test.nofulltext">
+  <require>org.nuxeo.ecm.core.storage.sql.test.repo.repository.test</require>
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="test" />
+  </extension>
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="test"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <repository sendInvalidationEvents="true">
+        <schema>
+          <field type="largetext">note</field>
+          <field type="largetext">relatedtext</field>
+        </schema>
+        <indexing>
+          <fulltext disabled="true"/>
+        </indexing>
+        <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
+        <property name="URL">jdbc:h2:target/test/h2/nuxeo/nuxeojunittests</property>
+        <property name="User">sa</property>
+        <property name="Password"></property>
+      </repository>
+    </repository>
+  </extension>
+</component>

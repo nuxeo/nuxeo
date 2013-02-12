@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.platform.groups.audit.service.rendering.tests;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +23,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import com.google.common.collect.Lists;
 
 public class AbstractAclLayoutTest {
-    protected static String folder = "target/";
+    protected static String folder = "target/test/";
 
     protected DocumentModel makeFolder(CoreSession session, String path,
             String name, boolean save) throws ClientException,
@@ -192,16 +194,16 @@ public class AbstractAclLayoutTest {
                     RichTextString rts = cell.getRichStringCellValue();
                     return rts.getString();
                 } else {
-                    throw new RuntimeException("no cell at id " + c
-                            + " in row " + r + " at sheet " + s);
+                    fail("no cell at id " + c + " in row " + r + " at sheet "
+                            + s);
                 }
             } else {
-                throw new RuntimeException("no row at id " + r + " in sheet "
-                        + s);
+                fail("no row at id " + r + " in sheet " + s);
             }
         } else {
-            throw new RuntimeException("no sheet at id " + s);
+            fail("no sheet at id " + s);
         }
+        return null;
     }
 
 }

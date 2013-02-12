@@ -44,7 +44,7 @@ import com.google.inject.Inject;
 
 /**
  * Test excel export of groups
- * 
+ *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -57,7 +57,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.automation.core" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml" })
+        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml"})
 public class TestExcelExportGroups {
 
     @Inject

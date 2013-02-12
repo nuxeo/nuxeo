@@ -32,20 +32,25 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.AclExcelLayoutBuilder;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.IAclExcelLayoutBuilder;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.ReportLayoutSettings;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsGroupOnly;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.Work;
+import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.runtime.api.Framework;
 
 @Name("excelExportRightsAction")
 @Scope(ScopeType.EVENT)
@@ -107,31 +112,58 @@ public class ExcelExportRightsActionBean implements Serializable {
 
     protected void buildAndDownload(final File tmpFile) throws ClientException {
         final FacesContext context = FacesContext.getCurrentInstance();
-        final DocumentModel doc = navigationContext.getCurrentDocument();
+        final DocumentModel auditRoot = navigationContext.getCurrentDocument();
 
-        UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
-                doc.getRepositoryName()) {
-            @Override
-            public void run() throws ClientException {
-                log.info("start audit, export in " + tmpFile);
-
-                // configure audit
-                ReportLayoutSettings s = AclExcelLayoutBuilder.defaultLayout();
-                s.setPageSize(1000);
-                IContentFilter f = new AcceptsGroupOnly();
-
-                // do work
-                IAclExcelLayoutBuilder v = new AclExcelLayoutBuilder(s, f);
-                v.renderAudit(session, doc);
-
-                try {
-                    v.getExcel().save(tmpFile);
-                } catch (IOException e) {
-                    log.error(e, e);
-                }
+        Runnable todo = new RunnableAclAudit(documentManager, auditRoot, tmpFile){
+            public void onAuditDone() {
                 ComponentUtils.downloadFile(context, "rights.xls", tmpFile);
             }
         };
-        runner.runUnrestricted();
+        todo.run();
+    }
+
+    /** Execute ACL audit and save the result XLS file as child of the document
+     * we started the analysis from. */
+    protected void buildAndDownloadAsync(final File tmpFile) throws ClientException {
+        final DocumentModel auditRoot = navigationContext.getCurrentDocument();
+
+        Work work = new Work("ACL Audit");
+        new RunnableAclAudit(documentManager, auditRoot, work, tmpFile){
+            public void onAuditDone() {
+                Blob b = new FileBlob(getOutputFile());
+
+                try {
+                    createDocument(documentManager, auditRoot, "ACL Audit", b);
+                } catch (ClientException e) {
+                    log.error(e,e);
+                }
+            }
+        };
+
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        wm.schedule(work);
+    }
+
+    protected DocumentModel createDocument(CoreSession session,
+            DocumentModel parent, String name, Blob doc) throws ClientException {
+        DocumentRef dr = new PathRef(parent.getPath().append(name).toString());
+        String filenamePlusExt = name + "."
+                + FileUtils.getFileExtension(doc.getFilename());
+
+        if (session.exists(dr)) {
+            DocumentModel document = session.getDocument(dr);
+            document.setPropertyValue("file:content", (Serializable) doc);
+            document.setPropertyValue("file:filename", filenamePlusExt);
+            document.setPropertyValue("dublincore:title", name);
+            return session.saveDocument(document);
+        } else {
+            DocumentModel document = session.createDocumentModel(
+                    parent.getPathAsString(),
+                    IdUtils.generatePathSegment(name), "File");
+            document.setPropertyValue("file:content", (Serializable) doc);
+            document.setPropertyValue("file:filename", filenamePlusExt);
+            document.setPropertyValue("dublincore:title", name);
+            return session.createDocument(document);
+        }
     }
 }

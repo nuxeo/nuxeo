@@ -222,7 +222,8 @@ public class DataProcessor implements IDataProcessor {
 
     public void log() {
         log.info("doc tree depth    : " + getDocumentTreeMaxDepth());
-        log.info("#docs (or folders): " + getNumberOfDocuments());
+        log.info("#docs (or folders): " + getNumberOfDocuments()
+                + " (analyzed by processor, may differ from actual number of doc in repo if exceeding timeout or max number of doc)");
         log.info("#users (or groups): "
                 + getUserAndGroups().size()
                 + " (mentionned in ACLs, may differ from actual user directory)");
