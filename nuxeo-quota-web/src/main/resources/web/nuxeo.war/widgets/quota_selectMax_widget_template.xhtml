@@ -12,6 +12,8 @@
  <nxu:set var="minQuotaSliderValue" value="#{quotaStatsActions.getMinQuotaSliderValue()}" cache="true">
  <nxu:set var="maxQuotaSliderValue" value="#{quotaStatsActions.getMaxQuotaSliderValue()}" cache="true">
  <nxu:set var="validateMaxSize" value="#{nxu:test(empty widgetProperty_validateMaxSize, 'false', widgetProperty_validateMaxSize)}" cache="true">
+  
+  <h:outputText value="#{messages['label.quota.setMaxSize']}" rendered="#{!quotaStatsActions.isQuotaSetOnCurrentDocument()}"/>
   <table id="sliderTable">
    <tr>
     </tr><tr>
@@ -74,5 +76,4 @@
 
 
  </c:if>
-<h:messages/>
 </div>

@@ -216,6 +216,20 @@ public class QuotaStatsActions implements Serializable {
         return running.size() > 0 || scheduled.size() > 0;
     }
 
+    public boolean isQuotaSetOnCurrentDocument() {
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        // the quota info set on the userworkspaces root should be ignored
+        if ("UserWorkspacesRoot".equals(doc.getType())) {
+            return true;
+        }
+        QuotaAware qa = doc.getAdapter(QuotaAware.class);
+        if (qa == null) {
+            return false;
+        }
+        long maxSize = qa.getMaxQuota();
+        return maxSize > 0;
+    }
+
     public boolean isActivateQuotaOnUsersWorkspaces() {
         return activateQuotaOnUsersWorkspaces;
     }
