@@ -15,6 +15,7 @@ package org.nuxeo.ecm.platform.audit.api.document;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
@@ -42,7 +43,10 @@ public class SourceDocumentResolver extends UnrestrictedSessionRunner {
             version = document;
         }
         if (version != null) {
-            sourceDocument = session.getSourceDocument(version.getRef());
+            if (version.getSourceId() != null
+                    && session.exists(new IdRef(version.getSourceId()))) {
+                sourceDocument = session.getSourceDocument(version.getRef());
+            }
         }
     }
 
