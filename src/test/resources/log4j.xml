@@ -257,7 +257,7 @@
   </category>
 
   <category name="org.nuxeo.ecm.platform.groups.audit">
-    <priority value="INFO" />
+    <priority value="DEBUG" />
   </category>
 
 

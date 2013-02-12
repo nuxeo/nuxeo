@@ -85,8 +85,8 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
     public void testTimeout() throws Exception {
         // --------------------
         // Doc tree generation
-        // 10k docs to have a long process
-        int depth = 2;
+        // Many docs to have a long process
+        int depth = 5;
         int width = 10;
         int groups = 1;
 
