@@ -332,23 +332,35 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
         @Override
         public void run() throws ClientException {
-            IterableQueryResult results = session.queryAndFetch(
-                    String.format(
-                            "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' "
-                                    + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ORDER BY dss:maxSize DESC",
-                            parent.getPath()), "NXQL");
-            long quotaOnChildren = 0;
-            for (Map<String, Serializable> result : results) {
-                Long maxSize = (Long) result.get("dss:maxSize");
-                quotaOnChildren = quotaOnChildren
-                        + (maxSize == null || maxSize == -1 ? 0 : maxSize);
-                if (quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+            IterableQueryResult results = null;
+            try {
+                results = session.queryAndFetch(
+                        String.format(
+                                "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:primaryType NOT IN ('UserWorkspacesRoot') "
+                                        + " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:parentId !='%s' ORDER BY dss:maxSize DESC",
+                                parent.getPath(),
+                                getUserWorkspaceRootId(
+                                        session.getRootDocument(), session)),
+                        "NXQL");
+                long quotaOnChildren = 0;
+                for (Map<String, Serializable> result : results) {
+                    Long maxSize = (Long) result.get("dss:maxSize");
+                    quotaOnChildren = quotaOnChildren
+                            + (maxSize == null || maxSize == -1 ? 0 : maxSize);
+                    if (quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+                        results.close();
+                        canSetQuota = false;
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e);
+                throw new ClientException(e);
+            } finally {
+                if (results != null) {
                     results.close();
-                    canSetQuota = false;
-                    return;
                 }
             }
-            results.close();
         }
 
         public boolean canSetQuota() throws ClientException {
