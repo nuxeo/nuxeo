@@ -81,100 +81,81 @@ public final class StringUtils {
     }
 
     /**
-     * Improved versions of join method from org.apache.commons.lang.StringUtils.
-     */
-    public static String join(Object[] array) {
-        if (array == null) {
-            return null;
-        }
-        int arraySize = array.length;
-        int bufSize = arraySize == 0 ? 0
-                : ((array[0] == null ? 16 : array[0].toString().length()) + 1) * arraySize;
-        StringBuilder buf = new StringBuilder(bufSize);
-
-        for (int i = 0; i < arraySize; i++) {
-            if (array[i] != null) {
-                buf.append(array[i]);
-            }
-        }
-        return buf.toString();
-    }
-
-    /**
-     * Improved versions of join method from org.apache.commons.lang.StringUtils.
-     */
-    public static String join(Object[] array, String separator) {
-        if (array == null) {
-            return null;
-        }
-        int arraySize = array.length;
-        if (arraySize == 0) {
-            return "";
-        }
-        int bufSize = ((array[0] == null ? 16 : array[0].toString().length()) + 1) * arraySize;
-        StringBuilder buf = new StringBuilder(bufSize);
-
-        buf.append(array[0]);
-        for (int i = 1; i < arraySize; i++) {
-            if (separator != null) {
-                buf.append(separator);
-            }
-            if (array[i] != null) {
-                buf.append(array[i]);
-            }
-        }
-        return buf.toString();
-    }
-
-    public static String join(Object[] array, char separator) {
-        return join(array, String.valueOf(separator));
-    }
-
-    /**
-     * Joins strings from a {@code List} with an optional separator.
+     * Joins the elements of the provided array into a single String containing
+     * the provided list of elements.
      *
-     * @param list the list.
-     * @param separator the separator.
-     * @return the joined string.
+     * @deprecated since 5.7, use
+     *             {@link org.apache.commons.lang.StringUtils#join(Object[])}
+     *             instead
      */
+    @Deprecated
+    public static String join(Object[] array) {
+        return org.apache.commons.lang.StringUtils.join(array);
+    }
+
+    /**
+     * Joins the elements of the provided array with an optional separator into
+     * a single String containing the provided list of elements.
+     *
+     * @deprecated since 5.7, use
+     *             {@link org.apache.commons.lang.StringUtils#join(Object[], String)}
+     *             instead
+     */
+    @Deprecated
+    public static String join(Object[] array, String separator) {
+        return org.apache.commons.lang.StringUtils.join(array, separator);
+    }
+
+    /**
+     * Joins the elements of the provided array with an optional separator into
+     * a single String containing the provided list of elements.
+     *
+     * @deprecated since 5.7, use
+     *             {@link org.apache.commons.lang.StringUtils#join(Object[], char)}
+     *             instead
+     */
+    @Deprecated
+    public static String join(Object[] array, char separator) {
+        return org.apache.commons.lang.StringUtils.join(array, separator);
+    }
+
+    /**
+     * Joins the elements of the provided {@link List} with an optional
+     * separator into a single String containing the provided elements.
+     *
+     * @deprecated since 5.7, use
+     *             {@link org.apache.commons.lang.StringUtils#join(java.util.Collection, String)}
+     *             instead
+     */
+    @Deprecated
     public static String join(List<String> list, String separator) {
-        if (list == null) {
-            return null;
-        }
-        if (list.isEmpty()) {
-            return "";
-        }
-        int seplen = (separator == null) ? 0 : separator.length();
-        int len = -seplen;
-        for (String s : list) {
-            len += seplen;
-            if (s != null) {
-                len += s.length();
-            }
-        }
-        StringBuilder buf = new StringBuilder(len);
-        boolean first = true;
-        for (String s : list) {
-            if (first) {
-                first = false;
-            } else {
-                if (seplen != 0) {
-                    buf.append(separator);
-                }
-            }
-            if (s != null) {
-                buf.append(s);
-            }
-        }
-        return buf.toString();
+        return org.apache.commons.lang.StringUtils.join(list, separator);
     }
 
+    /**
+     * Joins the elements of the provided {@link List} into a single String
+     * containing the provided elements.
+     *
+     * @deprecated since 5.7, use
+     *             {@link org.apache.commons.lang.StringUtils#join(java.util.Collection, null)}
+     *             instead
+     */
+    @Deprecated
     public static String join(List<String> list) {
-        return join(list, null);
+        return org.apache.commons.lang.StringUtils.join(list, null);
     }
 
+    /**
+     * Joins the elements of the provided {@link List} with an optional
+     * separator into a single String containing the provided elements.
+     *
+     * @deprecated since 5.7, use
+     *             {@link org.apache.commons.lang.StringUtils#join(java.util.Collection, char)}
+     *             instead
+     */
+    @Deprecated
     public static String join(List<String> list, char separator) {
-        return join(list, String.valueOf(separator));
+        return org.apache.commons.lang.StringUtils.join(list, separator);
     }
 
     public static String[] split(String str, char delimiter, boolean trim) {
@@ -211,6 +192,16 @@ public final class StringUtils {
         return ar.toArray(new String[ar.size()]);
     }
 
+    /**
+     * Converts a string to a sequence of hexadecimal characters, using a
+     * non-obvious encoding (unicode code points with all leading 0 stripped for
+     * each character).
+     *
+     * @deprecated since 5.7, use
+     *             {@link org.apache.commons.codec.binary.Hex#encodeHexString(byte[])}
+     *             instead
+     */
+    @Deprecated
     public static String toHex(String string) {
         char[] chars = string.toCharArray();
         StringBuilder buf = new StringBuilder();
