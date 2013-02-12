@@ -35,7 +35,7 @@
       <showFilterForm>true</showFilterForm>
       <showPageSizeSelector>false</showPageSizeSelector>
       <showRefreshCommand>true</showRefreshCommand>
-      <actions category="CURRENT_SELECTION_LIST"/>
+      <actions category="CURRENT_QUOTA_SELECTION_LIST"/>
       <resultLayouts>
         <layout name="quota_heaviest_children@cvListingLayout" title="document_listing" translateTitle="true" 
         iconPath="/icons/document_listing_icon.png" showCSVExport="false" showPDFExport="false"/>

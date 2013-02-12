@@ -167,13 +167,13 @@
         <handlingLabels>true</handlingLabels>
       </widget>
       
-      <widget name="listing_quota_title" type="text">
+      <widget name="listing_quota_title" type="listing_title_link">
         <labels>
           <label mode="any">label.content.header.title</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>data['dc']['title']</field>
+          <field>data</field>
         </fields>
       </widget>
       <widget name="listing_quota_created" type="datetime">

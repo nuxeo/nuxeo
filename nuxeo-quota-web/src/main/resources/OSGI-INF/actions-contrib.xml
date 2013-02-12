@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.quota.actions">
 
+  <require>org.nuxeo.ecm.platform.actions</require>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
@@ -43,6 +44,15 @@
     <action id="TAB_QUOTA_STATS" link="/incl/tabs/document_quota_statistics.xhtml"
       order="200" label="action.view.quota.statistics" icon="/icons/file.gif">
       <category>TAB_QUOTA_sub_tab</category>
+    </action>
+    
+    <action id="CURRENT_SELECTION_ADDTOLIST">
+      <category>CURRENT_QUOTA_SELECTION_LIST</category>
+    </action>
+
+
+    <action id="CURRENT_SELECTION_TRASH">
+      <category>CURRENT_QUOTA_SELECTION_LIST</category>
     </action>
 
   </extension>
