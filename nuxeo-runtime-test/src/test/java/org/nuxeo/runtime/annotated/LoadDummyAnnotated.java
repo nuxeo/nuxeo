@@ -17,11 +17,11 @@
 package org.nuxeo.runtime.annotated;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.javasimon.Simon;
 import org.javasimon.SimonManager;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
-import org.openqa.jetty.log.LogFactory;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class LoadDummyAnnotated extends NXRuntimeTestCase {
 
-    protected static final Log log = LogFactory.getLog(LoadDummyAnnotated.class);
+    private static final Log log = LogFactory.getLog(LoadDummyAnnotated.class);
 
     @Before
     public void setUp() throws Exception {
@@ -71,7 +71,7 @@ public class LoadDummyAnnotated extends NXRuntimeTestCase {
             Split s = sw.start();
             da.dummy();
             s.stop();
-        } 
+        }
     }
 
 }
