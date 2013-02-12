@@ -5,6 +5,8 @@
     <queue id="quota">
       <maxThreads>1</maxThreads>
       <category>quotaInitialStatistics</category>
+      <category>quotaMaxSizeSetter</category>
+      <name>quota</name>
     </queue>
   </extension>
 

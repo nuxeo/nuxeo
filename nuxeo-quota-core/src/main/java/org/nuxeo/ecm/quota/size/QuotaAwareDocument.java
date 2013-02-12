@@ -39,11 +39,11 @@ public class QuotaAwareDocument implements QuotaAware {
     public static final String DOCUMENTS_SIZE_INNER_SIZE_PROPERTY = "dss:innerSize";
 
     public static final String DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY = "dss:totalSize";
-    
+
     public static final String DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY = "dss:sizeTrash";
 
     public static final String DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY = "dss:sizeVersions";
-    
+
     public static final String DOCUMENTS_SIZE_MAX_SIZE_PROPERTY = "dss:maxSize";
 
     protected DocumentModel doc;
@@ -78,7 +78,7 @@ public class QuotaAwareDocument implements QuotaAware {
             return 0;
         }
     }
-    
+
     @Override
     public long getTrashSize() {
         try {
@@ -141,10 +141,12 @@ public class QuotaAwareDocument implements QuotaAware {
         }
     }
 
+    @Override
     public void save() throws ClientException {
         doc.getContextData().putScopedValue(ScopeType.REQUEST,
                 QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER, true);
-        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                Boolean.TRUE);
         doc = doc.getCoreSession().saveDocument(doc);
     }
 
@@ -158,14 +160,18 @@ public class QuotaAwareDocument implements QuotaAware {
         }
     }
 
-    public void setMaxQuota(long maxSize, boolean save) throws ClientException {
-        if (!(Framework.getLocalService(QuotaStatsService.class).canSetMaxQuota(
-                maxSize, doc, doc.getCoreSession()))) {
-            throw new QuotaExceededException(
-                    doc,
-                    "Can not set "
-                            + maxSize
-                            + ". Quota exceeded because the quota set on one of the children.");
+    @Override
+    public void setMaxQuota(long maxSize, boolean save, boolean skipValidation)
+            throws ClientException {
+        if (!skipValidation) {
+            if (!(Framework.getLocalService(QuotaStatsService.class).canSetMaxQuota(
+                    maxSize, doc, doc.getCoreSession()))) {
+                throw new QuotaExceededException(
+                        doc,
+                        "Can not set "
+                                + maxSize
+                                + ". Quota exceeded because the quota set on one of the children.");
+            }
         }
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, maxSize);
         if (save) {
@@ -173,6 +179,12 @@ public class QuotaAwareDocument implements QuotaAware {
         }
     }
 
+    @Override
+    public void setMaxQuota(long maxSize, boolean save) throws ClientException {
+        setMaxQuota(maxSize, save, false);
+    }
+
+    @Override
     public QuotaInfo getQuotaInfo() {
         return new QuotaInfo(getInnerSize(), getTotalSize(), getTrashSize(),
                 getVersionsSize(), getMaxQuota());

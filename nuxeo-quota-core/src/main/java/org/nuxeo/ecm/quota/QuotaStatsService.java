@@ -87,4 +87,19 @@ public interface QuotaStatsService {
     public void launchSetMaxQuotaOnUserWorkspaces(long maxQuota,
             DocumentModel context, CoreSession session) throws ClientException;
 
+    /**
+     * Activates the quota on user personal workspaces
+     *
+     * @since 5.7
+     */
+    public void activateQuotaOnUserWorkspaces(long maxQuota, CoreSession session)
+            throws ClientException;
+
+    /**
+     *
+     * @since 5.7
+     */
+    public long getQuotaSetOnUserWorkspaces(CoreSession session)
+            throws ClientException;
+
 }

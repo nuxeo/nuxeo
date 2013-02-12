@@ -8,11 +8,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:f="http://java.sun.com/jsf/core">
-
-<a4j:region renderRegionOnly="true">
-  <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel">
-   <h:form id="set_quota_userworkspace_form">
-  <script>
+ <script>
 
   var GB_label = "#{messages['label.unit.GB']}";
   var MB_label = "#{messages['label.unit.MB']}";
@@ -20,12 +16,16 @@
   var B_label = "#{messages['label.unit.B']}";
 
   jQuery(document).ready(function() {
-    setInitialValue(#{quotaStatsActions.maxQuotaOnUsersWorkspaces});
-    jQuery("#set_quota_userworkspace_form\\:nxl_edit_userworkspaces_quota\\:sliderInput").css("display","none");
-    changeUnlimited();
+	initQuotasActivation();
   });
   
 
+  function initQuotasActivation(){
+     setInitialValue(#{quotaStatsActions.maxQuotaOnUsersWorkspaces});
+     jQuery("#set_quota_userworkspace_form\\:nxl_edit_userworkspaces_quota\\:sliderInput").css("display","none");
+     changeUnlimited();
+  }
+  
   function setInitialValue(value) {
     value = Number(value);
     if (value == -1) {
@@ -81,10 +81,23 @@
     jQuery('#sliderDisplay').html(label);
   }
   </script>
-
-<h:outputText value="#{messages['adm.quota.set.personalworkspace']}"/>
+ <a4j:queue name="quotaActivateQueue"/>
+ <a4j:region id="quotaActivateQueueReg" renderRegionOnly="true">
  
- <h:selectOneRadio id="unlimitedChk" value="#{quotaStatsActions.activateQuotaOnUsersWorkspaces}" 
+ <h:form>
+  <a4j:poll id="checkQuotaStatus" interval="5000"
+   enabled="true" eventsQueue="quotaActivateQueue"
+   reRender="setQuotaOnUserWorkspacesPanel, checkQuotaStatus, quotaActivateQueueReg" onsubmit="initQuotasActivation();" />
+ </h:form>
+
+  <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel" rendered="#{!quotaStatsActions.workQueuesInProgess()}">
+
+  <h:form id="set_quota_userworkspace_form">
+
+
+  <h:outputText value="#{messages['adm.quota.set.personalworkspace']}"/>
+ 
+  <h:selectOneRadio id="unlimitedChk" value="#{quotaStatsActions.activateQuotaOnUsersWorkspaces}" 
   onchange="changeUnlimited()">
   <f:selectItem
     itemLabel="#{messages['label.forum.thread.moderated.yes']}"
@@ -99,8 +112,8 @@
   </nxu:set>
 
   <nxh:commandButton action="#{quotaStatsActions.saveQuotaActivatedOnUsersWorkspaces}"
-    id="activate_quota_on_userworkspaces"
-    value="#{messages['command.save']}" reRender="setQuotaOnUserWorkspacesPanel"
+    id="activate_quota_on_userworkspaces" 
+    value="#{messages['command.save']}" reRender="setQuotaOnUserWorkspacesPanel,checkQuotaStatus"
     styleClass="button" />
 
   <h:message styleClass="errorMessage"

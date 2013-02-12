@@ -55,6 +55,11 @@ public class QuotaMaxSizeSetterWork extends AbstractWork {
         return QUOTA_MAX_SIZE_UPDATE_WORK;
     }
 
+    @Override
+    public String getCategory() {
+        return QUOTA_MAX_SIZE_UPDATE_WORK;
+    }
+
     public void notifyProgress(long current) {
         setProgress(new Progress(current, ids.size()));
     }
@@ -71,7 +76,8 @@ public class QuotaMaxSizeSetterWork extends AbstractWork {
                     if (qa == null) {
                         qa = QuotaAwareDocumentFactory.make(doc, true);
                     }
-                    qa.setMaxQuota(maxSize, true);
+                    // skip validation on other children quotas
+                    qa.setMaxQuota(maxSize, true, true);
                 }
             }
         }.runUnrestricted();

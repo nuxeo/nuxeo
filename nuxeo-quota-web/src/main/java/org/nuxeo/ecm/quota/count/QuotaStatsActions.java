@@ -20,7 +20,6 @@ package org.nuxeo.ecm.quota.count;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,12 +40,14 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.Work.State;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.QuotaStatsUpdater;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaDisplayValue;
-import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
@@ -62,10 +63,6 @@ public class QuotaStatsActions implements Serializable {
     protected Log log = LogFactory.getLog(QuotaStatsActions.class);
 
     private static final long serialVersionUID = -1L;
-
-    public static final String QUOTA_STATS_USERWORKSPACES = "quota.active.userworkspaces";
-
-    public static final String QUOTA_MAX_SIZE_USERWORKSPACES = "quota.maxSize.userworkspaces";
 
     @In(create = true)
     protected transient CoreSession documentManager;
@@ -84,9 +81,15 @@ public class QuotaStatsActions implements Serializable {
 
     protected long maxQuotaOnUsersWorkspaces = -1;
 
+    protected WorkManager workManager;
+
     @Create
     public void initialize() {
-        initQuotaActivatedOnUserWorkspaces();
+        try {
+            initQuotaActivatedOnUserWorkspaces();
+        } catch (ClientException e) {
+            log.error(e);
+        }
     }
 
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
@@ -182,15 +185,10 @@ public class QuotaStatsActions implements Serializable {
      * @since 5.7
      */
     public void saveQuotaActivatedOnUsersWorkspaces() throws ClientException {
-        Map<String, String> customParameters = new HashMap<String, String>();
-        customParameters.put(QUOTA_STATS_USERWORKSPACES,
-                Boolean.toString(isActivateQuotaOnUsersWorkspaces()));
-        customParameters.put(QUOTA_MAX_SIZE_USERWORKSPACES,
-                Long.toString(getMaxQuotaOnUsersWorkspaces()));
         try {
-            getConfigurationGenerator().saveFilteredConfiguration(
-                    customParameters);
-        } catch (ConfigurationException e) {
+            getQuotaStatsService().activateQuotaOnUserWorkspaces(
+                    getMaxQuotaOnUsersWorkspaces(), documentManager);
+        } catch (ClientException e) {
             log.error(e, e);
         }
         if (isActivateQuotaOnUsersWorkspaces()) {
@@ -201,19 +199,21 @@ public class QuotaStatsActions implements Serializable {
     }
 
     /**
+     * @throws ClientException
      * @since 5.7
      */
-    public void initQuotaActivatedOnUserWorkspaces() {
-        if (getConfigurationGenerator().init()) {
-            setActivateQuotaOnUsersWorkspaces((Boolean.parseBoolean((String) setupConfigGenerator.getUserConfig().get(
-                    QUOTA_STATS_USERWORKSPACES))));
-            String mx = (String) setupConfigGenerator.getUserConfig().get(
-                    QUOTA_MAX_SIZE_USERWORKSPACES);
-            if (mx == null || mx.equals("")) {
-                mx = "-1";
-            }
-            setMaxQuotaOnUsersWorkspaces(Long.parseLong(mx));
-        }
+    public void initQuotaActivatedOnUserWorkspaces() throws ClientException {
+        long quota = getQuotaStatsService().getQuotaSetOnUserWorkspaces(
+                documentManager);
+        setActivateQuotaOnUsersWorkspaces(quota == -1 ? false : true);
+        setMaxQuotaOnUsersWorkspaces(quota);
+    }
+
+    public boolean workQueuesInProgess() {
+        WorkManager workManager = getWorkManager();
+        List<Work> running = workManager.listWork("quota", State.RUNNING);
+        List<Work> scheduled = workManager.listWork("quota", State.SCHEDULED);
+        return running.size() > 0 || scheduled.size() > 0;
     }
 
     public boolean isActivateQuotaOnUsersWorkspaces() {
@@ -240,11 +240,11 @@ public class QuotaStatsActions implements Serializable {
         return quotaStatsService;
     }
 
-    ConfigurationGenerator getConfigurationGenerator() {
-        if (setupConfigGenerator == null) {
-            setupConfigGenerator = new ConfigurationGenerator();
+    protected WorkManager getWorkManager() {
+        if (workManager == null) {
+            workManager = Framework.getLocalService(WorkManager.class);
         }
-        return setupConfigGenerator;
+        return workManager;
     }
 
     class QuotaSlidervalueInfo {

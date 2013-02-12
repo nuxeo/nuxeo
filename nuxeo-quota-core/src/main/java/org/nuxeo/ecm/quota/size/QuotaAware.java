@@ -51,6 +51,8 @@ public interface QuotaAware {
     DocumentModel getDoc();
 
     void setMaxQuota(long maxSize, boolean save) throws ClientException;
+    
+    void setMaxQuota(long maxSize, boolean save, boolean skipValidation) throws ClientException;
 
     QuotaInfo getQuotaInfo();
 }
