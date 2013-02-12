@@ -333,15 +333,28 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         @Override
         public void run() throws ClientException {
             IterableQueryResult results = null;
+            String userWorkspaceRootId = null;
+            String queryString = "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:primaryType NOT IN ('UserWorkspacesRoot') "
+                    + " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:parentId !='%s' ORDER BY dss:maxSize DESC";
             try {
-                results = session.queryAndFetch(
-                        String.format(
-                                "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:primaryType NOT IN ('UserWorkspacesRoot') "
-                                        + " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:parentId !='%s' ORDER BY dss:maxSize DESC",
-                                parent.getPath(),
-                                getUserWorkspaceRootId(
-                                        session.getRootDocument(), session)),
-                        "NXQL");
+                userWorkspaceRootId = getUserWorkspaceRootId(
+                        session.getRootDocument(), session);
+            } catch (ClientException e) {
+                // no userworkspaces root?
+                log.error(e);
+                queryString = "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:primaryType NOT IN ('UserWorkspacesRoot') "
+                        + " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ORDER BY dss:maxSize DESC";
+            }
+            if (userWorkspaceRootId != null) {
+                queryString = String.format(queryString,
+                        parent.getPathAsString(), userWorkspaceRootId);
+
+            } else {
+                queryString = String.format(queryString,
+                        parent.getPathAsString());
+            }
+            try {
+                results = session.queryAndFetch(queryString, "NXQL");
                 long quotaOnChildren = 0;
                 for (Map<String, Serializable> result : results) {
                     Long maxSize = (Long) result.get("dss:maxSize");

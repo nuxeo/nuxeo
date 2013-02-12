@@ -72,7 +72,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @TransactionalConfig(autoStart = false)
-@Deploy("org.nuxeo.ecm.quota.core")
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core",
+        "org.nuxeo.ecm.platform.userworkspace.types",
+        "org.nuxeo.ecm.quota.core" })
 public class TestDocumentsSizeUpdater {
 
     @Inject
