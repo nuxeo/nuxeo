@@ -3916,8 +3916,7 @@
                 <goal>compile</goal>
               </goals>
               <configuration>
-                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m
-                  -Djava.io.tmpdir=${project.build.directory}</extraJvmArgs>
+                <extraJvmArgs>-Xmx512M -Xms128M -XX:MaxPermSize=384m -Djava.io.tmpdir=${project.build.directory}</extraJvmArgs>
                 <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
                 <treeLogger>true</treeLogger>
