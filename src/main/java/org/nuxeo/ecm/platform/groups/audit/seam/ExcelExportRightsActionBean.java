@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
@@ -77,10 +77,11 @@ public class ExcelExportRightsActionBean implements Serializable {
     @In(create = true, required = false)
     protected NuxeoPrincipal currentNuxeoPrincipal;
 
+    protected static String OUTPUT_FILE = "rights.xls";
+
     public String doGet() {
         try {
             buildAndDownload();
-            //facesMessages.add(StatusMessage.Severity.INFO, "doGet");
         } catch (Exception e) {
             log.error(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR,
@@ -114,28 +115,33 @@ public class ExcelExportRightsActionBean implements Serializable {
         final FacesContext context = FacesContext.getCurrentInstance();
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
 
-        Runnable todo = new RunnableAclAudit(documentManager, auditRoot, tmpFile){
+        Runnable todo = new RunnableAclAudit(documentManager, auditRoot,
+                tmpFile) {
             public void onAuditDone() {
-                ComponentUtils.downloadFile(context, "rights.xls", tmpFile);
+                ComponentUtils.downloadFile(context, OUTPUT_FILE, tmpFile);
             }
         };
         todo.run();
     }
 
-    /** Execute ACL audit and save the result XLS file as child of the document
-     * we started the analysis from. */
+    /**
+     * Execute ACL audit and save the result XLS file as child of the document
+     * we started the analysis from.
+     */
     protected void buildAndDownloadAsync(final File tmpFile) throws ClientException {
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
+        final String repository = documentManager.getRepositoryName();
 
-        Work work = new Work("ACL Audit");
+        final String workName = "ACL Audit for " + auditRoot.getPathAsString();
+        final Work work = new Work(workName);
         new RunnableAclAudit(documentManager, auditRoot, work, tmpFile){
             public void onAuditDone() {
                 log.debug("about to save audit");
                 Blob b = new FileBlob(getOutputFile());
+                b.setFilename(OUTPUT_FILE);
 
                 try {
-                    createDocument(documentManager, auditRoot, "ACL Audit", b);
-                    log.debug("audit saved");
+                    reconnectAndCreateDocument(repository, auditRoot, workName, b);
                 } catch (ClientException e) {
                     log.error(e,e);
                 }
@@ -144,14 +150,27 @@ public class ExcelExportRightsActionBean implements Serializable {
 
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         wm.schedule(work);
+
+        String message = resourcesAccessor.getMessages().get("message.audit.acl.started");
+        facesMessages.add(StatusMessage.Severity.INFO, message);
     }
 
-    protected DocumentModel createDocument(CoreSession session,
+    protected void reconnectAndCreateDocument(String repository,
+            final DocumentModel parent, final String name, final Blob doc)
+            throws ClientException {
+        new UnrestrictedSessionRunner(repository) {
+            @Override
+            public void run() throws ClientException {
+                createOrUpdateDocument(session, parent, name, doc);
+                log.debug("audit saved");
+            }
+        }.runUnrestricted();
+    }
+
+    protected DocumentModel createOrUpdateDocument(CoreSession session,
             DocumentModel parent, String name, Blob doc) throws ClientException {
         DocumentRef dr = new PathRef(parent.getPath().append(name).toString());
-        String filenamePlusExt = name + "."
-                + FileUtils.getFileExtension(doc.getFilename());
-
+        String filenamePlusExt = doc.getFilename();
         if (session.exists(dr)) {
             DocumentModel document = session.getDocument(dr);
             document.setPropertyValue("file:content", (Serializable) doc);
@@ -165,7 +184,8 @@ public class ExcelExportRightsActionBean implements Serializable {
             document.setPropertyValue("file:content", (Serializable) doc);
             document.setPropertyValue("file:filename", filenamePlusExt);
             document.setPropertyValue("dublincore:title", name);
-            return session.createDocument(document);
+            DocumentModel d = session.createDocument(document);
+            return session.saveDocument(d);
         }
     }
 }
