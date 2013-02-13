@@ -9,7 +9,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * A work able to start transactions with a custom timeout, and able to return
  * this timeout.
- * 
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
 public class Work extends AbstractWork implements ITimeoutWork {
@@ -45,6 +44,7 @@ public class Work extends AbstractWork implements ITimeoutWork {
 
     /** If timeout is {@link UNDEFINED_TIMEOUT}, uses {@link DEFAULT_TIMEOUT}. */
     public Work(Runnable runnable, String name, int timeout) {
+        super();
         this.runnable = runnable;
         this.name = name;
         this.timeout = timeout;

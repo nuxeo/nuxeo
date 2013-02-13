@@ -31,6 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,6 +49,8 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessor.Proces
 import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessorPaginated;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
+
+
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.Work;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -95,14 +100,16 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
 
         // --------------------
         final Work work = new Work("test-work");
-        new RunnableAclAudit(session, root, work, testFile);
-
+        new RunnableAclAudit(session, root, work, testFile){
+            public void onAuditDone() {
+                log.info("audit done");
+            }
+        };
         assertEquals(SCHEDULED, work.getState());
 
         // Go!
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         wm.schedule(work);
-
         assertEquals(RUNNING, work.getState());
         assertEquals(0, wm.listWork("default", COMPLETED).size());
         assertEquals(1, wm.listWork("default", RUNNING).size());
