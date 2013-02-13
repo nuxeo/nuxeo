@@ -48,7 +48,9 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
             throws ClientException {
         Blob thumbnailBlob = null;
         try {
-            thumbnailBlob = (Blob) doc.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME);
+            if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                thumbnailBlob = (Blob) doc.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME);
+            }
         } catch (ClientException e) {
             log.warn("Could not fetch the thumbnail blob", e);
         } finally {

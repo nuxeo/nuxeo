@@ -35,7 +35,7 @@ public class CheckBlobUpdateListener implements EventListener {
         if (ec instanceof DocumentEventContext) {
             DocumentEventContext context = (DocumentEventContext) ec;
             DocumentModel doc = context.getSourceDocument();
-            if (doc.getProperty("file:content").isDirty()) {
+            if (doc.hasSchema("file") && doc.getProperty("file:content").isDirty()) {
                 EventService eventService = Framework.getLocalService(EventService.class);
                 eventService.fireEvent(
                         ThumbnailConstants.EventNames.afterBlobUpdateCheck.name(),
