@@ -35,7 +35,8 @@ Templating zone to define:
         ignoreDupResponses="true"
         eventsQueue="#{nxu:test(empty eventsQueueId, defaultEventsId, eventsQueueId)}"
         reRender="#{reRender}"
-        styleClass="#{formStyleClass}">
+        styleClass="#{formStyleClass}"
+        onsubmit="removeAllTinyMCEEditors(); return true;">
         <ui:insert name="form_template_content" />
       </a4j:form>
     </nxu:set>
