@@ -115,8 +115,8 @@
     <nuxeo.webengine.version>5.7-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>5.7-SNAPSHOT</nuxeo.features.version>
 
-    <nuxeo.connect.client.version>1.4.5-SNAPSHOT</nuxeo.connect.client.version>
-    <nuxeo.distribution.tools.version>1.11.5</nuxeo.distribution.tools.version>
+    <nuxeo.connect.client.version>1.4.5</nuxeo.connect.client.version>
+    <nuxeo.distribution.tools.version>1.13</nuxeo.distribution.tools.version>
     <nuxeo.ftest.version>1.7.2</nuxeo.ftest.version>
 
     <tomcat.version>6.0.35</tomcat.version>
@@ -4148,7 +4148,7 @@
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
                   <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
-                  <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
+                  <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                 </excludes>
               </requireReleaseDeps>
               <requireMavenVersion>
