@@ -126,7 +126,7 @@
     <guice.version>3.0</guice.version>
     <jersey.version>1.11</jersey.version>
     <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
-    <shindig.version>1.1-BETA5-incubating</shindig.version>
+    <shindig.version>1.1-BETA5-incubating-nx1</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
     <chemistry.opencmis.version>0.7.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
@@ -2746,9 +2746,9 @@
         <scope>compile</scope>
       </dependency>
       <dependency>
-        <groupId>com.google.collections</groupId>
-        <artifactId>google-collections</artifactId>
-        <version>1.0-rc2</version>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>13.0.1</version>
       </dependency>
       <dependency>
         <groupId>com.allen-sauer.gwt.log</groupId>
