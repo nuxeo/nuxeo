@@ -60,12 +60,13 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
                     session.save();
                 } else {
                     if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                        doc.setPropertyValue(
+                                ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
+                                null);
                         doc.removeFacet(ThumbnailConstants.THUMBNAIL_FACET);
+                        session.saveDocument(doc);
+                        session.save();
                     }
-                    doc.setPropertyValue(
-                            ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
-                    session.saveDocument(doc);
-                    session.save();
                 }
             }
         } catch (Exception e) {
