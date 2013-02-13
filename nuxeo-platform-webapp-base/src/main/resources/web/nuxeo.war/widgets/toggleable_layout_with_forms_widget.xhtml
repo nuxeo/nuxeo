@@ -147,7 +147,8 @@
             ajaxSubmit="true"
             ignoreDupResponses="true" eventsQueue="#{widget.id}_queue"
             reRender="#{widget.id}_regionPanel"
-            selfRendered="true">
+            selfRendered="true"
+            onsubmit="removeAllTinyMCEEditors(); return true;">
 
             <nxl:layout
               name="#{toggledLayoutName}"
