@@ -16,6 +16,9 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilderMultiSh
 public class TestMultiSheetBuilder extends AbstractAclLayoutTest {
     private final static Log log = LogFactory.getLog(TestMultiSheetBuilder.class);
 
+    protected static File testFile = new File(folder
+            + TestMultiSheetBuilder.class.getSimpleName() + ".xls");
+
     @Test
     public void testMultiSheet() {
         ExcelBuilderMultiSheet s = new ExcelBuilderMultiSheet();
@@ -51,9 +54,8 @@ public class TestMultiSheetBuilder extends AbstractAclLayoutTest {
 
         Workbook w = null;
         try {
-            File file = new File("test-multisheet.xls");
-            s.save(file);
-            w = s.load(file);
+            s.save(testFile);
+            w = s.load(testFile);
         } catch (IOException e) {
             log.error(e, e);
         } catch (InvalidFormatException e) {
