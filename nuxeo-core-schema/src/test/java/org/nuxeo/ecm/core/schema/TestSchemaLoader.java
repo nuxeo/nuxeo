@@ -425,4 +425,27 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertNotNull(field3B);
     }
 
+    @Test
+    public void testSchema12() throws Exception {
+
+        URL url = getResource("schema/schema12.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("schema12", "", url);
+
+        Field field1 = schema.getField("field1");
+        assertNotNull(field1);
+
+        assertTrue(field1.getType().isComplexType());
+
+        ComplexType ct = (ComplexType) field1.getType();
+        assertEquals(2, ct.getFieldsCount());
+
+        assertTrue(ct.hasField("label"));
+        assertTrue(ct.hasField("roles"));
+
+        assertTrue(ct.getField("roles").getType().isListType());
+        assertFalse(ct.getField("label").getType().isListType());
+
+    }
+
 }
