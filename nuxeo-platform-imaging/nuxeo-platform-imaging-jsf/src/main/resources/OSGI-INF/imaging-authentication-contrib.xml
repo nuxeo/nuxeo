@@ -9,7 +9,6 @@
     <startURLPattern>
       <patterns>
         <pattern>nxpicsfile/</pattern>
-        <pattern>nxthumb/</pattern>
       </patterns>
     </startURLPattern>
   </extension>
