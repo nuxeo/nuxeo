@@ -184,7 +184,8 @@ public class TestFileSystemItemManagerService {
         // ------------------------------------------------------
         // Check #getTopLevelChildren
         // ------------------------------------------------------
-        List<FileSystemItem> topLevelChildren = fileSystemItemManagerService.getTopLevelChildren(principal);
+        List<FileSystemItem> topLevelChildren = fileSystemItemManagerService.getTopLevelFolder(
+                principal).getChildren();
         assertNotNull(topLevelChildren);
         assertEquals(2, topLevelChildren.size());
 

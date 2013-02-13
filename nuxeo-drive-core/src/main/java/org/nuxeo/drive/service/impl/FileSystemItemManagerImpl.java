@@ -114,6 +114,12 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
+    public FolderItem getTopLevelFolder(Principal principal)  throws ClientException {
+        return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(
+                principal.getName());
+    }
+
+    @Override
     public boolean exists(String id, Principal principal)
             throws ClientException {
         return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(

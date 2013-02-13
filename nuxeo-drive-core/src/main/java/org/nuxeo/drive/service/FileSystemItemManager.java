@@ -55,12 +55,21 @@ public interface FileSystemItemManager {
     /**
      * Gets the children of the top level {@link FolderItem} for the given
      * principal.
-     *
+     * @deprecated use getTopLevelFolder#getChildren instead
      * @throws ClientException if the top level {@link FolderItem} or its
      *             children cannot be retrieved
      */
+    @Deprecated
     List<FileSystemItem> getTopLevelChildren(Principal principal)
             throws ClientException;
+
+    /**
+     * Gets the top level {@link FolderItem} for the given principal.
+     *
+     * @throws ClientException if the top level {@link FolderItem} cannot be
+     *             retrieved
+     */
+    FolderItem getTopLevelFolder(Principal principal) throws ClientException;
 
     /**
      * Returns true if a {@link FileSystemItem} with the given id exists for the

@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
@@ -194,10 +195,17 @@ public class TestFileSystemItemOperations {
     @Test
     public void testGetTopLevelChildren() throws Exception {
 
-        Blob topLevelChildrenJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetTopLevelChildren.ID).execute();
-        assertNotNull(topLevelChildrenJSON);
+        Blob topLevelFolderJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetTopLevelFolder.ID).execute();
+        assertNotNull(topLevelFolderJSON);
 
+        FolderItem topLevelFolder = mapper.readValue(
+                topLevelFolderJSON.getStream(),
+                new TypeReference<DefaultTopLevelFolderItem>() {
+                });
+
+        Blob topLevelChildrenJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetChildren.ID).set("id", topLevelFolder.getId()).execute();
         List<DefaultSyncRootFolderItem> topLevelChildren = mapper.readValue(
                 topLevelChildrenJSON.getStream(),
                 new TypeReference<List<DefaultSyncRootFolderItem>>() {
