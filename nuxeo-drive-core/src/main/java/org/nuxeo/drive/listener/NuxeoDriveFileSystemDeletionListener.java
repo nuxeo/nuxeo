@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -92,7 +93,8 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             // The log is not deployed (probably in unittest
             return;
         }
-        FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
+        FileSystemItem fsItem = Framework.getLocalService(
+                FileSystemItemAdapterService.class).getFileSystemItem(doc, true);
         if (fsItem == null) {
             return;
         }
@@ -114,9 +116,12 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             extendedInfos.put("impactedUserName",
                     logger.newExtendedInfo(impactedUserName));
         }
-        // We do not serialize the whole object as it's too big to fit in a StringInfo column and
-        extendedInfos.put("fileSystemItemId", logger.newExtendedInfo(fsItem.getId()));
-        extendedInfos.put("fileSystemItemName", logger.newExtendedInfo(fsItem.getName()));
+        // We do not serialize the whole object as it's too big to fit in a
+        // StringInfo column and
+        extendedInfos.put("fileSystemItemId",
+                logger.newExtendedInfo(fsItem.getId()));
+        extendedInfos.put("fileSystemItemName",
+                logger.newExtendedInfo(fsItem.getName()));
         entry.setExtendedInfos(extendedInfos);
         logger.addLogEntries(Collections.singletonList(entry));
     }

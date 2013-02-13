@@ -58,6 +58,11 @@ public class NuxeoDriveMove {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FileSystemItem fsItem = fileSystemItemManager.move(srcId, destId,
                 ctx.getPrincipal());
+
+        // Commit transaction explicitly to ensure client-side consistency
+        // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
+        NuxeoDriveOperationHelper.commitTransaction();
+
         ObjectMapper mapper = new ObjectMapper();
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, fsItem);

@@ -48,6 +48,10 @@ public class NuxeoDriveDelete {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         fileSystemItemManager.delete(id, ctx.getPrincipal());
+
+        // Commit transaction explicitly to ensure client-side consistency
+        // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
+        NuxeoDriveOperationHelper.commitTransaction();
     }
 
 }

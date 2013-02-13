@@ -96,28 +96,28 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
-    /**
-     * Iterates on the ordered contributed file system item factories until it
-     * finds one that matches and retrieves a non null {@link FileSystemItem}
-     * for the given doc. A factory matches if:
-     * <ul>
-     * <li>It is not bound to any docType nor facet (this is the case for the
-     * default factory contribution {@code defaultFileSystemItemFactory} bound
-     * to {@link DefaultFileSystemItemFactory})</li>
-     * <li>It is bound to a docType that matches the given doc's type</li>
-     * <li>It is bound to a facet that matches one of the given doc's facets</li>
-     * </ul>
-     */
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
-        return getFileSystemItem(doc, false, null);
+        return getFileSystemItem(doc, false, null, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, false, null, includeDeleted);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
             throws ClientException {
-        return getFileSystemItem(doc, true, parentId);
+        return getFileSystemItem(doc, true, parentId, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, true, parentId, includeDeleted);
     }
 
     /**
@@ -165,8 +165,21 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedFactories();
     }
 
+    /**
+     * Iterates on the ordered contributed file system item factories until it
+     * finds one that matches and retrieves a non null {@link FileSystemItem}
+     * for the given doc. A factory matches if:
+     * <ul>
+     * <li>It is not bound to any docType nor facet (this is the case for the
+     * default factory contribution {@code defaultFileSystemItemFactory} bound
+     * to {@link DefaultFileSystemItemFactory})</li>
+     * <li>It is bound to a docType that matches the given doc's type</li>
+     * <li>It is bound to a facet that matches one of the given doc's facets</li>
+     * </ul>
+     */
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentId, String parentId) throws ClientException {
+            boolean forceParentId, String parentId, boolean includeDeleted)
+            throws ClientException {
 
         FileSystemItem fileSystemItem = null;
         FileSystemItemFactoryWrapper matchingFactory = null;
@@ -179,9 +192,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                 matchingFactory = factory;
                 if (forceParentId) {
                     fileSystemItem = factory.getFactory().getFileSystemItem(
-                            doc, parentId);
+                            doc, parentId, includeDeleted);
                 } else {
-                    fileSystemItem = factory.getFactory().getFileSystemItem(doc);
+                    fileSystemItem = factory.getFactory().getFileSystemItem(
+                            doc, includeDeleted);
                 }
                 if (fileSystemItem != null) {
                     return fileSystemItem;

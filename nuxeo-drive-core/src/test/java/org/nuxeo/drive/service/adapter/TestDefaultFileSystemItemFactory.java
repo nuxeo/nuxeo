@@ -220,6 +220,18 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
         assertNull(fsItem);
 
+        // Deleted file => not adaptable as a FileSystemItem
+        custom.followTransition("delete");
+        assertNull(defaultFileSystemItemFactory.getFileSystemItem(custom));
+
+        // Deleted file with explicit "includeDeleted" => adaptable as a
+        // FileSystemItem
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom, true);
+        assertNotNull(fsItem);
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
+                fsItem.getId());
+        assertEquals("Bonnie's file.odt", fsItem.getName());
+
         // ------------------------------------------------------
         // Check folderish FileSystemItems
         // ------------------------------------------------------
@@ -318,6 +330,10 @@ public class TestDefaultFileSystemItemFactory {
         assertFalse(defaultFileSystemItemFactory.exists(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal));
+        // Deleted
+        file.followTransition("delete");
+        assertFalse(defaultFileSystemItemFactory.exists(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
     }
 
     @Test
@@ -362,6 +378,11 @@ public class TestDefaultFileSystemItemFactory {
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal);
+        assertNull(fsItem);
+        // Deleted
+        custom.followTransition("delete");
+        fsItem = defaultFileSystemItemFactory.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal);
         assertNull(fsItem);
     }
 

@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.runtime.api.Framework;
@@ -67,13 +68,25 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
-        return getFileSystemItem(doc, false, null);
+        return getFileSystemItem(doc, false, null, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, false, null, includeDeleted);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
             throws ClientException {
-        return getFileSystemItem(doc, true, parentId);
+        return getFileSystemItem(doc, true, parentId, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+            boolean inlcudeDeleted) throws ClientException {
+        return getFileSystemItem(doc, true, parentId, inlcudeDeleted);
     }
 
     @Override
@@ -87,15 +100,27 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
         return true;
     }
 
+    /**
+     * The default factory considers that a {@link FileSystemItem} with the
+     * given id exists if:
+     * <ul>
+     * <li>The backing {@link DocumentModel} can be fetched</li>
+     * <li>It is not in the 'deleted' life cycle state</li>
+     * <li>It is folderish or it can be adapted as a {@link BlobHolder} with a
+     * blob</li>
+     * </ul>
+     *
+     * @see #isFileSystemItem(DocumentModel)
+     */
     @Override
     public boolean exists(String id, Principal principal)
             throws ClientException {
         try {
             DocumentModel doc = getDocumentByFileSystemId(id, principal);
-            boolean exists = doc.isFolder() || hasBlob(doc);
+            boolean exists = isFileSystemItem(doc);
             if (!exists) {
                 log.debug(String.format(
-                        "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem => returning false.",
+                        "Document %s cannot be adapted as a FileSystemItem => returning false.",
                         doc.getId()));
             }
             return exists;
@@ -130,7 +155,15 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
 
     /*--------------------------- Protected ---------------------------------*/
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentId, String parentId) throws ClientException {
+            boolean forceParentId, String parentId, boolean includeDeleted)
+            throws ClientException {
+        if (!includeDeleted
+                && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            log.debug(String.format(
+                    "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem => returning null.",
+                    doc.getId(), LifeCycleConstants.DELETED_STATE));
+            return null;
+        }
         if (doc.isFolder()) {
             if (forceParentId) {
                 return new DocumentBackedFolderItem(name, parentId, doc);
@@ -206,6 +239,23 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     protected DocumentModel getDocumentById(String docId, CoreSession session)
             throws ClientException {
         return session.getDocument(new IdRef(docId));
+    }
+
+    protected boolean isFileSystemItem(DocumentModel doc)
+            throws ClientException {
+        if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            log.debug(String.format(
+                    "Document %s is in the '%s' life cycle state.",
+                    doc.getId(), LifeCycleConstants.DELETED_STATE));
+            return false;
+        }
+        if (!doc.isFolder() && !hasBlob(doc)) {
+            log.debug(String.format(
+                    "Document %s is not Folderish nor a BlobHolder with a blob.",
+                    doc.getId()));
+            return false;
+        }
+        return true;
     }
 
 }

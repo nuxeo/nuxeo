@@ -23,4 +23,13 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+
+    <types>
+      <type name="Custom">default</type>
+    </types>
+
+  </extension>
+
 </component>

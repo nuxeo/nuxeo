@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
@@ -23,6 +25,7 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -34,6 +37,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultSyncRootFolderItemFactory extends
         DefaultFileSystemItemFactory {
 
+    private static final Log log = LogFactory.getLog(DefaultSyncRootFolderItemFactory.class);
+
     /**
      * Prevent from instantiating class as it should only be done by
      * {@link FileSystemItemFactoryDescriptor#getFactory()}.
@@ -44,16 +49,35 @@ public class DefaultSyncRootFolderItemFactory extends
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
+        return getFileSystemItem(doc, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
         String userName = doc.getCoreSession().getPrincipal().getName();
         return getFileSystemItem(
                 doc,
                 getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getSyncRootParentFolderItemId(
-                        userName));
+                        userName), includeDeleted);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
             throws ClientException {
+        return getFileSystemItem(doc, parentId, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+            boolean includeDeleted) throws ClientException {
+        if (!includeDeleted
+                && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            log.debug(String.format(
+                    "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem => returning null.",
+                    doc.getId(), LifeCycleConstants.DELETED_STATE));
+            return null;
+        }
         if (!doc.isFolder()) {
             throw new IllegalArgumentException(
                     String.format(

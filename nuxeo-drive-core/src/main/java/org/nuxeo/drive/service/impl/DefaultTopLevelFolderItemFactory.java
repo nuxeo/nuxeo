@@ -68,6 +68,12 @@ public class DefaultTopLevelFolderItemFactory implements
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
+        return getFileSystemItem(doc, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
         throw new UnsupportedOperationException(
                 "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.");
     }
@@ -75,6 +81,12 @@ public class DefaultTopLevelFolderItemFactory implements
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
             throws ClientException {
+        return getFileSystemItem(doc, parentId, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+            boolean includeDeleted) throws ClientException {
         throw new UnsupportedOperationException(
                 "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.");
     }

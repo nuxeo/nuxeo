@@ -219,6 +219,10 @@ public class TestFileSystemItemManagerService {
         assertFalse(fileSystemItemManagerService.exists(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
                 principal));
+        // Deleted
+        custom.followTransition("delete");
+        assertFalse(fileSystemItemManagerService.exists(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
 
         // ------------------------------------------------------
         // Check #getFileSystemItemById
@@ -238,7 +242,7 @@ public class TestFileSystemItemManagerService {
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
         List<FileSystemItem> children = ((FolderItem) fsItem).getChildren();
         assertNotNull(children);
-        assertEquals(5, children.size());
+        assertEquals(4, children.size());
 
         // File
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
@@ -289,6 +293,10 @@ public class TestFileSystemItemManagerService {
                 principal);
         assertNull(fsItem);
 
+        // Deleted
+        assertNull(fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
+
         // Sub folder
         fsItem = fileSystemItemManagerService.getFileSystemItemById(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
@@ -309,16 +317,21 @@ public class TestFileSystemItemManagerService {
         // ------------------------------------------------------
         // Check #getChildren
         // ------------------------------------------------------
+        // Need to flush VCS cache for the session obtained by
+        // FileSystemItemManager#getSession(String repositoryName, Principal
+        // principal) in DocumentBackedFolderItem#getChildren() to be aware of
+        // changes in the current session
+        session.save();
         children = fileSystemItemManagerService.getChildren(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(children);
-        assertEquals(5, children.size());
+
+        assertEquals(4, children.size());
         // Don't check children order against MySQL database because of the
         // milliseconds limitation
         boolean ordered = !(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
         checkChildren(children, folder.getId(), file.getId(), note.getId(),
-                custom.getId(), folderishFile.getId(), subFolder.getId(),
-                ordered);
+                folderishFile.getId(), subFolder.getId(), ordered);
 
         children = fileSystemItemManagerService.getChildren(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
@@ -603,13 +616,12 @@ public class TestFileSystemItemManagerService {
     }
 
     protected void checkChildren(List<FileSystemItem> folderChildren,
-            String folderId, String fileId, String noteId, String customId,
+            String folderId, String fileId, String noteId,
             String folderishFileId, String subFolderId, boolean ordered)
             throws Exception {
 
         boolean isFileFound = false;
         boolean isNoteFound = false;
-        boolean isCustomFound = false;
         boolean isFolderishFileFound = false;
         boolean isSubFolderFound = false;
         int childrenCount = 0;
@@ -636,18 +648,6 @@ public class TestFileSystemItemManagerService {
                     assertEquals("aNote.txt", fsItem.getName());
                     assertFalse(fsItem.isFolder());
                     isNoteFound = true;
-                    childrenCount++;
-                }
-            }
-            // Check Custom
-            else if (!isCustomFound
-                    && (DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + customId).equals(fsItem.getId())) {
-                if (!ordered || ordered && childrenCount == 2) {
-                    assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId,
-                            fsItem.getParentId());
-                    assertEquals("Bonnie's file.odt", fsItem.getName());
-                    assertFalse(fsItem.isFolder());
-                    isCustomFound = true;
                     childrenCount++;
                 }
             }
