@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -52,7 +51,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.thumbnail",
         "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.url.core" })
+        "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.web.common" })
 public class TestThumbnailStorage {
 
     @Inject
@@ -62,7 +61,6 @@ public class TestThumbnailStorage {
     EventService eventService;
 
     @Test
-    @Ignore
     public void testThumbnailCRUD() throws ClientException, IOException {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(),

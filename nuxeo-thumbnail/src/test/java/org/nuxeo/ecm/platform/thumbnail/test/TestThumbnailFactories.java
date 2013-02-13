@@ -49,7 +49,8 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.thumbnail",
-        "org.nuxeo.ecm.platform.commandline.executor" })
+        "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml" })
 public class TestThumbnailFactories {
 
