@@ -55,16 +55,6 @@ public class DamCodec extends DocumentPathCodec {
         return PREFIX;
     }
 
-    @Override
-    public DocumentView getDocumentViewFromUrl(String url) {
-        DocumentView docView = super.getDocumentViewFromUrl(url);
-        if (docView != null) {
-            docView.setViewId(ASSETS_VIEW);
-            return docView;
-        }
-        return null;
-    }
-
     /**
      * Never handle document views: this codec is useless on post requests
      */
