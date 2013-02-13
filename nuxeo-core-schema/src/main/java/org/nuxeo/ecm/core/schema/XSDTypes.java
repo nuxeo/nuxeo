@@ -63,6 +63,7 @@ public class XSDTypes {
         xsdBaseTypes.put("duration", StringType.INSTANCE);
         xsdBaseTypes.put("anyType", StringType.INSTANCE);
         xsdBaseTypes.put("anySimpleType", StringType.INSTANCE);
+        xsdBaseTypes.put("anyURI", StringType.INSTANCE);
     }
 
     public static SimpleType getType(String name) {

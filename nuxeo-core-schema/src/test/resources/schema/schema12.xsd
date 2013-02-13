@@ -12,5 +12,6 @@
   </xs:complexType>
 
   <xs:element name="field1" type="nxs:sampleType" />
+  <xs:element name="self" type="xs:anyURI"/>
 
 </xs:schema>

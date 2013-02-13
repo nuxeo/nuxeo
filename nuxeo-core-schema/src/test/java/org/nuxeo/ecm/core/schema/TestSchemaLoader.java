@@ -446,6 +446,10 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertTrue(ct.getField("roles").getType().isListType());
         assertFalse(ct.getField("label").getType().isListType());
 
+        Field field2 = schema.getField("self");
+        assertNotNull(field2);
+        assertEquals("string", field2.getType().getName());
+
     }
 
 }
