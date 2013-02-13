@@ -145,6 +145,11 @@
         combineLists(List...): returns an aggregate list with the elements all
         the lists passed as arguments, preserving the global ordering.
       </li>
+      <li>
+        jsfTagIdEscape(String): returns a valid string to be used as a JSF tag
+        id from the given name. Throws an error if given name is empty.
+        Available since 5.7.
+      </li>
     </ul>
   </description>
 

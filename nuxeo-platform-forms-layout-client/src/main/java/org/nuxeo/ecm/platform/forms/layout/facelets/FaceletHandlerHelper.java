@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -115,7 +116,8 @@ public final class FaceletHandlerHelper {
         if (counters == null) {
             counters = new HashMap<String, Integer>();
         }
-        String generatedId = generateUniqueId(base, counters);
+        String generatedId = generateUniqueId(generateValidIdString(base),
+                counters);
         requestMap.put(LAYOUT_ID_COUNTERS, counters);
         return generatedId;
     }
@@ -158,48 +160,21 @@ public final class FaceletHandlerHelper {
         }
     }
 
-    public String generateValidIdString(String base) {
-        if (base == null) {
-            throw new IllegalArgumentException(base);
-        }
-        int n = base.length();
-        if (n < 1) {
-            throw new IllegalArgumentException(base);
-        }
-        StringBuilder newId = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            char c = base.charAt(i);
-            if (i == 0) {
-                if (!Character.isLetter(c) && (c != '_')) {
-                    newId.append("_");
-                } else {
-                    newId.append(c);
-                }
-            } else {
-                if (!Character.isLetter(c) && !Character.isDigit(c)
-                        && (c != '-') && (c != '_')) {
-                    newId.append("_");
-                } else {
-                    newId.append(c);
-                }
-            }
-        }
-        return newId.toString();
+    public static String generateValidIdString(String base) {
+        return Functions.jsfTagIdEscape(base);
     }
 
     public String generateWidgetId(String widgetName) {
-        return generateUniqueId(generateValidIdString(WIDGET_ID_PREFIX
-                + widgetName));
+        return generateUniqueId(WIDGET_ID_PREFIX + widgetName);
     }
 
     public String generateLayoutId(String layoutName) {
-        return generateUniqueId(generateValidIdString(LAYOUT_ID_PREFIX
-                + layoutName));
+        return generateUniqueId(LAYOUT_ID_PREFIX + layoutName);
     }
 
     public String generateMessageId(String widgetName) {
-        return generateUniqueId(generateValidIdString(WIDGET_ID_PREFIX
-                + widgetName + MESSAGE_ID_SUFFIX));
+        return generateUniqueId(WIDGET_ID_PREFIX + widgetName
+                + MESSAGE_ID_SUFFIX);
     }
 
     /**
