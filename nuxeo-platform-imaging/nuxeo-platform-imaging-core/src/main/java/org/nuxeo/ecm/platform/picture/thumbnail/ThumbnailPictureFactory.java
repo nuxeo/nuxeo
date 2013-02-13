@@ -41,7 +41,7 @@ public class ThumbnailPictureFactory implements ThumbnailFactory {
         // Choose the nuxeo default thumbnail of the picture views if exists
         MultiviewPicture mViewPicture = doc.getAdapter(MultiviewPicture.class);
         PictureView thumbnailView = mViewPicture.getView("Thumbnail");
-        if (thumbnailView.getBlob() == null) {
+        if (thumbnailView == null || thumbnailView.getBlob() == null) {
             TypeInfo docType = doc.getAdapter(TypeInfo.class);
             return new FileBlob(
                     FileUtils.getResourceFileFromContext("nuxeo.war"
