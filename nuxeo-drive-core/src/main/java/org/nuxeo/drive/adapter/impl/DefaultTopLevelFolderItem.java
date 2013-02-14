@@ -17,8 +17,8 @@
 package org.nuxeo.drive.adapter.impl;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +58,8 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
         this.name = "Nuxeo Drive";
         this.folder = true;
         this.creator = "system";
-        Calendar cal = Calendar.getInstance();
-        this.creationDate = cal;
+        // The Fixed Origin of (Unix) Time
+        this.creationDate = new GregorianCalendar(1970, 0, 1, 0, 0, 0);
         this.lastModificationDate = this.creationDate;
         this.canRename = false;
         this.canDelete = false;
