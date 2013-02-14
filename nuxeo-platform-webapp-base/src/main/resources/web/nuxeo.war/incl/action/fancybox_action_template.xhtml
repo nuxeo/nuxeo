@@ -183,6 +183,7 @@
                       ignoreDupResponses="true"
                       requestDelay="100"
                       eventsQueue="#{eventsQueueId}"
+                      onsubmit="removeAllTinyMCEEditors(); return true;">
                       oncomplete="jQuery.fancybox.close();">
                       <ui:include src="#{include}" />
                     </a4j:form>
@@ -190,6 +191,7 @@
 
                   <c:if test="#{not useAjaxForm}">
                     <h:form id="#{fancyboxFormId}"
+                      enctype="multipart/form-data"
                       onsubmit="jQuery.fancybox.close();">
                       <ui:include src="#{include}" />
                     </h:form>

@@ -90,6 +90,10 @@ public interface SearchActions extends SelectDataModelListener,
 
     String performSearch();
 
+    /**
+     * @deprecated unused since 5.6
+     */
+    @Deprecated
     String getDocumentLocation(DocumentModel doc);
 
     SelectDataModel getResultsSelectModel(String providerName)

@@ -215,35 +215,13 @@ public class ContentViewImpl implements ContentView,
     }
 
     public void setCurrentResultLayout(String resultLayoutName) {
-        for (ContentViewLayout layout : resultLayouts) {
-            if (layout.getName().equals(resultLayoutName)) {
-                setCurrentResultLayout(layout);
-            }
-        }
-    }
-
-    protected boolean getParametersChanged(Object[] oldParams,
-            Object[] newParams) {
-        if (oldParams == null && newParams == null) {
-            return true;
-        } else if (oldParams != null && newParams != null) {
-            if (oldParams.length != newParams.length) {
-                return true;
-            }
-            for (int i = 0; i < oldParams.length; i++) {
-                if (oldParams[i] == null && newParams[i] == null) {
-                    continue;
-                } else if (oldParams[i] != null
-                        && !oldParams[i].equals(newParams[i])) {
-                    return true;
-                } else if (newParams[i] != null
-                        && !newParams[i].equals(oldParams[i])) {
-                    return true;
+        if (resultLayoutName != null) {
+            for (ContentViewLayout layout : resultLayouts) {
+                if (resultLayoutName.equals(layout.getName())) {
+                    setCurrentResultLayout(layout);
                 }
             }
-            return false;
         }
-        return true;
     }
 
     /**
@@ -313,8 +291,7 @@ public class ContentViewImpl implements ContentView,
         // do not force setting of sort infos as they can be set directly on
         // the page provider and this method will be called after so they could
         // be lost.
-        if (pageProvider == null
-                || pageProvider.hasChangedParameters(params)) {
+        if (pageProvider == null || pageProvider.hasChangedParameters(params)) {
             try {
                 // make the service build the provider
                 ContentViewService service = Framework.getService(ContentViewService.class);

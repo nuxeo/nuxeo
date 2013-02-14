@@ -16,12 +16,13 @@
  */
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
 /**
@@ -31,16 +32,16 @@ public class TestFunctions {
 
     @Test
     public void testPrintFileSize() {
-        assertEquals("123 kB", Functions.printFormatedFileSize("123456", "SI",
-                true));
-        assertEquals("1 MB", Functions.printFormatedFileSize("1000000", "SI",
-                true));
-        assertEquals("1 megaB", Functions.printFormatedFileSize("1000000",
-                "SI", false));
-        assertEquals("1 KiB", Functions.printFormatedFileSize("1024", "IEC",
-                true));
-        assertEquals("1 kibiB", Functions.printFormatedFileSize("1024", "IEC",
-                false));
+        assertEquals("123 kB",
+                Functions.printFormatedFileSize("123456", "SI", true));
+        assertEquals("1 MB",
+                Functions.printFormatedFileSize("1000000", "SI", true));
+        assertEquals("1 megaB",
+                Functions.printFormatedFileSize("1000000", "SI", false));
+        assertEquals("1 KiB",
+                Functions.printFormatedFileSize("1024", "IEC", true));
+        assertEquals("1 kibiB",
+                Functions.printFormatedFileSize("1024", "IEC", false));
     }
 
     @Test
@@ -69,27 +70,27 @@ public class TestFunctions {
         messages.put(Functions.I18N_DURATION_PREFIX + "minutes", "minutes");
         messages.put(Functions.I18N_DURATION_PREFIX + "seconds", "secondes");
 
-        assertEquals("3 jours 2 heures", Functions.printFormattedDuration(
-                266405, messages));
+        assertEquals("3 jours 2 heures",
+                Functions.printFormattedDuration(266405, messages));
 
-        assertEquals("1 heures 32 minutes", Functions.printFormattedDuration(
-                "5533", messages));
-        assertEquals("1 heures 32 minutes", Functions.printFormattedDuration(
-                5533L, messages));
-        assertEquals("1 heures 32 minutes", Functions.printFormattedDuration(
-                5533.310, messages));
+        assertEquals("1 heures 32 minutes",
+                Functions.printFormattedDuration("5533", messages));
+        assertEquals("1 heures 32 minutes",
+                Functions.printFormattedDuration(5533L, messages));
+        assertEquals("1 heures 32 minutes",
+                Functions.printFormattedDuration(5533.310, messages));
 
-        assertEquals("3 minutes 13 secondes", Functions.printFormattedDuration(
-                193.4, messages));
-        assertEquals("3 minutes 13 secondes", Functions.printFormattedDuration(
-                193.4, messages));
+        assertEquals("3 minutes 13 secondes",
+                Functions.printFormattedDuration(193.4, messages));
+        assertEquals("3 minutes 13 secondes",
+                Functions.printFormattedDuration(193.4, messages));
 
-        assertEquals("0 secondes", Functions.printFormattedDuration(0.01,
-                messages));
+        assertEquals("0 secondes",
+                Functions.printFormattedDuration(0.01, messages));
         assertEquals("0 secondes",
                 Functions.printFormattedDuration(0, messages));
-        assertEquals("0 secondes", Functions.printFormattedDuration(null,
-                messages));
+        assertEquals("0 secondes",
+                Functions.printFormattedDuration(null, messages));
     }
 
     @Test
@@ -110,6 +111,16 @@ public class TestFunctions {
     public void testFileSize() {
         assertEquals("3 GB",
                 Functions.printFormatedFileSize("3145728000", "SI", true));
+    }
+
+    @Test
+    public void testGenerateValidId() throws Exception {
+        assertNull(Functions.jsfTagIdEscape(null));
+        assertEquals("", Functions.jsfTagIdEscape(""));
+        assertEquals("blah_blah", Functions.jsfTagIdEscape("blah_blah"));
+        assertEquals("blah_blah", Functions.jsfTagIdEscape("blah blah"));
+        assertEquals("blah_blah", Functions.jsfTagIdEscape("blah-blah"));
+        assertEquals("blah_blahe", Functions.jsfTagIdEscape("blah_blahé"));
     }
 
 }

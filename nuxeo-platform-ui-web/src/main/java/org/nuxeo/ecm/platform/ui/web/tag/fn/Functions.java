@@ -680,4 +680,42 @@ public final class Functions {
         }
         return combined;
     }
+
+    /**
+     * Helper that escapes a string used as a JSF tag id: this is useful to
+     * replace characters that are not handled correctly in JSF context.
+     * <p>
+     * This method currently removes ASCII characters from the given string,
+     * and replaces "-" characters by "_" because the dash is an issue for
+     * forms rendered in ajax (see NXP-10793).
+     *
+     * @since 5.7
+     * @return the escaped string
+     */
+    public static String jsfTagIdEscape(String base) {
+        if (base == null) {
+            return null;
+        }
+        int n = base.length();
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            char c = base.charAt(i);
+            if (i == 0) {
+                if (!Character.isLetter(c) && (c != '_')) {
+                    res.append("_");
+                } else {
+                    res.append(c);
+                }
+            } else {
+                if (!Character.isLetter(c) && !Character.isDigit(c)
+                        && (c != '_')) {
+                    res.append("_");
+                } else {
+                    res.append(c);
+                }
+            }
+        }
+        return org.nuxeo.common.utils.StringUtils.toAscii(res.toString());
+    }
+
 }

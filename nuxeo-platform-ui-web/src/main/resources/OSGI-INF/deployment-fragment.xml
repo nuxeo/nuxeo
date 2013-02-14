@@ -559,6 +559,20 @@
 
     <!-- end of override of buggy seam libraries -->
 
+    <!-- override default form components to check for nested forms -->
+    <component>
+      <component-type>javax.faces.HtmlForm</component-type>
+      <component-class>org.nuxeo.ecm.platform.ui.web.component.NXHtmlForm</component-class>
+    </component>
+    <component>
+      <component-type>org.ajax4jsf.Form</component-type>
+      <component-class>org.nuxeo.ecm.platform.ui.web.component.NXAjaxForm</component-class>
+      <component-extension>
+        <component-family>javax.faces.Form</component-family>
+        <renderer-type>org.ajax4jsf.FormRenderer</renderer-type>
+      </component-extension>
+    </component>
+
   </extension>
 
   <extension target="faces-config#RENDERER">
