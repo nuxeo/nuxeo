@@ -21,11 +21,12 @@ import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
+import static org.nuxeo.ecm.quota.size.SizeUpdateEventContext.DOCUMENT_UPDATE_INITIAL_STATISTICS;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -197,6 +198,12 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 } else if (DELETE_TRANSITION.equals(sourceEvent)
                         || UNDELETE_TRANSITION.equals(sourceEvent)) {
                     quotaDoc.addTrashSize(quotaCtx.getBlobSize(), true);
+                } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
+                    quotaDoc.addInnerSize(quotaCtx.getBlobSize(), false);
+                    quotaDoc.addTotalSize(quotaCtx.getVersionsSizeOnTotal(),
+                            false);
+                    quotaDoc.addVersionsSize(quotaCtx.getVersionsSize(), true);
+
                 } else {
                     // BEFORE_DOC_UPDATE
                     // DOCUMENT_CREATED
@@ -207,7 +214,8 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         }
         if (parents.size() > 0) {
             if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
-                processOnParents(parents, 0, quotaCtx.getBlobSize(), true, false, true);
+                processOnParents(parents, 0, quotaCtx.getBlobSize(), true,
+                        false, true);
             } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
                 processOnParents(parents, quotaCtx.getBlobSize(), true, false);
             } else if (DELETE_TRANSITION.equals(sourceEvent)
@@ -235,6 +243,12 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 // versions
                 // are also moved
                 processOnParents(parents, quotaCtx.getBlobDelta(),
+                        quotaCtx.getVersionsSize(), true, false, true);
+            } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
+                processOnParents(
+                        parents,
+                        quotaCtx.getBlobSize()
+                                + quotaCtx.getVersionsSizeOnTotal(),
                         quotaCtx.getVersionsSize(), true, false, true);
             } else {
                 processOnParents(parents, quotaCtx.getBlobDelta(), true, false);

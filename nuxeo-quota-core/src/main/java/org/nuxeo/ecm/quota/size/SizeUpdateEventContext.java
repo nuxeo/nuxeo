@@ -39,6 +39,8 @@ import org.nuxeo.ecm.quota.QuotaStatsService;
 public class SizeUpdateEventContext extends DocumentEventContext {
 
     public static final String QUOTA_UPDATE_NEEDED = "quotaUpdateNeeded";
+    
+    public static final String DOCUMENT_UPDATE_INITIAL_STATISTICS = "documentUpdateInitialStats";
 
     private static final long serialVersionUID = 1L;
 
@@ -46,8 +48,13 @@ public class SizeUpdateEventContext extends DocumentEventContext {
 
     public static final String BLOB_DELTA_PROPERTY_KEY = "blobDelta";
     
+    
     //used when permanently deleting a document, remove all versions
     public static final String VERSIONS_SIZE_PROPERTY_KEY = "versionsSize";
+    
+    // versions size to be added on the total size , differs from the versions
+    // size if the doc is checked in
+    public static final String VERSIONS_SIZE_ON_TOTAL_PROPERTY_KEY = "versionsSizeOnTotal";
 
     public static final String PARENT_UUIDS_PROPERTY_KEY = "parentUUIDs";
 
@@ -132,6 +139,23 @@ public class SizeUpdateEventContext extends DocumentEventContext {
     public long getVersionsSize() {
         if (getProperty(VERSIONS_SIZE_PROPERTY_KEY) != null) {
             return (Long) getProperty(VERSIONS_SIZE_PROPERTY_KEY);
+        }
+        return 0L;
+    }
+    
+    /**
+     * @since 5.7
+     */
+    public void setVersionsSizeOnTotal(long blobSize) {
+        setProperty(VERSIONS_SIZE_ON_TOTAL_PROPERTY_KEY, blobSize);
+    }
+
+    /**
+     * @since 5.7
+     */
+    public long getVersionsSizeOnTotal() {
+        if (getProperty(VERSIONS_SIZE_ON_TOTAL_PROPERTY_KEY) != null) {
+            return (Long) getProperty(VERSIONS_SIZE_ON_TOTAL_PROPERTY_KEY);
         }
         return 0L;
     }

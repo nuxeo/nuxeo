@@ -1161,7 +1161,7 @@ public class TestDocumentsSizeUpdater {
         EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", false);
 
-        addContent();
+        addContent(true);
 
         dump();
 
@@ -1180,8 +1180,9 @@ public class TestDocumentsSizeUpdater {
         session.save(); // process invalidations
 
         TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
 
-        session.save();
+        dispose(session);
 
         TransactionHelper.startTransaction();
 
@@ -1193,16 +1194,43 @@ public class TestDocumentsSizeUpdater {
         DocumentModel firstFile = session.getDocument(firstFileRef);
         DocumentModel secondFile = session.getDocument(secondFileRef);
 
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(ws, 0L, 300L);
+        assertQuota(firstFile, 100L, 100L, 0L, 100L);
+        assertQuota(secondFile, 200L, 200L, 0L, 0L);
+        assertQuota(firstSubFolder, 0L, 300L, 0L, 100L);
+        assertQuota(firstFolder, 0L, 300L, 0L, 100L);
+        assertQuota(ws, 0L, 300L, 0L, 100L);
 
         TransactionHelper.commitOrRollbackTransaction();
         session.save();
-
+        dispose(session);
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
+        TransactionHelper.startTransaction();
+        firstFile = session.getDocument(firstFileRef);
+        //modify file to checkout
+        firstFile.setPropertyValue("dc:title", "File1");
+        firstFile = session.saveDocument(firstFile);
+        session.save(); // process invalidations
+        assertTrue(firstFile.isCheckedOut());
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        dispose(session);
+        TransactionHelper.startTransaction();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
+        firstFile = session.getDocument(firstFileRef);
+        secondFile = session.getDocument(secondFileRef);
+
+        assertQuota(firstFile, 100L, 200L, 0L, 100L);
+        assertQuota(secondFile, 200L, 200L, 0L, 0L);
+        assertQuota(firstSubFolder, 0L, 400L, 0L, 100L);
+        assertQuota(firstFolder, 0L, 400L, 0L, 100L);
+        assertQuota(ws, 0L, 400L, 0L, 100L);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        session.save();
+        eventService.waitForAsyncCompletion();
     }
 
     @Test

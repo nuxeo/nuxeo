@@ -244,8 +244,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
                 QuotaAware qa = uwRoot.getAdapter(QuotaAware.class);
                 if (qa == null) {
                     quota = -1;
+                } else {
+                    quota = qa.getMaxQuota();
                 }
-                quota = qa.getMaxQuota();
             }
         }.getsQuotaSetOnUserWorkspaces();
     }

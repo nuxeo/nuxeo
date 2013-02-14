@@ -25,8 +25,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 
@@ -185,6 +183,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException;
 
-    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc,
-            DocumentEventContext docCtx) throws ClientException;
+    protected abstract void processDocumentTrashOp(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException;
 }

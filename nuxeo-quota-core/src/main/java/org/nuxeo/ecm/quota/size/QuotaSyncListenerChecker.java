@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOU
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
+import static org.nuxeo.ecm.quota.size.SizeUpdateEventContext.DOCUMENT_UPDATE_INITIAL_STATISTICS;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -73,7 +74,6 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             IterableQueryResult res = unrestrictedSession.queryAndFetch(
                     "SELECT ecm:uuid FROM Document where ecm:isCheckedInVersion=0 and ecm:isProxy=0 order by dc:created desc",
                     "NXQL");
-
             log.debug("Starting initial Quota computation");
             long total = res.size();
             log.debug("Start iteration on " + total + " items");
@@ -113,8 +113,37 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 return;
             }
             BlobSizeInfo bsi = computeSizeImpact(target, false);
-            SizeUpdateEventContext quotaCtx = new SizeUpdateEventContext(
-                    unrestrictedSession, bsi, DOCUMENT_CREATED, target);
+            SizeUpdateEventContext quotaCtx = null;
+
+            // process versions if any
+            List<DocumentModel> versions = unrestrictedSession.getVersions(ref);
+            if (versions.size() == 0) {
+                quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
+                        DOCUMENT_CREATED, target);
+
+            } else {
+                long lastVersionSize = 0;
+                long versionsSize = 0;
+                for (DocumentModel documentModel : versions) {
+                    long s = computeSizeImpact(documentModel, false).blobSize;
+                    if (documentModel.isLatestVersion()) {
+                        lastVersionSize = s;
+                    } else {
+                        versionsSize = versionsSize + s;
+                    }
+                }
+                quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
+                        DOCUMENT_UPDATE_INITIAL_STATISTICS, target);
+                // on checkout we account in the total for the last version size
+                if (target.isCheckedOut()) {
+                    quotaCtx.setVersionsSizeOnTotal(lastVersionSize
+                            + lastVersionSize);
+                    quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
+                } else {
+                    quotaCtx.setVersionsSizeOnTotal(versionsSize);
+                    quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
+                }
+            }
 
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " started update");
@@ -173,7 +202,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     session, docCtx, bsi, DOCUMENT_CREATED);
             sendUpdateEvents(asyncEventCtx);
         } else {
-            //make the doc quota aware even if the impact size is 0, see NXP-10718
+            // make the doc quota aware even if the impact size is 0, see
+            // NXP-10718
             QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
             if (quotaDoc == null) {
                 log.debug("  add Quota Facet on " + targetDoc.getPathAsString());
