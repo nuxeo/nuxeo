@@ -89,7 +89,7 @@
           <a4j:commandLink id="#{fancyboxId}_link"
             ajaxSingle="true"
             ignoreDupResponses="true" requestDelay="100"
-            onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
+            onclick="javascript:openFancyBox('#{iframe}', { width: '#{iframe_width}', height: '#{iframe_height}', scrolling: '#{iframe_scrolling}' });"
             disabled="#{!action.available}"
             eventsQueue="#{eventsQueueId}"
             styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
@@ -102,7 +102,7 @@
           <a4j:commandButton id="#{fancyboxId}_link"
             ajaxSingle="true"
             ignoreDupResponses="true" requestDelay="100"
-            onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
+            onclick="javascript:openFancyBox('#{iframe}', width: '#{iframe_width}', height: '#{iframe_height}', scrolling: '#{iframe_scrolling}' });"
             value="#{messages[action.label]}"
             disabled="#{!action.available}"
             eventsQueue="#{eventsQueueId}"
