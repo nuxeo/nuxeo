@@ -62,6 +62,8 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     /** Internal attributes */
     protected String factoryName;
 
+    protected String path;
+
     // Must not be serialized => transient
     protected transient Principal principal;
 
@@ -86,6 +88,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
     }
 
     @Override
@@ -194,6 +201,10 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     /*---------- Needed for JSON deserialization ----------*/
     protected void setId(String id) {
         this.id = id;
+    }
+
+    protected void setPath(String path) {
+        this.path = path;
     }
 
     protected void setParentId(String parentId) {

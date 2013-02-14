@@ -72,6 +72,11 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
 
     /*--------------------- FileSystemItem ---------------------*/
     @Override
+    public String getPath() {
+        return "/" + getId();
+    }
+
+    @Override
     public void rename(String name) throws ClientException {
         throw new UnsupportedOperationException(
                 "Cannot rename the top level folder item.");

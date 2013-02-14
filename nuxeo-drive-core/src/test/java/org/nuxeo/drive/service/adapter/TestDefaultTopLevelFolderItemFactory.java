@@ -115,6 +115,9 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
         assertTrue(topLevelFolderItem.getId().endsWith(
                 "DefaultTopLevelFolderItemFactory/"));
+        assertTrue(topLevelFolderItem.getPath().endsWith(
+                "DefaultTopLevelFolderItemFactory/"));
+        assertTrue(topLevelFolderItem.getPath().startsWith("/"));
         assertNull(topLevelFolderItem.getParentId());
         assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
         assertTrue(topLevelFolderItem.isFolder());
@@ -147,6 +150,11 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertNotNull(children);
         assertEquals(2, children.size());
         assertFalse(topLevelFolderItem.getCanCreateChild());
+
+        for (FileSystemItem child : children) {
+            assertEquals(topLevelFolderItem.getPath() + '/' + child.getId(),
+                    child.getPath());
+        }
         try {
             topLevelFolderItem.createFile(new StringBlob("Child file content."));
             fail("Should not be able to create a file in the default top level folder item.");

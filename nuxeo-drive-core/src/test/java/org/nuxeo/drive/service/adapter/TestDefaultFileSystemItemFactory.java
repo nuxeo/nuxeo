@@ -272,8 +272,8 @@ public class TestDefaultFileSystemItemFactory {
         // Check #getFileSystemItem(DocumentModel doc, String parentId)
         // -------------------------------------------------------------
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(note,
-                "noteParentId");
-        assertEquals("noteParentId", fsItem.getParentId());
+                rootDocFileSystemItemId);
+        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(note, null);
         assertNull(fsItem.getParentId());
 
