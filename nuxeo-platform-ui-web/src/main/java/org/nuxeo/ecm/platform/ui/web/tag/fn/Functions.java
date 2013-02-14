@@ -690,17 +690,13 @@ public final class Functions {
      * forms rendered in ajax (see NXP-10793).
      *
      * @since 5.7
-     * @throws IllegalArgumentException if the given string is null or empty.
      * @return the escaped string
      */
     public static String jsfTagIdEscape(String base) {
         if (base == null) {
-            throw new IllegalArgumentException(base);
+            return null;
         }
         int n = base.length();
-        if (n < 1) {
-            throw new IllegalArgumentException(base);
-        }
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < n; i++) {
             char c = base.charAt(i);
