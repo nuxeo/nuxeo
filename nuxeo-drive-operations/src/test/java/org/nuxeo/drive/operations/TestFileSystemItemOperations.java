@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
@@ -83,9 +84,9 @@ import com.google.inject.Inject;
 @Jetty(port = 18080)
 public class TestFileSystemItemOperations {
 
-    private static final String SYNC_ROOT_FOLDER_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory/test/";
+    private static final String SYNC_ROOT_FOLDER_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
 
-    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
     @Inject
     protected CoreSession session;
@@ -194,10 +195,17 @@ public class TestFileSystemItemOperations {
     @Test
     public void testGetTopLevelChildren() throws Exception {
 
-        Blob topLevelChildrenJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetTopLevelChildren.ID).execute();
-        assertNotNull(topLevelChildrenJSON);
+        Blob topLevelFolderJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetTopLevelFolder.ID).execute();
+        assertNotNull(topLevelFolderJSON);
 
+        FolderItem topLevelFolder = mapper.readValue(
+                topLevelFolderJSON.getStream(),
+                new TypeReference<DefaultTopLevelFolderItem>() {
+                });
+
+        Blob topLevelChildrenJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveGetChildren.ID).set("id", topLevelFolder.getId()).execute();
         List<DefaultSyncRootFolderItem> topLevelChildren = mapper.readValue(
                 topLevelChildrenJSON.getStream(),
                 new TypeReference<List<DefaultSyncRootFolderItem>>() {
@@ -209,7 +217,7 @@ public class TestFileSystemItemOperations {
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(),
                 child.getId());
         assertTrue(child.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("folder1", child.getName());
         assertTrue(child.isFolder());
         assertEquals("Administrator", child.getCreator());
@@ -221,7 +229,7 @@ public class TestFileSystemItemOperations {
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId(),
                 child.getId());
         assertTrue(child.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("folder2", child.getName());
         assertTrue(child.isFolder());
         assertEquals("Administrator", child.getCreator());
@@ -304,7 +312,7 @@ public class TestFileSystemItemOperations {
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(),
                 syncRootFolderItem.getId());
         assertTrue(syncRootFolderItem.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("folder1", syncRootFolderItem.getName());
         assertTrue(syncRootFolderItem.isFolder());
         assertEquals("Administrator", syncRootFolderItem.getCreator());

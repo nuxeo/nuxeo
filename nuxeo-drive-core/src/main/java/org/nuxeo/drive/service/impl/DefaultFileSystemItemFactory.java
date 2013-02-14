@@ -21,6 +21,7 @@ import java.security.Principal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
@@ -203,12 +204,12 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     protected String[] parseFileSystemId(String id) throws ClientException {
 
         // Parse id, expecting pattern:
-        // fileSystemItemFactoryName/repositoryName/docId
-        String[] idFragments = id.split("/");
+        // fileSystemItemFactoryName#repositoryName#docId
+        String[] idFragments = id.split(AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR);
         if (idFragments.length != 3) {
             throw new ClientException(
                     String.format(
-                            "FileSystemItem id %s cannot be handled by factory named %s. Should match the 'fileSystemItemFactoryName/repositoryName/docId' pattern.",
+                            "FileSystemItem id %s cannot be handled by factory named %s. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
                             id, name));
         }
 
@@ -226,7 +227,7 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
     protected DocumentModel getDocumentByFileSystemId(String id,
             Principal principal) throws ClientException {
         // Parse id, expecting
-        // pattern:fileSystemItemFactoryName/repositoryName/docId
+        // pattern:fileSystemItemFactoryName#repositoryName#docId
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];

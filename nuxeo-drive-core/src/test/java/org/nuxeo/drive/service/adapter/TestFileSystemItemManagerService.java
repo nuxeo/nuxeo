@@ -77,7 +77,7 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestFileSystemItemManagerService {
 
-    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
     @Inject
     protected CoreSession session;
@@ -184,26 +184,27 @@ public class TestFileSystemItemManagerService {
         // ------------------------------------------------------
         // Check #getTopLevelChildren
         // ------------------------------------------------------
-        List<FileSystemItem> topLevelChildren = fileSystemItemManagerService.getTopLevelChildren(principal);
+        List<FileSystemItem> topLevelChildren = fileSystemItemManagerService.getTopLevelFolder(
+                principal).getChildren();
         assertNotNull(topLevelChildren);
         assertEquals(2, topLevelChildren.size());
 
         FileSystemItem childFsItem = topLevelChildren.get(0);
         assertTrue(childFsItem instanceof DefaultSyncRootFolderItem);
         assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + syncRoot1.getId(),
+                "defaultSyncRootFolderItemFactory#test#" + syncRoot1.getId(),
                 childFsItem.getId());
         assertTrue(childFsItem.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("syncRoot1", childFsItem.getName());
 
         childFsItem = topLevelChildren.get(1);
         assertTrue(childFsItem instanceof DefaultSyncRootFolderItem);
         assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + syncRoot2.getId(),
+                "defaultSyncRootFolderItemFactory#test#" + syncRoot2.getId(),
                 childFsItem.getId());
         assertTrue(childFsItem.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("syncRoot2", childFsItem.getName());
 
         // ------------------------------------------------------

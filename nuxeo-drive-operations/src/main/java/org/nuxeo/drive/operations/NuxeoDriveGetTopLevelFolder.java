@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,11 +16,7 @@
  */
 package org.nuxeo.drive.operations;
 
-import java.io.StringWriter;
-import java.util.List;
-
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -33,16 +29,13 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Gets the children of the top level {@link FolderItem} for the currently
- * authenticated user.
- * @deprecated use NuxeoDriveGetTopLevelFolder and the NuxeoDriveGetChildren operations instead
- * @author Antoine Taillefer
+ * Gets of the top level {@link FolderItem} for the currently authenticated user.
+ * @author Olivier Grisel
  */
-@Deprecated
-@Operation(id = NuxeoDriveGetTopLevelChildren.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get top level children")
-public class NuxeoDriveGetTopLevelChildren {
+@Operation(id = NuxeoDriveGetTopLevelFolder.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get the top level folder")
+public class NuxeoDriveGetTopLevelFolder {
 
-    public static final String ID = "NuxeoDrive.GetTopLevelChildren";
+    public static final String ID = "NuxeoDrive.GetTopLevelFolder";
 
     @Context
     protected OperationContext ctx;
@@ -51,12 +44,10 @@ public class NuxeoDriveGetTopLevelChildren {
     public Blob run() throws Exception {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        List<FileSystemItem> children = fileSystemItemManager.getTopLevelChildren(ctx.getPrincipal());
+        FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(ctx.getPrincipal());
         ObjectMapper mapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, children);
-        return StreamingBlob.createFromString(writer.toString(),
-                "application/json");
+        return StreamingBlob.createFromString(
+                mapper.writeValueAsString(topLevelFolder), "application/json");
     }
 
 }

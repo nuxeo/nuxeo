@@ -20,6 +20,7 @@ import java.security.Principal;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -93,7 +94,7 @@ public class DefaultTopLevelFolderItemFactory implements
 
     @Override
     public boolean canHandleFileSystemItemId(String id) {
-        return (getName() + "/").equals(id);
+        return (getName() + AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR).equals(id);
     }
 
     @Override

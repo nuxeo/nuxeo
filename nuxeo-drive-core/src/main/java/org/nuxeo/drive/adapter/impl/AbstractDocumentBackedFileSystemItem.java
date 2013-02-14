@@ -16,12 +16,14 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -59,15 +61,13 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         CoreSession docSession = doc.getCoreSession();
         DocumentModel parentDoc = docSession.getParentDocument(doc.getRef());
         if (parentDoc == null) {
-            throw new UnsupportedOperationException(
-                    String.format(
-                            "Doc %s has no parent document, please provide a FileSystemItem parentId to the constructor.",
-                            doc.getPathAsString()));
+            parentId = null;
+            path = '/' + id;
         } else {
-            // Pass a mock parent id when fetching the parent file system item
-            // to avoid recursive calls
-            this.parentId = getFileSystemItemAdapterService().getFileSystemItem(
-                    parentDoc, "mockParentId").getId();
+            FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
+                    parentDoc, true);
+            parentId = parent.getId();
+            path = parent.getPath() + '/' + id;
         }
     }
 
@@ -95,6 +95,35 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
                 SecurityConstants.REMOVE)
                 && docSession.hasPermission(doc.getParentRef(),
                         SecurityConstants.REMOVE_CHILDREN);
+
+        String parentPath;
+        if (parentId != null) {
+            // TODO: provide an alternative constructor to directly pass the
+            // parent item to avoid having to this unnecessary lookup
+            FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
+            Principal principal = doc.getCoreSession().getPrincipal();
+            FileSystemItem parent = fsManager.getFileSystemItemById(parentId,
+                    principal);
+            if (parent == null) {
+                throw new ClientException("Could not find FS item with id "
+                        + parentId + " for user: " + principal.getName());
+            }
+            parentPath = parent.getPath();
+        } else {
+            DocumentModel parentDoc = docSession.getParentDocument(doc.getRef());
+            if (parentDoc == null) {
+                parentPath = "";
+            } else {
+                FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
+                        parentDoc, true);
+                if (parent == null) {
+                    parentPath = "";
+                } else {
+                    parentPath = parent.getPath();
+                }
+            }
+        }
+        path = parentPath + '/' + id;
     }
 
     protected AbstractDocumentBackedFileSystemItem() {
@@ -162,7 +191,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         StringBuilder sb = new StringBuilder();
         sb.append(super.getId());
         sb.append(repositoryName);
-        sb.append("/");
+        sb.append(FILE_SYSTEM_ITEM_ID_SEPARATOR);
         sb.append(docId);
         return sb.toString();
     }
@@ -213,12 +242,12 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     protected String[] parseFileSystemId(String id) throws ClientException {
 
         // Parse id, expecting pattern:
-        // fileSystemItemFactoryName/repositoryName/docId
-        String[] idFragments = id.split("/");
+        // fileSystemItemFactoryName#repositoryName#docId
+        String[] idFragments = id.split(FILE_SYSTEM_ITEM_ID_SEPARATOR);
         if (idFragments.length != 3) {
             throw new ClientException(
                     String.format(
-                            "FileSystemItem id %s is not valid. Should match the 'fileSystemItemFactoryName/repositoryName/docId' pattern.",
+                            "FileSystemItem id %s is not valid. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
                             id));
         }
         return idFragments;
