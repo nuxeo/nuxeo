@@ -65,7 +65,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             path = '/' + id;
         } else {
             FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
-                    parentDoc);
+                    parentDoc, true);
             parentId = parent.getId();
             path = parent.getPath() + '/' + id;
         }
@@ -114,8 +114,13 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             if (parentDoc == null) {
                 parentPath = "";
             } else {
-                parentPath = getFileSystemItemAdapterService().getFileSystemItem(
-                        parentDoc).getPath();
+                FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
+                        parentDoc, true);
+                if (parent == null) {
+                    parentPath = "";
+                } else {
+                    parentPath = parent.getPath();
+                }
             }
         }
         path = parentPath + '/' + id;
