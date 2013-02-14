@@ -80,7 +80,7 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
 
-    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
     @Inject
     protected CoreSession session;
@@ -313,7 +313,7 @@ public class TestDefaultFileSystemItemFactory {
             fail("Should not be able to check existence for bad id.");
         } catch (ClientException e) {
             assertEquals(
-                    "FileSystemItem id badId cannot be handled by factory named defaultFileSystemItemFactory. Should match the 'fileSystemItemFactoryName/repositoryName/docId' pattern.",
+                    "FileSystemItem id badId cannot be handled by factory named defaultFileSystemItemFactory. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
                     e.getMessage());
         }
         // Non existent doc id

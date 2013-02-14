@@ -92,7 +92,7 @@ public class TestFileSystemItemAdapterService {
     @Before
     public void createTestDocs() throws Exception {
 
-        rootDocFileSystemItemId = "dummyFacetFactory/test/"
+        rootDocFileSystemItemId = "dummyFacetFactory#test#"
                 + session.getRootDocument().getId();
 
         file = session.createDocumentModel("/", "aFile", "File");
@@ -206,7 +206,7 @@ public class TestFileSystemItemAdapterService {
         FileSystemItem fsItem = fileSystemItemAdapterService.getFileSystemItem(file);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof DummyFileItem);
-        assertEquals("dummyDocTypeFactory/test/" + file.getId(), fsItem.getId());
+        assertEquals("dummyDocTypeFactory#test#" + file.getId(), fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Dummy file with id " + file.getId(), fsItem.getName());
         assertFalse(fsItem.isFolder());
@@ -218,7 +218,7 @@ public class TestFileSystemItemAdapterService {
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof DummyFolderItem);
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
-        assertEquals("dummyFacetFactory/test/" + folder.getId(), fsItem.getId());
+        assertEquals("dummyFacetFactory#test#" + folder.getId(), fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Dummy folder with id " + folder.getId(), fsItem.getName());
         assertTrue(fsItem.isFolder());
@@ -229,7 +229,7 @@ public class TestFileSystemItemAdapterService {
         fsItem = fileSystemItemAdapterService.getFileSystemItem(custom);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
-        assertEquals("defaultFileSystemItemFactory/test/" + custom.getId(),
+        assertEquals("defaultFileSystemItemFactory#test#" + custom.getId(),
                 fsItem.getId());
         assertEquals("/" + rootDocFileSystemItemId + "/" + fsItem.getId(),
                 fsItem.getPath());
@@ -256,7 +256,7 @@ public class TestFileSystemItemAdapterService {
         // Check #getFileSystemItemFactoryForId(String id)
         // -------------------------------------------------------------
         // Default factory
-        String fsItemId = "defaultFileSystemItemFactory/test/someId";
+        String fsItemId = "defaultFileSystemItemFactory#test#someId";
         FileSystemItemFactory fsItemFactory = fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
         assertNotNull(fsItemFactory);
         assertEquals("defaultFileSystemItemFactory", fsItemFactory.getName());
@@ -265,7 +265,7 @@ public class TestFileSystemItemAdapterService {
         assertTrue(fsItemFactory.canHandleFileSystemItemId(fsItemId));
 
         // Top level folder item factory
-        fsItemId = "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/";
+        fsItemId = "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#";
         fsItemFactory = fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
         assertNotNull(fsItemFactory);
         assertTrue(fsItemFactory.getName().endsWith(
@@ -275,13 +275,13 @@ public class TestFileSystemItemAdapterService {
         assertTrue(fsItemFactory.canHandleFileSystemItemId(fsItemId));
 
         // Factory with #canHandleFileSystemItemId returning false
-        fsItemId = "dummyDocTypeFactory/test/someId";
+        fsItemId = "dummyDocTypeFactory#test#someId";
         try {
             fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
             fail("No fileSystemItemFactory should be found FileSystemItem id.");
         } catch (ClientException e) {
             assertEquals(
-                    "No fileSystemItemFactory found for FileSystemItem with id dummyDocTypeFactory/test/someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
+                    "No fileSystemItemFactory found for FileSystemItem with id dummyDocTypeFactory#test#someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
                     e.getMessage());
         }
 
@@ -297,13 +297,13 @@ public class TestFileSystemItemAdapterService {
         }
 
         // Non existent factory name
-        fsItemId = "nonExistentFactoryName/test/someId";
+        fsItemId = "nonExistentFactoryName#test#someId";
         try {
             fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
             fail("No fileSystemItemFactory should be found for FileSystemItem id.");
         } catch (ClientException e) {
             assertEquals(
-                    "No fileSystemItemFactory found for FileSystemItem with id nonExistentFactoryName/test/someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
+                    "No fileSystemItemFactory found for FileSystemItem with id nonExistentFactoryName#test#someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
                     e.getMessage());
         }
 
@@ -403,7 +403,7 @@ public class TestFileSystemItemAdapterService {
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
-        assertEquals("dummyFacetFactory/test/" + folder.getId(), fsItem.getId());
+        assertEquals("dummyFacetFactory#test#" + folder.getId(), fsItem.getId());
         assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
@@ -427,18 +427,18 @@ public class TestFileSystemItemAdapterService {
         // Check #getFileSystemItemFactoryForId(String id)
         // -------------------------------------------------------------
         // Disabled default factory
-        String fsItemId = "defaultFileSystemItemFactory/test/someId";
+        String fsItemId = "defaultFileSystemItemFactory#test#someId";
         try {
             fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
             fail("No fileSystemItemFactory should be found for FileSystemItem id.");
         } catch (ClientException e) {
             assertEquals(
-                    "No fileSystemItemFactory found for FileSystemItem with id defaultFileSystemItemFactory/test/someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
+                    "No fileSystemItemFactory found for FileSystemItem with id defaultFileSystemItemFactory#test#someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
                     e.getMessage());
         }
 
         // Factory with #canHandleFileSystemItemId returning true
-        fsItemId = "dummyDocTypeFactory/test/someId";
+        fsItemId = "dummyDocTypeFactory#test#someId";
         FileSystemItemFactory fsItemFactory = fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
         assertNotNull(fsItemFactory);
         assertEquals("dummyDocTypeFactory", fsItemFactory.getName());
@@ -447,7 +447,7 @@ public class TestFileSystemItemAdapterService {
         assertTrue(fsItemFactory.canHandleFileSystemItemId(fsItemId));
 
         // Other test factory with #canHandleFileSystemItemId returning true
-        fsItemId = "dummyFacetFactory/test/someId";
+        fsItemId = "dummyFacetFactory#test#someId";
         fsItemFactory = fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
         assertNotNull(fsItemFactory);
         assertEquals("dummyFacetFactory", fsItemFactory.getName());
@@ -456,7 +456,7 @@ public class TestFileSystemItemAdapterService {
         assertTrue(fsItemFactory.canHandleFileSystemItemId(fsItemId));
 
         // Top level folder item factory
-        fsItemId = "org.nuxeo.drive.service.adapter.DummyTopLevelFolderItemFactory/";
+        fsItemId = "org.nuxeo.drive.service.adapter.DummyTopLevelFolderItemFactory#";
         fsItemFactory = fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
         assertNotNull(fsItemFactory);
         assertTrue(fsItemFactory.getName().endsWith(

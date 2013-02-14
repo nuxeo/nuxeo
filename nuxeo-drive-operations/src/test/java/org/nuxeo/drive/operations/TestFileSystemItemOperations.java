@@ -84,9 +84,9 @@ import com.google.inject.Inject;
 @Jetty(port = 18080)
 public class TestFileSystemItemOperations {
 
-    private static final String SYNC_ROOT_FOLDER_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory/test/";
+    private static final String SYNC_ROOT_FOLDER_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
 
-    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory/test/";
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
     @Inject
     protected CoreSession session;
@@ -217,7 +217,7 @@ public class TestFileSystemItemOperations {
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(),
                 child.getId());
         assertTrue(child.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("folder1", child.getName());
         assertTrue(child.isFolder());
         assertEquals("Administrator", child.getCreator());
@@ -229,7 +229,7 @@ public class TestFileSystemItemOperations {
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId(),
                 child.getId());
         assertTrue(child.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("folder2", child.getName());
         assertTrue(child.isFolder());
         assertEquals("Administrator", child.getCreator());
@@ -312,7 +312,7 @@ public class TestFileSystemItemOperations {
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(),
                 syncRootFolderItem.getId());
         assertTrue(syncRootFolderItem.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("folder1", syncRootFolderItem.getName());
         assertTrue(syncRootFolderItem.isFolder());
         assertEquals("Administrator", syncRootFolderItem.getCreator());

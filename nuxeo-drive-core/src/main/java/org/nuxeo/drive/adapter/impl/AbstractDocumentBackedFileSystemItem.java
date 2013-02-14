@@ -186,7 +186,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         StringBuilder sb = new StringBuilder();
         sb.append(super.getId());
         sb.append(repositoryName);
-        sb.append("/");
+        sb.append(FILE_SYSTEM_ITEM_ID_SEPARATOR);
         sb.append(docId);
         return sb.toString();
     }
@@ -237,12 +237,12 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     protected String[] parseFileSystemId(String id) throws ClientException {
 
         // Parse id, expecting pattern:
-        // fileSystemItemFactoryName/repositoryName/docId
-        String[] idFragments = id.split("/");
+        // fileSystemItemFactoryName#repositoryName#docId
+        String[] idFragments = id.split(FILE_SYSTEM_ITEM_ID_SEPARATOR);
         if (idFragments.length != 3) {
             throw new ClientException(
                     String.format(
-                            "FileSystemItem id %s is not valid. Should match the 'fileSystemItemFactoryName/repositoryName/docId' pattern.",
+                            "FileSystemItem id %s is not valid. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
                             id));
         }
         return idFragments;
