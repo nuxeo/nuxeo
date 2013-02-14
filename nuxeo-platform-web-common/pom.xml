@@ -70,16 +70,6 @@
       <groupId>net.oauth.core</groupId>
       <artifactId>oauth</artifactId>
     </dependency>
-    <!-- to get the OAuthSecurityToken into the HttpRequest during Filtering -->
-    <dependency>
-      <groupId>org.apache.shindig</groupId>
-      <artifactId>shindig-social-api</artifactId>
-    </dependency>
-    <!-- to get the AuthInfo that attaches tokens to requests -->
-    <dependency>
-      <groupId>org.apache.shindig</groupId>
-      <artifactId>shindig-common</artifactId>
-    </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
