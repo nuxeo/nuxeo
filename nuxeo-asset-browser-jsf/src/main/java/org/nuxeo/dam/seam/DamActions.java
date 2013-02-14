@@ -113,6 +113,10 @@ public class DamActions implements Serializable {
                 SecurityConstants.ADD_CHILDREN);
     }
 
+    public boolean getCanCreateNewAsset() throws ClientException {
+        return !getAllowedAssetTypes().isEmpty() && getCanCreateInAssetLibrary();
+    }
+
     public AssetLibrary getAssetLibrary() {
         return Framework.getLocalService(DamService.class).getAssetLibrary();
     }

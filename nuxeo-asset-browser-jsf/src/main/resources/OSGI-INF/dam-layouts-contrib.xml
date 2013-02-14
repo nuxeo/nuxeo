@@ -100,9 +100,17 @@
     </widget>
 
     <!-- Search results -->
-    <widget name="damNewAsset" type="template">
-      <properties widgetMode="any">
-        <property name="template">/dam/widgets/dam_new_asset_widget_template.xhtml</property>
+    <widget name="damSearchResultsActions" type="currentDocumentActionsWithForms">
+      <properties widgetMode="view">
+        <property name="category">DAM_SEARCH_RESULTS_ACTIONS</property>
+        <property name="styleClass">globalActionBar</property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+        <property name="actionsDisplay">buttons</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">3</property>
       </properties>
     </widget>
 
@@ -350,11 +358,19 @@
       </properties>
     </action>
 
-    <action id="damNewAsset" type="widget" order="100">
+    <action id="damSearchResultsActions" type="widget" order="100">
       <category>DAM_PANEL_CENTER</category>
       <properties>
-        <property name="widgetName">damNewAsset</property>
+        <property name="widgetName">damSearchResultsActions</property>
       </properties>
+    </action>
+
+    <action id="damNewAsset" order="100" label="label.dam.new.asset" type="fancybox">
+      <category>DAM_SEARCH_RESULTS_ACTIONS</category>
+      <properties>
+        <property name="include">/dam/incl/new_asset_box.xhtml</property>
+      </properties>
+      <filter-id>canCreateNewAsset</filter-id>
     </action>
 
     <action id="damSearchResults" type="widget" order="200">
@@ -507,6 +523,10 @@
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
+    <action id="permalinkAction">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
     <action id="subscribesAllDocNotifications">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
@@ -551,6 +571,12 @@
     <filter id="hasTasks">
       <rule grant="true">
         <condition>#{currentDashBoardItemsExceptPublishingTasks.size() > 0}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canCreateNewAsset">
+      <rule grant="true">
+        <condition>#{damActions.canCreateNewAsset}</condition>
       </rule>
     </filter>
 
