@@ -160,7 +160,17 @@ public final class FaceletHandlerHelper {
         }
     }
 
-    public static String generateValidIdString(String base) {
+    /**
+     * @throws IllegalArgumentException if the given string is null or empty.
+     */
+    protected static String generateValidIdString(String base) {
+        if (base == null) {
+            throw new IllegalArgumentException(base);
+        }
+        int n = base.length();
+        if (n < 1) {
+            throw new IllegalArgumentException(base);
+        }
         return Functions.jsfTagIdEscape(base);
     }
 

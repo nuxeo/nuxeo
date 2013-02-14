@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.ui.web.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -114,6 +115,8 @@ public class TestFunctions {
 
     @Test
     public void testGenerateValidId() throws Exception {
+        assertNull(Functions.jsfTagIdEscape(null));
+        assertEquals("", Functions.jsfTagIdEscape(""));
         assertEquals("blah_blah", Functions.jsfTagIdEscape("blah_blah"));
         assertEquals("blah_blah", Functions.jsfTagIdEscape("blah blah"));
         assertEquals("blah_blah", Functions.jsfTagIdEscape("blah-blah"));
