@@ -87,16 +87,15 @@ public class MockPageProvider extends AbstractPageProvider<MockPagedListItem> {
 
     @Override
     protected void pageChanged() {
-        super.pageChanged();
         currentItems = null;
-        notifyPageChanged();
+        super.pageChanged();
     }
 
     @Override
     public void refresh() {
-        super.refresh();
         currentItems = null;
         setResultsCount(givenResultsCount);
+        super.refresh();
     }
 
 }

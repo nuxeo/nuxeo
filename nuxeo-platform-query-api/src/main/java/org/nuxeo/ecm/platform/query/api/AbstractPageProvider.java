@@ -89,10 +89,15 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     /**
      * Page change hook, to override for custom behavior
+     * <p>
+     * When overriding it, call {@code super.pageChanged()} as last statement to
+     * make sure that the {@link PageProviderChangedListener} is called with the
+     * up-to-date @{code PageProvider} state.
      */
     protected void pageChanged() {
         currentEntryIndex = 0;
         currentSelectPage = null;
+        notifyPageChanged();
     }
 
     public void firstPage() {
@@ -380,12 +385,21 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         previousPage();
     }
 
+    /**
+     * Refresh hook, to override for custom behavior
+     * <p>
+     * When overriding it, call {@code super.refresh()} as last statement
+     * to make sure that the {@link PageProviderChangedListener} is called with
+     * the up-to-date @{code PageProvider} state.
+     */
     public void refresh() {
         setResultsCount(UNKNOWN_SIZE);
         setCurrentHigherNonEmptyPageIndex(-1);
         currentSelectPage = null;
         errorMessage = null;
         error = null;
+        notifyRefresh();
+
     }
 
     public void setName(String name) {
@@ -719,13 +733,32 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public void setPageProviderChangedListener(PageProviderChangedListener listener) {
+    public void setPageProviderChangedListener(
+            PageProviderChangedListener listener) {
         pageProviderChangedListener = listener;
     }
 
+    /**
+     * Call the registered {@code PageProviderChangedListener}, if any, to
+     * notify that the page provider current page has changed.
+     *
+     * @since 5.7
+     */
     protected void notifyPageChanged() {
         if (pageProviderChangedListener != null) {
-            pageProviderChangedListener.pageChanged();
+            pageProviderChangedListener.pageChanged(this);
+        }
+    }
+
+    /**
+     * Call the registered {@code PageProviderChangedListener}, if any, to
+     * notify that the page provider has refreshed.
+     *
+     * @since 5.7
+     */
+    protected void notifyRefresh() {
+        if (pageProviderChangedListener != null) {
+            pageProviderChangedListener.refreshed(this);
         }
     }
 

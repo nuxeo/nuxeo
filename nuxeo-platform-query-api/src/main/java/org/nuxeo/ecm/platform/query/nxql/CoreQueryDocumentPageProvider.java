@@ -292,16 +292,15 @@ public class CoreQueryDocumentPageProvider extends
 
     @Override
     protected void pageChanged() {
-        super.pageChanged();
         currentPageDocuments = null;
-        notifyPageChanged();
+        super.pageChanged();
     }
 
     @Override
     public void refresh() {
-        super.refresh();
         query = null;
         currentPageDocuments = null;
+        super.refresh();
     }
 
 }
