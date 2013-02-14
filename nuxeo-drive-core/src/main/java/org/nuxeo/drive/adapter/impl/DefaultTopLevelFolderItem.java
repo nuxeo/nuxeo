@@ -54,16 +54,17 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
         super(factoryName,
                 Framework.getLocalService(UserManager.class).getPrincipal(
                         userName));
-        this.parentId = null;
-        this.name = "Nuxeo Drive";
-        this.folder = true;
-        this.creator = "system";
+        parentId = null;
+        name = "Nuxeo Drive";
+        folder = true;
+        creator = "system";
         // The Fixed Origin of (Unix) Time
-        this.creationDate = new GregorianCalendar(1970, 0, 1, 0, 0, 0);
-        this.lastModificationDate = this.creationDate;
-        this.canRename = false;
-        this.canDelete = false;
-        this.canCreateChild = false;
+        creationDate = new GregorianCalendar(1970, 0, 1, 0, 0, 0);
+        lastModificationDate = this.creationDate;
+        canRename = false;
+        canDelete = false;
+        canCreateChild = false;
+        path = "/" + getId();
     }
 
     protected DefaultTopLevelFolderItem() {
@@ -71,11 +72,6 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
     }
 
     /*--------------------- FileSystemItem ---------------------*/
-    @Override
-    public String getPath() {
-        return "/" + getId();
-    }
-
     @Override
     public void rename(String name) throws ClientException {
         throw new UnsupportedOperationException(
