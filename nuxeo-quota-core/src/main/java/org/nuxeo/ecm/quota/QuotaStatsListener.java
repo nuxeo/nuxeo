@@ -30,6 +30,8 @@ import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,8 +58,8 @@ public class QuotaStatsListener implements EventListener {
             Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY,
                     DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
                     BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION,
-                    DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT,
-                    TRANSITION_EVENT)));
+                    DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT, TRANSITION_EVENT,
+                    BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
 
     @Override
     public void handleEvent(Event event) throws ClientException {

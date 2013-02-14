@@ -337,6 +337,7 @@ public class TestDocumentsSizeUpdater {
             firstFile.putContextData(VersioningService.VERSIONING_OPTION,
                     VersioningOption.MINOR);
             firstFile = session.saveDocument(firstFile);
+        } catch (Exception e) {
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -1206,7 +1207,7 @@ public class TestDocumentsSizeUpdater {
         eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
         TransactionHelper.startTransaction();
         firstFile = session.getDocument(firstFileRef);
-        //modify file to checkout
+        // modify file to checkout
         firstFile.setPropertyValue("dc:title", "File1");
         firstFile = session.saveDocument(firstFile);
         session.save(); // process invalidations
@@ -1388,4 +1389,107 @@ public class TestDocumentsSizeUpdater {
         TransactionHelper.commitOrRollbackTransaction();
     }
 
+    @Test
+    public void testQuotaOnRevertVersion() throws Exception {
+
+        addContent();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        DocumentModel ws = session.getDocument(wsRef);
+        DocumentModel firstFolder = session.getDocument(firstFolderRef);
+        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
+        DocumentModel firstFile = session.getDocument(firstFileRef);
+        DocumentModel secondFile = session.getDocument(secondFileRef);
+
+        assertQuota(firstFile, 100, 100, 0, 0);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 300, 0, 0);
+        assertQuota(firstFolder, 0, 300, 0, 0);
+        assertQuota(ws, 0, 300, 0, 0);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        // update and create a version
+        doUpdateAndVersionContent();
+        // ws + 50, file + 280 + version
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
+        firstFile = session.getDocument(firstFileRef);
+        secondFile = session.getDocument(secondFileRef);
+
+        assertFalse(firstFile.isCheckedOut());
+        assertEquals("0.1", firstFile.getVersionLabel());
+
+        assertQuota(firstFile, 380, 380, 0, 380);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 580, 0, 380);
+        assertQuota(firstFolder, 0, 580, 0, 380);
+        assertQuota(ws, 50, 630, 0, 380);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+
+        // create another version
+        doSimpleVersion();
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
+        firstFile = session.getDocument(firstFileRef);
+        secondFile = session.getDocument(secondFileRef);
+
+        assertFalse(firstFile.isCheckedOut());
+        assertEquals("0.2", firstFile.getVersionLabel());
+
+        assertQuota(firstFile, 380, 760, 0, 760);
+        assertQuota(secondFile, 200, 200, 0, 0);
+        assertQuota(firstSubFolder, 0, 960, 0, 760);
+        assertQuota(firstFolder, 0, 960, 0, 760);
+        assertQuota(ws, 50, 1010, 0, 760);
+
+        List<DocumentModel> versions = session.getVersions(firstFileRef);
+        for (DocumentModel documentModel : versions) {
+            if ("0.1".equals(documentModel.getVersionLabel())) {
+                firstFile = session.restoreToVersion(firstFileRef,
+                        documentModel.getRef(), true, true);
+            }
+        }
+        firstFileRef = firstFile.getRef();
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        dispose(session);
+
+        TransactionHelper.startTransaction();
+
+        dump();
+
+        ws = session.getDocument(wsRef);
+        firstFolder = session.getDocument(firstFolderRef);
+        firstSubFolder = session.getDocument(firstSubFolderRef);
+        firstFile = session.getDocument(firstFileRef);
+
+        assertFalse(firstFile.isCheckedOut());
+        assertEquals("0.1", firstFile.getVersionLabel());
+
+        assertQuota(firstFile, 380, 760, 0, 760);
+        assertQuota(firstSubFolder, 0, 960, 0, 760);
+        assertQuota(firstFolder, 0, 960, 0, 760);
+        assertQuota(ws, 50, 1010, 0, 760);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+    }
 }

@@ -202,8 +202,8 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     quotaDoc.addInnerSize(quotaCtx.getBlobSize(), false);
                     quotaDoc.addTotalSize(quotaCtx.getVersionsSizeOnTotal(),
                             false);
+                    quotaDoc.addTrashSize(quotaCtx.getTrashSize(), false);
                     quotaDoc.addVersionsSize(quotaCtx.getVersionsSize(), true);
-
                 } else {
                     // BEFORE_DOC_UPDATE
                     // DOCUMENT_CREATED
@@ -214,15 +214,17 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         }
         if (parents.size() > 0) {
             if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
-                processOnParents(parents, 0, quotaCtx.getBlobSize(), true,
+                processOnParents(parents, 0L, 0L, quotaCtx.getBlobSize(), true,
                         false, true);
             } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize(), true, false);
+                processOnParents(parents, quotaCtx.getBlobSize(), 0L, true,
+                        false);
             } else if (DELETE_TRANSITION.equals(sourceEvent)
                     || UNDELETE_TRANSITION.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize(), false, true);
+                processOnParents(parents, quotaCtx.getBlobSize(),
+                        quotaCtx.getTrashSize(), false, true);
             } else if (ABOUT_TO_REMOVE_VERSION.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobDelta(),
+                processOnParents(parents, quotaCtx.getBlobDelta(), 0L,
                         quotaCtx.getBlobDelta(), true, false, true);
             } else if (ABOUT_TO_REMOVE.equals(sourceEvent)) {
                 // when permanently deleting the doc clean the trash if the doc
@@ -231,6 +233,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 processOnParents(
                         parents,
                         quotaCtx.getBlobDelta(),
+                        quotaCtx.getTrashSize(),
                         quotaCtx.getVersionsSize(),
                         true,
                         quotaCtx.getProperties().get(
@@ -242,27 +245,29 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 // update versionsSize on source parents since all archived
                 // versions
                 // are also moved
-                processOnParents(parents, quotaCtx.getBlobDelta(),
+                processOnParents(parents, quotaCtx.getBlobDelta(), 0L,
                         quotaCtx.getVersionsSize(), true, false, true);
             } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
                 processOnParents(
                         parents,
                         quotaCtx.getBlobSize()
                                 + quotaCtx.getVersionsSizeOnTotal(),
-                        quotaCtx.getVersionsSize(), true, false, true);
+                        quotaCtx.getTrashSize(), quotaCtx.getVersionsSize(),
+                        true, false, true);
             } else {
-                processOnParents(parents, quotaCtx.getBlobDelta(), true, false);
+                processOnParents(parents, quotaCtx.getBlobDelta(),
+                        quotaCtx.getBlobDelta(), true, false);
             }
         }
     }
 
     protected void processOnParents(List<DocumentModel> parents, long delta,
-            boolean total, boolean trashOp) throws ClientException {
-        processOnParents(parents, delta, 0L, total, trashOp, false);
+            long trash, boolean total, boolean trashOp) throws ClientException {
+        processOnParents(parents, delta, trash, 0L, total, trashOp, false);
     }
 
     protected void processOnParents(List<DocumentModel> parents,
-            long deltaTotal, long deltaVersions, boolean total,
+            long deltaTotal, long trashSize, long deltaVersions, boolean total,
             boolean trashOp, boolean versionsOp) throws ClientException {
         for (DocumentModel parent : parents) {
             if (parent.getPathAsString().equals("/")) {

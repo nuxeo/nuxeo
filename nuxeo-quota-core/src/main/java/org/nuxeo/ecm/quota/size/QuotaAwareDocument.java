@@ -189,4 +189,20 @@ public class QuotaAwareDocument implements QuotaAware {
         return new QuotaInfo(getInnerSize(), getTotalSize(), getTrashSize(),
                 getVersionsSize(), getMaxQuota());
     }
+
+    /**
+     * @throws ClientException
+     * @since 5.7
+     */
+    @Override
+    public void resetInfos(boolean save) throws ClientException {
+        doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, 0L);
+        doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, 0L);
+        doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, 0L);
+        doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, 0L);
+        doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, 0L);
+        if (save) {
+            save();
+        }
+    }
 }

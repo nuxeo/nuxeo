@@ -112,60 +112,18 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 }
                 return;
             }
-            BlobSizeInfo bsi = computeSizeImpact(target, false);
-            SizeUpdateEventContext quotaCtx = null;
-
-            // process versions if any
-            List<DocumentModel> versions = unrestrictedSession.getVersions(ref);
-            if (versions.size() == 0) {
-                quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
-                        DOCUMENT_CREATED, target);
-
-            } else {
-                long lastVersionSize = 0;
-                long versionsSize = 0;
-                for (DocumentModel documentModel : versions) {
-                    long s = computeSizeImpact(documentModel, false).blobSize;
-                    if (documentModel.isLatestVersion()) {
-                        lastVersionSize = s;
-                    } else {
-                        versionsSize = versionsSize + s;
-                    }
-                }
-                quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
-                        DOCUMENT_UPDATE_INITIAL_STATISTICS, target);
-                // on checkout we account in the total for the last version size
-                if (target.isCheckedOut()) {
-                    quotaCtx.setVersionsSizeOnTotal(lastVersionSize
-                            + lastVersionSize);
-                    quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
-                } else {
-                    quotaCtx.setVersionsSizeOnTotal(versionsSize);
-                    quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
-                }
-            }
 
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " started update");
             }
+            SizeUpdateEventContext quotaCtx = updateEventToProcessNewDocument(
+                    unrestrictedSession, target);
+            quotaCtx.getProperties().put(
+                    SizeUpdateEventContext._UPDATE_TRASH_SIZE,
+                    DELETED_STATE.equals(target.getCurrentLifeCycleState()));
             processor.processQuotaComputation(quotaCtx);
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " update completed");
-            }
-            // if doc is in trash compute trash size also
-            if (DELETED_STATE.equals(target.getCurrentLifeCycleState())) {
-                quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
-                        DELETE_TRANSITION, target);
-
-                if (log.isTraceEnabled()) {
-                    log.trace("doc with uuid " + uuid
-                            + " started update on trash size");
-                }
-                processor.processQuotaComputation(quotaCtx);
-                if (log.isTraceEnabled()) {
-                    log.trace("doc with uuid " + uuid
-                            + " update completed on trash size");
-                }
             }
 
         } else {
@@ -558,4 +516,75 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         }
     }
 
+    @Override
+    protected void processDocumentBeforeRestore(CoreSession session,
+            DocumentModel targetDoc, DocumentEventContext docCtx)
+            throws ClientException {
+        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
+        if (quotaDoc != null) {
+            long total = quotaDoc.getTotalSize();
+            if (total > 0) {
+                List<String> parentUUIDs = getParentUUIDS(session, targetDoc);
+                SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                        session, docCtx, total, ABOUT_TO_REMOVE);
+                // remove size for all its versions from sizeVersions on parents
+                // since they will be recalculated on restore
+                long versSize = -quotaDoc.getVersionsSize();
+                asyncEventCtx.setVersionsSize(versSize);
+                asyncEventCtx.setParentUUIds(parentUUIDs);
+                sendUpdateEvents(asyncEventCtx);
+            }
+        }
+    }
+
+    @Override
+    protected void processDocumentRestored(CoreSession session,
+            DocumentModel targetDoc, DocumentEventContext docCtx)
+            throws ClientException {
+        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
+        if (quotaDoc == null) {
+            log.debug("  add Quota Facet on " + targetDoc.getPathAsString());
+            quotaDoc = QuotaAwareDocumentFactory.make(targetDoc, true);
+        }
+        quotaDoc.resetInfos(true);
+        sendUpdateEvents(updateEventToProcessNewDocument(session, targetDoc));
+    }
+
+    private SizeUpdateEventContext updateEventToProcessNewDocument(
+            CoreSession unrestrictedSession, DocumentModel target)
+            throws ClientException {
+        BlobSizeInfo bsi = computeSizeImpact(target, false);
+        SizeUpdateEventContext quotaCtx = null;
+
+        // process versions if any
+        List<DocumentModel> versions = unrestrictedSession.getVersions(target.getRef());
+        if (versions.size() == 0) {
+            quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
+                    DOCUMENT_CREATED, target);
+
+        } else {
+            long lastVersionSize = 0;
+            long versionsSize = 0;
+            for (DocumentModel documentModel : versions) {
+                long s = computeSizeImpact(documentModel, false).blobSize;
+                if (documentModel.isLatestVersion()) {
+                    lastVersionSize = s;
+                } else {
+                    versionsSize = versionsSize + s;
+                }
+            }
+            quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
+                    DOCUMENT_UPDATE_INITIAL_STATISTICS, target);
+            // on checkout we account in the total for the last version size
+            if (target.isCheckedOut()) {
+                quotaCtx.setVersionsSizeOnTotal(lastVersionSize
+                        + lastVersionSize);
+                quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
+            } else {
+                quotaCtx.setVersionsSizeOnTotal(versionsSize);
+                quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
+            }
+        }
+        return quotaCtx;
+    }
 }

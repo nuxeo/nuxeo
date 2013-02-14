@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Interface to manage DocumentModel that supports Quotas
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -31,9 +31,9 @@ public interface QuotaAware {
     long getInnerSize();
 
     long getTotalSize();
-    
+
     long getTrashSize();
-    
+
     long getVersionsSize();
 
     long getMaxQuota();
@@ -41,18 +41,22 @@ public interface QuotaAware {
     void addInnerSize(long additionalSize, boolean save) throws ClientException;
 
     void addTotalSize(long additionalSize, boolean save) throws ClientException;
-    
+
     void addTrashSize(long additionalSize, boolean save) throws ClientException;
-    
-    void addVersionsSize(long additionalSize, boolean save) throws ClientException;
+
+    void addVersionsSize(long additionalSize, boolean save)
+            throws ClientException;
 
     void save() throws ClientException;
 
     DocumentModel getDoc();
 
     void setMaxQuota(long maxSize, boolean save) throws ClientException;
-    
-    void setMaxQuota(long maxSize, boolean save, boolean skipValidation) throws ClientException;
+
+    void setMaxQuota(long maxSize, boolean save, boolean skipValidation)
+            throws ClientException;
 
     QuotaInfo getQuotaInfo();
+
+    void resetInfos(boolean save) throws ClientException;
 }
