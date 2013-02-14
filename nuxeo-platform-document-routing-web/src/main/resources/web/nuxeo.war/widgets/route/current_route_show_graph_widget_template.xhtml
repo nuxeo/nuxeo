@@ -9,10 +9,10 @@
   <script type="text/javascript">
     <h:outputText  value="var routeDocId='#{value.document.id}';" />
     <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>
-    <h:outputText value="var divContainerTargetId='#{widget.id}_target';"/>   
+    <h:outputText value="var divContainerTargetId='#{widget.id}_target';"/>
     function showGraph() {
       loadGraph(routeDocId, currentLang, divContainerTargetId);
-      jQuery('&lt;a href="##{widget.id}_graphView_box"&gt;&lt;/a&gt;').fancybox({
+      openFancyBox('##{widget.id}_graphView_box', {
         'autoScale': true,
         'autoDimensions': false,
         'type': 'inline',
@@ -22,7 +22,7 @@
         'transitionOut': 'none',
         'enableEscapeButton': true,
         'centerOnScroll': true
-      }).click();
+      });
       return false;
     }
   </script>
