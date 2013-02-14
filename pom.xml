@@ -4275,6 +4275,11 @@
           <artifactId>sonar-maven-plugin</artifactId>
           <version>1.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.sonar-plugins</groupId>
+          <artifactId>maven-report</artifactId>
+          <version>0.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -4329,6 +4334,7 @@
       <plugin>
         <groupId>org.codehaus.sonar-plugins</groupId>
         <artifactId>maven-report</artifactId>
+        <version>0.1</version>
       </plugin>
     </plugins>
   </reporting>
