@@ -252,6 +252,9 @@
       <labels>
         <label mode="any">label.dublincore.expirationDateBetween</label>
       </labels>
+      <fields>
+        <field>search:expired_min</field>
+      </fields>
       <translated>true</translated>
       <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
@@ -266,6 +269,9 @@
       <labels>
         <label mode="any">label.search.and</label>
       </labels>
+      <fields>
+        <field>search:expired_max</field>
+      </fields>
       <translated>true</translated>
       <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
