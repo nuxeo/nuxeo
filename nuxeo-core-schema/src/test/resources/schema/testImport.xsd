@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/testImport/">
+
+  <xs:complexType name="typeB">
+    <xs:sequence>
+      <xs:element name="fieldA" type="xs:string"/>
+      <xs:element name="fieldB" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+
+

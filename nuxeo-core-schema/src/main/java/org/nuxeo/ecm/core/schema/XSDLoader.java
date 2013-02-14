@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.schema;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +39,9 @@ import org.nuxeo.ecm.core.schema.types.TypeBindingException;
 import org.nuxeo.ecm.core.schema.types.TypeException;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.StringLengthConstraint;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -76,8 +79,15 @@ public class XSDLoader {
 
     protected boolean collectReferencedXSD = false;
 
+    protected SchemaBindingDescriptor sd;
+
     public XSDLoader(SchemaManagerImpl schemaManager) {
         this.schemaManager = schemaManager;
+    }
+
+    public XSDLoader(SchemaManagerImpl schemaManager, SchemaBindingDescriptor sd) {
+        this.schemaManager = schemaManager;
+        this.sd = sd;
     }
 
     public XSDLoader(SchemaManagerImpl schemaManager,
@@ -102,7 +112,50 @@ public class XSDLoader {
         XSOMParser parser = new XSOMParser();
         ErrorHandler errorHandler = new SchemaErrorHandler();
         parser.setErrorHandler(errorHandler);
+        if (sd != null) {
+            parser.setEntityResolver(new NXSchemaResolver(schemaManager, sd));
+        }
         return parser;
+    }
+
+    protected static class NXSchemaResolver implements EntityResolver {
+
+        protected SchemaManagerImpl schemaManager;
+
+        protected SchemaBindingDescriptor sd;
+
+        NXSchemaResolver(SchemaManagerImpl schemaManager,
+                SchemaBindingDescriptor sd) {
+            this.schemaManager = schemaManager;
+            this.sd = sd;
+        }
+
+        @Override
+        public InputSource resolveEntity(String publicId, String systemId)
+                throws SAXException, IOException {
+
+            String[] parts = systemId.split("/"
+                    + SchemaManagerImpl.SCHEMAS_DIR_NAME + "/");
+            String importXSDSubPath = parts[1];
+
+            File xsd = new File(schemaManager.getSchemasDir(), importXSDSubPath);
+            if (!xsd.exists()) {
+                int idx = sd.src.lastIndexOf("/");
+                importXSDSubPath = sd.src.substring(0, idx + 1)
+                        + importXSDSubPath;
+                URL url = sd.context.getLocalResource(importXSDSubPath);
+                if (url == null) {
+                    // try asking the class loader
+                    url = sd.context.getResource(importXSDSubPath);
+                }
+                if (url != null) {
+                    return new InputSource(url.openStream());
+                }
+            }
+
+            return null;
+        }
+
     }
 
     protected static class SchemaErrorHandler implements ErrorHandler {

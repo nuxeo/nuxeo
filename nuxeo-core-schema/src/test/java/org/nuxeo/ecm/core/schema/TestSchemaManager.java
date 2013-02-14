@@ -28,6 +28,7 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -86,7 +87,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertNotNull(schemaManager.getDocumentType("Parent"));
         assertEquals(2, schemaManager.getDocumentTypes().length);
 
-        assertEquals("Parent", schemaManager.getDocumentType("Parent").getName());
+        assertEquals("Parent",
+                schemaManager.getDocumentType("Parent").getName());
         Set<String> tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
         assertNotNull(tff);
         assertEquals(1, tff.size());
@@ -128,14 +130,14 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     public void testInheritanceCache() {
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd;
-        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
-                "Parent", schemas, new String[0]);
+        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "Parent",
+                schemas, new String[0]);
         schemaManager.registerDocumentType(dtd);
-        dtd = new DocumentTypeDescriptor("Parent",
-                "Child", schemas, new String[0]);
+        dtd = new DocumentTypeDescriptor("Parent", "Child", schemas,
+                new String[0]);
         schemaManager.registerDocumentType(dtd);
-        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
-                "TopLevel", schemas, new String[0]);
+        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "TopLevel",
+                schemas, new String[0]);
         schemaManager.registerDocumentType(dtd);
         checkInheritanceCache();
     }
@@ -187,8 +189,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         facets = new String[2];
         facets[0] = "parent1";
         facets[1] = "parent2";
-        dtd = new DocumentTypeDescriptor("Document",
-                "Parent", schemas, facets);
+        dtd = new DocumentTypeDescriptor("Document", "Parent", schemas, facets);
         schemaManager.registerDocumentType(dtd);
 
         Set<String> tff = schemaManager.getDocumentTypeNamesForFacet("parent1");
@@ -210,16 +211,16 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd;
 
-        dtd = new DocumentTypeDescriptor("Parent",
-                "Child", schemas, new String[0]);
+        dtd = new DocumentTypeDescriptor("Parent", "Child", schemas,
+                new String[0]);
         schemaManager.registerDocumentType(dtd);
 
-        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
-                "Parent", schemas, new String[0]);
+        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "Parent",
+                schemas, new String[0]);
         schemaManager.registerDocumentType(dtd);
 
-        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
-                "TopLevel", schemas, new String[0]);
+        dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT, "TopLevel",
+                schemas, new String[0]);
         schemaManager.registerDocumentType(dtd);
 
         checkInheritanceCache();
@@ -312,4 +313,25 @@ public class TestSchemaManager extends NXRuntimeTestCase {
                 t.getFacets());
     }
 
+    @Test
+    public void testDeployWithIncludeAndImport() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/testSchemaWithImportInclude.xml");
+
+        Schema schema = schemaManager.getSchema("schemaWithIncludeAndImport");
+        assertNotNull(schema);
+
+        assertEquals("typeA", schema.getField("field3").getType().getName());
+        assertEquals("typeB", schema.getField("field4").getType().getName());
+
+        assertTrue(schema.getField("field4").getType().isComplexType());
+        assertTrue(schema.getField("field3").getType().isComplexType());
+
+        assertEquals(
+                3,
+                ((ComplexType) schema.getField("field3").getType()).getFieldsCount());
+        assertEquals(
+                2,
+                ((ComplexType) schema.getField("field4").getType()).getFieldsCount());
+    }
 }

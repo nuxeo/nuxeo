@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/testImportInclude/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/testImportInclude/"
+  xmlns:ti="http://www.nuxeo.org/ecm/schemas/testImport/"
+  >
+
+  <xs:include schemaLocation="testInclude.xsd"/>
+  <xs:import namespace="http://www.nuxeo.org/ecm/schemas/testImport/" schemaLocation="testImport.xsd"/>
+
+  <xs:element name="field1" type="xs:string"/>
+  <xs:element name="field2" type="xs:date"/>
+
+  <xs:element name="field3" type="nxs:typeA"/>
+  <xs:element name="field4" type="ti:typeB"/>
+
+</xs:schema>
+
+

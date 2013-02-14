@@ -100,12 +100,18 @@ public class SchemaManagerImpl implements SchemaManager {
 
     private File schemaDir;
 
+    public static final String SCHEMAS_DIR_NAME = "schemas";
+
     public SchemaManagerImpl() {
-        schemaDir = new File(Framework.getRuntime().getHome(), "schemas");
+        schemaDir = new File(Framework.getRuntime().getHome(), SCHEMAS_DIR_NAME);
         if (!schemaDir.isDirectory()) {
             schemaDir.mkdirs();
         }
         registerBuiltinTypes();
+    }
+
+    public File getSchemasDir() {
+        return schemaDir;
     }
 
     protected void registerBuiltinTypes() {
@@ -279,8 +285,9 @@ public class SchemaManagerImpl implements SchemaManager {
             FileUtils.copyToFile(in, file); // may overwrite
             Schema oldschema = schemas.get(sd.name);
             // loadSchema calls this.registerSchema
-            XSDLoader schemaLoader = new XSDLoader(this);
+            XSDLoader schemaLoader = new XSDLoader(this, sd);
             schemaLoader.loadSchema(sd.name, sd.prefix, file, sd.override);
+
             if (oldschema == null) {
                 log.info("Registered schema: " + sd.name + " from "
                         + url.toString());
@@ -351,7 +358,8 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
-                log.error("Facet: " + name + " uses unknown schema: " + schemaName);
+                log.error("Facet: " + name + " uses unknown schema: "
+                        + schemaName);
                 continue;
             }
             facetSchemas.add(schema);
