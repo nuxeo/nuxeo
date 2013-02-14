@@ -73,7 +73,7 @@
           <table class="dataOutput2Columns">
             <tr>
               <td>
-                <table class="">
+                <table class="dataTableNoBorder">
                   <c:forEach var="row" items="#{documents.rows}"
                     varStatus="layoutListingStatus"
                     end="#{(documents.size-1)/2}">
@@ -84,7 +84,7 @@
                 </table>
               </td>
               <td>
-                <table class="">
+                <table class="dataTableNoBorder">
                   <c:forEach var="row" items="#{documents.rows}"
                     varStatus="layoutListingStatus"
                     begin="#{(documents.size-1)/2 + 1}">
@@ -99,7 +99,7 @@
         </c:when>
 
         <c:otherwise>
-          <table class="dataList">
+          <table class="dataOutput">
             <c:forEach var="row" items="#{documents.rows}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
