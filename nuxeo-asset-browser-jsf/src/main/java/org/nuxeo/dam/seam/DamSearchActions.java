@@ -21,6 +21,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_PAGE_CHANGED_EVENT;
 import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT;
+import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_REFRESH_EVENT;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -49,9 +50,10 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
+import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
-import org.nuxeo.ecm.platform.faceted.search.api.util.JSONMetadataExporter;
-import org.nuxeo.ecm.platform.faceted.search.api.util.JSONMetadataHelper;
+import org.nuxeo.ecm.platform.contentview.seam.ContentViewRestActions;
 import org.nuxeo.ecm.platform.forms.layout.io.Base64;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -80,13 +82,11 @@ public class DamSearchActions implements Serializable {
 
     public static final String CONTENT_VIEW_NAME_PARAMETER = "contentViewName";
 
-    public static final String RESULT_LAYOUT_NAME_PARAMETER = "resultLayoutName";
-
-    public static final String OFFSET_PARAMETER = "offset";
+    public static final String CURRENT_PAGE_PARAMETER = "currentPage";
 
     public static final String PAGE_SIZE_PARAMETER = "pageSize";
 
-    public static final String FILTER_VALUES_PARAMETER = "values";
+    public static final String CONTENT_VIEW_STATE_PARAMETER = "state";
 
     public static final String ENCODED_VALUES_ENCODING = "UTF-8";
 
@@ -108,11 +108,9 @@ public class DamSearchActions implements Serializable {
 
     protected String currentContentViewName;
 
-    protected String offset;
+    protected String currentPage;
 
     protected String pageSize;
-
-    protected String resultLayoutName;
 
     public String getCurrentContentViewName() {
         if (currentContentViewName == null) {
@@ -212,75 +210,42 @@ public class DamSearchActions implements Serializable {
         updateCurrentDocument(pageProvider);
     }
 
-    /*
-     * ----- Permanent link generation and loading -----
-     */
-
-    protected String encodeValues(String values)
-            throws UnsupportedEncodingException {
-        String encodedValues = Base64.encodeBytes(values.getBytes(),
-                Base64.GZIP | Base64.DONT_BREAK_LINES);
-        encodedValues = URLEncoder.encode(encodedValues,
-                ENCODED_VALUES_ENCODING);
-        return encodedValues;
-    }
-
-    protected String decodeValues(String values)
-            throws UnsupportedEncodingException {
-        String decodedValues = URLDecoder.decode(values,
-                ENCODED_VALUES_ENCODING);
-        decodedValues = new String(Base64.decode(decodedValues));
-        return decodedValues;
-    }
-
-    /**
-     * Set the metadata of the SearchDocumentModel from an encoded JSON string.
-     */
     @SuppressWarnings("unchecked")
-    public void setFilterValues(String filterValues) throws ClientException,
+    public void setState(String state) throws ClientException,
             JSONException, UnsupportedEncodingException {
-        ContentView contentView = contentViewActions.getContentViewWithProvider(
-                getCurrentContentViewName(), null, null, null, null);
-        if (!StringUtils.isBlank(filterValues)) {
-            DocumentModel searchDocumentModel = contentView.getSearchDocumentModel();
-            String decodedValues = decodeValues(filterValues);
-            searchDocumentModel = JSONMetadataHelper.setPropertiesFromJson(
-                    searchDocumentModel, decodedValues);
-            contentView.setSearchDocumentModel(searchDocumentModel);
-        }
-
-        if (!StringUtils.isBlank(resultLayoutName)) {
-            contentView.setCurrentResultLayout(resultLayoutName);
-        }
-
-        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) contentView.getCurrentPageProvider();
+        Long finalPageSize = null;
         if (!StringUtils.isBlank(pageSize)) {
             try {
-                pageProvider.setPageSize(Long.valueOf(pageSize));
+                finalPageSize = Long.valueOf(pageSize);
             } catch (NumberFormatException e) {
                 log.warn(String.format(
                         "Unable to parse '%s' parameter with value '%s'",
                         PAGE_SIZE_PARAMETER, pageSize));
             }
         }
-        if (!StringUtils.isBlank(offset)) {
+
+        Long finalCurrentPage = null;
+        if (!StringUtils.isBlank(currentPage)) {
             try {
-                pageProvider.setCurrentPageOffset(Long.valueOf(offset));
+                finalCurrentPage = Long.valueOf(currentPage);
             } catch (NumberFormatException e) {
                 log.warn(String.format(
                         "Unable to parse '%s' parameter with value '%s'",
-                        OFFSET_PARAMETER, offset));
+                        CURRENT_PAGE_PARAMETER, currentPage));
             }
         }
-        updateCurrentDocument(pageProvider);
+
+        contentViewActions.restoreContentView(getCurrentContentViewName(),
+                finalCurrentPage, finalPageSize, null, state);
+        updateCurrentDocument();
     }
 
-    public String getOffset() {
-        return offset;
+    public String getCurrentPage() {
+        return currentPage;
     }
 
-    public void setOffset(String offset) {
-        this.offset = offset;
+    public void setCurrentPage(String currentPage) {
+        this.currentPage = currentPage;
     }
 
     public String getPageSize() {
@@ -291,14 +256,6 @@ public class DamSearchActions implements Serializable {
         this.pageSize = pageSize;
     }
 
-    public String getResultLayoutName() {
-        return resultLayoutName;
-    }
-
-    public void setResultLayoutName(String resultLayoutName) {
-        this.resultLayoutName = resultLayoutName;
-    }
-
     /**
      * Compute a permanent link for the current search.
      */
@@ -307,45 +264,30 @@ public class DamSearchActions implements Serializable {
             UnsupportedEncodingException {
         String currentContentViewName = getCurrentContentViewName();
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentView docView;
-        if (currentDocument != null) {
-            docView = new DocumentViewImpl(new DocumentLocationImpl(
-                    documentManager.getRepositoryName(), new PathRef(
-                            currentDocument.getPathAsString())));
-        } else {
-            docView = new DocumentViewImpl(new DocumentLocationImpl(
-                    documentManager.getRepositoryName(), null));
-        }
+        DocumentView docView = computeDocumentView(currentDocument);
         docView.setViewId("assets");
         docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
-        docView.addParameter(RESULT_LAYOUT_NAME_PARAMETER,
-                contentView.getCurrentResultLayout().getName());
-        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) contentView.getCurrentPageProvider();
-        if (pageProvider != null) {
-            docView.addParameter(OFFSET_PARAMETER,
-                    String.valueOf(pageProvider.getCurrentPageOffset()));
-            docView.addParameter(PAGE_SIZE_PARAMETER,
-                    String.valueOf(pageProvider.getPageSize()));
-        }
-        DocumentModel doc = contentView.getSearchDocumentModel();
-        String values = getEncodedValuesFrom(doc);
-        docView.addParameter(FILTER_VALUES_PARAMETER, values);
+        ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
+        ContentViewState state = contentViewService.saveContentView(contentView);
+        docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
+                JSONContentViewState.toJSON(state, true));
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
         String url = documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
                 docView, true, BaseURL.getBaseURL());
         return RestHelper.addCurrentConversationParameters(url);
     }
 
-    /**
-     * Returns an encoded JSON string computed from the {@code doc} metadata.
-     */
-    protected String getEncodedValuesFrom(DocumentModel doc)
-            throws ClientException, UnsupportedEncodingException {
-        JSONMetadataExporter exporter = new JSONMetadataExporter();
-        String values = exporter.run(doc).toString();
-        return encodeValues(values);
+    protected DocumentView computeDocumentView(DocumentModel doc) {
+        if (doc != null) {
+            return new DocumentViewImpl(new DocumentLocationImpl(
+                    documentManager.getRepositoryName(), new PathRef(
+                    doc.getPathAsString())));
+        } else {
+            return new DocumentViewImpl(new DocumentLocationImpl(
+                    documentManager.getRepositoryName(), null));
+        }
     }
 
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
@@ -356,7 +298,7 @@ public class DamSearchActions implements Serializable {
     }
 
     @Observer(value = { CONTENT_VIEW_PAGE_CHANGED_EVENT,
-            CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT }, create = true)
+            CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT, CONTENT_VIEW_REFRESH_EVENT }, create = true)
     public void onContentViewPageProviderChanged(String contentViewName)
             throws ClientException {
         String currentContentViewName = getCurrentContentViewName();

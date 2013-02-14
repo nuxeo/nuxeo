@@ -38,17 +38,14 @@
         <binding name="contentViewName" callGetter="false">
           #{damSearchActions.currentContentViewName}
         </binding>
-        <binding name="resultLayoutName" callGetter="false">
-          #{damSearchActions.resultLayoutName}
-        </binding>
-        <binding name="offset" callGetter="false">
-          #{damSearchActions.offset}
+        <binding name="currentPage" callGetter="false">
+          #{damSearchActions.currentPage}
         </binding>
         <binding name="pageSize" callGetter="false">
           #{damSearchActions.pageSize}
         </binding>
-        <binding name="values" callGetter="false">
-          #{damSearchActions.filterValues}
+        <binding name="state" callGetter="false">
+          #{damSearchActions.state}
         </binding>
       </bindings>
     </urlPattern>
