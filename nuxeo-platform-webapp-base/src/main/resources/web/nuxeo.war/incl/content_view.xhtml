@@ -89,7 +89,7 @@
   </c:if>
 
 <nxu:set var="contentViewRenderId"
-  value="cv_#{nxu:jsfTagIdEscape(contentView.name)}_#{nxu:jsfTagIdEscape(contentViewId)}"
+  value="cv_#{nxu:jsfTagIdEscape(contentView.name)}_#{contentViewId}"
   cache="true">
 <a4j:region id="#{contentViewRenderId}_region">
 <a4j:outputPanel id="#{contentViewRenderId}_panel">
