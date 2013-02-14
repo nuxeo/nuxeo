@@ -32,19 +32,16 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.Work;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.PublishAsDocument;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.PublishByMail;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -107,7 +104,7 @@ public class ExcelExportRightsActionBean implements Serializable {
     public void buildAndDownload() throws ClientException, IOException {
         File tmpFile = File.createTempFile("rights", ".xls");
         tmpFile.deleteOnExit();
-        buildAndDownloadAsync(tmpFile);
+        buildAndSendByMail(tmpFile);
     }
 
     /** Execute ACL audit and download the result in a XLS file. */
@@ -125,24 +122,53 @@ public class ExcelExportRightsActionBean implements Serializable {
     }
 
     /**
-     * Execute ACL audit and save the result XLS file as child of the document
+     * Execute ACL audit asynchronously and save the result XLS file as child of the document
      * we started the analysis from.
      */
-    protected void buildAndDownloadAsync(final File tmpFile) throws ClientException {
+    protected void buildAndSaveAsChildDocument(final File tmpFile) throws ClientException {
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
         final String repository = documentManager.getRepositoryName();
-
         final String workName = "ACL Audit for " + auditRoot.getPathAsString();
+
+        // Work to do and publishing
         final Work work = new Work(workName);
         new RunnableAclAudit(documentManager, auditRoot, work, tmpFile){
             public void onAuditDone() {
-                log.debug("about to save audit");
-                Blob b = new FileBlob(getOutputFile());
-                b.setFilename(OUTPUT_FILE);
-
+                IResultPublisher publisher = new PublishAsDocument(getOutputFile(), workName, repository, auditRoot);
                 try {
-                    reconnectAndCreateDocument(repository, auditRoot, workName, b);
+                    publisher.publish();
                 } catch (ClientException e) {
+                    facesMessages.add(StatusMessage.Severity.ERROR, e.getMessage());
+                    log.error(e,e);
+                }
+            }
+        };
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        wm.schedule(work);
+
+        // Shows information about work, and output
+        String message = resourcesAccessor.getMessages().get("message.audit.acl.started");
+        facesMessages.add(StatusMessage.Severity.INFO, message);
+    }
+
+    /**
+     * Execute ACL audit asynchronously and send the result to current user.
+     */
+    protected void buildAndSendByMail(final File tmpFile) throws ClientException {
+        final DocumentModel auditRoot = navigationContext.getCurrentDocument();
+        final String repository = documentManager.getRepositoryName();
+        final String email = "test@nuxeo";//currentNuxeoPrincipal.getEmail();
+        final String workName = "ACL Audit for " + auditRoot.getPathAsString();
+
+        // Work to do and publishing
+        final Work work = new Work(workName);
+        new RunnableAclAudit(documentManager, auditRoot, work, tmpFile){
+            public void onAuditDone() {
+                IResultPublisher publisher = new PublishByMail(getOutputFile(), workName, email, repository);
+                try {
+                    publisher.publish();
+                } catch (ClientException e) {
+                    facesMessages.add(StatusMessage.Severity.ERROR, e.getMessage());
                     log.error(e,e);
                 }
             }
@@ -151,41 +177,8 @@ public class ExcelExportRightsActionBean implements Serializable {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         wm.schedule(work);
 
+        // Shows information about work, and output
         String message = resourcesAccessor.getMessages().get("message.audit.acl.started");
         facesMessages.add(StatusMessage.Severity.INFO, message);
-    }
-
-    protected void reconnectAndCreateDocument(String repository,
-            final DocumentModel parent, final String name, final Blob doc)
-            throws ClientException {
-        new UnrestrictedSessionRunner(repository) {
-            @Override
-            public void run() throws ClientException {
-                createOrUpdateDocument(session, parent, name, doc);
-                log.debug("audit saved");
-            }
-        }.runUnrestricted();
-    }
-
-    protected DocumentModel createOrUpdateDocument(CoreSession session,
-            DocumentModel parent, String name, Blob doc) throws ClientException {
-        DocumentRef dr = new PathRef(parent.getPath().append(name).toString());
-        String filenamePlusExt = doc.getFilename();
-        if (session.exists(dr)) {
-            DocumentModel document = session.getDocument(dr);
-            document.setPropertyValue("file:content", (Serializable) doc);
-            document.setPropertyValue("file:filename", filenamePlusExt);
-            document.setPropertyValue("dublincore:title", name);
-            return session.saveDocument(document);
-        } else {
-            DocumentModel document = session.createDocumentModel(
-                    parent.getPathAsString(),
-                    IdUtils.generatePathSegment(name), "File");
-            document.setPropertyValue("file:content", (Serializable) doc);
-            document.setPropertyValue("file:filename", filenamePlusExt);
-            document.setPropertyValue("dublincore:title", name);
-            DocumentModel d = session.createDocument(document);
-            return session.saveDocument(d);
-        }
     }
 }

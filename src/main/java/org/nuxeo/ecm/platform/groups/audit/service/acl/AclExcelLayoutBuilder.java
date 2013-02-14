@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilderMultiSh
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsAllContent;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutWork;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutable;
 
 import com.google.common.collect.Multimap;
 
@@ -181,7 +181,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     @Override
     public void renderAudit(CoreSession session, final DocumentModel doc,
-            boolean unrestricted, final ITimeoutWork work) throws ClientException {
+            boolean unrestricted, final ITimeoutable work) throws ClientException {
         if (!unrestricted) {
             analyzeAndRender(session, doc, work);
         } else {
@@ -196,7 +196,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         }
     }
 
-    protected void analyzeAndRender(CoreSession session, final DocumentModel doc, ITimeoutWork work)
+    protected void analyzeAndRender(CoreSession session, final DocumentModel doc, ITimeoutable work)
             throws ClientException {
         log.debug("start processing data");
         data.analyze(session, doc, work);

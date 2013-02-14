@@ -11,7 +11,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * this timeout.
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
-public class Work extends AbstractWork implements ITimeoutWork {
+public class Work extends AbstractWork implements ITimeoutable {
     public static int DEFAULT_TIMEOUT = 1200; // 20 min
 
     public static int UNDEFINED_TIMEOUT = -1;

@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.Pair;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutWork;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutable;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 
 import com.google.common.collect.Multimap;
@@ -62,7 +62,7 @@ public class DataProcessorPaginated extends DataProcessor {
 
     @Override
     protected void doAnalyze(CoreSession session, DocumentModel root,
-            ITimeoutWork work) throws ClientException {
+            ITimeoutable work) throws ClientException {
         // get data
         DataFetch fetch = new DataFetch();
         CoreQueryDocumentPageProvider pages = fetch.getAllChildrenPaginated(
