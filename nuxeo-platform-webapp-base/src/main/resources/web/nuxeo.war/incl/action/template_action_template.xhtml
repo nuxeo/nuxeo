@@ -6,7 +6,6 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
-<ui:insert name="action_template_content">
   <nxu:set var="actionTemplate" value="#{action.properties.template}"
     resolveTwice="true">
     <c:if test="#{not empty actionTemplate}">
@@ -15,5 +14,4 @@
       </ui:include>
     </c:if>
   </nxu:set>
-</ui:insert>
 </ui:composition>
