@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.7-SNAPSHOT</version>
   </parent>
-
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-groups-rights-audit</artifactId>
   <name>Groups rights audit</name>
   <description>Audit information extraction from the group management</description>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -62,7 +60,6 @@
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-client</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
@@ -100,7 +97,6 @@
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
     </dependency>
-
     <!-- Tests -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -142,8 +138,32 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-event</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -180,7 +200,6 @@
       </plugin>
     </plugins>
   </build>
-
   <repositories>
     <repository>
       <id>public</id>
@@ -203,11 +222,9 @@
       </snapshots>
     </repository>
   </repositories>
-
   <scm>
     <connection>scm:git:git://github.com/nuxeo/nuxeo-groups-rights-audit.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-groups-rights-audit.git</developerConnection>
     <url>https://github.com/nuxeo/nuxeo-groups-rights-audit</url>
   </scm>
-
 </project>
