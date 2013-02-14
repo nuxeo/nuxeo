@@ -189,7 +189,7 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals("test", change.getRepositoryId());
         assertEquals("deleted", change.getEventId());
         assertEquals(doc1.getId(), change.getDocUuid());
-        assertEquals("defaultFileSystemItemFactory/test/" + doc1.getId(),
+        assertEquals("defaultFileSystemItemFactory#test#" + doc1.getId(),
                 change.getFileSystemItemId());
 
         // Restore a deleted document and move a document in a newly
@@ -223,7 +223,7 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals("test", change.getRepositoryId());
         assertEquals("deleted", change.getEventId());
         assertEquals(doc3.getId(), change.getDocUuid());
-        assertEquals("defaultFileSystemItemFactory/test/" + doc3.getId(),
+        assertEquals("defaultFileSystemItemFactory#test#" + doc3.getId(),
                 change.getFileSystemItemId());
 
         // Too many changes
@@ -409,7 +409,7 @@ public class TestAuditFileSystemChangeFinder {
         // creation rather than modification
         assertEquals("documentModified", fsItemChange.getEventId());
         assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
+                "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                 fsItemChange.getFileSystemItem().getId());
 
         // Check that root unregistration is detected as a deletion
@@ -427,7 +427,7 @@ public class TestAuditFileSystemChangeFinder {
         fsItemChange = changes.get(0);
         assertEquals("deleted", fsItemChange.getEventId());
         assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
+                "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                 fsItemChange.getFileSystemItemId());
 
         // Register back the root, it's activity is again detected by the client
@@ -447,7 +447,7 @@ public class TestAuditFileSystemChangeFinder {
         // creation rather than modification
         assertEquals("documentModified", fsItemChange.getEventId());
         assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
+                "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                 fsItemChange.getFileSystemItem().getId());
 
         // Test deletion of a root
@@ -471,7 +471,7 @@ public class TestAuditFileSystemChangeFinder {
         fsItemChange = changes.get(0);
         assertEquals("deleted", fsItemChange.getEventId());
         assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + folder1.getId(),
+                "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                 fsItemChange.getFileSystemItemId());
     }
 

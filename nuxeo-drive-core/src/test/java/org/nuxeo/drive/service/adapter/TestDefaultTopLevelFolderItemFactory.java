@@ -114,7 +114,10 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertNotNull(topLevelFolderItem);
         assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
         assertTrue(topLevelFolderItem.getId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
+        assertTrue(topLevelFolderItem.getPath().endsWith(
+                "DefaultTopLevelFolderItemFactory#"));
+        assertTrue(topLevelFolderItem.getPath().startsWith("/"));
         assertNull(topLevelFolderItem.getParentId());
         assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
         assertTrue(topLevelFolderItem.isFolder());
@@ -147,6 +150,11 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertNotNull(children);
         assertEquals(2, children.size());
         assertFalse(topLevelFolderItem.getCanCreateChild());
+
+        for (FileSystemItem child : children) {
+            assertEquals(topLevelFolderItem.getPath() + '/' + child.getId(),
+                    child.getPath());
+        }
         try {
             topLevelFolderItem.createFile(new StringBlob("Child file content."));
             fail("Should not be able to create a file in the default top level folder item.");
@@ -186,10 +194,10 @@ public class TestDefaultTopLevelFolderItemFactory {
         FileSystemItem childFsItem = children.get(0);
         assertTrue(childFsItem instanceof DefaultSyncRootFolderItem);
         assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + syncRoot1.getId(),
+                "defaultSyncRootFolderItemFactory#test#" + syncRoot1.getId(),
                 childFsItem.getId());
         assertTrue(childFsItem.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("syncRoot1", childFsItem.getName());
         assertTrue(childFsItem.isFolder());
         assertEquals("Administrator", childFsItem.getCreator());
@@ -223,10 +231,10 @@ public class TestDefaultTopLevelFolderItemFactory {
         childFsItem = children.get(1);
         assertTrue(childFsItem instanceof DefaultSyncRootFolderItem);
         assertEquals(
-                "defaultSyncRootFolderItemFactory/test/" + syncRoot2.getId(),
+                "defaultSyncRootFolderItemFactory#test#" + syncRoot2.getId(),
                 childFsItem.getId());
         assertTrue(childFsItem.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory/"));
+                "DefaultTopLevelFolderItemFactory#"));
         assertEquals("syncRoot2", childFsItem.getName());
     }
 
@@ -266,11 +274,11 @@ public class TestDefaultTopLevelFolderItemFactory {
                     e.getMessage());
         }
         // #canHandleFileSystemItemId(String id)
-        assertTrue(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/"));
-        assertFalse(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory/"));
+        assertTrue(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#"));
+        assertFalse(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory#"));
         // #exists(String id, Principal principal)
         assertTrue(defaultTopLevelFolderItemFactory.exists(
-                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/",
+                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#",
                 session.getPrincipal()));
         try {
             defaultTopLevelFolderItemFactory.exists("testId",
@@ -283,7 +291,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         }
         // #getFileSystemItemById(String id, Principal principal)
         FileSystemItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getFileSystemItemById(
-                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory/",
+                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#",
                 session.getPrincipal());
         assertNotNull(topLevelFolderItem);
         assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);

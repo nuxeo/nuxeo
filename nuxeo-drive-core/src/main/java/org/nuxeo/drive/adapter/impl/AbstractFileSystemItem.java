@@ -38,6 +38,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractFileSystemItem implements FileSystemItem {
 
+    public static final String FILE_SYSTEM_ITEM_ID_SEPARATOR = "#";
+
     private static final long serialVersionUID = 1L;
 
     /** {@link FileSystemItem} attributes */
@@ -62,6 +64,8 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     /** Internal attributes */
     protected String factoryName;
 
+    protected String path;
+
     // Must not be serialized => transient
     protected transient Principal principal;
 
@@ -75,7 +79,7 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
         this.factoryName = factoryName;
         this.principal = principal;
         this.userName = principal.getName();
-        this.id = this.factoryName + "/";
+        this.id = this.factoryName + FILE_SYSTEM_ITEM_ID_SEPARATOR;
     }
 
     protected AbstractFileSystemItem() {
@@ -86,6 +90,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
     }
 
     @Override
@@ -194,6 +203,10 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     /*---------- Needed for JSON deserialization ----------*/
     protected void setId(String id) {
         this.id = id;
+    }
+
+    protected void setPath(String path) {
+        this.path = path;
     }
 
     protected void setParentId(String parentId) {

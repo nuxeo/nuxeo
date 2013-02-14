@@ -46,6 +46,12 @@ public interface FileSystemItem extends Comparable<FileSystemItem>,
     String getParentId();
 
     /**
+     * A concatenation of ancestor ids with '/' as prefix
+     * and separator.
+     */
+    String getPath();
+
+    /**
      * Gets the name displayed in the file system.
      */
     String getName();

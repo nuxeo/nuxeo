@@ -74,14 +74,18 @@ public class DefaultSyncRootFolderItemFactory extends
         if (!includeDeleted
                 && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             log.debug(String.format(
-                    "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem => returning null.",
+                    "Document %s is in the '%s' life cycle state, it cannot be adapted"
+                            + " as a FileSystemItem => returning null.",
                     doc.getId(), LifeCycleConstants.DELETED_STATE));
             return null;
         }
         if (!doc.isFolder()) {
             throw new IllegalArgumentException(
                     String.format(
-                            "Doc %s is a synchronization root but is not Folderish, please check the consitency of the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
+                            "Doc %s is a synchronization root but is not Folderish, please check"
+                                    + " the consitency of the contributions to the following extension point:"
+                                    + " <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\""
+                                    + " point=\"fileSystemItemFactory\">.",
                             doc.getPathAsString()));
         }
         return new DefaultSyncRootFolderItem(name, parentId, doc);
