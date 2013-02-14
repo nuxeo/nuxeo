@@ -176,15 +176,15 @@ public class UserTaskPageProvider extends
 
     @Override
     protected void pageChanged() {
-        super.pageChanged();
         pageTasks = null;
+        super.pageChanged();
     }
 
     @Override
     public void refresh() {
-        super.refresh();
         userTasks = null;
         pageTasks = null;
+        super.refresh();
     }
 
 }
