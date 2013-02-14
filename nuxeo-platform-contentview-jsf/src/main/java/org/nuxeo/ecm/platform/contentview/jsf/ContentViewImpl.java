@@ -684,7 +684,13 @@ public class ContentViewImpl implements ContentView,
     }
 
     @Override
-    public void pageChanged() {
+    public void pageChanged(PageProvider pageProvider) {
         raiseEvent(CONTENT_VIEW_PAGE_CHANGED_EVENT);
     }
+
+    @Override
+    public void refreshed(PageProvider pageProvider) {
+        raiseEvent(CONTENT_VIEW_REFRESH_EVENT);
+    }
+
 }
