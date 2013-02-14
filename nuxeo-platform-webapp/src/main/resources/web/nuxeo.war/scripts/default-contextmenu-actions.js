@@ -100,7 +100,7 @@ function doPreview(docid) {
 
 function doPreviewPopup(docid) {
   Seam.Component.getInstance("previewActions").getPreviewPopupURL(docid, function(result) {
-    showFancyBox(result);
+    openFancyBox(result);
   });
 }
 
