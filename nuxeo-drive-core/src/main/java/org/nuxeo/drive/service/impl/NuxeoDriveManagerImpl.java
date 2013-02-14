@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.drive.service.FileSystemChangeFinder;
@@ -55,8 +56,7 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.MapMaker;
 
 
 /**
@@ -76,7 +76,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * Cache holding the synchronization roots for a given user (first map key)
      * and repository (second map key).
      */
-    protected Cache<String, Map<String, SynchronizationRoots>> cache;
+    // TODO: upgrade to latest version of google collections to be able to limit
+    // the size with a LRU policy
+    ConcurrentMap<String, Map<String, SynchronizationRoots>> cache = new MapMaker().concurrencyLevel(
+            4).softKeys().softValues().expiration(10, TimeUnit.MINUTES).makeMap();
 
     // TODO: make this overridable with an extension point
     protected FileSystemChangeFinder changeFinder = new AuditChangeFinder();
@@ -88,15 +91,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     // Versioning option
     // TODO: make this configurable with an extension point
     protected VersioningOption versioningOption = VersioningOption.MINOR;
-
-    public NuxeoDriveManagerImpl() {
-        clearCache();
-    }
-
-    protected void clearCache() {
-        cache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(
-                10, TimeUnit.MINUTES).build();
-    }
 
     @Override
     public void registerSynchronizationRoot(String userName,
@@ -139,7 +133,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 (Serializable) subscriptions);
         session.saveDocument(newRootContainer);
         session.save();
-        clearCache();
+        cache.clear();
         fireEvent(newRootContainer, session, NuxeoDriveEvents.ROOT_REGISTERED,
                 userName);
     }
@@ -167,7 +161,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 (Serializable) subscriptions);
         session.saveDocument(rootContainer);
         session.save();
-        clearCache();
+        cache.clear();
         fireEvent(rootContainer, session, NuxeoDriveEvents.ROOT_UNREGISTERED,
                 userName);
     }
@@ -181,7 +175,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     @Override
     public void handleFolderDeletion(IdRef deleted) throws ClientException {
-        clearCache();
+        cache.clear();
     }
 
     protected void fireEvent(DocumentModel sourceDocument, CoreSession session,
@@ -284,7 +278,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         // cache uses soft keys hence physical equality: intern key before
         // lookup
         String userName = principal.getName().intern();
-        Map<String, SynchronizationRoots> syncRoots = cache.getIfPresent(userName);
+        Map<String, SynchronizationRoots> syncRoots = cache.get(userName);
         if (syncRoots == null) {
             String query = String.format(
                     "SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s"
