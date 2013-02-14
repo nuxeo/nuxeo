@@ -97,6 +97,11 @@
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
     <!-- Tests -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -137,10 +142,6 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.collections</groupId>
-      <artifactId>google-collections</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
