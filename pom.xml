@@ -101,7 +101,6 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-
     <!-- Tests -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -163,6 +162,10 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-ra</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-features</artifactId>
     </dependency>
   </dependencies>
   <build>
