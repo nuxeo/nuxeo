@@ -191,11 +191,12 @@ public class QuotaStatsActions implements Serializable {
         } catch (ClientException e) {
             log.error(e, e);
         }
+        long maxSize = -1;
         if (isActivateQuotaOnUsersWorkspaces()) {
-            getQuotaStatsService().launchSetMaxQuotaOnUserWorkspaces(
-                    getMaxQuotaOnUsersWorkspaces(),
-                    documentManager.getRootDocument(), documentManager);
+            maxSize = getMaxQuotaOnUsersWorkspaces();
         }
+        getQuotaStatsService().launchSetMaxQuotaOnUserWorkspaces(maxSize,
+                documentManager.getRootDocument(), documentManager);
     }
 
     /**
