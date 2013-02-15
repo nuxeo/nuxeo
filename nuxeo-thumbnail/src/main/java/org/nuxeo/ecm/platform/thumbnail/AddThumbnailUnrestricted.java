@@ -53,19 +53,25 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
                     if (!doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
                         doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
                     }
-                    doc.setPropertyValue(
-                            ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
-                            (Serializable) thumbnailBlob);
-                    session.saveDocument(doc);
-                    session.save();
-                } else {
-                    if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                    if (!doc.getProperty(
+                            ThumbnailConstants.THUMBNAIL_PROPERTY_NAME).isReadOnly()) {
                         doc.setPropertyValue(
                                 ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
-                                null);
-                        doc.removeFacet(ThumbnailConstants.THUMBNAIL_FACET);
+                                (Serializable) thumbnailBlob);
                         session.saveDocument(doc);
                         session.save();
+                    }
+                } else {
+                    if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                        if (!doc.getProperty(
+                                ThumbnailConstants.THUMBNAIL_PROPERTY_NAME).isReadOnly()) {
+                            doc.setPropertyValue(
+                                    ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
+                                    null);
+                            doc.removeFacet(ThumbnailConstants.THUMBNAIL_FACET);
+                            session.saveDocument(doc);
+                            session.save();
+                        }
                     }
                 }
             }
