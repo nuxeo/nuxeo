@@ -72,7 +72,8 @@ author: lkemen@nuxeo.com
   min-height: 170px;
   text-align: left;
   vertical-align: top;
-  width: 128px }
+  min-width: 128px;
+  max-width: 170px }
 
 .bubbleBox:hover {
   background-color: "color.major.light (__FLAVOR__ background)";
@@ -122,12 +123,12 @@ author: lkemen@nuxeo.com
   margin: 1em .4em }
 
 /* Smaller tables display in foldableBox, apply .dataTableLine styles */
-.gridStyle4 .foldableBox .dataInput {
+.gridStyle4 .dataInput {
   border-collapse: collapse;
   border-spacing: 0;
   font-size: .9em;
   margin: 0 0 .5em }
-.gridStyle4 .foldableBox .dataInput td {
+.gridStyle4 .dataInput td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-spacing: 0;
   border-style: solid none;
@@ -135,8 +136,23 @@ author: lkemen@nuxeo.com
   padding: .1em .3em .2em;
   text-align: left;
   vertical-align: top }
-.gridStyle4 .foldableBox .dataInput tr:hover {
+.gridStyle4 .dataInput tr:hover {
   background-color: "color.major.light (__FLAVOR__ background)" }
+.gridStyle4 .widgetTable table {
+  width: 100% }
+.gridStyle4 .widgetPanel .labelColumn {
+  text-align: left }
+
+.gridStyle4 .summaryTitle {
+  background-color: "neutral.medium (__FLAVOR__ background)";
+  font-size: 1em;
+  padding: .3em;
+  text-transform: none }
+.gridStyle4 .widgetPanel.containerWidgetPanel {
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px }
 
 /* smaller buttons in Foldable boxes*/
 .foldableBox .buttonsGadget {
