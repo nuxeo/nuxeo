@@ -71,6 +71,7 @@ author: lkemen@nuxeo.com
   margin: .1em .3em .6em;
   min-height: 170px;
   text-align: left;
+  position: relative;
   vertical-align: top;
   min-width: 128px;
   max-width: 170px }
@@ -145,6 +146,7 @@ author: lkemen@nuxeo.com
 
 .gridStyle4 .summaryTitle {
   background-color: "neutral.medium (__FLAVOR__ background)";
+  border-bottom: 0 none;
   font-size: 1em;
   padding: .3em;
   text-transform: none }
