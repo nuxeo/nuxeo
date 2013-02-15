@@ -149,33 +149,6 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
-    <widgetType name="dam_listing_thumbnail">
-      <configuration>
-        <sinceVersion>5.7</sinceVersion>
-        <title>Thumbnail</title>
-        <description>
-          <p>
-            This widget type displays the thumbnail of the given document.
-          </p>
-          <p>
-            It requires the following fields configuration:
-            <ul>
-              <li>
-                first field maps the document model, it will be used to
-                display its thumbnail
-              </li>
-            </ul>
-          </p>
-        </description>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /dam/widgets/listing/listing_thumbnail_widget_template.xhtml
-      </property>
-    </widgetType>
-
     <widgetType name="dam_listing_ajax_selection_box_with_title">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
@@ -395,7 +368,7 @@
       </fields>
     </widget>
 
-    <widget name="dam_listing_thumbnail" type="dam_listing_thumbnail">
+    <widget name="dam_listing_thumbnail" type="listing_thumbnail">
       <labels>
         <label mode="any"></label>
       </labels>
