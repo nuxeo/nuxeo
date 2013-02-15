@@ -9,7 +9,7 @@
  * Contributors:
  * Vladimir Pasquier <vpasquier@nuxeo.com>
  * Laurent Doguin <ldoguin@nuxeo.com>
- * 
+ *
  */
 package org.nuxeo.ecm.platform.thumbnail;
 
@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 /**
  * Thumbnail bean in session unrestricted to add/update thumbnail facet to a
  * document and store doc thumbnail
- * 
+ *
  * @since 5.7
  */
 public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
@@ -53,8 +53,7 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
                     if (!doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
                         doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
                     }
-                    if (!doc.getProperty(
-                            ThumbnailConstants.THUMBNAIL_PROPERTY_NAME).isReadOnly()) {
+                    if (!doc.isProxy() && !doc.isVersion()) {
                         doc.setPropertyValue(
                                 ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
                                 (Serializable) thumbnailBlob);
@@ -63,8 +62,7 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
                     }
                 } else {
                     if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
-                        if (!doc.getProperty(
-                                ThumbnailConstants.THUMBNAIL_PROPERTY_NAME).isReadOnly()) {
+                        if (!doc.isProxy() && !doc.isVersion()) {
                             doc.setPropertyValue(
                                     ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
                                     null);
