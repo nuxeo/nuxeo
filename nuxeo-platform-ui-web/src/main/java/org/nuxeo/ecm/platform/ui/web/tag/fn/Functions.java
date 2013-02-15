@@ -688,6 +688,9 @@ public final class Functions {
      * This method currently removes ASCII characters from the given string,
      * and replaces "-" characters by "_" because the dash is an issue for
      * forms rendered in ajax (see NXP-10793).
+     * <p>
+     * Also starting digits are replaced by the "_" character because a tag id
+     * cannot start with a digit.
      *
      * @since 5.7
      * @return the escaped string
