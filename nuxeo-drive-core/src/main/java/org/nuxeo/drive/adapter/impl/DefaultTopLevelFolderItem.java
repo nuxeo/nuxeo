@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -59,7 +60,8 @@ public class DefaultTopLevelFolderItem extends AbstractFileSystemItem implements
         folder = true;
         creator = "system";
         // The Fixed Origin of (Unix) Time
-        creationDate = new GregorianCalendar(1970, 0, 1, 0, 0, 0);
+        creationDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        creationDate.set(1970, 0, 1, 0, 0, 0);
         lastModificationDate = this.creationDate;
         canRename = false;
         canDelete = false;
