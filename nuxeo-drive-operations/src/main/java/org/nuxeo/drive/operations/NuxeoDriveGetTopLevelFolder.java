@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Antoine Taillefer <ogrisel@nuxeo.com>
  */
 package org.nuxeo.drive.operations;
 
@@ -29,7 +29,8 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Gets of the top level {@link FolderItem} for the currently authenticated user.
+ * Gets the top level {@link FolderItem} for the currently authenticated user.
+ *
  * @author Olivier Grisel
  */
 @Operation(id = NuxeoDriveGetTopLevelFolder.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Get the top level folder")
