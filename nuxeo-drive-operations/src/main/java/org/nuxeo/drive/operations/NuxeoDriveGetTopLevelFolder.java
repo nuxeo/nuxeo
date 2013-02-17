@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Antoine Taillefer <ogrisel@nuxeo.com>
+ *     Olivier Grisel <ogrisel@nuxeo.com>
  */
 package org.nuxeo.drive.operations;
 
