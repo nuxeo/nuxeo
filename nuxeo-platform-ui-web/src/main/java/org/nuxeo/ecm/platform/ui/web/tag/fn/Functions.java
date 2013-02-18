@@ -616,6 +616,19 @@ public final class Functions {
         }
     }
 
+    /**
+     * Returns true if the faces context holds messages for given JSF component
+     * id, usually the form id.
+     * <p>
+     * Id given id is null, returns true if there is at least one client id
+     * with messages.
+     * <p>
+     * Since the form id might be prefixed with a container id in some cases,
+     * the method returns true if one of client ids with messages stats with
+     * given id, or if given id is contained in it.
+     *
+     * @since 5.4.2
+     */
     public static boolean hasMessages(String clientId) {
         Iterator<String> it = FacesContext.getCurrentInstance().getClientIdsWithMessages();
         if (clientId == null) {
@@ -623,7 +636,11 @@ public final class Functions {
         } else {
             while (it.hasNext()) {
                 String id = it.next();
-                if (id != null && id.startsWith(clientId)) {
+                if (id != null
+                        && (id.startsWith(clientId + ":")
+                                || id.contains(":" + clientId + ":")
+                                || id.equals(clientId) || id.endsWith(":"
+                                + clientId))) {
                     return true;
                 }
             }

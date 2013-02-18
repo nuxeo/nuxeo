@@ -20,12 +20,19 @@
 
   <a4j:outputPanel id="#{fancyboxId}_ajax_panel">
 
-    <nxu:set var="addForm"
-      value="#{action.properties.requireSurroundingForm}"
-      resolveTwice="true" cache="true">
-      <c:if test="#{clickedActionId == action.id and not addForm}">
+    <nxu:set var="fancyboxFormId"
+      value="#{fancyboxId}_form"
+      cache="true">
+    <nxu:set
+      var="actionClicked"
+      value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
+      cache="true">
+
+      <c:if test="#{actionClicked}">
         <script>
-          openFancyBox('##{fancyboxId}_box');
+          jQuery(document).ready(function() {
+            openFancyBox('##{fancyboxId}_box');
+          });
         </script>
         <div style="display:none">
           <div id="#{fancyboxId}_box">
@@ -34,70 +41,7 @@
         </div>
       </c:if>
 
-      <c:if test="#{addForm}">
-        <nxu:set var="fancyboxFormId"
-          value="#{fancyboxId}_form"
-          cache="true">
-        <nxu:set
-          var="actionClicked"
-          value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}">
-        <nxu:set var="elementsToReRender"
-          value="#{action.properties.reRender}"
-          resolveTwice="true" cache="true">
-
-          <c:if test="#{actionClicked}">
-            <script>
-              openFancyBox('##{fancyboxId}_box', {
-                'autoDimensions': false,
-                'autoScale': true,
-                'width': 'auto',
-                'height': '320',
-                'transitionIn': 'none',
-                'transitionOut': 'none',
-                'enableEscapeButton': true,
-                'centerOnScroll': true,
-                'scrolling': 'auto'
-              });
-              jQuery('##{fancyboxId}_form').focusFirst();
-            </script>
-          </c:if>
-
-          <div style="display:none">
-            <div id="#{fancyboxId}_box">
-              <nxu:set var="useAjaxForm"
-                value="#{action.properties.useAjaxForm}"
-                resolveTwice="true" cache="true">
-
-                <c:if test="#{useAjaxForm}">
-                  <a4j:form id="#{fancyboxFormId}"
-                    ajaxSubmit="true"
-                    reRender="#{elementsToReRender},#{fancyboxId}_ajax_panel"
-                    ignoreDupResponses="true"
-                    requestDelay="100"
-                    eventsQueue="#{eventsQueueId}"
-                    onsubmit="removeAllTinyMCEEditors(); return true;"
-                    oncomplete="jQuery.fancybox.close();">
-                    <ui:include src="#{include}" />
-                  </a4j:form>
-                </c:if>
-
-                <c:if test="#{not useAjaxForm}">
-                  <h:form id="#{fancyboxFormId}"
-                    enctype="multipart/form-data"
-                    onsubmit="jQuery.fancybox.close();">
-                    <ui:include src="#{include}" />
-                  </h:form>
-                </c:if>
-
-              </nxu:set>
-            </div>
-          </div>
-
-        </nxu:set>
-        </nxu:set>
-        </nxu:set>
-      </c:if>
-
+    </nxu:set>
     </nxu:set>
 
   </a4j:outputPanel>
