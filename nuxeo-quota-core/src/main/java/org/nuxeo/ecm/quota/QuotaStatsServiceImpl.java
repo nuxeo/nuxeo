@@ -400,7 +400,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             parents = new ArrayList<DocumentModel>();
             parents.addAll(session.getParentDocuments(doc.getRef()));
             Collections.reverse(parents);
-            parents.remove(0);
+            if (parents.size() > 0) {
+                parents.remove(0);
+            }
             for (DocumentModel parent : parents) {
                 parent.detach(true);
             }
