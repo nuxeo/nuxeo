@@ -19,7 +19,6 @@ package org.nuxeo.ecm.quota;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -398,10 +398,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         @Override
         public void run() throws ClientException {
             parents = new ArrayList<DocumentModel>();
-            parents.addAll(session.getParentDocuments(doc.getRef()));
-            Collections.reverse(parents);
-            if (parents.size() > 0) {
-                parents.remove(0);
+            DocumentRef[] parentRefs = session.getParentDocumentRefs(doc.getRef());
+            for (DocumentRef documentRef : parentRefs) {
+                parents.add(session.getDocument(documentRef));
             }
             for (DocumentModel parent : parents) {
                 parent.detach(true);

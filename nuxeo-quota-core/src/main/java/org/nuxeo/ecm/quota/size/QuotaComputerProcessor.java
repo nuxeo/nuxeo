@@ -29,7 +29,6 @@ import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATIST
 import static org.nuxeo.ecm.quota.size.SizeUpdateEventContext.DOCUMENT_UPDATE_INITIAL_STATISTICS;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -37,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -150,9 +150,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     }
                 }
             } else {
-                parents.addAll(session.getParentDocuments(sourceDocument.getRef()));
-                Collections.reverse(parents);
-                parents.remove(0);
+                parents.addAll(getParents(sourceDocument, session));
             }
         } else {
             // DELETE_TRANSITION
@@ -173,9 +171,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             if (sourceDocument.getRef() == null) {
                 log.error("SourceDocument has no ref");
             } else {
-                parents.addAll(session.getParentDocuments(sourceDocument.getRef()));
-                Collections.reverse(parents);
-                parents.remove(0);
+                parents.addAll(getParents(sourceDocument, session));
             }
 
             // process Quota on target Document
@@ -270,9 +266,6 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             long deltaTotal, long trashSize, long deltaVersions, boolean total,
             boolean trashOp, boolean versionsOp) throws ClientException {
         for (DocumentModel parent : parents) {
-            if (parent.getPathAsString().equals("/")) {
-                continue;
-            }
             // process Quota on target Document
             QuotaAware quotaDoc = parent.getAdapter(QuotaAware.class);
             if (quotaDoc == null) {
@@ -293,5 +286,17 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 quotaDoc.addVersionsSize(deltaVersions, true);
             }
         }
+    }
+
+    protected List<DocumentModel> getParents(DocumentModel sourceDocument,
+            CoreSession session) throws ClientException {
+        List<DocumentModel> parents = new ArrayList<DocumentModel>();
+        //use getParentDocumentRefs instead of getParentDocuments , beacuse
+        // getParentDocuments doesn't fetch the root document
+        DocumentRef[] parentRefs = session.getParentDocumentRefs(sourceDocument.getRef());
+        for (DocumentRef documentRef : parentRefs) {
+            parents.add(session.getDocument(documentRef));
+        }
+        return parents;
     }
 }
