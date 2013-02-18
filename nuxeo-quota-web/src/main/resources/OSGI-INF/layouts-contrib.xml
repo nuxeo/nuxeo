@@ -296,7 +296,7 @@
           <field>quota_heaviest_containers_cv:dublincore_title</field>
         </fields>
       </widget>
-      <widget name="documents_size_statistics_totalSize" type="int">
+      <widget name="documents_size_statistics_totalSize" type="template">
         <labels>
           <label mode="any">label.quota.totalSize</label>
         </labels>
@@ -304,6 +304,12 @@
         <fields>
           <field>quota_heaviest_containers_cv:documents_size_statistics_totalSize</field>
         </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/quota_selectSizeLimits_widget_template.xhtml
+          </property>
+        </properties>
+        <handlingLabels>true</handlingLabels>
       </widget>
     </layout>
     <layout name="quota_heaviest_children@cvListingLayout">
