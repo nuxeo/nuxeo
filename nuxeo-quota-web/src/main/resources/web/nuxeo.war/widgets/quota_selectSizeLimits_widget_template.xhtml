@@ -1,0 +1,71 @@
+<div xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  id="#{widget.id}">
+
+<c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+ <nxu:set var="minQuotaSliderValue" value="#{quotaStatsActions.getMinQuotaSliderValue()}" cache="true">
+ <nxu:set var="maxQuotaSliderValue" value="#{quotaStatsActions.getMaxQuotaSliderValue()}" cache="true">
+  
+  <table id="sliderTable">
+   <tr>
+    </tr><tr>
+    <td>
+     <table>
+     <tr>
+     <td></td><td style="text-align:center;font-weight:bold"><span id="sliderDisplay"></span>
+     </td><td></td></tr>
+     <tr>
+      <td>
+
+  
+      <h:outputText value="#{minQuotaSliderValue.getValueInUnit()}">
+        <f:convertNumber maxFractionDigits="2" />
+      </h:outputText>
+      <h:outputText value=" #{messages[minQuotaSliderValue.getUnit()]}"/>
+
+      </td>
+      <td>
+   
+       <rich:inputNumberSlider id="slider" width="450px"
+            showBoundaryValues="false"
+            onchange="displayQuotaSize(this.value);"
+            onslide="displayQuotaSize(this.value);"
+            showToolTip="false"
+            showInput="true"
+            maxValue="#{maxQuotaSliderValue.getSize()}"
+            minValue="#{minQuotaSliderValue.getSize()}" step="0.001">
+       </rich:inputNumberSlider>
+      </td>
+      <td>
+       <h:outputText value="#{maxQuotaSliderValue.getValueInUnit()}">
+        <f:convertNumber maxFractionDigits="2" />
+       </h:outputText> 
+       #{messages[maxQuotaSliderValue.getUnit()]}
+        <h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
+     </td>
+     </tr>
+     </table>
+    </td></tr>
+   </table>
+  </nxu:set>
+  </nxu:set>
+</c:if>
+
+ <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
+
+  <nxu:set var="formatedSize" value="#{quotaStatsActions.formatQuota(field, 0)}">
+    <h:outputText value="#{formatedSize.valueInUnit}">
+      <f:convertNumber maxFractionDigits="2" />
+    </h:outputText>
+    <h:outputText value=" #{messages[formatedSize.unit]}"/>
+  </nxu:set>
+
+
+ </c:if>
+</div>
