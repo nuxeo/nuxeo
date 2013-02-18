@@ -4,11 +4,12 @@
     point="actions">
 
     <action id="csvImportAction" order="40" label="label.csv.import" type="fancybox"
-      icon="/icons/contextual_menu/share.png">
-      <category>SUBVIEW_UPPER_LIST_HREF</category>
+      icon="/icons/action_add_file.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
       <properties>
         <property name="include">/incl/csv_import_box.xhtml</property>
       </properties>
+      <filter-id>importFile</filter-id>
     </action>
 
   </extension>
