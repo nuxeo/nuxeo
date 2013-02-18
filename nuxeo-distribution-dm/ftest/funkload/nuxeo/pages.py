@@ -523,8 +523,8 @@ class FolderPage(BasePage):
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['documentActionSubviewUpperListForm', 'documentActionSubviewUpperListForm'],
-            ['documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink', 'documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink']],
+            ['nxw_documentActionSubviewUpperList_1_form', 'nxw_documentActionSubviewUpperList_1_form'],
+            ['nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newWorkspace', 'nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newWorkspace']],
             description="Create workspace form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Workspace creation form not found.")
@@ -545,8 +545,8 @@ class FolderPage(BasePage):
         server_url = fl.server_url
         fl.post(server_url + "/view_documents.faces", params=[
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['documentActionSubviewUpperListForm', 'documentActionSubviewUpperListForm'],
-            ['documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink', 'documentActionSubviewUpperListForm:documentActionSubviewUpperListTable:0:documentActionSubviewUpperListLink']],
+            ['nxw_documentActionSubviewUpperList_1_form', 'nxw_documentActionSubviewUpperList_1_form'],
+            ['nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newSection', 'nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newSection']],
             description="Create a section form")
         fl.assert_('nxw_title' in fl.getBody(),
                    "Section creation form not found.")
@@ -563,11 +563,20 @@ class FolderPage(BasePage):
 
     def createFolder(self, title, description):
         fl = self.fl
+
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['selectDocumentTypeForCreationForm', 'selectDocumentTypeForCreationForm'],
+            ['AJAXREQUEST', 'nxw_documentActionSubviewUpperList_1_region'],
+            ['nxw_documentActionSubviewUpperList_1_form', 'nxw_documentActionSubviewUpperList_1_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink'],
-            ['selectDocumentTypeForCreationForm:selectDocTypePanelOpenedState', '']],
+            ['ajaxSingle', 'nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newDocument_subview:nxw_documentActionSubviewUpperList_1_newDocument_link'],
+            ['nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newDocument_subview:nxw_documentActionSubviewUpperList_1_newDocument_link', 'nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newDocument_subview:nxw_documentActionSubviewUpperList_1_newDocument_link'],
+            ['AJAX:EVENTS_COUNT', '1']],
+            description="Click on 'New' action")
+
+        fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['nxw_documentActionSubviewUpperList_1_newDocument_form', 'nxw_documentActionSubviewUpperList_1_newDocument_form'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['nxw_documentActionSubviewUpperList_1_newDocument_form:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_1_newDocument_form:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink']],
             description="Create folder: New Folder")
 
         fl.assert_('document_create' in fl.getBody(),
@@ -585,11 +594,21 @@ class FolderPage(BasePage):
 
     def createFile(self, title, description, file_path=None):
         fl = self.fl
+
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['selectDocumentTypeForCreationForm', 'selectDocumentTypeForCreationForm'],
+            ['AJAXREQUEST', 'nxw_documentActionSubviewUpperList_1_region'],
+            ['nxw_documentActionSubviewUpperList_1_form', 'nxw_documentActionSubviewUpperList_1_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'selectDocumentTypeForCreationForm:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink'],
-            ['selectDocumentTypeForCreationForm:selectDocTypePanelOpenedState', '']],
+            ['ajaxSingle', 'nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newDocument_subview:nxw_documentActionSubviewUpperList_1_newDocument_link'],
+            ['nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newDocument_subview:nxw_documentActionSubviewUpperList_1_newDocument_link', 'nxw_documentActionSubviewUpperList_1_form:nxw_documentActionSubviewUpperList_1_newDocument_subview:nxw_documentActionSubviewUpperList_1_newDocument_link'],
+            ['AJAX:EVENTS_COUNT', '1']],
+            description="Click on 'New' action")
+
+        fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['nxw_documentActionSubviewUpperList_1_newDocument_form', 'nxw_documentActionSubviewUpperList_1_newDocument_form'],
+            ['javax.faces.ViewState', fl.getLastJsfState()],
+            ['nxw_documentActionSubviewUpperList_1_newDocument_form:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_1_newDocument_form:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink'],
+            ['nxw_documentActionSubviewUpperList_1_newDocument_form:selectDocTypePanelOpenedState', '']],
             description="Create file: New document")
 
         fl.assert_('document_create' in fl.getBody(),
