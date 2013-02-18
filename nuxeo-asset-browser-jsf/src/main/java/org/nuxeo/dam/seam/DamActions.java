@@ -114,7 +114,8 @@ public class DamActions implements Serializable {
     }
 
     public boolean getCanCreateNewAsset() throws ClientException {
-        return !getAllowedAssetTypes().isEmpty() && getCanCreateInAssetLibrary();
+        return !getAllowedAssetTypes().isEmpty()
+                && getCanCreateInAssetLibrary();
     }
 
     public AssetLibrary getAssetLibrary() {
@@ -125,7 +126,22 @@ public class DamActions implements Serializable {
         return Framework.getLocalService(DamService.class).getAllowedAssetTypes();
     }
 
+    /**
+     * Gets the selected asset new asset type.
+     * <p>
+     * If selected type is null, initialize it to the first one, and initialize
+     * the changeable document with this document type.
+     */
     public String getSelectedNewAssetType() throws ClientException {
+        if (selectedNewAssetType == null) {
+            List<Type> allowedAssetTypes = getAllowedAssetTypes();
+            if (!allowedAssetTypes.isEmpty()) {
+                selectedNewAssetType = allowedAssetTypes.get(0).getId();
+            }
+            if (selectedNewAssetType != null) {
+                selectNewAssetType();
+            }
+        }
         return selectedNewAssetType;
     }
 
@@ -134,24 +150,17 @@ public class DamActions implements Serializable {
     }
 
     public void selectNewAssetType() throws ClientException {
+        String selectedType = getSelectedNewAssetType();
+        if (selectedType == null) {
+            // ignore
+            return;
+        }
         Map<String, Object> context = new HashMap<String, Object>();
         context.put(CoreEventConstants.PARENT_PATH,
                 navigationContext.getCurrentDocument().getPathAsString());
         DocumentModel changeableDocument = documentManager.createDocumentModel(
-                selectedNewAssetType, context);
+                selectedType, context);
         navigationContext.setChangeableDocument(changeableDocument);
-    }
-
-    public void initializeNewAssetType() throws ClientException {
-        if (selectedNewAssetType == null) {
-            List<Type> allowedAssetTypes = getAllowedAssetTypes();
-            if (!allowedAssetTypes.isEmpty()) {
-                selectedNewAssetType = allowedAssetTypes.get(0).getId();
-            }
-        }
-        if (selectedNewAssetType != null) {
-            selectNewAssetType();
-        }
     }
 
     public void saveNewAsset() throws ClientException {
@@ -167,6 +176,9 @@ public class DamActions implements Serializable {
         changeableDocument = documentManager.createDocument(changeableDocument);
         documentManager.save();
 
+        // reset changeable document and selected type
+        cancelNewAsset();
+
         facesMessages.add(StatusMessage.Severity.INFO,
                 messages.get("document_saved"),
                 messages.get(changeableDocument.getType()));
@@ -174,6 +186,7 @@ public class DamActions implements Serializable {
 
     public void cancelNewAsset() {
         navigationContext.setChangeableDocument(null);
+        setSelectedNewAssetType(null);
     }
 
 }

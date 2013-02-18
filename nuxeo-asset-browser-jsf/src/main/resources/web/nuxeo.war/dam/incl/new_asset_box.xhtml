@@ -8,13 +8,6 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <a4j:form>
-    <a4j:jsFunction name="initializeNewAssetType" reRender="newAsset_panel"
-      action="#{damActions.initializeNewAssetType()}"
-      oncomplete="nuxeo.dam.showNewAssetFancyBox();">
-    </a4j:jsFunction>
-  </a4j:form>
-
   <h3><h:outputText value="#{messages['label.dam.new.asset']}" /></h3>
 
   <div class="content">
@@ -54,7 +47,7 @@
             </tr>
           </table>
 
-          <h:form enctype="multipart/form-data" id="#{widget.id}_form">
+          <h:form enctype="multipart/form-data" id="#{fancyboxFormId}">
             <nxl:documentLayout mode="create" value="#{changeableDocument}" />
 
             <p class="buttonsGadget">
