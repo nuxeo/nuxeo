@@ -47,13 +47,8 @@
       <artifactId>oauth</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.shindig</groupId>
-      <artifactId>shindig-social-api</artifactId>
-    </dependency>
-    <!-- to get the AuthInfo that attaches tokens to requests-->
-    <dependency>
-      <groupId>org.apache.shindig</groupId>
-      <artifactId>shindig-common</artifactId>
+      <groupId>net.oauth.core</groupId>
+      <artifactId>oauth-provider</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>

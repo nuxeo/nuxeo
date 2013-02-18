@@ -178,11 +178,11 @@ public class CoreQueryAndFetchPageProvider extends
                     getParameters(), def.getQuotePatternParameters(),
                     def.getEscapePatternParameters(), sortArray);
 
-            if (!newQuery.equals(query)) {
+            if (query != null && newQuery != null && !newQuery.equals(query)) {
                 // query has changed => refresh
                 refresh();
-                query = newQuery;
             }
+            query = newQuery;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
