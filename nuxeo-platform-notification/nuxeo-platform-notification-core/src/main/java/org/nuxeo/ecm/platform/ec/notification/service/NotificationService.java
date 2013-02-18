@@ -346,7 +346,9 @@ public class NotificationService extends DefaultComponent implements
             if (!notificationNames.contains(notification.getName())) {
                 // Check if notification is available for the current document
                 String availableIn = notification.getAvailableIn();
-                if (availableIn.equals(doc.getType())) {
+                if (availableIn == null || "all".equals(availableIn)
+                        || "*".equals(availableIn)
+                        || availableIn.equals(doc.getType())) {
                     notificationNames.add(notification.getName());
                     continue;
                 }

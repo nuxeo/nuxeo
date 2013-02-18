@@ -17,6 +17,21 @@
         #{restHelper.newDocumentView}
       </newDocumentViewBinding>
     </urlPattern>
+
+    <urlPattern name="downloadThumbnail" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>false</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>downloadThumbnail</codecName>
+      <actionBinding>#{pictureManager.downloadThumbnail}</actionBinding>
+      <documentViewBinding>
+        #{restHelper.documentView}
+      </documentViewBinding>
+      <newDocumentViewBinding>
+        #{restHelper.newDocumentView}
+      </newDocumentViewBinding>
+    </urlPattern>
   </extension>
 
 </component>

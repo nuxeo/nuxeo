@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_REQUEST_NOCHARSET;
 import static org.nuxeo.ecm.automation.client.Constants.REQUEST_ACCEPT_HEADER;
+import static org.nuxeo.ecm.automation.client.Constants.HEADER_NX_SCHEMAS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,8 @@ public class DefaultSession implements Session {
 
     protected final LoginInfo login;
 
+    protected String defaultSchemas = null;
+
     public DefaultSession(AbstractAutomationClient client, Connector connector,
             LoginInfo login) {
         this.client = client;
@@ -60,6 +63,14 @@ public class DefaultSession implements Session {
 
     public <T> T getAdapter(Class<T> type) {
         return client.getAdapter(this, type);
+    }
+
+    public String getDefaultSchemas() {
+        return defaultSchemas;
+    }
+
+    public void setDefaultSchemas(String defaultSchemas) {
+        this.defaultSchemas = defaultSchemas;
     }
 
     public Object execute(OperationRequest request) throws Exception {
@@ -91,6 +102,9 @@ public class DefaultSession implements Session {
         }
         req.put("Accept", REQUEST_ACCEPT_HEADER);
         req.put("Content-Type", ctype);
+        if (req.get(HEADER_NX_SCHEMAS) == null && defaultSchemas != null) {
+            req.put(HEADER_NX_SCHEMAS, defaultSchemas);
+        }
         return connector.execute(req);
     }
 

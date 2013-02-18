@@ -1,0 +1,20 @@
+<component name="org.nuxeo.ecm.platform.thumbnail.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="updateThumbListener" async="true"
+      postCommit="true"
+      class="org.nuxeo.ecm.platform.thumbnail.listener.UpdateThumbnailListener"
+      priority="999">
+      <event>documentCreated</event>
+      <event>afterBlobUpdateCheck</event>
+    </listener>
+    <listener name="checkBlobUpdate" async="false" postCommit="false"
+      class="org.nuxeo.ecm.platform.thumbnail.listener.CheckBlobUpdateListener"
+      priority="999">
+      <event>beforeDocumentModification</event>
+    </listener>
+  </extension>
+
+</component>

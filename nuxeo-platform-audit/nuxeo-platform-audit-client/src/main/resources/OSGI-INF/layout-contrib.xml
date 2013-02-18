@@ -143,6 +143,7 @@
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">log.docLifeCycle</property>
           </properties>
           <widget>eventLC</widget>
         </column>

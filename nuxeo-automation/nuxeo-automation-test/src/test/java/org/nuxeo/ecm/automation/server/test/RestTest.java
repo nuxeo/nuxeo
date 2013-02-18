@@ -263,7 +263,6 @@ public class RestTest {
         }
     }
 
-
     /**
      * Test documents input / output
      */
@@ -320,11 +319,11 @@ public class RestTest {
         // get the root
         Document root = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
-        Document note = (Document)session.newRequest(CreateDocument.ID).setInput(root).set("type",
-                "Note").set("name", "note1").set("properties", "dc:title=Note1").execute();
+        Document note = (Document) session.newRequest(CreateDocument.ID).setInput(
+                root).set("type", "Note").set("name", "note1").set(
+                "properties", "dc:title=Note1").execute();
         note = (Document) session.newRequest(FetchDocument.ID).setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").set("value",
-                note.getPath()).execute();
+                Constants.HEADER_NX_SCHEMAS, "*").set("value", note.getPath()).execute();
 
         PropertyMap props = note.getProperties();
         assertTrue(props.getKeys().contains("dc:source"));
@@ -741,6 +740,37 @@ public class RestTest {
         assertEquals("a", ar.getString(0));
         assertEquals("b", ar.getString(1));
         assertEquals("c,d", ar.getString(2));
+    }
+
+    @Test
+    public void testSchemaSelection() throws Exception {
+
+        try {
+            Document root = (Document) session.newRequest(FetchDocument.ID).set(
+                    "value", "/").execute();
+            // only title
+            assertEquals(1, root.getProperties().size());
+
+            // lot of properties ...
+            session.setDefaultSchemas("common,dublincore,file");
+            root = (Document) session.newRequest(FetchDocument.ID).set("value",
+                    "/").execute();
+            assertTrue(root.getProperties().size() > 15);
+
+            // set at request level with only common schema + dc:title
+            root = (Document) session.newRequest(FetchDocument.ID).set("value",
+                    "/").setHeader(Constants.HEADER_NX_SCHEMAS, "common").execute();
+            assertEquals(4, root.getProperties().size());
+
+            // reset
+            session.setDefaultSchemas(null);
+            root = (Document) session.newRequest(FetchDocument.ID).set("value",
+                    "/").execute();
+            assertEquals(1, root.getProperties().size());
+
+        } finally {
+            session.setDefaultSchemas(null);
+        }
     }
 
     @Test

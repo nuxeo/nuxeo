@@ -97,7 +97,41 @@ public interface Session {
     <T> T getAdapter(Class<T> type);
 
     /**
-     * Remove any resources held by this session. The session will no more be used again.
+     * Get the default schemas that should be sent by the server.
+     * <p>
+     * This is a comma separated String (ex: dublincore,file)
+     * <p>
+     * default value is null (let the server decide what to send)
+     * <p>
+     * when Automation server convert the Documents to JSON, it will use this
+     * list to select what properties should be sent. You can explicitly set
+     * the X-NXDocumentProperties header at request level. If defaultSchemas,
+     * the request that don't already have the header set will inherit the
+     * default value.
+     *
+     * @since 5.7
+     */
+    String getDefaultSchemas();
+
+    /**
+     * Set the default schemas that should be sent by the server.
+     * <p>
+     * This is a comma separated String (ex: dublincore,file)
+     * <p>
+     * when Automation server convert the Documents to JSON, it will use this
+     * list to select what properties should be sent. You can explicitly set
+     * the X-NXDocumentProperties header at request level. If defaultSchemas,
+     * the request that don't already have the header set will inherit the
+     * default value.
+     *
+     * @param defaultSchemas list of schemas as a comma separated string
+     * @since 5.7
+     */
+    void setDefaultSchemas(String defaultSchemas);
+
+    /**
+     * Remove any resources held by this session. The session will no more be
+     * used again.
      */
     void close();
 }

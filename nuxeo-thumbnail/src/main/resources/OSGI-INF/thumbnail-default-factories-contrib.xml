@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.thumbnail.service.thumbnailfactory">
+
+  <extension target="org.nuxeo.ecm.core.api.thumbnail.ThumbnailService"
+    point="thumbnailFactory">
+    <thumbnailFactory name="thumbnailFolderishFactory"
+      facet="Folderish"
+      factoryClass="org.nuxeo.ecm.platform.thumbnail.factories.ThumbnailFolderishFactory" />
+    <thumbnailFactory name="thumbnailDocumentFactory"
+      factoryClass="org.nuxeo.ecm.platform.thumbnail.factories.ThumbnailDocumentFactory" />
+  </extension>
+
+</component>
