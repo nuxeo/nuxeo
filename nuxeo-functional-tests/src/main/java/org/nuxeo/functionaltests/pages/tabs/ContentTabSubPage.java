@@ -23,6 +23,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -32,12 +34,16 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents
  * and displaying the current document's children.
  */
 public class ContentTabSubPage extends DocumentBasePage {
+
+    private static final Log log = LogFactory.getLog(ContentTabSubPage.class);
 
     private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
 
@@ -54,7 +60,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     /**
      * Clicking on one of the child with the title.
-     * 
+     *
      * @param documentTitle
      */
     public DocumentBasePage goToDocument(String documentTitle) {
@@ -64,27 +70,22 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     /**
      * Clicks on the new button and select the type of document to create
-     * 
+     *
      * @param docType the document type to create
      * @param pageClassToProxy The page object type to return
      * @return The create form page object
      */
     public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
         newButton.click();
-        WebElement link = null;
-        for (WebElement element : driver.findElements(By.className("documentType"))) {
-            try {
-                link = element.findElement(By.linkText(docType));
-                break;
-            } catch (NoSuchElementException e) {
-                // next
-            }
-
-        }
+        // make sure the fancybox content is loaded
+        WebElement fancyBox = findElementWithTimeout(By.id("fancybox-content"));
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+        wait.until(ExpectedConditions.visibilityOf(fancyBox));
+        // find the link to doc type that needs to be created
+        WebElement link = fancyBox.findElement(By.linkText(docType));
         assertNotNull(link);
         link.click();
         return asPage(pageClassToProxy);
-
     }
 
     public DocumentBasePage removeDocument(String documentTitle) {
