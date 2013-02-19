@@ -2082,11 +2082,23 @@
         <groupId>net.sf.jxls</groupId>
         <artifactId>jxls-core</artifactId>
         <version>${jxls.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-jexl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>net.sf.jxls</groupId>
         <artifactId>jxls-reader</artifactId>
         <version>${jxls.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-jexl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- docx report -->
@@ -2158,6 +2170,12 @@
         <groupId>com.sun.xsom</groupId>
         <artifactId>xsom</artifactId>
         <version>20081112</version>
+        <exclusions>
+          <exclusion>
+            <groupId>relaxngDatatype</groupId>
+            <artifactId>relaxngDatatype</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.sun.xml</groupId>
@@ -2490,6 +2508,17 @@
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
         <version>1.3.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xpp3</groupId>
+            <artifactId>xpp3_min</artifactId>
+          </exclusion> 
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>xpp3</groupId>
+        <artifactId>xpp3</artifactId>
+        <version>1.1.4c</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
@@ -3066,6 +3095,10 @@
         <artifactId>shindig-gadgets</artifactId>
         <version>${shindig.version}</version>
         <exclusions>
+          <exclusion>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
           <!-- exclude bad versions 1.O.b2 -->
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -3125,6 +3158,10 @@
           <exclusion>
             <groupId>com.google.code.guice</groupId>
             <artifactId>guice</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xpp3</groupId>
+            <artifactId>xpp3_min</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
