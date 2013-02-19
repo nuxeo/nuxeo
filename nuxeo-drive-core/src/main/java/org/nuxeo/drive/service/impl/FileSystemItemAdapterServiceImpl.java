@@ -160,6 +160,18 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         return fileSystemItemFactories;
     }
 
+    public FileSystemItemFactory getFileSystemItemFactory(String name) {
+        for (FileSystemItemFactoryWrapper factoryWrapper : fileSystemItemFactories) {
+            FileSystemItemFactory factory = factoryWrapper.getFactory();
+            if (name.equals(factory.getName())) {
+                return factory;
+            }
+        }
+        log.debug(String.format(
+                "No fileSystemItemFactory named %s, returning null.", name));
+        return null;
+    }
+
     /*--------------------------- Protected ---------------------------------------*/
     protected void sortFileSystemItemFactories() throws Exception {
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedFactories();

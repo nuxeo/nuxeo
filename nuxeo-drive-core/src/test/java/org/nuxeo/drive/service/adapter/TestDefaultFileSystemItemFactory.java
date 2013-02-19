@@ -161,8 +161,7 @@ public class TestDefaultFileSystemItemFactory {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors().get(
-                "defaultFileSystemItemFactory").getFactory();
+        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
         assertTrue(defaultFileSystemItemFactory instanceof DefaultFileSystemItemFactory);
 
         // Set versioning delay to 1 second
