@@ -128,6 +128,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 			// note: we assume that all configuration is done in loginconfig, so there are NO parameters here
 			loginContext.login();
 			serverCredential = Subject.doAs(loginContext.getSubject(), getServerCredential);
+			logger.debug("Successfully initialized Kerberos auth module");
 		} catch(LoginException le) {
 			logger.error("Cannot create LoginContext, disabling Kerberos module", le);
 			this.disabled = true;
@@ -140,7 +141,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 
 	@Override
 	public Boolean needLoginPrompt(HttpServletRequest req) {
-		return !disabled && req.getHeader(SKIP_KERBEROS) == null;
+		return !disabled && (req.getHeader(SKIP_KERBEROS) == null);
 	}
 
 	
