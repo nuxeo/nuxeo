@@ -266,6 +266,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
             vo = VersioningOption.MAJOR;
         } else if (option == VersioningActions.ACTION_INCREMENT_MINOR) {
             vo = VersioningOption.MINOR;
+        } else if (option == VersioningActions.ACTION_NO_INCREMENT) {
+            vo = VersioningOption.NONE;
         } else {
             vo = null;
         }
