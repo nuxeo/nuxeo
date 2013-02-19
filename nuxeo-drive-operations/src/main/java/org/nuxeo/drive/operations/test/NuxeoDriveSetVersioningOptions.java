@@ -53,11 +53,12 @@ public class NuxeoDriveSetVersioningOptions {
         FileSystemItemFactory defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
         if (delay != null) {
             defaultFileSystemItemFactory.setParameter(
-                    FileSystemItemFactory.VERSIONING_DELAY_PARAM, delay);
+                    DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM, delay);
         }
         if (option != null) {
             defaultFileSystemItemFactory.setParameter(
-                    FileSystemItemFactory.VERSIONING_OPTION_PARAM, option);
+                    DefaultFileSystemItemFactory.VERSIONING_OPTION_PARAM,
+                    option);
         }
     }
 

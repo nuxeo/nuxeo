@@ -36,10 +36,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface FileSystemItemFactory {
 
-    static final String VERSIONING_DELAY_PARAM = "versioningDelay";
-
-    static final String VERSIONING_OPTION_PARAM = "versioningOption";
-
     /**
      * Sets the factory unique name.
      */
@@ -120,8 +116,7 @@ public interface FileSystemItemFactory {
             throws ClientException;
 
     /**
-     * Gets the factory parameters, such as {@link #VERSIONING_DELAY_PARAM} or
-     * {@link #VERSIONING_OPTION_PARAM}.
+     * Gets the factory parameters.
      */
     Map<String, String> getParameters();
 

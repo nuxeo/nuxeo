@@ -24,8 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.adapter.FileItem;
-import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -176,11 +176,11 @@ public class DocumentBackedFileItem extends
         }
         this.canUpdate = this.canRename;
         if (params != null) {
-            String versioningDelayParam = params.get(FileSystemItemFactory.VERSIONING_DELAY_PARAM);
+            String versioningDelayParam = params.get(DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM);
             if (!StringUtils.isEmpty(versioningDelayParam)) {
                 versioningDelay = Long.parseLong(versioningDelayParam);
             }
-            String versioningOptionParam = params.get(FileSystemItemFactory.VERSIONING_OPTION_PARAM);
+            String versioningOptionParam = params.get(DefaultFileSystemItemFactory.VERSIONING_OPTION_PARAM);
             if (!StringUtils.isEmpty(versioningOptionParam)) {
                 versioningOption = VersioningOption.valueOf(versioningOptionParam);
             }

@@ -166,7 +166,7 @@ public class TestDefaultFileSystemItemFactory {
 
         // Set versioning delay to 1 second
         defaultFileSystemItemFactory.setParameter(
-                FileSystemItemFactory.VERSIONING_DELAY_PARAM, "1");
+                DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM, "1");
         assertEquals("1",
                 defaultFileSystemItemFactory.getParameter("versioningDelay"));
         assertEquals("MINOR",

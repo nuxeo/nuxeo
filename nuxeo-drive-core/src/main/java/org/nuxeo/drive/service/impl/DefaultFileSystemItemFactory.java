@@ -47,6 +47,10 @@ public class DefaultFileSystemItemFactory implements FileSystemItemFactory {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactory.class);
 
+    public static final String VERSIONING_DELAY_PARAM = "versioningDelay";
+
+    public static final String VERSIONING_OPTION_PARAM = "versioningOption";
+
     protected String name;
 
     protected Map<String, String> parameters;
