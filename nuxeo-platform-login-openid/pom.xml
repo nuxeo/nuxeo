@@ -24,7 +24,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-oauth</artifactId>
-      <version>5.7-SNAPSHOT</version>
     </dependency>
 
     <dependency>
