@@ -11,17 +11,23 @@
 
   <c:if test="#{value.hasFacet('Video')}">
 
-    <ui:repeat var="item" value="#{storyboardActions.getItems(value)}">
-      <span class="videoStoryboardItem" timecode="#{item.timecode}">
-        <nxh:graphicImage url="#{item.url}" />
-      </span>
-    </ui:repeat>
+  <h3 class="summaryTitle">#{messages[widget.label]}</h3>
 
-    <script type="text/javascript">
-      jQuery(document).ready(function() {
-        NXVideo.initializeStoryBoard();
-      });
-    </script>
+  <c:if test="#{not empty label}">
+    <h3 class="summaryTitle">#{messages[label]}</h3>
+  </c:if>
+
+  <ui:repeat var="item" value="#{storyboardActions.getItems(value)}">
+    <span class="videoStoryboardItem" timecode="#{item.timecode}">
+      <nxh:graphicImage url="#{item.url}" />
+    </span>
+  </ui:repeat>
+
+  <script type="text/javascript">
+    jQuery(document).ready(function() {
+      NXVideo.initializeStoryBoard();
+    });
+  </script>
 
   </c:if>
 

@@ -35,21 +35,6 @@
       </property>
     </widgetType>
 
-    <widgetType name="summary_video_storyboard">
-      <documentation>
-        <p>This widget displays the story board of
-        a document having the facet 'Video'.</p>
-        <p>This widget has to be used inside a document summary.</p>
-      </documentation>
-
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /widgets/summary/summary_video_storyboard_widget_template.xhtml
-      </property>
-    </widgetType>
-
     <widgetType name="video_conversions">
       <documentation>
         This widget displays the list of available
@@ -87,17 +72,13 @@
         <property name="height">310</property>
       </properties>
     </widget>
-    <widget name="summary_video_storyboard" type="summary_video_storyboard">
+    <widget name="summary_video_storyboard" type="video_storyboard">
       <labels>
         <label mode="any">heading.storyboard</label>
       </labels>
       <translated>true</translated>
     </widget>
-    <widget name="summary_video_conversions" type="video_conversions">
-      <controls mode="any">
-        <control name="requireSurroundingForm">true</control>
-      </controls>
-    </widget>
+    <widget name="summary_video_conversions" type="video_conversions" />
     <widget name="summary_video_info" type="video_info" />
 
     <widget name="video_info_duration" type="text">
