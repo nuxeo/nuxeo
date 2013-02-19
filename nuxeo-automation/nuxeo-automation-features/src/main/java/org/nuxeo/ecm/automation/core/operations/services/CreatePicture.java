@@ -120,7 +120,7 @@ public class CreatePicture {
                 log.warn("Unable to read Blob from properties");
             } else {
                 PictureResourceAdapter adapter = picture.getAdapter(PictureResourceAdapter.class);
-                adapter.createPicture(blob, blob.getFilename(),
+                adapter.fillPictureViews(blob, blob.getFilename(),
                         picture.getTitle(), templates);
                 picture = session.saveDocument(picture);
             }

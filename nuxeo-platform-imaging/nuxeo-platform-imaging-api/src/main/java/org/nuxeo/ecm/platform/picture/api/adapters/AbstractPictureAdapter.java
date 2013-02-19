@@ -69,7 +69,7 @@ import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBAL
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WRITER;
 
-import java.awt.Point;
+import java.awt.*;
 import java.awt.color.ICC_Profile;
 import java.io.File;
 import java.io.IOException;
@@ -380,8 +380,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
         PictureTemplate pictureTemplate = new PictureTemplate(title,
                 description, tag, maxsize);
-        PictureView view = getImagingService().computeViewFor(
-                fileContent, pictureTemplate);
+        PictureView view = getImagingService().computeViewFor(fileContent,
+                pictureTemplate, true);
 
         List<Map<String, Serializable>> views = (List<Map<String, Serializable>>) doc.getPropertyValue(VIEWS_PROPERTY);
         if (views == null) {

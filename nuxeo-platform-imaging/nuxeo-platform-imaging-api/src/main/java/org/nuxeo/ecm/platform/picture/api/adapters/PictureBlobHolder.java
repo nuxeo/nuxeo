@@ -79,7 +79,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         String filename = blob == null ? null : blob.getFilename();
         String title = (String) doc.getPropertyValue("dc:title"); // re-set
         try {
-            picture.createPicture(blob, filename, title, pictureTemplates);
+            picture.fillPictureViews(blob, filename, title, pictureTemplates);
         } catch (IOException e) {
             throw new ClientException(e.toString(), e);
         }

@@ -17,18 +17,34 @@
 
 package org.nuxeo.ecm.platform.picture.listener;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.picture.PictureViewsGenerationWork;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Listener updating the views of a Picture if the main Blob has changed.
@@ -37,6 +53,10 @@ import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
  * @since 5.5
  */
 public class PictureChangedListener implements EventListener {
+
+    public static final String EMPTY_PICTURE_PATH = "nuxeo.war/img/empty_picture.png";
+
+    private static final Log log = LogFactory.getLog(PictureChangedListener.class);
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -52,11 +72,65 @@ public class PictureChangedListener implements EventListener {
             if (fileProp.isDirty()) {
                 // if the views are dirty, assume they're up to date
                 if (viewsProp == null || !viewsProp.isDirty()) {
-                    BlobHolder bh = doc.getAdapter(BlobHolder.class);
-                    bh.setBlob(fileProp.getValue(Blob.class));
+                    preFillPictureViews(docCtx.getCoreSession(), doc);
+                    // launch work doing the actual views generation
+                    PictureViewsGenerationWork work = new PictureViewsGenerationWork(
+                            doc.getRepositoryName(), doc.getRef());
+                    WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                    workManager.schedule(work,
+                            WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+                }
+            } else if (fileProp.getValue() == null) {
+                // no main Blob
+                preFillPictureViews(docCtx.getCoreSession(), doc);
+            }
+
+        }
+    }
+
+    protected void preFillPictureViews(CoreSession session, DocumentModel doc) {
+        try {
+            Blob blob = new FileBlob(
+                    FileUtils.getResourceFileFromContext(getEmptyPicturePath()));
+
+            MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+            String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
+                    blob.getFilename(), blob, null);
+            blob.setMimeType(mimeType);
+
+            DocumentModel parentDoc = getParentDocument(session, doc);
+
+            List<Map<String, Object>> pictureTemplates = null;
+            if (parentDoc != null
+                    && PICTUREBOOK_TYPE_NAME.equals(parentDoc.getType())) {
+                // use PictureBook Properties
+                pictureTemplates = (ArrayList<Map<String, Object>>) parentDoc.getPropertyValue("picturebook:picturetemplates");
+                if (pictureTemplates.isEmpty()) {
+                    pictureTemplates = null;
                 }
             }
+
+            PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
+            adapter.preFillPictureViews(blob, pictureTemplates);
+        } catch (Exception e) {
+            log.error("Error while : " + e.getMessage());
         }
+    }
+
+    protected String getEmptyPicturePath() {
+        return EMPTY_PICTURE_PATH;
+    }
+
+    protected DocumentModel getParentDocument(CoreSession session,
+            DocumentModel doc) throws ClientException {
+        DocumentModel parent;
+        if (session.exists(doc.getRef())) {
+            parent = session.getParentDocument(doc.getRef());
+        } else {
+            Path parentPath = doc.getPath().removeLastSegments(1);
+            parent = session.getDocument(new PathRef(parentPath.toString()));
+        }
+        return parent;
     }
 
 }

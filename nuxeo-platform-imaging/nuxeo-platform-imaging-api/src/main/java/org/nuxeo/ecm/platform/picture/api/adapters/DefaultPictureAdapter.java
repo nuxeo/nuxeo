@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -38,6 +39,9 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
+import org.nuxeo.ecm.platform.picture.api.ImagingService;
+import org.nuxeo.ecm.platform.picture.api.PictureTemplate;
+import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.runtime.api.Framework;
 
 public class DefaultPictureAdapter extends AbstractPictureAdapter {
@@ -54,6 +58,13 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     public boolean createPicture(Blob blob, String filename, String title,
             ArrayList<Map<String, Object>> pictureTemplates)
             throws IOException, ClientException {
+        return fillPictureViews(blob, filename, title, pictureTemplates);
+    }
+
+    @Override
+    public boolean fillPictureViews(Blob blob, String filename, String title,
+            ArrayList<Map<String, Object>> pictureTemplates)
+            throws IOException, ClientException {
         if (blob == null) {
             clearViews();
             return true;
@@ -66,8 +77,9 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             blob.transferTo(file);
             // use a persistent blob with our file
             if (!blob.isPersistent()) {
-                blob = new FileBlob(file, blob.getMimeType(), blob.getEncoding(),
-                        blob.getFilename(), blob.getDigest());
+                blob = new FileBlob(file, blob.getMimeType(),
+                        blob.getEncoding(), blob.getFilename(),
+                        blob.getDigest());
             }
         }
 
@@ -93,6 +105,43 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             addViews(pictureTemplates, filename, title);
         }
         return true;
+    }
+
+    @Override
+    public void preFillPictureViews(Blob blob,
+            List<Map<String, Object>> pictureTemplates) throws IOException,
+            ClientException {
+        List<PictureTemplate> templates = new ArrayList<PictureTemplate>();
+        if (pictureTemplates != null) {
+            for (Map<String, Object> template : pictureTemplates) {
+                templates.add(new PictureTemplate(
+                        (String) template.get("title"),
+                        (String) template.get("description"),
+                        (String) template.get("tag"), 0));
+            }
+        } else {
+            templates = computeDefaultPictureTemplates();
+        }
+
+        ImagingService imagingService = getImagingService();
+        List<PictureView> pictureViews = imagingService.computeViewsFor(blob,
+                templates, false);
+        List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
+        for (PictureView pictureView : pictureViews) {
+            views.add(pictureView.asMap());
+        }
+        doc.setPropertyValue(VIEWS_PROPERTY, (Serializable) views);
+    }
+
+    protected List<PictureTemplate> computeDefaultPictureTemplates() {
+        List<PictureTemplate> templates = new ArrayList<PictureTemplate>();
+        templates.add(new PictureTemplate("Medium", "Medium Size", "medium", 0));
+        templates.add(new PictureTemplate("Original", "Original", "original", 0));
+        templates.add(new PictureTemplate("Thumbnail", "Thumbnail Size",
+                "thumb", 0));
+        templates.add(new PictureTemplate("OriginalJpeg",
+                "Original Picture in JPEG format", "originalJpeg", 0));
+        return templates;
     }
 
     @Override

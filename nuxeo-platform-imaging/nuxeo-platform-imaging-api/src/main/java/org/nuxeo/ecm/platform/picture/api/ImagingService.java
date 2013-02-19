@@ -125,33 +125,41 @@ public interface ImagingService {
      * Computes a {@link PictureView} for the given {@code blob} and
      * {@code pictureTemplate}.
      *
-     * @return the compute picture view as a Map
-     *
+     * @param convert true if the {@code blob} is converted to fit each
+     *            {@code PictureTemplate}, false if the {@code blob} is put as
+     *            it in the PictureView (without any conversion)
+     * @return the computed picture view
      * @since 5.7
      */
-    PictureView computeViewFor(Blob blob, PictureTemplate pictureTemplate)
-            throws IOException, ClientException;
+    PictureView computeViewFor(Blob blob, PictureTemplate pictureTemplate,
+            boolean convert) throws IOException, ClientException;
 
     /**
      * Computes a List of {@link PictureView}s for the given {@code blob} and
      * {@code pictureTemplates}.
      *
-     * @return the compute picture view as a List of Maps
-     *
+     * @param convert true if the {@code blob} is converted to fit each
+     *            {@code PictureTemplate}, false if the {@code blob} is put as
+     *            it in the PictureView (without any conversion)
+     * @return the computed picture views as a List of {@code PictureView}s
      * @since 5.7
      */
     List<PictureView> computeViewsFor(Blob blob,
-            List<PictureTemplate> pictureTemplates) throws IOException,
-            ClientException;
+            List<PictureTemplate> pictureTemplates, boolean convert)
+            throws IOException, ClientException;
 
     /**
      * Computes a List of all {@link PictureView}s for each {@link Blob} of
      * {@code blobs}.
      *
+     * * @param convert true if the {@code blob} is converted to fit each
+     * {@code PictureTemplate}, false if the {@code blob} is put as it in the
+     * PictureView (without any conversion)
+     *
      * @since 5.7
      */
     List<List<PictureView>> computeViewsFor(List<Blob> blobs,
-            List<PictureTemplate> pictureTemplates) throws IOException,
-            ClientException;
+            List<PictureTemplate> pictureTemplates, boolean convert)
+            throws IOException, ClientException;
 
 }

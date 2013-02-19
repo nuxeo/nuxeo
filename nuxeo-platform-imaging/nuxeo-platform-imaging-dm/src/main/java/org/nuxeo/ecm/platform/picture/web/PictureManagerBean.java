@@ -187,7 +187,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
                         "picturebook", "picturetemplates");
             }
             PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
-            boolean status = picture.createPicture(fileContent, filename,
+            boolean status = picture.fillPictureViews(fileContent, filename,
                     title, pictureTemplates);
             if (!status) {
                 documentManager.cancel();

@@ -231,20 +231,21 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public PictureView computeViewFor(Blob blob, PictureTemplate pictureTemplate)
+    public PictureView computeViewFor(Blob blob,
+            PictureTemplate pictureTemplate, boolean convert)
             throws IOException, ClientException {
         String mimeType = blob.getMimeType();
         if (mimeType == null) {
             blob.setMimeType(getImageMimeType(blob));
         }
         ImageInfo imageInfo = getImageInfo(blob);
-        return computeViewFor(blob, pictureTemplate, imageInfo);
+        return computeViewFor(blob, pictureTemplate, imageInfo, convert);
     }
 
     @Override
     public List<PictureView> computeViewsFor(Blob blob,
-            List<PictureTemplate> pictureTemplates) throws IOException,
-            ClientException {
+            List<PictureTemplate> pictureTemplates, boolean convert)
+            throws IOException, ClientException {
         String mimeType = blob.getMimeType();
         if (mimeType == null) {
             blob.setMimeType(getImageMimeType(blob));
@@ -253,21 +254,26 @@ public class ImagingComponent extends DefaultComponent implements
         ImageInfo imageInfo = getImageInfo(blob);
         List<PictureView> views = new ArrayList<PictureView>();
         for (PictureTemplate pictureTemplate : pictureTemplates) {
-            views.add(computeViewFor(blob, pictureTemplate, imageInfo));
+            views.add(computeViewFor(blob, pictureTemplate, imageInfo, convert));
         }
         return views;
     }
 
     protected PictureView computeViewFor(Blob blob,
-            PictureTemplate pictureTemplate, ImageInfo imageInfo)
-            throws IOException, ClientException {
-        String title = pictureTemplate.getTitle();
-        if ("Original".equals(title)) {
-            return computeOriginalView(blob, pictureTemplate, imageInfo);
-        } else if ("OriginalJpeg".equals(title)) {
-            return computeOriginalJpegView(blob, pictureTemplate, imageInfo);
+            PictureTemplate pictureTemplate, ImageInfo imageInfo,
+            boolean convert) throws IOException, ClientException {
+        if (convert) {
+            String title = pictureTemplate.getTitle();
+            if ("Original".equals(title)) {
+                return computeOriginalView(blob, pictureTemplate, imageInfo);
+            } else if ("OriginalJpeg".equals(title)) {
+                return computeOriginalJpegView(blob, pictureTemplate, imageInfo);
+            } else {
+                return computeView(blob, pictureTemplate, imageInfo);
+            }
         } else {
-            return computeView(blob, pictureTemplate, imageInfo);
+            return computeViewWithoutConversion(blob, pictureTemplate,
+                    imageInfo);
         }
     }
 
@@ -384,6 +390,19 @@ public class ImagingComponent extends DefaultComponent implements
         return new PictureViewImpl(map);
     }
 
+    protected PictureView computeViewWithoutConversion(Blob blob,
+            PictureTemplate pictureTemplate, ImageInfo imageInfo) {
+        PictureView view = new PictureViewImpl();
+        view.setBlob(blob);
+        view.setWidth(imageInfo.getWidth());
+        view.setHeight(imageInfo.getHeight());
+        view.setFilename(blob.getFilename());
+        view.setTitle(pictureTemplate.getTitle());
+        view.setDescription(pictureTemplate.getDescription());
+        view.setTag(pictureTemplate.getTag());
+        return view;
+    }
+
     protected static Point getSize(Point current, int max) {
         int x = current.x;
         int y = current.y;
@@ -404,11 +423,11 @@ public class ImagingComponent extends DefaultComponent implements
 
     @Override
     public List<List<PictureView>> computeViewsFor(List<Blob> blobs,
-            List<PictureTemplate> pictureTemplates) throws IOException,
-            ClientException {
+            List<PictureTemplate> pictureTemplates, boolean convert)
+            throws IOException, ClientException {
         List<List<PictureView>> allViews = new ArrayList<List<PictureView>>();
         for (Blob blob : blobs) {
-            allViews.add(computeViewsFor(blob, pictureTemplates));
+            allViews.add(computeViewsFor(blob, pictureTemplates, convert));
         }
         return allViews;
     }

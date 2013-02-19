@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.picture.workmanager" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="pictureViewsGeneration">
+      <maxThreads>1</maxThreads>
+      <category>pictureViewsGeneration</category>
+    </queue>
+  </extension>
+
+</component>
