@@ -74,7 +74,7 @@ author: lkemen@nuxeo.com
   position: relative;
   vertical-align: top;
   min-width: 128px;
-  max-width: 170px }
+  max-width: 140px }
 
 .bubbleBox:hover {
   background-color: "color.major.light (__FLAVOR__ background)";
