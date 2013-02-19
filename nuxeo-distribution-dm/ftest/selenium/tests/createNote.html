@@ -11,14 +11,14 @@
 <!--@Test groups:CreateNote|depends:introduction-->
 <!--Identification-->
 <tr>
-  <td>setTimeout</td>
-  <td>30000</td>
-  <td></td>
+	<td>setTimeout</td>
+	<td>30000</td>
+	<td></td>
 </tr>
 <tr>
-        <td>open</td>
-        <td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium createNote</td>
-        <td></td>
+	<td>open</td>
+	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium createNote</td>
+	<td></td>
 </tr>
 <tr>
 	<td>open</td>
@@ -52,8 +52,18 @@
 </tr>
 <!--Création de la note-->
 <tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
 	<td>mouseDown</td>
 	<td>link=New</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
@@ -63,12 +73,12 @@
 </tr>
 <tr>
 	<td>type</td>
-	<td>//td[@class="fieldColumn"]/input[@type="text"]</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/input[@type=&quot;text&quot;]</td>
 	<td>testNote1</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>//td[@class="fieldColumn"]/textarea</td>
+	<td>//td[@class=&quot;fieldColumn&quot;]/textarea</td>
 	<td>desc testNote1</td>
 </tr>
 <tr>
@@ -97,7 +107,6 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>
