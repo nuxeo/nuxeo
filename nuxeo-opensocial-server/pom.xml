@@ -97,6 +97,11 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>xpp3</groupId>
+      <artifactId>xpp3</artifactId>
+      <classifier>clean</classifier>
+    </dependency>
+    <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
     </dependency>
