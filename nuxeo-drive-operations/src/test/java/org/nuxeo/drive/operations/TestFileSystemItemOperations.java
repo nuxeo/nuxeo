@@ -744,6 +744,21 @@ public class TestFileSystemItemOperations {
 
         canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
                 String.class);
+
+        // syncRoot2 is not registered as a sync root for joe
+        assertEquals("false", canMoveFSItem);
+
+        nuxeoDriveManager.registerSynchronizationRoot("joe",
+                syncRoot2, session);
+        session.save();
+        canMoveFSItemJSON = (Blob) clientSession.newRequest(
+                NuxeoDriveCanMove.ID).set("srcId",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+                "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+        assertNotNull(canMoveFSItemJSON);
+        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
+                String.class);
+        // syncRoot2 is now a registered root for joe
         assertEquals("true", canMoveFSItem);
 
         // ----------------------------------------------------------------------
