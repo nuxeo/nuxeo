@@ -21,7 +21,7 @@ ktadd -k /tmp/keytab HTTP/servername
 
 (you may create as many principals you want and add their keys to the same keytab, e.g. HTTP/nuxeo@COMPANY and HTTP/nuxeo.company.com@COMPANY).
 
-In Microsoft Active Directory, create a user (with "password does not expire" checked and "use must change password unchecked") then, in a command-line window register the service principal name(s) you want this user to respond to (generally the server name in its short and fully qualified forms - note that again, it *has* to correspond to the server's canonical name in DNS):
+In Microsoft Active Directory, create a user (with "password does not expire" checked and "use must change password" unchecked) then, in a command-line window register the service principal name(s) you want this user to respond to (generally the server name in its short and fully qualified forms - note that again, it *has* to correspond to the server's canonical name in DNS):
 
 setspn -a HTTP/servername@REALM <username>
 setspn -a HTTP/fully.qualified.servername@REALM <username>
@@ -32,7 +32,7 @@ setspn -l <username>
 
 Then export the keytab with:
 
-ktpass /out C:\temp\http.keytab /princ HTTP/servername@REALM /mapuser domain\username /pass password /crypto DES-CBC-MD5 /ptype KRB5_NT_PRINCIPAL /kvno 0
+ktpass /out C:\temp\http.keytab /princ HTTP/servername@REALM /mapuser domain\username /pass password /crypto RC4-HMAC-NT /ptype KRB5_NT_PRINCIPAL /kvno 0
 
 (/mapuser and /pass should not be strictly necessary after setspn, but better be safe than sorry.)
 
