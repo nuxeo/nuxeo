@@ -57,6 +57,8 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
     public static final String PROVIDER_URL_PARAM_NAME = "provider";
 
+    protected UserResolverHelper userResolver = new UserResolverHelper();
+
     protected void sendError(HttpServletRequest req, String msg) {
         req.setAttribute(LOGIN_ERROR, msg);
     }
@@ -108,9 +110,9 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
                 return null;
             }
 
-            UserInfo info = provider.getUserInfo(accessToken);
+            OpenIdUserInfo info = provider.getUserInfo(accessToken);
 
-            String userId = findUser(info);
+            String userId = userResolver.findNuxeoUser(info);
 
             if (userId == null) {
                 sendError(req, "No user found with email: \"" + info.email
@@ -125,30 +127,6 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
         }
 
         return null;
-    }
-
-    protected String findUser(UserInfo userInfo) {
-
-        try {
-            UserManager userManager = Framework.getLocalService(UserManager.class);
-            Map<String, Serializable> query = new HashMap<String, Serializable>();
-            query.put(userManager.getUserEmailField(), userInfo.email);
-
-            DocumentModelList users = userManager.searchUsers(query, null);
-
-            if (users.isEmpty()) {
-                return null;
-            }
-
-            DocumentModel user = users.get(0);
-            return (String) user.getPropertyValue(userManager.getUserIdField());
-
-        } catch (ClientException e) {
-            log.error("Error while search user in UserManager using email "
-                    + userInfo.email, e);
-            return null;
-        }
-
     }
 
     public List<String> getUnAuthenticatedURLPrefix() {

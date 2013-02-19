@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.oauth2.openid.auth.UserInfo;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIdUserInfo;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
@@ -112,11 +112,9 @@ public class OpenIDConnectProvider {
                     HTTP_TRANSPORT, JSON_FACTORY);
 
             String redirectUri = getRedirectUri(req);
-
             response = flow.newTokenRequest(code).setRedirectUri(redirectUri).executeUnparsed();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error during OAuth2 Authorization", e);
         }
 
         String type = response.getContentType();
@@ -136,6 +134,7 @@ public class OpenIDConnectProvider {
 
                 TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
                 accessToken = tokenResponse.getAccessToken();
+
             }
         } catch (IOException e) {
             log.error("Unable to parse server response", e);
@@ -144,8 +143,8 @@ public class OpenIDConnectProvider {
         return accessToken;
     }
 
-    public UserInfo getUserInfo(String accessToken) {
-        UserInfo userInfo = null;
+    public OpenIdUserInfo getUserInfo(String accessToken) {
+        OpenIdUserInfo userInfo = null;
 
         HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(new HttpRequestInitializer() {
             @Override
@@ -160,7 +159,7 @@ public class OpenIDConnectProvider {
         try {
             HttpRequest request = requestFactory.buildGetRequest(url);
             HttpResponse response = request.execute();
-            userInfo = response.parseAs(UserInfo.class);
+            userInfo = response.parseAs(OpenIdUserInfo.class);
 
         } catch (IOException e) {
             log.error("Unable to parse server response", e);
