@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service;
 
 import java.security.Principal;
+import java.util.Map;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
@@ -34,6 +35,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @see DefaultFileSystemItemFactory
  */
 public interface FileSystemItemFactory {
+
+    static final String VERSIONING_DELAY_PARAM = "versioningDelay";
+
+    static final String VERSIONING_OPTION_PARAM = "versioningOption";
 
     /**
      * Sets the factory unique name.
@@ -113,5 +118,26 @@ public interface FileSystemItemFactory {
      */
     FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException;
+
+    /**
+     * Gets the factory parameters, such as {@link #VERSIONING_DELAY_PARAM} or
+     * {@link #VERSIONING_OPTION_PARAM}.
+     */
+    Map<String, String> getParameters();
+
+    /**
+     * Sets the factory parameters.
+     */
+    void setParameters(Map<String, String> parameters);
+
+    /**
+     * Gets the factory parameter with the given name.
+     */
+    String getParameter(String name);
+
+    /**
+     * Sets the factory parameter with the given name to the given value.
+     */
+    void setParameter(String name, String value);
 
 }

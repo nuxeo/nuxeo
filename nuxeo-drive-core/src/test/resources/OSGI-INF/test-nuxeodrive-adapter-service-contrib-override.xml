@@ -19,7 +19,12 @@
       class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
     <fileSystemItemFactory name="dummyDocTypeFactory"
       order="30" docType="File"
-      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
+      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory">
+      <parameters>
+        <parameter name="versioningDelay">60</parameter>
+        <parameter name="versioningOption">MAJOR</parameter>
+      </parameters>
+    </fileSystemItemFactory>
 
   </extension>
 

@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -118,8 +120,6 @@ public class TestDefaultFileSystemItemFactory {
         principal = session.getPrincipal();
         rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + session.getRootDocument().getId();
-        // Set versioning delay to 1 second
-        nuxeoDriveManager.setVersioningDelay(1);
 
         // File
         file = session.createDocumentModel("/", "aFile", "File");
@@ -164,6 +164,14 @@ public class TestDefaultFileSystemItemFactory {
         defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors().get(
                 "defaultFileSystemItemFactory").getFactory();
         assertTrue(defaultFileSystemItemFactory instanceof DefaultFileSystemItemFactory);
+
+        // Set versioning delay to 1 second
+        defaultFileSystemItemFactory.setParameter(
+                FileSystemItemFactory.VERSIONING_DELAY_PARAM, "1");
+        assertEquals("1",
+                defaultFileSystemItemFactory.getParameter("versioningDelay"));
+        assertEquals("MINOR",
+                defaultFileSystemItemFactory.getParameter("versioningOption"));
     }
 
     @Test
@@ -436,13 +444,22 @@ public class TestDefaultFileSystemItemFactory {
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         assertTrue(fileItem.getCanUpdate());
 
+        // ------------------------------------------------------------
+        // DocumentBackedFileItem#getVersioningDelay
+        // and DocumentBackedFileItem#getVersioningOption
+        // ------------------------------------------------------------
+        // Re-fetch file with Administrator session
+        file = session.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        assertEquals(1,
+                ((DocumentBackedFileItem) fileItem).getVersioningDelay());
+        assertEquals(VersioningOption.MINOR,
+                ((DocumentBackedFileItem) fileItem).getVersioningOption());
+
         // ------------------------------------------------------
         // FileItem#getBlob and FileItem#setBlob
         // ------------------------------------------------------
         // #getBlob
-        // Re-fetch file with Administrator session
-        file = session.getDocument(file.getRef());
-        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         Blob fileItemBlob = fileItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());

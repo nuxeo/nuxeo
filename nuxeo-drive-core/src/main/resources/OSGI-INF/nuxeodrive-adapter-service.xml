@@ -48,7 +48,12 @@
           target="org.nuxeo.drive.service.FileSystemItemAdapterService"
           point="fileSystemItemFactory">
           <fileSystemItemFactory name="defaultFileSystemItemFactory" order="50"
-            class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
+            class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory">
+            <parameters>
+              <parameter name="versioningDelay">3600</parameter>
+              <parameter name="versioningOption">MINOR</parameter>
+            </parameters>
+          </fileSystemItemFactory>
          </extension>
       </code>
 
