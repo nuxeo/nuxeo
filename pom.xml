@@ -136,6 +136,7 @@
     <xdocreport.version>1.0.0</xdocreport.version>
     <itext.version>2.1.7</itext.version>
     <jclouds.version>1.5.3</jclouds.version>
+    <google.client.version>1.12.0-beta</google.client.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -3241,7 +3242,27 @@
         <artifactId>xmlunit</artifactId>
         <version>1.3</version>
       </dependency>
-
+      <!-- OAUth2 libs -->
+      <dependency>
+        <groupId>com.google.http-client</groupId>
+        <artifactId>google-http-client</artifactId>
+        <version>${google.client.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.http-client</groupId>
+        <artifactId>google-http-client-jackson</artifactId>
+        <version>${google.client.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.oauth-client</groupId>
+        <artifactId>google-oauth-client</artifactId>
+        <version>${google.client.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.api-client</groupId>
+        <artifactId>google-api-client</artifactId>
+        <version>${google.client.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.dts</groupId>
         <artifactId>jmyspell-core</artifactId>
