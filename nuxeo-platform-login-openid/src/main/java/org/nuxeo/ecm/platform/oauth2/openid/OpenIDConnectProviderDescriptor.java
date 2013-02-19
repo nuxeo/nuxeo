@@ -26,34 +26,34 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("provider")
 public class OpenIDConnectProviderDescriptor implements Serializable {
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     @XNode("@enabled")
-    private boolean enabled = true;
+    protected boolean enabled = true;
 
     @XNode("name")
-    private String name;
+    protected String name;
 
     @XNode("tokenServerURL")
-    private String tokenServerURL;
+    protected String tokenServerURL;
 
     @XNode("authorizationServerURL")
-    private String authorizationServerURL;
+    protected String authorizationServerURL;
 
     @XNode("userInfoURL")
-    private String userInfoURL;
+    protected String userInfoURL;
 
     @XNode("clientId")
-    private String clientId;
+    protected String clientId;
 
     @XNode("clientSecret")
-    private String clientSecret;
+    protected String clientSecret;
 
     @XNodeList(value = "scope", type = String[].class, componentType = String.class)
     public String[] scopes;
 
     @XNode("icon")
-    private String icon;
+    protected String icon;
 
     public static long getSerialversionuid() {
         return serialVersionUID;

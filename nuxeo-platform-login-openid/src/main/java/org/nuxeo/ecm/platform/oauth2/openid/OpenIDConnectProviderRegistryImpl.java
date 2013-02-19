@@ -36,6 +36,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Nelson Silva <nelson.silva@inevo.pt>
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * @since 5.7
  */
 public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
         implements OpenIDConnectProviderRegistry {
@@ -46,7 +48,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
 
     protected Map<String, OpenIDConnectProvider> providers = new HashMap<String, OpenIDConnectProvider>();
 
-    protected List<OpenIDConnectProviderDescriptor> pendingProviders = new ArrayList<OpenIDConnectProviderDescriptor>();
+    protected OpenIDProviderFragmentRegistry pendingProviders = new OpenIDProviderFragmentRegistry();
 
     protected OAuth2ServiceProviderRegistry getOAuth2ServiceProviderRegistry() {
         return Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
@@ -59,20 +61,18 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
         if (PROVIDER_EP.equals(extensionPoint)) {
             OpenIDConnectProviderDescriptor provider = (OpenIDConnectProviderDescriptor) contribution;
 
-            if (provider.getClientId() != null
-                    && provider.getClientSecret() != null) {
-                System.out.println(provider.getName()
-                        + " Registred !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                log.info("OpenId provider for " + provider.getName()
-                        + " will be registred at application startup");
-                // delay registration because data sources may not be available
-                // at this point
-                pendingProviders.add(provider);
-            } else {
+            if (provider.getClientId() == null
+                    || provider.getClientSecret() == null) {
                 log.warn("OpenId provider for "
                         + provider.getName()
-                        + " is skipped because clientId and/or clientSecret are empty");
+                        + " is disbaled because clientId and/or clientSecret are empty");
+                provider.setEnabled(false);
             }
+            log.info("OpenId provider for " + provider.getName()
+                    + " will be registred at application startup");
+            // delay registration because data sources may not be available
+            // at this point
+            pendingProviders.addContribution(provider);
         }
     }
 
@@ -98,32 +98,46 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
     }
 
     protected void registerPendingProviders() throws Exception {
-        for (OpenIDConnectProviderDescriptor provider : pendingProviders) {
+        for (OpenIDConnectProviderDescriptor provider : pendingProviders.getContribs()) {
             registerOpenIdProvider(provider);
         }
-        pendingProviders.clear();
     }
 
     protected void registerOpenIdProvider(
             OpenIDConnectProviderDescriptor provider) throws Exception {
+
         OAuth2ServiceProviderRegistry oauth2ProviderRegistry = getOAuth2ServiceProviderRegistry();
 
-        NuxeoOAuth2ServiceProvider oauth2Provider = oauth2ProviderRegistry.getProvider(provider.getName());
+        if (oauth2ProviderRegistry != null) {
 
-        if (oauth2Provider == null) {
-            oauth2Provider = oauth2ProviderRegistry.addProvider(
-                    provider.getName(), provider.getTokenServerURL(),
-                    provider.getAuthorizationServerURL(),
-                    provider.getClientId(), provider.getClientSecret(),
-                    Arrays.asList(provider.getScopes()));
+            NuxeoOAuth2ServiceProvider oauth2Provider = oauth2ProviderRegistry.getProvider(provider.getName());
+
+            if (oauth2Provider == null) {
+                oauth2Provider = oauth2ProviderRegistry.addProvider(
+                        provider.getName(), provider.getTokenServerURL(),
+                        provider.getAuthorizationServerURL(),
+                        provider.getClientId(), provider.getClientSecret(),
+                        Arrays.asList(provider.getScopes()));
+            } else {
+                log.warn("Provider "
+                        + provider.getName()
+                        + " is already in the Database, XML contribution  won't overwrite it");
+            }
+            providers.put(
+                    provider.getName(),
+                    new OpenIDConnectProvider(oauth2Provider,
+                            provider.getUserInfoURL(), provider.getIcon(),
+                            provider.isEnabled()));
+
         } else {
-            log.warn("Provider "
-                    + provider.getName()
-                    + " is already in the Database, XML contribution  won't overwrite it");
+            if (Framework.isTestModeSet()) {
+                providers.put(provider.getName(), new OpenIDConnectProvider(
+                        null, provider.getUserInfoURL(), provider.getIcon(),
+                        provider.isEnabled()));
+            } else {
+                log.error("Can not register OAuth Provider since OAuth Registry is not available");
+            }
         }
-        providers.put(provider.getName(), new OpenIDConnectProvider(
-                oauth2Provider, provider.getUserInfoURL(), provider.getIcon(),
-                provider.isEnabled()));
     }
 
     @Override

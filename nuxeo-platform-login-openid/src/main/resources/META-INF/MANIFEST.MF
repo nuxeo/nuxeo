@@ -5,4 +5,5 @@ Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/auth-contrib.xml, 
  OSGI-INF/openid-connect-provider-registry.xml,
  OSGI-INF/openid-google-contrib.xml
-Bundle-SymbolicName: nuxeo-platform-login-openid
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.openid;singleton:=true
+
