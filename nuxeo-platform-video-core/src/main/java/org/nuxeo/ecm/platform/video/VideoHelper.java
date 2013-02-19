@@ -170,7 +170,7 @@ public class VideoHelper {
                 && result.getBlob().getLength() > 0) {
             PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
             try {
-                picture.createPicture(result.getBlob(),
+                picture.fillPictureViews(result.getBlob(),
                         result.getBlob().getFilename(), docModel.getTitle(),
                         new ArrayList<Map<String, Object>>(templates));
             } catch (Exception e) {
@@ -186,7 +186,7 @@ public class VideoHelper {
             Blob blob = StreamingBlob.createFromStream(is, "image/jpeg").persist();
             blob.setFilename(MISSING_PREVIEW_PICTURE.replace('/', '-'));
             PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
-            picture.createPicture(blob, blob.getFilename(),
+            picture.fillPictureViews(blob, blob.getFilename(),
                     docModel.getTitle(), new ArrayList<Map<String, Object>>(
                             templates));
         }
