@@ -20,7 +20,7 @@ package org.nuxeo.dam;
 /**
  * @since 5.7
  */
-public class DamConstants {
+public final class DamConstants {
 
     private DamConstants() {
         // Constants class

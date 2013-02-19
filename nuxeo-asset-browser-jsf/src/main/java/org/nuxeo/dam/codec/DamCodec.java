@@ -19,22 +19,8 @@ package org.nuxeo.dam.codec;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.DocumentLocation;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.codec.DocumentIdCodec;
 import org.nuxeo.ecm.platform.url.codec.DocumentPathCodec;
-import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @since 5.7

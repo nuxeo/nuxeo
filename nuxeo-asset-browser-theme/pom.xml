@@ -8,7 +8,6 @@
     <version>5.7-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.dam</groupId>
   <artifactId>nuxeo-asset-browser-theme</artifactId>
   <name>Nuxeo Asset Browser Theme</name>
   <description>Nuxeo Asset Browser Theme</description>
