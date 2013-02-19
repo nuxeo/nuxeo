@@ -53,8 +53,7 @@ public class OAuth2TokenStore implements CredentialStore {
         try {
             storeTokenAsDirectoryEntry(token);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error during token storage", e);
         }
     }
 
@@ -74,7 +73,7 @@ public class OAuth2TokenStore implements CredentialStore {
             credential.setExpirationTimeMilliseconds(token.getExpirationTimeMilliseconds());
             return true;
         } catch (Exception e) {
-
+            log.error("Error during token loading", e);
             return false;
         }
     }
