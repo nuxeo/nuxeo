@@ -3145,6 +3145,10 @@
         <artifactId>shindig-gadgets</artifactId>
         <version>${shindig.version}</version>
         <exclusions>
+          <exclusion>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
           <!-- exclude bad versions 1.O.b2 -->
           <exclusion>
             <groupId>xml-apis</groupId>
