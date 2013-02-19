@@ -10,7 +10,6 @@
     <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
       <nxh:graphicImage value="#{thumbnailUrl}"
         rendered="#{not empty thumbnailUrl}" />
-      <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}" />
     </c:if>
   </nxu:set>
 </div>
