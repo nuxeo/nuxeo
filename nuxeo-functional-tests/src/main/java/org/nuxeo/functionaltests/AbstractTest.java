@@ -150,6 +150,8 @@ public abstract class AbstractTest {
     protected static ProxyServer proxyServer = null;
 
     /**
+     *
+     *
      * @since 5.7
      */
     protected class LogTestWatchman extends TestWatchman {
@@ -684,36 +686,7 @@ public abstract class AbstractTest {
 
     public static List<WebElement> findElementsWithTimeout(By by)
             throws NoSuchElementException {
-        return findElementsWithTimeout(by, LOAD_TIMEOUT_SECONDS * 1000, null);
-    }
-
-    public static List<WebElement> findElementsWithTimeout(By by, int timeout,
-            WebElement parentElement) throws NoSuchElementException {
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(timeout);
-        NoSuchElementException lastException = null;
-        while (clock.isNowBefore(end)) {
-            try {
-                List<WebElement> elements;
-                if (parentElement == null) {
-                    elements = driver.findElements(by);
-                } else {
-                    elements = parentElement.findElements(by);
-                }
-                if (elements != null) {
-                    return elements;
-                }
-            } catch (NoSuchElementException e) {
-                lastException = e;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-        }
-        throw new NoSuchElementException(String.format(
-                "Couldn't find element '%s' after timeout", by), lastException);
+        return driver.findElements(by);
     }
 
     /**

@@ -23,8 +23,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -41,8 +39,6 @@ import org.openqa.selenium.support.FindBy;
  */
 public class ContentTabSubPage extends DocumentBasePage {
 
-    private static final Log log = LogFactory.getLog(ContentTabSubPage.class);
-
     private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
 
     @Required
@@ -58,7 +54,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     /**
      * Clicking on one of the child with the title.
-     *
+     * 
      * @param documentTitle
      */
     public DocumentBasePage goToDocument(String documentTitle) {
@@ -68,34 +64,23 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     /**
      * Clicks on the new button and select the type of document to create
-     *
+     * 
      * @param docType the document type to create
      * @param pageClassToProxy The page object type to return
      * @return The create form page object
      */
     public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
         newButton.click();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            // ignore
-        }
-        WebElement fancyBox = findElementWithTimeout(By.id("fancybox-content"));
-        WebElement title = findElementWithTimeout(By.tagName("h3"), fancyBox);
-        log.info(title.getText());
         WebElement link = null;
-        int counter = 0;
-        for (WebElement element : fancyBox.findElements(By.className("documentType"))) {
+        for (WebElement element : driver.findElements(By.className("documentType"))) {
             try {
                 link = element.findElement(By.linkText(docType));
-                counter++;
-                log.info(link.getText());
                 break;
             } catch (NoSuchElementException e) {
                 // next
             }
+
         }
-        log.info("Counter: " + counter);
         assertNotNull(link);
         link.click();
         return asPage(pageClassToProxy);
