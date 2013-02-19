@@ -53,11 +53,6 @@
       <category>USER_CENTER</category>
     </action>
 
-    <action id="UserOAuthSubscriber" link="/incl/oauth_subscriber.xhtml"
-      label="oauth.subscriber.tab.view" order="10">
-      <category>OAuthSubscriber_sub_tab</category>
-    </action>
-
   </extension>
 
 </component>

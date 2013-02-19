@@ -17,7 +17,7 @@
           var="detailButtonLabel"/>
 
  <c:if test="#{bean.editableEntry == null and showAddControl == 'true' }">
-        <h:form id="showHideAddDirectoryEntry">
+        <h:form>
 
           <h4>
             <h:commandLink
@@ -35,7 +35,7 @@
         <c:if test="#{bean.showAddForm}">
           <div class="tabsContent">
 
-           <h:form id="addEntryForm">
+           <h:form>
 
             <div class="vocabularyEntryContent">
 
@@ -61,17 +61,15 @@
  <c:if test="#{bean.editableEntry != null}">
 
         <div class="vocabularyEntryContent">
-          <h:form id="editDirectoryEntry">
+          <h:form>
 
             <nxl:layout name="#{entryLayoutName}" mode="#{detailMode}"
               value="#{bean.editableEntry}" />
             <div class="buttons">
               <h:commandButton value="#{messages['command.save']}"
-                id="editDirectoryEntryButton"
                 styleClass="button"
                 action="#{bean.saveEntry}" rendered="#{detailMode == 'edit'}"/>
               <h:commandButton value="#{messages['command.back']}"
-                id="cancelEditingDirectoryEntryButton"
                 styleClass="button"
                 action="#{bean.resetEditEntry}"
                 immediate="true" />
@@ -85,7 +83,7 @@
 
 <c:if test="#{bean.editableEntry == null}">
 
-<h:form id="entryList">
+<h:form>
 
 <div style="float:right">
 <h:commandLink action="#{bean.refresh}">

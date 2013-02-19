@@ -210,6 +210,7 @@
           <property name="help">
           label.oauth.help.consumerKey
           </property>
+          <property name="size">60</property>
         </properties>
       </widget>
       <widget name="consumerSecret" type="text">
@@ -224,6 +225,7 @@
           <property name="help">
           label.oauth.help.consumerSecret
           </property>
+          <property name="size">60</property>
         </properties>
       </widget>
       <widget name="publicKey" type="text">
@@ -238,6 +240,7 @@
           <property name="help">
           label.oauth.help.publicKey
           </property>
+          <property name="size">100</property>
         </properties>
       </widget>
       <widget name="enabled" type="checkbox">
@@ -266,6 +269,7 @@
           <property name="help">
           label.oauth.help.description
           </property>
+          <property name="size">30</property>
         </properties>
       </widget>
       <widget name="requestTokenURL" type="text">
@@ -280,6 +284,7 @@
           <property name="help">
           label.oauth.help.requestTokenURL
           </property>
+          <property name="size">50</property>
         </properties>
       </widget>
       <widget name="userAuthorizationURL" type="text">
@@ -294,6 +299,7 @@
           <property name="help">
           label.oauth.help.userAuthorizationURL
           </property>
+          <property name="size">50</property>
         </properties>
       </widget>
       <widget name="accessTokenURL" type="text">
@@ -308,6 +314,7 @@
           <property name="help">
           label.oauth.help.accessTokenURL
           </property>
+          <property name="size">50</property>
         </properties>
       </widget>
       <widget name="gadgetUrl" type="text">
@@ -322,6 +329,7 @@
           <property name="help">
           label.oauth.help.gadgetUrl
           </property>
+          <property name="size">50</property>
         </properties>
       </widget>
       <widget name="serviceName" type="text">
@@ -392,6 +400,13 @@
         <fields>
           <field>oauth2ServiceProvider.authorizationServerURL</field>
         </fields>
+        <properties mode="edit">
+           <property name="size">50</property>
+        </properties>
+        <widgetModes>
+          <mode value="view_list">hidden</mode>
+          <mode value="view_list_and_header">hidden</mode>
+        </widgetModes>
       </widget>
       <widget name="tokenServerURL" type="text">
         <labels>
@@ -400,6 +415,13 @@
         <fields>
           <field>oauth2ServiceProvider.tokenServerURL</field>
         </fields>
+        <properties mode="edit">
+           <property name="size">50</property>
+        </properties>
+        <widgetModes>
+          <mode value="view_list">hidden</mode>
+          <mode value="view_list_and_header">hidden</mode>
+        </widgetModes>
       </widget>
       <widget name="clientId" type="text">
         <labels>
@@ -408,6 +430,10 @@
         <fields>
           <field>oauth2ServiceProvider.clientId</field>
         </fields>
+        <properties mode="edit">
+           <property name="size">40</property>
+        </properties>
+
       </widget>
       <widget name="userAuthorizationURL" type="text">
         <labels>
@@ -416,6 +442,13 @@
         <fields>
           <field>oauth2ServiceProvider.userAuthorizationURL</field>
         </fields>
+        <properties mode="edit">
+           <property name="size">50</property>
+        </properties>
+        <widgetModes>
+          <mode value="view_list">hidden</mode>
+          <mode value="view_list_and_header">hidden</mode>
+        </widgetModes>
       </widget>
       <widget name="clientSecret" type="text">
         <labels>
@@ -424,6 +457,13 @@
         <fields>
           <field>oauth2ServiceProvider.clientSecret</field>
         </fields>
+        <properties mode="edit">
+           <property name="size">60</property>
+        </properties>
+        <widgetModes>
+          <mode value="view_list">hidden</mode>
+          <mode value="view_list_and_header">hidden</mode>
+        </widgetModes>
       </widget>
       <widget name="scopes" type="text">
         <labels>
@@ -842,6 +882,97 @@
         <properties mode="any">
           <property name="help">
           label.oauth.help.durationInMinutes
+          </property>
+        </properties>
+      </widget>
+
+    </layout>
+
+
+  <layout name="oauth2ProviderTokenLayoutAdmin">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>id</widget>
+        </row>
+        <row>
+          <widget>serviceName</widget>
+        </row>
+        <row>
+          <widget>accessToken</widget>
+        </row>
+        <row>
+          <widget>refreshToken</widget>
+        </row>
+        <row>
+          <widget>nuxeoLogin</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+      </rows>
+
+      <widget name="id" type="text">
+        <labels>
+          <label mode="any">Id</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.id</field>
+        </fields>
+      </widget>
+      <widget name="serviceName" type="text">
+        <labels>
+          <label mode="any">Service Name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.serviceName</field>
+        </fields>
+      </widget>
+      <widget name="accessToken" type="text">
+        <labels>
+          <label mode="any">Access Token </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.accessToken</field>
+        </fields>
+      </widget>
+      <widget name="refreshToken" type="text">
+        <labels>
+          <label mode="any">Refresh Token</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.refreshToken</field>
+        </fields>
+      </widget>
+      <widget name="nuxeoLogin" type="text">
+        <labels>
+          <label mode="any">Nuxeo Login</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.nuxeoLogin</field>
+        </fields>
+      </widget>
+
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation Date </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.creationDate</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.creationDate
           </property>
         </properties>
       </widget>
