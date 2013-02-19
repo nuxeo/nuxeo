@@ -98,6 +98,10 @@ public class TestDefaultTopLevelFolderItemFactory {
         syncRoot1Child.setPropertyValue("file:content", (Serializable) blob);
         syncRoot1Child = session.createDocument(syncRoot1Child);
 
+        // Flush the session so that the other session instances from the
+        // FileSystemManager service.
+        session.save();
+
         // Get default top level folder item factory
         defaultTopLevelFolderItemFactory = fileSystemItemAdapterService.getTopLevelFolderItemFactory();
         assertTrue(defaultTopLevelFolderItemFactory instanceof DefaultTopLevelFolderItemFactory);
@@ -191,51 +195,54 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertNotNull(children);
         assertEquals(2, children.size());
 
-        FileSystemItem childFsItem = children.get(0);
-        assertTrue(childFsItem instanceof DefaultSyncRootFolderItem);
+        FileSystemItem firstRootAsFsItem = children.get(0);
+        assertTrue(firstRootAsFsItem instanceof DefaultSyncRootFolderItem);
         assertEquals(
                 "defaultSyncRootFolderItemFactory#test#" + syncRoot1.getId(),
-                childFsItem.getId());
-        assertTrue(childFsItem.getParentId().endsWith(
+                firstRootAsFsItem.getId());
+        assertTrue(firstRootAsFsItem.getParentId().endsWith(
                 "DefaultTopLevelFolderItemFactory#"));
-        assertEquals("syncRoot1", childFsItem.getName());
-        assertTrue(childFsItem.isFolder());
-        assertEquals("Administrator", childFsItem.getCreator());
-        assertFalse(childFsItem.getCanRename());
+        assertEquals("syncRoot1", firstRootAsFsItem.getName());
+        assertTrue(firstRootAsFsItem.isFolder());
+        assertEquals("Administrator", firstRootAsFsItem.getCreator());
+        assertFalse(firstRootAsFsItem.getCanRename());
         try {
-            childFsItem.rename("newName");
+            firstRootAsFsItem.rename("newName");
             fail("Should not be able to rename a synchronization root folder item.");
         } catch (UnsupportedOperationException e) {
             assertEquals("Cannot rename a synchronization root folder item.",
                     e.getMessage());
         }
-        assertTrue(childFsItem.getCanDelete());
-        childFsItem.delete();
+        assertTrue(firstRootAsFsItem instanceof FolderItem);
+        FolderItem firstRootAsFolderItem = (FolderItem) firstRootAsFsItem;
+        List<FileSystemItem> childFsItemChildren = firstRootAsFolderItem.getChildren();
+        assertNotNull(childFsItemChildren);
+        assertEquals(1, childFsItemChildren.size());
+        assertTrue(firstRootAsFolderItem.getCanCreateChild());
+
+        FileSystemItem secondRootAsFsItem = children.get(1);
+        assertTrue(secondRootAsFsItem instanceof DefaultSyncRootFolderItem);
+        assertEquals(
+                "defaultSyncRootFolderItemFactory#test#" + syncRoot2.getId(),
+                secondRootAsFsItem.getId());
+        assertTrue(secondRootAsFsItem.getParentId().endsWith(
+                "DefaultTopLevelFolderItemFactory#"));
+        assertEquals("syncRoot2", secondRootAsFsItem.getName());
+
+        // Let's delete a Sync Root FS Item: this should result in a root
+        // unregistration
+        assertTrue(firstRootAsFsItem.getCanDelete());
+        firstRootAsFsItem.delete();
         assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session).contains(
                 new IdRef(syncRoot1.getId())));
-        assertFalse(childFsItem.canMove(null));
+        assertFalse(firstRootAsFsItem.canMove(null));
         try {
-            childFsItem.move(null);
+            firstRootAsFsItem.move(null);
             fail("Should not be able to move a synchronization root folder item.");
         } catch (UnsupportedOperationException e) {
             assertEquals("Cannot move a synchronization root folder item.",
                     e.getMessage());
         }
-        assertTrue(childFsItem instanceof FolderItem);
-        FolderItem childFolderItem = (FolderItem) childFsItem;
-        List<FileSystemItem> childFsItemChildren = childFolderItem.getChildren();
-        assertNotNull(childFsItemChildren);
-        assertEquals(1, childFsItemChildren.size());
-        assertTrue(childFolderItem.getCanCreateChild());
-
-        childFsItem = children.get(1);
-        assertTrue(childFsItem instanceof DefaultSyncRootFolderItem);
-        assertEquals(
-                "defaultSyncRootFolderItemFactory#test#" + syncRoot2.getId(),
-                childFsItem.getId());
-        assertTrue(childFsItem.getParentId().endsWith(
-                "DefaultTopLevelFolderItemFactory#"));
-        assertEquals("syncRoot2", childFsItem.getName());
     }
 
     @Test
