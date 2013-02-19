@@ -387,6 +387,7 @@ public class ExcelBuilder implements IExcelBuilder {
 
     /* PICTURES */
 
+    @Override
     public int loadPicture(String image) throws IOException {
         InputStream is = new FileInputStream(image);
         byte[] bytes = IOUtils.toByteArray(is);
@@ -395,6 +396,7 @@ public class ExcelBuilder implements IExcelBuilder {
         return pictureIdx;
     }
 
+    @Override
     public void setPicture(int pictureIdx, int col1, int row1, boolean resize) {
         ClientAnchor anchor = create.createClientAnchor();
         // set top-left corner of the picture,
@@ -410,15 +412,22 @@ public class ExcelBuilder implements IExcelBuilder {
 
     /* FONTS */
 
+    @Override
     public Font getBoldFont() {
         return boldFont;
     }
 
+    @Override
     public Font newFont(int size) {
         Font newFont = workbook.createFont();
         // newFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
         newFont.setFontHeightInPoints((short) size);
         return newFont;
+    }
+
+    @Override
+    public Font newFont(){
+        return workbook.createFont();
     }
 
     /* IO */

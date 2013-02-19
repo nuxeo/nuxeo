@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.Work;
@@ -105,6 +107,7 @@ public class ExcelExportRightsActionBean implements Serializable {
         File tmpFile = File.createTempFile("rights", ".xls");
         tmpFile.deleteOnExit();
         buildAndSendByMail(tmpFile);
+        //buildAndSaveAsChildDocument(tmpFile);
     }
 
     /** Execute ACL audit and download the result in a XLS file. */
@@ -157,19 +160,30 @@ public class ExcelExportRightsActionBean implements Serializable {
     protected void buildAndSendByMail(final File tmpFile) throws ClientException {
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
         final String repository = documentManager.getRepositoryName();
-        final String email = "test@nuxeo";//currentNuxeoPrincipal.getEmail();
+        final String to = currentNuxeoPrincipal.getEmail();
+        final String defaultFrom = "default@from.com";
         final String workName = "ACL Audit for " + auditRoot.getPathAsString();
+
+        if(StringUtils.isBlank(to)){
+            facesMessages.add(StatusMessage.Severity.ERROR, "Your email is missing from your profile.");
+            return;
+        }
 
         // Work to do and publishing
         final Work work = new Work(workName);
         new RunnableAclAudit(documentManager, auditRoot, work, tmpFile){
             public void onAuditDone() {
-                IResultPublisher publisher = new PublishByMail(getOutputFile(), workName, email, repository);
+                // content to send
+                FileBlob fb = new FileBlob(getOutputFile(), "application/xls");
+                fb.setFilename(getOutputFile().getName());
+
+                // do publish
+                IResultPublisher publisher = new PublishByMail(fb, to, defaultFrom, repository);
                 try {
                     publisher.publish();
                 } catch (ClientException e) {
-                    facesMessages.add(StatusMessage.Severity.ERROR, e.getMessage());
                     log.error(e,e);
+                    facesMessages.add(StatusMessage.Severity.ERROR, e.getMessage());
                 }
             }
         };

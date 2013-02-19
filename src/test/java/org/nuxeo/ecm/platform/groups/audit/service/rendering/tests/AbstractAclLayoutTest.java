@@ -23,7 +23,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import com.google.common.collect.Lists;
 
 public class AbstractAclLayoutTest {
-    protected static String folder = "target/test/";
+    protected static String folder = "target/";
 
     protected DocumentModel makeFolder(CoreSession session, String path,
             String name, boolean save) throws ClientException,
@@ -119,6 +119,8 @@ public class AbstractAclLayoutTest {
         return makeDocumentTree(session, depth, width, nGroups, 1, root, groups);
     }
 
+    protected int MOD = 3;
+
     protected DocumentModel makeDocumentTree(CoreSession session, int maxDepth,
             int width, int nGroups, int currentDepth, DocumentModel folder,
             List<String> groups) throws PropertyException, ClientException {
@@ -138,7 +140,7 @@ public class AbstractAclLayoutTest {
                     true, save);
 
             // final rule with lock inherit
-            if (currentDepth != 0 && currentDepth % 2 == 0)
+            if (currentDepth != 0 && currentDepth % MOD == 0)
                 addAclLockInheritance(session, folder, group, save);
         }
 

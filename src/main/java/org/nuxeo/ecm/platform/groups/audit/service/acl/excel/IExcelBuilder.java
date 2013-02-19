@@ -100,6 +100,7 @@ public interface IExcelBuilder {
     public Workbook load(File file) throws InvalidFormatException, IOException;
 
     public Font newFont(int size);
+    public Font newFont();
 
     public Font getBoldFont();
 

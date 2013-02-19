@@ -12,7 +12,9 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
+import org.nuxeo.ecm.automation.core.mail.Mailer;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -28,75 +30,85 @@ public class PublishByMail implements IResultPublisher {
 
     public static final String PROPERTY_ACLAUDIT_SENDMAIL_CHAIN = "ACL.Audit.SendMail";
 
+    public static String FROM = "noreply@nuxeo.com";
+
     protected final AutomationService automation = Framework.getLocalService(AutomationService.class);
 
-    protected File fileToPublish;
+    protected FileBlob file;
 
-    protected String documentName;
+    protected String documentName = "";
 
     protected String repository;
 
-    protected String email;
+    protected String to;
 
-    public PublishByMail(File fileToPublish, String documentName, String email,
-            String repository) {
-        this.fileToPublish = fileToPublish;
+    protected String defaultFrom;
+
+    public PublishByMail(FileBlob fb, String to,
+            String defaultFrom, String repository) {
+        this.file = fb;
         this.repository = repository;
-        this.email = email;
-        this.documentName = documentName;
+        this.to = to;
+        this.defaultFrom = defaultFrom;
     }
 
     public void publish() throws ClientException {
-        reconnectAndSendMail(repository, fileToPublish, email);
+        reconnectAndSendMail();
     }
 
-    protected void reconnectAndSendMail(String repository,
-            final File fileToPublish, final String email)
-            throws ClientException {
+    /* repository required to have a session and to build a document */
+    protected void reconnectAndSendMail() throws ClientException {
         new UnrestrictedSessionRunner(repository) {
             @Override
             public void run() throws ClientException {
-                Blob b = new FileBlob(fileToPublish);
-                b.setFilename(documentName);
-
-                DocumentModel docToSend = createDocument(session, b,
+                DocumentModel docToSend = createDocument(session, file,
                         documentName, documentName);
-                doCallOperationSendMail(session, docToSend, email);
+                doCallOperationSendMail(session, docToSend, to, defaultFrom);
                 log.debug("audit sent");
             }
         }.runUnrestricted();
     }
 
     protected void doCallOperationSendMail(CoreSession session,
-            DocumentModel docToSend, String email) {
-        String from = Framework.getProperty(PROPERTY_MAILFROM, "noreply");
+            DocumentModel docToSend, String to, String defaultFrom)
+            throws ClientException {
+        String from = Framework.getProperty(PROPERTY_MAILFROM, defaultFrom);
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(docToSend);
 
         try {
             OperationChain chain = new OperationChain(
                     PROPERTY_ACLAUDIT_SENDMAIL_CHAIN);
-            OperationParameters params = chain.add(SendMail.ID);//findParameters(chain, SendMail.ID);
+            OperationParameters params = chain.add(SendMail.ID);// findParameters(chain,
+                                                                // SendMail.ID);
             if (params == null) {
                 log.error("failed to retrieve operation " + SendMail.ID
                         + " in chain " + chain);
                 return;
             }
             params.set("from", from);
-            params.set("to", email);
+            params.set("to", to);
             params.set("message", "ACL Audit report");
             params.set("subject", "ACL Audit report");
+
+            String[] str = { "file:content" };
+            params.set("files", new StringList(str));
+         // TODO: see SendMail test case where we can directly pass a blob
+
+            logMailerConfiguration();
+
+            // chain.g
             log.debug("Automation run " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN
-                    + " for " + email);
+                    + " for " + to);
             automation.run(ctx, chain);
             log.debug("Automation done " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN
-                    + " for " + email);
+                    + " for " + to);
         } catch (InvalidChainException e) {
-            log.error(e);
+            throw new ClientException(e);
         } catch (OperationException e) {
-            log.error(e);
+            throw new ClientException(e);
         } catch (Exception e) {
-            log.error(e);
+            throw new ClientException(e);
         }
     }
 
@@ -115,5 +127,14 @@ public class PublishByMail implements IResultPublisher {
         document.setPropertyValue("file:filename", filename);
         document.setPropertyValue("dublincore:title", title);
         return document;
+    }
+
+    protected void logMailerConfiguration(){
+        Mailer m = SendMail.COMPOSER.getMailer();
+        log.info("mail.smtp.auth:"+m.getConfiguration().get("mail.smtp.auth"));
+        log.info("mail.smtp.starttls.enable:"+m.getConfiguration().get("mail.smtp.starttls.enable"));
+        log.info("mail.smtp.host:"+m.getConfiguration().get("mail.smtp.host"));
+        log.info("mail.smtp.user:"+m.getConfiguration().get("mail.smtp.user"));
+        log.info("mail.smtp.password:"+m.getConfiguration().get("mail.smtp.password"));
     }
 }

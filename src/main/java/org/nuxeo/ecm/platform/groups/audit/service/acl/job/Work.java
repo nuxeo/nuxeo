@@ -12,6 +12,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
 public class Work extends AbstractWork implements ITimeoutable {
+    public static String PROPERTY_ACL_AUDIT_TIMEOUT = "nuxeo.audit.acl.timeout";
+
     public static int DEFAULT_TIMEOUT = 1200; // 20 min
 
     public static int UNDEFINED_TIMEOUT = -1;
@@ -131,7 +133,7 @@ public class Work extends AbstractWork implements ITimeoutable {
     }
 
     public static int getAclAuditTimeoutFromProperties() {
-        String v = Framework.getProperty("nuxeo.audit.acl.timeout",
+        String v = Framework.getProperty(PROPERTY_ACL_AUDIT_TIMEOUT,
                 UNDEFINED_TIMEOUT + "");
         try {
             return Integer.parseInt(v);

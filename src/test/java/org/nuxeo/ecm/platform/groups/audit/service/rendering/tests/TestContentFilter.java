@@ -56,8 +56,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.usermanager.api", "nuxeo-groups-rights-audit",
         "org.nuxeo.ecm.automation.core" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml" })
+        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
 public class TestContentFilter extends AbstractAclLayoutTest {
 
     @Inject

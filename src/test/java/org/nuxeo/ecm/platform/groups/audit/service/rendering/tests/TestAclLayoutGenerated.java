@@ -51,8 +51,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml" })
+        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
 public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
     @Inject
     CoreSession session;
@@ -81,7 +80,6 @@ public class TestAclLayoutGenerated extends AbstractAclLayoutTest {
         // --------------------
         // settings and filters
         ReportLayoutSettings s = AclExcelLayoutBuilder.defaultLayout();
-        s.setPageSize(1000);
         IContentFilter filter = new AcceptsAllContent();
 
         // generate XLS report

@@ -59,7 +59,8 @@ import com.google.inject.Inject;
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml"})
 public class TestExcelExportGroups {
-
+    
+    
     @Inject
     CoreSession session;
 

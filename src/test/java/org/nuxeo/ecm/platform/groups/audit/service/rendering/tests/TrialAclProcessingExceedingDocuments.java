@@ -56,8 +56,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml" })
+        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
 public class TrialAclProcessingExceedingDocuments extends AbstractAclLayoutTest {
     @Inject
     CoreSession session;

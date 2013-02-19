@@ -57,28 +57,60 @@ public class AclSummaryExtractor {
      * @return
      * @throws ClientException
      */
-    public Multimap<String, Pair<String, Boolean>> getAclByUser(
+    public Multimap<String, Pair<String, Boolean>> getAllAclByUser(
             DocumentModel doc) throws ClientException {
-        Multimap<String, Pair<String, Boolean>> aclByUser = HashMultimap.create();
-
         ACP acp = doc.getACP();
         ACL[] acls = acp.getACLs();
+        return getAclByUser(acls);
+    }
+
+    public Multimap<String, Pair<String, Boolean>> getAclLocalByUser(
+            DocumentModel doc) throws ClientException {
+        ACP acp = doc.getACP();
+        ACL acl = acp.getACL(ACL.LOCAL_ACL);
+        return getAclByUser(acl);
+    }
+
+    public Multimap<String, Pair<String, Boolean>> getAclInheritedByUser(
+            DocumentModel doc) throws ClientException {
+        ACP acp = doc.getACP();
+        ACL acl = acp.getACL(ACL.INHERITED_ACL);
+        return getAclByUser(acl);
+    }
+
+    public Multimap<String, Pair<String, Boolean>> getAclByUser(ACL[] acls)
+            throws ClientException {
+        Multimap<String, Pair<String, Boolean>> aclByUser = HashMultimap.create();
 
         for (ACL acl : acls) {
-            for (ACE ace : acl.getACEs()) {
-                if (filter.acceptsUserOrGroup(ace.getUsername())) {
-                    String userOrGroup = ace.getUsername();
-                    String permission = ace.getPermission();
-                    boolean allow = ace.isGranted();
-                    Pair<String, Boolean> pair = Pair.of(permission, allow);
-                    aclByUser.put(userOrGroup, pair);
-
-                    if (ace.isGranted() && ace.isDenied())
-                        log.warn("stupid state: ace granted and denied at the same time. Considered granted");
-                }
-            }
+            fillAceByUser(aclByUser, acl);
         }
         return aclByUser;
+    }
+
+    public Multimap<String, Pair<String, Boolean>> getAclByUser(ACL acl)
+            throws ClientException {
+        Multimap<String, Pair<String, Boolean>> aclByUser = HashMultimap.create();
+        fillAceByUser(aclByUser, acl);
+        return aclByUser;
+    }
+
+    protected void fillAceByUser(
+            Multimap<String, Pair<String, Boolean>> aclByUser, ACL acl) {
+        if(acl==null)
+            return;
+        for (ACE ace : acl.getACEs()) {
+            if (filter.acceptsUserOrGroup(ace.getUsername())) {
+                String userOrGroup = ace.getUsername();
+                String permission = ace.getPermission();
+                boolean allow = ace.isGranted();
+                Pair<String, Boolean> pair = Pair.of(permission, allow);
+                aclByUser.put(userOrGroup, pair);
+
+                if (ace.isGranted() && ace.isDenied())
+                    log.warn("stupid state: ace granted and denied at the same time. Considered granted");
+            }
+        }
     }
 
     /**

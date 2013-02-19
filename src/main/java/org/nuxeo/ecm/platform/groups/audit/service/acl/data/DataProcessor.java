@@ -144,12 +144,17 @@ public class DataProcessor implements IDataProcessor {
     protected DocumentSummary computeSummary(DocumentModel doc)
             throws ClientException {
         String title = doc.getTitle();
+        String path = doc.getPathAsString();
+        if(path==null)
+            path = "";
         int depth = computeDepth(doc);
-        Multimap<String, Pair<String, Boolean>> m = acl.getAclByUser(doc);
-        boolean lock = acl.hasLockInheritanceACE(m);
 
-        // store usefull results
-        DocumentSummary da = new DocumentSummary(title, depth, lock, m);
+        boolean lock = acl.hasLockInheritanceACE(doc);
+        Multimap<String, Pair<String, Boolean>> aclLo = acl.getAclLocalByUser(doc);
+        Multimap<String, Pair<String, Boolean>> aclIn = acl.getAclInheritedByUser(doc);
+
+        DocumentSummary da = new DocumentSummary(title, depth, lock, aclLo,
+                aclIn, path);
         return da;
     }
 

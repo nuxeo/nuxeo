@@ -31,6 +31,16 @@ public class DocumentSummary {
     }
 
     public DocumentSummary(String title, int depth, boolean aclLockInheritance,
+            Multimap<String, Pair<String, Boolean>> aclLocal, Multimap<String, Pair<String, Boolean>> aclInherited, String path) {
+        this.title = title;
+        this.depth = depth;
+        this.aclLockInheritance = aclLockInheritance;
+        this.userAcls = aclLocal;
+        this.userAclsInherited = aclInherited;
+        this.path = path;
+    }
+
+    public DocumentSummary(String title, int depth, boolean aclLockInheritance,
             Multimap<String, Pair<String, Boolean>> userAcls, String path) {
         this.title = title;
         this.depth = depth;
@@ -55,8 +65,16 @@ public class DocumentSummary {
         return aclLockInheritance;
     }
 
-    public Multimap<String, Pair<String, Boolean>> getUserAcls() {
+    public Multimap<String, Pair<String, Boolean>> getAclByUser() {
         return userAcls;
+    }
+
+    public Multimap<String, Pair<String, Boolean>> getAclInheritedByUser() {
+        return userAclsInherited;
+    }
+
+    public void setAclInheritedByUser(Multimap<String, Pair<String, Boolean>> userAclsInherited) {
+        this.userAclsInherited = userAclsInherited;
     }
 
     protected String title;
@@ -68,4 +86,7 @@ public class DocumentSummary {
     protected boolean aclLockInheritance;
 
     protected Multimap<String, Pair<String, Boolean>> userAcls;
+
+    /** If we want to have different colors for inherited ACL, we can use this structure. */
+    protected Multimap<String, Pair<String, Boolean>> userAclsInherited;
 }

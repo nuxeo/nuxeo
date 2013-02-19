@@ -18,11 +18,14 @@
 package org.nuxeo.ecm.platform.groups.audit.service.acl;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -91,6 +94,8 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     protected CellStyle aclHeaderStyle;
 
     protected CellStyle lockInheritanceStyle;
+
+    protected CellStyle grayTextStyle;
 
     protected int mainSheetId;
 
@@ -216,7 +221,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
         renderInit();
         renderHeader(colStart, data.getUserAndGroups(), data.getPermissions());
-        renderFileTreeAndAclMatrix(data.getAllDocuments(), minDepth);
+        renderFileTreeAndAclMatrix(data.getAllDocuments(), minDepth, maxDepth);
         formatFileTreeCellLayout(maxDepth, minDepth, colStart);
         renderLegend(data.getStatus(), data.getInformation());
         renderFinal();
@@ -239,6 +244,12 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
             aclHeaderStyle.setRotation((short) layoutSettings.aclHeaderRotation);
 
         lockInheritanceStyle = excel.newColoredCellStyle(ByteColor.BLUE);
+
+        grayTextStyle = excel.newCellStyle();
+        Font f = excel.newFont();
+        f.setColor(HSSFColor.GREY_50_PERCENT.index);
+        grayTextStyle.setFont(f);
+        //grayTextStyle.set
     }
 
     /** Perform various general tasks, such as setting the current sheet zoom. */
@@ -274,14 +285,20 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /* FILE TREE AND MATRIX CONTENT RENDERING */
 
     protected void renderFileTreeAndAclMatrix(
-            Collection<DocumentSummary> analyses, int minDepth)
+            Collection<DocumentSummary> analyses, int minDepth, int maxDepth)
             throws ClientException {
         treeLineCursor = layoutSettings.treeLineCursorRowStart;
 
         for (DocumentSummary summary : analyses) {
             renderFilename(summary.getTitle(), summary.getDepth() - minDepth,
                     summary.isAclLockInheritance());
-            renderAcl(summary.getUserAcls());
+
+            excel.setCell(treeLineCursor, maxDepth-minDepth+1, summary.getPath());
+
+            if(summary.getAclInheritedByUser()!=null)
+                renderAcl(summary.getAclByUser(), summary.getAclInheritedByUser());
+            else
+                renderAcl(summary.getAclByUser());
             treeLineCursor++;
         }
     }
@@ -300,11 +317,51 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /** Render a row with all ACL of a given input file. */
     protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls)
             throws ClientException {
+        renderAcl(userAcls, (CellStyle)null);
+    }
+
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls, CellStyle style)
+            throws ClientException {
         for (String user : userAcls.keySet()) {
             int column = layout.getUserColumn(user);
             String info = formatAcl(userAcls.get(user));
+            excel.setCell(treeLineCursor, column, info, style);
+        }
+    }
 
-            excel.setCell(treeLineCursor, column, info);
+    /**
+     * Render local AND inherited ACL.
+     *
+     * <ul>
+     * <li>Local acl only are rendered with default font.
+     * <li>Inherited acl only are rendered with gray font.
+     * <li>Mixed acl (local and inherited) are rendered with default font.
+     * </ul>
+     */
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> localAcls, Multimap<String, Pair<String, Boolean>> inheritedAcls)
+            throws ClientException {
+        Set<String> users = new HashSet<String>();
+        users.addAll(localAcls.keySet());
+        users.addAll(inheritedAcls.keySet());
+
+        for (String user : users) {
+            int column = layout.getUserColumn(user);
+            String localAclsString = formatAcl(localAcls.get(user));
+            String inheritedAclsString = formatAcl(inheritedAcls.get(user));
+
+            if("".equals(localAclsString) && "".equals(inheritedAclsString)){ }
+            else if(!"".equals(localAclsString) && !"".equals(inheritedAclsString)){
+                String info = localAclsString + "," + inheritedAclsString;
+                excel.setCell(treeLineCursor, column, info);
+            }
+            else if(!"".equals(localAclsString) && "".equals(inheritedAclsString)){
+                String info = localAclsString;
+                excel.setCell(treeLineCursor, column, info);
+            }
+            else if("".equals(localAclsString) && !"".equals(inheritedAclsString)){
+                String info = inheritedAclsString;
+                excel.setCell(treeLineCursor, column, info, grayTextStyle);
+            }
         }
     }
 

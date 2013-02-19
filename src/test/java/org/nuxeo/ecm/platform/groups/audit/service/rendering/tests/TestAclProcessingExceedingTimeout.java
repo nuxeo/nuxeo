@@ -67,7 +67,6 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/test-chain-export-operation.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/test-repo-repository-h2-contrib-nofulltext.xml" })
 public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
     @Inject

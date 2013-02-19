@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.groups.audit.service.acl.data;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
@@ -25,13 +24,10 @@ import java.util.TreeSet;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.Pair;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutable;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-
-import com.google.common.collect.Multimap;
 
 public class DataProcessorPaginated extends DataProcessor {
     public static int MAX_DOCUMENTS = ExcelBuilder.MAX_ROW - 2;
@@ -39,13 +35,6 @@ public class DataProcessorPaginated extends DataProcessor {
     public static int DEFAULT_PAGE_SIZE = 1000;
 
     public static int EXCEL_RENDERING_RESERVED_TIME = 90; // seconds
-
-    /**
-     * OrderBy on an SQL request is awfully slow when paging a large amount of
-     * documents, so it's better to not order them and sort results as they
-     * arrive.
-     */
-    protected static boolean ORDER_BY_DB = false;
 
     protected static int UNBOUNDED_PROCESS_TIME = -1;
 
@@ -66,7 +55,7 @@ public class DataProcessorPaginated extends DataProcessor {
         // get data
         DataFetch fetch = new DataFetch();
         CoreQueryDocumentPageProvider pages = fetch.getAllChildrenPaginated(
-                session, root, pageSize, ORDER_BY_DB);
+                session, root, pageSize, false);
         initSummarySet();
 
         // analyse root
@@ -103,7 +92,7 @@ public class DataProcessorPaginated extends DataProcessor {
 
                     // verify exit conditions
                     if (getNumberOfDocuments() == MAX_DOCUMENTS) {
-                        //log.debug("will interrupt doc)
+                        // log.debug("will interrupt doc)
                         status = ProcessorStatus.ERROR_TOO_MANY_DOCUMENTS;
                         break overPages;
                     }
@@ -127,35 +116,15 @@ public class DataProcessorPaginated extends DataProcessor {
 
     @Override
     public void initSummarySet() {
-        if (ORDER_BY_DB) {
-            allDocuments = new ArrayList<DocumentSummary>(pageSize);
-        } else {
-            allDocuments = new TreeSet<DocumentSummary>(
-                    new Comparator<DocumentSummary>() {
-                        @Override
-                        public int compare(DocumentSummary arg0,
-                                DocumentSummary arg1) {
-                            final String dp0 = arg0.getPath();
-                            final String dp1 = arg1.getPath();
-                            return dp0.compareTo(dp1);
-                        }
-                    });
-        }
-    }
-
-    @Override
-    protected DocumentSummary computeSummary(DocumentModel doc)
-            throws ClientException {
-        String title = doc.getTitle();
-        int depth = computeDepth(doc);
-        Multimap<String, Pair<String, Boolean>> m = acl.getAclByUser(doc);
-        boolean lock = acl.hasLockInheritanceACE(m);
-
-        // store usefull results
-        if (ORDER_BY_DB) {
-            return new DocumentSummary(title, depth, lock, m);
-        } else
-            return new DocumentSummary(title, depth, lock, m,
-                    doc.getPathAsString());
+        allDocuments = new TreeSet<DocumentSummary>(
+                new Comparator<DocumentSummary>() {
+                    @Override
+                    public int compare(DocumentSummary arg0,
+                            DocumentSummary arg1) {
+                        final String dp0 = arg0.getPath();
+                        final String dp1 = arg1.getPath();
+                        return dp0.compareTo(dp1);
+                    }
+                });
     }
 }
