@@ -36,6 +36,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>xpp3</groupId>
+      <artifactId>xpp3</artifactId>
+      <classifier>clean</classifier>
+    </dependency>
+    <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
       <scope>provided</scope>
