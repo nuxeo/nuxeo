@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>5.6.0-HF08-SNAPSHOT</version>
+    <version>5.6.0-HF11-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
@@ -21,6 +21,7 @@
     <module>nuxeo-platform-login-shibboleth</module>
     <module>nuxeo-platform-login-digest</module>
     <module>nuxeo-platform-login-deputy</module>
+    <module>nuxeo-platform-login-token</module>
     <module>nuxeo-platform-login-kerberos</module>
   </modules>
 

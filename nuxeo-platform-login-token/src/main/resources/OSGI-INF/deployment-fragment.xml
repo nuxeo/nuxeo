@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <require>org.nuxeo.ecm.platform.lang</require>
+
+  <!-- Token Authentication Servlet -->
+  <extension target="web#SERVLET">
+
+    <servlet>
+      <servlet-name>Nuxeo Token Authentication Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Token Authentication Servlet</servlet-name>
+      <url-pattern>/authentication/token</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/authentication/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+  <install>
+
+    <!-- Unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+    <!-- Append message properties -->
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+
+    <append
+      from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <append
+      from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+    <append
+      from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
+    <delete path="${bundle.fileName}.tmp" />
+
+  </install>
+
+</fragment>
+
