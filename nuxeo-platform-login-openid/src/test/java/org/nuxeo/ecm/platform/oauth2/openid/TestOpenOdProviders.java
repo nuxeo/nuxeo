@@ -30,6 +30,10 @@ public class TestOpenOdProviders {
         Assert.assertNotNull(provider);
 
         Assert.assertTrue(OpenIDConnectHelper.getEnabledProviders().size() > 0);
+
+        OpenIDConnectProvider provider2 = registry.getProvider("TestingGoogleOpenIDConnect2");
+        Assert.assertNotNull(provider2);
+
     }
 
 }

@@ -19,6 +19,23 @@
       <clientId>clientID</clientId>
       <clientSecret>superSecret</clientSecret>
     </provider>
-  </extension>
+
+
+    <provider>
+      <name>TestingGoogleOpenIDConnect2</name>
+      <authorizationServerURL>https://accounts.google.com/o/oauth2/auth</authorizationServerURL>
+      <tokenServerURL>https://accounts.google.com/o/oauth2/token</tokenServerURL>
+      <userInfoURL>https://www.googleapis.com/oauth2/v1/tokeninfo</userInfoURL>
+      <scope>https://www.googleapis.com/auth/userinfo.email</scope>
+      <icon>/img/google_icon.png</icon>
+    </provider>
+
+    <provider>
+      <name>TestingGoogleOpenIDConnect2</name>
+      <clientId>clientID</clientId>
+      <clientSecret>superSecret</clientSecret>
+    </provider>
+
+*  </extension>
 
 </component>

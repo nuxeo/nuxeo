@@ -65,7 +65,8 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
                     || provider.getClientSecret() == null) {
                 log.warn("OpenId provider for "
                         + provider.getName()
-                        + " is disbaled because clientId and/or clientSecret are empty");
+                        + " is disabled because clientId and/or clientSecret are empty (component id = "
+                        + contributor.getName().toString() + ")");
                 provider.setEnabled(false);
             }
             log.info("OpenId provider for " + provider.getName()

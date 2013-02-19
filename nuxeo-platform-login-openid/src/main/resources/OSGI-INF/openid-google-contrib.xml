@@ -16,7 +16,6 @@
       <userInfoURL>https://www.googleapis.com/oauth2/v1/tokeninfo</userInfoURL>
       <scope>https://www.googleapis.com/auth/userinfo.email</scope>
       <icon>/img/google_icon.png</icon>
-
     </provider>
   </extension>
 
