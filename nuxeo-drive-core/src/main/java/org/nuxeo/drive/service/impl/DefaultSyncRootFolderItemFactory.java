@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import java.security.Principal;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -23,6 +25,8 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
@@ -77,6 +81,15 @@ public class DefaultSyncRootFolderItemFactory extends
                     "Document %s is in the '%s' life cycle state, it cannot be adapted"
                             + " as a FileSystemItem => returning null.",
                     doc.getId(), LifeCycleConstants.DELETED_STATE));
+            return null;
+        }
+        // check that the sync root is currently active
+        NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        Principal principal = doc.getCoreSession().getPrincipal();
+        String repoName = doc.getRepositoryName();
+        SynchronizationRoots syncRoots = nuxeoDriveManager.getSynchronizationRoots(
+                principal).get(repoName);
+        if (!includeDeleted && !syncRoots.refs.contains(doc.getRef())) {
             return null;
         }
         if (!doc.isFolder()) {
