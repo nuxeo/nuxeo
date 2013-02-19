@@ -310,8 +310,10 @@
         <label mode="any">
           The page provider that will be called to perform a
           search for the suggestion. It must accept one parameter that will be
-          replaced by the suggestion input. If no name is defined, a default
-          page provider is used.
+          replaced by the suggestion input. Since 5.7, additional parameters set
+          on the page provider definition will also be taken into account (but
+          the suggestion input will still be used as the first implicit
+          parameter). If no name is defined, a default page provider is used.
         </label>
       </helpLabels>
       <fields>
