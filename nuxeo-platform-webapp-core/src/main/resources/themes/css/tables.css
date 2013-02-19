@@ -25,6 +25,13 @@ table thead th { padding: .3em; text-align: left }
 .archiveTabContent .dataInput { border: none; margin-bottom: 1.4em }
 .dataInputGroup { margin: 0; padding: 0; vertical-align: top }
 
+/* remove border spacing from all the tables */
+.dataInput,
+.dataOutput,
+.dataTable,
+.dataTableLine,
+.dataList { border-spacing: 0 }
+
 /* DataOutput styles will be replaced by DataList styles */
 .dataOutput, .dataOutput2Columns {
   border-collapse: collapse;
