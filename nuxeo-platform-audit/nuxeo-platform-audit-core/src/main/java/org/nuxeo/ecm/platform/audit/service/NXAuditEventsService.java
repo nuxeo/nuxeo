@@ -801,16 +801,17 @@ public class NXAuditEventsService extends DefaultComponent implements
             log.warn("received event " + eventName + " with null principal");
         }
         entry.setComment((String) properties.get("comment"));
-        try {
-            if (document.isLifeCycleLoaded()) {
-                entry.setDocLifeCycle(document.getCurrentLifeCycleState());
-            }
-        } catch (UnsupportedOperationException uoe) {
+        if (document instanceof DeletedDocumentModel) {
             entry.setComment("Document does not exist anymore!");
-            log.debug("Document associated to event does not exists anymore");
-        } catch (ClientException e1) {
-            throw new AuditRuntimeException(
-                    "Cannot fetch life cycle state from " + document, e1);
+        } else {
+            try {
+                if (document.isLifeCycleLoaded()) {
+                    entry.setDocLifeCycle(document.getCurrentLifeCycleState());
+                }
+            } catch (ClientException e1) {
+                throw new AuditRuntimeException(
+                        "Cannot fetch life cycle state from " + document, e1);
+            }
         }
         if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)) {
             entry.setDocLifeCycle((String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO));
