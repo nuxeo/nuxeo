@@ -400,8 +400,12 @@ public class TestPageProvider {
         public boolean hasPageChanged = false;
 
         @Override
-        public void pageChanged() {
+        public void pageChanged(PageProvider pageProvider) {
             hasPageChanged = true;
+        }
+
+        @Override
+        public void refreshed(PageProvider pageProvider) {
         }
     }
 

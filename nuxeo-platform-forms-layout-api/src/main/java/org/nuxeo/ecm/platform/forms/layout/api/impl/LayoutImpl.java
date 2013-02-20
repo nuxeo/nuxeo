@@ -56,6 +56,8 @@ public class LayoutImpl implements Layout {
 
     protected String definitionId;
 
+    protected String valueName;
+
     // needed by GWT serialization
     protected LayoutImpl() {
         super();
@@ -202,6 +204,31 @@ public class LayoutImpl implements Layout {
         buf.append('}');
 
         return buf.toString();
+    }
+
+    @Override
+    public String getValueName() {
+        return valueName;
+    }
+
+    @Override
+    public void setValueName(String valueName) {
+        this.valueName = valueName;
+        // set it on all widgets too
+        if (rows == null || rows.length == 0) {
+            return;
+        }
+        for (LayoutRow row : rows) {
+            Widget[] widgets = row.getWidgets();
+            if (widgets == null || widgets.length == 0) {
+                continue;
+            }
+            for (Widget widget : widgets) {
+                if (widget != null) {
+                    widget.setValueName(valueName);
+                }
+            }
+        }
     }
 
 }

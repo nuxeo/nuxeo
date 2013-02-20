@@ -119,14 +119,14 @@ public abstract class AbstractGroupsPageProvider extends
 
     @Override
     protected void pageChanged() {
-        super.pageChanged();
         pageGroups = null;
+        super.pageChanged();
     }
 
     @Override
     public void refresh() {
-        super.refresh();
         pageGroups = null;
+        super.refresh();
     }
 
 }

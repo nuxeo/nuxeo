@@ -20,14 +20,19 @@ package org.nuxeo.ecm.platform.query.api;
 /**
  * Listener to set on a {@link PageProvider} to be notified when the
  * {@code PageProvider} changes.
- * 
+ *
  * @since 5.7
  */
 public interface PageProviderChangedListener {
 
     /**
-     * Called when the current page of the Page Provider has changed.
+     * Called when the current page of the {@code pageProvider} has changed.
      */
-    void pageChanged();
+    void pageChanged(PageProvider pageProvider);
+
+    /**
+     * Called when the {@code pageProvider} has refreshed.
+     */
+    void refreshed(PageProvider pageProvider);
 
 }

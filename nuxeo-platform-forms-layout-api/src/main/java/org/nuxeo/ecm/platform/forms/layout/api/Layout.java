@@ -136,4 +136,18 @@ public interface Layout extends Serializable {
      */
     void setProperty(String name, Serializable value);
 
+    /**
+     * Gets the value name used to compute widget attributes.
+     *
+     * @since 5.7
+     */
+    String getValueName();
+
+    /**
+     * Sets the value name used to compute widget bindings.
+     *
+     * @since 5.7
+     */
+    void setValueName(String valueName);
+
 }

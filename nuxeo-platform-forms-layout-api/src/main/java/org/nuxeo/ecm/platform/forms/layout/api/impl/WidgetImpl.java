@@ -298,6 +298,14 @@ public class WidgetImpl implements Widget {
 
     public void setValueName(String valueName) {
         this.valueName = valueName;
+        // set it on subwidgets too
+        if (subWidgets != null) {
+            for (Widget sub : subWidgets) {
+                if (sub != null) {
+                    sub.setValueName(valueName);
+                }
+            }
+        }
     }
 
     public int getLevel() {

@@ -210,14 +210,14 @@ public class UsersPageProvider extends
 
     @Override
     protected void pageChanged() {
-        super.pageChanged();
         pageUsers = null;
+        super.pageChanged();
     }
 
     @Override
     public void refresh() {
-        super.refresh();
         pageUsers = null;
+        super.refresh();
     }
 
 }
